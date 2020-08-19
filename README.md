@@ -1,8 +1,11 @@
 # MiraiCP
 码云地址:https://gitee.com/JMcreate/MiraiCP
 github地址:https://github.com/Nambers/mirai_kotlin_example
-基于mirai 框架的机器人 
+
+基于mirai 框架的qq机器人 
 使用c++,kotlin 语言编写
+作者使用IDEA+VS
+
 实现原理：
 用kotlin调用java的jni包，再用jni调用c++编写dll动态链接库，实现使用c++语言编写mirai机器人
 
