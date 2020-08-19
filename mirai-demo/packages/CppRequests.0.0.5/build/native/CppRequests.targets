@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="CppRequests_init">
+  <PropertyGroup Label="Debug and static and RuntimeLibraryNull" Condition="( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-CppRequests.ToLower())' == 'static' And ('$(RuntimeLibrary)' == '')">
+    <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+  </PropertyGroup>
+  <PropertyGroup Label="Release and static and RuntimeLibraryNull" Condition="( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-CppRequests.ToLower())' == 'static' And ('$(RuntimeLibrary)' == '')">
+    <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+  </PropertyGroup>
+  <PropertyGroup Label="Default initializers for properties">
+    <Linkage-CppRequests Condition="'$(Linkage-CppRequests)' == ''">dynamic</Linkage-CppRequests>
+    <CallingConvention-CppRequests Condition="'$(CallingConvention-CppRequests)' == ''">cdecl</CallingConvention-CppRequests>
+  </PropertyGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\default-propertiesui.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\CppRequests-propertiesui-1ca6bc50-44a4-4a79-b62d-e89c712ac126.xml" />
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../..//build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../..//build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="static" Condition="'$(Linkage-CppRequests.ToLower())' == 'static'">
+    <ClCompile>
+      <RuntimeLibrary>$(RuntimeLibrary)</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and v120 and static and Release" Condition="'$(Platform.ToLower())' == 'win32' And ( $(PlatformToolset.ToLower().IndexOf('v120')) &gt; -1 Or '$(PlatformToolset.ToLower())' == 'windowskernelmodedriver8.0' Or '$(PlatformToolset.ToLower())' == 'windowsapplicationfordrivers8.0' Or '$(PlatformToolset.ToLower())' == 'windowsusermodedriver8.0' ) And '$(Linkage-CppRequests.ToLower())' == 'static' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Win32\v120\static\Release\HttpLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and v120 and static and Debug" Condition="'$(Platform.ToLower())' == 'win32' And ( $(PlatformToolset.ToLower().IndexOf('v120')) &gt; -1 Or '$(PlatformToolset.ToLower())' == 'windowskernelmodedriver8.0' Or '$(PlatformToolset.ToLower())' == 'windowsapplicationfordrivers8.0' Or '$(PlatformToolset.ToLower())' == 'windowsusermodedriver8.0' ) And '$(Linkage-CppRequests.ToLower())' == 'static' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Win32\v120\static\Debug\HttpLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and v120 and static and Release" Condition="'$(Platform.ToLower())' == 'x64' And ( $(PlatformToolset.ToLower().IndexOf('v120')) &gt; -1 Or '$(PlatformToolset.ToLower())' == 'windowskernelmodedriver8.0' Or '$(PlatformToolset.ToLower())' == 'windowsapplicationfordrivers8.0' Or '$(PlatformToolset.ToLower())' == 'windowsusermodedriver8.0' ) And '$(Linkage-CppRequests.ToLower())' == 'static' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/x64\v120\static\Release\HttpLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and v120 and static and Debug" Condition="'$(Platform.ToLower())' == 'x64' And ( $(PlatformToolset.ToLower().IndexOf('v120')) &gt; -1 Or '$(PlatformToolset.ToLower())' == 'windowskernelmodedriver8.0' Or '$(PlatformToolset.ToLower())' == 'windowsapplicationfordrivers8.0' Or '$(PlatformToolset.ToLower())' == 'windowsusermodedriver8.0' ) And '$(Linkage-CppRequests.ToLower())' == 'static' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/x64\v120\static\Debug\HttpLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <UsingTask TaskName="CppRequests_Contains" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" TaskFactory="CodeTaskFactory">
+    <ParameterGroup>
+      <Text Output="false" ParameterType="System.String" />
+      <Library Output="false" Required="true" ParameterType="System.String" />
+      <Value Output="false" Required="true" ParameterType="System.String" />
+      <Result Output="true" ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Code>Result = ((Text ?? "").Split(';').Contains(Library) ) ? Value : String.Empty;</Code>
+    </Task>
+  </UsingTask>
+  <Target Name="CppRequests_init">
+    <CppRequests_Contains Text="Linkage-dynamic" Library="CppRequests" Value="dynamic" Condition="'$(Linkage-CppRequests)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-CppRequests" />
+    </CppRequests_Contains>
+    <CppRequests_Contains Text="Linkage-static" Library="CppRequests" Value="static" Condition="'$(Linkage-CppRequests)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-CppRequests" />
+    </CppRequests_Contains>
+    <CppRequests_Contains Text="Linkage-ltcg" Library="CppRequests" Value="ltcg" Condition="'$(Linkage-CppRequests)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-CppRequests" />
+    </CppRequests_Contains>
+    <CppRequests_Contains Text="Linkage-sxs" Library="CppRequests" Value="sxs" Condition="'$(Linkage-CppRequests)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-CppRequests" />
+    </CppRequests_Contains>
+    <CppRequests_Contains Text="CallingConvention-cdecl" Library="CppRequests" Value="cdecl" Condition="'$(CallingConvention-CppRequests)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-CppRequests" />
+    </CppRequests_Contains>
+    <CppRequests_Contains Text="CallingConvention-stdcall" Library="CppRequests" Value="stdcall" Condition="'$(CallingConvention-CppRequests)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-CppRequests" />
+    </CppRequests_Contains>
+    <CppRequests_Contains Text="CallingConvention-fastcall" Library="CppRequests" Value="fastcall" Condition="'$(CallingConvention-CppRequests)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-CppRequests" />
+    </CppRequests_Contains>
+    <CppRequests_Contains Text="CallingConvention-thiscall" Library="CppRequests" Value="thiscall" Condition="'$(CallingConvention-CppRequests)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-CppRequests" />
+    </CppRequests_Contains>
+    <CppRequests_Contains Text="CallingConvention-clrcall" Library="CppRequests" Value="clrcall" Condition="'$(CallingConvention-CppRequests)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-CppRequests" />
+    </CppRequests_Contains>
+  </Target>
+</Project>
