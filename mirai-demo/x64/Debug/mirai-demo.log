@@ -1,0 +1,5 @@
+﻿  dllmain.cpp
+C:\Users\19308\source\repos\mirai-demo\dllmain.cpp(32,59): warning C4267: “参数”: 从“size_t”转换到“jsize”，可能丢失数据
+C:\Users\19308\source\repos\mirai-demo\dllmain.cpp(34,69): warning C4267: “参数”: 从“size_t”转换到“jsize”，可能丢失数据
+    正在创建库 C:\Users\19308\source\repos\mirai-demo\x64\Debug\mirai-demo.lib 和对象 C:\Users\19308\source\repos\mirai-demo\x64\Debug\mirai-demo.exp
+  mirai-demo.vcxproj -> C:\Users\19308\source\repos\mirai-demo\x64\Debug\mirai-demo.dll
