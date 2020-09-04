@@ -1,2 +1,4 @@
 C:\Users\19308\source\repos\mirai-demo\Debug\mirai-demo.dll
 C:\Users\19308\source\repos\mirai-demo\Debug\mirai-demo.pdb
+C:\Users\19308\Desktop\e\MiraiCP\mirai-demo\Debug\mirai-demo.dll
+C:\Users\19308\Desktop\e\MiraiCP\mirai-demo\Debug\mirai-demo.pdb
