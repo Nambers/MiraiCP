@@ -21,7 +21,7 @@ https://github.com/Nambers/mirai_kotlin_example
 
 c++版
 1. 下载全部文件
-2. c++sdk中编辑你想要的功能，在pch.php里
+2. c++sdk中编辑你想要的功能，在pch.cpp里
 3. 生成dll动态链接库
 4. 放到miraiok包下的libraries里面
 5. 如果改名或改存放地点了（不是D:/Mirai/libraries/mirai-demo.dll），要到kotline——mirai文件夹里的，CPP_lib.kt里的路径改成你的路径，并且用gradle中的jar任务重新编译，然后到build/libs文件夹下找到jar文件，复制到miraiok包下的plugin文件夹里面
