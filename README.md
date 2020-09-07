@@ -1,4 +1,6 @@
-# MiraiCP
+# MiraiCP #
+## 附带教程 https://blog.csdn.net/qq_40832960/article/details/108294625 ##
+
 码云地址:https://gitee.com/JMcreate/MiraiCP
 github地址:https://github.com/Nambers/MiraiCP
 
