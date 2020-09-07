@@ -1,1 +1,2 @@
 C:\Users\19308\source\repos\mirai-demo\Release\mirai-demo.dll
+D:\VS_Project\MiraiCP\mirai-demo\Release\mirai-demo.dll

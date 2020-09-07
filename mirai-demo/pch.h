@@ -10,8 +10,8 @@
 #include "com_example_plugin_CPP_lib.h"
 #include <string>
 #include "tools.h"
-using namespace std;
+#include <jni.h>
 static Tools tools;
 static Reply reply;
+using namespace std;
 #endif //PCH_H
-

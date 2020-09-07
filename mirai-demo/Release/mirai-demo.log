@@ -1,9 +1,10 @@
 ﻿  pch.cpp
   dllmain.cpp
-    正在创建库 C:\Users\19308\source\repos\mirai-demo\Release\mirai-demo.lib 和对象 C:\Users\19308\source\repos\mirai-demo\Release\mirai-demo.exp
+  tools.cpp
+    正在创建库 D:\VS_Project\MiraiCP\mirai-demo\Release\mirai-demo.lib 和对象 D:\VS_Project\MiraiCP\mirai-demo\Release\mirai-demo.exp
   正在生成代码
-  1 of 4 functions (25.0%) were compiled, the rest were copied from previous compilation.
+  2 of 183 functions ( 1.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
-  mirai-demo.vcxproj -> C:\Users\19308\source\repos\mirai-demo\Release\mirai-demo.dll
+  mirai-demo.vcxproj -> D:\VS_Project\MiraiCP\mirai-demo\Release\mirai-demo.dll

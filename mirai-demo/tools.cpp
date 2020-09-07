@@ -1,5 +1,4 @@
-#include "tools.h"
-Tools tools;
+#include "pch.h"
     string Tools::jstring2str(JNIEnv* env, jstring jstr)
     {
         char* rtn = NULL;
@@ -50,9 +49,6 @@ Tools tools;
 
     jstring Reply::AutoReturn(JNIEnv* env, string message) {
         return tools.str2jstring(env, message.c_str());
-    }
-    jstring Reply::AutoReturn(JNIEnv* env, const char* message) {
-        return tools.str2jstring(env, message);
     }
     jstring Reply::AutoReturn(JNIEnv* env, const char* message) {
         return tools.str2jstring(env, message);
