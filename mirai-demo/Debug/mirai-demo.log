@@ -1,6 +1,50 @@
 ﻿  pch.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um\winbase.h(7464,48): warning C5039: “TpSetCallbackCleanupGroup”: 可能引发函数的指针或引用传递到 -EHc 下的外部 "C" 函数。如果此函数引发异常，则可能发生未定义的行为。
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\xmemory(141,5): warning C4365: “参数”: 从“long”转换到“unsigned int”，有符号/无符号不匹配
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\xmemory(151,5): warning C4365: “参数”: 从“long”转换到“unsigned int”，有符号/无符号不匹配
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\atomic(146,9): warning C4365: “参数”: 从“long”转换到“unsigned int”，有符号/无符号不匹配
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\atomic(162,9): warning C4365: “参数”: 从“long”转换到“unsigned int”，有符号/无符号不匹配
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\atomic(179,9): warning C4365: “参数”: 从“long”转换到“unsigned int”，有符号/无符号不匹配
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\atomic(245,9): warning C4365: “参数”: 从“long”转换到“unsigned int”，有符号/无符号不匹配
+C:\Program Files\Java\jdk1.8.0_261\include\jni.h(1874,1): warning C4820: “JavaVMInitArgs”:“3”字节填充添加在 数据成员“JavaVMInitArgs::ignoreUnrecognized”后
+D:\VS_Project\MiraiCP\mirai-demo\pch.cpp(13,62): warning C4100: “message”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\pch.cpp(13,48): warning C4100: “nick”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\pch.cpp(13,34): warning C4100: “qqid”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\pch.cpp(13,23): warning C4100: “job”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\pch.cpp(13,10): warning C4100: “env”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\pch.cpp(23,88): warning C4100: “job”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\pch.cpp(33,23): warning C4100: “job”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\pch.cpp(49,49): warning C4100: “qqid”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\pch.cpp(49,34): warning C4100: “groupid”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\pch.cpp(49,23): warning C4100: “job”: 未引用的形参
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\corecrt_wstdio.h(1530,41): warning C4710: “int swprintf_s(wchar_t *const ,const size_t,const wchar_t *const ,...)”: 函数未内联
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\corecrt_wstdio.h(1530): message : 参见“swprintf_s”的声明
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\corecrt_wstdio.h(1761,37): warning C4710: “int _scwprintf(const wchar_t *const ,...)”: 函数未内联
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\corecrt_wstdio.h(1761): message : 参见“_scwprintf”的声明
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1833,41): warning C4710: “int sprintf_s(char *const ,const size_t,const char *const ,...)”: 函数未内联
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1833): message : 参见“sprintf_s”的声明
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(2100,37): warning C4710: “int _scprintf(const char *const ,...)”: 函数未内联
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(2100): message : 参见“_scprintf”的声明
   dllmain.cpp
   tools.cpp
-  正在生成代码...
-    正在创建库 C:\Users\19308\Desktop\e\MiraiCP\mirai-demo\Debug\mirai-demo.lib 和对象 C:\Users\19308\Desktop\e\MiraiCP\mirai-demo\Debug\mirai-demo.exp
-  mirai-demo.vcxproj -> C:\Users\19308\Desktop\e\MiraiCP\mirai-demo\Debug\mirai-demo.dll
+D:\VS_Project\MiraiCP\mirai-demo\tools.cpp(13,41): warning C4365: “参数”: 从“jsize”转换到“size_t”，有符号/无符号不匹配
+D:\VS_Project\MiraiCP\mirai-demo\tools.cpp(14,33): warning C4365: “参数”: 从“jsize”转换到“size_t”，有符号/无符号不匹配
+D:\VS_Project\MiraiCP\mirai-demo\tools.cpp(30,59): warning C4365: “参数”: 从“size_t”转换到“jsize”，有符号/无符号不匹配
+D:\VS_Project\MiraiCP\mirai-demo\tools.cpp(32,69): warning C4365: “参数”: 从“size_t”转换到“jsize”，有符号/无符号不匹配
+D:\VS_Project\MiraiCP\mirai-demo\dllmain.cpp(3,19): warning C4211: 使用了非标准扩展: 将“extern”重新定义为“static”
+D:\VS_Project\MiraiCP\mirai-demo\dllmain.cpp(8,12): warning C4100: “lpReserved”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\dllmain.cpp(6,31): warning C4100: “hModule”: 未引用的形参
+D:\VS_Project\MiraiCP\mirai-demo\tools.cpp(59,39): warning C4100: “env”: 未引用的形参
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(2100,37): warning C4710: “int _scprintf(const char *const ,...)”: 函数未内联 (编译源文件 tools.cpp)
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(2100): message : 参见“_scprintf”的声明 (编译源文件 tools.cpp)
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1833,41): warning C4710: “int sprintf_s(char *const ,const size_t,const char *const ,...)”: 函数未内联 (编译源文件 tools.cpp)
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1833): message : 参见“sprintf_s”的声明 (编译源文件 tools.cpp)
+C:\Program Files\Java\jdk1.8.0_261\include\jni.h(868,13): warning C4710: “jobject JNIEnv_::NewObject(jclass,jmethodID,...)”: 函数未内联 (编译源文件 tools.cpp)
+C:\Program Files\Java\jdk1.8.0_261\include\jni.h(868): message : 参见“JNIEnv_::NewObject”的声明 (编译源文件 tools.cpp)
+C:\Program Files\Java\jdk1.8.0_261\include\jni.h(897,13): warning C4710: “jobject JNIEnv_::CallObjectMethod(jobject,jmethodID,...)”: 函数未内联 (编译源文件 tools.cpp)
+C:\Program Files\Java\jdk1.8.0_261\include\jni.h(897): message : 参见“JNIEnv_::CallObjectMethod”的声明 (编译源文件 tools.cpp)
+D:\VS_Project\MiraiCP\mirai-demo\tools.cpp(14): warning C5045: 如果指定了 /Qspectre 开关，编译器会插入内存负载的 Spectre 缓解
+  D:\VS_Project\MiraiCP\mirai-demo\tools.cpp(11) : 注意: 在此行上通过对比检查索引 "alen" 范围
+  D:\VS_Project\MiraiCP\mirai-demo\tools.cpp(14) : 注意: 此行上的源调用
+    正在创建库 D:\VS_Project\MiraiCP\mirai-demo\Debug\mirai-demo.lib 和对象 D:\VS_Project\MiraiCP\mirai-demo\Debug\mirai-demo.exp
+  mirai-demo.vcxproj -> D:\VS_Project\MiraiCP\mirai-demo\Debug\mirai-demo.dll

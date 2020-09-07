@@ -6,4 +6,4 @@
 login 123456789 TestMiraiOK
 say 655057127 MiraiOK_published!
 ----------
-login 481784853 xxxxxxx TestMiraiOK
+# login 账号 密码 TestMiraiOK

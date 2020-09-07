@@ -1,9 +1,4 @@
-﻿// pch.cpp: 与预编译标头对应的源文件
-#include "pch.h"
-
-
-// 当使用预编译的头时，需要使用此源文件，编译才能成功。
-
+﻿#include "pch.h"
 /*
 *正文开始
 */
@@ -36,12 +31,13 @@ JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify(JNIEnv* env, j
 */
 JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
 (JNIEnv* env, jobject job, jlong qqid, jstring message) {
-    string result=reply.no;//default is no reply
-    if (tools.JLongToString(qqid)== (string)"11111")result = "hi";//if the qqid equal 11111 send qqmessage "hi"
-    if (tools.jstring2str(env,message).substr(0, 4) == "复读") {
+    string result = "我还在测试中";//default is no reply
+    if (tools.JLongToString(qqid) == (string)"11111")result = "hi";//if the qqid equal 11111 send qqmessage "hi"
+    if (tools.jstring2str(env, message).substr(0, 4) == "复读") {
         return reply.AutoReturn(env, message);//复读功能
     }
-    return reply.AutoReturn(env,result);
+    if (result == reply.no)return reply.NoReply(env);
+    return reply.AutoReturn(env, result);
 }
 /*
 * 名称:Java_com_example_plugin_CPP_1lib_GroupMessage
@@ -51,6 +47,9 @@ JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
 */
 JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMessage
 (JNIEnv* env, jobject job, jlong groupid, jlong qqid, jstring message) {
+    if (tools.jstring2str(env, message).substr(0, 4) == "复读") {
+        return reply.AutoReturn(env, message);//复读功能
+    }
     return reply.AutoReturn(env, reply.no);//no reply
 }
 
