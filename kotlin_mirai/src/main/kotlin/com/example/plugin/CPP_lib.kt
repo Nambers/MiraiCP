@@ -15,4 +15,7 @@ class CPP_lib {
     external fun PrivateMessage(qqid:Long,message:String): String
     external fun GroupMessage(groupid:Long,qqid:Long,message:String): String
     external fun FriendRequest(qqid:Long,Nick:String,message: String): Boolean
+    external fun GroupNameChange(origin:String,new:String,group:Long,operate:Long):Void
+    external fun GroupMemberLeave(Memberid:Long,Q:Boolean):Void
+    external fun GroupMemberJoin(Memberid:Long,Driving:Boolean):Void
 }
