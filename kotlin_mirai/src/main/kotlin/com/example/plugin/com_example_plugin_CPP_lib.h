@@ -39,6 +39,30 @@ JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMessage
 JNIEXPORT jboolean JNICALL Java_com_example_plugin_CPP_1lib_FriendRequest
   (JNIEnv *, jobject, jlong, jstring, jstring);
 
+/*
+ * Class:     com_example_plugin_CPP_lib
+ * Method:    GroupNameChange
+ * Signature: (Ljava/lang/String;Ljava/lang/String;JJ)Ljava/lang/Void;
+ */
+JNIEXPORT jobject JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
+  (JNIEnv *, jobject, jstring, jstring, jlong, jlong);
+
+/*
+ * Class:     com_example_plugin_CPP_lib
+ * Method:    GroupMemberLeave
+ * Signature: (JZ)Ljava/lang/Void;
+ */
+JNIEXPORT jobject JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
+  (JNIEnv *, jobject, jlong, jboolean);
+
+/*
+ * Class:     com_example_plugin_CPP_lib
+ * Method:    GroupMemberJoin
+ * Signature: (JZ)Ljava/lang/Void;
+ */
+JNIEXPORT jobject JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
+  (JNIEnv *, jobject, jlong, jboolean);
+
 #ifdef __cplusplus
 }
 #endif
