@@ -42,25 +42,25 @@ JNIEXPORT jboolean JNICALL Java_com_example_plugin_CPP_1lib_FriendRequest
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    GroupNameChange
- * Signature: (Ljava/lang/String;Ljava/lang/String;JJ)Ljava/lang/Void;
+ * Signature: (Ljava/lang/String;Ljava/lang/String;JJ)Ljava/lang/String;
  */
-JNIEXPORT jobject JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
+JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
   (JNIEnv *, jobject, jstring, jstring, jlong, jlong);
 
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    GroupMemberLeave
- * Signature: (JZ)Ljava/lang/Void;
+ * Signature: (JZ)Ljava/lang/String;
  */
-JNIEXPORT jobject JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
+JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
   (JNIEnv *, jobject, jlong, jboolean);
 
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    GroupMemberJoin
- * Signature: (JZ)Ljava/lang/Void;
+ * Signature: (JZ)Ljava/lang/String;
  */
-JNIEXPORT jobject JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
+JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
   (JNIEnv *, jobject, jlong, jboolean);
 
 #ifdef __cplusplus
