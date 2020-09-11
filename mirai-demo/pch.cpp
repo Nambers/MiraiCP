@@ -10,7 +10,7 @@
 */
 JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
 (JNIEnv* env, jobject job, jlong memberid, jboolean active) {
-    return reply.NoReply(env);
+    return reply.AutoReturn(env,memberid+"加入了本群");
 }
 /*
 * 名称:Java_com_example_plugin_CPP_1lib_GroupMemberLeave
@@ -20,7 +20,7 @@ JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
 */
 JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
 (JNIEnv* env, jobject job, jlong memberid, jboolean active) {
-    return reply.NoReply(env);
+    return reply.AutoReturn(env,memberid+"离开了本群");
 }
 /*
 * 名称:Java_com_example_plugin_CPP_1lib_GroupNameChange
@@ -55,33 +55,30 @@ JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify(JNIEnv* env, j
 /*
 * 名称:Java_com_example_plugin_CPP_1lib_PrivateMessage
 * 作用:处理私聊消息
-* 参数:env 必备job 必备，qqid qq号，message 发送的消息
+* 参数:env 必备，job 必备，senderid qq号，sendername 发送者昵称，HeadImageDownloadUrl 发送者头像地址，message 发送的消息
 * 返回值:jstring(用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
 JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
-(JNIEnv* env, jobject job, jlong qqid, jstring message) {
+(JNIEnv* env, jobject job, jlong SenderId, jstring SenderName, jstring HeadImageDownloadUrl, jstring Message) {
     string result = "我还在测试中";//default is no reply
-    if (tools.JLongToString(qqid) == (string)"1930893235")result = "hi";//if the qqid equal 11111 send qqmessage "hi"
+    if (tools.JLongToString(SenderId) == (string)"1930893235")result = "hi";//if the qqid equal 11111 send qqmessage "hi"
     /*jclass cls = env->GetObjectClass(job);  //获得JAVA对象在C++中的对应对象  jclass
     jmethodID  id = env->GetStaticMethodID(cls, "showStatic", "()V");  //通过 JNIEnv类 也就是java环境获得  静态方法的 jmethodID          
     env->CallStaticVoidMethod(cls, id,"a");  //INVOKE  STATIC  METHOD   执行java静态方法 */
-    if (tools.jstring2str(env, message).substr(0, 2) == "复读") {
-        return reply.AutoReturn(env, message);//复读功能
+    if (tools.jstring2str(env, Message).substr(0, 2) == "复读") {
+        return reply.AutoReturn(env, Message);//复读功能
     }
     if (result == reply.no)return reply.NoReply(env);
     return reply.AutoReturn(env, result);
 }
-/*
+/**
 * 名称:Java_com_example_plugin_CPP_1lib_GroupMessage
 * 作用:处理群消息
-* 参数:env:JNIEnv 必备， job:jobject 必备，groupid:jlong 群号，qqid:jlong qq号，message:jstring 信息
+* 参数: env:JNIEnv 必备， job:jobject 必备，groupid:jlong 群号，GroupName:jstring 群名，GroupOwnerId:jlong 群主qq号，sendernick:jstring 发送者昵称，sendergroupname:jstring 发送者群名称，senderid:jlong qq号，message:jstring 信息
 * 返回值:jsrting (用str2jstring把string类型转成jsrting) 发送返回的字符串
-*/
+**/
 JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMessage
-(JNIEnv* env, jobject job, jlong groupid, jlong qqid, jstring message) {
-    if (tools.jstring2str(env, message).substr(0, 4) == "复读") {
-        return reply.AutoReturn(env, message);//复读功能
-    }
+(JNIEnv* env, jobject job, jlong GroupId, jstring GroupName, jlong GroupOwnerId, jstring SenderNick, jstring SenderGroupName, jlong SenderId, jstring Message){
     return reply.AutoReturn(env, reply.no);//no reply
 }
 
