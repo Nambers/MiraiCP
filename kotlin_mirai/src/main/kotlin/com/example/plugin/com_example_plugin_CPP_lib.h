@@ -18,18 +18,18 @@ JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    PrivateMessage
- * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jstring, jstring);
 
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    GroupMessage
- * Signature: (JJLjava/lang/String;)Ljava/lang/String;
+ * Signature: (JLjava/lang/String;JLjava/lang/String;Ljava/lang/String;JLjava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMessage
-  (JNIEnv *, jobject, jlong, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jstring, jstring, jlong, jstring);
 
 /*
  * Class:     com_example_plugin_CPP_lib
