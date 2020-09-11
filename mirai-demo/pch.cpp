@@ -6,31 +6,31 @@
 * 名称:Java_com_example_plugin_CPP_1lib_GroupMemberJoin
 * 作用:群成员加入
 * 参数:env 必备参数，job 必备参数，memberid qq号，active 是否主动加入（非邀请）
-* 返回值:job 返回本身
+* 返回值: jstring 发送到群里的原因
 */
-JNIEXPORT jobject JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
+JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
 (JNIEnv* env, jobject job, jlong memberid, jboolean active) {
-    return job;
+    return reply.NoReply(env);
 }
 /*
 * 名称:Java_com_example_plugin_CPP_1lib_GroupMemberLeave
 * 作用:群成员离开
 * 参数:env 必备参数，job 必备参数，memberid qq号，active 是否退出（非踢出）
-* 返回值:job 返回本身
+* 返回值:jstring 发送到群里的消息
 */
-JNIEXPORT jobject JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
+JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
 (JNIEnv* env, jobject job, jlong memberid, jboolean active) {
-    return job;
+    return reply.NoReply(env);
 }
 /*
 * 名称:Java_com_example_plugin_CPP_1lib_GroupNameChange
 * 作用:群 改变名字
 * 参数:env 必备参数，job 必备参数，origin 原名，newName 新名字，Groupid 群号，operateid 操作者qq（如果是机器人则为0）
-* 返回值:job 返回本身
+* 返回值: jstring 发送到群里的消息
 */
-JNIEXPORT jobject JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
+JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
 (JNIEnv* env, jobject job, jstring origin, jstring newName, jlong Groupid, jlong operateid) {
-    return job;
+    return reply.NoReply(env);
 }
 /*
 * 名称:Java_com_example_plugin_CPP_1lib_FriendRequest

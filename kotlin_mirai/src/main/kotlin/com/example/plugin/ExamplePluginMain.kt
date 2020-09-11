@@ -33,31 +33,38 @@ object ExamplePluginMain : PluginBase() {
             //群信息
 
             val r=cpp.GroupMessage(subject.id, sender.id, message.toString())
+
             if(r!="CONTINUE") reply(r)//继续
 
         }
         subscribeAlways<FriendMessageEvent> {
             //个人信息
+
             val r=cpp.PrivateMessage(sender.id, message.toString())
             if(r!="CONTINUE") reply(r)
         }
         subscribeAlways<MemberJoinEvent.Active> {
-            cpp.GroupMemberJoin(member.id, true)
+            val r=cpp.GroupMemberJoin(member.id, true)
+            if(r!="CONTINUE") group.sendMessage(r)
         }
         subscribeAlways<MemberJoinEvent.Invite> {
-            cpp.GroupMemberJoin(member.id, false)
+            val r=cpp.GroupMemberJoin(member.id, false)
+            if(r!="CONTINUE") group.sendMessage(r)
         }
         subscribeAlways<MemberLeaveEvent.Kick> {
-            cpp.GroupMemberLeave(member.id, true)
+            val r=cpp.GroupMemberLeave(member.id, true)
+            if(r!="CONTINUE") group.sendMessage(r)
         }
         subscribeAlways<MemberLeaveEvent.Quit> {
-            cpp.GroupMemberLeave(member.id, false)
+            val r=cpp.GroupMemberLeave(member.id, false)
+            if(r!="CONTINUE") group.sendMessage(r)
         }
         subscribeAlways<GroupNameChangeEvent> {
             val a:Long
             if(operator==null) a=0
             else a= operator!!.id
-            cpp.GroupNameChange(origin, new, group.id, a)
+            val r=cpp.GroupNameChange(origin, new, group.id, a)
+            if(r!="CONTINUE") group.sendMessage(r)
         }
 
         subscribeAlways<NewFriendRequestEvent> {
