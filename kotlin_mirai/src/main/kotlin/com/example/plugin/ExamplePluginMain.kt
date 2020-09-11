@@ -32,15 +32,14 @@ object ExamplePluginMain : PluginBase() {
         subscribeAlways<GroupMessageEvent> {
             //群信息
 
-            val r=cpp.GroupMessage(subject.id, sender.id, message.toString())
-
+            val r=cpp.GroupMessage(subject.id,subject.name,subject.owner.id, sender.nick,sender.nameCard,sender.id, message.toString())
             if(r!="CONTINUE") reply(r)//继续
 
         }
         subscribeAlways<FriendMessageEvent> {
             //个人信息
 
-            val r=cpp.PrivateMessage(sender.id, message.toString())
+            val r=cpp.PrivateMessage(subject.id,subject.nick,subject.avatarUrl, message.toString())
             if(r!="CONTINUE") reply(r)
         }
         subscribeAlways<MemberJoinEvent.Active> {
