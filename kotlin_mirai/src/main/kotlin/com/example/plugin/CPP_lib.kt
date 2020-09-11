@@ -12,8 +12,8 @@ class CPP_lib {
         }
     }
     external fun Verify(): String
-    external fun PrivateMessage(qqid:Long,message:String): String
-    external fun GroupMessage(groupid:Long,qqid:Long,message:String): String
+    external fun PrivateMessage(id:Long,nick:String,avatarUrl:String, message:String): String
+    external fun GroupMessage(groupId:Long,GroupName:String,ownerId:Long,MemberName:String,MemberGroupName:String,Memberid: Long,message:String): String
     external fun FriendRequest(qqid:Long,Nick:String,message: String): Boolean
     external fun GroupNameChange(origin:String,new:String,group:Long,operate:Long):String
     external fun GroupMemberLeave(Memberid:Long,Q:Boolean):String

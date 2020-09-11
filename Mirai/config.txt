@@ -1,9 +1,0 @@
-#DEBUG
-#NOUPDATE
-#在----------下面可以添加需要在每次启动时输入得指令
-#请注意，指令部分中#并不起效，miraiOK会原样输入到console
-例如:
-login 123456789 TestMiraiOK
-say 655057127 MiraiOK_published!
-----------
-# login 账号 密码 TestMiraiOK
