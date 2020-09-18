@@ -1,4 +1,29 @@
 ﻿#include "pch.h"
+
+void Send(JNIEnv* env, jobject job, string mess,long id) {
+    //1.首先要在C中获取jclass对象，也就是找到方法所在的类，通过完整  包名+类名
+    jclass java_first = env->FindClass("com/example/plugin/CPP_lib");
+
+    /**2.找到该方法的方法ID
+    *参数一：jclass
+    *参数二：方法名
+    *参数三：方法签名
+    *方法签名，网上有详细说明，如果不想查，可以使用javap -s指令查询
+    */
+    jmethodID static_method_id = env->GetStaticMethodID(java_first, "SendPrivate",
+        "(Ljava/lang/String;J)V");
+
+    /**3.调用静态方法
+    *参数一：jclass
+    *参数二：方法ID
+    *参数三：参数三是可变长参数，也就是该方法声明时候对应的参数列表，相当于调用方法时的传参
+    *这个方法声明的是（s: String, i: Int）
+    */
+    env->CallStaticVoidMethod(java_first, static_method_id,tools.str2jstring(env,mess.c_str()),(jlong)id);
+
+    //4.删除掉本地引用
+    env->DeleteLocalRef(java_first);
+}
 /*
 *正文开始
 */
@@ -61,7 +86,10 @@ JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify(JNIEnv* env, j
 JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
 (JNIEnv* env, jobject job, jlong SenderId, jstring SenderName, jstring HeadImageDownloadUrl, jstring Message) {
     string result = "我还在测试中";//default is no reply
-    if (tools.JLongToString(SenderId) == (string)"1930893235")result = "hi";//if the qqid equal 11111 send qqmessage "hi"
+    if (tools.JLongToString(SenderId) == (string)"1930893235") {
+        Send(env, job, "c",SenderId);
+        return reply.NoReply(env);
+    }//if the qqid equal 11111 send qqmessage "hi"
     /*jclass cls = env->GetObjectClass(job);  //获得JAVA对象在C++中的对应对象  jclass
     jmethodID  id = env->GetStaticMethodID(cls, "showStatic", "()V");  //通过 JNIEnv类 也就是java环境获得  静态方法的 jmethodID          
     env->CallStaticVoidMethod(cls, id,"a");  //INVOKE  STATIC  METHOD   执行java静态方法 */

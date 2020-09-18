@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="jsoncpp_init">
+  <PropertyGroup Label="Debug and static and RuntimeLibraryNull" Condition="( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-jsoncpp.ToLower())' == 'static' And ('$(RuntimeLibrary)' == '')">
+    <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+  </PropertyGroup>
+  <PropertyGroup Label="Release and static and RuntimeLibraryNull" Condition="( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-jsoncpp.ToLower())' == 'static' And ('$(RuntimeLibrary)' == '')">
+    <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+  </PropertyGroup>
+  <PropertyGroup Label="Default initializers for properties">
+    <Linkage-jsoncpp Condition="'$(Linkage-jsoncpp)' == ''">dynamic</Linkage-jsoncpp>
+    <CallingConvention-jsoncpp Condition="'$(CallingConvention-jsoncpp)' == ''">cdecl</CallingConvention-jsoncpp>
+  </PropertyGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\default-propertiesui.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\jsoncpp-propertiesui-2f26ac94-3097-4c56-b380-fbdb12f1efd3.xml" />
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>JSON_DLL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../..//build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../..//build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="static" Condition="'$(Linkage-jsoncpp.ToLower())' == 'static'">
+    <ClCompile>
+      <RuntimeLibrary>$(RuntimeLibrary)</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and v110 and Debug" Condition="'$(Platform.ToLower())' == 'win32' And ( $(PlatformToolset.ToLower().IndexOf('v110')) &gt; -1 Or '$(PlatformToolset.ToLower())' == 'windowskernelmodedriver8.0' Or '$(PlatformToolset.ToLower())' == 'windowsapplicationfordrivers8.0' Or '$(PlatformToolset.ToLower())' == 'windowsusermodedriver8.0' ) And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Win32\v110\Debug\jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and v110 and Release" Condition="'$(Platform.ToLower())' == 'win32' And ( $(PlatformToolset.ToLower().IndexOf('v110')) &gt; -1 Or '$(PlatformToolset.ToLower())' == 'windowskernelmodedriver8.0' Or '$(PlatformToolset.ToLower())' == 'windowsapplicationfordrivers8.0' Or '$(PlatformToolset.ToLower())' == 'windowsusermodedriver8.0' ) And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Win32\v110\Release\jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and v110 and Debug" Condition="'$(Platform.ToLower())' == 'x64' And ( $(PlatformToolset.ToLower().IndexOf('v110')) &gt; -1 Or '$(PlatformToolset.ToLower())' == 'windowskernelmodedriver8.0' Or '$(PlatformToolset.ToLower())' == 'windowsapplicationfordrivers8.0' Or '$(PlatformToolset.ToLower())' == 'windowsusermodedriver8.0' ) And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/x64\v110\Debug\jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and v110 and Release" Condition="'$(Platform.ToLower())' == 'x64' And ( $(PlatformToolset.ToLower().IndexOf('v110')) &gt; -1 Or '$(PlatformToolset.ToLower())' == 'windowskernelmodedriver8.0' Or '$(PlatformToolset.ToLower())' == 'windowsapplicationfordrivers8.0' Or '$(PlatformToolset.ToLower())' == 'windowsusermodedriver8.0' ) And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/x64\v110\Release\jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and v100 and Debug" Condition="'$(Platform.ToLower())' == 'win32' And '$(PlatformToolset.ToLower())' == 'v100' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Win32\v100\Debug\jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and v100 and Release" Condition="'$(Platform.ToLower())' == 'win32' And '$(PlatformToolset.ToLower())' == 'v100' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Win32\v100\Release\jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and v100 and Debug" Condition="'$(Platform.ToLower())' == 'x64' And '$(PlatformToolset.ToLower())' == 'v100' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/x64\v100\Debug\jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and v100 and Release" Condition="'$(Platform.ToLower())' == 'x64' And '$(PlatformToolset.ToLower())' == 'v100' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/x64\v100\Release\jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <UsingTask TaskName="jsoncpp_Contains" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" TaskFactory="CodeTaskFactory">
+    <ParameterGroup>
+      <Text Output="false" ParameterType="System.String" />
+      <Library Output="false" Required="true" ParameterType="System.String" />
+      <Value Output="false" Required="true" ParameterType="System.String" />
+      <Result Output="true" ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Code>Result = ((Text ?? "").Split(';').Contains(Library) ) ? Value : String.Empty;</Code>
+    </Task>
+  </UsingTask>
+  <Target Name="jsoncpp_init">
+    <jsoncpp_Contains Text="Linkage-dynamic" Library="jsoncpp" Value="dynamic" Condition="'$(Linkage-jsoncpp)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-jsoncpp" />
+    </jsoncpp_Contains>
+    <jsoncpp_Contains Text="Linkage-static" Library="jsoncpp" Value="static" Condition="'$(Linkage-jsoncpp)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-jsoncpp" />
+    </jsoncpp_Contains>
+    <jsoncpp_Contains Text="Linkage-ltcg" Library="jsoncpp" Value="ltcg" Condition="'$(Linkage-jsoncpp)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-jsoncpp" />
+    </jsoncpp_Contains>
+    <jsoncpp_Contains Text="Linkage-sxs" Library="jsoncpp" Value="sxs" Condition="'$(Linkage-jsoncpp)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-jsoncpp" />
+    </jsoncpp_Contains>
+    <jsoncpp_Contains Text="CallingConvention-cdecl" Library="jsoncpp" Value="cdecl" Condition="'$(CallingConvention-jsoncpp)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-jsoncpp" />
+    </jsoncpp_Contains>
+    <jsoncpp_Contains Text="CallingConvention-stdcall" Library="jsoncpp" Value="stdcall" Condition="'$(CallingConvention-jsoncpp)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-jsoncpp" />
+    </jsoncpp_Contains>
+    <jsoncpp_Contains Text="CallingConvention-fastcall" Library="jsoncpp" Value="fastcall" Condition="'$(CallingConvention-jsoncpp)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-jsoncpp" />
+    </jsoncpp_Contains>
+    <jsoncpp_Contains Text="CallingConvention-thiscall" Library="jsoncpp" Value="thiscall" Condition="'$(CallingConvention-jsoncpp)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-jsoncpp" />
+    </jsoncpp_Contains>
+    <jsoncpp_Contains Text="CallingConvention-clrcall" Library="jsoncpp" Value="clrcall" Condition="'$(CallingConvention-jsoncpp)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-jsoncpp" />
+    </jsoncpp_Contains>
+  </Target>
+</Project>

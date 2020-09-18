@@ -1,0 +1,6 @@
+name: "Kotlin_Mirai"
+author: "Eritque arcus"
+version: "0.1.0"
+main: "com.example.plugin.ExamplePluginMain"
+info: ""
+depends: []
