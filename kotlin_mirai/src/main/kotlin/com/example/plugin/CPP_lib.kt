@@ -17,6 +17,12 @@ class CPP_lib {
             System.load("D:\\Mirai\\libraries\\mirai-demo.dll")
         }
         @JvmStatic
+        fun SendGroup(message:String,id:Long){
+            GlobalScope.launch(Dispatchers.Default) {
+                SendG(message, id)
+            }
+        }
+        @JvmStatic
         fun SendLog(log:String){
             BasicSendLog(log)
         }

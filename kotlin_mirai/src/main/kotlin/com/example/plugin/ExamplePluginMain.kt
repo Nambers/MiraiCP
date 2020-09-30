@@ -21,6 +21,9 @@ lateinit var Logger:net.mamoe.mirai.utils.MiraiLogger
     fun BasicSendLog(log:String){
         Logger.info(log)
     }
+    suspend fun SendG(message:String,id:Long){
+        AIbot.getGroup(id).sendMessage(message)
+    }
     object ExamplePluginMain : PluginBase() {
         override fun onEnable() {
             Logger=logger
