@@ -13,20 +13,17 @@ import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.*
 
 lateinit var AIbot:Bot
-
-        suspend fun Send(message:String, id:Long){
-            //反向调用-测试中
-            AIbot.getFriend(id).sendMessage(message)
-        }
-
+lateinit var Logger:net.mamoe.mirai.utils.MiraiLogger
+    suspend fun Send(message:String, id:Long){
+        //反向调用
+        AIbot.getFriend(id).sendMessage(message)
+    }
+    fun BasicSendLog(log:String){
+        Logger.info(log)
+    }
     object ExamplePluginMain : PluginBase() {
-//    fun showStatic(a:String) {
-//        logger.info(a)
-//    }
-
-
         override fun onEnable() {
-
+            Logger=logger
             val cpp=CPP_lib()
             super.onEnable()
             //插件已加载
