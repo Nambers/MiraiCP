@@ -17,8 +17,12 @@ class CPP_lib {
             System.load("D:\\Mirai\\libraries\\mirai-demo.dll")
         }
         @JvmStatic
+        fun SendLog(log:String){
+            BasicSendLog(log)
+        }
+        @JvmStatic
         fun SendPrivate(message: String, id: Long) {
-            GlobalScope.launch(Dispatchers.Main) {
+            GlobalScope.launch(Dispatchers.Default) {
                 // 反向调用发送消息 测试中
                 Send(message, id)
             }
