@@ -27,18 +27,41 @@ public:
     */
     string JLongToString(jlong qqid);
 };
-class Reply {
+static Tools tools;
+class Friend {
+private:
+    jclass java_first;
+    jmethodID Send_Msg_id;
+    jmethodID Nick_Name_id;
+    jlong jid;
+    JNIEnv* env;
 public:
-    string no = "CONTINUE"; //用于返回发送信息时，返回该值不会发送信息
-    /*
-    * 作用:自动识别类型返回
-    */
-    jstring AutoReturn(JNIEnv* env, string message);
-    jstring AutoReturn(JNIEnv* env, int message);
-    jstring AutoReturn(JNIEnv* env, long message);
-    jstring AutoReturn(JNIEnv* env, float message);
-    jstring AutoReturn(JNIEnv* env, double message);
-    jstring AutoReturn(JNIEnv* env, const char* message);
-    jstring AutoReturn(JNIEnv* env, jstring message);
-    jstring NoReply(JNIEnv* env);
+    long id;
+    Friend(JNIEnv* env, jobject job, jlong id);
+    ~Friend();
+    string GetNick();
+    string nick;
+    void SendMsg(jstring msg) {
+        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, msg, jid);
+    }
+    void SendMsg(string msg) {      
+        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, tools.str2jstring(this->env, msg.c_str()), jid);
+    }
+};
+class Group {
+private:
+    jclass java_first;
+    jmethodID Send_Msg_id;
+    jlong jid;
+    JNIEnv* env;
+public:
+    long id;
+    ~Group();
+    Group(JNIEnv* env,jobject job,jlong id);
+    void SendMsg(jstring msg) {
+        this->env->CallStaticVoidMethod(java_first, Send_Msg_id, msg, (jlong)this->id);
+    }
+    void SendMsg(string msg) {
+        SendMsg(tools.str2jstring(this->env, msg.c_str()));
+    }
 };

@@ -1,4 +1,46 @@
 #include "pch.h"
+string Friend::GetNick() {
+    return tools.jstring2str(this->env, (jstring)this->env->CallStaticObjectMethod(java_first, Send_Msg_id, this->jid));
+}
+Friend::Friend (JNIEnv* env, jobject job,jlong id){
+    //1.首先要在C中获取jclass对象，也就是找到方法所在的类，通过完整  包名+类名
+
+        /**2.找到该方法的方法ID
+        *参数一：jclass
+        *参数二：方法名
+        *参数三：方法签名
+        *方法签名，网上有详细说明，如果不想查，可以使用javap -s指令查询
+        */
+
+        /**3.调用静态方法
+        *参数一：jclass
+        *参数二：方法ID
+        *参数三：参数三是可变长参数，也就是该方法声明时候对应的参数列表，相当于调用方法时的传参
+        *这个方法声明的是（s: String, i: Int）
+        */
+    this->java_first = env->FindClass("com/example/plugin/CPP_lib");
+    this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivate", "(Ljava/lang/String;J)V");
+    this->Nick_Name_id = env->GetStaticMethodID(java_first, "GetNick", "(J)Ljava/lang/String");
+    this->jid = id;
+    this->id = (long)id;
+    this->env = env;
+    //this->nick=this->GetNick();
+}
+Friend::~Friend() {
+    this->env->DeleteLocalRef(java_first);
+    delete(this->env);
+}
+Group::Group(JNIEnv* env, jobject job, jlong id) {
+    this->java_first = env->FindClass("com/example/plugin/CPP_lib");
+    this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendGroup", "(Ljava/lang/String;J)V");
+    this->env = env;
+    this->jid = id;
+    this->id = id;
+}
+Group::~Group() {
+    env->DeleteLocalRef(java_first);
+    delete(this->env);
+}
     string Tools::jstring2str(JNIEnv* env, jstring jstr)
     {
         char* rtn = NULL;
@@ -45,29 +87,4 @@
             return a;
         };
         return id();
-    }
-
-    jstring Reply::AutoReturn(JNIEnv* env, string message) {
-        return tools.str2jstring(env, message.c_str());
-    }
-    jstring Reply::AutoReturn(JNIEnv* env, const char* message) {
-        return tools.str2jstring(env, message);
-    }
-    jstring Reply::NoReply(JNIEnv* env) {
-        return tools.str2jstring(env, no.c_str());
-    }
-    jstring Reply::AutoReturn(JNIEnv* env, jstring message) {
-        return message;
-    }
-    jstring Reply::AutoReturn(JNIEnv* env, int message) {
-        return tools.str2jstring(env, to_string(message).c_str());
-    }
-    jstring Reply::AutoReturn(JNIEnv* env, long message) {
-        return tools.str2jstring(env, to_string(message).c_str());
-    }
-    jstring Reply::AutoReturn(JNIEnv* env, float message) {
-        return tools.str2jstring(env, to_string(message).c_str());
-    }
-    jstring Reply::AutoReturn(JNIEnv* env, double message) {
-        return tools.str2jstring(env, to_string(message).c_str());
     }

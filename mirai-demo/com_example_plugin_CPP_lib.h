@@ -18,17 +18,17 @@ JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    PrivateMessage
- * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
+JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
   (JNIEnv *, jobject, jlong, jstring, jstring, jstring);
 
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    GroupMessage
- * Signature: (JLjava/lang/String;JLjava/lang/String;Ljava/lang/String;JLjava/lang/String;)Ljava/lang/String;
+ * Signature: (JLjava/lang/String;JLjava/lang/String;Ljava/lang/String;JLjava/lang/String;)V
  */
-JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMessage
+JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMessage
   (JNIEnv *, jobject, jlong, jstring, jlong, jstring, jstring, jlong, jstring);
 
 /*
@@ -42,26 +42,26 @@ JNIEXPORT jboolean JNICALL Java_com_example_plugin_CPP_1lib_FriendRequest
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    GroupNameChange
- * Signature: (Ljava/lang/String;Ljava/lang/String;JJ)Ljava/lang/String;
+ * Signature: (Ljava/lang/String;Ljava/lang/String;JJ)V
  */
-JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
+JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
   (JNIEnv *, jobject, jstring, jstring, jlong, jlong);
 
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    GroupMemberLeave
- * Signature: (JZ)Ljava/lang/String;
+ * Signature: (JZJ)V
  */
-JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
-  (JNIEnv *, jobject, jlong, jboolean);
+JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
+  (JNIEnv *, jobject, jlong, jboolean, jlong);
 
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    GroupMemberJoin
- * Signature: (JZ)Ljava/lang/String;
+ * Signature: (JZJ)V
  */
-JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
-  (JNIEnv *, jobject, jlong, jboolean);
+JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
+  (JNIEnv *, jobject, jlong, jboolean, jlong);
 
 #ifdef __cplusplus
 }

@@ -11,7 +11,5 @@
 #include <string>
 #include "tools.h"
 #include <jni.h>
-static Tools tools;
-static Reply reply;
 using namespace std;
 #endif //PCH_H

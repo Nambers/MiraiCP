@@ -7,70 +7,65 @@ package com.example.plugin
 
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.plugins.PluginBase
-import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.*
 
-lateinit var AIbot:Bot
-lateinit var Logger:net.mamoe.mirai.utils.MiraiLogger
+object ExamplePluginMain : PluginBase() {
+    lateinit var AIbot:Bot
     suspend fun Send(message:String, id:Long){
         //反向调用
-        AIbot.getFriend(id).sendMessage(message)
+        logger.info("Send message for $id is $message")
+        logger.info(AIbot.selfQQ.toString())
+        val a=AIbot.getFriend(id)
+        logger.info("successful get friend")
+        a.sendMessage(message)
+        logger.info("Send success")
     }
     fun BasicSendLog(log:String){
-        Logger.info(log)
+        logger.info(log);
     }
     suspend fun SendG(message:String,id:Long){
         AIbot.getGroup(id).sendMessage(message)
     }
-    object ExamplePluginMain : PluginBase() {
+    fun GetN(qqid:Long):String {
+        return AIbot.getFriend(qqid).nick;
+    }
         override fun onEnable() {
-            Logger=logger
             val cpp=CPP_lib()
             super.onEnable()
             //插件已加载
             logger.info("Plugin loaded!")
             logger.info(cpp.ver)//输出2333 正常
-
-
             subscribeAlways<BotOnlineEvent> {
                 AIbot=bot
             }
             subscribeAlways<GroupMessageEvent> {
                 //群信息
-                val r=cpp.GroupMessage(subject.id,subject.name,subject.owner.id, sender.nick,sender.nameCard,sender.id, message.toString())
-                if(r!="CONTINUE") reply(r)//继续
+                cpp.GroupMessage(subject.id,subject.name,subject.owner.id, sender.nick,sender.nameCard,sender.id, message.toString())
 
             }
             subscribeAlways<FriendMessageEvent> {
                 //个人信息
-
-                val r=cpp.PrivateMessage(subject.id,subject.nick,subject.avatarUrl, message.toString())
-                if(r!="CONTINUE") reply(r)
+                cpp.PrivateMessage(subject.id,subject.nick,subject.avatarUrl, message.toString())
             }
             subscribeAlways<MemberJoinEvent.Active> {
-                val r=cpp.GroupMemberJoin(member.id, true)
-                if(r!="CONTINUE") group.sendMessage(r)
+                cpp.GroupMemberJoin(member.id, true,group.id)
             }
             subscribeAlways<MemberJoinEvent.Invite> {
-                val r=cpp.GroupMemberJoin(member.id, false)
-                if(r!="CONTINUE") group.sendMessage(r)
+                cpp.GroupMemberJoin(member.id, false,group.id)
             }
             subscribeAlways<MemberLeaveEvent.Kick> {
-                val r=cpp.GroupMemberLeave(member.id, true)
-                if(r!="CONTINUE") group.sendMessage(r)
+                cpp.GroupMemberLeave(member.id, true,group.id)
             }
             subscribeAlways<MemberLeaveEvent.Quit> {
-                val r=cpp.GroupMemberLeave(member.id, false)
-                if(r!="CONTINUE") group.sendMessage(r)
+                cpp.GroupMemberLeave(member.id, false,group.id)
             }
             subscribeAlways<GroupNameChangeEvent> {
                 val a:Long
                 if(operator==null) a=0
                 else a= operator!!.id
-                val r=cpp.GroupNameChange(origin, new, group.id, a)
-                if(r!="CONTINUE") group.sendMessage(r)
+                cpp.GroupNameChange(origin, new, group.id, a)
             }
 
             subscribeAlways<NewFriendRequestEvent> {
