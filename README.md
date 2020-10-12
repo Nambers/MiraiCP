@@ -1,5 +1,6 @@
 # MiraiCP #
-![ ](https://img.shields.io/badge/Author-Nambers-blue)
+![Github](https://img.shields.io/badge/Author-Nambers-blue)![GitHub](https://img.shields.io/github/license/Nambers/MiraiCP)
+
 ## 附带教程 https://blog.csdn.net/qq_40832960/article/details/108294625 ##
 Mirai下载地址 https://github.com/Nambers/MiraiEXE
 码云地址:https://gitee.com/JMcreate/MiraiCP
