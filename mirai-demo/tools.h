@@ -42,10 +42,10 @@ public:
     string GetNick();
     string nick;
     void SendMsg(jstring msg) {
-        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, msg, jid);
+        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, msg, this->jid);
     }
     void SendMsg(string msg) {      
-        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, tools.str2jstring(this->env, msg.c_str()), jid);
+        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, tools.str2jstring(this->env, msg.c_str()), this->jid);
     }
 };
 class Group {

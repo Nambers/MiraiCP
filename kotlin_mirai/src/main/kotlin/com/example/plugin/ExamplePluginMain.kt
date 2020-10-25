@@ -10,23 +10,28 @@ import net.mamoe.mirai.console.plugins.PluginBase
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
 
 object ExamplePluginMain : PluginBase() {
     lateinit var AIbot:Bot
-    suspend fun Send(message:String, id:Long){
+    fun Send(message:String, id:Long){
         //反向调用
         logger.info("Send message for $id is $message")
-        logger.info(AIbot.selfQQ.toString())
         val a=AIbot.getFriend(id)
-        logger.info("successful get friend")
-        a.sendMessage(message)
-        logger.info("Send success")
+        GlobalScope.launch(Dispatchers.Unconfined) {
+            a.sendMessage(message)
+        }
     }
     fun BasicSendLog(log:String){
         logger.info(log);
     }
-    suspend fun SendG(message:String,id:Long){
-        AIbot.getGroup(id).sendMessage(message)
+    fun SendG(message:String,id:Long){
+        GlobalScope.launch(Dispatchers.Unconfined) {
+            logger.info("Send message for Group($id) is $message")
+            AIbot.getGroup(id).sendMessage(message)
+        }
     }
     fun GetN(qqid:Long):String {
         return AIbot.getFriend(qqid).nick;
@@ -36,9 +41,10 @@ object ExamplePluginMain : PluginBase() {
             super.onEnable()
             //插件已加载
             logger.info("Plugin loaded!")
+            logger.info("github存储库:https://github.com/Nambers/MiraiCP")
             logger.info(cpp.ver)//输出2333 正常
             subscribeAlways<BotOnlineEvent> {
-                AIbot=bot
+                AIbot=this.bot
             }
             subscribeAlways<GroupMessageEvent> {
                 //群信息

@@ -78,6 +78,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_plugin_CPP_1lib_FriendRequest
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
 JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify(JNIEnv* env, jobject job) {
+    //Friend(env, job, (jlong)1930893235).SendMsg("H");
     return tools.str2jstring(env, "2333");//验证机制
 }
 /*

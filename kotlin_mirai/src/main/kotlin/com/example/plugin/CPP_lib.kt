@@ -16,22 +16,21 @@ class CPP_lib {
             //这里填自己的路径
             System.load("D:\\Mirai\\libraries\\mirai-demo.dll")
         }
+        
         @JvmStatic
         fun SendGroup(message:String,id:Long){
-            GlobalScope.launch(Dispatchers.Default) {
                 SendG(message, id)
-            }
         }
         @JvmStatic
         fun SendLog(log:String) {
             BasicSendLog(log)
         }
         @JvmStatic
-        fun SendPrivate(message: String, id: Long){
+        fun SendPrivateMSG(message: String, id: Long){
             // 反向调用发送消息
-            GlobalScope.launch(Dispatchers.Default) {
+            //GlobalScope.launch(Dispatchers.Default) {
                 Send(message, id)
-            }
+            //}
         }
         @JvmStatic
         fun GetNick(qqid:Long): String {
