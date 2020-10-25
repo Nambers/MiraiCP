@@ -19,7 +19,7 @@ Friend::Friend (JNIEnv* env, jobject job,jlong id){
         *这个方法声明的是（s: String, i: Int）
         */
     this->java_first = env->FindClass("com/example/plugin/CPP_lib");
-    this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivate", "(Ljava/lang/String;J)V");
+    this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateMSG", "(Ljava/lang/String;J)V");
     this->Nick_Name_id = env->GetStaticMethodID(java_first, "GetNick", "(J)Ljava/lang/String");
     this->jid = id;
     this->id = (long)id;
