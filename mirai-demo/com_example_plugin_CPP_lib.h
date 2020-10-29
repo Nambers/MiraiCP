@@ -18,10 +18,10 @@ JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify
 /*
  * Class:     com_example_plugin_CPP_lib
  * Method:    PrivateMessage
- * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
-  (JNIEnv *, jobject, jlong, jstring, jstring, jstring);
+  (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_example_plugin_CPP_lib
