@@ -6,6 +6,8 @@ import com.example.plugin.ExamplePluginMain.SendG
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+
 class CPP_lib {
     var ver:String=""
     init {
@@ -18,8 +20,12 @@ class CPP_lib {
         }
         
         @JvmStatic
-        fun SendGroup(message:String,id:Long){
-                SendG(message, id)
+        fun SendGroup(message:String,id:Long) {
+            runBlocking {
+                launch {
+                    SendG(message, id)
+                }
+            }
         }
         @JvmStatic
         fun SendLog(log:String) {
@@ -28,9 +34,11 @@ class CPP_lib {
         @JvmStatic
         fun SendPrivateMSG(message: String, id: Long){
             // 反向调用发送消息
-            //GlobalScope.launch(Dispatchers.Default) {
-                Send(message, id)
-            //}
+            runBlocking {
+                launch {
+                    Send(message, id)
+                }
+            }
         }
         @JvmStatic
         fun GetNick(qqid:Long): String {
@@ -41,7 +49,7 @@ class CPP_lib {
     
 
     external fun Verify(): String
-    external fun PrivateMessage(id:Long,nick:String,avatarUrl:String, message:String)
+    external fun PrivateMessage(id:Long,message:String)
     external fun GroupMessage(groupId:Long,GroupName:String,ownerId:Long,MemberName:String,MemberGroupName:String,Memberid: Long,message:String)
     external fun FriendRequest(qqid:Long,Nick:String,message: String): Boolean
     external fun GroupNameChange(origin:String,new:String,group:Long,operate:Long)

@@ -5,7 +5,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 group = '1122'
-version = '0.2.1'
+version = '0.2.2'
 
 repositories {
     mavenLocal()
@@ -19,7 +19,6 @@ repositories {
     google()
 }
 dependencies {
-    //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
     implementation "net.mamoe:mirai-core-qqandroid:1.1.3"
     implementation "net.mamoe:mirai-console:0.5.2"

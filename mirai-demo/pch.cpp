@@ -29,9 +29,9 @@ void SendLog(JNIEnv* env, jobject job, string log) {
 * 名称:Java_com_example_plugin_CPP_1lib_GroupMemberJoin
 * 作用:群成员加入
 * 参数:env 必备参数，job 必备参数，memberid qq号，active 是否主动加入（非邀请）
-* 返回值: jstring 发送到群里的原因
+* 返回值: void
 */
-JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
+ void JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
 (JNIEnv* env, jobject job, jlong memberid, jboolean active,jlong groupid) {
     Group g(env, job, groupid);
     g.SendMsg(tools.JLongToString(memberid) + "加入了本群");
@@ -40,9 +40,9 @@ JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
 * 名称:Java_com_example_plugin_CPP_1lib_GroupMemberLeave
 * 作用:群成员离开
 * 参数:env 必备参数，job 必备参数，memberid qq号，active 是否退出（非踢出）
-* 返回值:jstring 发送到群里的消息
+* 返回值:void
 */
-JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
+ void JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
 (JNIEnv* env, jobject job, jlong memberid, jboolean active,jlong groupid) {
     Group g(env, job, groupid);
     Friend f(env, job, memberid);
@@ -52,9 +52,9 @@ JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
 * 名称:Java_com_example_plugin_CPP_1lib_GroupNameChange
 * 作用:群 改变名字
 * 参数:env 必备参数，job 必备参数，origin 原名，newName 新名字，Groupid 群号，operateid 操作者qq（如果是机器人则为0）
-* 返回值: jstring 发送到群里的消息
+* 返回值: void
 */
-JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
+ void JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
 (JNIEnv* env, jobject job, jstring origin, jstring newName, jlong Groupid, jlong operateid) {
     //不做反应
 }
@@ -64,7 +64,7 @@ JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
 * 参数:env 必备参数，job 必备参数，qqid qq号，nick 申请者昵称，message 验证消息
 * 返回值:bool 是为添加 否为不添加
 */
-JNIEXPORT jboolean JNICALL Java_com_example_plugin_CPP_1lib_FriendRequest
+ jboolean JNICALL Java_com_example_plugin_CPP_1lib_FriendRequest
 (JNIEnv* env, jobject job, jlong qqid, jstring nick, jstring message) {
     Friend object(env, job, qqid);
     object.SendMsg("Hi");
@@ -77,7 +77,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_plugin_CPP_1lib_FriendRequest
 * 参数:env 必备，job 必备
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
-JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify(JNIEnv* env, jobject job) {
+ jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify(JNIEnv* env, jobject job) {
     //Friend(env, job, (jlong)1930893235).SendMsg("H");
     return tools.str2jstring(env, "2333");//验证机制
 }
@@ -85,19 +85,15 @@ JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify(JNIEnv* env, j
 * 名称:Java_com_example_plugin_CPP_1lib_PrivateMessage
 * 作用:处理私聊消息
 * 参数:env 必备，job 必备，senderid qq号，sendername 发送者昵称，HeadImageDownloadUrl 发送者头像地址，message 发送的消息
-* 返回值:jstring(用str2jstring把string类型转成jsrting) 发送返回的字符串
+* 返回值: void
 */
-JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
-(JNIEnv* env, jobject job, jlong SenderId, jstring SenderName, jstring HeadImageDownloadUrl, jstring Message) {
+void JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
+(JNIEnv* env, jobject job, jlong SenderId, jstring Message) {
     Friend object(env,job, SenderId);
     string result = "我还在测试中";//default is no reply
     if (object.id== 1930893235) {
-        SendLog(env, job, "Master");//发送日志
         object.SendMsg("Hi");//发送消息 Hi
-        return;
-    }
-    if (tools.jstring2str(env, Message).substr(0, 2) == "复读") {
-        object.SendMsg(tools.jstring2str(env,Message));
+        SendLog(env, job, "OKOK");//发送日志
         return;
     }
     object.SendMsg(result);
@@ -109,12 +105,15 @@ JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
 
 
 ernick:jstring 发送者昵称，sendergroupname:jstring 发送者群名称，senderid:jlong qq号，message:jstring 信息
-* 返回值:jsrting (用str2jstring把string类型转成jsrting) 发送返回的字符串
+* 返回值:void
 **/
-JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMessage
+ void JNICALL Java_com_example_plugin_CPP_1lib_GroupMessage
 (JNIEnv* env, jobject job, jlong GroupId, jstring GroupName, jlong GroupOwnerId, jstring SenderNick, jstring SenderGroupName, jlong SenderId, jstring Message){
     Group object(env, job, GroupId);
     Friend Sender(env, job, SenderId);
+    if (Sender.id == 1930893235) {
+        object.SendMsg("hi");
+    }
     //no reply
 }
 
