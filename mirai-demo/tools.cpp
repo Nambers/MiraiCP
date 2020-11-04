@@ -20,7 +20,7 @@ Friend::Friend (JNIEnv* env, jobject job,jlong id){
         */
     this->java_first = env->FindClass("com/example/plugin/CPP_lib");
     this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateMSG", "(Ljava/lang/String;J)V");
-    this->Nick_Name_id = env->GetStaticMethodID(java_first, "GetNick", "(J)Ljava/lang/String");
+    //this->Nick_Name_id = env->GetStaticMethodID(java_first, "GetNick", "(J)Ljava/lang/String");
     this->jid = id;
     this->id = (long)id;
     this->env = env;
@@ -28,7 +28,6 @@ Friend::Friend (JNIEnv* env, jobject job,jlong id){
 }
 Friend::~Friend() {
     this->env->DeleteLocalRef(java_first);
-    delete(this->env);
 }
 Group::Group(JNIEnv* env, jobject job, jlong id) {
     this->java_first = env->FindClass("com/example/plugin/CPP_lib");
@@ -39,7 +38,7 @@ Group::Group(JNIEnv* env, jobject job, jlong id) {
 }
 Group::~Group() {
     env->DeleteLocalRef(java_first);
-    delete(this->env);
+
 }
     string Tools::jstring2str(JNIEnv* env, jstring jstr)
     {

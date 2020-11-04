@@ -8,6 +8,7 @@ package com.example.plugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.plugins.PluginBase
 import net.mamoe.mirai.event.events.*
@@ -63,9 +64,9 @@ object ExamplePluginMain : PluginBase() {
         }
         subscribeAlways<FriendMessageEvent> {
             //个人信息
-            logger.info("starting")
-            cpp.PrivateMessage(subject.id,message.toString())
-            logger.info("ending")
+            GlobalScope.launch(Dispatchers.Default) {
+                cpp.PrivateMessage(subject.id, message.toString())
+            }
         }
         subscribeAlways<MemberJoinEvent.Active> {
             cpp.GroupMemberJoin(member.id, true, group.id)
