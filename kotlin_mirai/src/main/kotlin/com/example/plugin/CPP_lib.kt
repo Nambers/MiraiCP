@@ -39,6 +39,7 @@ class CPP_lib {
                     Send(message, id)
                 }
             }
+            return
         }
         @JvmStatic
         fun GetNick(qqid:Long): String {
