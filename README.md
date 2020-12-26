@@ -1,4 +1,5 @@
 # MiraiCP #
+# 暂不继续更新维护 #
 ![Github](https://img.shields.io/badge/Author-Nambers-blue) ![GitHub](https://img.shields.io/github/license/Nambers/MiraiCP) ![GitHub repo size](https://img.shields.io/github/repo-size/Nambers/MiraiCP) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP) ![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)
 ## 附带教程 https://blog.csdn.net/qq_40832960/article/details/108294625 ##
 
