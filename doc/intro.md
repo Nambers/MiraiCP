@@ -34,4 +34,8 @@ c++版
 
 如果有其他问题，提交issue
 
+欢迎提交PR贡献
+
+目前支持的事件[event](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/events.md)
+
 附:[kotlin版开发模板](https://github.com/Nambers/mirai_kotlin_example)
