@@ -1,40 +1,5 @@
 # MiraiCP #
 # 重构完成 #
 ![Github](https://img.shields.io/badge/Author-Nambers-blue) ![GitHub](https://img.shields.io/github/license/Nambers/MiraiCP) ![GitHub repo size](https://img.shields.io/github/repo-size/Nambers/MiraiCP) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP) ![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)
-~~附带教程 https://blog.csdn.net/qq_40832960/article/details/108294625~~
 
-[mcl下载地址](https://github.com/Nambers/MiraiEXE)
-
-[github地址](https://github.com/Nambers/MiraiCP)
-
-基于mirai 框架的qq机器人 
-使用c++,kotlin 语言编写
-作者使用IDEA+VS
-
-实现原理：
-用kotlin调用java的jni包，再用jni调用c++编写dll动态链接库，实现使用c++语言编写mirai机器人
-
-文件结构:
-kotlin_mirai: 针对mirai 的kotlin插件
-mirai-demo: C++编写SDK，针对mirai 的kotlin插件的插件
-
-使用方法（开始制作插件）:
-
-[kotlin版](https://github.com/Nambers/mirai_kotlin_example)
-
-c++版
-1. 下载release文件或源代码(需自己编译出.jar)
-2. c++sdk中procession.cpp中编辑你想要的功能
-3. 生成dll动态链接库(x64,release)
-4. 放到mcl(mirai-console-loader)下的data文件夹下的miraiCP里,然后把release版本中的.jar文件放到plugin文件夹里,如果data下没有没有要先运行一次mcl然后会报错，退出，复制dll进去再运行
-
-
-~~错误提示:
-如果报错 can't find dependents libraries
-把miraiok包下的env文件夹下的全部dll文件复制到syswow64文件夹里
-如果还是不行，自己下载depends22_x64.zip 把生成的dllsdk拖进去，查看你的dll文件依赖，然后在百度下载，复制到你的syswow64文件夹里
-ps: c:/windows/syswow64~~
-
-~~[可能的其他问题](https://blog.csdn.net/qq_40832960/article/details/108455749)~~
-
-如果有其他问题，私聊作者qq:1930893235或1930893235@qq.com
+[文档](https://github.com/Nambers/MiraiCP/tree/master/doc/intro.md)
