@@ -1,7 +1,9 @@
 ﻿#include "pch.h"
-JNIEXPORT void SendLog(JNIEnv* env, jobject job, string log) {
+#include "Procession.cpp"
+
+void SendLog(JNIEnv* env, jobject job, string log) {
     //1.首先要在C中获取jclass对象，也就是找到方法所在的类，通过完整  包名+类名
-    jclass java_first = env->FindClass("com/example/plugin/CPP_lib");
+    jclass java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
 
     /**2.找到该方法的方法ID
     *参数一：jclass
@@ -26,96 +28,43 @@ JNIEXPORT void SendLog(JNIEnv* env, jobject job, string log) {
 *正文开始
 */
 /*
-* 名称:Java_com_example_plugin_CPP_1lib_GroupMemberJoin
-* 作用:群成员加入
-* 参数:env 必备参数，job 必备参数，memberid qq号，active 是否主动加入（非邀请）
-* 返回值: void
-*/
-JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberJoin
-(JNIEnv* env, jobject job, jlong memberid, jboolean active,jlong groupid) {
-    Group g(env, job, groupid);
-    g.SendMsg(tools.JLongToString(memberid) + "加入了本群");
-}
-/*
-* 名称:Java_com_example_plugin_CPP_1lib_GroupMemberLeave
-* 作用:群成员离开
-* 参数:env 必备参数，job 必备参数，memberid qq号，active 是否退出（非踢出）
-* 返回值:void
-*/
-JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMemberLeave
-(JNIEnv* env, jobject job, jlong memberid, jboolean active,jlong groupid) {
-    Group g(env, job, groupid);
-    Friend f(env, job, memberid);
-    g.SendMsg(tools.JLongToString(memberid) + "离开了本群");
-}
-/*
-* 名称:Java_com_example_plugin_CPP_1lib_GroupNameChange
-* 作用:群 改变名字
-* 参数:env 必备参数，job 必备参数，origin 原名，newName 新名字，Groupid 群号，operateid 操作者qq（如果是机器人则为0）
-* 返回值: void
-*/
-JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupNameChange
-(JNIEnv* env, jobject job, jstring origin, jstring newName, jlong Groupid, jlong operateid) {
-    //不做反应
-}
-/*
-* 名称:Java_com_example_plugin_CPP_1lib_FriendRequest
-* 作用:好友申请
-* 参数:env 必备参数，job 必备参数，qqid qq号，nick 申请者昵称，message 验证消息
-* 返回值:bool 是为添加 否为不添加
-*/
-JNIEXPORT jboolean JNICALL Java_com_example_plugin_CPP_1lib_FriendRequest
-(JNIEnv* env, jobject job, jlong qqid, jstring nick, jstring message) {
-    Friend object(env, job, qqid);
-    object.SendMsg("Hi");
-    return true;
-}
-
-/*
 * 名称:Java_com_example_plugin_CPP_1lib_Verify
 * 作用:判断是否连接上本插件，勿改
 * 参数:env 必备，job 必备
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
-JNIEXPORT jstring JNICALL Java_com_example_plugin_CPP_1lib_Verify(JNIEnv* env, jobject job) {
+JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject job) {
     //Friend(env, job, (jlong)1930893235).SendMsg("H");
     return tools.str2jstring(env, "2333");//验证机制
 }
-/*
-* 名称:Java_com_example_plugin_CPP_1lib_PrivateMessage
-* 作用:处理私聊消息
-* 参数:env 必备，job 必备，senderid qq号，sendername 发送者昵称，HeadImageDownloadUrl 发送者头像地址，message 发送的消息
-* 返回值: void
-*/
-JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_PrivateMessage
-(JNIEnv* env, jobject job, jlong SenderId, jstring Message) {
-    Friend object(env,job, SenderId);
-    string result = "我还在测试中";//default is no reply
-    if (object.id== 1930893235) {
-        object.SendMsg("Hi"+object.GetNick());//发送消息 Hi
-        SendLog(env, job, "Send MSG");//发送日志
+procession p = procession();
+JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
+(JNIEnv* env, jobject job, jstring content) {
+    string Rcontent = tools.jstring2str(env, content);
+    const auto rawJsonLength = static_cast<int>(Rcontent.length());
+    JSONCPP_STRING err;
+    Json::Value root;
+    Json::CharReaderBuilder builder;
+    const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+    if (!reader->parse(Rcontent.c_str(), Rcontent.c_str() + rawJsonLength, &root,
+        &err)) {
+        //error
+        SendLog(env, job, "JSON reader error");
     }
-    else {
-        object.SendMsg(result);
+    switch (root["type"].asInt()) {
+        /*
+        1- groupmessage
+        2- privatemessage
+        */
+    case 1:
+        //GroupMessage
+        p.GroupMessage(Group(env,job, root["groupid"].asLargestInt()),
+            Friend(env, job, root["senderid"].asLargestInt()));
+        return tools.str2jstring(env, "NULL");
+    case 2:
+        p.PrivateMessage(Friend(env, job, root["senderid"].asLargestInt()));
+        return tools.str2jstring(env, "NULL");
     }
+    SendLog(env, job, "unknown type");
+    return tools.str2jstring(env, "ERROR");
 }
-/**
-* 名称:Java_com_example_plugin_CPP_1lib_GroupMessage
-* 作用:处理群消息
-* 参数: env:JNIEnv 必备， job:jobject 必备，groupid:jlong 群号，GroupName:jstring 群名，GroupOwnerId:jlong 群主qq号，
-
-
-ernick:jstring 发送者昵称，sendergroupname:jstring 发送者群名称，senderid:jlong qq号，message:jstring 信息
-* 返回值:void
-**/
-JNIEXPORT void JNICALL Java_com_example_plugin_CPP_1lib_GroupMessage
-(JNIEnv* env, jobject job, jlong GroupId, jstring GroupName, jlong GroupOwnerId, jstring SenderNick, jstring SenderGroupName, jlong SenderId, jstring Message){
-    Group object(env, job, GroupId);
-    Friend Sender(env, job, SenderId);
-    if (Sender.id == 1930893235) {
-        object.SendMsg("hi");
-    }
-    //no reply
-}
-
-

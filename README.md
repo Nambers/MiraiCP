@@ -1,5 +1,5 @@
 # MiraiCP #
-# 暂不继续更新维护 #
+# 重构完成 #
 ![Github](https://img.shields.io/badge/Author-Nambers-blue) ![GitHub](https://img.shields.io/github/license/Nambers/MiraiCP) ![GitHub repo size](https://img.shields.io/github/repo-size/Nambers/MiraiCP) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP) ![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)
 ## 附带教程 https://blog.csdn.net/qq_40832960/article/details/108294625 ##
 
@@ -18,7 +18,6 @@
 
 文件结构:
 kotlin_mirai: 针对mirai 的kotlin插件
-Mirai: miraiok包，mirai框架的执行程序
 mirai-demo: C++编写SDK，针对mirai 的kotlin插件的插件
 
 使用方法（开始制作插件）:
@@ -27,11 +26,9 @@ mirai-demo: C++编写SDK，针对mirai 的kotlin插件的插件
 
 c++版
 1. 下载全部文件
-2. c++sdk中编辑你想要的功能，在pch.cpp里
-3. 生成dll动态链接库
-4. 放到miraiok包下的libraries里面
-5. 如果改名或改存放地点了（不是D:/Mirai/libraries/mirai-demo.dll），要到kotline——mirai文件夹里的，CPP_lib.kt里的路径改成你的路径，并且用gradle中的jar任务重新编译，然后到build/libs文件夹下找到jar文件，复制到miraiok包下的plugin文件夹里面
-6. 运行miraiOK_windows_386.exe
+2. c++sdk中procession.cpp中编辑你想要的功能
+3. 生成dll动态链接库(x64,release)
+4. 放到mcl(mirai-console-loader)下的data文件夹下的miraiCP里,如果没有要先运行一次mcl然后会报错，退出，复制dll进去再运行
 
 
 错误提示:
