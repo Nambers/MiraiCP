@@ -6,8 +6,10 @@
 
 // 添加要在此处预编译的标头
 #include "framework.h"
+#include <json.h>
+//#pragma comment(lib, "jsoncpp.lib")
 #include <iostream>
-#include "com_example_plugin_CPP_lib.h"
+#include "org_example_mirai_plugin_CPP_lib.h"
 #include <string>
 #include "tools.h"
 #include <jni.h>

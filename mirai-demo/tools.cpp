@@ -1,8 +1,9 @@
 #include "pch.h"
+
 string Friend::GetNick() {
-    return tools.jstring2str(this->env, (jstring)this->env->CallStaticObjectMethod(java_first, Send_Msg_id, this->jid));
+    return tools.jstring2str(this->env, (jstring)this->env->CallStaticObjectMethod(java_first, Send_Msg_id, (jlong)this->id));
 }
-Friend::Friend (JNIEnv* env, jobject job,jlong id){
+Friend::Friend (JNIEnv* env, jobject job,long id){
     //1.首先要在C中获取jclass对象，也就是找到方法所在的类，通过完整  包名+类名
 
         /**2.找到该方法的方法ID
@@ -18,22 +19,20 @@ Friend::Friend (JNIEnv* env, jobject job,jlong id){
         *参数三：参数三是可变长参数，也就是该方法声明时候对应的参数列表，相当于调用方法时的传参
         *这个方法声明的是（s: String, i: Int）
         */
-    this->java_first = env->FindClass("com/example/plugin/CPP_lib");
+    this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
     this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateMSG", "(Ljava/lang/String;J)V");
     //this->Nick_Name_id = env->GetStaticMethodID(java_first, "GetNick", "(J)Ljava/lang/String");
-    this->jid = id;
-    this->id = (long)id;
+    this->id = id;
     this->env = env;
     //this->nick=this->GetNick();
 }
 Friend::~Friend() {
     this->env->DeleteLocalRef(java_first);
 }
-Group::Group(JNIEnv* env, jobject job, jlong id) {
-    this->java_first = env->FindClass("com/example/plugin/CPP_lib");
+Group::Group(JNIEnv* env, jobject job, long id) {
+    this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
     this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendGroup", "(Ljava/lang/String;J)V");
     this->env = env;
-    this->jid = id;
     this->id = id;
 }
 Group::~Group() {

@@ -33,35 +33,39 @@ private:
     jclass java_first;
     jmethodID Send_Msg_id;
     jmethodID Nick_Name_id;
-    jlong jid;
     JNIEnv* env;
 public:
     long id;
-    Friend(JNIEnv* env, jobject job, jlong id);
+    Friend(JNIEnv* env, jobject job, long id);
     ~Friend();
     string GetNick();
     string nick;
     void SendMsg(jstring msg) {
-        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, msg, this->jid);
+        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, msg, (jlong)this->id);
     }
     void SendMsg(string msg) {      
-        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, tools.str2jstring(this->env, msg.c_str()), this->jid);
+        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, tools.str2jstring(this->env, msg.c_str()), (jlong)this->id);
     }
 };
 class Group {
 private:
     jclass java_first;
     jmethodID Send_Msg_id;
-    jlong jid;
     JNIEnv* env;
 public:
     long id;
     ~Group();
-    Group(JNIEnv* env,jobject job,jlong id);
+    Group(JNIEnv* env,jobject job,long id);
     void SendMsg(jstring msg) {
         this->env->CallStaticVoidMethod(java_first, Send_Msg_id, msg, (jlong)this->id);
     }
     void SendMsg(string msg) {
         SendMsg(tools.str2jstring(this->env, msg.c_str()));
     }
+};
+class Procession {
+    //以下为目前接受的接口
+public:
+    virtual void GroupMessage(Group, Friend) = 0 {};
+    virtual void PrivateMessage(Friend) = 0 {};
 };
