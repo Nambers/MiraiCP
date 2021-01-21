@@ -1,6 +1,0 @@
-please run the classes task in gradle first
-先执行classes任务在gradle里
-and use cmd into the "...\MiraiCP\kotlin_mirai\build\classes\kotlin\main\com\example\plugin" address
-然后用cmd cd到"...\MiraiCP\kotlin_mirai\build\classes\kotlin\main\com\example\plugin"路径下
-run this command "javah com.example.plugin.CPP_lib"
-执行这个指令 "javah com.example.plugin.CPP_lib"
