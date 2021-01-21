@@ -7,9 +7,19 @@ class Config {
         val message: String,
         val type: Int = 1
     )
-    class PrivateMessage(
+    data class PrivateMessage(
         val senderid: Long,
         val message: String,
         val type: Int = 2
+    )
+    data class GroupInvite(
+        val groupid: Long,
+        val invitorid: Long,
+        val type: Int = 3
+    )
+    data class NewFriendRequest(
+        val friendid: Long,
+        val message: String,
+        val type: Int = 4
     )
 }
