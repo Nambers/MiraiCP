@@ -2,6 +2,20 @@
 #include <iostream>
 #include <sstream>
 using namespace std;
+class Logger {
+private:
+    JNIEnv* env;
+    jclass javaclass;
+    jmethodID sinfo;
+    jmethodID swarning;
+    jmethodID serror;
+public:
+    ~Logger();
+    void init(JNIEnv* env);
+    void Info(string log);
+    void Warning(string log);
+    void Error(string log);
+};
 class Tools {
 public:
     
@@ -66,6 +80,24 @@ public:
 class Procession {
     //以下为目前接受的接口
 public:
-    virtual void GroupMessage(Group, Friend) = 0 {};
-    virtual void PrivateMessage(Friend) = 0 {};
+    //日志变量
+    Logger logger;
+    //初始化日志
+    void init(Logger logger) {
+        this->logger = logger;
+    }
+    //接受的值，用于GroupInvite这种，对应kotlin中的accept()
+    const string accept = "true";
+    //拒绝的值
+    const string reject = "false";
+    //群聊消息
+    virtual void GroupMessage(Group, Friend, string) = 0;
+    //私聊消息
+    virtual void PrivateMessage(Friend, string) = 0;
+    //被邀请进群
+    virtual string GroupInvite(Group, Friend) { return "true"; };
+    //新好友邀请
+    virtual string NewFriendRequest(Friend, string) { return "true"; };
+    JNIEnv* env;
+    jobject job;
 };

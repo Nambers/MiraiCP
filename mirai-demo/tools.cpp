@@ -1,24 +1,27 @@
 #include "pch.h"
-
+void Logger::init(JNIEnv* env) {
+    this->env = env;
+    this->javaclass = this->env->FindClass("org/example/mirai/plugin/CPP_lib");
+    this->sinfo = this->env->GetStaticMethodID(this->javaclass, "SendLog", "(Ljava/lang/String;)V");
+    this->swarning = this->env->GetStaticMethodID(this->javaclass, "SendW", "(Ljava/lang/String;)V");
+    this->serror = this->env->GetStaticMethodID(this->javaclass, "SendE", "(Ljava/lang/String;)V");
+}
+Logger::~Logger() {
+    this->env->DeleteLocalRef(this->javaclass);
+}
+void Logger::Warning(string log) {
+    this->env->CallStaticVoidMethod(this->javaclass, this->swarning, tools.str2jstring(env, log.c_str()));
+}
+void Logger::Error(string log) {
+    this->env->CallStaticVoidMethod(this->javaclass, this->serror, tools.str2jstring(env, log.c_str()));
+}
+void Logger::Info(string log) {
+    this->env->CallStaticVoidMethod(this->javaclass, this->sinfo, tools.str2jstring(env, log.c_str()));
+}
 string Friend::GetNick() {
     return tools.jstring2str(this->env, (jstring)this->env->CallStaticObjectMethod(java_first, Send_Msg_id, (jlong)this->id));
 }
 Friend::Friend (JNIEnv* env, jobject job,long id){
-    //1.首先要在C中获取jclass对象，也就是找到方法所在的类，通过完整  包名+类名
-
-        /**2.找到该方法的方法ID
-        *参数一：jclass
-        *参数二：方法名
-        *参数三：方法签名
-        *方法签名，网上有详细说明，如果不想查，可以使用javap -s指令查询
-        */
-
-        /**3.调用静态方法
-        *参数一：jclass
-        *参数二：方法ID
-        *参数三：参数三是可变长参数，也就是该方法声明时候对应的参数列表，相当于调用方法时的传参
-        *这个方法声明的是（s: String, i: Int）
-        */
     this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
     this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateMSG", "(Ljava/lang/String;J)V");
     //this->Nick_Name_id = env->GetStaticMethodID(java_first, "GetNick", "(J)Ljava/lang/String");
