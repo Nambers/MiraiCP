@@ -14,7 +14,7 @@ MiraiCP是一个[Mirai](https://github.com/mamoe/mirai) 的C++语言的社区SDK
 
 用kotlin调用java的jni包，再用jni调用c++编写dll动态链接库，实现使用c++语言编写mirai机器人
 
-![项目流程](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/pic/%E6%B5%81%E7%A8%8B.png)
+![项目流程](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/pic/流程.svg?raw=true)
 
 文件结构:
 
