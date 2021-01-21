@@ -1,0 +1,6 @@
+name: "mirai-example"
+author: "Eritque arcus"
+version: "0.1.0"
+main: "org.example.mirai.plugin.PluginMain"
+info: "mirai-console plugin in kotlin"
+depends: []
