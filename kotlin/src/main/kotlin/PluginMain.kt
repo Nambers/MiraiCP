@@ -29,7 +29,15 @@ object PluginMain : KotlinPlugin(
     }
 
     fun BasicSendLog(log: String) {
-        logger.info(log);
+        logger.info(log)
+    }
+
+    fun SendWarning(log: String){
+        logger.warning(log)
+    }
+
+    fun SendError(log: String){
+        logger.error(log)
     }
 
     suspend fun SendG(message: String, id: Long) {
@@ -64,21 +72,41 @@ object PluginMain : KotlinPlugin(
         }
         globalEventChannel().subscribeAlways<FriendMessageEvent>{
             //好友信息
-            val temp = gson.toJson(
+            cpp.Event(gson.toJson(
                 Config.PrivateMessage(
                     this.sender.id,
                     this.message.contentToString())
-            )
-            logger.info(temp)
-            cpp.Event(temp)
+            ))
         }
         globalEventChannel().subscribeAlways<NewFriendRequestEvent>{
             //自动同意好友申请
-            accept()
+            val r = cpp.Event(gson.toJson(
+                Config.NewFriendRequest(
+                    this.fromId,
+                    this.message
+                )))
+            when(r) {
+                "true" -> accept()
+                "false" -> reject()
+                else -> {
+                    logger.error("NewFriendRequestEvent unknown return")
+                }
+            }
         }
         globalEventChannel().subscribeAlways<BotInvitedJoinGroupRequestEvent>{
             //自动同意加群申请
-            accept()
+            val r = cpp.Event(gson.toJson(
+                Config.GroupInvite(
+                    this.groupId,
+                    this.invitorId
+                )))
+            when(r) {
+                "true" -> accept()
+                "false" -> ignore()
+                else -> {
+                    logger.error("BotInvitedJoinGroupRequestEvent unknown return")
+                }
+            }
         }
     }
 }

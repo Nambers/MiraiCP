@@ -2,12 +2,13 @@ package org.example.mirai.plugin
 import kotlinx.coroutines.launch
 import org.example.mirai.plugin.PluginMain.BasicSendLog
 import org.example.mirai.plugin.PluginMain.Send
-//login 692928873 air12345
 import org.example.mirai.plugin.PluginMain.dll_name
 import org.example.mirai.plugin.PluginMain.dataFolder
 import kotlinx.coroutines.runBlocking
 import org.example.mirai.plugin.PluginMain.GetN
+import org.example.mirai.plugin.PluginMain.SendError
 import org.example.mirai.plugin.PluginMain.SendG
+import org.example.mirai.plugin.PluginMain.SendWarning
 
 class CPP_lib {
     var ver:String=""
@@ -32,6 +33,14 @@ class CPP_lib {
         @JvmStatic
         fun SendLog(log:String) {
             BasicSendLog(log)
+        }
+        @JvmStatic
+        fun SendW(log:String) {
+            SendWarning(log)
+        }
+        @JvmStatic
+        fun SendE(log:String) {
+            SendError(log)
         }
         @JvmStatic
         fun SendPrivateMSG(message: String, id: Long){
