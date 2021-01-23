@@ -3,14 +3,16 @@
 */
 #ifndef PCH_H
 #define PCH_H
-
 // 添加要在此处预编译的标头
-#include "framework.h"
-#include <json.h>
 #include <iostream>
-#include "org_example_mirai_plugin_CPP_lib.h"
+#include "framework.h"
 #include <string>
-#include "tools.h"
+#include <functional>
+#include <json.h>
+#include "org_example_mirai_plugin_CPP_lib.h"
 #include <jni.h>
+#include <sstream>
+#include <vector> 
 using namespace std;
+#include "tools.h"
 #endif //PCH_H

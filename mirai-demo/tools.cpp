@@ -18,9 +18,9 @@ void Logger::Error(string log) {
 void Logger::Info(string log) {
     this->env->CallStaticVoidMethod(this->javaclass, this->sinfo, tools.str2jstring(env, log.c_str()));
 }
-string Friend::GetNick() {
+/*string Friend::GetNick() {
     return tools.jstring2str(this->env, (jstring)this->env->CallStaticObjectMethod(java_first, Send_Msg_id, (jlong)this->id));
-}
+}*/
 Friend::Friend (JNIEnv* env, jobject job,long id){
     this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
     this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateMSG", "(Ljava/lang/String;J)V");
@@ -42,7 +42,7 @@ Group::~Group() {
     env->DeleteLocalRef(java_first);
 
 }
-    string Tools::jstring2str(JNIEnv* env, jstring jstr)
+string Tools::jstring2str(JNIEnv* env, jstring jstr)
     {
         char* rtn = NULL;
         jclass   clsstring = env->FindClass("java/lang/String");
@@ -62,8 +62,7 @@ Group::~Group() {
         free(rtn);
         return stemp;
     }
-    
-    jstring Tools::str2jstring(JNIEnv* env, const char* pat)
+jstring Tools::str2jstring(JNIEnv* env, const char* pat)
     {
         //定义java String类 strClass
         jclass strClass = (env)->FindClass("Ljava/lang/String;");
@@ -78,7 +77,7 @@ Group::~Group() {
         //将byte数组转换为java String,并输出
         return (jstring)(env)->NewObject(strClass, ctorID, bytes, encoding);
     }
-    string Tools::JLongToString(jlong qqid) {
+string Tools::JLongToString(jlong qqid) {
         auto id = [qqid]() -> string {
             stringstream stream;
             stream << qqid;
