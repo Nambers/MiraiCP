@@ -1,7 +1,7 @@
 #include "pch.h"
-#include <iostream>
-#include <sstream>
-using namespace std;
+/*
+* 日志对象
+*/
 class Logger {
 private:
     JNIEnv* env;
@@ -16,23 +16,24 @@ public:
     void Warning(string log);
     void Error(string log);
 };
+
 class Tools {
 public:
-    
+
     /*
     * 名称:jstring2str
     * 作用:jstring到string转换
     * 参数:env:JNIEnv 必须,jstr:jstring 转换的文本
     * 返回值:string
     */
-	string jstring2str(JNIEnv* env, jstring jstr);
+    string jstring2str(JNIEnv* env, jstring jstr);
     /*
     * 名称:str2jstring
     * 作用:string类型转jstring类型
     * 参数:JNIEnv,const char*(string)
     * 返回值:jstring
     */
-	jstring str2jstring(JNIEnv* env, const char* pat);
+    jstring str2jstring(JNIEnv* env, const char* pat);
     /*
     * 名称:JLongToString
     * 作用:jlong类型转string类型
@@ -41,26 +42,36 @@ public:
     */
     string JLongToString(jlong qqid);
 };
+
 static Tools tools;
+
+/*
+* 好友对象
+*/
 class Friend {
 private:
     jclass java_first;
     jmethodID Send_Msg_id;
-    jmethodID Nick_Name_id;
+    //jmethodID Nick_Name_id;
     JNIEnv* env;
 public:
     long id;
     Friend(JNIEnv* env, jobject job, long id);
+    Friend() {};
     ~Friend();
-    string GetNick();
-    string nick;
+    //string GetNick();
+    //string nick;
     void SendMsg(jstring msg) {
         this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, msg, (jlong)this->id);
     }
-    void SendMsg(string msg) {      
+    void SendMsg(string msg) {
         this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, tools.str2jstring(this->env, msg.c_str()), (jlong)this->id);
     }
 };
+
+/*
+* qq中群聊对象
+*/
 class Group {
 private:
     jclass java_first;
@@ -69,7 +80,8 @@ private:
 public:
     long id;
     ~Group();
-    Group(JNIEnv* env,jobject job,long id);
+    Group(JNIEnv* env, jobject job, long id);
+    Group() {};
     void SendMsg(jstring msg) {
         this->env->CallStaticVoidMethod(java_first, Send_Msg_id, msg, (jlong)this->id);
     }
@@ -77,27 +89,129 @@ public:
         SendMsg(tools.str2jstring(this->env, msg.c_str()));
     }
 };
-class Procession {
-    //以下为目前接受的接口
+
+class GroupMessageEvent {
 public:
-    //日志变量
-    Logger logger;
-    //初始化日志
-    void init(Logger logger) {
-        this->logger = logger;
+    //来源群
+    Group group;
+    //发送人
+    Friend sender;
+    //信息本体
+    string message;
+    GroupMessageEvent(Group g, Friend f, string s) {
+        this->group = g;
+        this->sender = f;
+        this->message = s;
     }
-    //接受的值，用于GroupInvite这种，对应kotlin中的accept()
-    const string accept = "true";
-    //拒绝的值
-    const string reject = "false";
-    //群聊消息
-    virtual void GroupMessage(Group, Friend, string) = 0;
-    //私聊消息
-    virtual void PrivateMessage(Friend, string) = 0;
-    //被邀请进群
-    virtual string GroupInvite(Group, Friend) { return "true"; };
-    //新好友邀请
-    virtual string NewFriendRequest(Friend, string) { return "true"; };
-    JNIEnv* env;
-    jobject job;
 };
+
+class PrivateMessageEvent {
+public:
+    //发起人
+    Friend sender;
+    //附带消息
+    string message;
+    PrivateMessageEvent(Friend f, string s) {
+        this->sender = f;
+        this->message = s;
+    }
+};
+
+class GroupInviteEvent {
+public:
+    //发起人
+    Friend sender;
+    //被邀请进的组
+    Group group;
+    GroupInviteEvent(Group g, Friend f) {
+        this->sender = f;
+        this->group = g;
+    }
+};
+
+class NewFriendRequestEvent {
+public:
+    //发起者
+    Friend sender;
+    //附加信息
+    string message;
+    NewFriendRequestEvent(Friend f, string s) {
+        this->sender = f;
+        this->message = s;
+    }
+};
+
+/*
+* 事件监听
+*/
+class Event {
+private:
+    typedef std::function<void(GroupMessageEvent param)> GME;
+    typedef std::function<void(PrivateMessageEvent param)> PME;
+    typedef std::function<bool(GroupInviteEvent param)> GI;
+    typedef std::function<bool(NewFriendRequestEvent param)> NFRE;
+    vector<GME> GMEa;
+    vector<PME> PMEa;
+    // 邀请的处理函数的唯一的
+    NFRE NFREf = NFRE();
+    GI GIf = GI();
+public:
+    /*
+    * 广播函数重载
+    */
+
+    void broadcast(GroupMessageEvent g) {
+        //如果处理长度为0，即未注册，不处理
+        if (GMEa.size() <= 0) {
+            return;
+        }
+        for (int i = 0; i < GMEa.size(); i++) {
+            this->GMEa[i](g);
+        }
+    }
+    void broadcast(PrivateMessageEvent p) {
+        //如果处理长度为0，即未注册，不处理
+        if (PMEa.size()<= 0) {
+            return;
+        }
+        for (int i = 0; i < PMEa.size(); i++) {
+            this->PMEa[i](p);
+        }
+    }
+    string broadcast(GroupInviteEvent g) {
+        if (GIf == NULL) {
+            //默认自动拒绝
+            return "false";
+        }
+        return (this->GIf(g) ? "true" : "false");
+    }
+
+    string broadcast(NewFriendRequestEvent g) {
+        if (GIf == NULL) {
+            //默认自动拒绝
+            return "false";
+        }
+        return (this->NFREf(g) ? "true" : "false");
+    }
+
+    /*
+    * 监听函数重载
+    */
+
+    void registerEvent(GME f) {
+        GMEa.push_back(move(f));
+    }
+    void registerEvent(PME f) {
+        PMEa.push_back(move(f));
+    }
+    void registerEvent(GI f) {
+        this->GIf = std::move(f);
+    }
+    void registerEvent(NFRE f) {
+        this->NFREf = std::move(f);
+    }
+};
+void EventRegister();
+extern Event procession;
+extern Logger logger;
+
