@@ -6,6 +6,7 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
+import net.mamoe.mirai.message.data.At
 import java.io.File
 
 /*
@@ -27,6 +28,11 @@ object PluginMain : KotlinPlugin(
         logger.info("Send message for $id is $message")
         AIbot.getFriend(id)?.sendMessage(message)
     }
+    suspend fun Send(message: String, id: Long, gid: Long) {
+        //反向调用
+        logger.info("Send message for a member $id is $message")
+        AIbot.getGroup(gid)?.get(id)?.sendMessage(message)
+    }
 
     fun BasicSendLog(log: String) {
         logger.info(log)
@@ -45,8 +51,14 @@ object PluginMain : KotlinPlugin(
         AIbot.getGroup(id)?.sendMessage(message)
     }
 
-    fun GetN(qqid: Long): String? {
-        return AIbot.getFriend(qqid)?.nick
+    fun GetNN(qqid: Long, groupid: Long): String {
+        val group = AIbot.getGroup(groupid) ?: return ""
+        val member = group[qqid] ?: return ""
+        return member.nameCard
+    }
+
+    fun GetN(qqid: Long): String {
+        return AIbot.getFriend(qqid)?.nick ?: return ""
     }
     override fun onEnable() {
 
