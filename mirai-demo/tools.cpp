@@ -18,18 +18,29 @@ void Logger::Error(string log) {
 void Logger::Info(string log) {
     this->env->CallStaticVoidMethod(this->javaclass, this->sinfo, tools.str2jstring(env, log.c_str()));
 }
-/*string Friend::GetNick() {
-    return tools.jstring2str(this->env, (jstring)this->env->CallStaticObjectMethod(java_first, Send_Msg_id, (jlong)this->id));
-}*/
 Friend::Friend (JNIEnv* env, jobject job,long id){
     this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
     this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateMSG", "(Ljava/lang/String;J)V");
-    //this->Nick_Name_id = env->GetStaticMethodID(java_first, "GetNick", "(J)Ljava/lang/String");
+    this->NickorName_id = env->GetStaticMethodID(java_first, "GetNick", "(J)Ljava/lang/String;");
     this->id = id;
     this->env = env;
-    //this->nick=this->GetNick();
+    jstring temp = (jstring)this->env->CallStaticObjectMethod(this->java_first, this->NickorName_id, (jlong)id, (jlong)id);
+    this->nick = tools.jstring2str(this->env, temp);
 }
 Friend::~Friend() {
+    this->env->DeleteLocalRef(java_first);
+}
+Member::Member(JNIEnv* env, jobject job, long id, long groupid) {
+    this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
+    this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateM2M", "(Ljava/lang/String;JJ)V");
+    this->NickorName_id = env->GetStaticMethodID(java_first, "GetNameCard", "(JJ)Ljava/lang/String;");
+    this->id = id;
+    this->groupid = groupid;
+    this->env = env;
+    jstring temp = (jstring)this->env->CallStaticObjectMethod(this->java_first, this->NickorName_id, (jlong)id, (jlong)groupid);
+    this->nameCard = tools.jstring2str(this->env, temp);
+}
+Member::~Member() {
     this->env->DeleteLocalRef(java_first);
 }
 Group::Group(JNIEnv* env, jobject job, long id) {

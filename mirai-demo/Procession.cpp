@@ -17,12 +17,13 @@ void EventRegister() {
 	procession.registerEvent([](GroupMessageEvent param)->void {
 		//在这写你自己处理群消息的代码
 		logger.Info("hi");
-		param.group.SendMsg("hi");
+		param.group.SendMsg(param.sender.at() + param.sender.nameCard + " <this is your name");
+		param.sender.SendMsg("hi");
 		});
 	procession.registerEvent([](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
 		logger.Info("hi");
-		param.sender.SendMsg("hi");
+		param.sender.SendMsg(param.sender.nick + " <this is your name");
 		});
 	procession.registerEvent([](GroupInviteEvent param)->bool{
 		//处理群邀请，true同意进群,false不同意

@@ -39,7 +39,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
         //GroupMessage
         procession.broadcast(GroupMessageEvent(
             Group(env, job, root["groupid"].asLargestInt()),
-            Friend(env, job, root["senderid"].asLargestInt()),
+            Member(env, job, root["senderid"].asLargestInt(), root["groupid"].asLargestInt()),
             root["message"].asCString()));
         return tools.str2jstring(env, "NULL");
     case 2:
