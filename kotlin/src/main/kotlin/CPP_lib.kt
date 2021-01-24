@@ -6,9 +6,11 @@ import org.example.mirai.plugin.PluginMain.dll_name
 import org.example.mirai.plugin.PluginMain.dataFolder
 import kotlinx.coroutines.runBlocking
 import org.example.mirai.plugin.PluginMain.GetN
+import org.example.mirai.plugin.PluginMain.GetNN
 import org.example.mirai.plugin.PluginMain.SendError
 import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendWarning
+import org.example.mirai.plugin.PluginMain.logger
 
 class CPP_lib {
     var ver:String=""
@@ -52,8 +54,21 @@ class CPP_lib {
             }
         }
         @JvmStatic
-        fun GetNick(qqid:Long): String? {
+        fun SendPrivateM2M(message: String, id: Long, gid: Long){
+            // 反向调用发送消息
+            runBlocking {
+                launch {
+                    Send(message, id, gid)
+                }
+            }
+        }
+        @JvmStatic
+        fun GetNick(qqid:Long): String {
             return GetN(qqid)
+        }
+        @JvmStatic
+        fun GetNameCard(qqid:Long, groupid:Long): String {
+            return GetNN(qqid, groupid);
         }
     }
 
