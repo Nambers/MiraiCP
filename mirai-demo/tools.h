@@ -52,20 +52,43 @@ class Friend {
 private:
     jclass java_first;
     jmethodID Send_Msg_id;
-    //jmethodID Nick_Name_id;
+    jmethodID NickorName_id;
     JNIEnv* env;
 public:
     long id;
     Friend(JNIEnv* env, jobject job, long id);
     Friend() {};
     ~Friend();
-    //string GetNick();
-    //string nick;
+    string nick;
     void SendMsg(jstring msg) {
         this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, msg, (jlong)this->id);
     }
     void SendMsg(string msg) {
         this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, tools.str2jstring(this->env, msg.c_str()), (jlong)this->id);
+    }
+};
+
+class Member{
+private:
+    jclass java_first;
+    jmethodID Send_Msg_id;
+    jmethodID NickorName_id;
+    JNIEnv* env;
+public:
+    long groupid;
+    long id;
+    Member(JNIEnv* env, jobject job, long id, long groupid);
+    Member() {};
+    ~Member();
+    string nameCard;
+    string at() {
+        return "[mirai:at:"+ to_string(this->id) + "] ";
+    }
+    void SendMsg(jstring msg) {
+        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, msg, (jlong)this->id, (jlong)this->groupid);
+    }
+    void SendMsg(string msg) {
+        this->env->CallStaticVoidMethod(this->java_first, this->Send_Msg_id, tools.str2jstring(this->env, msg.c_str()), (jlong)this->id, (jlong)this->groupid);
     }
 };
 
@@ -90,15 +113,19 @@ public:
     }
 };
 
+/*
+* 事件类型声明开始
+*/
+
 class GroupMessageEvent {
 public:
     //来源群
     Group group;
     //发送人
-    Friend sender;
+    Member sender;
     //信息本体
     string message;
-    GroupMessageEvent(Group g, Friend f, string s) {
+    GroupMessageEvent(Group g, Member f, string s) {
         this->group = g;
         this->sender = f;
         this->message = s;
@@ -140,6 +167,8 @@ public:
         this->message = s;
     }
 };
+
+/*结束*/
 
 /*
 * 事件监听

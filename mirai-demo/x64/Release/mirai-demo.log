@@ -1,19 +1,10 @@
-﻿  pch.cpp
-D:\Git\MiraiCP\mirai-demo\pch.cpp(41,57): warning C4244: “参数”: 从“Json::Value::LargestInt”转换到“long”，可能丢失数据
-D:\Git\MiraiCP\mirai-demo\pch.cpp(42,59): warning C4244: “参数”: 从“Json::Value::LargestInt”转换到“long”，可能丢失数据
-D:\Git\MiraiCP\mirai-demo\pch.cpp(48,59): warning C4244: “参数”: 从“Json::Value::LargestInt”转换到“long”，可能丢失数据
-D:\Git\MiraiCP\mirai-demo\pch.cpp(54,57): warning C4244: “参数”: 从“Json::Value::LargestInt”转换到“long”，可能丢失数据
-D:\Git\MiraiCP\mirai-demo\pch.cpp(55,60): warning C4244: “参数”: 从“Json::Value::LargestInt”转换到“long”，可能丢失数据
-  Procession.cpp
-  dllmain.cpp
-  jsoncpp.cpp
-  tools.cpp
-D:\Git\MiraiCP\mirai-demo\tools.cpp(72,59): warning C4267: “参数”: 从“size_t”转换到“jsize”，可能丢失数据
-D:\Git\MiraiCP\mirai-demo\tools.cpp(74,69): warning C4267: “参数”: 从“size_t”转换到“jsize”，可能丢失数据
+﻿  tools.cpp
+D:\Git\MiraiCP\mirai-demo\tools.cpp(83,59): warning C4267: “参数”: 从“size_t”转换到“jsize”，可能丢失数据
+D:\Git\MiraiCP\mirai-demo\tools.cpp(85,69): warning C4267: “参数”: 从“size_t”转换到“jsize”，可能丢失数据
     正在创建库 D:\Git\MiraiCP\mirai-demo\x64\Release\mirai-demo.lib 和对象 D:\Git\MiraiCP\mirai-demo\x64\Release\mirai-demo.exp
   正在生成代码
-  109 of 1118 functions ( 9.7%) were compiled, the rest were copied from previous compilation.
-    60 functions were new in current compilation
-    102 functions had inline decision re-evaluated but remain unchanged
+  2 of 1140 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
   mirai-demo.vcxproj -> D:\Git\MiraiCP\mirai-demo\x64\Release\mirai-demo.dll
