@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
-Logger logger = Logger();
-Event procession = Event();
+Logger* logger = new Logger();
+Event* procession = new Event();
 /*
 *正文开始
 */
@@ -12,12 +12,20 @@ Event procession = Event();
 */
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject job) {
     //初始化日志模块
-    logger.init(env);
+    logger->init(env);
     //初始化监听
     EventRegister();
+    onEnable();
     return tools.str2jstring(env, "2333");//验证机制
 }
-
+/* 插件结束*/
+JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
+(JNIEnv* env, jobject job) {
+    onDisable();
+    delete(logger);
+    delete(procession);
+    return job;
+}
 /*
 * 消息解析分流
 */
@@ -32,32 +40,33 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
     if (!reader->parse(Rcontent.c_str(), Rcontent.c_str() + rawJsonLength, &root,
         &err)) {
         //error
-        logger.Error("JSON reader error");
+        logger->Error("JSON reader error");
     }
     switch (root["type"].asInt()) {
     case 1:
         //GroupMessage
-        procession.broadcast(GroupMessageEvent(
+        procession->broadcast(GroupMessageEvent(
             Group(env, job, root["groupid"].asLargestInt()),
             Member(env, job, root["senderid"].asLargestInt(), root["groupid"].asLargestInt()),
             root["message"].asCString()));
         return tools.str2jstring(env, "NULL");
     case 2:
         //私聊消息
-        procession.broadcast(PrivateMessageEvent(
+        procession->broadcast(PrivateMessageEvent(
             Friend(env, job, root["senderid"].asLargestInt()),
             root["message"].asCString()));
         return tools.str2jstring(env, "NULL");
     case 3:
         //群聊邀请
-        return tools.str2jstring(env, procession.broadcast(GroupInviteEvent(
+        return tools.str2jstring(env, procession->broadcast(GroupInviteEvent(
             Group(env, job, root["groupid"].asLargestInt()),
             Friend(env, job, root["invitorid"].asLargestInt()))).c_str());
     case 4: 
-        return tools.str2jstring(env, "false");
-        //return tools.str2jstring(env,p.NewFriendRequest(
-            //Friend(env, job, root["friendid"].asLargestInt()), root["message"].asCString()).c_str());
+        //好友
+        return tools.str2jstring(env,procession->broadcast(NewFriendRequestEvent(
+            Friend(env, job, root["friendid"].asLargestInt()), 
+            root["message"].asCString())).c_str());
     }
-    logger.Error("unknown type");
+    logger->Error("unknown type");
     return tools.str2jstring(env, "ERROR");
 }

@@ -23,6 +23,14 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
   (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     org_example_mirai_plugin_CPP_lib
+ * Method:    PluginDisable
+ * Signature: ()Ljava/lang/Void;
+ */
+JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

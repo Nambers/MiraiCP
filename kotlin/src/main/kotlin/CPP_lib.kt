@@ -75,5 +75,6 @@ class CPP_lib {
 
     external fun Verify(): String
     external fun Event(content: String): String
+    external fun PluginDisable(): Void
 }
 

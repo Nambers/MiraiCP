@@ -1,4 +1,10 @@
 #include "pch.h"
+void onEnable() {
+	/*插件启动*/
+}
+void onDisable() {
+	/*插件结束*/
+}
 void EventRegister() {
 	/*
 	注册事件监听-用户自定义
@@ -14,27 +20,26 @@ void EventRegister() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 
-	procession.registerEvent([](GroupMessageEvent param)->void {
+	procession->registerEvent([](GroupMessageEvent param)->void {
 		//在这写你自己处理群消息的代码
-		logger.Info("hi");
-		param.group.SendMsg(param.sender.at() + param.sender.nameCard + " <this is your name");
-		param.sender.SendMsg("hi");
+		logger->Info("hi");
+		param.group.SendMsg(param.message);
 		});
-	procession.registerEvent([](PrivateMessageEvent param)->void {
+	procession->registerEvent([](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
-		logger.Info("hi");
-		param.sender.SendMsg(param.sender.nick + " <this is your name");
+		logger->Info("hi");
+		param.sender.SendMsg(param.message);
 		});
-	procession.registerEvent([](GroupInviteEvent param)->bool{
+	procession->registerEvent([](GroupInviteEvent param)->bool{
 		//处理群邀请，true同意进群,false不同意
 		if (param.sender.id == 11111) {
 			return true;
 		}
 		return true;
 		});
-	procession.registerEvent([](NewFriendRequestEvent param)->bool {
+	procession->registerEvent([](NewFriendRequestEvent param)->bool {
 		//新好友邀请
-		logger.Info("新好友申请来自于" + to_string(param.sender.id));
+		logger->Info("新好友申请来自于" + to_string(param.sender.id));
 		if (param.message == "hhh") {
 			return false;
 		}
