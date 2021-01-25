@@ -1,6 +1,6 @@
 name: "miraiCP"
 author: "Eritque arcus"
-version: "1.0.0"
+version: "1.0.1"
 main: "org.example.mirai.plugin.PluginMain"
 info: "mirai C++ SDK"
 depends: []

@@ -8,4 +8,4 @@ pluginManagement {
     }
 }
 //这里改生成的插件名称
-rootProject.name = "mirai-example"
+rootProject.name = "miraiCP"
