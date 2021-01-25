@@ -1,6 +1,6 @@
 # 事件列表 #
 这些内容可以在`MiraiCP\kotlin\src\main\kotlin\Config.kt`看到
-| 事件名称 | 函数名称         | 数据内容                                                      |
+| 事件名称 | 函数名称         | 参数内容                                                      |
 |------|------------------|---------------------------------------------------------------|
 | 群聊消息 | GroupMessage     | groupid: Long, senderid: Long, message: String, type: Int = 1 |
 | 私聊消息 | PrivateMessage   | senderid: Long, message: String, type: Int = 2                |
