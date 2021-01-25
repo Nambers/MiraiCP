@@ -107,6 +107,7 @@ object PluginMain : KotlinPlugin(
                 "false" -> reject()
                 else -> {
                     logger.error("NewFriendRequestEvent unknown return")
+                    reject()
                 }
             }
         }
@@ -122,6 +123,7 @@ object PluginMain : KotlinPlugin(
                 "false" -> ignore()
                 else -> {
                     logger.error("BotInvitedJoinGroupRequestEvent unknown return")
+                    ignore()
                 }
             }
         }
