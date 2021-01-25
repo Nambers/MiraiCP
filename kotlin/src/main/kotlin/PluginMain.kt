@@ -17,7 +17,7 @@ import java.io.File
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
-        version = "0.1.0"
+        version = "1.0.0"
     )
 ) {
     val dll_name = "mirai-demo.dll"
