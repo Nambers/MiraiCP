@@ -241,6 +241,7 @@ public:
     }
 };
 void EventRegister();
-extern Event procession;
-extern Logger logger;
-
+extern Event* procession;
+extern Logger* logger;
+void onDisable();
+void onEnable();
