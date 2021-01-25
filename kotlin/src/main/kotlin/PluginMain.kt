@@ -6,7 +6,6 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
-import net.mamoe.mirai.message.data.At
 import java.io.File
 
 /*
@@ -23,14 +22,15 @@ object PluginMain : KotlinPlugin(
 ) {
     val dll_name = "mirai-demo.dll"
     private lateinit var AIbot: Bot
+    lateinit var cpp: CPP_lib
     suspend fun Send(message: String, id: Long) {
         //反向调用
-        logger.info("Send message for $id is $message")
+        logger.info("Send message for($id) is $message")
         AIbot.getFriend(id)?.sendMessage(message)
     }
     suspend fun Send(message: String, id: Long, gid: Long) {
         //反向调用
-        logger.info("Send message for a member $id is $message")
+        logger.info("Send message for a member($id) is $message")
         AIbot.getGroup(gid)?.get(id)?.sendMessage(message)
     }
 
@@ -60,14 +60,19 @@ object PluginMain : KotlinPlugin(
     fun GetN(qqid: Long): String {
         return AIbot.getFriend(qqid)?.nick ?: return ""
     }
-    override fun onEnable() {
 
+    override fun onDisable() {
+        super.onDisable()
+        cpp.PluginDisable()
+    }
+    override fun onEnable() {
+        super.onEnable()
         logger.info("Plugin loaded!")
         logger.info("github存储库:https://github.com/Nambers/MiraiCP")
         if(!File("${dataFolder.absoluteFile}/$dll_name").exists()){
             logger.error("文件${dataFolder.absoluteFile}/$dll_name 不存在")
         }
-        val cpp = CPP_lib()
+        cpp = CPP_lib()
         val gson = Gson()
         logger.info(cpp.ver)//输出2333 正常
         globalEventChannel().subscribeAlways<BotOnlineEvent> {
