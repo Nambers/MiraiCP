@@ -2,10 +2,13 @@ package org.example.mirai.plugin
 
 import com.google.gson.Gson
 import net.mamoe.mirai.Bot
+import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
+import net.mamoe.mirai.message.code.MiraiCode
+import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import java.io.File
 
 /*
@@ -26,12 +29,12 @@ object PluginMain : KotlinPlugin(
     suspend fun Send(message: String, id: Long) {
         //反向调用
         logger.info("Send message for($id) is $message")
-        AIbot.getFriend(id)?.sendMessage(message)
+        AIbot.getFriend(id)?.sendMessage(MiraiCode.deserializeMiraiCode(message))
     }
     suspend fun Send(message: String, id: Long, gid: Long) {
         //反向调用
         logger.info("Send message for a member($id) is $message")
-        AIbot.getGroup(gid)?.get(id)?.sendMessage(message)
+        AIbot.getGroup(gid)?.get(id)?.sendMessage(MiraiCode.deserializeMiraiCode(message))
     }
 
     fun BasicSendLog(log: String) {
@@ -48,7 +51,7 @@ object PluginMain : KotlinPlugin(
 
     suspend fun SendG(message: String, id: Long) {
         logger.info("Send message for Group($id) is $message")
-        AIbot.getGroup(id)?.sendMessage(message)
+        AIbot.getGroup(id)?.sendMessage(MiraiCode.deserializeMiraiCode(message))
     }
 
     fun GetNN(qqid: Long, groupid: Long): String {
@@ -80,19 +83,22 @@ object PluginMain : KotlinPlugin(
         }
         //配置文件目录 "${dataFolder.absolutePath}/"
         globalEventChannel().subscribeAlways<GroupMessageEvent> {
+            //群消息
+            logger.info(this.message.serializeToMiraiCode())
             cpp.Event(gson.toJson(
                 Config.GroupMessage(
                     this.group.id,
                     this.sender.id,
-                    this.message.contentToString())
+                    this.message.serializeToMiraiCode())
                 ))
         }
         globalEventChannel().subscribeAlways<FriendMessageEvent>{
             //好友信息
+            logger.info(this.message.serializeToMiraiCode())
             cpp.Event(gson.toJson(
                 Config.PrivateMessage(
                     this.sender.id,
-                    this.message.contentToString())
+                    this.message.serializeToMiraiCode())
             ))
         }
         globalEventChannel().subscribeAlways<NewFriendRequestEvent>{
