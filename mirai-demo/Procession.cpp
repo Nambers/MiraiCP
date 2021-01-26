@@ -23,7 +23,7 @@ void EventRegister() {
 	procession->registerEvent([](GroupMessageEvent param)->void {
 		//在这写你自己处理群消息的代码
 		logger->Info("hi");
-		param.group.SendMsg(param.message);
+		param.group.SendMsg(param.sender.at()+param.message);
 		});
 	procession->registerEvent([](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
