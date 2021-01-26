@@ -1,7 +1,5 @@
 #include "pch.h"
-/*
-* 日志对象
-*/
+/*日志类定义*/
 class Logger {
 private:
     JNIEnv* env;
@@ -17,9 +15,16 @@ public:
     void Error(string log);
 };
 
+/*工具类定义*/
 class Tools {
 public:
-
+    bool replace(std::string& str, const std::string& from, const std::string& to) {
+        size_t start_pos = str.find(from);
+        if (start_pos == std::string::npos)
+            return false;
+        str.replace(start_pos, from.length(), to);
+        return true;
+    }
     /*
     * 名称:jstring2str
     * 作用:jstring到string转换
@@ -43,11 +48,30 @@ public:
     string JLongToString(jlong qqid);
 };
 
+/*静态声明工具对象*/
 static Tools tools;
 
-/*
-* 好友对象
-*/
+/*图像类声明*/
+class Image {
+private:
+    JNIEnv* env;
+    jclass java_class;
+    jmethodID Query;
+public:
+    string id = "";
+    /*
+    * 从图片id构造，适用于服务器上已经有的图片，即接收到的
+    * 图片miraiCode例子: [mirai:image:{图片id}.jpg]
+    * 可以用这个正则表达式找出id ` \[*\{(.*?)\} `
+    */
+    Image(JNIEnv*, string);
+    /*
+    * 获取图片下载url
+    */
+    string queryURL();
+};
+
+/*好友类声明*/
 class Friend {
 private:
     jclass java_first;
@@ -56,7 +80,7 @@ private:
     JNIEnv* env;
 public:
     long id;
-    Friend(JNIEnv* env, jobject job, long id);
+    Friend(JNIEnv*, long);
     Friend() {};
     ~Friend();
     string nick;
@@ -68,6 +92,7 @@ public:
     }
 };
 
+/*群成员类声明*/
 class Member{
 private:
     jclass java_first;
@@ -77,7 +102,7 @@ private:
 public:
     long groupid;
     long id;
-    Member(JNIEnv* env, jobject job, long id, long groupid);
+    Member(JNIEnv*, long, long);
     Member() {};
     ~Member();
     string nameCard;
@@ -92,9 +117,7 @@ public:
     }
 };
 
-/*
-* qq中群聊对象
-*/
+/*群聊类声明*/
 class Group {
 private:
     jclass java_first;
@@ -103,7 +126,7 @@ private:
 public:
     long id;
     ~Group();
-    Group(JNIEnv* env, jobject job, long id);
+    Group(JNIEnv*, long);
     Group() {};
     void SendMsg(jstring msg) {
         this->env->CallStaticVoidMethod(java_first, Send_Msg_id, msg, (jlong)this->id);
@@ -113,37 +136,42 @@ public:
     }
 };
 
-/*
-* 事件类型声明开始
-*/
-
+/*群消息事件声明*/
 class GroupMessageEvent {
 public:
+    /*jni参数，可以不用管*/
+    JNIEnv* env;
     //来源群
     Group group;
     //发送人
     Member sender;
     //信息本体
     string message;
-    GroupMessageEvent(Group g, Member f, string s) {
+    GroupMessageEvent(JNIEnv* env, Group g, Member f, string s) {
+        this->env = env;
         this->group = g;
         this->sender = f;
         this->message = s;
     }
 };
 
+/*私聊消息事件类声明*/
 class PrivateMessageEvent {
 public:
+    /*jni参数，可以不用管*/
+    JNIEnv* env;
     //发起人
     Friend sender;
     //附带消息
     string message;
-    PrivateMessageEvent(Friend f, string s) {
+    PrivateMessageEvent(JNIEnv* env, Friend f, string s) {
+        this->env = env;
         this->sender = f;
         this->message = s;
     }
 };
 
+/*群聊邀请事件类声明*/
 class GroupInviteEvent {
 public:
     //发起人
@@ -156,6 +184,7 @@ public:
     }
 };
 
+/*好友申请事件声明*/
 class NewFriendRequestEvent {
 public:
     //发起者
@@ -168,11 +197,7 @@ public:
     }
 };
 
-/*结束*/
-
-/*
-* 事件监听
-*/
+/*监听类声明*/
 class Event {
 private:
     typedef std::function<void(GroupMessageEvent param)> GME;
@@ -240,8 +265,16 @@ public:
         this->NFREf = std::move(f);
     }
 };
+
+/*声明注册监听事件*/
 void EventRegister();
+
+/*声明全局监听对象(广播源)*/
 extern Event* procession;
+
+/*声明全局日志对象*/
 extern Logger* logger;
+
+/*声明插件启用和结束函数*/
 void onDisable();
 void onEnable();

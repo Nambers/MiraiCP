@@ -33,6 +33,16 @@ class CPP_lib {
             }
         }
         @JvmStatic
+        fun QueryImgUrl(id:String): String{
+            var temp = ""
+            runBlocking {
+                launch {
+                    temp = QueryImgUrl(id)
+                }
+            }
+            return temp
+        }
+        @JvmStatic
         fun SendLog(log:String) {
             BasicSendLog(log)
         }

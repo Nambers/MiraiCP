@@ -18,7 +18,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* 
     onEnable();
     return tools.str2jstring(env, "2333");//验证机制
 }
-/* 插件结束*/
+/* 插件结束事件*/
 JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
 (JNIEnv* env, jobject job) {
     onDisable();
@@ -45,26 +45,26 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
     switch (root["type"].asInt()) {
     case 1:
         //GroupMessage
-        procession->broadcast(GroupMessageEvent(
-            Group(env, job, root["groupid"].asLargestInt()),
-            Member(env, job, root["senderid"].asLargestInt(), root["groupid"].asLargestInt()),
+        procession->broadcast(GroupMessageEvent(env,
+            Group(env,root["groupid"].asLargestInt()),
+            Member(env, root["senderid"].asLargestInt(), root["groupid"].asLargestInt()),
             root["message"].asCString()));
         return tools.str2jstring(env, "NULL");
     case 2:
         //私聊消息
-        procession->broadcast(PrivateMessageEvent(
-            Friend(env, job, root["senderid"].asLargestInt()),
+        procession->broadcast(PrivateMessageEvent(env,
+            Friend(env, root["senderid"].asLargestInt()),
             root["message"].asCString()));
         return tools.str2jstring(env, "NULL");
     case 3:
         //群聊邀请
         return tools.str2jstring(env, procession->broadcast(GroupInviteEvent(
-            Group(env, job, root["groupid"].asLargestInt()),
-            Friend(env, job, root["invitorid"].asLargestInt()))).c_str());
+            Group(env, root["groupid"].asLargestInt()),
+            Friend(env, root["invitorid"].asLargestInt()))).c_str());
     case 4: 
         //好友
         return tools.str2jstring(env,procession->broadcast(NewFriendRequestEvent(
-            Friend(env, job, root["friendid"].asLargestInt()), 
+            Friend(env, root["friendid"].asLargestInt()), 
             root["message"].asCString())).c_str());
     }
     logger->Error("unknown type");

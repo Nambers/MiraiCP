@@ -1,4 +1,6 @@
 #include "pch.h"
+
+/*日志类实现*/
 void Logger::init(JNIEnv* env) {
     this->env = env;
     this->javaclass = this->env->FindClass("org/example/mirai/plugin/CPP_lib");
@@ -18,7 +20,24 @@ void Logger::Error(string log) {
 void Logger::Info(string log) {
     this->env->CallStaticVoidMethod(this->javaclass, this->sinfo, tools.str2jstring(env, log.c_str()));
 }
-Friend::Friend (JNIEnv* env, jobject job,long id){
+
+/*图片类实现*/
+Image::Image(JNIEnv* env, string imageId) {
+    this->env = env;
+    this->java_class = env->FindClass("org/example/mirai/plugin/CPP_lib");
+    this->Query = env->GetStaticMethodID(java_class, "QueryImgUrl", "(Ljava/lang/String;)Ljava/lang/String;");
+    this->id = imageId;
+}
+string Image::queryURL() {
+    string temp = tools.jstring2str(this->env, (jstring)this->env->CallStaticObjectMethod(this->java_class, this->Query, tools.str2jstring(this->env, this->id.c_str())));
+    tools.replace(temp, "{", "");
+    tools.replace(temp, "}", "");
+    logger->Info(temp);
+    return temp;
+}
+
+/*好友类实现*/
+Friend::Friend (JNIEnv* env, long id){
     this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
     this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateMSG", "(Ljava/lang/String;J)V");
     this->NickorName_id = env->GetStaticMethodID(java_first, "GetNick", "(J)Ljava/lang/String;");
@@ -30,7 +49,9 @@ Friend::Friend (JNIEnv* env, jobject job,long id){
 Friend::~Friend() {
     this->env->DeleteLocalRef(java_first);
 }
-Member::Member(JNIEnv* env, jobject job, long id, long groupid) {
+
+/*成员类实现*/
+Member::Member(JNIEnv* env, long id, long groupid) {
     this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
     this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateM2M", "(Ljava/lang/String;JJ)V");
     this->NickorName_id = env->GetStaticMethodID(java_first, "GetNameCard", "(JJ)Ljava/lang/String;");
@@ -43,7 +64,9 @@ Member::Member(JNIEnv* env, jobject job, long id, long groupid) {
 Member::~Member() {
     this->env->DeleteLocalRef(java_first);
 }
-Group::Group(JNIEnv* env, jobject job, long id) {
+
+/*群聊类实现*/
+Group::Group(JNIEnv* env, long id) {
     this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
     this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendGroup", "(Ljava/lang/String;J)V");
     this->env = env;
@@ -53,6 +76,8 @@ Group::~Group() {
     env->DeleteLocalRef(java_first);
 
 }
+
+/*工具类实现*/
 string Tools::jstring2str(JNIEnv* env, jstring jstr)
     {
         char* rtn = NULL;
