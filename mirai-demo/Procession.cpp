@@ -29,6 +29,11 @@ void EventRegister() {
 		//在这写你自己处理私聊消息的代码
 		logger->Info("hi");
 		param.sender.SendMsg(param.message);
+		vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
+		for (int i = 0; i < temp.size(); i++) {
+			logger->Info(temp[i]);
+			logger->Info("图片下载地址:" + Image(param.env, temp[i]).queryURL());
+		}
 		});
 	procession->registerEvent([](GroupInviteEvent param)->bool{
 		//处理群邀请，true同意进群,false不同意

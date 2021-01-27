@@ -29,11 +29,18 @@ Image::Image(JNIEnv* env, string imageId) {
     this->id = imageId;
 }
 string Image::queryURL() {
-    string temp = tools.jstring2str(this->env, (jstring)this->env->CallStaticObjectMethod(this->java_class, this->Query, tools.str2jstring(this->env, this->id.c_str())));
-    tools.replace(temp, "{", "");
-    tools.replace(temp, "}", "");
-    logger->Info(temp);
-    return temp;
+    return tools.jstring2str(this->env, (jstring)this->env->CallStaticObjectMethod(this->java_class, this->Query, tools.str2jstring(this->env, this->id.c_str())));
+}
+vector<string> Image::GetImgIdFromMiraiCode(string MiraiCode) {
+    vector<string> result = vector<string>();
+    string temp = MiraiCode;
+    smatch m;
+    regex re("\\[mirai:image:(.*?)\\]");
+    while (std::regex_search(temp, m, re)) {
+        result.push_back(m[1]);
+        temp = m.suffix().str();
+    }
+    return result;
 }
 
 /*好友类实现*/

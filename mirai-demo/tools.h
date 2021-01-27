@@ -62,13 +62,16 @@ public:
     /*
     * 从图片id构造，适用于服务器上已经有的图片，即接收到的
     * 图片miraiCode例子: [mirai:image:{图片id}.jpg]
-    * 可以用这个正则表达式找出id ` \[*\{(.*?)\} `
+    * 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
     */
     Image(JNIEnv*, string);
     /*
     * 获取图片下载url
     */
     string queryURL();
+
+    /*取全部的图片id*/
+    static vector<string> GetImgIdFromMiraiCode(string);
 };
 
 /*好友类声明*/

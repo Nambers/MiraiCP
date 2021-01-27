@@ -12,6 +12,7 @@
 #include "org_example_mirai_plugin_CPP_lib.h"
 #include <jni.h>
 #include <sstream>
+#include <regex>
 #include <vector> 
 using namespace std;
 #include "tools.h"
