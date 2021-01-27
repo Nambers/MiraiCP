@@ -1,8 +1,0 @@
-﻿  Procession.cpp
-    正在创建库 D:\Git\MiraiCP\mirai-demo\x64\Release\mirai-demo.lib 和对象 D:\Git\MiraiCP\mirai-demo\x64\Release\mirai-demo.exp
-  正在生成代码
-  141 of 1146 functions (12.3%) were compiled, the rest were copied from previous compilation.
-    18 functions were new in current compilation
-    225 functions had inline decision re-evaluated but remain unchanged
-  已完成代码的生成
-  mirai-demo.vcxproj -> D:\Git\MiraiCP\mirai-demo\x64\Release\mirai-demo.dll
