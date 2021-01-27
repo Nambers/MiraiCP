@@ -10,6 +10,7 @@
 # Precompiled Headers
 *.gch
 *.pch
+*.ipch
 
 # Compiled Dynamic libraries
 *.so
@@ -34,6 +35,7 @@
 
 # Log file
 *.log
+*.tlog
 
 # BlueJ files
 *.ctxt
@@ -52,3 +54,6 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+.vs/
+x64/
