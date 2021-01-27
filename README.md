@@ -51,8 +51,9 @@ mirai-demo: C++SDK
 附:[kotlin版开发模板](https://github.com/Nambers/mirai_kotlin_example)
 
 ### TODO
-- [ ] 修复`v1.0.1`中频繁调用报错问题
+- [ ] 修复`v1.0.1`中发现的群聊频繁发送消息报错问题
 - [ ] 增加更多事件
 - [ ] 写文档
-- [ ] 图片支持(下载)
+- [x] 图片支持(下载)
+  - [ ] 图片支持(上传及发送)
 - [x] 增加复合消息支持，把消息转成miraiCode传输
