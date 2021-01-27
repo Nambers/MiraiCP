@@ -44,6 +44,8 @@ mirai-demo: C++SDK
 
 项目设计流程[intro.md](https://github.com/Nambers/MiraiCP/blob/master/doc/intro.md)
 
+代码示例[example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)
+
 进阶教程(在补了在补了[:wink:])
 
 附:[kotlin版开发模板](https://github.com/Nambers/mirai_kotlin_example)
