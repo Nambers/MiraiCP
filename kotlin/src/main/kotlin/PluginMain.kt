@@ -22,7 +22,7 @@ import java.io.File
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
-        version = "1.0.0"
+        version = "1.0.2"
     )
 ) {
     val dll_name = "mirai-demo.dll"
@@ -67,7 +67,7 @@ object PluginMain : KotlinPlugin(
     }
 
     suspend fun QueryImg(id: String): String{
-        return Image.fromId(id).queryUrl()
+        return Image(id).queryUrl()
     }
 
     override fun onDisable() {

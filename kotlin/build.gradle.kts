@@ -5,8 +5,13 @@ plugins {
     id("net.mamoe.mirai-console") version "2.0.0"
 }
 
+mirai { // this: MiraiConsoleExtension
+    // 配置，例如
+    coreVersion = "2.1.0" // 修改 mirai-core 版本
+}
+
 group = "org.example"
-version = "1.0.1"
+version = "1.0.2"
 
 repositories {
     //国内镜像源
@@ -20,5 +25,4 @@ repositories {
 }
 dependencies{
     implementation("com.google.code.gson:gson:2.8.6")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21")
 }

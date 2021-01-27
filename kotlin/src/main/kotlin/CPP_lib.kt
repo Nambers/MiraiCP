@@ -7,10 +7,10 @@ import org.example.mirai.plugin.PluginMain.dataFolder
 import kotlinx.coroutines.runBlocking
 import org.example.mirai.plugin.PluginMain.GetN
 import org.example.mirai.plugin.PluginMain.GetNN
+import org.example.mirai.plugin.PluginMain.QueryImg
 import org.example.mirai.plugin.PluginMain.SendError
 import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendWarning
-import org.example.mirai.plugin.PluginMain.logger
 
 class CPP_lib {
     var ver:String=""
@@ -37,7 +37,7 @@ class CPP_lib {
             var temp = ""
             runBlocking {
                 launch {
-                    temp = QueryImgUrl(id)
+                    temp = QueryImg(id)
                 }
             }
             return temp
