@@ -16,6 +16,9 @@
 
 ## 使用流程:
 
+### 0 配置环境
+mcl需要openjdk而不是甲骨文的jdk
+
 ### 1 下载启动器(mcl)
 下载地址[笔者整合包](https://github.com/Nambers/MiraiEXE) 或 [官方](https://github.com/iTXTech/mirai-console-loader/)
 
