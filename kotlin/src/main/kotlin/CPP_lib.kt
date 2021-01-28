@@ -11,6 +11,9 @@ import org.example.mirai.plugin.PluginMain.QueryImg
 import org.example.mirai.plugin.PluginMain.SendError
 import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendWarning
+import org.example.mirai.plugin.PluginMain.uploadImgFriend
+import org.example.mirai.plugin.PluginMain.uploadImgGroup
+import org.example.mirai.plugin.PluginMain.uploadImgMember
 
 class CPP_lib {
     var ver:String=""
@@ -79,6 +82,36 @@ class CPP_lib {
         @JvmStatic
         fun GetNameCard(qqid:Long, groupid:Long): String {
             return GetNN(qqid, groupid);
+        }
+        @JvmStatic
+        fun uploadImgG(qqid: Long, fileName:String): String{
+            var re = ""
+            runBlocking {
+                launch {
+                    re = uploadImgGroup(qqid, fileName)
+                }
+            }
+            return re
+        }
+        @JvmStatic
+        fun uploadImgF(qqid: Long, fileName:String): String{
+            var re = ""
+            runBlocking {
+                launch {
+                    re = uploadImgFriend(qqid, fileName)
+                }
+            }
+            return re
+        }
+        @JvmStatic
+        fun uploadImgM(groupid: Long, qqid: Long, fileName:String): String{
+            var re = ""
+            runBlocking {
+                launch {
+                    re = uploadImgMember(groupid,qqid, fileName)
+                }
+            }
+            return re
         }
     }
 
