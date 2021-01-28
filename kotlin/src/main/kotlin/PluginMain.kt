@@ -3,14 +3,19 @@ package org.example.mirai.plugin
 import com.google.gson.Gson
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.Mirai
+import net.mamoe.mirai.console.permission.PermissionService.Companion.getOrFail
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
+import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
+import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
+import net.mamoe.mirai.utils.OverFileSizeMaxException
 import java.io.File
 
 /*
@@ -61,7 +66,55 @@ object PluginMain : KotlinPlugin(
         val member = group[qqid] ?: return ""
         return member.nameCard
     }
-
+    suspend fun uploadImgFriend(id: Long, file: String): String {
+        val temp = AIbot.getFriend(id)?:let{
+            logger.error("找不到对应好友,位置:uploadImgFriend(),id:$id")
+            return ""
+        }
+        return try {
+            File(file).uploadAsImage(temp).imageId
+        }catch (e: OverFileSizeMaxException) {
+            logger.error("文件过大最大30MB,位置:uploadImgFriend(),文件名:$file")
+            ""
+        }catch (e:NullPointerException){
+            logger.error("文件名异常,位置:uploadImgFriend(),文件名:$file")
+            ""
+        }
+    }
+    suspend fun uploadImgGroup(id: Long, file: String): String {
+        val temp = AIbot.getGroup(id)?:let{
+            logger.error("找不到对应组,位置:uploadImgGroup(),id:$id")
+            return ""
+        }
+        return try {
+            File(file).uploadAsImage(temp).imageId
+        }catch (e: OverFileSizeMaxException) {
+            logger.error("文件过大最大30MB,位置:uploadImgGroup(),文件名:$file")
+            ""
+        }catch (e:NullPointerException){
+            logger.error("文件名异常,位置:uploadImgGroup(),文件名:$file")
+            ""
+        }
+    }
+    suspend fun uploadImgMember(id: Long,qqid: Long, file: String): String {
+        val temp = AIbot.getGroup(id)?:let{
+            logger.error("找不到对应组,位置:uploadImgGroup(),id:$id")
+            return ""
+        }
+        val temp1 = temp[qqid]?:let{
+            logger.error("找不到对应成员,位置:uploadImgMember(),成员id:$qqid,群聊id:$id")
+            return ""
+        }
+        return try {
+            File(file).uploadAsImage(temp1).imageId
+        }catch (e: OverFileSizeMaxException) {
+            logger.error("文件过大最大30MB,位置:uploadImgGroup(),文件名:$file")
+            ""
+        }catch (e:NullPointerException){
+            logger.error("文件名异常,位置:uploadImgGroup(),文件名:$file")
+            ""
+        }
+    }
     fun GetN(qqid: Long): String {
         return AIbot.getFriend(qqid)?.nick ?: return ""
     }
