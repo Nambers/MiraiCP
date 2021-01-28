@@ -24,7 +24,6 @@ void EventRegister() {
 		//在这写你自己处理群消息的代码
 		logger->Info("hi");
 		param.group.SendMsg(param.sender.at());
-		param.sender.SendMsg(Image::uploadImg2Member(param.env, param.group.id, param.sender.id, "C:\\Users\\19308\\Desktop\\a.jpg").toMiraiCode());
 		});
 	procession->registerEvent([](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
