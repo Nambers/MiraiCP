@@ -13,6 +13,7 @@
 #include <jni.h>
 #include <sstream>
 #include <regex>
+#include <fstream>
 #include <vector> 
 using namespace std;
 #include "tools.h"

@@ -63,15 +63,45 @@ public:
     * 从图片id构造，适用于服务器上已经有的图片，即接收到的
     * 图片miraiCode例子: [mirai:image:{图片id}.jpg]
     * 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
+    * 示例:
+        vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
+		for (int i = 0; i < temp.size(); i++) {
+			logger->Info(temp[i]);
+			logger->Info("图片下载地址:" + Image(param.env, temp[i]).queryURL());
+		}
     */
     Image(JNIEnv*, string);
+    /*
+    * 上传本地图片，务必要用绝对路径
+    * 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到好友
+    * 最大支持图片大小为30MB
+    * 可能抛出invalid_argument异常代表路径无效
+    * 示例:
+        	param.sender.SendMsg(Image::uploadImg2Friend(param.env, param.sender.id, "C:\\Users\\***\\Desktop\\a.jpg").toMiraiCode());
+    */
+    static Image uploadImg2Friend(JNIEnv*,long, string);
+    /*
+    * 上传本地图片，务必要用绝对路径
+    * 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
+    * 最大支持图片大小为30MB
+    * 可能抛出invalid_argument异常代表路径无效
+    * 示例:
+            param.group.SendMsg(Image::uploadImg2Group(param.env, param.group.id, "C:\\Users\\***\\Desktop\\a.jpg").toMiraiCode());
+    */
+    static Image uploadImg2Group(JNIEnv*, long, string);
+
+    /*TODO发送给Member的还没实现*/
+
     /*
     * 获取图片下载url
     */
     string queryURL();
 
-    /*取全部的图片id*/
+    /*取全部的图片id，详情见Image*/
     static vector<string> GetImgIdFromMiraiCode(string);
+
+    /*取图片Mirai码*/
+    string toMiraiCode();
 };
 
 /*好友类声明*/

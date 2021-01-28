@@ -42,6 +42,35 @@ vector<string> Image::GetImgIdFromMiraiCode(string MiraiCode) {
     }
     return result;
 }
+Image Image::uploadImg2Friend(JNIEnv* env, long id, string filename) {
+    ifstream fin(filename);
+    if(!fin){
+        logger->Error("文件不存在,位置:C++部分 uploadImg2Friend(),文件名:"+filename);
+        fin.close();
+        throw invalid_argument("NO_FILE_ERROR");
+    }
+    fin.close();
+    jclass java_class = env->FindClass("org/example/mirai/plugin/CPP_lib");
+    jmethodID m = env->GetStaticMethodID(java_class, "uploadImgF", "(JLjava/lang/String;)Ljava/lang/String;");
+    string re = tools.jstring2str(env, (jstring)env->CallStaticObjectMethod(java_class, m, (jlong)id, tools.str2jstring(env, filename.c_str())));
+    return Image(env, re);
+}
+Image Image::uploadImg2Group(JNIEnv* env, long groupid, string filename) {
+    ifstream fin(filename);
+    if (!fin) {
+        logger->Error("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
+        fin.close();
+        throw invalid_argument("NO_FILE_ERROR");
+    }
+    fin.close();
+    jclass java_class = env->FindClass("org/example/mirai/plugin/CPP_lib");
+    jmethodID m = env->GetStaticMethodID(java_class, "uploadImgG", "(JLjava/lang/String;)Ljava/lang/String;");
+    string re = tools.jstring2str(env, (jstring)env->CallStaticObjectMethod(java_class, m, (jlong)groupid, tools.str2jstring(env, filename.c_str())));
+    return Image(env, re);
+}
+string Image::toMiraiCode() {
+    return "[mirai:image:" + this->id + "] ";
+}
 
 /*好友类实现*/
 Friend::Friend (JNIEnv* env, long id){
