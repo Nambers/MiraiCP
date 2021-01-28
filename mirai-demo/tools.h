@@ -89,8 +89,15 @@ public:
             param.group.SendMsg(Image::uploadImg2Group(param.env, param.group.id, "C:\\Users\\***\\Desktop\\a.jpg").toMiraiCode());
     */
     static Image uploadImg2Group(JNIEnv*, long, string);
-
-    /*TODO发送给Member的还没实现*/
+    /*
+   * 上传本地图片，务必要用绝对路径
+   * 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
+   * 最大支持图片大小为30MB
+   * 可能抛出invalid_argument异常代表路径无效
+   * 示例:
+           param.sender.SendMsg(Image::uploadImg2Member(param.env, param.group.id, param.sender.id, "C:\\Users\\***\\Desktop\\a.jpg").toMiraiCode());
+   */
+    static Image uploadImg2Member(JNIEnv*,long, long, string);
 
     /*
     * 获取图片下载url
