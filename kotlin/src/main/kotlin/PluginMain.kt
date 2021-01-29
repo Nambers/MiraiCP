@@ -27,6 +27,7 @@ import java.io.File
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
+        name = "miraiCP",
         version = "1.0.2"
     )
 ) {
@@ -149,6 +150,34 @@ object PluginMain : KotlinPlugin(
                     this.sender.id,
                     this.message.serializeToMiraiCode())
                 ))
+        }
+        globalEventChannel().subscribeAlways<MemberJoinEvent.Retrieve> {
+            cpp.Event(gson.toJson(
+                Config.MemberJoin(
+                    this.group.id,
+                    this.member.id,
+                    3
+                )
+            ))
+        }
+        globalEventChannel().subscribeAlways<MemberJoinEvent.Active> {
+            cpp.Event(gson.toJson(
+                Config.MemberJoin(
+                    this.group.id,
+                    this.member.id,
+                    2
+                )
+            ))
+        }
+        globalEventChannel().subscribeAlways<MemberJoinEvent.Invite> {
+            cpp.Event(gson.toJson(
+                Config.MemberJoin(
+                    this.group.id,
+                    this.member.id,
+                    1,
+                    this.invitor.id
+                )
+            ))
         }
         globalEventChannel().subscribeAlways<FriendMessageEvent>{
             //∫√”—–≈œ¢
