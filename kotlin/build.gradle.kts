@@ -5,19 +5,18 @@ plugins {
     id("net.mamoe.mirai-console") version "2.0.0"
 }
 
-mirai { // this: MiraiConsoleExtension
-    // 配置，例如
-    coreVersion = "2.1.0" // 修改 mirai-core 版本
-}
 
 group = "org.example"
 version = "1.0.2"
 
 repositories {
     //国内镜像源
+    //华为云
     maven { url =uri("https://mirrors.huaweicloud.com/repository/maven") }
+    //阿里云
     maven { url =uri("https://maven.aliyun.com/nexus/content/repositories/jcenter")}
-    maven { url =uri("https://dl.bintray.com/kotlin/kotlin-eap")}
+    //mirai-console的仓库
+    maven {url = uri("https://dl.bintray.com/him188moe/mirai")}
     mavenLocal()
     mavenCentral()
     jcenter()
