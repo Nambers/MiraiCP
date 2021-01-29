@@ -54,13 +54,13 @@ mirai-demo: C++SDK
 
 如果有其他问题，欢迎提交issue和提交PR贡献
 
-目前支持的事件[events.md](https://github.com/Nambers/MiraiCP/blob/master/doc/events.md)
+目前支持的事件 [events.md](https://github.com/Nambers/MiraiCP/blob/master/doc/events.md)
 
-项目设计流程[intro.md](https://github.com/Nambers/MiraiCP/blob/master/doc/intro.md)
+项目设计流程 [intro.md](https://github.com/Nambers/MiraiCP/blob/master/doc/intro.md)
 
-代码示例[example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)
+代码示例 [example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)
 
-qq表情对应[face.md](https://github.com/Nambers/MiraiCP/blob/master/doc/face.md)
+qq表情对应 [faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/faces.md)
 
 进阶教程(在补了在补了[:wink:])
 
