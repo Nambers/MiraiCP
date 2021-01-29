@@ -5,3 +5,5 @@
 [intro.md](https://github.com/Nambers/MiraiCP/new/master/doc/intro.md) 流程文档
 
 [example.md](https://github.com/Nambers/MiraiCP/new/master/doc/example.md) 例子文档
+
+[faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/faces.md) qq表情对应

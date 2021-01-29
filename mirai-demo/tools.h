@@ -142,6 +142,7 @@ private:
 public:
     long groupid;
     long id;
+    // env, qqid, groupid
     Member(JNIEnv*, long, long);
     Member() {};
     ~Member();
@@ -237,6 +238,30 @@ public:
     }
 };
 
+/*新群成员加入*/
+class MemberJoinEvent {
+public:
+    /*
+    事件类型
+    1 - 被邀请进来
+    2 - 主动加入
+    3 - 原群主通过 https://huifu.qq.com/ 恢复原来群主身份并入群
+    */
+    int type;
+    //新进入的成员
+    Member member;
+    //目标群
+    Group group;
+    //邀请人, 当type = 1时存在，否则是一位id为0的member，务必不要调用当invitor不存在，否则可能报错
+    Member invitor;
+    MemberJoinEvent(int t, Member m, Group g, Member i) {
+        this->type = t;
+        this->member = m;
+        this->group = g;
+        this->invitor = i;
+    }
+};
+
 /*监听类声明*/
 class Event {
 private:
@@ -244,11 +269,13 @@ private:
     typedef std::function<void(PrivateMessageEvent param)> PME;
     typedef std::function<bool(GroupInviteEvent param)> GI;
     typedef std::function<bool(NewFriendRequestEvent param)> NFRE;
-    vector<GME> GMEa;
-    vector<PME> PMEa;
+    typedef std::function<void(MemberJoinEvent param)> MJ;
+    GME GMEf;
+    PME PMEf;
     // 邀请的处理函数的唯一的
-    NFRE NFREf = NFRE();
-    GI GIf = GI();
+    NFRE NFREf;
+    GI GIf;
+    MJ MJf;
 public:
     /*
     * 广播函数重载
@@ -256,21 +283,17 @@ public:
 
     void broadcast(GroupMessageEvent g) {
         //如果处理长度为0，即未注册，不处理
-        if (GMEa.size() <= 0) {
+        if (GMEf == NULL) {
             return;
         }
-        for (int i = 0; i < GMEa.size(); i++) {
-            this->GMEa[i](g);
-        }
+         this->GMEf(g);
     }
     void broadcast(PrivateMessageEvent p) {
         //如果处理长度为0，即未注册，不处理
-        if (PMEa.size()<= 0) {
+        if (PMEf == NULL) {
             return;
         }
-        for (int i = 0; i < PMEa.size(); i++) {
-            this->PMEa[i](p);
-        }
+        this->PMEf(p);
     }
     string broadcast(GroupInviteEvent g) {
         if (GIf == NULL) {
@@ -279,7 +302,6 @@ public:
         }
         return (this->GIf(g) ? "true" : "false");
     }
-
     string broadcast(NewFriendRequestEvent g) {
         if (GIf == NULL) {
             //默认自动拒绝
@@ -287,22 +309,28 @@ public:
         }
         return (this->NFREf(g) ? "true" : "false");
     }
+    void broadcast(MemberJoinEvent g) {
+        this->MJf(g);
+    }
 
     /*
     * 监听函数重载
     */
 
     void registerEvent(GME f) {
-        GMEa.push_back(move(f));
+        this->GMEf = move(f);
     }
     void registerEvent(PME f) {
-        PMEa.push_back(move(f));
+        this->PMEf = move(f);
     }
     void registerEvent(GI f) {
         this->GIf = std::move(f);
     }
     void registerEvent(NFRE f) {
         this->NFREf = std::move(f);
+    }
+    void registerEvent(MJ f) {
+        this->MJf = f;
     }
 };
 

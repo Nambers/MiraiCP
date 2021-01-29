@@ -27,8 +27,7 @@ void EventRegister() {
 		});
 	procession->registerEvent([](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
-		logger->Info("hi");
-		param.sender.SendMsg(param.message);
+		
 		});
 	procession->registerEvent([](GroupInviteEvent param)->bool{
 		//处理群邀请，true同意进群,false不同意
@@ -44,5 +43,8 @@ void EventRegister() {
 			return false;
 		}
 		return true;
+		});
+	procession->registerEvent([](MemberJoinEvent param)->void {
+		param.group.SendMsg("欢迎" + to_string(param.member.id) + "加入本群");
 		});
 }

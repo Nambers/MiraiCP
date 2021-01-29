@@ -66,6 +66,27 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
         return tools.str2jstring(env,procession->broadcast(NewFriendRequestEvent(
             Friend(env, root["friendid"].asLargestInt()), 
             root["message"].asCString())).c_str());
+    case 5:
+        //新成员加入
+        if (root["jointype"].asInt() == 1) {
+            procession->broadcast(MemberJoinEvent(
+                root["jointype"].asInt(),
+                Member(env, root["id"].asLargestInt(),
+                    root["groupid"].asLargestInt()),
+                Group(env, root["groupid"].asLargestInt()),
+                Member(env, root["invitorid"].asLargestInt(),
+                    root["groupid"].asLargestInt())
+            ));
+            return tools.str2jstring(env, "NULL");
+        }
+        procession->broadcast(MemberJoinEvent(
+            root["jointype"].asInt(),
+            Member(env,root["id"].asLargestInt(),
+                root["groupid"].asLargestInt()),
+            Group(env, root["groupid"].asLargestInt()),
+            Member(env, 0, 0)
+        ));
+        return tools.str2jstring(env, "NULL");
     }
     logger->Error("unknown type");
     return tools.str2jstring(env, "ERROR");
