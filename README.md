@@ -30,6 +30,8 @@ kotlin_mirai: 配套kotlin插件
 
 mirai-demo: C++SDK
 
+版本规则: 从2.2.0开始 *(2021/1/31)*,版本前两位为Mirai的版本，后一位为SDK更新迭代版本
+
 ### 3 使用方法:
 
 #### 3.1 使用release包
