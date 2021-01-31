@@ -2,18 +2,13 @@ package org.example.mirai.plugin
 
 import com.google.gson.Gson
 import net.mamoe.mirai.Bot
-import net.mamoe.mirai.Mirai
-import net.mamoe.mirai.console.permission.PermissionService.Companion.getOrFail
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
-import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
-import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
-import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import java.io.File
@@ -24,11 +19,12 @@ import java.io.File
 用runmiraikt这个配置可以在ide里运行，不用复制到mcl或其他启动器
  */
 
+
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
         name = "miraiCP",
-        version = "1.0.2"
+        version = "2.2.0"
     )
 ) {
     val dll_name = "mirai-demo.dll"
@@ -37,12 +33,24 @@ object PluginMain : KotlinPlugin(
     suspend fun Send(message: String, id: Long) {
         //反向调用
         logger.info("Send message for($id) is $message")
-        AIbot.getFriend(id)?.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        val f = AIbot.getFriend(id)?:let {
+            logger.error("发送消息找不到好友，位置:K-Send()，id:$id")
+            return
+        }
+        f.sendMessage(MiraiCode.deserializeMiraiCode(message))
     }
     suspend fun Send(message: String, id: Long, gid: Long) {
         //反向调用
         logger.info("Send message for a member($id) is $message")
-        AIbot.getGroup(gid)?.get(id)?.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        val G = AIbot.getGroup(gid)?:let{
+            logger.error("发送消息找不到群聊，位置K-Send()，id:$gid")
+            return
+        }
+        val f = G[id]?:let{
+            logger.error("发送消息找不到群成员，位置K-Send()，id:$id，gid:$gid")
+            return
+        }
+        f.sendMessage(MiraiCode.deserializeMiraiCode(message))
     }
 
     fun BasicSendLog(log: String) {
@@ -59,65 +67,80 @@ object PluginMain : KotlinPlugin(
 
     suspend fun SendG(message: String, id: Long) {
         logger.info("Send message for Group($id) is $message")
-        AIbot.getGroup(id)?.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        val g = AIbot.getGroup(id)?:let {
+            logger.error("发送群消息异常找不到群组，位置K-SendG，gid:$id")
+            return
+        }
+        g.sendMessage(MiraiCode.deserializeMiraiCode(message))
     }
 
     fun GetNN(qqid: Long, groupid: Long): String {
-        val group = AIbot.getGroup(groupid) ?: return ""
-        val member = group[qqid] ?: return ""
+        val group = AIbot.getGroup(groupid) ?: let{
+            logger.error("取群名片找不到对应群组，位置K-GetNN()，gid:$groupid")
+            return ""
+        }
+        val member = group[qqid] ?: let {
+            logger.error("取群名片找不到对应群成员，位置K-GetNN()，id:$qqid, gid:$groupid")
+            return ""
+        }
         return member.nameCard
+
     }
     suspend fun uploadImgFriend(id: Long, file: String): String {
         val temp = AIbot.getFriend(id)?:let{
-            logger.error("找不到对应好友,位置:uploadImgFriend(),id:$id")
+            logger.error("发送图片找不到对应好友,位置:K-uploadImgFriend(),id:$id")
             return ""
         }
         return try {
             File(file).uploadAsImage(temp).imageId
         }catch (e: OverFileSizeMaxException) {
-            logger.error("文件过大最大30MB,位置:uploadImgFriend(),文件名:$file")
+            logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
             ""
         }catch (e:NullPointerException){
-            logger.error("文件名异常,位置:uploadImgFriend(),文件名:$file")
+            logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
             ""
         }
     }
     suspend fun uploadImgGroup(id: Long, file: String): String {
         val temp = AIbot.getGroup(id)?:let{
-            logger.error("找不到对应组,位置:uploadImgGroup(),id:$id")
+            logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:$id")
             return ""
         }
         return try {
             File(file).uploadAsImage(temp).imageId
         }catch (e: OverFileSizeMaxException) {
-            logger.error("文件过大最大30MB,位置:uploadImgGroup(),文件名:$file")
+            logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
             ""
         }catch (e:NullPointerException){
-            logger.error("文件名异常,位置:uploadImgGroup(),文件名:$file")
+            logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
             ""
         }
     }
     suspend fun uploadImgMember(id: Long,qqid: Long, file: String): String {
         val temp = AIbot.getGroup(id)?:let{
-            logger.error("找不到对应组,位置:uploadImgGroup(),id:$id")
+            logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:$id")
             return ""
         }
         val temp1 = temp[qqid]?:let{
-            logger.error("找不到对应成员,位置:uploadImgMember(),成员id:$qqid,群聊id:$id")
+            logger.error("发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:$qqid,群聊id:$id")
             return ""
         }
         return try {
             File(file).uploadAsImage(temp1).imageId
         }catch (e: OverFileSizeMaxException) {
-            logger.error("文件过大最大30MB,位置:uploadImgGroup(),文件名:$file")
+            logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
             ""
         }catch (e:NullPointerException){
-            logger.error("文件名异常,位置:uploadImgGroup(),文件名:$file")
+            logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
             ""
         }
     }
     fun GetN(qqid: Long): String {
-        return AIbot.getFriend(qqid)?.nick ?: return ""
+        val f = AIbot.getFriend(qqid) ?: let {
+            logger.error("找不到对应好友的昵称，位置:K-GetN()，id:$qqid")
+            return ""
+        }
+        return f.nick
     }
 
     suspend fun QueryImg(id: String): String{
@@ -156,7 +179,8 @@ object PluginMain : KotlinPlugin(
                 Config.MemberJoin(
                     this.group.id,
                     this.member.id,
-                    3
+                    3,
+                    this.member.id
                 )
             ))
         }
@@ -165,7 +189,8 @@ object PluginMain : KotlinPlugin(
                 Config.MemberJoin(
                     this.group.id,
                     this.member.id,
-                    2
+                    2,
+                    this.member.id
                 )
             ))
         }
