@@ -16,5 +16,6 @@
 #include <fstream>
 #include <vector> 
 using namespace std;
+#include "constants.h"
 #include "tools.h"
 #endif //PCH_H

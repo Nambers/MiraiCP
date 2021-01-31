@@ -32,9 +32,14 @@ mirai-demo: C++SDK
 
 版本规则: 从2.2.0开始 *(2021/1/31)*,版本前两位为Mirai的版本，后一位为SDK更新迭代版本
 
-### 3 使用方法:
+### 3 注意事项
+1. 过于频繁向群聊或私聊发送信息会导致堆栈溢出，还在解决
 
-#### 3.1 使用release包
+2. 因为JNIEnv是局部变量，不了解jni请勿在SDK中使用多线程，如果要使用多线程的话，要保存全局`JavaVM`变量然后在多线程开头使用`genv == JavaVM.GetEnv()`覆盖全局Env，否则可能会报错，目前适用于多线程的操作还在解决
+
+### 4 使用方法:
+
+#### 4.1 使用release包
 1. 下载release文件
 2. 压缩包根目录下有个.jar文件留着下面有用
 3. 打开`mirai-demo`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于mirai-dome目录下的c++项目
@@ -46,7 +51,7 @@ mirai-demo: C++SDK
 9. 运行一次mcl，然后不管报错，不要登录，直接退出
 10. 打开mcl目录下的`data/org.example.miraiCP`路径，把上面的.dll文件拷进来
 11. 正常运行mcl
-#### 3.2 使用源代码
+#### 4.2 使用源代码
 1. 下载源代码文件
 2. 里面把kotlin_mirai用IDE打开
 3. 运行gradle里面的buildplugin这个任务
@@ -69,10 +74,11 @@ qq表情对应 [faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/fac
 附:[kotlin版开发模板](https://github.com/Nambers/mirai_kotlin_example)
 
 ### TODO
-- [ ] 修复`v1.0.1`中发现的群聊频繁发送消息报错问题
+- [ ] 修复`v1.0.1`中发现的群聊频繁发送消息报错问题(堆栈溢出以及一个未知的错误)
+- [ ] 多线程适配
 - [ ] 增加更多事件
 - [ ] 写文档
 - [x] 图片支持(下载)
   - [x] 图片支持(上传及发送)
-- [ ] 文件支持(下载及上传)
+- [ ] ~~文件支持(下载及上传)~~(Mirai不支持)
 - [x] 增加复合消息支持，把消息转成miraiCode传输

@@ -33,19 +33,25 @@ void EventRegister() {
 	procession->registerEvent([](GroupInviteEvent param)->bool {
 		//处理群邀请，true同意进群,false不同意
 		if (param.sender.id == 11111) {
-			return true;
+			return ACCEPT;
 		}
-		return true;
+		return ACCEPT;
 		});
 	procession->registerEvent([](NewFriendRequestEvent param)->bool {
 		//新好友邀请
 		logger->Info("新好友申请来自于" + to_string(param.sender.id));
 		if (param.message == "hhh") {
-			return false;
+			return ACCEPT;
 		}
-		return true;
+		return ACCEPT;
 		});
 	procession->registerEvent([](MemberJoinEvent param)->void {
+		if (param.type == INVITE) {
+			//该成员是被邀请进入的，所以有param.invitor，其他类型都没有
+		}
+		else if (param.type == ACTIVE) {
+			//该成员是主动加入的
+		}
 		logger->Info(to_string(param.member.id) + "加入本群");
 		param.group.SendMsg("欢迎" + param.member.nameCard + "加入本群");
 		});
