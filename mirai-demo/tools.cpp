@@ -1,175 +1,234 @@
 #include "pch.h"
 
-/*日志类实现*/
-void Logger::init(JNIEnv* env) {
-    this->env = env;
-    this->javaclass = this->env->FindClass("org/example/mirai/plugin/CPP_lib");
-    this->sinfo = this->env->GetStaticMethodID(this->javaclass, "SendLog", "(Ljava/lang/String;)V");
-    this->swarning = this->env->GetStaticMethodID(this->javaclass, "SendW", "(Ljava/lang/String;)V");
-    this->serror = this->env->GetStaticMethodID(this->javaclass, "SendE", "(Ljava/lang/String;)V");
+/*配置类实现*/
+void Config::Init() {
+	JNIEnv* env = genv;
+	this->CPP_lib = (jclass)env->NewGlobalRef(env->FindClass("org/example/mirai/plugin/CPP_lib"));
+	if (this->CPP_lib == NULL) {
+		logger->Error("1");
+		throw exception("初始化错误");
+	}
+	this->Query = env->GetStaticMethodID(CPP_lib, "QueryImgUrl", "(Ljava/lang/String;)Ljava/lang/String;");
+	if (this->Query == NULL) {
+		logger->Error("2");
+		throw exception("初始化错误");
+	}
+	this->SendMsg2F = env->GetStaticMethodID(CPP_lib, "SendPrivateMSG", "(Ljava/lang/String;J)V");
+	if (this->SendMsg2F == NULL) {
+		logger->Error("3");
+		throw exception("初始化错误");
+	}
+	this->NickorNameF = env->GetStaticMethodID(CPP_lib, "GetNick", "(J)Ljava/lang/String;");
+	if (this->NickorNameF == NULL) {
+		logger->Error("4");
+		throw exception("初始化错误");
+	}
+	this->SendMsg2M = env->GetStaticMethodID(CPP_lib, "SendPrivateM2M", "(Ljava/lang/String;JJ)V");
+	if (this->SendMsg2M == NULL) {
+		logger->Error("5");
+		throw exception("初始化错误");
+	}
+	this->NickorNameM = env->GetStaticMethodID(CPP_lib, "GetNameCard", "(JJ)Ljava/lang/String;");
+	if (this->NickorNameM == NULL) {
+		logger->Error("6");
+		throw exception("初始化错误");
+	}
+	this->SendMsg2G = env->GetStaticMethodID(CPP_lib, "SendGroup", "(Ljava/lang/String;J)V");
+	if (this->SendMsg2G == NULL) {
+		logger->Error("7");
+		throw exception("初始化错误");
+	}
 }
-Logger::~Logger() {
-    this->env->DeleteLocalRef(this->javaclass);
+Config::~Config() {
+	genv->DeleteGlobalRef(this->CPP_lib);
+}
+
+/*日志类实现*/
+void Logger::init() {
+	JNIEnv* env = genv;
+	this->CPP_lib = (jclass)(env->NewGlobalRef(env->FindClass("org/example/mirai/plugin/CPP_lib")));
+	this->sinfo = env->GetStaticMethodID(this->CPP_lib, "SendLog", "(Ljava/lang/String;)V");
+	this->swarning = env->GetStaticMethodID(this->CPP_lib, "SendW", "(Ljava/lang/String;)V");
+	this->serror = env->GetStaticMethodID(this->CPP_lib, "SendE", "(Ljava/lang/String;)V");
+	if (this->CPP_lib == NULL) {
+		logger->Error("1");
+		throw exception("初始化错误");
+	}
+	if (this->sinfo == NULL) {
+		logger->Error("2");
+		throw exception("初始化错误");
+	}
+	if (this->swarning == NULL) {
+		logger->Error("3");
+		throw exception("初始化错误");
+	}
+	if (this->serror == NULL) {
+		logger->Error("4");
+		throw exception("初始化错误");
+	}
 }
 void Logger::Warning(string log) {
-    this->env->CallStaticVoidMethod(this->javaclass, this->swarning, tools.str2jstring(env, log.c_str()));
+	genv->CallStaticVoidMethod(config->CPP_lib, this->swarning, tools.str2jstring(log.c_str()));
 }
 void Logger::Error(string log) {
-    this->env->CallStaticVoidMethod(this->javaclass, this->serror, tools.str2jstring(env, log.c_str()));
+	genv->CallStaticVoidMethod(config->CPP_lib, this->serror, tools.str2jstring(log.c_str()));
 }
 void Logger::Info(string log) {
-    this->env->CallStaticVoidMethod(this->javaclass, this->sinfo, tools.str2jstring(env, log.c_str()));
+	genv->CallStaticVoidMethod(config->CPP_lib, this->sinfo, tools.str2jstring(log.c_str()));
+}
+Logger::~Logger() {
+	genv->DeleteGlobalRef(this->CPP_lib);
 }
 
 /*图片类实现*/
-Image::Image(JNIEnv* env, string imageId) {
-    this->env = env;
-    this->java_class = env->FindClass("org/example/mirai/plugin/CPP_lib");
-    this->Query = env->GetStaticMethodID(java_class, "QueryImgUrl", "(Ljava/lang/String;)Ljava/lang/String;");
-    this->id = imageId;
+Image::Image(string imageId) {
+	this->Query = config->Query;
+	this->id = imageId;
 }
 string Image::queryURL() {
-    return tools.jstring2str(this->env, (jstring)this->env->CallStaticObjectMethod(this->java_class, this->Query, tools.str2jstring(this->env, this->id.c_str())));
+	return tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Query, tools.str2jstring(this->id.c_str())));
 }
 vector<string> Image::GetImgIdFromMiraiCode(string MiraiCode) {
-    vector<string> result = vector<string>();
-    string temp = MiraiCode;
-    smatch m;
-    regex re("\\[mirai:image:(.*?)\\]");
-    while (std::regex_search(temp, m, re)) {
-        result.push_back(m[1]);
-        temp = m.suffix().str();
-    }
-    return result;
+	vector<string> result = vector<string>();
+	string temp = MiraiCode;
+	smatch m;
+	regex re("\\[mirai:image:(.*?)\\]");
+	while (std::regex_search(temp, m, re)) {
+		result.push_back(m[1]);
+		temp = m.suffix().str();
+	}
+	return result;
 }
-Image Image::uploadImg2Friend(JNIEnv* env, long id, string filename) {
-    ifstream fin(filename);
-    if(!fin){
-        logger->Error("文件不存在,位置:C++部分 uploadImg2Friend(),文件名:"+filename);
-        fin.close();
-        throw invalid_argument("NO_FILE_ERROR");
-    }
-    fin.close();
-    jclass java_class = env->FindClass("org/example/mirai/plugin/CPP_lib");
-    jmethodID m = env->GetStaticMethodID(java_class, "uploadImgF", "(JLjava/lang/String;)Ljava/lang/String;");
-    string re = tools.jstring2str(env, (jstring)env->CallStaticObjectMethod(java_class, m, (jlong)id, tools.str2jstring(env, filename.c_str())));
-    return Image(env, re);
+Image Image::uploadImg2Friend(unsigned long id, string filename) {
+	ifstream fin(filename);
+	if (!fin) {
+		logger->Error("文件不存在,位置:C++部分 uploadImg2Friend(),文件名:" + filename);
+		fin.close();
+		throw invalid_argument("NO_FILE_ERROR");
+	}
+	fin.close();
+	jmethodID m = genv->GetStaticMethodID(config->CPP_lib, "uploadImgF", "(JLjava/lang/String;)Ljava/lang/String;");
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, m, (jlong)id, tools.str2jstring(filename.c_str())));
+	return Image(re);
 }
-Image Image::uploadImg2Group(JNIEnv* env, long groupid, string filename) {
-    ifstream fin(filename);
-    if (!fin) {
-        logger->Error("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
-        fin.close();
-        throw invalid_argument("NO_FILE_ERROR");
-    }
-    fin.close();
-    jclass java_class = env->FindClass("org/example/mirai/plugin/CPP_lib");
-    jmethodID m = env->GetStaticMethodID(java_class, "uploadImgG", "(JLjava/lang/String;)Ljava/lang/String;");
-    string re = tools.jstring2str(env, (jstring)env->CallStaticObjectMethod(java_class, m, (jlong)groupid, tools.str2jstring(env, filename.c_str())));
-    return Image(env, re);
+Image Image::uploadImg2Group(unsigned long groupid, string filename) {
+	ifstream fin(filename);
+	if (!fin) {
+		logger->Error("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
+		fin.close();
+		throw invalid_argument("NO_FILE_ERROR");
+	}
+	fin.close();
+	jmethodID m = genv->GetStaticMethodID(config->CPP_lib, "uploadImgG", "(JLjava/lang/String;)Ljava/lang/String;");
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, m, (jlong)groupid, tools.str2jstring(filename.c_str())));
+	return Image(re);
 }
-Image Image::uploadImg2Member(JNIEnv* env, long groupid, long qqid, string filename) {
-    ifstream fin(filename);
-    if (!fin) {
-        logger->Error("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
-        fin.close();
-        throw invalid_argument("NO_FILE_ERROR");
-    }
-    fin.close();
-    jclass java_class = env->FindClass("org/example/mirai/plugin/CPP_lib");
-    jmethodID m = env->GetStaticMethodID(java_class, "uploadImgM", "(JJLjava/lang/String;)Ljava/lang/String;");
-    string re = tools.jstring2str(env, (jstring)env->CallStaticObjectMethod(java_class, m, (jlong)groupid,(jlong) qqid, tools.str2jstring(env, filename.c_str())));
-    return Image(env, re);
+Image Image::uploadImg2Member(unsigned long groupid, unsigned long qqid, string filename) {
+	ifstream fin(filename);
+	if (!fin) {
+		logger->Error("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
+		fin.close();
+		throw invalid_argument("NO_FILE_ERROR");
+	}
+	fin.close();
+	jmethodID m = genv->GetStaticMethodID(config->CPP_lib, "uploadImgM", "(JJLjava/lang/String;)Ljava/lang/String;");
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, m, (jlong)groupid, (jlong)qqid, tools.str2jstring(filename.c_str())));
+	return Image(re);
 }
 string Image::toMiraiCode() {
-    return "[mirai:image:" + this->id + "] ";
+	return "[mirai:image:" + this->id + "] ";
 }
 
 /*好友类实现*/
-Friend::Friend (JNIEnv* env, long id){
-    this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
-    this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateMSG", "(Ljava/lang/String;J)V");
-    this->NickorName_id = env->GetStaticMethodID(java_first, "GetNick", "(J)Ljava/lang/String;");
-    this->id = id;
-    this->env = env;
-    jstring temp = (jstring)this->env->CallStaticObjectMethod(this->java_first, this->NickorName_id, (jlong)id, (jlong)id);
-    this->nick = tools.jstring2str(this->env, temp);
-}
-Friend::~Friend() {
-    this->env->DeleteLocalRef(java_first);
+Friend::Friend(unsigned long id) {
+	this->Send_Msg_id = config->SendMsg2F;
+	this->NickorName_id = config->NickorNameF;
+	this->id = id;
+	jstring temp = (jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->NickorName_id, (jlong)id, (jlong)id);
+	this->nick = tools.jstring2str(temp);
 }
 
 /*成员类实现*/
-Member::Member(JNIEnv* env, long id, long groupid) {
-    this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
-    this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendPrivateM2M", "(Ljava/lang/String;JJ)V");
-    this->NickorName_id = env->GetStaticMethodID(java_first, "GetNameCard", "(JJ)Ljava/lang/String;");
-    this->id = id;
-    this->groupid = groupid;
-    this->env = env;
-    jstring temp = (jstring)this->env->CallStaticObjectMethod(this->java_first, this->NickorName_id, (jlong)id, (jlong)groupid);
-    this->nameCard = tools.jstring2str(this->env, temp);
-}
-Member::~Member() {
-    this->env->DeleteLocalRef(java_first);
+Member::Member(unsigned long id, unsigned long groupid) {
+	this->id = id;
+	this->groupid = groupid;
+	this->Send_Msg_id = config->SendMsg2M;
+	this->NickorName_id = config->NickorNameM;
+	jstring temp = (jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->NickorName_id, (jlong)id, (jlong)groupid);
+	this->nameCard = tools.jstring2str(temp);
 }
 
 /*群聊类实现*/
-Group::Group(JNIEnv* env, long id) {
-    this->java_first = env->FindClass("org/example/mirai/plugin/CPP_lib");
-    this->Send_Msg_id = env->GetStaticMethodID(java_first, "SendGroup", "(Ljava/lang/String;J)V");
-    this->env = env;
-    this->id = id;
-}
-Group::~Group() {
-    env->DeleteLocalRef(java_first);
-
+Group::Group(unsigned long id) {
+	this->Send_Msg_id = config->SendMsg2G;
+	this->id = id;
 }
 
 /*工具类实现*/
-string Tools::jstring2str(JNIEnv* env, jstring jstr)
-    {
-        char* rtn = NULL;
-        jclass   clsstring = env->FindClass("java/lang/String");
-        jstring   strencode = env->NewStringUTF("GB2312");
-        jmethodID   mid = env->GetMethodID(clsstring, "getBytes", "(Ljava/lang/String;)[B");
-        jbyteArray   barr = (jbyteArray)env->CallObjectMethod(jstr, mid, strencode);
-        jsize   alen = env->GetArrayLength(barr);
-        jbyte* ba = env->GetByteArrayElements(barr, JNI_FALSE);
-        if (alen > 0)
-        {
-            rtn = (char*)malloc(alen + 1);
-            memcpy(rtn, ba, alen);
-            rtn[alen] = 0;
-        }
-        env->ReleaseByteArrayElements(barr, ba, 0);
-        string stemp(rtn);
-        free(rtn);
-        return stemp;
-    }
-jstring Tools::str2jstring(JNIEnv* env, const char* pat)
-    {
-        //定义java String类 strClass
-        jclass strClass = (env)->FindClass("Ljava/lang/String;");
-        //获取String(byte[],String)的构造器,用于将本地byte[]数组转换为一个新String
-        jmethodID ctorID = (env)->GetMethodID(strClass, "<init>", "([BLjava/lang/String;)V");
-        //建立byte数组
-        jbyteArray bytes = (env)->NewByteArray(strlen(pat));
-        //将char* 转换为byte数组
-        (env)->SetByteArrayRegion(bytes, 0, strlen(pat), (jbyte*)pat);
-        // 设置String, 保存语言类型,用于byte数组转换至String时的参数
-        jstring encoding = (env)->NewStringUTF("GB2312");
-        //将byte数组转换为java String,并输出
-        return (jstring)(env)->NewObject(strClass, ctorID, bytes, encoding);
-    }
+string Tools::jstring2str(jstring jStr)
+{
+	/*char* rtn = NULL;
+	jclass   clsstring = config->env->FindClass("java/lang/String");
+	jstring   strencode = config->env->NewStringUTF("GB2312");
+	jmethodID   mid = config->env->GetMethodID(clsstring, "getBytes", "(Ljava/lang/String;)[B");
+	jbyteArray   barr = (jbyteArray)config->env->CallObjectMethod(jstr, mid, strencode);
+	jsize   alen = config->env->GetArrayLength(barr);
+	jbyte* ba = config->env->GetByteArrayElements(barr, JNI_FALSE);
+	if (alen > 0)
+	{
+		rtn = (char*)malloc(alen + 1);
+		memcpy(rtn, ba, alen);
+		rtn[alen] = 0;
+	}
+	config->env->ReleaseByteArrayElements(barr, ba, 0);
+	string stemp(rtn);
+	free(rtn);
+	return stemp;*/
+	if (!jStr)
+		return "";
+
+	const jclass stringClass = genv->GetObjectClass(jStr);
+	const jmethodID getBytes = genv->GetMethodID(stringClass, "getBytes", "(Ljava/lang/String;)[B");
+	const jbyteArray stringJbytes = (jbyteArray)genv->CallObjectMethod(jStr, getBytes, genv->NewStringUTF("UTF-8"));
+
+	size_t length = (size_t)genv->GetArrayLength(stringJbytes);
+	jbyte* pBytes = genv->GetByteArrayElements(stringJbytes, NULL);
+
+	std::string ret = std::string((char*)pBytes, length);
+	genv->ReleaseByteArrayElements(stringJbytes, pBytes, JNI_ABORT);
+
+	genv->DeleteLocalRef(stringJbytes);
+	genv->DeleteLocalRef(stringClass);
+	return ret;
+}
+jstring Tools::str2jstring(const char* pat)
+{
+	//获取String的class
+	jclass string_clz = genv->FindClass("java/lang/String");
+	//获取构造方法  public String(byte bytes[], String charsetName)
+	jmethodID jmid = genv->GetMethodID(string_clz, "<init>", "([BLjava/lang/String;)V");
+	//创建byte数组并赋值
+	jsize size = (jsize)strlen(pat);
+	jbyteArray bytes = genv->NewByteArray(size);
+	genv->SetByteArrayRegion(bytes, 0, size, (jbyte*)pat);
+
+	//charsetName
+	jstring charsetName = genv->NewStringUTF("GB2312");
+
+	jstring temp = (jstring)genv->NewObject(string_clz, jmid, bytes, charsetName);
+
+	genv->DeleteLocalRef(bytes);
+	genv->DeleteLocalRef(string_clz);
+	return temp;
+}
 string Tools::JLongToString(jlong qqid) {
-        auto id = [qqid]() -> string {
-            stringstream stream;
-            stream << qqid;
-            string a;
-            stream >> a;
-            stream.clear();
-            return a;
-        };
-        return id();
-    }
+	auto id = [qqid]() -> string {
+		stringstream stream;
+		stream << qqid;
+		string a;
+		stream >> a;
+		stream.clear();
+		return a;
+	};
+	return id();
+}
