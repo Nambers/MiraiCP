@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="RunMiraiKt" type="JetRunConfigurationType" nameIsGenerated="true">
-    <module name="mirai-example.test" />
+    <module name="miraiCP.test" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />

@@ -25,6 +25,7 @@ class Config {
         val message: String,
         val type: Int = 4
     )
+    //群成员加入
     data class MemberJoin(
         val groupid: Long,
         val memberid: Long,
