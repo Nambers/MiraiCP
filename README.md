@@ -1,6 +1,17 @@
 # 欢迎来到MiraiCP
 ![Github](https://img.shields.io/badge/Author-Nambers-blue) ![GitHub](https://img.shields.io/github/license/Nambers/MiraiCP) ![GitHub repo size](https://img.shields.io/github/repo-size/Nambers/MiraiCP) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP) ![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)
 
+* [欢迎来到MiraiCP](#欢迎来到miraicp)
+* [使用声明](#使用声明)
+  * [使用流程:](#使用流程)
+    * [0 配置环境](#0-配置环境)
+    * [1 下载启动器(mcl)](#1-下载启动器mcl)
+    * [2 了解项目](#2-了解项目)
+    * [3 注意事项](#3-注意事项)
+    * [4 使用方法:](#4-使用方法)
+      * [4\.1 使用release包](#41-使用release包)
+      * [4\.2 使用源代码](#42-使用源代码)
+    * [TODO](#todo)
 
 # 使用声明
 
@@ -75,7 +86,7 @@ qq表情对应 [faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/fac
 
 ### TODO
 - [ ] 修复`v1.0.1`中发现的群聊频繁发送消息报错问题(堆栈溢出以及一个未知的错误)
-- [ ] 多线程适配
+- [x] 多线程适配
 - [ ] 增加更多事件
 - [ ] 写文档
 - [x] 图片支持(下载)

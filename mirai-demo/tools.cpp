@@ -38,6 +38,11 @@ void Config::Init() {
 		logger->Error("7");
 		throw exception("初始化错误");
 	}
+	this->Schedule = env->GetStaticMethodID(CPP_lib, "schedule", "(JI)V");
+	if (this->Schedule == NULL) {
+		logger->Error("8");
+		throw exception("初始化错误");
+	}
 }
 Config::~Config() {
 	genv->DeleteGlobalRef(this->CPP_lib);
@@ -78,6 +83,11 @@ void Logger::Info(string log) {
 }
 Logger::~Logger() {
 	genv->DeleteGlobalRef(this->CPP_lib);
+}
+
+//定时任务实现
+void SetScheduling(long time, int id) {
+	genv->CallStaticVoidMethod(config->CPP_lib, config->Schedule, (jlong) time, (jint) id);
 }
 
 /*图片类实现*/

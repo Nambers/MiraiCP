@@ -17,8 +17,6 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* 
 	//初始化日志模块
 	logger->init();
 	config->Init();
-	//初始化监听
-	EventRegister();
 	onEnable();
 	return tools.str2jstring("2333");//验证机制
 }
@@ -101,4 +99,14 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 	}
 	logger->Error("unknown type");
 	return tools.str2jstring("ERROR");
+}
+
+/*
+* 定时任务
+*/
+JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_ScheduleTask
+(JNIEnv* env, jobject job, jint id) {
+	genv = env;
+	procession->broadcast(SchedulingEvent((int)id));
+	return job;
 }

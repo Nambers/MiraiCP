@@ -31,6 +31,14 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_example_mirai_plugin_CPP_lib
+ * Method:    ScheduleTask
+ * Signature: (I)Ljava/lang/Void;
+ */
+JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_ScheduleTask
+  (JNIEnv *, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif

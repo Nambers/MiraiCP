@@ -10,6 +10,7 @@ import org.example.mirai.plugin.PluginMain.QueryImg
 import org.example.mirai.plugin.PluginMain.SendError
 import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendWarning
+import org.example.mirai.plugin.PluginMain.scheduling
 import org.example.mirai.plugin.PluginMain.uploadImgFriend
 import org.example.mirai.plugin.PluginMain.uploadImgGroup
 import org.example.mirai.plugin.PluginMain.uploadImgMember
@@ -108,11 +109,18 @@ class CPP_lib {
             }
             return re
         }
+
+        @JvmStatic
+        fun schedule(time:Long, id:Int){
+            scheduling(time, id)
+            return
+        }
     }
 
 
     external fun Verify(): String
     external fun Event(content: String): String
     external fun PluginDisable(): Void
+    external fun ScheduleTask(id:Int): Void
 }
 
