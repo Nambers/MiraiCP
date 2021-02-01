@@ -174,6 +174,26 @@ object PluginMain : KotlinPlugin(
                     this.message.serializeToMiraiCode())
                 ))
         }
+        globalEventChannel().subscribeAlways<MemberLeaveEvent.Kick> {
+            cpp.Event(gson.toJson(
+                Config.MemberLeave(
+                    this.group.id,
+                    this.member.id,
+                    1,
+                    if(this.operator?.id == null) this.bot.id else this.operator!!.id
+                )
+            ))
+        }
+        globalEventChannel().subscribeAlways<MemberLeaveEvent.Quit> {
+            cpp.Event(gson.toJson(
+                Config.MemberLeave(
+                    this.group.id,
+                    this.member.id,
+                    2,
+                    this.member.id
+                )
+            ))
+        }
         globalEventChannel().subscribeAlways<MemberJoinEvent.Retrieve> {
             cpp.Event(gson.toJson(
                 Config.MemberJoin(
