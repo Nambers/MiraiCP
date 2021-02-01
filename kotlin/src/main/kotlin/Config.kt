@@ -39,4 +39,17 @@ class Config {
         val invitorid: Long = 0,
         val type: Int = 5
     )
+    //群成员退出
+    data class MemberLeave(
+        val groupid: Long,
+        val memberid: Long,
+        /*
+        kick - 1
+        quit - 2
+         */
+        val leavetype: Int,
+        //如果没有则为0
+        val operatorid: Long = 0,
+        val type: Int = 6
+    )
 }

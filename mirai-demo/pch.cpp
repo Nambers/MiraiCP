@@ -86,6 +86,18 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 				root["groupid"].asLargestUInt())
 		));
 		return tools.str2jstring("NULL");
+	case 6:
+		//群成员退出
+		procession->broadcast(MemberLeaveEvent(
+			root["leavetype"].asInt(),
+			Member(root["memberid"].asLargestUInt(),
+				root["groupid"].asLargestUInt()),
+			Group(root["groupid"].asLargestUInt()),
+			Member(
+				root["operatorid"].asLargestUInt(),
+				root["groupid"].asLargestUInt())
+		));
+		return tools.str2jstring("NULL");
 	}
 	logger->Error("unknown type");
 	return tools.str2jstring("ERROR");

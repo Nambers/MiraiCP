@@ -275,6 +275,27 @@ public:
 		this->invitor = i;
 	}
 };
+class MemberLeaveEvent {
+public:
+	/*
+	事件类型
+	1 - 被踢出
+	2 - 主动退出
+	*/
+	int type = NULL;
+	//退出的成员的成员
+	Member member;
+	//目标群
+	Group group;
+	//操作人, 主动退出时与member相同，改成员可能是当前bot，operater以与系统operator区分
+	Member operater;
+	MemberLeaveEvent(int t, Member m, Group g, Member i) {
+		this->type = t;
+		this->member = m;
+		this->group = g;
+		this->operater = i;
+	}
+};
 
 /*监听类声明*/
 class Event {
@@ -284,11 +305,18 @@ private:
 	typedef std::function<bool(GroupInviteEvent param)> GI;
 	typedef std::function<bool(NewFriendRequestEvent param)> NFRE;
 	typedef std::function<void(MemberJoinEvent param)> MJ;
+	typedef std::function<void(MemberLeaveEvent param)> ML;
+
+	/*
+	* 不使用vector做可重复监听的部分，因为没有什么必要且vector比变量占内存
+	*/
+
 	GME GMEf = [](GroupMessageEvent)->void {};
 	PME PMEf = [](PrivateMessageEvent)->void {};
 	GI GIf = [](GroupInviteEvent)->bool {return true; };
 	NFRE NFREf = [](NewFriendRequestEvent)->bool {return true; };
 	MJ MJf = [](MemberJoinEvent)->void {};
+	ML MLf = [](MemberLeaveEvent)->void {};
 public:
 	/*
 	* 广播函数重载
@@ -309,6 +337,9 @@ public:
 	void broadcast(MemberJoinEvent g) {
 		this->MJf(g);
 	}
+	void broadcast(MemberLeaveEvent g) {
+		this->MLf(g);
+	}
 
 	/*
 	* 监听函数重载
@@ -327,7 +358,10 @@ public:
 		this->NFREf = std::move(f);
 	}
 	void registerEvent(MJ f) {
-		this->MJf = std::move(f);
+		this->MJf = move(f);
+	}
+	void registerEvent(ML f) {
+		this->MLf = move(f);
 	}
 };
 
