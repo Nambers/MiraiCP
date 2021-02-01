@@ -1,10 +1,9 @@
 package org.example.mirai.plugin
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.example.mirai.plugin.PluginMain.BasicSendLog
 import org.example.mirai.plugin.PluginMain.Send
 import org.example.mirai.plugin.PluginMain.dll_name
 import org.example.mirai.plugin.PluginMain.dataFolder
-import kotlinx.coroutines.runBlocking
 import org.example.mirai.plugin.PluginMain.GetN
 import org.example.mirai.plugin.PluginMain.GetNN
 import org.example.mirai.plugin.PluginMain.QueryImg
@@ -26,17 +25,31 @@ class CPP_lib {
             //这里填自己的路径
             System.load(dataFolder.absolutePath + "/$dll_name")
         }
-        
         @JvmStatic
-        fun SendGroup(message:String,id:Long) {
-            runBlocking {
-                launch {
-                    SendG(message, id)
-                }
+        fun SendPrivateMSG(message: String, id: Long){
+            // 反向调用发送消息
+            GlobalScope.launch {
+                Send(message, id)
             }
+
         }
         @JvmStatic
-        fun QueryImgUrl(id:String): String{
+        fun SendPrivateM2M(message: String, id: Long, gid: Long){
+            // 反向调用发送消息
+            GlobalScope.launch {
+                Send(message, id, gid)
+            }
+
+        }
+        @JvmStatic
+        fun SendGroup(message:String,id:Long) {
+            GlobalScope.launch {
+                    SendG(message, id)
+            }
+
+        }
+        @JvmStatic
+        fun QueryImgUrl(id:String): String {
             var temp = ""
             runBlocking {
                 launch {
@@ -56,24 +69,6 @@ class CPP_lib {
         @JvmStatic
         fun SendE(log:String) {
             SendError(log)
-        }
-        @JvmStatic
-        fun SendPrivateMSG(message: String, id: Long){
-            // 反向调用发送消息
-            runBlocking {
-                launch {
-                    Send(message, id)
-                }
-            }
-        }
-        @JvmStatic
-        fun SendPrivateM2M(message: String, id: Long, gid: Long){
-            // 反向调用发送消息
-            runBlocking {
-                launch {
-                    Send(message, id, gid)
-                }
-            }
         }
         @JvmStatic
         fun GetNick(qqid:Long): String {
