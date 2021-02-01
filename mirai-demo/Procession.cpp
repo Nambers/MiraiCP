@@ -1,11 +1,7 @@
 #include "pch.h"
+unsigned long groupid = 0;
 void onEnable() {
 	/*插件启动*/
-}
-void onDisable() {
-	/*插件结束*/
-}
-void EventRegister() {
 	/*
 	注册事件监听-用户自定义
 	logger - 日志组件
@@ -19,15 +15,22 @@ void EventRegister() {
 		...
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
-
 	procession->registerEvent([](GroupMessageEvent param)->void {
 		//在这写你自己处理群消息的代码
 		logger->Info("hi");
 		param.group.SendMsg(param.sender.at());
 		});
-	procession->registerEvent([](PrivateMessageEvent param)->void {
+	procession->registerEvent([=](SchedulingEvent e) {
+		if (e.id == 1) {
+			/*do something*/
+			Friend(groupid).SendMsg("这是定时任务");
+		}
+		});
+	procession->registerEvent([&](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
 		logger->Info("hi");
+		SetScheduling(100, 1);
+		groupid = param.sender.id;
 		param.sender.SendMsg(param.message);
 		});
 	procession->registerEvent([](GroupInviteEvent param)->bool {
@@ -58,4 +61,7 @@ void EventRegister() {
 		logger->Info(to_string(param.member.id) + "加入本群");
 		param.group.SendMsg("欢迎" + param.member.nameCard + "加入本群");
 		});
+}
+void onDisable() {
+	/*插件结束*/
 }

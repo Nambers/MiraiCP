@@ -1,5 +1,6 @@
 #include "pch.h"
 
+//全局env变量
 extern JNIEnv* genv;
 
 /*日志类声明*/
@@ -37,6 +38,8 @@ public:
 	jmethodID NickorNameM = NULL;
 	/*群聊类*/
 	jmethodID SendMsg2G = NULL;
+	/*定时任务*/
+	jmethodID Schedule = NULL;
 	Config() {};
 	void Init();
 	~Config();
@@ -275,6 +278,8 @@ public:
 		this->invitor = i;
 	}
 };
+
+/*群成员离开*/
 class MemberLeaveEvent {
 public:
 	/*
@@ -297,15 +302,31 @@ public:
 	}
 };
 
+/*定时任务执行*/
+class SchedulingEvent {
+public:
+	/*自定义id标识符*/
+	int id = 0;
+	SchedulingEvent(int ido){
+		id = ido;
+	}
+};
+
+/*
+启动定时任务,time是多少毫秒后开始，id是自定义标识符
+*/
+void SetScheduling(long time, int id);
+
 /*监听类声明*/
 class Event {
 private:
-	typedef std::function<void(GroupMessageEvent param)> GME;
-	typedef std::function<void(PrivateMessageEvent param)> PME;
-	typedef std::function<bool(GroupInviteEvent param)> GI;
-	typedef std::function<bool(NewFriendRequestEvent param)> NFRE;
-	typedef std::function<void(MemberJoinEvent param)> MJ;
-	typedef std::function<void(MemberLeaveEvent param)> ML;
+	typedef std::function<void(GroupMessageEvent)> GME;
+	typedef std::function<void(PrivateMessageEvent)> PME;
+	typedef std::function<bool(GroupInviteEvent)> GI;
+	typedef std::function<bool(NewFriendRequestEvent)> NFRE;
+	typedef std::function<void(MemberJoinEvent)> MJ;
+	typedef std::function<void(MemberLeaveEvent)> ML;
+	typedef std::function<void(SchedulingEvent)> S;
 
 	/*
 	* 不使用vector做可重复监听的部分，因为没有什么必要且vector比变量占内存
@@ -317,6 +338,7 @@ private:
 	NFRE NFREf = [](NewFriendRequestEvent)->bool {return true; };
 	MJ MJf = [](MemberJoinEvent)->void {};
 	ML MLf = [](MemberLeaveEvent)->void {};
+	S Sf = [](SchedulingEvent)->void {};
 public:
 	/*
 	* 广播函数重载
@@ -340,6 +362,9 @@ public:
 	void broadcast(MemberLeaveEvent g) {
 		this->MLf(g);
 	}
+	void broadcast(SchedulingEvent g) {
+		this->Sf(g);
+	}
 
 	/*
 	* 监听函数重载
@@ -362,6 +387,9 @@ public:
 	}
 	void registerEvent(ML f) {
 		this->MLf = move(f);
+	}
+	void registerEvent(S f) {
+		this->Sf = f;
 	}
 };
 

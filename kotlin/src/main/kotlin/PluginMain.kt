@@ -1,6 +1,8 @@
 package org.example.mirai.plugin
 
 import com.google.gson.Gson
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -12,6 +14,8 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import java.io.File
+import java.util.*
+import kotlin.concurrent.schedule
 
 /*
 在src/main/resources/plugin.yml里改插件信息和入口点
@@ -24,12 +28,25 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
         name = "miraiCP",
-        version = "2.2.0"
+        version = "2.2.1"
     )
 ) {
     val dll_name = "mirai-demo.dll"
     private lateinit var AIbot: Bot
     lateinit var cpp: CPP_lib
+
+    fun BasicSendLog(log: String) {
+        logger.info(log)
+    }
+
+    fun SendWarning(log: String){
+        logger.warning(log)
+    }
+
+    fun SendError(log: String){
+        logger.error(log)
+    }
+
     suspend fun Send(message: String, id: Long) {
         //反向调用
         logger.info("Send message for($id) is $message")
@@ -51,18 +68,6 @@ object PluginMain : KotlinPlugin(
             return
         }
         f.sendMessage(MiraiCode.deserializeMiraiCode(message))
-    }
-
-    fun BasicSendLog(log: String) {
-        logger.info(log)
-    }
-
-    fun SendWarning(log: String){
-        logger.warning(log)
-    }
-
-    fun SendError(log: String){
-        logger.error(log)
     }
 
     suspend fun SendG(message: String, id: Long) {
@@ -145,6 +150,12 @@ object PluginMain : KotlinPlugin(
 
     suspend fun QueryImg(id: String): String{
         return Image(id).queryUrl()
+    }
+
+    fun scheduling(time: Long, id: Int){
+        Timer("SettingUp", false).schedule(time) {
+            cpp.ScheduleTask(id)
+        }
     }
 
     override fun onDisable() {
