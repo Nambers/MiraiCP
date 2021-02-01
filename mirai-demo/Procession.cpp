@@ -45,6 +45,9 @@ void EventRegister() {
 		}
 		return ACCEPT;
 		});
+	procession->registerEvent([](MemberLeaveEvent p) {
+		p.group.SendMsg(p.member.nameCard + "离开了本群");
+		});
 	procession->registerEvent([](MemberJoinEvent param)->void {
 		if (param.type == INVITE) {
 			//该成员是被邀请进入的，所以有param.invitor，其他类型都没有
