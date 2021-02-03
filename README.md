@@ -18,17 +18,17 @@
 
 0. MiraiCP是一个[Mirai](https://github.com/mamoe/mirai) 的C++语言的社区SDK，基于Mirai-console插件模板开发
 
-1. 本项目仅供学习参考，禁止用于任何商业用途(根据Mirai的AGPLv3许可(见下方许可) + 本项目的MIT协议开源，即AGPLv3需优先遵守, 以AGPLv3为主)。
+1. 本项目仅供学习参考，禁止用于任何商业用途(根据Mirai的AGPLv3许可协议开源)。
 
 2. 本项目不含有任何旨在破坏用户计算机数据和获取用户隐私的恶意代码，不含有任何跟踪、监视用户计算机功能代码，不会收集任何用户个人信息，不会泄露用户隐私。
 
-3. 本项目不提供任何具体功能实现，仅仅只是对项目mirai-console和mirai-core(详见[mirai仓库](https://github.com/mamoe/mirai))的二次封装。因使用本项目造成或与本项目有关的一切争议或法律纠纷，将由原项目mirai全部承担。
+3. 本项目不提供任何具体功能实现，仅仅只是对项目mirai-console和mirai-core(详见[mirai仓库](https://github.com/mamoe/mirai))的二次封装。
 
 4. 任何单位或个人认为本项目可能涉嫌侵权，应及时提出反馈，本项目将会第一时间对违规内容给予删除等相关处理。
 
 # 许可
 ```
-Copyright (C) 2019-2021 Mamoe Technologies and contributors.
+Copyright (C) 2020-2021 Eritque arcus and contributors.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
