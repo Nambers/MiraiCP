@@ -35,47 +35,6 @@ void onEnable() {
 		logger->Info("hi");
 		param.group.SendMsg(param.sender.at());
 		});
-	procession->registerEvent([=](SchedulingEvent e) {
-		if (e.id == 1) {
-			/*do something*/
-			Friend(groupid).SendMsg("这是定时任务");
-		}
-		});
-	procession->registerEvent([&](PrivateMessageEvent param)->void {
-		//在这写你自己处理私聊消息的代码
-		logger->Info("hi");
-		SetScheduling(100, 1);
-		groupid = param.sender.id;
-		param.sender.SendMsg(param.message);
-		});
-	procession->registerEvent([](GroupInviteEvent param)->bool {
-		//处理群邀请，true同意进群,false不同意
-		if (param.sender.id == 11111) {
-			return ACCEPT;
-		}
-		return ACCEPT;
-		});
-	procession->registerEvent([](NewFriendRequestEvent param)->bool {
-		//新好友邀请
-		logger->Info("新好友申请来自于" + to_string(param.sender.id));
-		if (param.message == "hhh") {
-			return ACCEPT;
-		}
-		return ACCEPT;
-		});
-	procession->registerEvent([](MemberLeaveEvent p) {
-		p.group.SendMsg(p.member.nameCard + "离开了本群");
-		});
-	procession->registerEvent([](MemberJoinEvent param)->void {
-		if (param.type == INVITE) {
-			//该成员是被邀请进入的，所以有param.invitor，其他类型都没有
-		}
-		else if (param.type == ACTIVE) {
-			//该成员是主动加入的
-		}
-		logger->Info(to_string(param.member.id) + "加入本群");
-		param.group.SendMsg("欢迎" + param.member.nameCard + "加入本群");
-		});
 }
 void onDisable() {
 	/*插件结束*/
@@ -121,7 +80,7 @@ unsigned long id = 0;
 ## 各类事件
 
 ### 群成员退出
-附，无法取到`p.member.nameCard`，因为该成员已经退出本群，无法取到成员实例，正在修复
+
 ```C++
 	procession->registerEvent([](MemberLeaveEvent p) {
 		p.group.SendMsg(p.member.id + "离开了本群");
