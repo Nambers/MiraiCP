@@ -103,11 +103,6 @@ qq表情对应 [faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/fac
 附:[kotlin版开发模板](https://github.com/Nambers/mirai_kotlin_example)
 
 ### TODO
-- [ ] 修复`v1.0.1`中发现的群聊频繁发送消息报错问题(堆栈溢出以及一个未知的错误)
-- [x] 多线程适配
+- [x] 修复`v1.0.1`中发现的群聊频繁发送消息报错问题(堆栈溢出以及一个未知的错误)*暂无再次观察到此现象*
 - [ ] 增加更多事件
 - [ ] 写文档
-- [x] 图片支持(下载)
-  - [x] 图片支持(上传及发送)
-- [ ] ~~文件支持(下载及上传)~~(Mirai不支持)
-- [x] 增加复合消息支持，把消息转成miraiCode传输
