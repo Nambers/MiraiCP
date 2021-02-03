@@ -393,9 +393,6 @@ public:
 	}
 };
 
-/*声明注册监听事件*/
-void EventRegister();
-
 /*声明全局监听对象(广播源)*/
 extern Event* procession;
 

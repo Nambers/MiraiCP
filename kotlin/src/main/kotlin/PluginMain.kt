@@ -1,11 +1,11 @@
 package org.example.mirai.plugin
 
 import com.google.gson.Gson
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.contact.NormalMember
+import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.message.code.MiraiCode
@@ -31,9 +31,10 @@ object PluginMain : KotlinPlugin(
         version = "2.2.1"
     )
 ) {
-    val dll_name = "mirai-demo.dll"
+    private var friend_cache = ArrayList<NormalMember>(0)
+    const val dll_name = "mirai-demo.dll"
     private lateinit var AIbot: Bot
-    lateinit var cpp: CPP_lib
+    private lateinit var cpp: CPP_lib
 
     fun BasicSendLog(log: String) {
         logger.info(log)
@@ -59,6 +60,12 @@ object PluginMain : KotlinPlugin(
     suspend fun Send(message: String, id: Long, gid: Long) {
         //反向调用
         logger.info("Send message for a member($id) is $message")
+        for(a in friend_cache){
+            if(a.id == id && a.group.id == gid){
+                a.sendMessage(message)
+                return
+            }
+        }
         val G = AIbot.getGroup(gid)?:let{
             logger.error("发送消息找不到群聊，位置K-Send()，id:$gid")
             return
@@ -80,6 +87,12 @@ object PluginMain : KotlinPlugin(
     }
 
     fun GetNN(qqid: Long, groupid: Long): String {
+        for(a in friend_cache){
+            if(a.id == qqid && a.group.id == groupid){
+                return a.nameCardOrNick
+            }
+        }
+
         val group = AIbot.getGroup(groupid) ?: let{
             logger.error("取群名片找不到对应群组，位置K-GetNN()，gid:$groupid")
             return ""
@@ -186,6 +199,7 @@ object PluginMain : KotlinPlugin(
                 ))
         }
         globalEventChannel().subscribeAlways<MemberLeaveEvent.Kick> {
+            friend_cache.add(this.member)
             cpp.Event(gson.toJson(
                 Config.MemberLeave(
                     this.group.id,
@@ -194,8 +208,10 @@ object PluginMain : KotlinPlugin(
                     if(this.operator?.id == null) this.bot.id else this.operator!!.id
                 )
             ))
+            friend_cache.remove(this.member)
         }
         globalEventChannel().subscribeAlways<MemberLeaveEvent.Quit> {
+            friend_cache.add(this.member)
             cpp.Event(gson.toJson(
                 Config.MemberLeave(
                     this.group.id,
@@ -204,6 +220,7 @@ object PluginMain : KotlinPlugin(
                     this.member.id
                 )
             ))
+            friend_cache.remove(this.member)
         }
         globalEventChannel().subscribeAlways<MemberJoinEvent.Retrieve> {
             cpp.Event(gson.toJson(
