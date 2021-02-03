@@ -3,6 +3,7 @@
 
 * [欢迎来到MiraiCP](#欢迎来到miraicp)
 * [使用声明](#使用声明)
+* [许可](#许可)
   * [使用流程:](#使用流程)
     * [0 配置环境](#0-配置环境)
     * [1 下载启动器(mcl)](#1-下载启动器mcl)
@@ -17,7 +18,7 @@
 
 0. MiraiCP是一个[Mirai](https://github.com/mamoe/mirai) 的C++语言的社区SDK，基于Mirai-console插件模板开发
 
-1. 本项目仅供学习参考，禁止用于任何商业用途(根据AGPLv3和MIT协议开源)。
+1. 本项目仅供学习参考，禁止用于任何商业用途(根据Mirai的AGPLv3许可(见下方许可) + 本项目的MIT协议开源，即AGPLv3需优先遵守, 以AGPLv3为主)。
 
 2. 本项目不含有任何旨在破坏用户计算机数据和获取用户隐私的恶意代码，不含有任何跟踪、监视用户计算机功能代码，不会收集任何用户个人信息，不会泄露用户隐私。
 
@@ -25,6 +26,23 @@
 
 4. 任何单位或个人认为本项目可能涉嫌侵权，应及时提出反馈，本项目将会第一时间对违规内容给予删除等相关处理。
 
+# 许可
+```
+Copyright (C) 2019-2021 Mamoe Technologies and contributors.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+```
 ## 使用流程:
 
 ### 0 配置环境
