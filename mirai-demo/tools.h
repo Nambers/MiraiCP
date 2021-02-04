@@ -40,6 +40,7 @@ public:
 	jmethodID SendMsg2G = NULL;
 	/*定时任务*/
 	jmethodID Schedule = NULL;
+	jmethodID Mute = NULL;
 	Config() {};
 	void Init();
 	~Config();
@@ -160,6 +161,7 @@ class Member {
 private:
 	jmethodID Send_Msg_id = NULL;
 	jmethodID NickorName_id = NULL;
+	jmethodID Mute_id = NULL;
 public:
 	unsigned long groupid = 0;
 	unsigned long id = 0;
@@ -177,7 +179,18 @@ public:
 	}
 	/*发送信息*/
 	void SendMsg(string msg) {
-		genv->CallStaticVoidMethod(config->CPP_lib, this->Send_Msg_id, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid);
+		SendMsg(tools.str2jstring(msg.c_str()));
+	}
+	/*禁言当前对象，单位是秒，最少0秒最大30天
+	* 返回值对应报错
+	*	"E1" - 找不到群
+	*	"E2" - 找不到群成员
+	*	"E3" - 机器人无权限禁言对方
+	*	"E4" - 禁言时间超出0s~30d
+	*	"Y" - 一切正常
+	*/
+	string Mute(int time) {
+		return tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Mute_id, (jlong)this->id, (jlong)this->groupid, (jint)time));
 	}
 };
 

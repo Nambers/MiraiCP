@@ -43,6 +43,11 @@ void Config::Init() {
 		logger->Error("8");
 		throw exception("初始化错误");
 	}
+	this->Mute = env->GetStaticMethodID(CPP_lib, "muteM", "(JJI)Ljava/lang/String;");
+	if (this->Mute == NULL) {
+		logger->Error("9");
+		throw exception("初始化错误");
+	}
 }
 Config::~Config() {
 	genv->DeleteGlobalRef(this->CPP_lib);
@@ -161,6 +166,7 @@ Friend::Friend(unsigned long id) {
 /*成员类实现*/
 Member::Member(unsigned long id, unsigned long groupid) {
 	this->id = id;
+	this->Mute_id = config->Mute;
 	this->groupid = groupid;
 	this->Send_Msg_id = config->SendMsg2M;
 	this->NickorName_id = config->NickorNameM;
