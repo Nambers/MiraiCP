@@ -5,6 +5,7 @@ import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.contact.NormalMember
+import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
@@ -28,7 +29,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
         name = "miraiCP",
-        version = "2.2.1"
+        version = "2.3.0"
     )
 ) {
     private var friend_cache = ArrayList<NormalMember>(0)
@@ -36,18 +37,18 @@ object PluginMain : KotlinPlugin(
     private lateinit var AIbot: Bot
     private lateinit var cpp: CPP_lib
 
+    //日志部分实现
     fun BasicSendLog(log: String) {
         logger.info(log)
     }
-
     fun SendWarning(log: String){
         logger.warning(log)
     }
-
     fun SendError(log: String){
         logger.error(log)
     }
 
+    //发送消息部分实现
     suspend fun Send(message: String, id: Long) {
         //反向调用
         logger.info("Send message for($id) is $message")
@@ -76,7 +77,6 @@ object PluginMain : KotlinPlugin(
         }
         f.sendMessage(MiraiCode.deserializeMiraiCode(message))
     }
-
     suspend fun SendG(message: String, id: Long) {
         logger.info("Send message for Group($id) is $message")
         val g = AIbot.getGroup(id)?:let {
@@ -86,6 +86,14 @@ object PluginMain : KotlinPlugin(
         g.sendMessage(MiraiCode.deserializeMiraiCode(message))
     }
 
+    //取昵称或名片部分
+    fun GetN(qqid: Long): String {
+        val f = AIbot.getFriend(qqid) ?: let {
+            logger.error("找不到对应好友的昵称，位置:K-GetN()，id:$qqid")
+            return ""
+        }
+        return f.nick
+    }
     fun GetNN(qqid: Long, groupid: Long): String {
         for(a in friend_cache){
             if(a.id == qqid && a.group.id == groupid){
@@ -104,6 +112,8 @@ object PluginMain : KotlinPlugin(
         return member.nameCard
 
     }
+
+    //图片部分实现
     suspend fun uploadImgFriend(id: Long, file: String): String {
         val temp = AIbot.getFriend(id)?:let{
             logger.error("发送图片找不到对应好友,位置:K-uploadImgFriend(),id:$id")
@@ -153,22 +163,36 @@ object PluginMain : KotlinPlugin(
             ""
         }
     }
-    fun GetN(qqid: Long): String {
-        val f = AIbot.getFriend(qqid) ?: let {
-            logger.error("找不到对应好友的昵称，位置:K-GetN()，id:$qqid")
-            return ""
-        }
-        return f.nick
-    }
-
     suspend fun QueryImg(id: String): String{
         return Image(id).queryUrl()
     }
 
+    //定时任务
     fun scheduling(time: Long, id: Int){
         Timer("SettingUp", false).schedule(time) {
             cpp.ScheduleTask(id)
         }
+    }
+
+    suspend fun mute(qqid: Long, groupid: Long, time:Int):String{
+        val group = AIbot.getGroup(groupid) ?: let{
+            logger.error("禁言找不到对应群组，位置K-mute()，gid:$groupid")
+            return "E1"
+        }
+        val member = group[qqid] ?: let {
+            logger.error("禁言找不到对应群成员，位置K-mute()，id:$qqid, gid:$groupid")
+            return "E2"
+        }
+        try {
+            member.mute(time)
+        }catch (e: PermissionDeniedException){
+            logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:$groupid，目标成员id:$qqid")
+            return "E3"
+        }catch (e:IllegalStateException){
+            logger.error("执行禁言失败禁言时间超出0s~30d，位置:K-mute()，时间:$time")
+            return "E4"
+        }
+        return "Y"
     }
 
     override fun onDisable() {
