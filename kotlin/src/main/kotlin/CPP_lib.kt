@@ -10,6 +10,7 @@ import org.example.mirai.plugin.PluginMain.QueryImg
 import org.example.mirai.plugin.PluginMain.SendError
 import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendWarning
+import org.example.mirai.plugin.PluginMain.mute
 import org.example.mirai.plugin.PluginMain.scheduling
 import org.example.mirai.plugin.PluginMain.uploadImgFriend
 import org.example.mirai.plugin.PluginMain.uploadImgGroup
@@ -49,6 +50,7 @@ class CPP_lib {
             }
 
         }
+        //查询图片下载链接
         @JvmStatic
         fun QueryImgUrl(id:String): String {
             var temp = ""
@@ -59,26 +61,32 @@ class CPP_lib {
             }
             return temp
         }
+        //发送普通日志
         @JvmStatic
         fun SendLog(log:String) {
             BasicSendLog(log)
         }
+        //发送警告日志
         @JvmStatic
         fun SendW(log:String) {
             SendWarning(log)
         }
+        //发送错误日志
         @JvmStatic
         fun SendE(log:String) {
             SendError(log)
         }
+        //取昵称
         @JvmStatic
         fun GetNick(qqid:Long): String {
             return GetN(qqid)
         }
+        //取群名片
         @JvmStatic
         fun GetNameCard(qqid:Long, groupid:Long): String {
             return GetNN(qqid, groupid);
         }
+        //给群聊上传图片以备发送
         @JvmStatic
         fun uploadImgG(qqid: Long, fileName:String): String{
             var re = ""
@@ -89,6 +97,7 @@ class CPP_lib {
             }
             return re
         }
+        //给好友上传图片以备发送
         @JvmStatic
         fun uploadImgF(qqid: Long, fileName:String): String{
             var re = ""
@@ -99,6 +108,7 @@ class CPP_lib {
             }
             return re
         }
+        //群成员对象上传图片
         @JvmStatic
         fun uploadImgM(groupid: Long, qqid: Long, fileName:String): String{
             var re = ""
@@ -109,11 +119,21 @@ class CPP_lib {
             }
             return re
         }
-
+        //定时任务
         @JvmStatic
         fun schedule(time:Long, id:Int){
             scheduling(time, id)
             return
+        }
+        @JvmStatic
+        fun muteM(qqid: Long, groupid: Long, time: Int): String{
+            var re = ""
+            runBlocking {
+                launch {
+                    re = mute(qqid, groupid, time)
+                }
+            }
+            return re
         }
     }
 
