@@ -1,15 +1,22 @@
 # Mirai支持的qq表情及编号
-本文档编写于2021/1/29,mirai版本2.0.0
+本文档编写于2021/2/8,mirai版本2.3.2(如果图片加载不出来请到doc/face_pic下查看,是raw.github被墙了)
 
 使用以下代码自动生成:
-```c++
-for (int a = 0; a < 7; a++) {
-			string text = "";
-			for (int b = 1; b <= 50; b++) {
-				text.append("[mirai:face:"+to_string(b + 50 * a)+"]");
-			}
-			param.sender.SendMsg(text);
-		}
+```kotlin
+			for (a in 0..6) {
+                var text = ""
+                for (c in 1..50 step 4) {
+                    var b = c
+                    text +=  "${b + 50 * a} | [mirai:face:${b + 50 * a}] "
+                    b++
+                    text +=  "${b + 50 * a} | [mirai:face:${b + 50 * a}] "
+                    b++
+                    text +=  "${b + 50 * a} | [mirai:face:${b + 50 * a}] "
+                    b++
+                    text +=  "${b + 50 * a} | [mirai:face:${b + 50 * a}]\n"
+                }
+                sender.sendMessage(MiraiCode.deserializeMiraiCode(text))
+            }
 ```
 
 MiraiCode表情格式:`[mirai:face:表情id]`
