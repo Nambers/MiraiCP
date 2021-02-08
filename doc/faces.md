@@ -41,7 +41,7 @@ MiraiCode表情格式:`[mirai:face:表情id]`
 ## 250~300
 ![250~300](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/250-300.jpg?raw=true)
 
-##关于emoji
+## 关于emoji
 如需发送emoji，请查看[这里](https://www.jianshu.com/p/bab9b6cdfffe) 获取emoji的utf8码然后发送
 
 如:
