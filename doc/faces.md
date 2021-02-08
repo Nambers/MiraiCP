@@ -3,7 +3,7 @@
 
 使用以下代码自动生成:
 ```kotlin
-			for (a in 0..6) {
+		for (a in 0..6) {
                 var text = ""
                 for (c in 1..50 step 4) {
                     var b = c
@@ -40,3 +40,14 @@ MiraiCode表情格式:`[mirai:face:表情id]`
 
 ## 250~300
 ![250~300](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/250-300.jpg?raw=true)
+
+##关于emoji
+如需发送emoji，请查看[这里](https://www.jianshu.com/p/bab9b6cdfffe) 获取emoji的utf8码然后发送
+
+如:
+```kotlin
+	globalEventChannel().subscribeAlways<GroupMessageEvent>{
+            //群消息
+            group.sendMessage("\uD83D\uDE03")
+        }
+```
