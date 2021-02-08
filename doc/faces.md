@@ -27,16 +27,16 @@ MiraiCode表情格式:`[mirai:face:表情id]`
 ![1~50](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/1-50.jpg?raw=true)
 
 ## 50~100
-![50~100](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/50-100.png?raw=true)
+![50~100](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/50-100.jpg?raw=true)
 
 ## 100~150
-![100~150](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/100-150.png?raw=true)
+![100~150](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/100-150.jpg?raw=true)
 
 ## 150~200
-![150~200](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/150-200.png?raw=true)
+![150~200](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/150-200.jpg?raw=true)
 
 ## 200~250
-![200~250](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/200-250.png?raw=true)
+![200~250](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/200-250.jpg?raw=true)
 
 ## 250~300
-![250~300](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/250-300.png?raw=true)
+![250~300](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/250-300.jpg?raw=true)
