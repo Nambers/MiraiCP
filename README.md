@@ -62,9 +62,9 @@ mirai-demo: C++SDK
 版本规则: 从2.2.0开始 *(2021/1/31)*,版本前两位为Mirai的版本，后一位为SDK更新迭代版本
 
 ### 3 注意事项
-1. 过于频繁向群聊或私聊发送信息会导致堆栈溢出，还在解决
+1. ~~过于频繁向群聊或私聊发送信息会导致堆栈溢出，还在解决~~没观察过这个错误
 
-2. 因为JNIEnv是局部变量，不了解jni请勿在SDK中使用多线程，如果要使用多线程的话，要保存全局`JavaVM`变量然后在多线程开头使用`genv == JavaVM.GetEnv()`覆盖全局Env，否则可能会报错，目前适用于多线程的操作还在解决
+2. 因为JNIEnv是局部变量，不了解jni请勿在SDK中使用多线程，如果要使用多线程的话，要保存全局`JavaVM`变量然后在多线程开头使用`genv == JavaVM.GetEnv()`覆盖全局Env，否则可能会报错，目前已添加定时计划的实现
 
 ### 4 使用方法:
 
@@ -96,7 +96,7 @@ mirai-demo: C++SDK
 
 代码示例 [example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)
 
-qq表情对应 [faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/faces.md)
+Mirai支持的qq表情对应序号 [faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/faces.md)
 
 进阶教程(在补了在补了[:wink:])
 
