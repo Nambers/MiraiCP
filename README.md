@@ -62,11 +62,9 @@ mirai-demo: C++SDK
 版本规则: 从2.2.0开始 *(2021/1/31)*,版本前两位为Mirai的版本，后一位为SDK更新迭代版本
 
 ### 3 注意事项
-1. ~~过于频繁向群聊或私聊发送信息会导致堆栈溢出，还在解决~~暂未观察继续到这个错误
+1. 因为JNIEnv是局部变量，不了解jni请勿在SDK中使用多线程，如果要使用多线程的话，要保存全局`JavaVM`变量然后在多线程开头使用`genv == JavaVM.GetEnv()`覆盖全局Env，否则可能会报错，目前已添加定时计划的实现
 
-2. 因为JNIEnv是局部变量，不了解jni请勿在SDK中使用多线程，如果要使用多线程的话，要保存全局`JavaVM`变量然后在多线程开头使用`genv == JavaVM.GetEnv()`覆盖全局Env，否则可能会报错，目前已添加定时计划的实现
-
-3. 目前只确定win下可用，其他操作系统未测试，理论上liunx应该可用，生成so文件替换dll文件即可
+2. 目前只确定win下可用，其他操作系统未测试，理论上liunx应该可用，生成so文件替换dll文件即可
 
 ### 4 使用方法:
 
@@ -100,12 +98,9 @@ mirai-demo: C++SDK
 
 Mirai支持的qq表情对应序号 [faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/faces.md)
 
-进阶教程(在补了在补了[:wink:])
-
 附:[kotlin版开发模板](https://github.com/Nambers/mirai_kotlin_example)
 
 ### TODO
-- [x] 修复`v1.0.1`中发现的群聊频繁发送消息报错问题(堆栈溢出以及一个未知的错误)*暂无再次观察到此现象*
 - [ ] 增加更多事件
 - [ ] 写文档
 - [ ] 推出整合包形式的sdk，即启动一个jar文件并把dll文件放置指定目录下即可，无需使用mcl
