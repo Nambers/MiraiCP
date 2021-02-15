@@ -70,29 +70,29 @@ mirai-demo: C++SDK
 
 #### 4.1 使用release包
 1. 下载release文件
-2. 压缩包根目录下有个.jar文件留着下面有用
-3. 打开`mirai-demo`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于mirai-dome目录下的c++项目
+2. 复制压缩包根目录下的`.jar`文件留着下面有用(配套插件)
+3. 打开`cpp`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于cpp文件夹下的c++项目
 4. 在`procession.cpp`里自定义你自己的代码
 5. 生成.dll文件
-6. 看`mirai-demo/x64/Release/`这个路径下的mirai-demo.dll文件，留着下面有用
+6. 复制`cpp/x64/Release/`这个路径下的`.dll`文件，留着下面有用
 7. 打开上面下载的mcl文件夹
 8. 把`.jar`文件(也就是配套插件)拷贝进mcl的plugin文件夹下
 9. 运行一次mcl，然后不管有无报错，不要登录，直接退出(目的是生成data路径)
-10. 打开mcl目录下的`data/org.example.miraiCP`路径，把上面的.dll文件复制进来
+10. 打开mcl目录下的`data/miraiCP`路径(可能名字随着mirai版本的迭代会更改，包含MiraiCP即可)，把上面的.dll文件复制进来
 11. 运行mcl
 #### 4.2 使用源代码
 1. 下载源代码文件
-2. 里面把kotlin_mirai用IDE打开
+2. 里面把kotlin用IDE打开
 3. 运行gradle里面的buildplugin这个任务
 4. 在`/build/mirai/`下获得.jar文件
-5. 打开`mirai-demo`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于mirai-dome目录下的c++项目
+5. 打开`cpp`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于cpp文件夹下的c++项目
 6. 在`procession.cpp`里自定义你自己的代码
 7. 生成.dll文件
-8. 看`mirai-demo/x64/Release/`这个路径下的mirai-demo.dll文件，留着下面有用
+8. 看`cpp/x64/Release/`这个路径下的.dll文件，留着下面有用
 9. 打开上面下载的mcl文件夹
 10. 把`.jar`文件(也就是配套插件)拷贝进mcl的plugin文件夹下
 11. 运行一次mcl，然后不管有无报错，不要登录，直接退出(目的是生成data路径)
-12. 打开mcl目录下的`data/org.example.miraiCP`路径，把上面的.dll文件复制进来
+12. 打开mcl目录下的`data/miraiCP`路径(可能名字随着mirai版本的迭代会更改，包含MiraiCP即可)，把上面的.dll文件复制进来
 13. 运行mcl
 
 
