@@ -20,5 +20,5 @@ void onEnable() {
 		});
 }
 void onDisable() {
-	/*插件结束*/
+	/*插件结束,正常退出才会调用*/
 }
