@@ -19,7 +19,6 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 /*
-在src/main/resources/plugin.yml里改插件信息和入口点
 在settings.gradle.kts里改生成的插件.jar名称
 用runmiraikt这个配置可以在ide里运行，不用复制到mcl或其他启动器
  */
