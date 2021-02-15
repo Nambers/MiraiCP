@@ -55,9 +55,7 @@ class CPP_lib {
         fun QueryImgUrl(id:String): String {
             var temp = ""
             runBlocking {
-                launch {
-                    temp = QueryImg(id)
-                }
+                temp = QueryImg(id)
             }
             return temp
         }
@@ -91,9 +89,7 @@ class CPP_lib {
         fun uploadImgG(qqid: Long, fileName:String): String{
             var re = ""
             runBlocking {
-                launch {
-                    re = uploadImgGroup(qqid, fileName)
-                }
+                re = uploadImgGroup(qqid, fileName)
             }
             return re
         }
@@ -102,9 +98,7 @@ class CPP_lib {
         fun uploadImgF(qqid: Long, fileName:String): String{
             var re = ""
             runBlocking {
-                launch {
-                    re = uploadImgFriend(qqid, fileName)
-                }
+                re = uploadImgFriend(qqid, fileName)
             }
             return re
         }
@@ -113,9 +107,7 @@ class CPP_lib {
         fun uploadImgM(groupid: Long, qqid: Long, fileName:String): String{
             var re = ""
             runBlocking {
-                launch {
-                    re = uploadImgMember(groupid,qqid, fileName)
-                }
+                re = uploadImgMember(groupid,qqid, fileName)
             }
             return re
         }
@@ -129,9 +121,7 @@ class CPP_lib {
         fun muteM(qqid: Long, groupid: Long, time: Int): String{
             var re = ""
             runBlocking {
-                launch {
-                    re = mute(qqid, groupid, time)
-                }
+                re = mute(qqid, groupid, time)
             }
             return re
         }
