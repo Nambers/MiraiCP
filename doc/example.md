@@ -55,12 +55,13 @@ void onDisable() {
 ...
 ```
 ## 执行定时任务
-因为env的局部性，所以在c++部分的多线程什么的并不具备反向调用kotlin部分发送消息或其他操作的能力，所以要把延迟调用移到kotlin部分，我封装好了一个接口
+因为env的局部性，所以在c++部分的多线程什么的并不具备反向调用kotlin部分发送消息或其他操作的能力，所以要把延迟调用移到kotlin部分，在miraiCP中封装成一个事件，即`SchedulingEvent`
 ```C++
 //注，需为全局变量
 unsigned long id = 0;
 ...
 	procession->registerEvent([=](SchedulingEvent e) {
+		//此处的e.id为自定义id，需在调用定时任务时自定义传入
 		if (e.id == 1) {
 			/*do something*/
 			Friend(id).SendMsg("这是定时任务");
@@ -70,7 +71,7 @@ unsigned long id = 0;
 	procession->registerEvent([&](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
 		logger->Info("hi");
-		//延迟100ms发送
+		//延迟100ms发送，后面的1为自定义id
 		SetScheduling(100, 1);
 		id = param.sender.id;
 		param.sender.SendMsg(param.message);
