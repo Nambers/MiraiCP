@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.example"
-version = "2.3.0"
+version = "2.4.0"
 
 repositories {
     //¹úÄÚ¾µÏñÔ´
