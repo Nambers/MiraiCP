@@ -3,7 +3,6 @@ import kotlinx.coroutines.*
 import org.example.mirai.plugin.PluginMain.BasicSendLog
 import org.example.mirai.plugin.PluginMain.Send
 import org.example.mirai.plugin.PluginMain.dll_name
-import org.example.mirai.plugin.PluginMain.dataFolder
 import org.example.mirai.plugin.PluginMain.GetN
 import org.example.mirai.plugin.PluginMain.GetNN
 import org.example.mirai.plugin.PluginMain.QueryImg
@@ -25,7 +24,7 @@ class CPP_lib {
     companion object{
         init {
             //这里填自己的路径
-            System.load(dataFolder.absolutePath + "/$dll_name")
+            System.load(dll_name)
         }
         @JvmStatic
         fun SendPrivateMSG(message: String, id: Long){

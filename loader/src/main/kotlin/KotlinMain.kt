@@ -207,10 +207,13 @@ object KotlinMain {
         if (!File(dll_name).exists()) {
             println("文件$dll_name 不存在")
             return
+        }else{
+            dll_name = File(dll_name).absolutePath
         }
         val bot = BotFactory.newBot(id, pass) {
             fileBasedDeviceInfo()
         }.alsoLogin()
+
         AIbot = bot
         logger=bot.logger
         cpp = CPP_lib()

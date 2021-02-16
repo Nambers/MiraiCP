@@ -13,7 +13,7 @@ application {
     mainClassName = "org.example.mirai.plugin.KotlinMainKt"
 }
 group = "org.example"
-version = "0.1.0"
+version = "2.4.0"
 
 repositories {
     //国内镜像源
