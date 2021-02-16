@@ -7,6 +7,8 @@ import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.event.Event
+import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.message.code.MiraiCode
@@ -31,10 +33,11 @@ object PluginMain : KotlinPlugin(
         version = "2.3.0"
     )
 ) {
-    private var friend_cache = ArrayList<NormalMember>(0)
-    const val dll_name = "mirai-demo.dll"
-    private lateinit var AIbot: Bot
-    private lateinit var cpp: CPP_lib
+    var friend_cache = ArrayList<NormalMember>(0)
+    var dll_name = "mirai-demo.dll"
+    lateinit var AIbot: Bot
+    lateinit var cpp: CPP_lib
+    lateinit var gson: Gson
 
     //日志部分实现
     fun BasicSendLog(log: String) {
@@ -195,33 +198,36 @@ object PluginMain : KotlinPlugin(
     }
 
     override fun onDisable() {
-        super.onDisable()
         cpp.PluginDisable()
+
     }
-    override fun onEnable() {
-        super.onEnable()
-        logger.info("Plugin loaded!")
-        logger.info("github存储库:https://github.com/Nambers/MiraiCP")
-        if(!File("${dataFolder.absoluteFile}/$dll_name").exists()){
-            logger.error("文件${dataFolder.absoluteFile}/$dll_name 不存在")
+    override fun onEnable(){
+        logger.info("启动成功")
+        logger.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
+
+        dll_name = "${dataFolder.absoluteFile}/$dll_name"
+        if(!File(dll_name).exists()){
+            logger.error("文件$dll_name 不存在")
         }
+        val ec = globalEventChannel()
+
         cpp = CPP_lib()
-        val gson = Gson()
+        gson = Gson()
         logger.info(cpp.ver)//输出2333 正常
-        globalEventChannel().subscribeAlways<BotOnlineEvent> {
+        ec.subscribeAlways<BotOnlineEvent> {
             AIbot = this.bot
         }
         //配置文件目录 "${dataFolder.absolutePath}/"
-        globalEventChannel().subscribeAlways<GroupMessageEvent> {
+        ec.subscribeAlways<GroupMessageEvent> {
             //群消息
             cpp.Event(gson.toJson(
                 Config.GroupMessage(
                     this.group.id,
                     this.sender.id,
                     this.message.serializeToMiraiCode())
-                ))
+            ))
         }
-        globalEventChannel().subscribeAlways<MemberLeaveEvent.Kick> {
+        ec.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
             cpp.Event(gson.toJson(
                 Config.MemberLeave(
@@ -233,7 +239,7 @@ object PluginMain : KotlinPlugin(
             ))
             friend_cache.remove(this.member)
         }
-        globalEventChannel().subscribeAlways<MemberLeaveEvent.Quit> {
+        ec.subscribeAlways<MemberLeaveEvent.Quit> {
             friend_cache.add(this.member)
             cpp.Event(gson.toJson(
                 Config.MemberLeave(
@@ -245,7 +251,7 @@ object PluginMain : KotlinPlugin(
             ))
             friend_cache.remove(this.member)
         }
-        globalEventChannel().subscribeAlways<MemberJoinEvent.Retrieve> {
+        ec.subscribeAlways<MemberJoinEvent.Retrieve> {
             cpp.Event(gson.toJson(
                 Config.MemberJoin(
                     this.group.id,
@@ -255,7 +261,7 @@ object PluginMain : KotlinPlugin(
                 )
             ))
         }
-        globalEventChannel().subscribeAlways<MemberJoinEvent.Active> {
+        ec.subscribeAlways<MemberJoinEvent.Active> {
             cpp.Event(gson.toJson(
                 Config.MemberJoin(
                     this.group.id,
@@ -265,7 +271,7 @@ object PluginMain : KotlinPlugin(
                 )
             ))
         }
-        globalEventChannel().subscribeAlways<MemberJoinEvent.Invite> {
+        ec.subscribeAlways<MemberJoinEvent.Invite> {
             cpp.Event(gson.toJson(
                 Config.MemberJoin(
                     this.group.id,
@@ -275,7 +281,7 @@ object PluginMain : KotlinPlugin(
                 )
             ))
         }
-        globalEventChannel().subscribeAlways<FriendMessageEvent>{
+        ec.subscribeAlways<FriendMessageEvent>{
             //好友信息
             cpp.Event(gson.toJson(
                 Config.PrivateMessage(
@@ -283,7 +289,7 @@ object PluginMain : KotlinPlugin(
                     this.message.serializeToMiraiCode())
             ))
         }
-        globalEventChannel().subscribeAlways<NewFriendRequestEvent>{
+        ec.subscribeAlways<NewFriendRequestEvent>{
             //自动同意好友申请
             val r = cpp.Event(gson.toJson(
                 Config.NewFriendRequest(
@@ -299,7 +305,7 @@ object PluginMain : KotlinPlugin(
                 }
             }
         }
-        globalEventChannel().subscribeAlways<BotInvitedJoinGroupRequestEvent>{
+        ec.subscribeAlways<BotInvitedJoinGroupRequestEvent>{
             //自动同意加群申请
             val r = cpp.Event(gson.toJson(
                 Config.GroupInvite(
