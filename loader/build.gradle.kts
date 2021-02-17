@@ -37,4 +37,7 @@ dependencies {
     implementation("org.fusesource.jansi:jansi:1.18")
     implementation("com.google.code.gson:gson:2.8.6")
     api("net.mamoe:mirai-core:2.4.0")
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation("org.json:json:20201115")
+
 }
