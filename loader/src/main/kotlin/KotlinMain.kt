@@ -26,6 +26,8 @@ import org.fusesource.jansi.AnsiConsole
 import org.json.JSONObject
 import java.net.URL
 
+val now_tag = "v2.4.0"
+
 object KotlinMain {
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
@@ -177,8 +179,9 @@ object KotlinMain {
         }
     }
 
-    suspend fun mute(qqid: Long, groupid: Long, time: Int): String {
-        val group = AIbot.getGroup(groupid) ?: let {
+    //禁言
+    suspend fun mute(qqid: Long, groupid: Long, time:Int):String{
+        val group = AIbot.getGroup(groupid) ?: let{
             logger.error("禁言找不到对应群组，位置K-mute()，gid:$groupid")
             return "E1"
         }
@@ -188,18 +191,34 @@ object KotlinMain {
         }
         try {
             member.mute(time)
-        } catch (e: PermissionDeniedException) {
+        }catch (e: PermissionDeniedException){
             logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:$groupid，目标成员id:$qqid")
             return "E3"
-        } catch (e: IllegalStateException) {
+        }catch (e:IllegalStateException){
             logger.error("执行禁言失败禁言时间超出0s~30d，位置:K-mute()，时间:$time")
             return "E4"
         }
         return "Y"
     }
 
+    //查询权限
+    fun kqueryM(qqid: Long, groupid: Long): String{
+        val group = AIbot.getGroup(groupid) ?: let {
+            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:$groupid")
+            return "E1"
+        }
+        val member = group[qqid] ?: let {
+            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:$qqid, gid:$groupid")
+            return "E2"
+        }
+        return member.permission.level.toString()
+
+    }
+
+
     @MiraiInternalApi
     suspend fun main(id:Long, pass:String, path:String){
+        println("当前MiraiCP框架版本:$now_tag")
         setDefaultLoggerCreator { identity ->
             PlatformLogger(identity, AnsiConsole.out::println, true)
         }
@@ -215,10 +234,12 @@ object KotlinMain {
         val bot = BotFactory.newBot(id, pass) {
             fileBasedDeviceInfo()
         }.alsoLogin()
-
+        cpp = CPP_lib()
         AIbot = bot
         logger=bot.logger
-        cpp = CPP_lib()
+        if(cpp.ver != now_tag){
+            logger.error("警告:当前MiraiCP框架版本($now_tag)和转载的C++ SDK(${cpp.ver})不一致")
+        }
         val gson = Gson()
         val globalEventChannel = bot.eventChannel
         logger.info(cpp.ver)//输出2333 正常
@@ -351,19 +372,21 @@ object KotlinMain {
 
     }
 }
-
-@MiraiInternalApi
-fun main(args: Array<String>){
-    // qqid, passworld, dllpath
-    val now_tag = "v2.4.0"
-    println("当前版本:$now_tag")
+fun CheckUpdate(){
     val tag = JSONObject(URL("https://api.github.com/repos/Nambers/MiraiCP/releases/latest").readText()).getString("tag_name")
     if(tag != now_tag)println("有最新可用版:$tag，前往:https://github.com/Nambers/MiraiCP/releases/latest下载")
-    if(args.size != 3){
-        println("参数不足或多余，请提供[botqqid, password, dllpath]")
+}
+@MiraiInternalApi
+fun main(args: Array<String>){
+    // qqid, passworld, dllpath, checkupdate
+    if(args.size != 3 && args.size != 4){
+        println("参数不足或多余，请提供[qq账号 - long, qq密码 - string, dll存放位置 - string] 以及可选的[是否检测有没有可用升级 - 1 或 不填]")
         return
     }
     println("正在启动\n机器人qqid:${args[0]}\n机器人qq密码:${args[1]}\nc++部分dll存放地址${args[2]}")
+    if(args[3] == "1"){
+        CheckUpdate()
+    }
     runBlocking {
         try {
             KotlinMain.main(valueOf(args[0]), args[1], args[2])

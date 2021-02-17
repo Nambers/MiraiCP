@@ -48,6 +48,11 @@ void Config::Init() {
 		logger->Error("9");
 		throw exception("初始化错误");
 	}
+	this->QueryP = env->GetStaticMethodID(CPP_lib, "queryM", "(JJ)Ljava/lang/String;");
+	if (this->QueryP == NULL) {
+		logger->Error("10");
+		throw exception("初始化错误");
+	}
 }
 Config::~Config() {
 	genv->DeleteGlobalRef(this->CPP_lib);
@@ -172,6 +177,8 @@ Member::Member(unsigned long id, unsigned long groupid) {
 	this->NickorName_id = config->NickorNameM;
 	jstring temp = (jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->NickorName_id, (jlong)id, (jlong)groupid);
 	this->nameCard = tools.jstring2str(temp);
+	this->Query_permission = config->QueryP;
+	this->permission = stoi(tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Query_permission, (jlong)id, (jlong)groupid)));
 }
 
 /*群聊类实现*/
