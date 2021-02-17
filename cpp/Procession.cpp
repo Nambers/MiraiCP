@@ -16,7 +16,16 @@ void onEnable() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
-		e.sender.Mute(5);
+		logger->Info(to_string(e.sender.permission));
+		if (e.sender.permission == Owner) {
+			e.group.SendMsg("Owner");
+		}
+		if (e.sender.permission == Administer) {
+			e.group.SendMsg("Administer");
+		}
+		if (e.sender.permission == Mamber) {
+			e.group.SendMsg("Mamber");
+		}
 		});
 }
 void onDisable() {

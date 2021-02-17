@@ -9,6 +9,7 @@ import org.example.mirai.plugin.PluginMain.QueryImg
 import org.example.mirai.plugin.PluginMain.SendError
 import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendWarning
+import org.example.mirai.plugin.PluginMain.kqueryM
 import org.example.mirai.plugin.PluginMain.mute
 import org.example.mirai.plugin.PluginMain.scheduling
 import org.example.mirai.plugin.PluginMain.uploadImgFriend
@@ -123,6 +124,11 @@ class CPP_lib {
                 re = mute(qqid, groupid, time)
             }
             return re
+        }
+
+        @JvmStatic
+        fun queryM(qqid: Long, groupid: Long): String{
+            return kqueryM(qqid, groupid)
         }
     }
 

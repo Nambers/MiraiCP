@@ -21,3 +21,11 @@ static const int INVITE = 1;
 static const int ACTIVE = 2;
 /*旧群主恢复群主位置*/
 static const int Retrieve = 3;
+
+/*群成员权限*/
+//群主
+static const int Owner = 2;
+//管理员
+static const int Administer = 1;
+//群成员
+static const int Mamber = 0;
