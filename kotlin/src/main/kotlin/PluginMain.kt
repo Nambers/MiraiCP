@@ -17,6 +17,7 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import java.io.File
+import java.net.URL
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -176,6 +177,7 @@ object PluginMain : KotlinPlugin(
         }
     }
 
+    //禁言
     suspend fun mute(qqid: Long, groupid: Long, time:Int):String{
         val group = AIbot.getGroup(groupid) ?: let{
             logger.error("禁言找不到对应群组，位置K-mute()，gid:$groupid")
@@ -197,23 +199,38 @@ object PluginMain : KotlinPlugin(
         return "Y"
     }
 
+    //查询权限
+    fun kqueryM(qqid: Long, groupid: Long): String{
+        val group = AIbot.getGroup(groupid) ?: let {
+            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:$groupid")
+            return "E1"
+        }
+        val member = group[qqid] ?: let {
+            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:$qqid, gid:$groupid")
+            return "E2"
+        }
+        return member.permission.level.toString()
+    }
+
     override fun onDisable() {
         cpp.PluginDisable()
 
     }
     override fun onEnable(){
+        val now_tag = "v2.4.0"
+        println("当前MiraiCP框架版本:$now_tag")
         logger.info("启动成功")
         logger.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
-
         dll_name = "${dataFolder.absoluteFile}/$dll_name"
         if(!File(dll_name).exists()){
-            logger.error("文件$dll_name 不存在")
+            logger.error("c++文件$dll_name 不存在")
         }
         val ec = globalEventChannel()
-
         cpp = CPP_lib()
+        if(cpp.ver != now_tag){
+            logger.error("警告:当前MiraiCP框架版本($now_tag)和转载的C++ SDK(${cpp.ver})不一致")
+        }
         gson = Gson()
-        logger.info(cpp.ver)//输出2333 正常
         ec.subscribeAlways<BotOnlineEvent> {
             AIbot = this.bot
         }
