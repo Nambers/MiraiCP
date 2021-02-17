@@ -14,6 +14,7 @@ import org.example.mirai.plugin.KotlinMain.scheduling
 import org.example.mirai.plugin.KotlinMain.uploadImgFriend
 import org.example.mirai.plugin.KotlinMain.uploadImgGroup
 import org.example.mirai.plugin.KotlinMain.uploadImgMember
+import java.net.URL
 
 class CPP_lib {
     var ver:String=""
@@ -131,4 +132,3 @@ class CPP_lib {
     external fun PluginDisable(): Void
     external fun ScheduleTask(id:Int): Void
 }
-
