@@ -23,6 +23,8 @@ import java.lang.Long.valueOf
 import java.util.*
 import kotlin.concurrent.schedule
 import org.fusesource.jansi.AnsiConsole
+import org.json.JSONObject
+import java.net.URL
 
 object KotlinMain {
     private var friend_cache = ArrayList<NormalMember>(0)
@@ -353,11 +355,15 @@ object KotlinMain {
 @MiraiInternalApi
 fun main(args: Array<String>){
     // qqid, passworld, dllpath
+    val now_tag = "v2.4.0"
+    println("当前版本:$now_tag")
+    val tag = JSONObject(URL("https://api.github.com/repos/Nambers/MiraiCP/releases/latest").readText()).getString("tag_name")
+    if(tag != now_tag)println("有最新可用版:$tag，前往:https://github.com/Nambers/MiraiCP/releases/latest下载")
     if(args.size != 3){
         println("参数不足或多余，请提供[botqqid, password, dllpath]")
         return
     }
-    println("正在启动\n机器人qqid:${args[0]}\n机器人qq密码${args[1]}\nc++部分dll存放地址${args[2]}")
+    println("正在启动\n机器人qqid:${args[0]}\n机器人qq密码:${args[1]}\nc++部分dll存放地址${args[2]}")
     runBlocking {
         try {
             KotlinMain.main(valueOf(args[0]), args[1], args[2])
