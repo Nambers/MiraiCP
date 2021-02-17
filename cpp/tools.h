@@ -36,11 +36,12 @@ public:
 	/*群聊成员类*/
 	jmethodID SendMsg2M = NULL;
 	jmethodID NickorNameM = NULL;
+	jmethodID Mute = NULL;
+	jmethodID QueryP = NULL;
 	/*群聊类*/
 	jmethodID SendMsg2G = NULL;
 	/*定时任务*/
 	jmethodID Schedule = NULL;
-	jmethodID Mute = NULL;
 	Config() {};
 	void Init();
 	~Config();
@@ -162,9 +163,12 @@ private:
 	jmethodID Send_Msg_id = NULL;
 	jmethodID NickorName_id = NULL;
 	jmethodID Mute_id = NULL;
+	jmethodID Query_permission = NULL;
 public:
 	unsigned long groupid = 0;
 	unsigned long id = 0;
+	// 权限等级. OWNER群主 为 2, ADMINISTRATOR管理员 为 1, MEMBER群成员 为 0
+	unsigned int permission = 0;
 	// env, qqid, groupid
 	Member(unsigned long, unsigned long);
 	Member() {};

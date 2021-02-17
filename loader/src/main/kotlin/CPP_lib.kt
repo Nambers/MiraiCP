@@ -9,6 +9,7 @@ import org.example.mirai.plugin.KotlinMain.QueryImg
 import org.example.mirai.plugin.KotlinMain.SendError
 import org.example.mirai.plugin.KotlinMain.SendG
 import org.example.mirai.plugin.KotlinMain.SendWarning
+import org.example.mirai.plugin.KotlinMain.kqueryM
 import org.example.mirai.plugin.KotlinMain.mute
 import org.example.mirai.plugin.KotlinMain.scheduling
 import org.example.mirai.plugin.KotlinMain.uploadImgFriend
@@ -19,7 +20,7 @@ import java.net.URL
 class CPP_lib {
     var ver:String=""
     init {
-        ver=Verify()//如果ver不等于2333 载入错误
+        ver=Verify()
     }
     //"C:\Program Files\Java\jdk1.8.0_261\bin\javah.exe" org.example.mirai.plugin.CPP_lib
     companion object{
@@ -123,6 +124,10 @@ class CPP_lib {
                 re = mute(qqid, groupid, time)
             }
             return re
+        }
+        @JvmStatic
+        fun queryM(qqid: Long, groupid: Long): String{
+            return kqueryM(qqid, groupid)
         }
     }
 
