@@ -1,85 +1,78 @@
 #include "pch.h"
 
-/*配置类实现*/
-void Config::Init() {
+/*
+配置类实现
+throw: InitxException 即找不到对应签名
+*/
+void Config::Init() throw(InitException) {
 	JNIEnv* env = genv;
+	this->initexception = env->FindClass("java/lang/NoSuchMethodException");
 	this->CPP_lib = (jclass)env->NewGlobalRef(env->FindClass("org/example/mirai/plugin/CPP_lib"));
 	if (this->CPP_lib == NULL) {
-		logger->Error("1");
-		throw exception("初始化错误");
+		throw InitException("初始化错误", 1);
 	}
 	this->Query = env->GetStaticMethodID(CPP_lib, "QueryImgUrl", "(Ljava/lang/String;)Ljava/lang/String;");
 	if (this->Query == NULL) {
-		logger->Error("2");
-		throw exception("初始化错误");
+		throw InitException("初始化错误", 2);
 	}
-	this->SendMsg2F = env->GetStaticMethodID(CPP_lib, "SendPrivateMSG", "(Ljava/lang/String;J)V");
+	this->SendMsg2F = env->GetStaticMethodID(CPP_lib, "SendPrivateMSG", "(Ljava/lang/String;J)Ljava/lang/String;");
 	if (this->SendMsg2F == NULL) {
-		logger->Error("3");
-		throw exception("初始化错误");
+		throw InitException("初始化错误", 3);
 	}
 	this->NickorNameF = env->GetStaticMethodID(CPP_lib, "GetNick", "(J)Ljava/lang/String;");
 	if (this->NickorNameF == NULL) {
-		logger->Error("4");
-		throw exception("初始化错误");
+		throw InitException("初始化错误", 4);
 	}
-	this->SendMsg2M = env->GetStaticMethodID(CPP_lib, "SendPrivateM2M", "(Ljava/lang/String;JJ)V");
+	this->SendMsg2M = env->GetStaticMethodID(CPP_lib, "SendPrivateM2M", "(Ljava/lang/String;JJ)Ljava/lang/String;");
 	if (this->SendMsg2M == NULL) {
-		logger->Error("5");
-		throw exception("初始化错误");
+		throw InitException("初始化错误", 5);
 	}
 	this->NickorNameM = env->GetStaticMethodID(CPP_lib, "GetNameCard", "(JJ)Ljava/lang/String;");
 	if (this->NickorNameM == NULL) {
-		logger->Error("6");
-		throw exception("初始化错误");
+		throw InitException("初始化错误", 6);
 	}
-	this->SendMsg2G = env->GetStaticMethodID(CPP_lib, "SendGroup", "(Ljava/lang/String;J)V");
+	this->SendMsg2G = env->GetStaticMethodID(CPP_lib, "SendGroup", "(Ljava/lang/String;J)Ljava/lang/String;");
 	if (this->SendMsg2G == NULL) {
-		logger->Error("7");
-		throw exception("初始化错误");
+		throw InitException("初始化错误", 7);
 	}
 	this->Schedule = env->GetStaticMethodID(CPP_lib, "schedule", "(JI)V");
 	if (this->Schedule == NULL) {
-		logger->Error("8");
-		throw exception("初始化错误");
+		throw InitException("初始化错误", 8);
 	}
 	this->Mute = env->GetStaticMethodID(CPP_lib, "muteM", "(JJI)Ljava/lang/String;");
 	if (this->Mute == NULL) {
-		logger->Error("9");
-		throw exception("初始化错误");
+		throw InitException("初始化错误", 9);
 	}
 	this->QueryP = env->GetStaticMethodID(CPP_lib, "queryM", "(JJ)Ljava/lang/String;");
 	if (this->QueryP == NULL) {
-		logger->Error("10");
-		throw exception("初始化错误");
+		throw InitException("初始化错误", 10);
 	}
 }
 Config::~Config() {
 	genv->DeleteGlobalRef(this->CPP_lib);
 }
 
-/*日志类实现*/
-void Logger::init() {
+/*
+日志类实现
+throw: InitException 即找不到签名
+*/
+void Logger::init()throw(InitException) {
 	JNIEnv* env = genv;
 	this->CPP_lib = (jclass)(env->NewGlobalRef(env->FindClass("org/example/mirai/plugin/CPP_lib")));
 	this->sinfo = env->GetStaticMethodID(this->CPP_lib, "SendLog", "(Ljava/lang/String;)V");
 	this->swarning = env->GetStaticMethodID(this->CPP_lib, "SendW", "(Ljava/lang/String;)V");
 	this->serror = env->GetStaticMethodID(this->CPP_lib, "SendE", "(Ljava/lang/String;)V");
 	if (this->CPP_lib == NULL) {
-		logger->Error("1");
-		throw exception("初始化错误");
+		throw InitException("logger初始化错误", 1);
 	}
 	if (this->sinfo == NULL) {
-		logger->Error("2");
-		throw exception("初始化错误");
+		throw InitException("logger初始化错误", 2);
 	}
 	if (this->swarning == NULL) {
-		logger->Error("3");
-		throw exception("初始化错误");
+		throw InitException("logger初始化错误", 3);
 	}
 	if (this->serror == NULL) {
-		logger->Error("4");
-		throw exception("初始化错误");
+		throw InitException("logger初始化错误", 4);
 	}
 }
 void Logger::Warning(string log) {
@@ -108,7 +101,7 @@ Image::Image(string imageId) {
 string Image::queryURL() {
 	return tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Query, tools.str2jstring(this->id.c_str())));
 }
-vector<string> Image::GetImgIdFromMiraiCode(string MiraiCode) {
+vector<string> Image::GetImgIdsFromMiraiCode(string MiraiCode) {
 	vector<string> result = vector<string>();
 	string temp = MiraiCode;
 	smatch m;
@@ -122,7 +115,7 @@ vector<string> Image::GetImgIdFromMiraiCode(string MiraiCode) {
 Image Image::uploadImg2Friend(unsigned long id, string filename) {
 	ifstream fin(filename);
 	if (!fin) {
-		logger->Error("文件不存在,位置:C++部分 uploadImg2Friend(),文件名:" + filename);
+		logger->Error("文件不存在,位置:C-uploadImg2Friend(),文件名:" + filename);
 		fin.close();
 		throw invalid_argument("NO_FILE_ERROR");
 	}
@@ -146,9 +139,8 @@ Image Image::uploadImg2Group(unsigned long groupid, string filename) {
 Image Image::uploadImg2Member(unsigned long groupid, unsigned long qqid, string filename) {
 	ifstream fin(filename);
 	if (!fin) {
-		logger->Error("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
 		fin.close();
-		throw invalid_argument("NO_FILE_ERROR");
+		throw IOException("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
 	}
 	fin.close();
 	jmethodID m = genv->GetStaticMethodID(config->CPP_lib, "uploadImgM", "(JJLjava/lang/String;)Ljava/lang/String;");
@@ -164,8 +156,13 @@ Friend::Friend(unsigned long id) {
 	this->Send_Msg_id = config->SendMsg2F;
 	this->NickorName_id = config->NickorNameF;
 	this->id = id;
-	jstring temp = (jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->NickorName_id, (jlong)id, (jlong)id);
-	this->nick = tools.jstring2str(temp);
+}
+void Friend::init()throw(FriendException) {
+	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->NickorName_id, (jlong)id, (jlong)id));
+	if(temp == "E1"){
+		throw FriendException();
+	}
+	this->nick = temp;
 }
 
 /*成员类实现*/
@@ -175,10 +172,46 @@ Member::Member(unsigned long id, unsigned long groupid) {
 	this->groupid = groupid;
 	this->Send_Msg_id = config->SendMsg2M;
 	this->NickorName_id = config->NickorNameM;
-	jstring temp = (jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->NickorName_id, (jlong)id, (jlong)groupid);
-	this->nameCard = tools.jstring2str(temp);
 	this->Query_permission = config->QueryP;
-	this->permission = stoi(tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Query_permission, (jlong)id, (jlong)groupid)));
+}
+void Member::init() throw(MemberException){
+	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->NickorName_id, (jlong)id, (jlong)groupid));
+	if (temp == "E1") {
+		throw MemberException(1);
+	}
+	if (temp == "E2") {
+		throw MemberException(2);
+	}
+	this->nameCard = temp;
+	this->permission = getPermission();
+}
+int Member::getPermission() throw(MemberException) {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Query_permission, (jlong)id, (jlong)groupid));
+	if (re == "E1") {
+		throw MemberException(1);
+	}
+	if(re == "E2"){
+		throw MemberException(2);
+	}
+	return stoi(re);
+}
+void Member::Mute(int time)throw(MuteException, MemberException) {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Mute_id, (jlong)this->id, (jlong)this->groupid, (jint)time));
+	if (re == "Y") {
+		return;
+	}
+	if (re == "E1") {
+		throw MemberException(1);
+	}
+	if (re == "E2") {
+		throw MemberException(2);
+	}
+	if (re == "E3") {
+		throw MuteException(1);
+	}
+	if (re == "E4") {
+		throw MuteException(2);
+	}
 }
 
 /*群聊类实现*/
@@ -190,23 +223,6 @@ Group::Group(unsigned long id) {
 /*工具类实现*/
 string Tools::jstring2str(jstring jStr)
 {
-	/*char* rtn = NULL;
-	jclass   clsstring = config->env->FindClass("java/lang/String");
-	jstring   strencode = config->env->NewStringUTF("GB2312");
-	jmethodID   mid = config->env->GetMethodID(clsstring, "getBytes", "(Ljava/lang/String;)[B");
-	jbyteArray   barr = (jbyteArray)config->env->CallObjectMethod(jstr, mid, strencode);
-	jsize   alen = config->env->GetArrayLength(barr);
-	jbyte* ba = config->env->GetByteArrayElements(barr, JNI_FALSE);
-	if (alen > 0)
-	{
-		rtn = (char*)malloc(alen + 1);
-		memcpy(rtn, ba, alen);
-		rtn[alen] = 0;
-	}
-	config->env->ReleaseByteArrayElements(barr, ba, 0);
-	string stemp(rtn);
-	free(rtn);
-	return stemp;*/
 	if (!jStr)
 		return "";
 
