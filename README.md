@@ -5,8 +5,7 @@
 * [使用声明](#使用声明)
 * [许可](#许可)
   * [使用流程:](#使用流程)
-    * [0 配置环境](#0-配置环境)
-    * [1 了解项目](#1-了解项目)
+    * [1 配置环境](#1-配置环境)
     * [2 注意事项](#2-注意事项)
     * [3 使用方法:](#3-使用方法)
       * [3\.1 MiraiCP-Plugin插件配合mcl使用](#31-MiraiCP-Plugin插件配合mcl使用)
@@ -44,20 +43,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
 ## 使用流程:
 
-### 0 配置环境
-mcl需要openjdk而不是甲骨文的jdk,如下载openjdk15
-
-### 1 了解项目
-
-文件结构:
-
-kotlin_mirai: 配套kotlin插件
-
-mirai-demo: C++SDK
-
-版本规则: 从2.2.0开始 *(2021/1/31)*,版本前两位为Mirai的版本，后一位为SDK更新迭代版本
+### 1 配置环境
+mirai需要openjdk而不是甲骨文的jdk,如下载openjdk15/openjdk11
 
 ### 2 注意事项
+
+> MiraiCP版本规则: 从2.2.0开始 *(2021/1/31)*,版本前两位为Mirai的版本，后一位为SDK更新迭代版本
+
 1. 因为JNIEnv是局部变量，不了解jni请勿在SDK中使用多线程，如果要使用多线程的话，要保存全局`JavaVM`变量然后在多线程开头使用`genv = JavaVM.GetEnv()`覆盖全局Env，否则mirai部分可能无法成功调用，目前已添加定时计划的实现[代码详见](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md#%E6%89%A7%E8%A1%8C%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1)
 
 2. 目前只确定win下可用，其他操作系统未测试，理论上liunx应该可用，生成so文件替换dll文件即可
