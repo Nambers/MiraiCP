@@ -19,7 +19,7 @@ import org.example.mirai.plugin.PluginMain.uploadImgMember
 class CPP_lib {
     var ver:String=""
     init {
-        ver=Verify()//如果ver不等于2333 载入错误
+        ver=Verify()
     }
     //"C:\Program Files\Java\jdk1.8.0_261\bin\javah.exe" org.example.mirai.plugin.CPP_lib
     companion object{
@@ -28,32 +28,30 @@ class CPP_lib {
             System.load(dll_name)
         }
         @JvmStatic
-        fun SendPrivateMSG(message: String, id: Long){
+        fun SendPrivateMSG(message: String, id: Long):String{
             // 反向调用发送消息
-            GlobalScope.launch {
-                Send(message, id)
+            return runBlocking {
+                return@runBlocking Send(message, id)
             }
 
         }
         @JvmStatic
-        fun SendPrivateM2M(message: String, id: Long, gid: Long){
+        fun SendPrivateM2M(message: String, id: Long, gid: Long): String{
             // 反向调用发送消息
-            GlobalScope.launch {
-                Send(message, id, gid)
+            return runBlocking {
+                return@runBlocking Send(message, id, gid)
             }
-
         }
         @JvmStatic
-        fun SendGroup(message:String,id:Long) {
-            GlobalScope.launch {
-                    SendG(message, id)
+        fun SendGroup(message:String,id:Long):String {
+            return runBlocking {
+                return@runBlocking SendG(message, id)
             }
-
         }
         //查询图片下载链接
         @JvmStatic
         fun QueryImgUrl(id:String): String {
-            var temp = ""
+            var temp:String
             runBlocking {
                 temp = QueryImg(id)
             }
@@ -87,7 +85,7 @@ class CPP_lib {
         //给群聊上传图片以备发送
         @JvmStatic
         fun uploadImgG(qqid: Long, fileName:String): String{
-            var re = ""
+            var re: String
             runBlocking {
                 re = uploadImgGroup(qqid, fileName)
             }
@@ -96,7 +94,7 @@ class CPP_lib {
         //给好友上传图片以备发送
         @JvmStatic
         fun uploadImgF(qqid: Long, fileName:String): String{
-            var re = ""
+            var re: String
             runBlocking {
                 re = uploadImgFriend(qqid, fileName)
             }
@@ -105,7 +103,7 @@ class CPP_lib {
         //群成员对象上传图片
         @JvmStatic
         fun uploadImgM(groupid: Long, qqid: Long, fileName:String): String{
-            var re = ""
+            var re: String
             runBlocking {
                 re = uploadImgMember(groupid,qqid, fileName)
             }
@@ -119,13 +117,12 @@ class CPP_lib {
         }
         @JvmStatic
         fun muteM(qqid: Long, groupid: Long, time: Int): String{
-            var re = ""
+            var re: String
             runBlocking {
                 re = mute(qqid, groupid, time)
             }
             return re
         }
-
         @JvmStatic
         fun queryM(qqid: Long, groupid: Long): String{
             return kqueryM(qqid, groupid)
@@ -138,4 +135,3 @@ class CPP_lib {
     external fun PluginDisable(): Void
     external fun ScheduleTask(id:Int): Void
 }
-

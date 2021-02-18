@@ -28,6 +28,7 @@ extern Logger* logger;
 class Config {
 public:
 	jclass CPP_lib = NULL;
+	jclass initexception = NULL;
 	/*图像类*/
 	jmethodID Query = NULL;
 	/*好友类*/
@@ -78,6 +79,191 @@ public:
 /*静态声明工具对象*/
 static Tools tools;
 
+//总异常
+class MiraiCPException :public exception {
+public:
+	virtual string what() { return ""; };
+	virtual void raise() {};
+};
+//初始化异常
+class InitException :public MiraiCPException
+{
+public:
+	int step = 0;
+	InitException(string text, int step)
+	{
+		this->description = text;
+		this->step = step;
+	}
+	//返回错误信息
+	virtual string what()
+	{
+		return this->description;
+	}
+	virtual void raise() {
+		genv->ThrowNew(config->initexception, (this->description + " step:" + to_string(this->step)).c_str());
+	}
+private:
+	string description;
+};
+//文件读取异常
+class IOException :public MiraiCPException
+{
+public:
+	IOException(string text)
+	{
+		this->description = "文件读取异常" + text;
+	}
+	//返回错误信息
+	virtual string what()
+	{
+		return this->description;
+	}
+	virtual void raise() {
+		logger->Error(this->description);
+		//genv->ThrowNew(config->initexception, (this->description).c_str());
+	}
+private:
+	string description;
+};
+//内部异常
+class APIException :public MiraiCPException
+{
+public:
+	APIException(string text)
+	{
+		this->description = "MiraiCP内部无法预料的错误:" + text;
+	}
+	//返回错误信息
+	virtual string what()
+	{
+		return this->description;
+	}
+	virtual void raise() {
+		logger->Error(this->description);
+		//genv->ThrowNew(config->initexception, (this->description).c_str());
+	}
+private:
+	string description;
+};
+//禁言异常
+class MuteException :public MiraiCPException
+{
+public:
+	/*
+	*	"1" - 机器人无权限禁言对方
+	*	"2" - 禁言时间超出0s~30d
+	*/
+	int type = 0;
+	MuteException(int type)
+	{
+		this->type = type;
+		switch (type)
+		{
+		case 1:
+			this->description = "没有权限禁言";
+			break;
+		case 2:
+			this->description = "禁言时长不在0s~30d中间";
+			break;
+		}
+	}
+	//返回错误信息
+	virtual string what()
+	{
+		return this->description;
+	}
+	virtual void raise() {
+		//genv->ThrowNew(config->initexception, (this->description).c_str());
+	}
+private:
+	string description;
+};
+//获取群成员错误
+class MemberException :public MiraiCPException
+{
+public:
+	/*
+	*   "1" - 找不到群
+	*	"2" - 找不到群成员
+	*/
+	int type = 0;
+	MemberException(int type)
+	{
+		this->type = type;
+		switch (type)
+		{
+		case 1:
+			this->description = "找不到群";
+			break;
+		case 2:
+			this->description = "找不到群成员";
+			break;
+		}
+	}
+	//返回错误信息
+	virtual string what()
+	{
+		return this->description;
+	}
+	virtual void raise() {
+		//genv->ThrowNew(config->initexception, (this->description).c_str());
+	}
+private:
+	string description;
+};
+//获取群成员错误
+class FriendException :public MiraiCPException
+{
+public:
+	/*
+	*   找不到好友
+	*/
+	FriendException()
+	{
+		this->description = "找不到好友";
+	}
+	//返回错误信息
+	virtual string what()
+	{
+		return this->description;
+	}
+	virtual void raise() {
+		//genv->ThrowNew(config->initexception, (this->description).c_str());
+	}
+private:
+	string description;
+};
+//获取群错误
+class GroupException :public MiraiCPException
+{
+public:
+	/*
+	*   "1" - 找不到群
+	*/
+	int type = 0;
+	GroupException(int type)
+	{
+		this->type = type;
+		switch (type)
+		{
+		case 1:
+			this->description = "找不到群";
+			break;
+		}
+	}
+	//返回错误信息
+	virtual string what()
+	{
+		return this->description;
+	}
+	virtual void raise() {
+		//genv->ThrowNew(config->initexception, (this->description).c_str());
+	}
+private:
+	string description;
+};
+
 /*图像类声明*/
 class Image {
 private:
@@ -103,7 +289,8 @@ public:
 	* 最大支持图片大小为30MB
 	* 可能抛出invalid_argument异常代表路径无效
 	* 示例:
-			param.sender.SendMsg(Image::uploadImg2Friend(param.env, param.sender.id, "C:\\Users\\***\\Desktop\\a.jpg").toMiraiCode());
+			param.sender.
+			(Image::uploadImg2Friend(param.env, param.sender.id, "C:\\Users\\***\\Desktop\\a.jpg").toMiraiCode());
 	*/
 	static Image uploadImg2Friend(unsigned long, string);
 	/*
@@ -131,7 +318,7 @@ public:
 	string queryURL();
 
 	/*取全部的图片id，详情见Image*/
-	static vector<string> GetImgIdFromMiraiCode(string);
+	static vector<string> GetImgIdsFromMiraiCode(string);
 
 	/*取图片Mirai码*/
 	string toMiraiCode();
@@ -146,14 +333,19 @@ public:
 	unsigned long id = NULL;
 	Friend(unsigned long);
 	Friend() {};
+	//初始化当前对象，可能抛出异常
+	void init();
 	string nick;
 	/*发送信息*/
-	void SendMsg(jstring msg) {
-		genv->CallStaticVoidMethod(config->CPP_lib, this->Send_Msg_id, msg, (jlong)this->id);
+	void SendMsg(jstring msg)throw(FriendException) {
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Send_Msg_id, msg, (jlong)this->id));
+		if (re == "E1") {
+			throw FriendException();
+		}
 	}
 	/*发送信息*/
-	void SendMsg(string msg) {
-		genv->CallStaticVoidMethod(config->CPP_lib, this->Send_Msg_id, tools.str2jstring(msg.c_str()), (jlong)this->id);
+	void SendMsg(string msg)throw(FriendException) {
+		SendMsg(tools.str2jstring(msg.c_str()));
 	}
 };
 
@@ -171,18 +363,27 @@ public:
 	unsigned int permission = 0;
 	// env, qqid, groupid
 	Member(unsigned long, unsigned long);
+	//初始化当前对象，可能抛出异常
+	void init();
 	Member() {};
+	int getPermission();
 	string nameCard = "";
 	/*返回at这个人的miraicode*/
 	string at() {
 		return "[mirai:at:" + to_string(this->id) + "] ";
 	}
 	/*发送信息*/
-	void SendMsg(jstring msg) {
-		genv->CallStaticVoidMethod(config->CPP_lib, this->Send_Msg_id, msg, (jlong)this->id, (jlong)this->groupid);
+	void SendMsg(jstring msg)throw(MemberException) {
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Send_Msg_id, msg, (jlong)this->id, (jlong)this->groupid));
+		if (re == "E1") {
+			throw MemberException(1);
+		}
+		if (re == "E2") {
+			throw MemberException(2);
+		}
 	}
 	/*发送信息*/
-	void SendMsg(string msg) {
+	void SendMsg(string msg)throw(MemberException) {
 		SendMsg(tools.str2jstring(msg.c_str()));
 	}
 	/*禁言当前对象，单位是秒，最少0秒最大30天
@@ -193,9 +394,7 @@ public:
 	*	"E4" - 禁言时间超出0s~30d
 	*	"Y" - 一切正常
 	*/
-	string Mute(int time) {
-		return tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Mute_id, (jlong)this->id, (jlong)this->groupid, (jint)time));
-	}
+	void Mute(int time);
 };
 
 /*群聊类声明*/
@@ -206,13 +405,18 @@ public:
 	/*群号*/
 	unsigned long id = NULL;
 	Group(unsigned long);
+	//初始化当前对象，可能抛出异常-暂无需求
+	void init() {};
 	Group() {};
 	/*发送信息*/
-	void SendMsg(jstring msg) {
-		genv->CallStaticVoidMethod(config->CPP_lib, config->SendMsg2G, msg, (jlong)this->id);
+	void SendMsg(jstring msg) throw(GroupException){
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2G, msg, (jlong)this->id));
+		if (re == "E1") {
+			throw GroupException(1);
+		}
 	}
 	/*发送信息*/
-	void SendMsg(string msg) {
+	void SendMsg(string msg)throw(GroupException) {
 		SendMsg(tools.str2jstring(msg.c_str()));
 	}
 };
@@ -240,6 +444,9 @@ public:
 	Friend sender;
 	//附带消息
 	string message;
+	void init() throw(FriendException){
+		this->sender.init();
+	}
 	PrivateMessageEvent(Friend f, string s) {
 		this->sender = f;
 		this->message = s;
@@ -253,6 +460,9 @@ public:
 	Friend sender;
 	//被邀请进的组
 	Group group;
+	void init() {
+		group.init();
+	}
 	GroupInviteEvent(Group g, Friend f) {
 		this->sender = f;
 		this->group = g;
@@ -266,6 +476,9 @@ public:
 	Friend sender;
 	//附加信息
 	string message;
+	void init() throw (FriendException){
+		this->sender.init();
+	}
 	NewFriendRequestEvent(Friend f, string s) {
 		this->sender = f;
 		this->message = s;
@@ -288,6 +501,11 @@ public:
 	Group group;
 	//邀请人, 当type = 1时存在，否则则和member变量相同
 	Member invitor;
+	void init() throw(MemberException){
+		this->member.init();
+		this->group.init();
+		this->invitor.init();
+	}
 	MemberJoinEvent(int t, Member m, Group g, Member i) {
 		this->type = t;
 		this->member = m;
@@ -305,12 +523,17 @@ public:
 	2 - 主动退出
 	*/
 	int type = NULL;
-	//退出的成员的成员
+	/*退出的成员的成员*/
 	Member member;
-	//目标群
+	/*目标群*/
 	Group group;
-	//操作人, 主动退出时与member相同，改成员可能是当前bot，operater以与系统operator区分
+	/*操作人, 主动退出时与member相同，改成员可能是当前bot，operater以与系统operator区分*/
 	Member operater;
+	void init() throw(MemberException){
+		this->member.init();
+		this->group.init();
+		this->operater.init();
+	}
 	MemberLeaveEvent(int t, Member m, Group g, Member i) {
 		this->type = t;
 		this->member = m;

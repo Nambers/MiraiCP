@@ -17,7 +17,6 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import java.io.File
-import java.net.URL
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -52,41 +51,46 @@ object PluginMain : KotlinPlugin(
     }
 
     //发送消息部分实现
-    suspend fun Send(message: String, id: Long) {
+    suspend fun Send(message: String, id: Long) :String{
         //反向调用
         logger.info("Send message for($id) is $message")
-        val f = AIbot.getFriend(id)?:let {
+        val f = AIbot.getFriend(id) ?: let {
             logger.error("发送消息找不到好友，位置:K-Send()，id:$id")
-            return
+            return "E1"
         }
         f.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        return "Y"
     }
-    suspend fun Send(message: String, id: Long, gid: Long) {
+
+    suspend fun Send(message: String, id: Long, gid: Long):String {
         //反向调用
         logger.info("Send message for a member($id) is $message")
-        for(a in friend_cache){
-            if(a.id == id && a.group.id == gid){
+        for (a in friend_cache) {
+            if (a.id == id && a.group.id == gid) {
                 a.sendMessage(message)
-                return
+                return "Y"
             }
         }
-        val G = AIbot.getGroup(gid)?:let{
+        val G = AIbot.getGroup(gid) ?: let {
             logger.error("发送消息找不到群聊，位置K-Send()，id:$gid")
-            return
+            return "E1"
         }
-        val f = G[id]?:let{
+        val f = G[id] ?: let {
             logger.error("发送消息找不到群成员，位置K-Send()，id:$id，gid:$gid")
-            return
+            return "E2"
         }
         f.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        return "Y"
     }
-    suspend fun SendG(message: String, id: Long) {
+
+    suspend fun SendG(message: String, id: Long):String {
         logger.info("Send message for Group($id) is $message")
-        val g = AIbot.getGroup(id)?:let {
+        val g = AIbot.getGroup(id) ?: let {
             logger.error("发送群消息异常找不到群组，位置K-SendG，gid:$id")
-            return
+            return "E1"
         }
         g.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        return "Y"
     }
 
     //取昵称或名片部分
@@ -203,11 +207,11 @@ object PluginMain : KotlinPlugin(
     fun kqueryM(qqid: Long, groupid: Long): String{
         val group = AIbot.getGroup(groupid) ?: let {
             logger.error("查询权限找不到对应群组，位置K-queryM()，gid:$groupid")
-            return ""
+            return "E1"
         }
         val member = group[qqid] ?: let {
             logger.error("查询权限找不到对应群成员，位置K-queryM()，id:$qqid, gid:$groupid")
-            return ""
+            return "E2"
         }
         return member.permission.level.toString()
     }
