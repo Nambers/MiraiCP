@@ -62,11 +62,12 @@ mirai-demo: C++SDK
 
 2. 目前只确定win下可用，其他操作系统未测试，理论上liunx应该可用，生成so文件替换dll文件即可
 
+3. 如果vs报错找不到jni.h，把cpp/include文件夹加入到vs的库里面去，include文件夹里包含了jni.h以及他的依赖文件
+
 ### 3 使用方法:
 
 #### 3.1 MiraiCP-Plugin插件配合mcl使用
-首先下载启动器(mcl)
-下载地址[笔者整合包](https://github.com/Nambers/MiraiEXE) 或 [官方](https://github.com/iTXTech/mirai-console-loader/)
+0. 首先下载启动器(mcl), 下载地址 -> [笔者整合包](https://github.com/Nambers/MiraiEXE) 或 [官方](https://github.com/iTXTech/mirai-console-loader/)
 1. 下载release中MiraiCP-Plugin.7z文件
 2. 复制压缩包根目录下的`.jar`文件留着下面有用(配套插件)
 3. 打开`cpp`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于cpp文件夹下的c++项目
@@ -104,4 +105,4 @@ Mirai支持的qq表情对应序号 [faces.md](https://github.com/Nambers/MiraiCP
 ### TODO
 - [ ] 增加更多事件
 - [ ] 写文档
-- [ ] 推出整合包形式的sdk，即启动一个jar文件并把dll文件放置指定目录下即可，无需使用mcl
+- [x] 推出整合包形式的sdk，即启动一个jar文件并把dll文件放置指定目录下即可，无需使用mcl
