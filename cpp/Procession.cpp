@@ -15,16 +15,14 @@ void onEnable() {
 		...
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
-	procession->registerEvent([](GroupMessageEvent e) {
-		logger->Info(to_string(e.sender.permission));
-		if (e.sender.permission == Owner) {
-			e.group.SendMsg("Owner");
+	procession->registerEvent([](MemberLeaveEvent e) {
+		try {
+			//由于当前成员退出了群聊，所以会抛出MemberException因为找不到对象
+			e.init();
+			e.member.Mute(5);
 		}
-		if (e.sender.permission == Administer) {
-			e.group.SendMsg("Administer");
-		}
-		if (e.sender.permission == Mamber) {
-			e.group.SendMsg("Mamber");
+		catch (MemberException error) {
+			e.group.SendMsg("失败:" + error.what());
 		}
 		});
 }

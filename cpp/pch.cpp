@@ -14,10 +14,15 @@ Config* config = new Config();
 */
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject) {
 	genv = env;
-	//初始化日志模块
-	logger->init();
-	config->Init();
-	onEnable();
+	try {
+		//初始化日志模块
+		logger->init();
+		config->Init();
+		onEnable();
+	}
+	catch (MiraiCPException e) {
+		e.raise();
+	}
 	return tools.str2jstring("v2.4.1");//验证机制，返回当前SDK版本
 }
 /* 插件结束事件*/
@@ -46,58 +51,89 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 		&err)) {
 		//error
 		logger->Error("JSON reader error");
-		throw exception("JSON reader error");
+		APIException("JSON reader error").raise();
 	}
 	switch (root["type"].asInt()) {
 	case 1:
 		//GroupMessage
-		procession->broadcast(GroupMessageEvent(
-			Group(root["groupid"].asLargestUInt()),
-			Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt()),
-			root["message"].asCString()));
+		try {
+			procession->broadcast(GroupMessageEvent(
+				Group(root["groupid"].asLargestUInt()),
+				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt()),
+				root["message"].asCString()));
+		}
+		catch (MiraiCPException e) {
+			e.raise();
+		}
 		return tools.str2jstring("NULL");
 	case 2:
 		//私聊消息
-		procession->broadcast(PrivateMessageEvent(
-			Friend(root["senderid"].asLargestUInt()),
-			root["message"].asCString()));
+		try {
+			procession->broadcast(PrivateMessageEvent(
+				Friend(root["senderid"].asLargestUInt()),
+				root["message"].asCString()));
+		}
+		catch (MiraiCPException e) {
+			e.raise();
+		}
 		return tools.str2jstring("NULL");
 	case 3:
 		//群聊邀请
-		return tools.str2jstring(procession->broadcast(GroupInviteEvent(
-			Group(root["groupid"].asLargestUInt()),
-			Friend(root["invitorid"].asLargestUInt()))).c_str());
+		try{
+			return tools.str2jstring(procession->broadcast(GroupInviteEvent(
+				Group(root["groupid"].asLargestUInt()),
+				Friend(root["invitorid"].asLargestUInt()))).c_str());
+		}
+		catch (MiraiCPException e) {
+			e.raise();
+		}
 	case 4:
 		//好友
-		return tools.str2jstring(procession->broadcast(NewFriendRequestEvent(
-			Friend(root["friendid"].asLargestUInt()),
-			root["message"].asCString())).c_str());
+		try {
+			return tools.str2jstring(procession->broadcast(NewFriendRequestEvent(
+				Friend(root["friendid"].asLargestUInt()),
+				root["message"].asCString())).c_str());
+		}
+		catch (MiraiCPException e) {
+			e.raise();
+		}
 	case 5:
 		//新成员加入
-		procession->broadcast(MemberJoinEvent(
-			root["jointype"].asInt(),
-			Member(root["memberid"].asLargestUInt(),
-				root["groupid"].asLargestUInt()),
-			Group(root["groupid"].asLargestUInt()),
-			Member(
-				root["invitorid"].asLargestUInt(),
-				root["groupid"].asLargestUInt())
-		));
+		try{
+			procession->broadcast(MemberJoinEvent(
+				root["jointype"].asInt(),
+				Member(root["memberid"].asLargestUInt(),
+					root["groupid"].asLargestUInt()),
+				Group(root["groupid"].asLargestUInt()),
+				Member(
+					root["invitorid"].asLargestUInt(),
+					root["groupid"].asLargestUInt())
+			));
+		}
+		catch (MiraiCPException e) {
+			e.raise();
+		}
 		return tools.str2jstring("NULL");
 	case 6:
 		//群成员退出
-		procession->broadcast(MemberLeaveEvent(
-			root["leavetype"].asInt(),
-			Member(root["memberid"].asLargestUInt(),
-				root["groupid"].asLargestUInt()),
-			Group(root["groupid"].asLargestUInt()),
-			Member(
-				root["operatorid"].asLargestUInt(),
-				root["groupid"].asLargestUInt())
-		));
+		try {
+			procession->broadcast(MemberLeaveEvent(
+				root["leavetype"].asInt(),
+				Member(root["memberid"].asLargestUInt(),
+					root["groupid"].asLargestUInt()),
+				Group(root["groupid"].asLargestUInt()),
+				Member(
+					root["operatorid"].asLargestUInt(),
+					root["groupid"].asLargestUInt())
+			));
+		}
+		catch (MiraiCPException e) {
+			e.raise();
+		}
 		return tools.str2jstring("NULL");
 	}
 	logger->Error("unknown type");
+	APIException("未知的消息类型").raise();
 	return tools.str2jstring("ERROR");
 }
 

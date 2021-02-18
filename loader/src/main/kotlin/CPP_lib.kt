@@ -29,25 +29,24 @@ class CPP_lib {
             System.load(dll_name)
         }
         @JvmStatic
-        fun SendPrivateMSG(message: String, id: Long){
+        fun SendPrivateMSG(message: String, id: Long):String{
             // 反向调用发送消息
-            GlobalScope.launch {
-                Send(message, id)
+            return runBlocking {
+                return@runBlocking Send(message, id)
             }
 
         }
         @JvmStatic
-        fun SendPrivateM2M(message: String, id: Long, gid: Long){
+        fun SendPrivateM2M(message: String, id: Long, gid: Long): String{
             // 反向调用发送消息
-            GlobalScope.launch {
-                Send(message, id, gid)
+            return runBlocking {
+                return@runBlocking Send(message, id, gid)
             }
-
         }
         @JvmStatic
-        fun SendGroup(message:String,id:Long) {
-            GlobalScope.launch {
-                    SendG(message, id)
+        fun SendGroup(message:String,id:Long):String {
+            return runBlocking {
+                    return@runBlocking SendG(message, id)
             }
         }
         //查询图片下载链接
