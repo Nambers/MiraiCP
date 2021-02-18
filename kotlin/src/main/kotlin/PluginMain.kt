@@ -31,7 +31,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
         name = "miraiCP",
-        version = "2.3.0"
+        version = "2.4.1"
     )
 ) {
     var friend_cache = ArrayList<NormalMember>(0)
@@ -203,21 +203,20 @@ object PluginMain : KotlinPlugin(
     fun kqueryM(qqid: Long, groupid: Long): String{
         val group = AIbot.getGroup(groupid) ?: let {
             logger.error("查询权限找不到对应群组，位置K-queryM()，gid:$groupid")
-            return "E1"
+            return ""
         }
         val member = group[qqid] ?: let {
             logger.error("查询权限找不到对应群成员，位置K-queryM()，id:$qqid, gid:$groupid")
-            return "E2"
+            return ""
         }
         return member.permission.level.toString()
     }
 
     override fun onDisable() {
         cpp.PluginDisable()
-
     }
     override fun onEnable(){
-        val now_tag = "v2.4.0"
+        val now_tag = "v2.4.1"
         println("当前MiraiCP框架版本:$now_tag")
         logger.info("启动成功")
         logger.info("本项目github存储库:https://github.com/Nambers/MiraiCP")

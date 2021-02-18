@@ -8,7 +8,7 @@
 #include "framework.h"
 #include <string>
 #include <functional>
-#include "json/json.h"
+#include <json.h>
 #include "org_example_mirai_plugin_CPP_lib.h"
 #include <jni.h>
 #include <sstream>
