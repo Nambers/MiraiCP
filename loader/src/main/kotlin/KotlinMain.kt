@@ -26,7 +26,7 @@ import org.fusesource.jansi.AnsiConsole
 import org.json.JSONObject
 import java.net.URL
 
-val now_tag = "v2.4.0"
+val now_tag = "v2.4.1"
 
 object KotlinMain {
     private var friend_cache = ArrayList<NormalMember>(0)
