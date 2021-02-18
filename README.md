@@ -86,7 +86,7 @@ mirai-demo: C++SDK
 3. 在`procession.cpp`里自定义你自己的代码
 4. 生成.dll文件
 5. 留意`cpp/x64/Release/`这个路径下的`.dll`文件，留着下面有用
-6. 更改run.bat文件里的qq号，密码和mirai-demo.dll路径(也就是上一步的.dll，可以复制出来，run.bat里可填相对路径或绝对路径)
+6. 更改run.bat文件里的启动参数，以\[qq号，密码和mirai-demo.dll路径(也就是上一步的.dll，可以复制出来，run.bat里可填相对路径或绝对路径),是否检测更新(可选，如果检查输入1否则不填)\]格式填写
 7. 运行run.bat
 
 
