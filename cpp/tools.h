@@ -82,7 +82,7 @@ static Tools tools;
 //总异常
 class MiraiCPException :public exception {
 public:
-	virtual string what() { return ""; };
+	virtual string what() { return "NO_EXCEPTION"; };
 	virtual void raise() {};
 };
 //初始化异常
@@ -96,11 +96,11 @@ public:
 		this->step = step;
 	}
 	//返回错误信息
-	virtual string what()
+	string what()
 	{
 		return this->description;
 	}
-	virtual void raise() {
+	void raise() {
 		genv->ThrowNew(config->initexception, (this->description + " step:" + to_string(this->step)).c_str());
 	}
 private:
@@ -115,11 +115,11 @@ public:
 		this->description = "文件读取异常" + text;
 	}
 	//返回错误信息
-	virtual string what()
+	string what()
 	{
 		return this->description;
 	}
-	virtual void raise() {
+	void raise() {
 		logger->Error(this->description);
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
@@ -135,11 +135,11 @@ public:
 		this->description = "MiraiCP内部无法预料的错误:" + text;
 	}
 	//返回错误信息
-	virtual string what()
+	string what()
 	{
 		return this->description;
 	}
-	virtual void raise() {
+	void raise() {
 		logger->Error(this->description);
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
@@ -169,11 +169,11 @@ public:
 		}
 	}
 	//返回错误信息
-	virtual string what()
+	string what()
 	{
 		return this->description;
 	}
-	virtual void raise() {
+	void raise() {
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
@@ -202,11 +202,11 @@ public:
 		}
 	}
 	//返回错误信息
-	virtual string what()
+	string what()
 	{
 		return this->description;
 	}
-	virtual void raise() {
+	void raise() {
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
@@ -224,11 +224,11 @@ public:
 		this->description = "找不到好友";
 	}
 	//返回错误信息
-	virtual string what()
+	string what()
 	{
 		return this->description;
 	}
-	virtual void raise() {
+	void raise() {
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
@@ -253,11 +253,11 @@ public:
 		}
 	}
 	//返回错误信息
-	virtual string what()
+	string what()
 	{
 		return this->description;
 	}
-	virtual void raise() {
+	void raise() {
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
@@ -461,6 +461,7 @@ public:
 	//被邀请进的组
 	Group group;
 	void init() {
+		sender.init();
 		group.init();
 	}
 	GroupInviteEvent(Group g, Friend f) {
@@ -529,6 +530,7 @@ public:
 	Group group;
 	/*操作人, 主动退出时与member相同，改成员可能是当前bot，operater以与系统operator区分*/
 	Member operater;
+	//初始化事件
 	void init() throw(MemberException){
 		this->member.init();
 		this->group.init();
@@ -600,7 +602,12 @@ public:
 		this->MJf(g);
 	}
 	void broadcast(MemberLeaveEvent g) {
-		this->MLf(g);
+		try {
+			this->MLf(g);
+		}
+		catch (MiraiCPException e) {
+			e.raise();
+		}
 	}
 	void broadcast(SchedulingEvent g) {
 		this->Sf(g);
