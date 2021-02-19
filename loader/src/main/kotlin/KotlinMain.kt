@@ -8,6 +8,7 @@ import net.mamoe.mirai.alsoLogin
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.event.broadcast
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.Image
@@ -325,6 +326,31 @@ object KotlinMain {
         }
         globalEventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
+
+            //针对失效功能的临时补丁
+            //[mirai:service:128,<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+            //<msg serviceID="128" templateID="12345" action="native" brief="[链接]邀请你加入群聊" sourceMsgId="0" url="">
+            //<item layout="2"><picture cover=""/><title>邀请你加入群聊</title><summary /></item>
+            //<data groupcode="1044565129" groupname="mirai 非官方 开发群" msgseq="1613736417225458" msgtype="2"/>
+            //</msg>]
+            if(this.message.contentToString().startsWith("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><msg serviceID=\"128\"")){
+                val mes = "<data[^>]+>".toRegex().find(this.message.contentToString())?.value
+                val groupid = mes?.let { it1 -> Regex("groupcode=\"[0-9]+\"").find(it1)?.value
+                    ?.replace("\"", "")
+                    ?.replace("groupcode=", "") }
+                val ida = mes?.let{it3->Regex("msgseq=\"[0-9]+\"").find(it3)?.value
+                    ?.replace("\"", "")
+                    ?.replace("msgseq=", "") }
+                val groupname = mes?.let{it2->Regex("groupname=\"(.*)\" msgseq").find(it2)?.value
+                    ?.replace("\"", "")
+                    ?.replace("msgseq", "")
+                    ?.replace("groupname=", "") }
+                if (ida != null && groupid != null && groupname != null) {
+                        BotInvitedJoinGroupRequestEvent(this.bot,ida.toLong(),this.sender.id,groupid.toLong(),groupname,this.sender.nick)
+                            .broadcast()
+                }
+                return@subscribeAlways
+            }
             cpp.Event(
                 gson.toJson(
                     Config.PrivateMessage(
@@ -366,6 +392,7 @@ object KotlinMain {
             when (r) {
                 "true" -> accept()
                 "false" -> ignore()
+                "NULL" -> ignore()
                 else -> {
                     logger.error("BotInvitedJoinGroupRequestEvent return unknown")
                     ignore()

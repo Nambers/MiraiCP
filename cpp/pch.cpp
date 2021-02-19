@@ -53,53 +53,34 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 		logger->Error("JSON reader error");
 		APIException("JSON reader error").raise();
 	}
-	switch (root["type"].asInt()) {
-	case 1:
-		//GroupMessage
-		try {
+	try {
+		switch (root["type"].asInt()) {
+		case 1:
+			//GroupMessage
 			procession->broadcast(GroupMessageEvent(
 				Group(root["groupid"].asLargestUInt()),
 				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt()),
 				root["message"].asCString()));
-		}
-		catch (MiraiCPException e) {
-			e.raise();
-		}
-		return tools.str2jstring("NULL");
-	case 2:
-		//私聊消息
-		try {
+			return tools.str2jstring("NULL");
+		case 2:
+			//私聊消息
 			procession->broadcast(PrivateMessageEvent(
 				Friend(root["senderid"].asLargestUInt()),
 				root["message"].asCString()));
-		}
-		catch (MiraiCPException e) {
-			e.raise();
-		}
-		return tools.str2jstring("NULL");
-	case 3:
-		//群聊邀请
-		try{
+			return tools.str2jstring("NULL");
+		case 3:
+			//群聊邀请
 			return tools.str2jstring(procession->broadcast(GroupInviteEvent(
 				Group(root["groupid"].asLargestUInt()),
 				Friend(root["invitorid"].asLargestUInt()))).c_str());
-		}
-		catch (MiraiCPException e) {
-			e.raise();
-		}
-	case 4:
-		//好友
-		try {
+
+		case 4:
+			//好友
 			return tools.str2jstring(procession->broadcast(NewFriendRequestEvent(
 				Friend(root["friendid"].asLargestUInt()),
 				root["message"].asCString())).c_str());
-		}
-		catch (MiraiCPException e) {
-			e.raise();
-		}
-	case 5:
-		//新成员加入
-		try{
+		case 5:
+			//新成员加入
 			procession->broadcast(MemberJoinEvent(
 				root["jointype"].asInt(),
 				Member(root["memberid"].asLargestUInt(),
@@ -109,14 +90,9 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 					root["invitorid"].asLargestUInt(),
 					root["groupid"].asLargestUInt())
 			));
-		}
-		catch (MiraiCPException e) {
-			e.raise();
-		}
-		return tools.str2jstring("NULL");
-	case 6:
-		//群成员退出
-		try {
+			return tools.str2jstring("NULL");
+		case 6:
+			//群成员退出
 			procession->broadcast(MemberLeaveEvent(
 				root["leavetype"].asInt(),
 				Member(root["memberid"].asLargestUInt(),
@@ -126,10 +102,10 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 					root["operatorid"].asLargestUInt(),
 					root["groupid"].asLargestUInt())
 			));
+			return tools.str2jstring("NULL");
 		}
-		catch (MiraiCPException e) {
-			e.raise();
-		}
+	}catch (MiraiCPException e) {
+		e.raise();
 		return tools.str2jstring("NULL");
 	}
 	logger->Error("unknown type");
