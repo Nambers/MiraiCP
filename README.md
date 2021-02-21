@@ -97,4 +97,4 @@ Mirai支持的qq表情对应序号 [faces.md](https://github.com/Nambers/MiraiCP
 ### TODO
 - [ ] 增加更多事件
 - [ ] 写文档
-- [x] 推出整合包形式的sdk，即启动一个jar文件并把dll文件放置指定目录下即可，无需使用mcl
+- [ ] 插件增加选择mirai-demo.dll路径和名称
