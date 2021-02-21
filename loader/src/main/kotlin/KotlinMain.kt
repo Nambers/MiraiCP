@@ -27,7 +27,7 @@ import org.fusesource.jansi.AnsiConsole
 import org.json.JSONObject
 import java.net.URL
 
-val now_tag = "v2.4.1"
+val now_tag = "v2.4.2"
 
 object KotlinMain {
     private var friend_cache = ArrayList<NormalMember>(0)
@@ -219,6 +219,22 @@ object KotlinMain {
 
     }
 
+    suspend fun kkick(qqid: Long, groupid: Long, message: String):String{
+        val group = AIbot.getGroup(groupid) ?: let {
+            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:$groupid")
+            return "E1"
+        }
+        val member = group[qqid] ?: let {
+            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:$qqid, gid:$groupid")
+            return "E2"
+        }
+        try {
+            member.kick(message)
+        }catch (e:PermissionDeniedException){
+            return "E3"
+        }
+        return "Y"
+    }
 
     @MiraiInternalApi
     suspend fun main(id:Long, pass:String, path:String){
@@ -349,6 +365,16 @@ object KotlinMain {
                         BotInvitedJoinGroupRequestEvent(this.bot,ida.toLong(),this.sender.id,groupid.toLong(),groupname,this.sender.nick)
                             .broadcast()
                 }
+                return@subscribeAlways
+            }
+            if(this.message.contentToString() == "1"){
+                this.sender.sendMessage(MiraiCode.deserializeMiraiCode("""
+                    [mirai:service:128,<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+            <msg serviceID="128" templateID="12345" action="native" brief="[链接]邀请你加入群聊" sourceMsgId="0" url="">
+            <item layout="2"><picture cover=""/><title>邀请你加入群聊</title><summary /></item>
+            <data groupcode="1044565129" groupname="mirai 非官方 开发群" msgseq="1613736417225458" msgtype="2"/>
+            </msg>]
+                """.trimIndent()))
                 return@subscribeAlways
             }
             cpp.Event(
