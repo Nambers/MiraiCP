@@ -1,6 +1,7 @@
-# 欢迎来到MiraiCP案例库
+# MiraiCP案例库
 
-* [欢迎来到MiraiCP案例库](#欢迎来到miraicp案例库)
+* [MiraiCP案例库](#miraicp案例库)
+* [注意事项](#注意事项)
   * [取当前消息里全部照片的下载链接](#取当前消息里全部照片的下载链接)
   * [执行定时任务](#执行定时任务)
   * [各类事件](#各类事件)
@@ -10,6 +11,8 @@
     * [机器人被邀请进群](#机器人被邀请进群)
     * [私聊信息](#私聊信息)
     * [群聊信息](#群聊信息)
+  * [群成员操作](#群成员操作)
+  	* [踢出群成员](#踢出群成员)
 
 所有的自定义代码皆写在`Procession.cpp`下的`onEnable()`里，如:
 ```C++
@@ -20,18 +23,20 @@ void onEnable() {
 	/*
 	注册事件监听-用户自定义
 	logger - 日志组件
-		logger.Info(string)发送消息级日志
-		logger.Warning(string)发送警告级日志
-		logger.Error(string)发送错误级日志
+		logger->Info(string)发送消息级日志
+		logger->Warning(string)发送警告级日志
+		logger->Error(string)发送错误级日志
 	procession 广播源
-		procession.registerEvent(lambda) 注册监听
-		procession.registerEvent([](GroupMessageEvent param){ \*处理*\});是监听群消息
-		procession.registerEvent([](PrivateMessageEvent param){ \*处理*\});是监听群消息
+		procession->registerEvent(lambda) 注册监听
+		procession->registerEvent([](GroupMessageEvent param){ \*处理*\});是监听群消息
+		procession->registerEvent([](PrivateMessageEvent param){ \*处理*\});是监听私聊消息
 		...
+	其中"param"是自定义的变量名，改成p,e什么的都可以
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	procession->registerEvent([](GroupMessageEvent param)->void {
 		//在这写你自己处理群消息的代码
+		param.init();
 		logger->Info("hi");
 		param.group.SendMsg(param.sender.at());
 		});
@@ -41,11 +46,14 @@ void onDisable() {
 }
 ```
 
+# 注意事项
+从`v2.4.2`开始，记得自行新建Member对象group对象friend对象和事件刚开始都要调用`init()`方法初始化(为了更好的捕获抛出的异常)
 ##  取当前消息里全部照片的下载链接
 ```C++
 ...
 	procession->registerEvent([](PrivateMessageEvent param)->void {
 	/*示例: 取消息里全部图片的下载地址*/
+	param.init();
 	vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
 	for (int i = 0; i < temp.size(); i++) {
 		logger->Info(temp[i]);
@@ -70,6 +78,7 @@ unsigned long id = 0;
 		//这里的[&]和[=]分别为以引用和值的方式捕获全部可以捕获的变量，前者可以改变量值，相当于指针，后者无法更改，相当于本地一个局部变量并进行值传递，详细见搜索引擎的c++ lambda
 	procession->registerEvent([&](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
+		param.init();
 		logger->Info("hi");
 		//延迟100ms发送，后面的1为自定义id
 		SetScheduling(100, 1);
@@ -84,6 +93,7 @@ unsigned long id = 0;
 
 ```C++
 	procession->registerEvent([](MemberLeaveEvent p) {
+		p.init();
 		p.group.SendMsg(p.member.id + "离开了本群");
 		});
 ```
@@ -92,6 +102,7 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](NewFriendRequestEvent param)->bool {
 		//新好友邀请
+		param.init();
 		logger->Info("新好友申请来自于" + to_string(param.sender.id));
 		//附加信息验证
 		if (param.message == "hhh") {
@@ -106,6 +117,7 @@ unsigned long id = 0;
 ### 新成员入群
 ```C++
 	procession->registerEvent([](MemberJoinEvent param)->void {
+		param.init();
 		if (param.type == INVITE) {
 			//该成员是被邀请进入的，所以有param.invitor，其他类型都没有
 		}
@@ -121,6 +133,7 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](GroupInviteEvent param)->bool {
 		//处理群邀请
+		param.init();
 		if (param.sender.id == 11111) {
 			return ACCEPT;
 		}
@@ -131,6 +144,7 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
+		param.init();
 		logger->Info("hi");
 		param.sender.SendMsg(param.message);
 		});
@@ -140,7 +154,32 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](GroupMessageEvent param)->void {
 		//在这写你自己处理群消息的代码
+		param.init();
 		logger->Info("hi");
 		param.group.SendMsg(param.sender.at());
 		});	
+```
+## 群成员操作
+### 踢出群成员
+```C++
+	procession->registerEvent([](GroupMessageEvent e) {
+		e.init();
+		try {
+			Member m = Member(qqid, e.group.id);
+			m.init();
+			m.Kick("this_is_reason");
+		}
+		catch (BotException err) {
+			//权限不足
+			logger->Error(err.what());
+		}
+		catch (MemberException err) {
+			if (err.type == 1) {
+				//找不到群
+			}
+			if (err.type == 2) {
+				//找不到群成员
+			}
+		}
+		});
 ```
