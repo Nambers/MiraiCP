@@ -39,6 +39,7 @@ public:
 	jmethodID NickorNameM = NULL;
 	jmethodID Mute = NULL;
 	jmethodID QueryP = NULL;
+	jmethodID KickM = NULL;
 	/*群聊类*/
 	jmethodID SendMsg2G = NULL;
 	/*定时任务*/
@@ -82,7 +83,7 @@ static Tools tools;
 //总异常
 class MiraiCPException :public exception {
 public:
-	virtual string what() { return "NO_EXCEPTION"; };
+	virtual string what() { return "C++部分出现了个未捕获的异常"; };
 	virtual void raise() {};
 };
 //初始化异常
@@ -146,16 +147,14 @@ public:
 private:
 	string description;
 };
-//禁言异常
-class MuteException :public MiraiCPException
-{
+//机器人操作异常
+class BotException : public MiraiCPException {
 public:
 	/*
-	*	"1" - 机器人无权限禁言对方
-	*	"2" - 禁言时间超出0s~30d
+	*	1 - 机器人无权限禁言对方
 	*/
 	int type = 0;
-	MuteException(int type)
+	BotException(int type)
 	{
 		this->type = type;
 		switch (type)
@@ -163,10 +162,29 @@ public:
 		case 1:
 			this->description = "没有权限禁言";
 			break;
-		case 2:
-			this->description = "禁言时长不在0s~30d中间";
-			break;
 		}
+	}
+	//返回错误信息
+	string what()
+	{
+		return this->description;
+	}
+	void raise() {
+		//genv->ThrowNew(config->initexception, (this->description).c_str());
+	}
+private:
+	string description;
+};
+//禁言异常
+class MuteException :public MiraiCPException
+{
+public:
+	/*
+	*	 禁言时间超出0s~30d
+	*/
+	MuteException()
+	{
+		this->description = "禁言时长不在0s~30d中间";
 	}
 	//返回错误信息
 	string what()
@@ -356,13 +374,14 @@ private:
 	jmethodID NickorName_id = NULL;
 	jmethodID Mute_id = NULL;
 	jmethodID Query_permission = NULL;
+	jmethodID KickM = NULL;
 public:
 	unsigned long groupid = 0;
 	unsigned long id = 0;
 	// 权限等级. OWNER群主 为 2, ADMINISTRATOR管理员 为 1, MEMBER群成员 为 0
 	unsigned int permission = 0;
-	// env, qqid, groupid
-	Member(unsigned long, unsigned long);
+	// qqid, groupid
+	Member(unsigned long qqid, unsigned long groupid);
 	//初始化当前对象，可能抛出异常
 	void init();
 	Member() {};
@@ -395,6 +414,8 @@ public:
 	*	"Y" - 一切正常
 	*/
 	void Mute(int time);
+	/*踢出这个群成员*/
+	void Kick(string reason);
 };
 
 /*群聊类声明*/
@@ -430,6 +451,10 @@ public:
 	Member sender;
 	//信息本体
 	string message;
+	void init() {
+		group.init();
+		sender.init();
+	}
 	GroupMessageEvent(Group g, Member f, string s) {
 		this->group = g;
 		this->sender = f;

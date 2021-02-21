@@ -218,12 +218,29 @@ object PluginMain : KotlinPlugin(
         return member.permission.level.toString()
     }
 
+    suspend fun kkick(qqid: Long, groupid: Long, message: String):String{
+        val group = AIbot.getGroup(groupid) ?: let {
+            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:$groupid")
+            return "E1"
+        }
+        val member = group[qqid] ?: let {
+            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:$qqid, gid:$groupid")
+            return "E2"
+        }
+        try {
+            member.kick(message)
+        }catch (e:PermissionDeniedException){
+            return "E3"
+        }
+        return "Y"
+    }
+
     override fun onDisable() {
         cpp.PluginDisable()
     }
     @MiraiInternalApi
     override fun onEnable(){
-        val now_tag = "v2.4.1"
+        val now_tag = "v2.4.2"
         println("当前MiraiCP框架版本:$now_tag")
         logger.info("启动成功")
         logger.info("本项目github存储库:https://github.com/Nambers/MiraiCP")

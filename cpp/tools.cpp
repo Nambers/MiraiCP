@@ -47,6 +47,10 @@ void Config::Init() throw(InitException) {
 	if (this->QueryP == NULL) {
 		throw InitException("初始化错误", 10);
 	}
+	this->KickM = env->GetStaticMethodID(CPP_lib, "kickM", "(JJLjava/lang/String;)Ljava/lang/String;");
+	if (this->KickM == NULL) {
+		throw InitException("初始化错误", 11);
+	}
 }
 Config::~Config() {
 	genv->DeleteGlobalRef(this->CPP_lib);
@@ -173,6 +177,7 @@ Member::Member(unsigned long id, unsigned long groupid) {
 	this->Send_Msg_id = config->SendMsg2M;
 	this->NickorName_id = config->NickorNameM;
 	this->Query_permission = config->QueryP;
+	this->KickM = config->KickM;
 }
 void Member::init() throw(MemberException){
 	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->NickorName_id, (jlong)id, (jlong)groupid));
@@ -195,7 +200,7 @@ int Member::getPermission() throw(MemberException) {
 	}
 	return stoi(re);
 }
-void Member::Mute(int time)throw(MuteException, MemberException) {
+void Member::Mute(int time)throw(MuteException, MemberException, BotException) {
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Mute_id, (jlong)this->id, (jlong)this->groupid, (jint)time));
 	if (re == "Y") {
 		return;
@@ -207,10 +212,25 @@ void Member::Mute(int time)throw(MuteException, MemberException) {
 		throw MemberException(2);
 	}
 	if (re == "E3") {
-		throw MuteException(1);
+		throw BotException(1);
 	}
 	if (re == "E4") {
-		throw MuteException(2);
+		throw MuteException();
+	}
+}
+void Member::Kick(string reason) throw(BotException, MemberException) {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->KickM, (jlong)id, (jlong)groupid, tools.str2jstring(reason.c_str())));
+	if (re == "Y") {
+		return;
+	}
+	if (re == "E1") {
+		throw MemberException(1);
+	}
+	if (re == "E2") {
+		throw MemberException(2);
+	}
+	if (re == "E3") {
+		throw BotException(1);
 	}
 }
 

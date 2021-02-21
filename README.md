@@ -84,11 +84,11 @@ mirai需要openjdk而不是甲骨文的jdk,如下载openjdk15/openjdk11
 
 如果有其他问题，欢迎提交issue和提交PR贡献
 
+**代码示例 [example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)**
+
 目前支持的事件 [events.md](https://github.com/Nambers/MiraiCP/blob/master/doc/events.md)
 
 项目设计流程 [intro.md](https://github.com/Nambers/MiraiCP/blob/master/doc/intro.md)
-
-代码示例 [example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)
 
 Mirai支持的qq表情对应序号 [faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/faces.md)
 
