@@ -9,6 +9,7 @@ import org.example.mirai.plugin.PluginMain.QueryImg
 import org.example.mirai.plugin.PluginMain.SendError
 import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendWarning
+import org.example.mirai.plugin.PluginMain.kkick
 import org.example.mirai.plugin.PluginMain.kqueryM
 import org.example.mirai.plugin.PluginMain.mute
 import org.example.mirai.plugin.PluginMain.scheduling
@@ -31,7 +32,7 @@ class CPP_lib {
         fun SendPrivateMSG(message: String, id: Long):String{
             // 反向调用发送消息
             return runBlocking {
-                return@runBlocking Send(message, id)
+                Send(message, id)
             }
 
         }
@@ -39,23 +40,21 @@ class CPP_lib {
         fun SendPrivateM2M(message: String, id: Long, gid: Long): String{
             // 反向调用发送消息
             return runBlocking {
-                return@runBlocking Send(message, id, gid)
+                Send(message, id, gid)
             }
         }
         @JvmStatic
         fun SendGroup(message:String,id:Long):String {
             return runBlocking {
-                return@runBlocking SendG(message, id)
+                SendG(message, id)
             }
         }
         //查询图片下载链接
         @JvmStatic
         fun QueryImgUrl(id:String): String {
-            var temp:String
-            runBlocking {
-                temp = QueryImg(id)
+            return runBlocking {
+                QueryImg(id)
             }
-            return temp
         }
         //发送普通日志
         @JvmStatic
@@ -85,47 +84,44 @@ class CPP_lib {
         //给群聊上传图片以备发送
         @JvmStatic
         fun uploadImgG(qqid: Long, fileName:String): String{
-            var re: String
-            runBlocking {
-                re = uploadImgGroup(qqid, fileName)
+            return runBlocking {
+                uploadImgGroup(qqid, fileName)
             }
-            return re
         }
         //给好友上传图片以备发送
         @JvmStatic
         fun uploadImgF(qqid: Long, fileName:String): String{
-            var re: String
-            runBlocking {
-                re = uploadImgFriend(qqid, fileName)
+            return runBlocking {
+                uploadImgFriend(qqid, fileName)
             }
-            return re
         }
         //群成员对象上传图片
         @JvmStatic
         fun uploadImgM(groupid: Long, qqid: Long, fileName:String): String{
-            var re: String
-            runBlocking {
-                re = uploadImgMember(groupid,qqid, fileName)
+            return runBlocking {
+                uploadImgMember(groupid,qqid, fileName)
             }
-            return re
         }
         //定时任务
         @JvmStatic
         fun schedule(time:Long, id:Int){
             scheduling(time, id)
-            return
         }
         @JvmStatic
         fun muteM(qqid: Long, groupid: Long, time: Int): String{
-            var re: String
-            runBlocking {
-                re = mute(qqid, groupid, time)
+            return runBlocking {
+                mute(qqid, groupid, time)
             }
-            return re
         }
         @JvmStatic
         fun queryM(qqid: Long, groupid: Long): String{
             return kqueryM(qqid, groupid)
+        }
+        @JvmStatic
+        fun kickM(qqid: Long, groupid: Long, message: String):String{
+            return runBlocking {
+                kkick(qqid, groupid, message)
+            }
         }
     }
 

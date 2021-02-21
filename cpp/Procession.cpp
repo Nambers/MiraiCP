@@ -15,16 +15,25 @@ void onEnable() {
 		...
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
-	procession->registerEvent([](GroupInviteEvent e) {
+	procession->registerEvent([](GroupMessageEvent e) {
+		e.init();
 		try {
-			e.init();
-		}catch (MiraiCPException error) {
-			/*捕获基类只能获取是否有异常发生，要用细分的异常类捕获才能知道发生了什么异常*/
-			logger->Error(error.what());
+			Member m = Member(481784853, e.group.id);
+			m.init();
+			m.Kick("this_is_reason");
 		}
-		//错误示范: 因为当前事件还未入群，所以发送消息会报错
-		e.group.SendMsg("邀请");
-		return false;
+		catch (BotException err) {
+			//权限不足
+			logger->Error(err.what());
+		}
+		catch (MemberException err) {
+			if (err.type == 1) {
+				//找不到群
+			}
+			if (err.type == 2) {
+				//找不到群成员
+			}
+		}
 		});
 
 }
