@@ -10,7 +10,8 @@
     * [3 使用方法:](#3-使用方法)
       * [3\.1 MiraiCP-Plugin插件配合mcl使用](#31-MiraiCP-Plugin插件配合mcl使用)
       * [3\.2 使用MiraiCP-Loader整合包](#32-使用MiraiCP-Loader整合包)
-    * [TODO](#todo)
+* [更新方式](#更新方式)
+* [TODO](#todo)
 
 # 使用声明
 
@@ -41,12 +42,12 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
-## 使用流程:
+# 使用流程:
 
-### 1 配置环境
+## 1 配置环境
 mirai需要openjdk而不是甲骨文的jdk,如下载openjdk15/openjdk11
 
-### 2 注意事项
+## 2 注意事项
 
 > MiraiCP版本规则: 从2.2.0开始 *(2021/1/31)*,版本前两位为Mirai的版本，后一位为SDK更新迭代版本
 
@@ -56,9 +57,9 @@ mirai需要openjdk而不是甲骨文的jdk,如下载openjdk15/openjdk11
 
 3. 如果vs报错找不到jni.h，把cpp/include文件夹加入到vs的库里面去(项目->属性->C++->常规)，include文件夹里包含了jni.h以及他的依赖文件
 
-### 3 使用方法:
+## 3 使用方法:
 
-#### 3.1 MiraiCP-Plugin插件配合mcl使用
+### 3.1 MiraiCP-Plugin插件配合mcl使用
 0. 首先下载启动器(mcl), 下载地址 -> [笔者整合包](https://github.com/Nambers/MiraiEXE) 或 [官方](https://github.com/iTXTech/mirai-console-loader/)
 1. 下载release中MiraiCP-Plugin.7z文件
 2. 复制压缩包根目录下的`.jar`文件留着下面有用(配套插件)
@@ -72,7 +73,7 @@ mirai需要openjdk而不是甲骨文的jdk,如下载openjdk15/openjdk11
 10. 打开mcl目录下的`data/miraiCP`路径(可能名字随着mirai版本的迭代会更改，包含MiraiCP即可)，把上面的.dll文件复制进来
 11. 运行mcl
 
-#### 3.2 使用MiraiCP-Loader整合包
+### 3.2 使用MiraiCP-Loader整合包
 1. 下载release中的MiraiCP-Loader.7z
 2. 打开`cpp`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于cpp文件夹下的c++项目
 3. 在`procession.cpp`里自定义你自己的代码
@@ -94,7 +95,11 @@ Mirai支持的qq表情对应序号 [faces.md](https://github.com/Nambers/MiraiCP
 
 附:[kotlin版开发模板](https://github.com/Nambers/mirai_kotlin_example)
 
-### TODO
+# 更新方式
+1. 下载release包
+2. 覆盖旧的`.mirai.jar`插件或者`.jar`loader
+3. 把`cpp`文件夹下的全部单个文件覆盖(json和include文件夹不需要),主要为`pch.h`(预编译头文件),`pch.cpp`(dll入口点),`tools.h`(各种事件及对象类声明),`tools.cpp`(tools.h里的声明的实现),`constants.h`(常量表)
+# TODO
 - [ ] 增加更多事件
 - [ ] 写文档
 - [ ] 加入构造xml的自动解析器，如歌曲，参考<https://github.com/khjxiaogu/MiraiSongPlugin>
