@@ -1,20 +1,20 @@
 plugins {
-    val kotlinVersion = "1.4.21"
+    val kotlinVersion = "1.4.30"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("net.mamoe.mirai-console") version "2.4.0"
 }
 
 group = "org.example"
-version = "2.4.2"
+version = "2.4.3"
 
 repositories {
-    //¹úÄÚ¾µÏñÔ´
-    //»ªÎªÔÆ
+    //å›½å†…é•œåƒæº
+    //åä¸ºäº‘
     maven { url =uri("https://mirrors.huaweicloud.com/repository/maven") }
-    //°¢ÀïÔÆ
+    //é˜¿é‡Œäº‘
     maven { url =uri("https://maven.aliyun.com/nexus/content/repositories/jcenter")}
-    //mirai-consoleµÄ²Ö¿â
+    //mirai-consoleçš„ä»“åº“
     maven {url = uri("https://dl.bintray.com/him188moe/mirai")}
     mavenLocal()
     mavenCentral()

@@ -13,8 +13,10 @@ import net.mamoe.mirai.event.broadcast
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.message.code.MiraiCode
+import net.mamoe.mirai.message.data.EmptyMessageChain
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
+import net.mamoe.mirai.message.data.MessageChain.Companion.deserializeFromMiraiCode
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.OverFileSizeMaxException
@@ -23,8 +25,8 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 /*
-ÔÚsettings.gradle.ktsÀï¸ÄÉú³ÉµÄ²å¼ş.jarÃû³Æ
-ÓÃrunmiraiktÕâ¸öÅäÖÃ¿ÉÒÔÔÚideÀïÔËĞĞ£¬²»ÓÃ¸´ÖÆµ½mcl»òÆäËûÆô¶¯Æ÷
+åœ¨settings.gradle.ktsé‡Œæ”¹ç”Ÿæˆçš„æ’ä»¶.jaråç§°
+ç”¨runmiraiktè¿™ä¸ªé…ç½®å¯ä»¥åœ¨ideé‡Œè¿è¡Œï¼Œä¸ç”¨å¤åˆ¶åˆ°mclæˆ–å…¶ä»–å¯åŠ¨å™¨
  */
 
 
@@ -32,7 +34,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
         name = "miraiCP",
-        version = "2.4.1"
+        version = "2.4.3"
     )
 ) {
     var friend_cache = ArrayList<NormalMember>(0)
@@ -41,7 +43,7 @@ object PluginMain : KotlinPlugin(
     lateinit var cpp: CPP_lib
     lateinit var gson: Gson
 
-    //ÈÕÖ¾²¿·ÖÊµÏÖ
+    //æ—¥å¿—éƒ¨åˆ†å®ç°
     fun BasicSendLog(log: String) {
         logger.info(log)
     }
@@ -52,20 +54,21 @@ object PluginMain : KotlinPlugin(
         logger.error(log)
     }
 
-    //·¢ËÍÏûÏ¢²¿·ÖÊµÏÖ
+    //å‘é€æ¶ˆæ¯éƒ¨åˆ†å®ç° MiraiCode
+
     suspend fun Send(message: String, id: Long) :String{
-        //·´Ïòµ÷ÓÃ
+        //åå‘è°ƒç”¨
         logger.info("Send message for($id) is $message")
         val f = AIbot.getFriend(id) ?: let {
-            logger.error("·¢ËÍÏûÏ¢ÕÒ²»µ½ºÃÓÑ£¬Î»ÖÃ:K-Send()£¬id:$id")
+            logger.error("å‘é€æ¶ˆæ¯æ‰¾ä¸åˆ°å¥½å‹ï¼Œä½ç½®:K-Send()ï¼Œid:$id")
             return "E1"
         }
-        f.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        f.sendMessage(EmptyMessageChain.deserializeFromMiraiCode(message, f))
         return "Y"
     }
 
     suspend fun Send(message: String, id: Long, gid: Long):String {
-        //·´Ïòµ÷ÓÃ
+        //åå‘è°ƒç”¨
         logger.info("Send message for a member($id) is $message")
         for (a in friend_cache) {
             if (a.id == id && a.group.id == gid) {
@@ -74,31 +77,75 @@ object PluginMain : KotlinPlugin(
             }
         }
         val G = AIbot.getGroup(gid) ?: let {
-            logger.error("·¢ËÍÏûÏ¢ÕÒ²»µ½ÈºÁÄ£¬Î»ÖÃK-Send()£¬id:$gid")
+            logger.error("å‘é€æ¶ˆæ¯æ‰¾ä¸åˆ°ç¾¤èŠï¼Œä½ç½®K-Send()ï¼Œid:$gid")
             return "E1"
         }
         val f = G[id] ?: let {
-            logger.error("·¢ËÍÏûÏ¢ÕÒ²»µ½Èº³ÉÔ±£¬Î»ÖÃK-Send()£¬id:$id£¬gid:$gid")
+            logger.error("å‘é€æ¶ˆæ¯æ‰¾ä¸åˆ°ç¾¤æˆå‘˜ï¼Œä½ç½®K-Send()ï¼Œid:$idï¼Œgid:$gid")
             return "E2"
         }
-        f.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        f.sendMessage(EmptyMessageChain.deserializeFromMiraiCode(message, f))
         return "Y"
     }
 
     suspend fun SendG(message: String, id: Long):String {
         logger.info("Send message for Group($id) is $message")
         val g = AIbot.getGroup(id) ?: let {
-            logger.error("·¢ËÍÈºÏûÏ¢Òì³£ÕÒ²»µ½Èº×é£¬Î»ÖÃK-SendG£¬gid:$id")
+            logger.error("å‘é€ç¾¤æ¶ˆæ¯å¼‚å¸¸æ‰¾ä¸åˆ°ç¾¤ç»„ï¼Œä½ç½®K-SendGï¼Œgid:$id")
             return "E1"
         }
-        g.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        g.sendMessage(EmptyMessageChain.deserializeFromMiraiCode(message, g))
         return "Y"
     }
 
-    //È¡êÇ³Æ»òÃûÆ¬²¿·Ö
+    //Msg
+
+    suspend fun SendM(message: String, id: Long) :String{
+        //åå‘è°ƒç”¨
+        logger.info("Send message for($id) is $message")
+        val f = AIbot.getFriend(id) ?: let {
+            logger.error("å‘é€æ¶ˆæ¯æ‰¾ä¸åˆ°å¥½å‹ï¼Œä½ç½®:K-Send()ï¼Œid:$id")
+            return "E1"
+        }
+        f.sendMessage(message)
+        return "Y"
+    }
+
+    suspend fun SendM(message: String, id: Long, gid: Long):String {
+        //åå‘è°ƒç”¨
+        logger.info("Send message for a member($id) is $message")
+        for (a in friend_cache) {
+            if (a.id == id && a.group.id == gid) {
+                a.sendMessage(message)
+                return "Y"
+            }
+        }
+        val G = AIbot.getGroup(gid) ?: let {
+            logger.error("å‘é€æ¶ˆæ¯æ‰¾ä¸åˆ°ç¾¤èŠï¼Œä½ç½®K-Send()ï¼Œid:$gid")
+            return "E1"
+        }
+        val f = G[id] ?: let {
+            logger.error("å‘é€æ¶ˆæ¯æ‰¾ä¸åˆ°ç¾¤æˆå‘˜ï¼Œä½ç½®K-Send()ï¼Œid:$idï¼Œgid:$gid")
+            return "E2"
+        }
+        f.sendMessage(message)
+        return "Y"
+    }
+
+    suspend fun SendGM(message: String, id: Long):String {
+        logger.info("Send message for Group($id) is $message")
+        val g = AIbot.getGroup(id) ?: let {
+            logger.error("å‘é€ç¾¤æ¶ˆæ¯å¼‚å¸¸æ‰¾ä¸åˆ°ç¾¤ç»„ï¼Œä½ç½®K-SendGï¼Œgid:$id")
+            return "E1"
+        }
+        g.sendMessage(message)
+        return "Y"
+    }
+
+    //å–æ˜µç§°æˆ–åç‰‡éƒ¨åˆ†
     fun GetN(qqid: Long): String {
         val f = AIbot.getFriend(qqid) ?: let {
-            logger.error("ÕÒ²»µ½¶ÔÓ¦ºÃÓÑµÄêÇ³Æ£¬Î»ÖÃ:K-GetN()£¬id:$qqid")
+            logger.error("æ‰¾ä¸åˆ°å¯¹åº”å¥½å‹çš„æ˜µç§°ï¼Œä½ç½®:K-GetN()ï¼Œid:$qqid")
             return ""
         }
         return f.nick
@@ -111,64 +158,64 @@ object PluginMain : KotlinPlugin(
         }
 
         val group = AIbot.getGroup(groupid) ?: let{
-            logger.error("È¡ÈºÃûÆ¬ÕÒ²»µ½¶ÔÓ¦Èº×é£¬Î»ÖÃK-GetNN()£¬gid:$groupid")
+            logger.error("å–ç¾¤åç‰‡æ‰¾ä¸åˆ°å¯¹åº”ç¾¤ç»„ï¼Œä½ç½®K-GetNN()ï¼Œgid:$groupid")
             return ""
         }
         val member = group[qqid] ?: let {
-            logger.error("È¡ÈºÃûÆ¬ÕÒ²»µ½¶ÔÓ¦Èº³ÉÔ±£¬Î»ÖÃK-GetNN()£¬id:$qqid, gid:$groupid")
+            logger.error("å–ç¾¤åç‰‡æ‰¾ä¸åˆ°å¯¹åº”ç¾¤æˆå‘˜ï¼Œä½ç½®K-GetNN()ï¼Œid:$qqid, gid:$groupid")
             return ""
         }
         return member.nameCard
 
     }
 
-    //Í¼Æ¬²¿·ÖÊµÏÖ
+    //å›¾ç‰‡éƒ¨åˆ†å®ç°
     suspend fun uploadImgFriend(id: Long, file: String): String {
         val temp = AIbot.getFriend(id)?:let{
-            logger.error("·¢ËÍÍ¼Æ¬ÕÒ²»µ½¶ÔÓ¦ºÃÓÑ,Î»ÖÃ:K-uploadImgFriend(),id:$id")
+            logger.error("å‘é€å›¾ç‰‡æ‰¾ä¸åˆ°å¯¹åº”å¥½å‹,ä½ç½®:K-uploadImgFriend(),id:$id")
             return ""
         }
         return try {
             File(file).uploadAsImage(temp).imageId
         }catch (e: OverFileSizeMaxException) {
-            logger.error("Í¼Æ¬ÎÄ¼ş¹ı´ó³¬¹ı30MB,Î»ÖÃ:K-uploadImgGroup(),ÎÄ¼şÃû:$file")
+            logger.error("å›¾ç‰‡æ–‡ä»¶è¿‡å¤§è¶…è¿‡30MB,ä½ç½®:K-uploadImgGroup(),æ–‡ä»¶å:$file")
             ""
         }catch (e:NullPointerException){
-            logger.error("ÉÏ´«Í¼Æ¬ÎÄ¼şÃûÒì³£,Î»ÖÃ:K-uploadImgGroup(),ÎÄ¼şÃû:$file")
+            logger.error("ä¸Šä¼ å›¾ç‰‡æ–‡ä»¶åå¼‚å¸¸,ä½ç½®:K-uploadImgGroup(),æ–‡ä»¶å:$file")
             ""
         }
     }
     suspend fun uploadImgGroup(id: Long, file: String): String {
         val temp = AIbot.getGroup(id)?:let{
-            logger.error("·¢ËÍÍ¼Æ¬ÕÒ²»µ½¶ÔÓ¦Èº×é,Î»ÖÃ:K-uploadImgGroup(),id:$id")
+            logger.error("å‘é€å›¾ç‰‡æ‰¾ä¸åˆ°å¯¹åº”ç¾¤ç»„,ä½ç½®:K-uploadImgGroup(),id:$id")
             return ""
         }
         return try {
             File(file).uploadAsImage(temp).imageId
         }catch (e: OverFileSizeMaxException) {
-            logger.error("Í¼Æ¬ÎÄ¼ş¹ı´ó³¬¹ı30MB,Î»ÖÃ:K-uploadImgGroup(),ÎÄ¼şÃû:$file")
+            logger.error("å›¾ç‰‡æ–‡ä»¶è¿‡å¤§è¶…è¿‡30MB,ä½ç½®:K-uploadImgGroup(),æ–‡ä»¶å:$file")
             ""
         }catch (e:NullPointerException){
-            logger.error("ÉÏ´«Í¼Æ¬ÎÄ¼şÃûÒì³£,Î»ÖÃ:K-uploadImgGroup(),ÎÄ¼şÃû:$file")
+            logger.error("ä¸Šä¼ å›¾ç‰‡æ–‡ä»¶åå¼‚å¸¸,ä½ç½®:K-uploadImgGroup(),æ–‡ä»¶å:$file")
             ""
         }
     }
     suspend fun uploadImgMember(id: Long,qqid: Long, file: String): String {
         val temp = AIbot.getGroup(id)?:let{
-            logger.error("·¢ËÍÍ¼Æ¬ÕÒ²»µ½¶ÔÓ¦Èº×é,Î»ÖÃ:K-uploadImgGroup(),id:$id")
+            logger.error("å‘é€å›¾ç‰‡æ‰¾ä¸åˆ°å¯¹åº”ç¾¤ç»„,ä½ç½®:K-uploadImgGroup(),id:$id")
             return ""
         }
         val temp1 = temp[qqid]?:let{
-            logger.error("·¢ËÍÍ¼Æ¬ÕÒ²»µ½Ä¿±ê³ÉÔ±,Î»ÖÃ:K-uploadImgMember(),³ÉÔ±id:$qqid,ÈºÁÄid:$id")
+            logger.error("å‘é€å›¾ç‰‡æ‰¾ä¸åˆ°ç›®æ ‡æˆå‘˜,ä½ç½®:K-uploadImgMember(),æˆå‘˜id:$qqid,ç¾¤èŠid:$id")
             return ""
         }
         return try {
             File(file).uploadAsImage(temp1).imageId
         }catch (e: OverFileSizeMaxException) {
-            logger.error("Í¼Æ¬ÎÄ¼ş¹ı´ó³¬¹ı30MB,Î»ÖÃ:K-uploadImgGroup(),ÎÄ¼şÃû:$file")
+            logger.error("å›¾ç‰‡æ–‡ä»¶è¿‡å¤§è¶…è¿‡30MB,ä½ç½®:K-uploadImgGroup(),æ–‡ä»¶å:$file")
             ""
         }catch (e:NullPointerException){
-            logger.error("ÉÏ´«Í¼Æ¬ÎÄ¼şÃûÒì³£,Î»ÖÃ:K-uploadImgGroup(),ÎÄ¼şÃû:$file")
+            logger.error("ä¸Šä¼ å›¾ç‰‡æ–‡ä»¶åå¼‚å¸¸,ä½ç½®:K-uploadImgGroup(),æ–‡ä»¶å:$file")
             ""
         }
     }
@@ -176,43 +223,43 @@ object PluginMain : KotlinPlugin(
         return Image(id).queryUrl()
     }
 
-    //¶¨Ê±ÈÎÎñ
+    //å®šæ—¶ä»»åŠ¡
     fun scheduling(time: Long, id: Int){
         Timer("SettingUp", false).schedule(time) {
             cpp.ScheduleTask(id)
         }
     }
 
-    //½ûÑÔ
+    //ç¦è¨€
     suspend fun mute(qqid: Long, groupid: Long, time:Int):String{
         val group = AIbot.getGroup(groupid) ?: let{
-            logger.error("½ûÑÔÕÒ²»µ½¶ÔÓ¦Èº×é£¬Î»ÖÃK-mute()£¬gid:$groupid")
+            logger.error("ç¦è¨€æ‰¾ä¸åˆ°å¯¹åº”ç¾¤ç»„ï¼Œä½ç½®K-mute()ï¼Œgid:$groupid")
             return "E1"
         }
         val member = group[qqid] ?: let {
-            logger.error("½ûÑÔÕÒ²»µ½¶ÔÓ¦Èº³ÉÔ±£¬Î»ÖÃK-mute()£¬id:$qqid, gid:$groupid")
+            logger.error("ç¦è¨€æ‰¾ä¸åˆ°å¯¹åº”ç¾¤æˆå‘˜ï¼Œä½ç½®K-mute()ï¼Œid:$qqid, gid:$groupid")
             return "E2"
         }
         try {
             member.mute(time)
         }catch (e: PermissionDeniedException){
-            logger.error("Ö´ĞĞ½ûÑÔÊ§°Ü»úÆ÷ÈËÎŞÈ¨ÏŞ£¬Î»ÖÃ:K-mute()£¬Ä¿±êÈºid:$groupid£¬Ä¿±ê³ÉÔ±id:$qqid")
+            logger.error("æ‰§è¡Œç¦è¨€å¤±è´¥æœºå™¨äººæ— æƒé™ï¼Œä½ç½®:K-mute()ï¼Œç›®æ ‡ç¾¤id:$groupidï¼Œç›®æ ‡æˆå‘˜id:$qqid")
             return "E3"
         }catch (e:IllegalStateException){
-            logger.error("Ö´ĞĞ½ûÑÔÊ§°Ü½ûÑÔÊ±¼ä³¬³ö0s~30d£¬Î»ÖÃ:K-mute()£¬Ê±¼ä:$time")
+            logger.error("æ‰§è¡Œç¦è¨€å¤±è´¥ç¦è¨€æ—¶é—´è¶…å‡º0s~30dï¼Œä½ç½®:K-mute()ï¼Œæ—¶é—´:$time")
             return "E4"
         }
         return "Y"
     }
 
-    //²éÑ¯È¨ÏŞ
+    //æŸ¥è¯¢æƒé™
     fun kqueryM(qqid: Long, groupid: Long): String{
         val group = AIbot.getGroup(groupid) ?: let {
-            logger.error("²éÑ¯È¨ÏŞÕÒ²»µ½¶ÔÓ¦Èº×é£¬Î»ÖÃK-queryM()£¬gid:$groupid")
+            logger.error("æŸ¥è¯¢æƒé™æ‰¾ä¸åˆ°å¯¹åº”ç¾¤ç»„ï¼Œä½ç½®K-queryM()ï¼Œgid:$groupid")
             return "E1"
         }
         val member = group[qqid] ?: let {
-            logger.error("²éÑ¯È¨ÏŞÕÒ²»µ½¶ÔÓ¦Èº³ÉÔ±£¬Î»ÖÃK-queryM()£¬id:$qqid, gid:$groupid")
+            logger.error("æŸ¥è¯¢æƒé™æ‰¾ä¸åˆ°å¯¹åº”ç¾¤æˆå‘˜ï¼Œä½ç½®K-queryM()ï¼Œid:$qqid, gid:$groupid")
             return "E2"
         }
         return member.permission.level.toString()
@@ -220,11 +267,11 @@ object PluginMain : KotlinPlugin(
 
     suspend fun kkick(qqid: Long, groupid: Long, message: String):String{
         val group = AIbot.getGroup(groupid) ?: let {
-            logger.error("²éÑ¯È¨ÏŞÕÒ²»µ½¶ÔÓ¦Èº×é£¬Î»ÖÃK-queryM()£¬gid:$groupid")
+            logger.error("æŸ¥è¯¢æƒé™æ‰¾ä¸åˆ°å¯¹åº”ç¾¤ç»„ï¼Œä½ç½®K-queryM()ï¼Œgid:$groupid")
             return "E1"
         }
         val member = group[qqid] ?: let {
-            logger.error("²éÑ¯È¨ÏŞÕÒ²»µ½¶ÔÓ¦Èº³ÉÔ±£¬Î»ÖÃK-queryM()£¬id:$qqid, gid:$groupid")
+            logger.error("æŸ¥è¯¢æƒé™æ‰¾ä¸åˆ°å¯¹åº”ç¾¤æˆå‘˜ï¼Œä½ç½®K-queryM()ï¼Œid:$qqid, gid:$groupid")
             return "E2"
         }
         try {
@@ -240,26 +287,37 @@ object PluginMain : KotlinPlugin(
     }
     @MiraiInternalApi
     override fun onEnable(){
-        val now_tag = "v2.4.2"
-        println("µ±Ç°MiraiCP¿ò¼Ü°æ±¾:$now_tag")
-        logger.info("Æô¶¯³É¹¦")
-        logger.info("±¾ÏîÄ¿github´æ´¢¿â:https://github.com/Nambers/MiraiCP")
-        dll_name = "${dataFolder.absoluteFile}/$dll_name"
+        val now_tag = "v2.4.3"
+        println("å½“å‰MiraiCPæ¡†æ¶ç‰ˆæœ¬:$now_tag")
+        logger.info("å¯åŠ¨æˆåŠŸ")
+        logger.info("æœ¬é¡¹ç›®githubå­˜å‚¨åº“:https://github.com/Nambers/MiraiCP")
+        dll_name = "${dataFolder.absoluteFile}\\$dll_name"
+        val Configuration = "${dataFolder.absoluteFile}\\miraicp.txt"
+        if(!File(Configuration).exists() || !File(Configuration).isFile){
+            logger.error("é…ç½®æ–‡ä»¶$Configuration ä¸å­˜åœ¨ï¼Œä½¿ç”¨é»˜è®¤dllè·¯å¾„$dll_name")
+        }else {
+            val c = File(Configuration).readLines()
+            if (c.size != 1 || !File(c[0]).exists() || !File(c[0]).isFile || File(c[0]).extension != "dll") {
+                logger.error("é…ç½®æ–‡ä»¶$Configuration æ ¼å¼é”™è¯¯ï¼Œåº”åªåŒ…å«ä¸€è¡Œä¸”ä¸ºä¸€ä¸ªå·²å­˜åœ¨çš„dllæ–‡ä»¶ï¼Œä½¿ç”¨é»˜è®¤dllè·¯å¾„$dll_name")
+            }else{
+                dll_name = c[0]
+            }
+        }
         if(!File(dll_name).exists()){
-            logger.error("c++ÎÄ¼ş$dll_name ²»´æÔÚ")
+            logger.error("c++æ–‡ä»¶$dll_name ä¸å­˜åœ¨")
         }
         val ec = globalEventChannel()
         cpp = CPP_lib()
         if(cpp.ver != now_tag){
-            logger.error("¾¯¸æ:µ±Ç°MiraiCP¿ò¼Ü°æ±¾($now_tag)ºÍ×ªÔØµÄC++ SDK(${cpp.ver})²»Ò»ÖÂ")
+            logger.error("è­¦å‘Š:å½“å‰MiraiCPæ¡†æ¶ç‰ˆæœ¬($now_tag)å’ŒåŠ è½½çš„C++ SDK(${cpp.ver})ä¸ä¸€è‡´")
         }
         gson = Gson()
         ec.subscribeAlways<BotOnlineEvent> {
             AIbot = this.bot
         }
-        //ÅäÖÃÎÄ¼şÄ¿Â¼ "${dataFolder.absolutePath}/"
+        //é…ç½®æ–‡ä»¶ç›®å½• "${dataFolder.absolutePath}/"
         ec.subscribeAlways<GroupMessageEvent> {
-            //ÈºÏûÏ¢
+            //ç¾¤æ¶ˆæ¯
             cpp.Event(gson.toJson(
                 Config.GroupMessage(
                     this.group.id,
@@ -322,13 +380,13 @@ object PluginMain : KotlinPlugin(
             ))
         }
         ec.subscribeAlways<FriendMessageEvent> {
-            //ºÃÓÑĞÅÏ¢
+            //å¥½å‹ä¿¡æ¯
 
-            //Õë¶ÔÊ§Ğ§¹¦ÄÜµÄÁÙÊ±²¹¶¡
+            //é’ˆå¯¹å¤±æ•ˆåŠŸèƒ½çš„ä¸´æ—¶è¡¥ä¸
             //[mirai:service:128,<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-            //<msg serviceID="128" templateID="12345" action="native" brief="[Á´½Ó]ÑûÇëÄã¼ÓÈëÈºÁÄ" sourceMsgId="0" url="">
-            //<item layout="2"><picture cover=""/><title>ÑûÇëÄã¼ÓÈëÈºÁÄ</title><summary /></item>
-            //<data groupcode="1044565129" groupname="mirai ·Ç¹Ù·½ ¿ª·¢Èº" msgseq="1613736417225458" msgtype="2"/>
+            //<msg serviceID="128" templateID="12345" action="native" brief="[é“¾æ¥]é‚€è¯·ä½ åŠ å…¥ç¾¤èŠ" sourceMsgId="0" url="">
+            //<item layout="2"><picture cover=""/><title>é‚€è¯·ä½ åŠ å…¥ç¾¤èŠ</title><summary /></item>
+            //<data groupcode="1044565129" groupname="mirai éå®˜æ–¹ å¼€å‘ç¾¤" msgseq="1613736417225458" msgtype="2"/>
             //</msg>]
             if(this.message.contentToString().startsWith("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><msg serviceID=\"128\"")){
                 val mes = "<data[^>]+>".toRegex().find(this.message.contentToString())?.value
@@ -355,7 +413,7 @@ object PluginMain : KotlinPlugin(
             ))
         }
         ec.subscribeAlways<NewFriendRequestEvent>{
-            //×Ô¶¯Í¬ÒâºÃÓÑÉêÇë
+            //è‡ªåŠ¨åŒæ„å¥½å‹ç”³è¯·
             val r = cpp.Event(gson.toJson(
                 Config.NewFriendRequest(
                     this.fromId,
@@ -371,7 +429,7 @@ object PluginMain : KotlinPlugin(
             }
         }
         ec.subscribeAlways<BotInvitedJoinGroupRequestEvent>{
-            //×Ô¶¯Í¬Òâ¼ÓÈºÉêÇë
+            //è‡ªåŠ¨åŒæ„åŠ ç¾¤ç”³è¯·
             val r = cpp.Event(gson.toJson(
                 Config.GroupInvite(
                     this.groupId,

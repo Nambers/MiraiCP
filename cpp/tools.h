@@ -33,15 +33,18 @@ public:
 	jmethodID Query = NULL;
 	/*好友类*/
 	jmethodID SendMsg2F = NULL;
+	jmethodID SendMsg2FM = NULL;
 	jmethodID NickorNameF = NULL;
 	/*群聊成员类*/
 	jmethodID SendMsg2M = NULL;
+	jmethodID SendMsg2MM = NULL;
 	jmethodID NickorNameM = NULL;
 	jmethodID Mute = NULL;
 	jmethodID QueryP = NULL;
 	jmethodID KickM = NULL;
 	/*群聊类*/
 	jmethodID SendMsg2G = NULL;
+	jmethodID SendMsg2GM = NULL;
 	/*定时任务*/
 	jmethodID Schedule = NULL;
 	Config() {};
@@ -75,6 +78,24 @@ public:
 	* 返回值:string
 	*/
 	string JLongToString(jlong qqid);
+	/*
+	* 替换全部
+	* 来源:https://blog.csdn.net/yanchenyu365/article/details/89181129
+	*/
+	string& replace(string& str, const string& old_value, const string& new_value)
+	{
+		string::size_type pos = 0;
+		while ((pos = str.find(old_value, pos)) != string::npos)
+		{
+			str = str.replace(pos, old_value.length(), new_value);
+			if (new_value.length() > 0)
+			{
+				pos += new_value.length();
+			}
+		}
+		return str;
+
+	}
 };
 
 /*静态声明工具对象*/
@@ -342,11 +363,19 @@ public:
 	string toMiraiCode();
 };
 
+class LightApp {
+public:
+	string content = "";
+	LightApp(string content) {
+		this->content = content;
+	};
+	string toString() {
+		return "[mirai:app:" + tools.replace(tools.replace(content, "[", "\\["),"]","\\]") +"]";
+	}
+};
+
 /*好友类声明*/
 class Friend {
-private:
-	jmethodID Send_Msg_id = NULL;
-	jmethodID NickorName_id = NULL;
 public:
 	unsigned long id = NULL;
 	Friend(unsigned long);
@@ -355,23 +384,23 @@ public:
 	void init();
 	string nick;
 	/*发送信息*/
-	void SendMsg(jstring msg)throw(FriendException) {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Send_Msg_id, msg, (jlong)this->id));
+	void SendMiraiCode(string msg)throw(FriendException) {
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2F, tools.str2jstring(msg.c_str()), (jlong)this->id));
 		if (re == "E1") {
 			throw FriendException();
 		}
 	}
-	/*发送信息*/
 	void SendMsg(string msg)throw(FriendException) {
-		SendMsg(tools.str2jstring(msg.c_str()));
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2FM, tools.str2jstring(msg.c_str()), (jlong)this->id));
+		if (re == "E1") {
+			throw FriendException();
+		}
 	}
 };
 
 /*群成员类声明*/
 class Member {
 private:
-	jmethodID Send_Msg_id = NULL;
-	jmethodID NickorName_id = NULL;
 	jmethodID Mute_id = NULL;
 	jmethodID Query_permission = NULL;
 	jmethodID KickM = NULL;
@@ -392,8 +421,8 @@ public:
 		return "[mirai:at:" + to_string(this->id) + "] ";
 	}
 	/*发送信息*/
-	void SendMsg(jstring msg)throw(MemberException) {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Send_Msg_id, msg, (jlong)this->id, (jlong)this->groupid));
+	void SendMiraiCode(string msg)throw(MemberException) {
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2M, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
 		if (re == "E1") {
 			throw MemberException(1);
 		}
@@ -401,9 +430,14 @@ public:
 			throw MemberException(2);
 		}
 	}
-	/*发送信息*/
-	void SendMsg(string msg)throw(MemberException) {
-		SendMsg(tools.str2jstring(msg.c_str()));
+	void SendMsg(string msg) throw(MemberException) {
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2MM, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
+		if (re == "E1") {
+			throw MemberException(1);
+		}
+		if (re == "E2") {
+			throw MemberException(2);
+		}
 	}
 	/*禁言当前对象，单位是秒，最少0秒最大30天
 	* 返回值对应报错
@@ -420,8 +454,6 @@ public:
 
 /*群聊类声明*/
 class Group {
-private:
-	jmethodID Send_Msg_id = NULL;
 public:
 	/*群号*/
 	unsigned long id = NULL;
@@ -430,15 +462,17 @@ public:
 	void init() {};
 	Group() {};
 	/*发送信息*/
-	void SendMsg(jstring msg) throw(GroupException){
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2G, msg, (jlong)this->id));
+	void SendMiraiCode(string msg)throw(GroupException) {
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2G, tools.str2jstring(msg.c_str()), (jlong)this->id));
 		if (re == "E1") {
 			throw GroupException(1);
 		}
 	}
-	/*发送信息*/
-	void SendMsg(string msg)throw(GroupException) {
-		SendMsg(tools.str2jstring(msg.c_str()));
+	void SendMsg(string msg) throw(GroupException) {
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2GM, tools.str2jstring(msg.c_str()), (jlong)this->id));
+		if (re == "E1") {
+			throw GroupException(1);
+		}
 	}
 };
 

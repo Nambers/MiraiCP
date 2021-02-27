@@ -19,6 +19,10 @@ void Config::Init() throw(InitException) {
 	if (this->SendMsg2F == NULL) {
 		throw InitException("初始化错误", 3);
 	}
+	this->SendMsg2FM = env->GetStaticMethodID(CPP_lib, "SendPrivateMSGM", "(Ljava/lang/String;J)Ljava/lang/String;");
+	if (this->SendMsg2FM == NULL) {
+		throw InitException("初始化错误", 3);
+	}
 	this->NickorNameF = env->GetStaticMethodID(CPP_lib, "GetNick", "(J)Ljava/lang/String;");
 	if (this->NickorNameF == NULL) {
 		throw InitException("初始化错误", 4);
@@ -27,12 +31,20 @@ void Config::Init() throw(InitException) {
 	if (this->SendMsg2M == NULL) {
 		throw InitException("初始化错误", 5);
 	}
+	this->SendMsg2MM = env->GetStaticMethodID(CPP_lib, "SendPrivateM2MM", "(Ljava/lang/String;JJ)Ljava/lang/String;");
+	if (this->SendMsg2MM == NULL) {
+		throw InitException("初始化错误", 5);
+	}
 	this->NickorNameM = env->GetStaticMethodID(CPP_lib, "GetNameCard", "(JJ)Ljava/lang/String;");
 	if (this->NickorNameM == NULL) {
 		throw InitException("初始化错误", 6);
 	}
 	this->SendMsg2G = env->GetStaticMethodID(CPP_lib, "SendGroup", "(Ljava/lang/String;J)Ljava/lang/String;");
 	if (this->SendMsg2G == NULL) {
+		throw InitException("初始化错误", 7);
+	}
+	this->SendMsg2GM = env->GetStaticMethodID(CPP_lib, "SendGroupM", "(Ljava/lang/String;J)Ljava/lang/String;");
+	if (this->SendMsg2GM == NULL) {
 		throw InitException("初始化错误", 7);
 	}
 	this->Schedule = env->GetStaticMethodID(CPP_lib, "schedule", "(JI)V");
@@ -157,12 +169,10 @@ string Image::toMiraiCode() {
 
 /*好友类实现*/
 Friend::Friend(unsigned long id) {
-	this->Send_Msg_id = config->SendMsg2F;
-	this->NickorName_id = config->NickorNameF;
 	this->id = id;
 }
 void Friend::init()throw(FriendException) {
-	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->NickorName_id, (jlong)id, (jlong)id));
+	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->NickorNameF, (jlong)id, (jlong)id));
 	if(temp == "E1"){
 		throw FriendException();
 	}
@@ -174,13 +184,11 @@ Member::Member(unsigned long id, unsigned long groupid) {
 	this->id = id;
 	this->Mute_id = config->Mute;
 	this->groupid = groupid;
-	this->Send_Msg_id = config->SendMsg2M;
-	this->NickorName_id = config->NickorNameM;
 	this->Query_permission = config->QueryP;
 	this->KickM = config->KickM;
 }
 void Member::init() throw(MemberException){
-	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->NickorName_id, (jlong)id, (jlong)groupid));
+	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->NickorNameM, (jlong)id, (jlong)groupid));
 	if (temp == "E1") {
 		throw MemberException(1);
 	}
@@ -236,7 +244,6 @@ void Member::Kick(string reason) throw(BotException, MemberException) {
 
 /*群聊类实现*/
 Group::Group(unsigned long id) {
-	this->Send_Msg_id = config->SendMsg2G;
 	this->id = id;
 }
 
