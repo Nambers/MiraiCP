@@ -8,6 +8,8 @@ import org.example.mirai.plugin.PluginMain.GetNN
 import org.example.mirai.plugin.PluginMain.QueryImg
 import org.example.mirai.plugin.PluginMain.SendError
 import org.example.mirai.plugin.PluginMain.SendG
+import org.example.mirai.plugin.PluginMain.SendGM
+import org.example.mirai.plugin.PluginMain.SendM
 import org.example.mirai.plugin.PluginMain.SendWarning
 import org.example.mirai.plugin.PluginMain.kkick
 import org.example.mirai.plugin.PluginMain.kqueryM
@@ -49,6 +51,30 @@ class CPP_lib {
                 SendG(message, id)
             }
         }
+
+        //msg
+        @JvmStatic
+        fun SendPrivateMSGM(message: String, id: Long):String{
+            // 反向调用发送消息
+            return runBlocking {
+                SendM(message, id)
+            }
+
+        }
+        @JvmStatic
+        fun SendPrivateM2MM(message: String, id: Long, gid: Long): String{
+            // 反向调用发送消息
+            return runBlocking {
+                SendM(message, id, gid)
+            }
+        }
+        @JvmStatic
+        fun SendGroupM(message:String,id:Long):String {
+            return runBlocking {
+                SendGM(message, id)
+            }
+        }
+
         //查询图片下载链接
         @JvmStatic
         fun QueryImgUrl(id:String): String {

@@ -1,5 +1,4 @@
 package org.example.mirai.plugin
-
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.Bot
@@ -11,7 +10,7 @@ import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.broadcast
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.code.MiraiCode
-import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiInternalApi
@@ -19,15 +18,16 @@ import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import net.mamoe.mirai.utils.PlatformLogger
-import java.io.File
-import java.lang.Long.valueOf
-import java.util.*
-import kotlin.concurrent.schedule
 import org.fusesource.jansi.AnsiConsole
 import org.json.JSONObject
+import java.io.File
+import java.lang.Long.valueOf
 import java.net.URL
+import java.util.*
+import kotlin.concurrent.schedule
+import net.mamoe.mirai.message.data.MessageChain.Companion.deserializeFromMiraiCode
 
-val now_tag = "v2.4.2"
+val now_tag = "v2.4.3"
 
 object KotlinMain {
     private var friend_cache = ArrayList<NormalMember>(0)
@@ -48,7 +48,8 @@ object KotlinMain {
         logger.error(log)
     }
 
-    //发送消息部分实现
+    //发送消息部分实现 MiraiCode
+
     suspend fun Send(message: String, id: Long) :String{
         //反向调用
         logger.info("Send message for($id) is $message")
@@ -56,7 +57,7 @@ object KotlinMain {
             logger.error("发送消息找不到好友，位置:K-Send()，id:$id")
             return "E1"
         }
-        f.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        f.sendMessage(EmptyMessageChain.deserializeFromMiraiCode(message, f))
         return "Y"
     }
 
@@ -77,7 +78,7 @@ object KotlinMain {
             logger.error("发送消息找不到群成员，位置K-Send()，id:$id，gid:$gid")
             return "E2"
         }
-        f.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        f.sendMessage(EmptyMessageChain.deserializeFromMiraiCode(message, f))
         return "Y"
     }
 
@@ -87,7 +88,51 @@ object KotlinMain {
             logger.error("发送群消息异常找不到群组，位置K-SendG，gid:$id")
             return "E1"
         }
-        g.sendMessage(MiraiCode.deserializeMiraiCode(message))
+        g.sendMessage(EmptyMessageChain.deserializeFromMiraiCode(message, g))
+        return "Y"
+    }
+
+    //Msg
+
+    suspend fun SendM(message: String, id: Long) :String{
+        //反向调用
+        logger.info("Send message for($id) is $message")
+        val f = AIbot.getFriend(id) ?: let {
+            logger.error("发送消息找不到好友，位置:K-Send()，id:$id")
+            return "E1"
+        }
+        f.sendMessage(message)
+        return "Y"
+    }
+
+    suspend fun SendM(message: String, id: Long, gid: Long):String {
+        //反向调用
+        logger.info("Send message for a member($id) is $message")
+        for (a in friend_cache) {
+            if (a.id == id && a.group.id == gid) {
+                a.sendMessage(message)
+                return "Y"
+            }
+        }
+        val G = AIbot.getGroup(gid) ?: let {
+            logger.error("发送消息找不到群聊，位置K-Send()，id:$gid")
+            return "E1"
+        }
+        val f = G[id] ?: let {
+            logger.error("发送消息找不到群成员，位置K-Send()，id:$id，gid:$gid")
+            return "E2"
+        }
+        f.sendMessage(message)
+        return "Y"
+    }
+
+    suspend fun SendGM(message: String, id: Long):String {
+        logger.info("Send message for Group($id) is $message")
+        val g = AIbot.getGroup(id) ?: let {
+            logger.error("发送群消息异常找不到群组，位置K-SendG，gid:$id")
+            return "E1"
+        }
+        g.sendMessage(message)
         return "Y"
     }
 
@@ -258,7 +303,7 @@ object KotlinMain {
         AIbot = bot
         logger=bot.logger
         if(cpp.ver != now_tag){
-            logger.error("警告:当前MiraiCP框架版本($now_tag)和转载的C++ SDK(${cpp.ver})不一致")
+            logger.error("警告:当前MiraiCP框架版本($now_tag)和加载的C++ SDK(${cpp.ver})不一致")
         }
         val gson = Gson()
         val globalEventChannel = bot.eventChannel
@@ -342,7 +387,6 @@ object KotlinMain {
         }
         globalEventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
-
             //针对失效功能的临时补丁
             //[mirai:service:128,<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
             //<msg serviceID="128" templateID="12345" action="native" brief="[链接]邀请你加入群聊" sourceMsgId="0" url="">
@@ -365,16 +409,6 @@ object KotlinMain {
                         BotInvitedJoinGroupRequestEvent(this.bot,ida.toLong(),this.sender.id,groupid.toLong(),groupname,this.sender.nick)
                             .broadcast()
                 }
-                return@subscribeAlways
-            }
-            if(this.message.contentToString() == "1"){
-                this.sender.sendMessage(MiraiCode.deserializeMiraiCode("""
-                    [mirai:service:128,<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-            <msg serviceID="128" templateID="12345" action="native" brief="[链接]邀请你加入群聊" sourceMsgId="0" url="">
-            <item layout="2"><picture cover=""/><title>邀请你加入群聊</title><summary /></item>
-            <data groupcode="1044565129" groupname="mirai 非官方 开发群" msgseq="1613736417225458" msgtype="2"/>
-            </msg>]
-                """.trimIndent()))
                 return@subscribeAlways
             }
             cpp.Event(
