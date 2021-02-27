@@ -92,7 +92,7 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](GroupMessageEvent e) {
 		e.init();
-		//风格1，适合文字暂时，不能交互
+		//风格1，适合文字展示，不能交互,无大图
 		//图标地址，应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接
 		string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
 		//小标题
@@ -120,9 +120,9 @@ unsigned long id = 0;
 			"\"host\":{\"uin\":1000000,\"nick\":\"应用消息\"},"
 			"\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\""+icon1+"\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
 		e.group.SendMiraiCode(LightApp(a).toString());
-		//风格3，可以跳转到网址
+		//风格3，可以跳转到网址，有预览图
 		//跳转链接
-		string url = "https://www.baiduc.com";
+		string url = "https://www.baidu.com";
 		//icon图标,应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接
 		string icon2 = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
 		//预览图(大图),应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接
