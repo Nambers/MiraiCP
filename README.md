@@ -71,6 +71,7 @@ mirai需要openjdk而不是甲骨文的jdk,如下载openjdk15/openjdk11
 8. 把`.jar`文件(也就是配套插件)拷贝进mcl的plugin文件夹下
 9. 运行一次mcl，然后不管有无报错，不要登录，直接退出(目的是生成data路径)
 10. 打开mcl目录下的`data/miraiCP`路径(可能名字随着mirai版本的迭代会更改，包含MiraiCP即可)，把上面的.dll文件复制进来
+	或把.dll文件放到任意位置，然后在`data/miraiCP`(可能名字随着mirai版本的迭代会更改，包含MiraiCP即可)下创建一个`miraicp.txt`把.dll的绝对路径写进去并不要写其他东西
 11. 运行mcl
 
 ### 3.2 使用MiraiCP-Loader整合包
