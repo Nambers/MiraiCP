@@ -23,7 +23,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* 
 	catch (MiraiCPException e) {
 		e.raise();
 	}
-	return tools.str2jstring("v2.4.1");//验证机制，返回当前SDK版本
+	return tools.str2jstring("v2.4.3");//验证机制，返回当前SDK版本
 }
 /* 插件结束事件*/
 JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
