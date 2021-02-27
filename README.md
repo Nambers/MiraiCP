@@ -66,7 +66,7 @@ mirai需要openjdk而不是甲骨文的jdk,如下载openjdk15/openjdk11
 3. 打开`cpp`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于cpp文件夹下的c++项目
 4. 在`procession.cpp`里自定义你自己的代码
 5. 生成.dll文件
-6. 复制`cpp/x64/Release/`这个路径下的`.dll`文件，留着下面有用
+6. 留意`cpp/x64/Release/`或`cpp/x64/Debug`(取决于你用哪个方案生成)这个路径下的`.dll`文件，留着下面有用
 7. 打开上面下载的mcl文件夹
 8. 把`.jar`文件(也就是配套插件)拷贝进mcl的plugin文件夹下
 9. 运行一次mcl，然后不管有无报错，不要登录，直接退出(目的是生成data路径)
@@ -78,7 +78,7 @@ mirai需要openjdk而不是甲骨文的jdk,如下载openjdk15/openjdk11
 2. 打开`cpp`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于cpp文件夹下的c++项目
 3. 在`procession.cpp`里自定义你自己的代码
 4. 生成.dll文件
-5. 留意`cpp/x64/Release/`这个路径下的`.dll`文件，留着下面有用
+5. 留意`cpp/x64/Release/`或`cpp/x64/Debug`(取决于你用哪个方案生成)这个路径下的`.dll`文件，留着下面有用
 6. 更改run.bat文件里的启动参数，以\[qq号，密码和mirai-demo.dll路径(也就是上一步的.dll，可以复制出来，run.bat里可填相对路径或绝对路径),是否检测更新(可选，如果检查输入1否则不填)\]格式填写
 7. 运行run.bat
 
