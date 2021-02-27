@@ -104,4 +104,5 @@ Mirai支持的qq表情对应序号 [faces.md](https://github.com/Nambers/MiraiCP
 - [ ] 增加更多事件
 - [ ] 写文档
 - [ ] 加入构造xml的自动解析器，如歌曲，参考<https://github.com/khjxiaogu/MiraiSongPlugin>
-- [ ] 插件增加选择mirai-demo.dll路径和名称
+	- [x] 增加json的解析器(lightapp)，可发送卡片 
+- [x] 插件增加选择mirai-demo.dll路径和名称
