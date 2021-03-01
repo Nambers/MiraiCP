@@ -29,6 +29,7 @@ class Config {
 public:
 	jclass CPP_lib = NULL;
 	jclass initexception = NULL;
+	jmethodID recallMsgM = NULL;
 	/*图像类*/
 	jmethodID Query = NULL;
 	/*好友类*/
@@ -181,7 +182,7 @@ public:
 		switch (type)
 		{
 		case 1:
-			this->description = "没有权限禁言";
+			this->description = "没有权限禁言/撤回";
 			break;
 		}
 	}
@@ -302,6 +303,58 @@ public:
 private:
 	string description;
 };
+//撤回异常
+class RecallException: public MiraiCPException{
+public:
+	RecallException() {
+		this->description = "该消息已经被撤回";
+	}
+	string what() {
+		return this->description;
+	}
+private:
+	string description = "";
+};
+
+/*小程序发送卡片*/
+class LightApp {
+public:
+	string content = "";
+	//使用纯文本构造，推荐使用其他结构体方法构造
+	LightApp(string content) {
+		this->content = content;
+	}
+	//样式1,适合文字展示，无大图，不能交互
+	LightApp(LightAppStyle1 c) {
+		this->content = "{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"0.0.0.1\",\"prompt\":\"[应用]\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"notification\":{\"appInfo\":"
+			"{\"appName\":\"" + c.appName + "\",\"appType\":4,\"appid\":1109659848,"
+			"\"iconUrl\":\"" + c.icon + "\"},"
+			"\"data\":[" + c.titles + "],"
+			"\"title\":\"" + c.title + "\",\"button\":"
+			"[" + c.buttons + "],"
+			"\"emphasis_keyword\":\"\"}},\"text\":\"\",\"sourceAd\":\"\"}";
+	}
+	//样式2，有大图，不能交互
+	LightApp(LightAppStyle2 c) {
+		this->content = "{\"config\":"
+			"{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
+			"\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"1.0.0.103\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
+			"\"meta\":{\"detail_1\":{\"appid\":\"1110081493\",\"preview\":\"" + c.preview + "\",\"shareTemplateData\":{},"
+			"\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"" + c.title2 + "\",\"title\":\"" + c.title + "\","
+			"\"host\":{\"uin\":0,\"nick\":\"\"},"
+			"\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" + c.icon + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
+	}
+	//样式3，有大图，可以在电脑qq显示，并在电脑上点击的链接会跳转
+	LightApp(LightAppStyle3 c) {
+		this->content = "{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
+			"\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"0.0.0.1\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
+			"\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\"" + c.preview + "\",\"shareTemplateData\":{},\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"" + c.title + "\",\"title\":\"" + c.description + "\","
+			"\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" + c.icon + "\",\"qqdocurl\":\"" + c.url + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
+	}
+	string toString() {
+		return "[mirai:app:" + tools.replace(tools.replace(content, "[", "\\["), "]", "\\]") + "]";
+	}
+};
 
 /*图像类声明*/
 class Image {
@@ -363,14 +416,20 @@ public:
 	string toMiraiCode();
 };
 
-class LightApp {
+//消息源声明
+class MessageSource {
 public:
-	string content = "";
-	LightApp(string content) {
-		this->content = content;
-	};
-	string toString() {
-		return "[mirai:app:" + tools.replace(tools.replace(content, "[", "\\["),"]","\\]") +"]";
+	string source;
+	MessageSource() {};
+	MessageSource(string t) {
+		this->source = t;
+	}
+	void recall() {
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM, 
+			tools.str2jstring(this->source.c_str())));
+		if (re == "Y") return;
+		if (re == "E1") throw BotException(1);
+		if (re == "E2") throw RecallException();
 	}
 };
 
@@ -384,17 +443,19 @@ public:
 	void init();
 	string nick;
 	/*发送信息*/
-	void SendMiraiCode(string msg)throw(FriendException) {
+	MessageSource SendMiraiCode(string msg)throw(FriendException) {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2F, tools.str2jstring(msg.c_str()), (jlong)this->id));
 		if (re == "E1") {
 			throw FriendException();
 		}
+		return MessageSource(re);
 	}
-	void SendMsg(string msg)throw(FriendException) {
+	MessageSource SendMsg(string msg)throw(FriendException) {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2FM, tools.str2jstring(msg.c_str()), (jlong)this->id));
 		if (re == "E1") {
 			throw FriendException();
 		}
+		return MessageSource(re);
 	}
 };
 
@@ -421,7 +482,7 @@ public:
 		return "[mirai:at:" + to_string(this->id) + "] ";
 	}
 	/*发送信息*/
-	void SendMiraiCode(string msg)throw(MemberException) {
+	MessageSource SendMiraiCode(string msg)throw(MemberException) {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2M, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
 		if (re == "E1") {
 			throw MemberException(1);
@@ -429,8 +490,9 @@ public:
 		if (re == "E2") {
 			throw MemberException(2);
 		}
+		return MessageSource(re);
 	}
-	void SendMsg(string msg) throw(MemberException) {
+	MessageSource SendMsg(string msg) throw(MemberException) {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2MM, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
 		if (re == "E1") {
 			throw MemberException(1);
@@ -438,6 +500,7 @@ public:
 		if (re == "E2") {
 			throw MemberException(2);
 		}
+		return MessageSource(re);
 	}
 	/*禁言当前对象，单位是秒，最少0秒最大30天
 	* 返回值对应报错
@@ -462,17 +525,19 @@ public:
 	void init() {};
 	Group() {};
 	/*发送信息*/
-	void SendMiraiCode(string msg)throw(GroupException) {
+	MessageSource SendMiraiCode(string msg)throw(GroupException) {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2G, tools.str2jstring(msg.c_str()), (jlong)this->id));
 		if (re == "E1") {
 			throw GroupException(1);
 		}
+		return MessageSource(re);
 	}
-	void SendMsg(string msg) throw(GroupException) {
+	MessageSource SendMsg(string msg) throw(GroupException) {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2GM, tools.str2jstring(msg.c_str()), (jlong)this->id));
 		if (re == "E1") {
 			throw GroupException(1);
 		}
+		return MessageSource(re);
 	}
 };
 
@@ -485,14 +550,17 @@ public:
 	Member sender;
 	//信息本体
 	string message;
+	//消息源
+	MessageSource messageSource;
 	void init() {
 		group.init();
 		sender.init();
 	}
-	GroupMessageEvent(Group g, Member f, string s) {
+	GroupMessageEvent(Group g, Member f, string s, MessageSource s1) {
 		this->group = g;
 		this->sender = f;
 		this->message = s;
+		this->messageSource = s1;
 	}
 };
 
@@ -503,12 +571,15 @@ public:
 	Friend sender;
 	//附带消息
 	string message;
+	//信息源
+	MessageSource messageSource;
 	void init() throw(FriendException){
 		this->sender.init();
 	}
-	PrivateMessageEvent(Friend f, string s) {
+	PrivateMessageEvent(Friend f, string s, MessageSource ms) {
 		this->sender = f;
 		this->message = s;
+		this->messageSource = ms;
 	}
 };
 
@@ -613,9 +684,7 @@ public:
 	}
 };
 
-/*
-启动定时任务,time是多少毫秒后开始，id是自定义标识符
-*/
+/*启动定时任务,time是多少毫秒后开始，id是自定义标识符*/
 void SetScheduling(long time, int id);
 
 /*监听类声明*/

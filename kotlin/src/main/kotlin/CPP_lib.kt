@@ -14,6 +14,7 @@ import org.example.mirai.plugin.PluginMain.SendWarning
 import org.example.mirai.plugin.PluginMain.kkick
 import org.example.mirai.plugin.PluginMain.kqueryM
 import org.example.mirai.plugin.PluginMain.mute
+import org.example.mirai.plugin.PluginMain.recallMsg
 import org.example.mirai.plugin.PluginMain.scheduling
 import org.example.mirai.plugin.PluginMain.uploadImgFriend
 import org.example.mirai.plugin.PluginMain.uploadImgGroup
@@ -75,6 +76,13 @@ class CPP_lib {
             }
         }
 
+        //recall
+        @JvmStatic
+        fun recall(source: String):String {
+            return runBlocking {
+                recallMsg(source)
+            }
+        }
         //查询图片下载链接
         @JvmStatic
         fun QueryImgUrl(id:String): String {
