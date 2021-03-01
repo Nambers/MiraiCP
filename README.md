@@ -101,8 +101,4 @@ Mirai支持的qq表情对应序号 [faces.md](https://github.com/Nambers/MiraiCP
 2. 覆盖旧的`.mirai.jar`插件或者`.jar`loader
 3. 把`cpp`文件夹下的全部单个文件覆盖(json和include文件夹不需要),主要为`pch.h`(预编译头文件),`pch.cpp`(dll入口点),`tools.h`(各种事件及对象类声明),`tools.cpp`(tools.h里的声明的实现),`constants.h`(常量表)
 # TODO
-- [ ] 增加更多事件
-- [ ] 写文档
-- [ ] 加入构造xml的自动解析器，如歌曲，参考<https://github.com/khjxiaogu/MiraiSongPlugin>
-	- [x] 增加json的解析器(lightapp)，可发送卡片 
-- [x] 插件增加选择mirai-demo.dll路径和名称
+查看[本项目的milestones里程碑](https://github.com/Nambers/MiraiCP/milestones)
