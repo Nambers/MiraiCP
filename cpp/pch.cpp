@@ -55,19 +55,27 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 	}
 	try {
 		switch (root["type"].asInt()) {
-		case 1:
+		case 1: {
 			//GroupMessage
 			procession->broadcast(GroupMessageEvent(
 				Group(root["groupid"].asLargestUInt()),
 				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt()),
-				root["message"].asCString()));
+				root["message"].asCString(),
+				MessageSource(root["Source"].asCString())
+			)
+			);
 			return tools.str2jstring("NULL");
-		case 2:
+		}
+		case 2: {
 			//私聊消息
 			procession->broadcast(PrivateMessageEvent(
 				Friend(root["senderid"].asLargestUInt()),
-				root["message"].asCString()));
+				root["message"].asCString(),
+				MessageSource(root["Source"].asCString())
+			)
+			);
 			return tools.str2jstring("NULL");
+		}
 		case 3:
 			//群聊邀请
 			return tools.str2jstring(procession->broadcast(GroupInviteEvent(

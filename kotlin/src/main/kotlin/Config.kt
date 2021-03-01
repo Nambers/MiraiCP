@@ -6,11 +6,13 @@ class Config {
         val groupid: Long,
         val senderid: Long,
         val message: String,
+        val Source: String,
         val type: Int = 1
     )
     data class PrivateMessage(
         val senderid: Long,
         val message: String,
+        val Source: String,
         val type: Int = 2
     )
     //ÈºÑûÇë

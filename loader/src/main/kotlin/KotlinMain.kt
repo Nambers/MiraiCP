@@ -1,6 +1,7 @@
 package org.example.mirai.plugin
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.alsoLogin
@@ -9,15 +10,15 @@ import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.broadcast
 import net.mamoe.mirai.event.events.*
+import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
+import net.mamoe.mirai.message.data.MessageSource.Key.recall
+import net.mamoe.mirai.utils.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiInternalApi
-import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
-import net.mamoe.mirai.utils.OverFileSizeMaxException
-import net.mamoe.mirai.utils.PlatformLogger
+import org.example.mirai.plugin.KotlinMain.now_tag
 import org.fusesource.jansi.AnsiConsole
 import org.json.JSONObject
 import java.io.File
@@ -25,16 +26,18 @@ import java.lang.Long.valueOf
 import java.net.URL
 import java.util.*
 import kotlin.concurrent.schedule
-import net.mamoe.mirai.message.data.MessageChain.Companion.deserializeFromMiraiCode
 
-val now_tag = "v2.4.3"
 
 object KotlinMain {
+    private val json =Json{
+        serializersModule = MessageSerializers.serializersModule
+    }
+    const val now_tag = "v2.4.3"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
     private lateinit var AIbot: Bot
     private lateinit var cpp: CPP_lib
-    lateinit var logger:MiraiLogger
+    private lateinit var logger:MiraiLogger
     //日志部分实现
     fun BasicSendLog(log: String) {
         logger.info(log)
@@ -57,8 +60,8 @@ object KotlinMain {
             logger.error("发送消息找不到好友，位置:K-Send()，id:$id")
             return "E1"
         }
-        f.sendMessage(EmptyMessageChain.deserializeFromMiraiCode(message, f))
-        return "Y"
+        return json.encodeToString(MessageSource.Serializer,
+            f.sendMessage(MiraiCode.deserializeMiraiCode(message)).source)
     }
 
     suspend fun Send(message: String, id: Long, gid: Long):String {
@@ -66,8 +69,9 @@ object KotlinMain {
         logger.info("Send message for a member($id) is $message")
         for (a in friend_cache) {
             if (a.id == id && a.group.id == gid) {
-                a.sendMessage(message)
-                return "Y"
+                a.sendMessage(MiraiCode.deserializeMiraiCode(message, a))
+                return json.encodeToString(MessageSource.Serializer,
+                    a.sendMessage(MiraiCode.deserializeMiraiCode(message)).source)
             }
         }
         val G = AIbot.getGroup(gid) ?: let {
@@ -78,8 +82,7 @@ object KotlinMain {
             logger.error("发送消息找不到群成员，位置K-Send()，id:$id，gid:$gid")
             return "E2"
         }
-        f.sendMessage(EmptyMessageChain.deserializeFromMiraiCode(message, f))
-        return "Y"
+        return json.encodeToString(MessageSource.Serializer, f.sendMessage(MiraiCode.deserializeMiraiCode(message)).source)
     }
 
     suspend fun SendG(message: String, id: Long):String {
@@ -88,8 +91,8 @@ object KotlinMain {
             logger.error("发送群消息异常找不到群组，位置K-SendG，gid:$id")
             return "E1"
         }
-        g.sendMessage(EmptyMessageChain.deserializeFromMiraiCode(message, g))
-        return "Y"
+        return json.encodeToString(MessageSource.Serializer,
+            g.sendMessage(MiraiCode.deserializeMiraiCode(message)).source)
     }
 
     //Msg
@@ -101,8 +104,7 @@ object KotlinMain {
             logger.error("发送消息找不到好友，位置:K-Send()，id:$id")
             return "E1"
         }
-        f.sendMessage(message)
-        return "Y"
+        return json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
     }
 
     suspend fun SendM(message: String, id: Long, gid: Long):String {
@@ -110,8 +112,7 @@ object KotlinMain {
         logger.info("Send message for a member($id) is $message")
         for (a in friend_cache) {
             if (a.id == id && a.group.id == gid) {
-                a.sendMessage(message)
-                return "Y"
+                return json.encodeToString(MessageSource.Serializer, a.sendMessage(message).source)
             }
         }
         val G = AIbot.getGroup(gid) ?: let {
@@ -122,8 +123,7 @@ object KotlinMain {
             logger.error("发送消息找不到群成员，位置K-Send()，id:$id，gid:$gid")
             return "E2"
         }
-        f.sendMessage(message)
-        return "Y"
+        return json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
     }
 
     suspend fun SendGM(message: String, id: Long):String {
@@ -132,8 +132,7 @@ object KotlinMain {
             logger.error("发送群消息异常找不到群组，位置K-SendG，gid:$id")
             return "E1"
         }
-        g.sendMessage(message)
-        return "Y"
+        return json.encodeToString(MessageSource.Serializer, g.sendMessage(message).source)
     }
 
     //取昵称或名片部分
@@ -219,6 +218,21 @@ object KotlinMain {
 
     suspend fun QueryImg(id: String): String {
         return Image(id).queryUrl()
+    }
+
+    //recall
+    suspend fun recallMsg(a:String): String {
+        val source = json.decodeFromString(MessageSource.Serializer,a)
+        try{
+            source.recall()
+        }catch (e:PermissionDeniedException){
+            logger.error("机器人无权限撤回")
+            return "E1"
+        }catch(e:IllegalStateException){
+            logger.error("该消息已被撤回")
+            return "E2"
+        }
+        return "Y"
     }
 
     //定时任务
@@ -307,8 +321,59 @@ object KotlinMain {
         }
         val gson = Gson()
         val globalEventChannel = bot.eventChannel
-        logger.info(cpp.ver)//输出2333 正常
+        logger.info(cpp.ver)//输出版本
         //配置文件目录 "${dataFolder.absolutePath}/"
+        globalEventChannel.subscribeAlways<FriendMessageEvent> {
+            //好友信息
+            //针对失效功能的临时补丁
+            //[mirai:service:128,<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+            //<msg serviceID="128" templateID="12345" action="native" brief="[链接]邀请你加入群聊" sourceMsgId="0" url="">
+            //<item layout="2"><picture cover=""/><title>邀请你加入群聊</title><summary /></item>
+            //<data groupcode="1044565129" groupname="mirai 非官方 开发群" msgseq="1613736417225458" msgtype="2"/>
+            //</msg>]
+            if(this.message.contentToString().startsWith("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><msg serviceID=\"128\"")) {
+                val mes = "<data[^>]+>".toRegex().find(this.message.contentToString())?.value
+                val groupid = mes?.let { it1 ->
+                    Regex("groupcode=\"[0-9]+\"").find(it1)?.value
+                        ?.replace("\"", "")
+                        ?.replace("groupcode=", "")
+                }
+                val ida = mes?.let { it3 ->
+                    Regex("msgseq=\"[0-9]+\"").find(it3)?.value
+                        ?.replace("\"", "")
+                        ?.replace("msgseq=", "")
+                }
+                val groupname = mes?.let { it2 ->
+                    Regex("groupname=\"(.*)\" msgseq").find(it2)?.value
+                        ?.replace("\"", "")
+                        ?.replace("msgseq", "")
+                        ?.replace("groupname=", "")
+                }
+                if (ida != null && groupid != null && groupname != null) {
+                    BotInvitedJoinGroupRequestEvent(
+                        this.bot,
+                        ida.toLong(),
+                        this.sender.id,
+                        groupid.toLong(),
+                        groupname,
+                        this.sender.nick
+                    )
+                        .broadcast()
+                }
+                return@subscribeAlways
+            }
+            cpp.Event(
+                gson.toJson(
+                    Config.PrivateMessage(
+                        this.sender.id,
+                        this.message.serializeToMiraiCode(),
+                        json.encodeToString(MessageSource.Serializer,
+                            this.message[MessageSource]!!)
+                    )
+                )
+            )
+        }
+
         globalEventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
             cpp.Event(
@@ -316,7 +381,8 @@ object KotlinMain {
                     Config.GroupMessage(
                         this.group.id,
                         this.sender.id,
-                        this.message.serializeToMiraiCode()
+                        this.message.serializeToMiraiCode(),
+                        json.encodeToString(MessageSource.Serializer,this.message[MessageSource]!!)
                     )
                 )
             )
@@ -385,41 +451,6 @@ object KotlinMain {
                 )
             )
         }
-        globalEventChannel.subscribeAlways<FriendMessageEvent> {
-            //好友信息
-            //针对失效功能的临时补丁
-            //[mirai:service:128,<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-            //<msg serviceID="128" templateID="12345" action="native" brief="[链接]邀请你加入群聊" sourceMsgId="0" url="">
-            //<item layout="2"><picture cover=""/><title>邀请你加入群聊</title><summary /></item>
-            //<data groupcode="1044565129" groupname="mirai 非官方 开发群" msgseq="1613736417225458" msgtype="2"/>
-            //</msg>]
-            if(this.message.contentToString().startsWith("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><msg serviceID=\"128\"")){
-                val mes = "<data[^>]+>".toRegex().find(this.message.contentToString())?.value
-                val groupid = mes?.let { it1 -> Regex("groupcode=\"[0-9]+\"").find(it1)?.value
-                    ?.replace("\"", "")
-                    ?.replace("groupcode=", "") }
-                val ida = mes?.let{it3->Regex("msgseq=\"[0-9]+\"").find(it3)?.value
-                    ?.replace("\"", "")
-                    ?.replace("msgseq=", "") }
-                val groupname = mes?.let{it2->Regex("groupname=\"(.*)\" msgseq").find(it2)?.value
-                    ?.replace("\"", "")
-                    ?.replace("msgseq", "")
-                    ?.replace("groupname=", "") }
-                if (ida != null && groupid != null && groupname != null) {
-                        BotInvitedJoinGroupRequestEvent(this.bot,ida.toLong(),this.sender.id,groupid.toLong(),groupname,this.sender.nick)
-                            .broadcast()
-                }
-                return@subscribeAlways
-            }
-            cpp.Event(
-                gson.toJson(
-                    Config.PrivateMessage(
-                        this.sender.id,
-                        this.message.serializeToMiraiCode()
-                    )
-                )
-            )
-        }
         globalEventChannel.subscribeAlways<NewFriendRequestEvent> {
             //自动同意好友申请
             val r = cpp.Event(
@@ -466,6 +497,8 @@ fun CheckUpdate(){
     val tag = JSONObject(URL("https://api.github.com/repos/Nambers/MiraiCP/releases/latest").readText()).getString("tag_name")
     if(tag != now_tag)println("有最新可用版:$tag，前往:https://github.com/Nambers/MiraiCP/releases/latest下载")
 }
+
+@MiraiExperimentalApi
 @MiraiInternalApi
 fun main(args: Array<String>){
     // qqid, passworld, dllpath, checkupdate

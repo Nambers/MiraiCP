@@ -63,6 +63,10 @@ void Config::Init() throw(InitException) {
 	if (this->KickM == NULL) {
 		throw InitException("初始化错误", 11);
 	}
+	this->recallMsgM = env->GetStaticMethodID(CPP_lib, "recall", "(Ljava/lang/String;)Ljava/lang/String;");
+	if (this->recallMsgM == NULL) {
+		throw InitException("初始化错误", 12);
+	}
 }
 Config::~Config() {
 	genv->DeleteGlobalRef(this->CPP_lib);
