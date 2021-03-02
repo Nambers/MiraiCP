@@ -5,6 +5,7 @@
   * [取当前消息里全部照片的下载链接](#取当前消息里全部照片的下载链接)
   * [执行定时任务](#执行定时任务)
   * [发送LightAPP-以小程序形式发送卡片](#发送LightAPP以小程序形式发送卡片)
+  * [撤回信息](#撤回信息)
   * [各类事件](#各类事件)
     * [群成员退出](#群成员退出)
     * [好友申请](#好友申请)
@@ -89,6 +90,20 @@ unsigned long id = 0;
 ...
 ```
 ## 发送LightAPP(以小程序形式发送卡片)
+通过模板构建发送:
+```C++
+	procession->registerEvent([](GroupMessageEvent e) {
+		e.init();
+		//修改里面的属性从而自定义
+		LightAppStyle1 a = LightAppStyle1();
+		LightAppStyle2 b = LightAppStyle2();
+		LightAppStyle3 c = LightAppStyle3();
+		e.group.SendMiraiCode(LightApp(a).toMiraiCode());
+		e.group.SendMiraiCode(LightApp(b).toMiraiCode());
+		e.group.SendMiraiCode(LightApp(c).toMiraiCode());
+	});
+```
+或者通过文本构建
 ```C++
 	procession->registerEvent([](GroupMessageEvent e) {
 		e.init();
@@ -131,6 +146,19 @@ unsigned long id = 0;
 			"\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"0.0.0.1\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
 			"\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\""+preview+"\",\"shareTemplateData\":{},\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"Test1\",\"title\":\"Test3\",\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\""+icon+"\",\"qqdocurl\":\""+url+"\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
 		e.group.SendMiraiCode(LightApp(b).toString());
+		});
+```
+## 撤回信息
+```C++
+	procession->registerEvent([](GroupMessageEvent e) {
+		e.init();
+		try {
+			e.messageSource.recall();
+			e.group.SendMsg("hi").recall();
+		}
+		catch (MiraiCPException) {
+			logger->Error("错误");
+		}
 		});
 ```
 ## 各类事件
@@ -205,7 +233,21 @@ unsigned long id = 0;
 		param.group.SendMsg(param.sender.at());
 		});	
 ```
+### 撤回信息
+```C++
+	procession->registerEvent([](RecallEvent e) {
+		e.init();
+		if (e.type == 2) {
+			Group g = Group(e.groupid);
+			g.init();
+			g.SendMsg(to_string(e.operatorid) + "撤回了" + 
+				to_string(e.authorid) + "的一条信息");
+			
+		}
+		});
+```
 ## 群成员操作
+
 ### 踢出群成员
 ```C++
 	procession->registerEvent([](GroupMessageEvent e) {
