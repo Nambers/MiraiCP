@@ -13,6 +13,7 @@
     * [机器人被邀请进群](#机器人被邀请进群)
     * [私聊信息](#私聊信息)
     * [群聊信息](#群聊信息)
+    * [撤回信息事件](#撤回信息事件)
   * [群成员操作](#群成员操作)
   	* [踢出群成员](#踢出群成员)
 
@@ -233,7 +234,7 @@ unsigned long id = 0;
 		param.group.SendMsg(param.sender.at());
 		});	
 ```
-### 撤回信息
+### 撤回信息事件
 ```C++
 	procession->registerEvent([](RecallEvent e) {
 		e.init();
