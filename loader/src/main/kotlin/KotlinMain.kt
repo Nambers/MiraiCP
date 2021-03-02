@@ -32,7 +32,7 @@ object KotlinMain {
     private val json =Json{
         serializersModule = MessageSerializers.serializersModule
     }
-    const val now_tag = "v2.4.3"
+    const val now_tag = "v2.4.4"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
     private lateinit var AIbot: Bot
@@ -469,6 +469,37 @@ object KotlinMain {
                     reject()
                 }
             }
+        }
+        globalEventChannel.subscribeAlways<MessageRecallEvent.FriendRecall> {
+            cpp.Event(
+                gson.toJson(
+                    Config.RecallEvent(
+                        1,
+                        this.authorId,
+                        this.operatorId,
+                        this.messageIds.toString(),
+                        this.messageInternalIds.toString(),
+                        this.messageTime
+                    )
+                )
+            )
+
+        }
+        globalEventChannel.subscribeAlways<MessageRecallEvent.GroupRecall> {
+            cpp.Event(
+                gson.toJson(
+                    Config.RecallEvent(
+                        2,
+                        this.authorId,
+                        this.operator!!.id,
+                        this.messageIds.toString(),
+                        this.messageInternalIds.toString(),
+                        this.messageTime,
+                        this.group.id
+                    )
+                )
+            )
+
         }
         globalEventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
