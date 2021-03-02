@@ -418,15 +418,19 @@ public:
 
 //消息源声明
 class MessageSource {
-public:
+private:
 	string source;
+public:
+	string toString() {
+		return source;
+	}
 	MessageSource() {};
 	MessageSource(string t) {
 		this->source = t;
 	}
 	void recall() {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM, 
-			tools.str2jstring(this->source.c_str())));
+			tools.str2jstring(this->toString().c_str())));
 		if (re == "Y") return;
 		if (re == "E1") throw BotException(1);
 		if (re == "E2") throw RecallException();
@@ -674,6 +678,38 @@ public:
 	}
 };
 
+/*撤回信息*/
+class RecallEvent {
+public:
+	/*
+	为1时是好友撤回，为2时为群聊内撤回
+	*/
+	int type = 0;
+	//时间戳
+	int time = 0;
+	//原发送者
+	unsigned long authorid = 0;
+	//撤回者
+	unsigned long operatorid = 0;
+	//信息id
+	string ids;
+	//内部ids
+	string internalids;
+	//当type是2的时候存在，否则为0
+	unsigned long groupid;
+	RecallEvent() {}
+	RecallEvent(int t, int t2, unsigned long a, unsigned long o, string id, string ii, unsigned long g = 0) {
+		this->type = t;
+		this->time = t2;
+		this->authorid = a;
+		this->operatorid = o;
+		this->ids = id;
+		this->internalids = ii;
+		this->groupid = g;
+	}
+	void init() {}
+};
+
 /*定时任务执行*/
 class SchedulingEvent {
 public:
@@ -696,6 +732,7 @@ private:
 	typedef std::function<bool(NewFriendRequestEvent)> NFRE;
 	typedef std::function<void(MemberJoinEvent)> MJ;
 	typedef std::function<void(MemberLeaveEvent)> ML;
+	typedef std::function<void(RecallEvent)> R;
 	typedef std::function<void(SchedulingEvent)> S;
 
 	/*
@@ -708,6 +745,7 @@ private:
 	NFRE NFREf = [](NewFriendRequestEvent)->bool {return true; };
 	MJ MJf = [](MemberJoinEvent)->void {};
 	ML MLf = [](MemberLeaveEvent)->void {};
+	R RE = [](RecallEvent) -> void {};
 	S Sf = [](SchedulingEvent)->void {};
 public:
 	/*
@@ -730,12 +768,10 @@ public:
 		this->MJf(g);
 	}
 	void broadcast(MemberLeaveEvent g) {
-		try {
-			this->MLf(g);
-		}
-		catch (MiraiCPException e) {
-			e.raise();
-		}
+		this->MLf(g);
+	}
+	void broadcast(RecallEvent r) {
+		this->RE(r);
 	}
 	void broadcast(SchedulingEvent g) {
 		this->Sf(g);
@@ -762,6 +798,9 @@ public:
 	}
 	void registerEvent(ML f) {
 		this->MLf = move(f);
+	}
+	void registerEvent(R r) {
+		this->RE = move(r);
 	}
 	void registerEvent(S f) {
 		this->Sf = f;

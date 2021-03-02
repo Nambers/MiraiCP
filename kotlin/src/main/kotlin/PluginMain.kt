@@ -303,7 +303,7 @@ object PluginMain : KotlinPlugin(
     }
     @MiraiInternalApi
     override fun onEnable(){
-        val now_tag = "v2.4.3"
+        val now_tag = "v2.4.4"
         println("当前MiraiCP框架版本:$now_tag")
         logger.info("启动成功")
         logger.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
@@ -395,6 +395,37 @@ object PluginMain : KotlinPlugin(
                     )
                 )
             )
+        }
+        ec.subscribeAlways<MessageRecallEvent.FriendRecall> {
+            cpp.Event(
+                gson.toJson(
+                    Config.RecallEvent(
+                        1,
+                        this.authorId,
+                        this.operatorId,
+                        this.messageIds.toString(),
+                        this.messageInternalIds.toString(),
+                        this.messageTime
+                    )
+                )
+            )
+
+        }
+        ec.subscribeAlways<MessageRecallEvent.GroupRecall> {
+            cpp.Event(
+                gson.toJson(
+                    Config.RecallEvent(
+                        2,
+                        this.authorId,
+                        this.operator!!.id,
+                        this.messageIds.toString(),
+                        this.messageInternalIds.toString(),
+                        this.messageTime,
+                        this.group.id
+                    )
+                )
+            )
+
         }
         ec.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
