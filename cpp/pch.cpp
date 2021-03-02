@@ -23,7 +23,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* 
 	catch (MiraiCPException e) {
 		e.raise();
 	}
-	return tools.str2jstring("v2.4.3");//验证机制，返回当前SDK版本
+	return tools.str2jstring("v2.4.4");//验证机制，返回当前SDK版本
 }
 /* 插件结束事件*/
 JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
@@ -109,6 +109,17 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 				Member(
 					root["operatorid"].asLargestUInt(),
 					root["groupid"].asLargestUInt())
+			));
+			return tools.str2jstring("NULL");
+		case 7:
+			procession->broadcast(RecallEvent(
+				root["Etype"].asInt(),
+				root["time"].asInt(),
+				root["authorid"].asLargestUInt(),
+				root["operatorid"].asLargestUInt(),
+				root["ids"].asCString(),
+				root["internalids"].asCString(),
+				root["groupid"].asLargestUInt()
 			));
 			return tools.str2jstring("NULL");
 		}

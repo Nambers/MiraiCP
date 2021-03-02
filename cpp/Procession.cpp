@@ -27,6 +27,17 @@ void onEnable() {
 			logger->Error("错误");
 		}
 		});
+	procession->registerEvent([](RecallEvent e) {
+		e.init();
+		if (e.type == 2) {
+			Group g = Group(e.groupid);
+			g.init();
+			g.SendMsg(to_string(e.operatorid) + "撤回了" + 
+				to_string(e.authorid) + "的一条信息");
+			
+		}
+		});
+	
 
 }
 void onDisable() {

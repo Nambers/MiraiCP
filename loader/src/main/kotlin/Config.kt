@@ -54,4 +54,15 @@ class Config {
         val operatorid: Long = 0,
         val type: Int = 6
     )
+    //³·»Ø
+    data class RecallEvent(
+        val Etype: Int,
+        val authorid: Long,
+        val operatorid: Long,
+        val ids: String,
+        val internalids: String,
+        val time: Int,
+        val groupid: Long = 0,
+        val type: Int = 7
+    )
 }
