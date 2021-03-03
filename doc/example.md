@@ -2,6 +2,10 @@
 
 * [MiraiCP案例库](#miraicp案例库)
 * [注意事项](#注意事项)
+  * [构建对象](#构建对象)
+	* [构建群成员](#构建群成员)
+	* [构建好友](#构建好友)
+	* [构建群](#构建群)
   * [取当前消息里全部照片的下载链接](#取当前消息里全部照片的下载链接)
   * [执行定时任务](#执行定时任务)
   * [发送LightAPP-以小程序形式发送卡片](#发送LightAPP以小程序形式发送卡片)
@@ -64,6 +68,22 @@ void onDisable() {
 	}
 	});
 ...
+```
+# 构建对象
+## 构建群成员
+用群号和群成员qq号构建一个群成员对象，失败时会抛出MemberException，可以对群成员对象执行mute, kick, getnamecard，以及sendmsg
+```C++
+Member(groupid, qqid);
+```
+## 构建好友
+用qq号构建一个好友对象，失败时会抛出FriendException，可以对好友对象sendmsg
+```C++
+Friend(qqid);
+```
+## 构建群
+用群号构建一个群对象，失败时抛出GroupException，可以对群对象sendmsg，getMemberList,和取群名称
+```C++
+Group(groupid);
 ```
 ## 执行定时任务
 因为env的局部性，所以在c++部分的多线程什么的并不具备反向调用kotlin部分发送消息或其他操作的能力，所以要把延迟调用移到kotlin部分，在miraiCP中封装成一个事件，即`SchedulingEvent`

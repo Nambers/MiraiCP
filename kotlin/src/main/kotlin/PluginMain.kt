@@ -170,6 +170,28 @@ object PluginMain : KotlinPlugin(
 
     }
 
+    //取群名称
+    fun QueryNG(groupid: Long): String {
+        val g = AIbot.getGroup(groupid)?:let{
+            logger.error("找不到群")
+            return "E1"
+        }
+        return g.name
+    }
+
+    //取群成员列表
+    fun QueryML(groupid: Long): String {
+        val g = AIbot.getGroup(groupid) ?: let {
+            logger.error("找不到群")
+            return "E1"
+        }
+        val m = ArrayList<Long>()
+        g.members.forEach{
+            m.add(it.id)
+        }
+        return Gson().toJson(m)
+    }
+
     //图片部分实现
     suspend fun uploadImgFriend(id: Long, file: String): String {
         val temp = AIbot.getFriend(id)?:let{
