@@ -46,6 +46,8 @@ public:
 	/*群聊类*/
 	jmethodID SendMsg2G = NULL;
 	jmethodID SendMsg2GM = NULL;
+	jmethodID QueryN = NULL;
+	jmethodID QueryML = NULL;
 	/*定时任务*/
 	jmethodID Schedule = NULL;
 	Config() {};
@@ -521,12 +523,23 @@ public:
 
 /*群聊类声明*/
 class Group {
+private:
+	string memberlist = "";
 public:
 	/*群号*/
 	unsigned long id = NULL;
+	/*群名称*/
+	string name = "";
+	/*取群成员列表-vector<long>*/
+	vector<long> getMemberList();
+	/*以string格式取群成员列表
+	格式：
+		每个群成员id间用逗号分隔
+	*/
+	string MemberListToString();
 	Group(unsigned long);
 	//初始化当前对象，可能抛出异常-暂无需求
-	void init() {};
+	void init();
 	Group() {};
 	/*发送信息*/
 	MessageSource SendMiraiCode(string msg)throw(GroupException) {

@@ -17,16 +17,6 @@ void onEnable() {
 		...
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
-	procession->registerEvent([](GroupMessageEvent e) {
-		e.init();
-		try {
-			e.messageSource.recall();
-			e.group.SendMsg("hi").recall();
-		}
-		catch (MiraiCPException) {
-			logger->Error("错误");
-		}
-		});
 	procession->registerEvent([](RecallEvent e) {
 		e.init();
 		if (e.type == 2) {
@@ -36,6 +26,11 @@ void onEnable() {
 				to_string(e.authorid) + "的一条信息");
 			
 		}
+		});
+	procession->registerEvent([](GroupMessageEvent e) {
+		e.init();
+		e.group.SendMsg(e.group.name);
+		e.group.SendMsg(e.group.MemberListToString());
 		});
 	
 
