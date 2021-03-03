@@ -6,6 +6,8 @@ import org.example.mirai.plugin.PluginMain.dll_name
 import org.example.mirai.plugin.PluginMain.GetN
 import org.example.mirai.plugin.PluginMain.GetNN
 import org.example.mirai.plugin.PluginMain.QueryImg
+import org.example.mirai.plugin.PluginMain.QueryML
+import org.example.mirai.plugin.PluginMain.QueryNG
 import org.example.mirai.plugin.PluginMain.SendError
 import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendGM
@@ -156,6 +158,15 @@ class CPP_lib {
             return runBlocking {
                 kkick(qqid, groupid, message)
             }
+        }
+        @JvmStatic
+        fun queryNG(groupid: Long): String {
+            return QueryNG(groupid)
+        }
+        @JvmStatic
+        fun queryML(groupid: Long):String{
+            return QueryML(groupid)
+
         }
     }
 

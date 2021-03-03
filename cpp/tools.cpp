@@ -6,6 +6,7 @@ throw: InitxException 即找不到对应签名
 */
 void Config::Init() throw(InitException) {
 	JNIEnv* env = genv;
+	
 	this->initexception = env->FindClass("java/lang/NoSuchMethodException");
 	this->CPP_lib = (jclass)env->NewGlobalRef(env->FindClass("org/example/mirai/plugin/CPP_lib"));
 	if (this->CPP_lib == NULL) {
@@ -66,6 +67,14 @@ void Config::Init() throw(InitException) {
 	this->recallMsgM = env->GetStaticMethodID(CPP_lib, "recall", "(Ljava/lang/String;)Ljava/lang/String;");
 	if (this->recallMsgM == NULL) {
 		throw InitException("初始化错误", 12);
+	}
+	this->QueryML = env->GetStaticMethodID(CPP_lib, "queryML", "(J)Ljava/lang/String;");
+	if (this->QueryML == NULL) {
+		throw InitException("初始化错误", 13);
+	}
+	this->QueryN = env->GetStaticMethodID(CPP_lib, "queryNG", "(J)Ljava/lang/String;");
+	if (this->QueryN == NULL) {
+		throw InitException("初始化错误", 14);
 	}
 }
 Config::~Config() {
@@ -249,6 +258,49 @@ void Member::Kick(string reason) throw(BotException, MemberException) {
 /*群聊类实现*/
 Group::Group(unsigned long id) {
 	this->id = id;
+}
+
+void Group::init() {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib,
+		config->QueryN,
+		(jlong)this->id));
+	if (re == "E1") {
+		throw GroupException(1);
+	}
+	this->name = re;
+	re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib,
+		config->QueryML,
+		(jlong)this->id));
+	if (re == "E1") {
+		throw GroupException(1);
+	}
+	this->memberlist = re;
+}
+
+vector<long> Group::getMemberList() {
+	vector<long> result;
+	string temp = this->memberlist;
+	temp.erase(temp.begin());
+	temp.pop_back();
+	std::regex ws_re("[,]+");
+	std::vector<std::string> v(std::sregex_token_iterator(temp.begin(), temp.end(), ws_re, -1),
+		std::sregex_token_iterator());
+	for (auto&& s : v)
+		result.push_back(atoi(s.c_str()));
+	return result;
+}
+
+string Group::MemberListToString() {
+	vector<long> a = getMemberList();
+	std::stringstream ss;
+	for (size_t i = 0; i < a.size(); ++i)
+	{
+		if (i != 0)
+			ss << ",";
+		ss << a[i];
+	}
+	std::string s = ss.str();
+	return s;
 }
 
 /*工具类实现*/

@@ -6,6 +6,8 @@ import org.example.mirai.plugin.KotlinMain.dll_name
 import org.example.mirai.plugin.KotlinMain.GetN
 import org.example.mirai.plugin.KotlinMain.GetNN
 import org.example.mirai.plugin.KotlinMain.QueryImg
+import org.example.mirai.plugin.KotlinMain.QueryML
+import org.example.mirai.plugin.KotlinMain.QueryNG
 import org.example.mirai.plugin.KotlinMain.SendError
 import org.example.mirai.plugin.KotlinMain.SendG
 import org.example.mirai.plugin.KotlinMain.SendGM
@@ -158,8 +160,16 @@ class CPP_lib {
                 kkick(qqid, groupid, message)
             }
         }
-    }
+        @JvmStatic
+        fun queryNG(groupid: Long): String {
+            return QueryNG(groupid)
+        }
+        @JvmStatic
+        fun queryML(groupid: Long):String{
+            return QueryML(groupid)
 
+        }
+    }
 
     external fun Verify(): String
     external fun Event(content: String): String
