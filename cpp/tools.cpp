@@ -76,6 +76,9 @@ void Config::Init() throw(InitException) {
 	if (this->QueryN == NULL) {
 		throw InitException("初始化错误", 14);
 	}
+	this->uploadImgF= genv->GetStaticMethodID(config->CPP_lib, "uploadImgF", "(JLjava/lang/String;)Ljava/lang/String;");
+	this->uploadImgG = genv->GetStaticMethodID(config->CPP_lib, "uploadImgG", "(JLjava/lang/String;)Ljava/lang/String;");
+	this->uploadImgM = genv->GetStaticMethodID(config->CPP_lib, "uploadImgM", "(JJLjava/lang/String;)Ljava/lang/String;");
 }
 Config::~Config() {
 	genv->DeleteGlobalRef(this->CPP_lib);
@@ -141,43 +144,8 @@ vector<string> Image::GetImgIdsFromMiraiCode(string MiraiCode) {
 	}
 	return result;
 }
-Image Image::uploadImg2Friend(unsigned long id, string filename) {
-	ifstream fin(filename);
-	if (!fin) {
-		logger->Error("文件不存在,位置:C-uploadImg2Friend(),文件名:" + filename);
-		fin.close();
-		throw invalid_argument("NO_FILE_ERROR");
-	}
-	fin.close();
-	jmethodID m = genv->GetStaticMethodID(config->CPP_lib, "uploadImgF", "(JLjava/lang/String;)Ljava/lang/String;");
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, m, (jlong)id, tools.str2jstring(filename.c_str())));
-	return Image(re);
-}
-Image Image::uploadImg2Group(unsigned long groupid, string filename) {
-	ifstream fin(filename);
-	if (!fin) {
-		logger->Error("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
-		fin.close();
-		throw invalid_argument("NO_FILE_ERROR");
-	}
-	fin.close();
-	jmethodID m = genv->GetStaticMethodID(config->CPP_lib, "uploadImgG", "(JLjava/lang/String;)Ljava/lang/String;");
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, m, (jlong)groupid, tools.str2jstring(filename.c_str())));
-	return Image(re);
-}
-Image Image::uploadImg2Member(unsigned long groupid, unsigned long qqid, string filename) {
-	ifstream fin(filename);
-	if (!fin) {
-		fin.close();
-		throw IOException("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
-	}
-	fin.close();
-	jmethodID m = genv->GetStaticMethodID(config->CPP_lib, "uploadImgM", "(JJLjava/lang/String;)Ljava/lang/String;");
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, m, (jlong)groupid, (jlong)qqid, tools.str2jstring(filename.c_str())));
-	return Image(re);
-}
 string Image::toMiraiCode() {
-	return "[mirai:image:" + this->id + "] ";
+	return "[mirai:image:" + this->id + "]";
 }
 
 /*好友类实现*/
@@ -190,6 +158,17 @@ void Friend::init()throw(FriendException) {
 		throw FriendException();
 	}
 	this->nick = temp;
+}
+Image Friend::uploadImg(string filename) {
+	ifstream fin(filename);
+	if (!fin) {
+		logger->Error("文件不存在,位置:C-Friend::uploadImg(),文件名:" + filename);
+		fin.close();
+		throw invalid_argument("NO_FILE_ERROR");
+	}
+	fin.close();
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgF, (jlong)this->id, tools.str2jstring(filename.c_str())));
+	return Image(re);
 }
 
 /*成员类实现*/
@@ -254,12 +233,21 @@ void Member::Kick(string reason) throw(BotException, MemberException) {
 		throw BotException(1);
 	}
 }
+Image Member::uploadImg(string filename) {
+	ifstream fin(filename);
+	if (!fin) {
+		fin.close();
+		throw IOException("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
+	}
+	fin.close();
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgM, (jlong)groupid, (jlong)id, tools.str2jstring(filename.c_str())));
+	return Image(re);
+}
 
 /*群聊类实现*/
 Group::Group(unsigned long id) {
 	this->id = id;
 }
-
 void Group::init() {
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib,
 		config->QueryN,
@@ -276,7 +264,6 @@ void Group::init() {
 	}
 	this->memberlist = re;
 }
-
 vector<long> Group::getMemberList() {
 	vector<long> result;
 	string temp = this->memberlist;
@@ -289,7 +276,6 @@ vector<long> Group::getMemberList() {
 		result.push_back(atoi(s.c_str()));
 	return result;
 }
-
 string Group::MemberListToString() {
 	vector<long> a = getMemberList();
 	std::stringstream ss;
@@ -302,7 +288,17 @@ string Group::MemberListToString() {
 	std::string s = ss.str();
 	return s;
 }
-
+Image Group::uploadImg(string filename) {
+	ifstream fin(filename);
+	if (!fin) {
+		logger->Error("文件不存在,位置:C++部分 Group::uploadImg2(),文件名:" + filename);
+		fin.close();
+		throw invalid_argument("NO_FILE_ERROR");
+	}
+	fin.close();
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgG, (jlong)this->id, tools.str2jstring(filename.c_str())));
+	return Image(re);
+}
 /*工具类实现*/
 string Tools::jstring2str(jstring jStr)
 {

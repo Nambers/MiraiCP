@@ -36,15 +36,18 @@ public:
 	jmethodID SendMsg2F = NULL;
 	jmethodID SendMsg2FM = NULL;
 	jmethodID NickorNameF = NULL;
+	jmethodID uploadImgF = NULL;
 	/*群聊成员类*/
 	jmethodID SendMsg2M = NULL;
 	jmethodID SendMsg2MM = NULL;
 	jmethodID NickorNameM = NULL;
 	jmethodID Mute = NULL;
 	jmethodID QueryP = NULL;
+	jmethodID uploadImgM = NULL;
 	jmethodID KickM = NULL;
 	/*群聊类*/
 	jmethodID SendMsg2G = NULL;
+	jmethodID uploadImgG = NULL;
 	jmethodID SendMsg2GM = NULL;
 	jmethodID QueryN = NULL;
 	jmethodID QueryML = NULL;
@@ -318,8 +321,61 @@ private:
 	string description = "";
 };
 
+//消息源声明
+class MessageSource {
+private:
+	string source;
+public:
+	string toString() {
+		return source;
+	}
+	MessageSource() {};
+	MessageSource(string t) {
+		this->source = t;
+	}
+	void recall() {
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM,
+			tools.str2jstring(this->toString().c_str())));
+		if (re == "Y") return;
+		if (re == "E1") throw BotException(1);
+		if (re == "E2") throw RecallException();
+	}
+};
+
+//MiraiCode
+class MiraiCodeable {
+public:
+	virtual string toMiraiCode() = 0;
+};
+class MiraiCode {
+private:
+	string content = "";
+public:
+	string toString() {
+		return content;
+	}
+	MiraiCode(MiraiCodeable* a) {
+		content = a->toMiraiCode();
+	}
+	MiraiCode(string a) {
+		content = a;
+	}
+	MiraiCode operator+(MiraiCodeable* a) {
+		return MiraiCode(content + a->toMiraiCode());
+	}
+	MiraiCode operator+(string a) {
+		return MiraiCode(content + a);
+	}
+	MiraiCode plus(MiraiCodeable* a) {
+		return MiraiCode(content + a->toMiraiCode());
+	}
+	MiraiCode plus(string a) {
+		return MiraiCode(content + a);
+	}
+};
+
 /*小程序发送卡片*/
-class LightApp {
+class LightApp: public MiraiCodeable {
 public:
 	string content = "";
 	//使用纯文本构造，推荐使用其他结构体方法构造
@@ -359,7 +415,7 @@ public:
 };
 
 /*图像类声明*/
-class Image {
+class Image: public MiraiCodeable {
 private:
 	jmethodID Query = NULL;
 public:
@@ -378,35 +434,6 @@ public:
 	*/
 	Image(string);
 	/*
-	* 上传本地图片，务必要用绝对路径
-	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到好友
-	* 最大支持图片大小为30MB
-	* 可能抛出invalid_argument异常代表路径无效
-	* 示例:
-			param.sender.
-			(Image::uploadImg2Friend(param.env, param.sender.id, "C:\\Users\\***\\Desktop\\a.jpg").toMiraiCode());
-	*/
-	static Image uploadImg2Friend(unsigned long, string);
-	/*
-	* 上传本地图片，务必要用绝对路径
-	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
-	* 最大支持图片大小为30MB
-	* 可能抛出invalid_argument异常代表路径无效
-	* 示例:
-			param.group.SendMsg(Image::uploadImg2Group(param.env, param.group.id, "C:\\Users\\***\\Desktop\\a.jpg").toMiraiCode());
-	*/
-	static Image uploadImg2Group(unsigned long, string);
-	/*
-   * 上传本地图片，务必要用绝对路径
-   * 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
-   * 最大支持图片大小为30MB
-   * 可能抛出invalid_argument异常代表路径无效
-   * 示例:
-		   param.sender.SendMsg(Image::uploadImg2Member(param.env, param.group.id, param.sender.id, "C:\\Users\\***\\Desktop\\a.jpg").toMiraiCode());
-   */
-	static Image uploadImg2Member(unsigned long, unsigned long, string);
-
-	/*
 	* 获取图片下载url
 	*/
 	string queryURL();
@@ -418,27 +445,6 @@ public:
 	string toMiraiCode();
 };
 
-//消息源声明
-class MessageSource {
-private:
-	string source;
-public:
-	string toString() {
-		return source;
-	}
-	MessageSource() {};
-	MessageSource(string t) {
-		this->source = t;
-	}
-	void recall() {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM, 
-			tools.str2jstring(this->toString().c_str())));
-		if (re == "Y") return;
-		if (re == "E1") throw BotException(1);
-		if (re == "E2") throw RecallException();
-	}
-};
-
 /*好友类声明*/
 class Friend {
 public:
@@ -447,8 +453,22 @@ public:
 	Friend() {};
 	//初始化当前对象，可能抛出异常
 	void init();
+	//昵称
 	string nick;
+	/*
+	* 上传本地图片，务必要用绝对路径
+	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到好友
+	* 最大支持图片大小为30MB
+	* 可能抛出invalid_argument异常代表路径无效
+	*/
+	Image uploadImg(string filename);
 	/*发送信息*/
+	MessageSource SendMiraiCode(MiraiCodeable* msg) {
+		return SendMiraiCode(msg->toMiraiCode());
+	}
+	MessageSource SendMiraiCode(MiraiCode msg) {
+		return SendMiraiCode(msg.toString());
+	}
 	MessageSource SendMiraiCode(string msg)throw(FriendException) {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2F, tools.str2jstring(msg.c_str()), (jlong)this->id));
 		if (re == "E1") {
@@ -480,14 +500,23 @@ public:
 	Member(unsigned long qqid, unsigned long groupid);
 	//初始化当前对象，可能抛出异常
 	void init();
+	/*
+	* 上传本地图片，务必要用绝对路径
+	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
+	* 最大支持图片大小为30MB
+	* 可能抛出invalid_argument异常代表路径无效
+	*/
+	Image uploadImg(string filename);
 	Member() {};
 	int getPermission();
 	string nameCard = "";
-	/*返回at这个人的miraicode*/
-	string at() {
-		return "[mirai:at:" + to_string(this->id) + "] ";
-	}
 	/*发送信息*/
+	MessageSource SendMiraiCode(MiraiCodeable* msg) {
+		return SendMiraiCode(msg->toMiraiCode());
+	}
+	MessageSource SendMiraiCode(MiraiCode msg) {
+		return SendMiraiCode(msg.toString());
+	}
 	MessageSource SendMiraiCode(string msg)throw(MemberException) {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2M, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
 		if (re == "E1") {
@@ -538,10 +567,23 @@ public:
 	*/
 	string MemberListToString();
 	Group(unsigned long);
+	/*
+	* 上传本地图片，务必要用绝对路径
+	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
+	* 最大支持图片大小为30MB
+	* 可能抛出invalid_argument异常代表路径无效
+	*/
+	Image uploadImg(string filename);
 	//初始化当前对象，可能抛出异常-暂无需求
 	void init();
 	Group() {};
 	/*发送信息*/
+	MessageSource SendMiraiCode(MiraiCodeable* msg) {
+		return SendMiraiCode(msg->toMiraiCode());
+	}
+	MessageSource SendMiraiCode(MiraiCode msg) {
+		return SendMiraiCode(msg.toString());
+	}
 	MessageSource SendMiraiCode(string msg)throw(GroupException) {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2G, tools.str2jstring(msg.c_str()), (jlong)this->id));
 		if (re == "E1") {
@@ -557,6 +599,17 @@ public:
 		return MessageSource(re);
 	}
 };
+
+/*At一个群成员*/
+string At(Member a) {
+	/*返回at这个人的miraicode*/
+	return "[mirai:at:" + to_string(a.id) + "] ";
+}
+/*用qq号at一个群成员*/
+string At(long a) {
+	/*返回at这个人的miraicode*/
+	return "[mirai:at:" + to_string(a) + "] ";
+}
 
 /*群消息事件声明*/
 class GroupMessageEvent {
