@@ -17,20 +17,10 @@ void onEnable() {
 		...
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
-	procession->registerEvent([](RecallEvent e) {
-		e.init();
-		if (e.type == 2) {
-			Group g = Group(e.groupid);
-			g.init();
-			g.SendMsg(to_string(e.operatorid) + "撤回了" + 
-				to_string(e.authorid) + "的一条信息");
-			
-		}
-		});
 	procession->registerEvent([](GroupMessageEvent e) {
 		e.init();
-		e.group.SendMsg(e.group.name);
-		e.group.SendMsg(e.group.MemberListToString());
+		e.group.SendMiraiCode(MiraiCode("a") + &e.group.uploadImg("C:\\Users\\19308\\Desktop\\aa.jpg") + "c");
+		e.group.SendMiraiCode(MiraiCode("a").plus(&e.group.uploadImg("C:\\Users\\19308\\Desktop\\aa.jpg")).plus("c"));
 		});
 	
 
