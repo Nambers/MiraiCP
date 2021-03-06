@@ -1,5 +1,4 @@
 #include "pch.h"
-#include<algorithm>
 
 unsigned long groupid = 0;
 void onEnable() {
