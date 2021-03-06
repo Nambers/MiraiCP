@@ -603,12 +603,12 @@ public:
 /*At一个群成员*/
 string At(Member a) {
 	/*返回at这个人的miraicode*/
-	return "[mirai:at:" + to_string(a.id) + "] ";
+	return "[mirai:at:" + to_string(a.id) + "]";
 }
 /*用qq号at一个群成员*/
 string At(long a) {
 	/*返回at这个人的miraicode*/
-	return "[mirai:at:" + to_string(a) + "] ";
+	return "[mirai:at:" + to_string(a) + "]";
 }
 
 /*群消息事件声明*/
