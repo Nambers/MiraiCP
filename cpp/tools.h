@@ -54,7 +54,7 @@ public:
 	/*定时任务*/
 	jmethodID Schedule = NULL;
 	Config() {};
-	void Init();
+	void Init(jobject);
 	~Config();
 };
 
