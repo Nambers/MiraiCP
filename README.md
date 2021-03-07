@@ -13,7 +13,8 @@
 * [更新方式](#更新方式)
 * [TODO](#todo)
 * [许可](#许可)
-
+> **Tips~**
+> 如有意向一起开发本项目，请联系我邮箱(`1930893235@qq.com`) (￣▽￣)"
 # 使用声明
 
 0. MiraiCP是一个[Mirai](https://github.com/mamoe/mirai) 的C++语言的社区SDK，基于Mirai-console和Mirai-core插件模板开发
