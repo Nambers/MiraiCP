@@ -12,7 +12,7 @@ application {
     mainClass.set("org.example.mirai.plugin.KotlinMainKt")
     mainClassName = "org.example.mirai.plugin.KotlinMainKt"
 }
-group = "org.example"
+group = "me.Eritque_arcus"
 version = "2.4.4"
 
 repositories {

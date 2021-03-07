@@ -4,7 +4,7 @@
 配置类实现
 throw: InitxException 即找不到对应签名
 */
-void Config::Init() throw(InitException) {
+void Config::Init(jobject job) throw(InitException) {
 	JNIEnv* env = genv;
 	
 	this->initexception = env->FindClass("java/lang/NoSuchMethodException");
@@ -191,7 +191,7 @@ void Member::init() throw(MemberException){
 	this->permission = getPermission();
 }
 int Member::getPermission() throw(MemberException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Query_permission, (jlong)id, (jlong)groupid));
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->QueryP, (jlong)id, (jlong)groupid));
 	if (re == "E1") {
 		throw MemberException(1);
 	}
