@@ -12,12 +12,12 @@ Config* config = new Config();
 * 参数:env 必备，job 必备
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
-JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject) {
+JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject job) {
 	genv = env;
 	try {
 		//初始化日志模块
 		logger->init();
-		config->Init();
+		config->Init(job);
 		onEnable();
 	}
 	catch (MiraiCPException e) {
