@@ -36,7 +36,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
         name = "miraiCP",
-        version = "2.4.3"
+        version = "2.4.5"
     )
 ) {
     private val json = Json{
@@ -346,7 +346,7 @@ object PluginMain : KotlinPlugin(
     }
     @MiraiInternalApi
     override fun onEnable(){
-        val now_tag = "v2.4.4"
+        val now_tag = "v2.4.5"
         println("当前MiraiCP框架版本:$now_tag")
         logger.info("启动成功")
         logger.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
