@@ -425,8 +425,8 @@ object PluginMain : KotlinPlugin(
                         1,
                         this.authorId,
                         this.operatorId,
-                        this.messageIds.toString(),
-                        this.messageInternalIds.toString(),
+                        this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
+                        this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageTime
                     )
                 )
@@ -440,8 +440,8 @@ object PluginMain : KotlinPlugin(
                         2,
                         this.authorId,
                         this.operator!!.id,
-                        this.messageIds.toString(),
-                        this.messageInternalIds.toString(),
+                        this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
+                        this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageTime,
                         this.group.id
                     )

@@ -86,21 +86,15 @@ public:
 	string JLongToString(jlong qqid);
 	/*
 	* 替换全部
-	* 来源:https://blog.csdn.net/yanchenyu365/article/details/89181129
+	* 来源:https://stackoverflow.com/a/24315631/14646226
 	*/
-	string& replace(string& str, const string& old_value, const string& new_value)
-	{
-		string::size_type pos = 0;
-		while ((pos = str.find(old_value, pos)) != string::npos)
-		{
-			str = str.replace(pos, old_value.length(), new_value);
-			if (new_value.length() > 0)
-			{
-				pos += new_value.length();
-			}
+	std::string replace(std::string str, const std::string& from, const std::string& to) {
+		size_t start_pos = 0;
+		while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
 		}
 		return str;
-
 	}
 };
 
@@ -326,13 +320,13 @@ class MessageSource {
 private:
 	string source;
 public:
+	string ids = "";
+	string internalids = "";
 	string toString() {
 		return source;
 	}
 	MessageSource() {};
-	MessageSource(string t) {
-		this->source = t;
-	}
+	MessageSource(string t);
 	void recall() {
 		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM,
 			tools.str2jstring(this->toString().c_str())));

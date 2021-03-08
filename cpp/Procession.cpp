@@ -16,10 +16,16 @@ void onEnable() {
 		...
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
+	procession->registerEvent([](RecallEvent e) {
+		e.init();
+		logger->Info(e.ids);
+		logger->Info(e.internalids);
+		});
 	procession->registerEvent([](GroupMessageEvent e) {
 		e.init();
-		e.group.SendMiraiCode(MiraiCode("a") + &e.group.uploadImg("C:\\Users\\19308\\Desktop\\aa.jpg") + "c");
-		e.group.SendMiraiCode(MiraiCode("a").plus(&e.group.uploadImg("C:\\Users\\19308\\Desktop\\aa.jpg")).plus("c"));
+		logger->Info(e.messageSource.toString());
+		logger->Info(e.messageSource.ids);
+		logger->Info(e.messageSource.internalids);
 		});
 	
 
