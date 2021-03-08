@@ -46,6 +46,7 @@ public:
 	jmethodID uploadImgM = NULL;
 	jmethodID KickM = NULL;
 	/*群聊类*/
+	jmethodID muteAll = NULL;
 	jmethodID SendMsg2G = NULL;
 	jmethodID uploadImgG = NULL;
 	jmethodID SendMsg2GM = NULL;
@@ -172,7 +173,7 @@ private:
 class BotException : public MiraiCPException {
 public:
 	/*
-	*	1 - 机器人无权限禁言对方
+	*	1 - 机器人无权限执行
 	*/
 	int type = 0;
 	BotException(int type)
@@ -181,7 +182,7 @@ public:
 		switch (type)
 		{
 		case 1:
-			this->description = "没有权限禁言/撤回";
+			this->description = "没有权限执行该操作";
 			break;
 		}
 	}
@@ -568,9 +569,14 @@ public:
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
 	Image uploadImg(string filename);
-	//初始化当前对象，可能抛出异常-暂无需求
+	//初始化当前对象，可能抛出异常
 	void init();
 	Group() {};
+	/*
+	* 设置全员禁言
+	* param: sign = true时为开始，false为关闭
+	*/
+	void setMuteAll(bool sign) throw(GroupException, BotException);
 	/*发送信息*/
 	MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
