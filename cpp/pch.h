@@ -8,6 +8,7 @@
 #include "framework.h"
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <functional>
 #include <json.h>
 #include "org_example_mirai_plugin_CPP_lib.h"

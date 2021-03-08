@@ -120,6 +120,35 @@ Logger::~Logger() {
 	genv->DeleteGlobalRef(this->CPP_lib);
 }
 
+MessageSource::MessageSource(string t) {
+	this->source = t;
+	logger->Info(t);
+	//{"kind":"GROUP","botId":692928873,"ids":[1530],"internalIds":[56283952],"time":1615194000,"fromId":1930893235,"targetId":788189105,"originalMessage":[{"type":"PlainText","content":"c"}]}
+	const auto rawJsonLength = static_cast<int>(t.length());
+	JSONCPP_STRING err;
+	Json::Value root;
+	Json::CharReaderBuilder builder;
+	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+	if (!reader->parse(t.c_str(), t.c_str() + rawJsonLength, &root,
+		&err)) {
+		//error
+		logger->Error("JSON reader error");
+		APIException("JSON reader error").raise();
+	}
+	Json::StreamWriterBuilder w;
+	Json::OStringStream o;
+	w.newStreamWriter()->write(root["ids"],&o);
+	this->ids = o.str();
+	this->ids = tools.replace(this->ids, "\n", "");
+	this->ids = tools.replace(this->ids, " ", "");
+	o.clear();
+	w.newStreamWriter()->write(root["internalIds"], &o);
+	this->internalids = o.str();
+	std::replace(this->internalids.begin(), this->internalids.end(), ' ', '\0');
+	std::replace(this->internalids.begin(), this->internalids.end(), '\n', '\0');
+	this->internalids = tools.replace(this->internalids, "\n", "");
+	this->internalids = tools.replace(this->internalids, " ", "");
+}
 //定时任务实现
 void SetScheduling(long time, int id) {
 	genv->CallStaticVoidMethod(config->CPP_lib, config->Schedule, (jlong) time, (jint) id);
