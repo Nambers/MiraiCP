@@ -17,7 +17,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* 
 	try {
 		//初始化日志模块
 		logger->init();
-		config->Init(job);
+		config->Init();
 		onEnable();
 	}
 	catch (MiraiCPException e) {

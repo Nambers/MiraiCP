@@ -18,9 +18,7 @@ void onEnable() {
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
 		e.init();
-		logger->Info(e.messageSource.ids);
-		logger->Info(e.messageSource.internalids);
-		e.group.setMuteAll(true);
+		logger->Info(to_string(e.group.getOwner().id));
 		});
 	
 

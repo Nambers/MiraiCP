@@ -13,6 +13,7 @@ import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendGM
 import org.example.mirai.plugin.PluginMain.SendM
 import org.example.mirai.plugin.PluginMain.SendWarning
+import org.example.mirai.plugin.PluginMain.getowner
 import org.example.mirai.plugin.PluginMain.kkick
 import org.example.mirai.plugin.PluginMain.kqueryM
 import org.example.mirai.plugin.PluginMain.mute
@@ -181,6 +182,11 @@ class CPP_lib {
         @JvmStatic
         fun queryML(groupid: Long):String{
             return QueryML(groupid)
+        }
+        //query the owner of a group
+        @JvmStatic
+        fun queryOwner(groupid: Long):String{
+            return getowner(groupid)
         }
     }
 
