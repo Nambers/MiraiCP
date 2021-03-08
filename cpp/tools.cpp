@@ -4,7 +4,7 @@
 配置类实现
 throw: InitxException 即找不到对应签名
 */
-void Config::Init(jobject job) throw(InitException) {
+void Config::Init() throw(InitException) {
 	JNIEnv* env = genv;
 	
 	this->initexception = env->FindClass("java/lang/NoSuchMethodException");
@@ -32,6 +32,7 @@ void Config::Init(jobject job) throw(InitException) {
 	this->uploadImgG = genv->GetStaticMethodID(config->CPP_lib, "uploadImgG", "(JLjava/lang/String;)Ljava/lang/String;");
 	this->uploadImgM = genv->GetStaticMethodID(config->CPP_lib, "uploadImgM", "(JJLjava/lang/String;)Ljava/lang/String;");
 	this->muteAll = genv->GetStaticMethodID(config->CPP_lib, "muteGroup", "(JZ)Ljava/lang/String;");
+	this->getowner = genv->GetStaticMethodID(config->CPP_lib, "queryOwner", "(J)Ljava/lang/String;");
 }
 Config::~Config() {
 	genv->DeleteGlobalRef(this->CPP_lib);
