@@ -144,8 +144,6 @@ MessageSource::MessageSource(string t) {
 	o.clear();
 	w.newStreamWriter()->write(root["internalIds"], &o);
 	this->internalids = o.str();
-	std::replace(this->internalids.begin(), this->internalids.end(), ' ', '\0');
-	std::replace(this->internalids.begin(), this->internalids.end(), '\n', '\0');
 	this->internalids = tools.replace(this->internalids, "\n", "");
 	this->internalids = tools.replace(this->internalids, " ", "");
 }
