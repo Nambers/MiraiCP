@@ -320,6 +320,19 @@ object PluginMain : KotlinPlugin(
         return "Y"
     }
 
+    //全员禁言
+    fun muteall(groupid: Long, sign: Boolean):String{
+        val g =AIbot.getGroup(groupid)?:let{
+            return "E1"
+        }
+        try {
+            g.settings.isMuteAll = sign
+        }catch(e:PermissionDeniedException){
+            return "E2"
+        }
+        return "Y"
+    }
+
     override fun onDisable() {
         cpp.PluginDisable()
     }

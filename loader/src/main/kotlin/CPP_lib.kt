@@ -16,6 +16,7 @@ import org.example.mirai.plugin.KotlinMain.SendWarning
 import org.example.mirai.plugin.KotlinMain.kkick
 import org.example.mirai.plugin.KotlinMain.kqueryM
 import org.example.mirai.plugin.KotlinMain.mute
+import org.example.mirai.plugin.KotlinMain.muteall
 import org.example.mirai.plugin.KotlinMain.recallMsg
 import org.example.mirai.plugin.KotlinMain.scheduling
 import org.example.mirai.plugin.KotlinMain.uploadImgFriend
@@ -34,14 +35,16 @@ class CPP_lib {
             //这里填自己的路径
             System.load(dll_name)
         }
+        //send MiraiCode
+        //to Friend
         @JvmStatic
         fun SendPrivateMSG(message: String, id: Long):String{
-            // 反向调用发送消息
             return runBlocking {
                 Send(message, id)
             }
 
         }
+        //to Member
         @JvmStatic
         fun SendPrivateM2M(message: String, id: Long, gid: Long): String{
             // 反向调用发送消息
@@ -49,14 +52,15 @@ class CPP_lib {
                 Send(message, id, gid)
             }
         }
+        //to Group
         @JvmStatic
         fun SendGroup(message:String,id:Long):String {
             return runBlocking {
                 SendG(message, id)
             }
         }
-
-        //msg
+        //send msg(painText)
+        //to Friend
         @JvmStatic
         fun SendPrivateMSGM(message: String, id: Long):String{
             // 反向调用发送消息
@@ -65,6 +69,7 @@ class CPP_lib {
             }
 
         }
+        //to Member
         @JvmStatic
         fun SendPrivateM2MM(message: String, id: Long, gid: Long): String{
             // 反向调用发送消息
@@ -72,14 +77,14 @@ class CPP_lib {
                 SendM(message, id, gid)
             }
         }
+        //to Group
         @JvmStatic
         fun SendGroupM(message:String,id:Long):String {
             return runBlocking {
                 SendGM(message, id)
             }
         }
-
-        //recall
+        //recall messageSource
         @JvmStatic
         fun recall(source: String):String {
             return runBlocking {
@@ -144,30 +149,39 @@ class CPP_lib {
         fun schedule(time:Long, id:Int){
             scheduling(time, id)
         }
+        //mute member
         @JvmStatic
         fun muteM(qqid: Long, groupid: Long, time: Int): String{
             return runBlocking {
                 mute(qqid, groupid, time)
             }
         }
+        //query the permission of a member in a group
         @JvmStatic
         fun queryM(qqid: Long, groupid: Long): String{
             return kqueryM(qqid, groupid)
         }
+        //kick a member
         @JvmStatic
         fun kickM(qqid: Long, groupid: Long, message: String):String{
             return runBlocking {
                 kkick(qqid, groupid, message)
             }
         }
+        //Mute the whole group
+        @JvmStatic
+        fun muteGroup(groupid: Long, sign: Boolean):String{
+            return muteall(groupid, sign)
+        }
+        //query the group name
         @JvmStatic
         fun queryNG(groupid: Long): String {
             return QueryNG(groupid)
         }
+        //query the member list of a group
         @JvmStatic
         fun queryML(groupid: Long):String{
             return QueryML(groupid)
-
         }
     }
 
