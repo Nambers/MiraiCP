@@ -123,7 +123,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 			));
 			return tools.str2jstring("NULL");
 		}
-	}catch (MiraiCPException e) {
+	}catch (MiraiCPException& e) {
 		e.raise();
 		return tools.str2jstring("NULL");
 	}
