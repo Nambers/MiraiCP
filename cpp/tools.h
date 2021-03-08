@@ -46,6 +46,7 @@ public:
 	jmethodID uploadImgM = NULL;
 	jmethodID KickM = NULL;
 	/*群聊类*/
+	jmethodID getowner = NULL;
 	jmethodID muteAll = NULL;
 	jmethodID SendMsg2G = NULL;
 	jmethodID uploadImgG = NULL;
@@ -55,7 +56,7 @@ public:
 	/*定时任务*/
 	jmethodID Schedule = NULL;
 	Config() {};
-	void Init(jobject);
+	void Init();
 	~Config();
 };
 
@@ -561,6 +562,12 @@ public:
 		每个群成员id间用逗号分隔
 	*/
 	string MemberListToString();
+	//取群主
+	Member getOwner() {
+		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->getowner,(jlong)this->id));
+		if (re == "E1")throw GroupException(1);
+		return Member(stoi(re), this->id);
+	}
 	Group(unsigned long);
 	/*
 	* 上传本地图片，务必要用绝对路径
