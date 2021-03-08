@@ -16,16 +16,11 @@ void onEnable() {
 		...
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
-	procession->registerEvent([](RecallEvent e) {
-		e.init();
-		logger->Info(e.ids);
-		logger->Info(e.internalids);
-		});
 	procession->registerEvent([](GroupMessageEvent e) {
 		e.init();
-		logger->Info(e.messageSource.toString());
 		logger->Info(e.messageSource.ids);
 		logger->Info(e.messageSource.internalids);
+		e.group.setMuteAll(true);
 		});
 	
 

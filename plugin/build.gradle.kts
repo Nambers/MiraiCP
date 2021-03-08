@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "me.Eritque_arcus"
-version = "2.4.4"
+version = "2.4.5"
 
 repositories {
     //国内镜像源

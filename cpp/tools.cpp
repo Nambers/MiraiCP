@@ -13,72 +13,25 @@ void Config::Init(jobject job) throw(InitException) {
 		throw InitException("初始化错误", 1);
 	}
 	this->Query = env->GetStaticMethodID(CPP_lib, "QueryImgUrl", "(Ljava/lang/String;)Ljava/lang/String;");
-	if (this->Query == NULL) {
-		throw InitException("初始化错误", 2);
-	}
 	this->SendMsg2F = env->GetStaticMethodID(CPP_lib, "SendPrivateMSG", "(Ljava/lang/String;J)Ljava/lang/String;");
-	if (this->SendMsg2F == NULL) {
-		throw InitException("初始化错误", 3);
-	}
 	this->SendMsg2FM = env->GetStaticMethodID(CPP_lib, "SendPrivateMSGM", "(Ljava/lang/String;J)Ljava/lang/String;");
-	if (this->SendMsg2FM == NULL) {
-		throw InitException("初始化错误", 3);
-	}
 	this->NickorNameF = env->GetStaticMethodID(CPP_lib, "GetNick", "(J)Ljava/lang/String;");
-	if (this->NickorNameF == NULL) {
-		throw InitException("初始化错误", 4);
-	}
 	this->SendMsg2M = env->GetStaticMethodID(CPP_lib, "SendPrivateM2M", "(Ljava/lang/String;JJ)Ljava/lang/String;");
-	if (this->SendMsg2M == NULL) {
-		throw InitException("初始化错误", 5);
-	}
 	this->SendMsg2MM = env->GetStaticMethodID(CPP_lib, "SendPrivateM2MM", "(Ljava/lang/String;JJ)Ljava/lang/String;");
-	if (this->SendMsg2MM == NULL) {
-		throw InitException("初始化错误", 5);
-	}
 	this->NickorNameM = env->GetStaticMethodID(CPP_lib, "GetNameCard", "(JJ)Ljava/lang/String;");
-	if (this->NickorNameM == NULL) {
-		throw InitException("初始化错误", 6);
-	}
 	this->SendMsg2G = env->GetStaticMethodID(CPP_lib, "SendGroup", "(Ljava/lang/String;J)Ljava/lang/String;");
-	if (this->SendMsg2G == NULL) {
-		throw InitException("初始化错误", 7);
-	}
 	this->SendMsg2GM = env->GetStaticMethodID(CPP_lib, "SendGroupM", "(Ljava/lang/String;J)Ljava/lang/String;");
-	if (this->SendMsg2GM == NULL) {
-		throw InitException("初始化错误", 7);
-	}
 	this->Schedule = env->GetStaticMethodID(CPP_lib, "schedule", "(JI)V");
-	if (this->Schedule == NULL) {
-		throw InitException("初始化错误", 8);
-	}
 	this->Mute = env->GetStaticMethodID(CPP_lib, "muteM", "(JJI)Ljava/lang/String;");
-	if (this->Mute == NULL) {
-		throw InitException("初始化错误", 9);
-	}
 	this->QueryP = env->GetStaticMethodID(CPP_lib, "queryM", "(JJ)Ljava/lang/String;");
-	if (this->QueryP == NULL) {
-		throw InitException("初始化错误", 10);
-	}
 	this->KickM = env->GetStaticMethodID(CPP_lib, "kickM", "(JJLjava/lang/String;)Ljava/lang/String;");
-	if (this->KickM == NULL) {
-		throw InitException("初始化错误", 11);
-	}
 	this->recallMsgM = env->GetStaticMethodID(CPP_lib, "recall", "(Ljava/lang/String;)Ljava/lang/String;");
-	if (this->recallMsgM == NULL) {
-		throw InitException("初始化错误", 12);
-	}
 	this->QueryML = env->GetStaticMethodID(CPP_lib, "queryML", "(J)Ljava/lang/String;");
-	if (this->QueryML == NULL) {
-		throw InitException("初始化错误", 13);
-	}
 	this->QueryN = env->GetStaticMethodID(CPP_lib, "queryNG", "(J)Ljava/lang/String;");
-	if (this->QueryN == NULL) {
-		throw InitException("初始化错误", 14);
-	}
 	this->uploadImgF= genv->GetStaticMethodID(config->CPP_lib, "uploadImgF", "(JLjava/lang/String;)Ljava/lang/String;");
 	this->uploadImgG = genv->GetStaticMethodID(config->CPP_lib, "uploadImgG", "(JLjava/lang/String;)Ljava/lang/String;");
 	this->uploadImgM = genv->GetStaticMethodID(config->CPP_lib, "uploadImgM", "(JJLjava/lang/String;)Ljava/lang/String;");
+	this->muteAll = genv->GetStaticMethodID(config->CPP_lib, "muteGroup", "(JZ)Ljava/lang/String;");
 }
 Config::~Config() {
 	genv->DeleteGlobalRef(this->CPP_lib);
@@ -122,8 +75,6 @@ Logger::~Logger() {
 
 MessageSource::MessageSource(string t) {
 	this->source = t;
-	logger->Info(t);
-	//{"kind":"GROUP","botId":692928873,"ids":[1530],"internalIds":[56283952],"time":1615194000,"fromId":1930893235,"targetId":788189105,"originalMessage":[{"type":"PlainText","content":"c"}]}
 	const auto rawJsonLength = static_cast<int>(t.length());
 	JSONCPP_STRING err;
 	Json::Value root;
@@ -135,15 +86,10 @@ MessageSource::MessageSource(string t) {
 		logger->Error("JSON reader error");
 		APIException("JSON reader error").raise();
 	}
-	Json::StreamWriterBuilder w;
-	Json::OStringStream o;
-	w.newStreamWriter()->write(root["ids"],&o);
-	this->ids = o.str();
+	this->ids = root["ids"].toStyledString();
 	this->ids = tools.replace(this->ids, "\n", "");
 	this->ids = tools.replace(this->ids, " ", "");
-	o.clear();
-	w.newStreamWriter()->write(root["internalIds"], &o);
-	this->internalids = o.str();
+	this->internalids = root["internalIds"].toStyledString();
 	this->internalids = tools.replace(this->internalids, "\n", "");
 	this->internalids = tools.replace(this->internalids, " ", "");
 }
@@ -320,11 +266,17 @@ Image Group::uploadImg(string filename) {
 	if (!fin) {
 		logger->Error("文件不存在,位置:C++部分 Group::uploadImg2(),文件名:" + filename);
 		fin.close();
-		throw invalid_argument("NO_FILE_ERROR");
+		//throw invalid_argument("NO_FILE_ERROR");
 	}
 	fin.close();
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgG, (jlong)this->id, tools.str2jstring(filename.c_str())));
 	return Image(re);
+}
+void Group::setMuteAll(bool sign)throw(GroupException, BotException) {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->muteAll, (jlong)this->id, (jboolean)sign));
+	if (re == "Y")return;
+	if (re == "E1") throw GroupException(1);
+	if (re == "E2") throw BotException(1);
 }
 /*工具类实现*/
 string Tools::jstring2str(jstring jStr)
