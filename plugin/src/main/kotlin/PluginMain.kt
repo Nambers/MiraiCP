@@ -333,6 +333,14 @@ object PluginMain : KotlinPlugin(
         return "Y"
     }
 
+    //取群主
+    fun getowner(groupid: Long):String{
+        val g = AIbot.getGroup(groupid)?:let {
+            return "E1"
+        }
+        return g.owner.id.toString()
+    }
+
     override fun onDisable() {
         cpp.PluginDisable()
     }

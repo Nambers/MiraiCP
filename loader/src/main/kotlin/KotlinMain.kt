@@ -330,6 +330,14 @@ object KotlinMain {
         return "Y"
     }
 
+    //取群主
+    fun getowner(groupid: Long):String{
+        val g = AIbot.getGroup(groupid)?:let {
+            return "E1"
+        }
+        return g.owner.id.toString()
+    }
+
     @MiraiInternalApi
     suspend fun main(id:Long, pass:String, path:String){
         println("当前MiraiCP框架版本:$now_tag")
