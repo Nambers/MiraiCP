@@ -27,11 +27,8 @@ import java.net.URL
 import java.util.*
 import kotlin.concurrent.schedule
 
-
 object KotlinMain {
-    private val json =Json{
-        serializersModule = MessageSerializers.serializersModule
-    }
+    private lateinit var json:Json
     const val now_tag = "v2.4.5"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
@@ -338,8 +335,14 @@ object KotlinMain {
         return g.owner.id.toString()
     }
 
+    @MiraiExperimentalApi
     @MiraiInternalApi
     suspend fun main(id:Long, pass:String, path:String){
+        //TODO fix serializer of image
+        MessageSerializers.registerSerializer(Image::class,Image.Serializer)
+        json = Json{
+            serializersModule = MessageSerializers.serializersModule
+        }
         println("当前MiraiCP框架版本:$now_tag")
         setDefaultLoggerCreator { identity ->
             PlatformLogger(identity, AnsiConsole.out::println, true)
