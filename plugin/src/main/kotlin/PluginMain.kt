@@ -36,7 +36,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
         name = "miraiCP",
-        version = "2.4.5"
+        version = "2.4.5-patch-1"
     )
 ) {
     private val json = Json{
