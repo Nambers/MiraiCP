@@ -123,7 +123,7 @@ string Image::toMiraiCode() {
 }
 
 /*好友类实现*/
-Friend::Friend(unsigned long id) {
+Friend::Friend(unsigned long long id) {
 	this->id = id;
 }
 void Friend::init()throw(FriendException) {
@@ -144,9 +144,23 @@ Image Friend::uploadImg(string filename) {
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgF, (jlong)this->id, tools.str2jstring(filename.c_str())));
 	return Image(re);
 }
+MessageSource Friend::SendMiraiCode(string msg)throw(FriendException) {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2F, tools.str2jstring(msg.c_str()), (jlong)this->id));
+	if (re == "E1") {
+		throw FriendException();
+	}
+	return MessageSource(re);
+}
+MessageSource Friend::SendMsg(string msg)throw(FriendException) {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2FM, tools.str2jstring(msg.c_str()), (jlong)this->id));
+	if (re == "E1") {
+		throw FriendException();
+	}
+	return MessageSource(re);
+}
 
 /*成员类实现*/
-Member::Member(unsigned long id, unsigned long groupid) {
+Member::Member(unsigned long long id, unsigned long long groupid) {
 	this->id = id;
 	this->Mute_id = config->Mute;
 	this->groupid = groupid;
@@ -217,9 +231,29 @@ Image Member::uploadImg(string filename) {
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgM, (jlong)groupid, (jlong)id, tools.str2jstring(filename.c_str())));
 	return Image(re);
 }
+MessageSource Member::SendMiraiCode(string msg)throw(MemberException) {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2M, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
+	if (re == "E1") {
+		throw MemberException(1);
+	}
+	if (re == "E2") {
+		throw MemberException(2);
+	}
+	return MessageSource(re);
+}
+MessageSource Member::SendMsg(string msg) throw(MemberException) {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2MM, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
+	if (re == "E1") {
+		throw MemberException(1);
+	}
+	if (re == "E2") {
+		throw MemberException(2);
+	}
+	return MessageSource(re);
+}
 
 /*群聊类实现*/
-Group::Group(unsigned long id) {
+Group::Group(unsigned long long id) {
 	this->id = id;
 }
 void Group::init() {
@@ -238,8 +272,8 @@ void Group::init() {
 	}
 	this->memberlist = re;
 }
-vector<long> Group::getMemberList() {
-	vector<long> result;
+vector<unsigned long long> Group::getMemberList() {
+	vector<unsigned long long> result;
 	string temp = this->memberlist;
 	temp.erase(temp.begin());
 	temp.pop_back();
@@ -251,7 +285,7 @@ vector<long> Group::getMemberList() {
 	return result;
 }
 string Group::MemberListToString() {
-	vector<long> a = getMemberList();
+	vector<unsigned long long> a = getMemberList();
 	std::stringstream ss;
 	for (size_t i = 0; i < a.size(); ++i)
 	{
@@ -279,6 +313,26 @@ void Group::setMuteAll(bool sign)throw(GroupException, BotException) {
 	if (re == "E1") throw GroupException(1);
 	if (re == "E2") throw BotException(1);
 }
+Member Group::getOwner() {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->getowner, (jlong)this->id));
+	if (re == "E1")throw GroupException(1);
+	return Member(stoi(re), this->id);
+}
+MessageSource Group::SendMiraiCode(string msg)throw(GroupException) {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2G, tools.str2jstring(msg.c_str()), (jlong)this->id));
+	if (re == "E1") {
+		throw GroupException(1);
+	}
+	return MessageSource(re);
+}
+MessageSource Group::SendMsg(string msg) throw(GroupException) {
+	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2GM, tools.str2jstring(msg.c_str()), (jlong)this->id));
+	if (re == "E1") {
+		throw GroupException(1);
+	}
+	return MessageSource(re);
+}
+
 /*工具类实现*/
 string Tools::jstring2str(jstring jStr)
 {
