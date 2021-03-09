@@ -347,7 +347,7 @@ class MiraiCode {
 private:
 	string content = "";
 public:
-	string toString() {
+	 string toString() {
 		return content;
 	}
 	MiraiCode(MiraiCodeable* a) {
@@ -444,8 +444,8 @@ public:
 /*好友类声明*/
 class Friend {
 public:
-	unsigned long id = NULL;
-	Friend(unsigned long);
+	unsigned long long id = NULL;
+	Friend(unsigned long long);
 	Friend() {};
 	//初始化当前对象，可能抛出异常
 	void init();
@@ -459,26 +459,14 @@ public:
 	*/
 	Image uploadImg(string filename);
 	/*发送信息*/
-	MessageSource SendMiraiCode(MiraiCodeable* msg) {
+	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
-	MessageSource SendMiraiCode(MiraiCode msg) {
+	 MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(string msg)throw(FriendException) {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2F, tools.str2jstring(msg.c_str()), (jlong)this->id));
-		if (re == "E1") {
-			throw FriendException();
-		}
-		return MessageSource(re);
-	}
-	MessageSource SendMsg(string msg)throw(FriendException) {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2FM, tools.str2jstring(msg.c_str()), (jlong)this->id));
-		if (re == "E1") {
-			throw FriendException();
-		}
-		return MessageSource(re);
-	}
+	MessageSource SendMiraiCode(string msg);
+	MessageSource SendMsg(string msg);
 };
 
 /*群成员类声明*/
@@ -488,12 +476,12 @@ private:
 	jmethodID Query_permission = NULL;
 	jmethodID KickM = NULL;
 public:
-	unsigned long groupid = 0;
-	unsigned long id = 0;
+	unsigned long long groupid = 0;
+	unsigned long long id = 0;
 	// 权限等级. OWNER群主 为 2, ADMINISTRATOR管理员 为 1, MEMBER群成员 为 0
 	unsigned int permission = 0;
 	// qqid, groupid
-	Member(unsigned long qqid, unsigned long groupid);
+	Member(unsigned long long qqid, unsigned long long groupid);
 	//初始化当前对象，可能抛出异常
 	void init();
 	/*
@@ -507,32 +495,14 @@ public:
 	int getPermission();
 	string nameCard = "";
 	/*发送信息*/
-	MessageSource SendMiraiCode(MiraiCodeable* msg) {
+	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
-	MessageSource SendMiraiCode(MiraiCode msg) {
+	 MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(string msg)throw(MemberException) {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2M, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
-		if (re == "E1") {
-			throw MemberException(1);
-		}
-		if (re == "E2") {
-			throw MemberException(2);
-		}
-		return MessageSource(re);
-	}
-	MessageSource SendMsg(string msg) throw(MemberException) {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2MM, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
-		if (re == "E1") {
-			throw MemberException(1);
-		}
-		if (re == "E2") {
-			throw MemberException(2);
-		}
-		return MessageSource(re);
-	}
+	MessageSource SendMiraiCode(string msg);
+	MessageSource SendMsg(string msg);
 	/*禁言当前对象，单位是秒，最少0秒最大30天
 	* 返回值对应报错
 	*	"E1" - 找不到群
@@ -552,23 +522,19 @@ private:
 	string memberlist = "";
 public:
 	/*群号*/
-	unsigned long id = NULL;
+	unsigned long long id = NULL;
 	/*群名称*/
 	string name = "";
 	/*取群成员列表-vector<long>*/
-	vector<long> getMemberList();
+	vector<unsigned long long> getMemberList();
 	/*以string格式取群成员列表
 	格式：
 		每个群成员id间用逗号分隔
 	*/
 	string MemberListToString();
 	//取群主
-	Member getOwner() {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->getowner,(jlong)this->id));
-		if (re == "E1")throw GroupException(1);
-		return Member(stoi(re), this->id);
-	}
-	Group(unsigned long);
+	Member getOwner();
+	Group(unsigned long long);
 	/*
 	* 上传本地图片，务必要用绝对路径
 	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
@@ -585,35 +551,23 @@ public:
 	*/
 	void setMuteAll(bool sign) throw(GroupException, BotException);
 	/*发送信息*/
-	MessageSource SendMiraiCode(MiraiCodeable* msg) {
+	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
-	MessageSource SendMiraiCode(MiraiCode msg) {
+	 MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(string msg)throw(GroupException) {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2G, tools.str2jstring(msg.c_str()), (jlong)this->id));
-		if (re == "E1") {
-			throw GroupException(1);
-		}
-		return MessageSource(re);
-	}
-	MessageSource SendMsg(string msg) throw(GroupException) {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2GM, tools.str2jstring(msg.c_str()), (jlong)this->id));
-		if (re == "E1") {
-			throw GroupException(1);
-		}
-		return MessageSource(re);
-	}
+	MessageSource SendMiraiCode(string msg);
+	MessageSource SendMsg(string msg);
 };
 
 /*At一个群成员*/
-string At(Member a) {
+ inline string At(Member a) {
 	/*返回at这个人的miraicode*/
 	return "[mirai:at:" + to_string(a.id) + "]";
 }
-/*用qq号at一个群成员*/
-string At(long a) {
+ /*At一个群成员*/
+ inline string At(unsigned long long a) {
 	/*返回at这个人的miraicode*/
 	return "[mirai:at:" + to_string(a) + "]";
 }
