@@ -18,7 +18,7 @@ void onEnable() {
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
 		e.init();
-		logger->Info(to_string(e.group.getOwner().id));
+		e.group.SendMiraiCode(At(e.sender));
 		});
 	
 
