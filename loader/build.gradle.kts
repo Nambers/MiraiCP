@@ -8,12 +8,18 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.1.0"
 
 }
+
+tasks {
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        this.isZip64 = true
+    }
+}
 application {
     mainClass.set("org.example.mirai.plugin.KotlinMainKt")
     mainClassName = "org.example.mirai.plugin.KotlinMainKt"
 }
 group = "me.Eritque_arcus"
-version = "2.4.5"
+version = "2.4.5-patch-1"
 
 repositories {
     //国内镜像源
