@@ -122,6 +122,10 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 				root["groupid"].asLargestUInt()
 			));
 			return tools.str2jstring("NULL");
+		case 8:
+			procession->broadcast(SchedulingEvent(
+				root["message"].asCString()));
+			return tools.str2jstring("NULL");
 		}
 	}catch (MiraiCPException& e) {
 		e.raise();
@@ -130,14 +134,4 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 	logger->Error("unknown type");
 	APIException("未知的消息类型").raise();
 	return tools.str2jstring("ERROR");
-}
-
-/*
-* 定时任务
-*/
-JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_ScheduleTask
-(JNIEnv* env, jobject job, jint id) {
-	genv = env;
-	procession->broadcast(SchedulingEvent((int)id));
-	return job;
 }
