@@ -146,7 +146,7 @@ class CPP_lib {
         }
         //定时任务
         @JvmStatic
-        fun schedule(time:Long, id:Int){
+        fun schedule(time:Long, id:String){
             scheduling(time, id)
         }
         //mute member
@@ -189,9 +189,7 @@ class CPP_lib {
             return getowner(groupid)
         }
     }
-
     external fun Verify(): String
     external fun Event(content: String): String
     external fun PluginDisable(): Void
-    external fun ScheduleTask(id:Int): Void
 }

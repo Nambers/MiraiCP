@@ -17,8 +17,12 @@ void onEnable() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
-		e.init();
-		e.group.SendMiraiCode(At(e.sender));
+		logger->Info(e.message);
+		e.group.SendMsg(e.message);
+		SetScheduling(100, {e.message, to_string(e.group.id)});
+		});
+	procession->registerEvent([](SchedulingEvent e) {
+		Group(stoi(e.ids[1])).SendMsg(e.ids[0]);
 		});
 	
 

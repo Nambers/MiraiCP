@@ -52,14 +52,16 @@ object PluginMain : KotlinPlugin(
     fun BasicSendLog(log: String) {
         logger.info(log)
     }
-    fun SendWarning(log: String){
+
+    fun SendWarning(log: String) {
         logger.warning(log)
     }
-    fun SendError(log: String){
+
+    fun SendError(log: String) {
         logger.error(log)
     }
 
-//发送消息部分实现 MiraiCode
+    //发送消息部分实现 MiraiCode
 
     suspend fun Send(message: String, id: Long) :String{
         //反向调用
@@ -146,25 +148,26 @@ object PluginMain : KotlinPlugin(
     //取昵称或名片部分
     fun GetN(qqid: Long): String {
         val f = AIbot.getFriend(qqid) ?: let {
-            logger.error("找不到对应好友的昵称，位置:K-GetN()，id:$qqid")
-            return ""
+            logger.error("找不到对应好友，位置:K-GetN()，id:$qqid")
+            return "E1"
         }
         return f.nick
     }
+
     fun GetNN(qqid: Long, groupid: Long): String {
-        for(a in friend_cache){
-            if(a.id == qqid && a.group.id == groupid){
+        for (a in friend_cache) {
+            if (a.id == qqid && a.group.id == groupid) {
                 return a.nameCardOrNick
             }
         }
 
-        val group = AIbot.getGroup(groupid) ?: let{
+        val group = AIbot.getGroup(groupid) ?: let {
             logger.error("取群名片找不到对应群组，位置K-GetNN()，gid:$groupid")
-            return ""
+            return "E1"
         }
         val member = group[qqid] ?: let {
             logger.error("取群名片找不到对应群成员，位置K-GetNN()，id:$qqid, gid:$groupid")
-            return ""
+            return "E2"
         }
         return member.nameCard
 
@@ -194,62 +197,86 @@ object PluginMain : KotlinPlugin(
 
     //图片部分实现
     suspend fun uploadImgFriend(id: Long, file: String): String {
-        val temp = AIbot.getFriend(id)?:let{
+        val temp = AIbot.getFriend(id) ?: let {
             logger.error("发送图片找不到对应好友,位置:K-uploadImgFriend(),id:$id")
             return ""
         }
         return try {
             File(file).uploadAsImage(temp).imageId
-        }catch (e: OverFileSizeMaxException) {
+        } catch (e: OverFileSizeMaxException) {
             logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
             ""
-        }catch (e:NullPointerException){
+        } catch (e: NullPointerException) {
             logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
             ""
         }
     }
+
     suspend fun uploadImgGroup(id: Long, file: String): String {
-        val temp = AIbot.getGroup(id)?:let{
+        val temp = AIbot.getGroup(id) ?: let {
             logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:$id")
             return ""
         }
         return try {
             File(file).uploadAsImage(temp).imageId
-        }catch (e: OverFileSizeMaxException) {
+        } catch (e: OverFileSizeMaxException) {
             logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
             ""
-        }catch (e:NullPointerException){
+        } catch (e: NullPointerException) {
             logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
             ""
         }
     }
-    suspend fun uploadImgMember(id: Long,qqid: Long, file: String): String {
-        val temp = AIbot.getGroup(id)?:let{
+
+    suspend fun uploadImgMember(id: Long, qqid: Long, file: String): String {
+        val temp = AIbot.getGroup(id) ?: let {
             logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:$id")
             return ""
         }
-        val temp1 = temp[qqid]?:let{
+        val temp1 = temp[qqid] ?: let {
             logger.error("发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:$qqid,群聊id:$id")
             return ""
         }
         return try {
             File(file).uploadAsImage(temp1).imageId
-        }catch (e: OverFileSizeMaxException) {
+        } catch (e: OverFileSizeMaxException) {
             logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
             ""
-        }catch (e:NullPointerException){
+        } catch (e: NullPointerException) {
             logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
             ""
         }
     }
-    suspend fun QueryImg(id: String): String{
+
+    suspend fun QueryImg(id: String): String {
         return Image(id).queryUrl()
     }
 
+    //recall
+    suspend fun recallMsg(a:String): String {
+        val source = json.decodeFromString(MessageSource.Serializer,a)
+        try{
+            source.recall()
+        }catch (e:PermissionDeniedException){
+            logger.error("机器人无权限撤回")
+            return "E1"
+        }catch(e:IllegalStateException){
+            logger.error("该消息已被撤回")
+            return "E2"
+        }
+        return "Y"
+    }
+
     //定时任务
-    fun scheduling(time: Long, id: Int){
+    fun scheduling(time: Long, id: String) {
         Timer("SettingUp", false).schedule(time) {
-            cpp.ScheduleTask(id)
+            cpp.Event(
+                Gson().toJson(
+                    Config.TimeOutEvent(
+                        id
+                    )
+                )
+            )
         }
     }
 
@@ -275,21 +302,6 @@ object PluginMain : KotlinPlugin(
         return "Y"
     }
 
-    //recall
-    suspend fun recallMsg(a:String): String {
-        val source = json.decodeFromString(MessageSource.Serializer,a)
-        try{
-            source.recall()
-        }catch (e:PermissionDeniedException){
-            logger.error("机器人无权限撤回")
-            return "E1"
-        }catch(e:IllegalStateException){
-            logger.error("该消息已被撤回")
-            return "E2"
-        }
-        return "Y"
-    }
-
     //查询权限
     fun kqueryM(qqid: Long, groupid: Long): String{
         val group = AIbot.getGroup(groupid) ?: let {
@@ -301,6 +313,7 @@ object PluginMain : KotlinPlugin(
             return "E2"
         }
         return member.permission.level.toString()
+
     }
 
     suspend fun kkick(qqid: Long, groupid: Long, message: String):String{

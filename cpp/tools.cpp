@@ -21,7 +21,7 @@ void Config::Init() throw(InitException) {
 	this->NickorNameM = env->GetStaticMethodID(CPP_lib, "GetNameCard", "(JJ)Ljava/lang/String;");
 	this->SendMsg2G = env->GetStaticMethodID(CPP_lib, "SendGroup", "(Ljava/lang/String;J)Ljava/lang/String;");
 	this->SendMsg2GM = env->GetStaticMethodID(CPP_lib, "SendGroupM", "(Ljava/lang/String;J)Ljava/lang/String;");
-	this->Schedule = env->GetStaticMethodID(CPP_lib, "schedule", "(JI)V");
+	this->Schedule = env->GetStaticMethodID(CPP_lib, "schedule", "(JLjava/lang/String;)V");
 	this->Mute = env->GetStaticMethodID(CPP_lib, "muteM", "(JJI)Ljava/lang/String;");
 	this->QueryP = env->GetStaticMethodID(CPP_lib, "queryM", "(JJ)Ljava/lang/String;");
 	this->KickM = env->GetStaticMethodID(CPP_lib, "kickM", "(JJLjava/lang/String;)Ljava/lang/String;");
@@ -74,6 +74,7 @@ Logger::~Logger() {
 	genv->DeleteGlobalRef(this->CPP_lib);
 }
 
+//消息源
 MessageSource::MessageSource(string t) {
 	this->source = t;
 	const auto rawJsonLength = static_cast<int>(t.length());
@@ -93,10 +94,6 @@ MessageSource::MessageSource(string t) {
 	this->internalids = root["internalIds"].toStyledString();
 	this->internalids = tools.replace(this->internalids, "\n", "");
 	this->internalids = tools.replace(this->internalids, " ", "");
-}
-//定时任务实现
-void SetScheduling(long time, int id) {
-	genv->CallStaticVoidMethod(config->CPP_lib, config->Schedule, (jlong) time, (jint) id);
 }
 
 /*图片类实现*/
@@ -125,10 +122,8 @@ string Image::toMiraiCode() {
 /*好友类实现*/
 Friend::Friend(unsigned long long id) {
 	this->id = id;
-}
-void Friend::init()throw(FriendException) {
 	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->NickorNameF, (jlong)id, (jlong)id));
-	if(temp == "E1"){
+	if (temp == "E1") {
 		throw FriendException();
 	}
 	this->nick = temp;
@@ -166,8 +161,6 @@ Member::Member(unsigned long long id, unsigned long long groupid) {
 	this->groupid = groupid;
 	this->Query_permission = config->QueryP;
 	this->KickM = config->KickM;
-}
-void Member::init() throw(MemberException){
 	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->NickorNameM, (jlong)id, (jlong)groupid));
 	if (temp == "E1") {
 		throw MemberException(1);
@@ -255,8 +248,6 @@ MessageSource Member::SendMsg(string msg) throw(MemberException) {
 /*群聊类实现*/
 Group::Group(unsigned long long id) {
 	this->id = id;
-}
-void Group::init() {
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib,
 		config->QueryN,
 		(jlong)this->id));
@@ -334,44 +325,35 @@ MessageSource Group::SendMsg(string msg) throw(GroupException) {
 }
 
 /*工具类实现*/
-string Tools::jstring2str(jstring jStr)
-{
-	if (!jStr)
-		return "";
-
-	const jclass stringClass = genv->GetObjectClass(jStr);
-	const jmethodID getBytes = genv->GetMethodID(stringClass, "getBytes", "(Ljava/lang/String;)[B");
-	const jbyteArray stringJbytes = (jbyteArray)genv->CallObjectMethod(jStr, getBytes, genv->NewStringUTF("UTF-8"));
-
-	size_t length = (size_t)genv->GetArrayLength(stringJbytes);
-	jbyte* pBytes = genv->GetByteArrayElements(stringJbytes, NULL);
-
-	std::string ret = std::string((char*)pBytes, length);
-	genv->ReleaseByteArrayElements(stringJbytes, pBytes, JNI_ABORT);
-
-	genv->DeleteLocalRef(stringJbytes);
-	genv->DeleteLocalRef(stringClass);
-	return ret;
+string Tools::jstring2str(jstring jstr)
+{	
+	jsize len = genv->GetStringLength(jstr);
+	const jchar* jcstr = genv->GetStringChars(jstr, NULL);
+	int size = 0;
+	char* str = (char*)malloc(static_cast<size_t>(len) * 2 + 1);
+	if ((size = WideCharToMultiByte(CP_ACP, 0, LPCWSTR(jcstr), len, str, len * 2 + 1, NULL, NULL)) == 0)
+		return NULL;
+	genv->ReleaseStringChars(jstr, jcstr);
+	str[size] = 0;
+	return str;
 }
-jstring Tools::str2jstring(const char* pat)
+jstring Tools::str2jstring(const char* str)
 {
-	//获取String的class
-	jclass string_clz = genv->FindClass("java/lang/String");
-	//获取构造方法  public String(byte bytes[], String charsetName)
-	jmethodID jmid = genv->GetMethodID(string_clz, "<init>", "([BLjava/lang/String;)V");
-	//创建byte数组并赋值
-	jsize size = (jsize)strlen(pat);
-	jbyteArray bytes = genv->NewByteArray(size);
-	genv->SetByteArrayRegion(bytes, 0, size, (jbyte*)pat);
-
-	//charsetName
-	jstring charsetName = genv->NewStringUTF("GB2312");
-
-	jstring temp = (jstring)genv->NewObject(string_clz, jmid, bytes, charsetName);
-
-	genv->DeleteLocalRef(bytes);
-	genv->DeleteLocalRef(string_clz);
-	return temp;
+	jstring rtn = 0;
+	int slen = strlen(str);
+	unsigned short* buffer = 0;
+	if (slen == 0)
+		rtn = (genv)->NewStringUTF(str);
+	else
+	{
+		int length = MultiByteToWideChar(CP_ACP, 0, (LPCSTR)str, slen, NULL, 0);
+		buffer = (unsigned short*)malloc(static_cast<size_t>(length) * 2 + 1);
+		if (MultiByteToWideChar(CP_ACP, 0, (LPCSTR)str, slen, (LPWSTR)buffer, length) > 0)
+			rtn = (genv)->NewString((jchar*)buffer, length);
+	}
+	if (buffer)
+		free(buffer);
+	return rtn;
 }
 string Tools::JLongToString(jlong qqid) {
 	auto id = [qqid]() -> string {
@@ -383,4 +365,13 @@ string Tools::JLongToString(jlong qqid) {
 		return a;
 	};
 	return id();
+}
+string Tools::JsonToString(const Json::Value& root)
+{
+	std::ostringstream stream;
+	Json::StreamWriterBuilder stream_builder;
+	stream_builder.settings_["emitUTF8"] = true;//Config emitUTF8
+	std::unique_ptr<Json::StreamWriter> writer(stream_builder.newStreamWriter());
+	writer->write(root, &stream);
+	return stream.str();
 }

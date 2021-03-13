@@ -70,6 +70,7 @@ public:
 	* 作用:jstring到string转换
 	* 参数:env:JNIEnv 必须,jstr:jstring 转换的文本
 	* 返回值:string
+	* 来源:https://blog.csdn.net/chunleixiahe/article/details/51394116
 	*/
 	string jstring2str(jstring jstr);
 	/*
@@ -77,6 +78,7 @@ public:
 	* 作用:string类型转jstring类型
 	* 参数:JNIEnv,const char*(string)
 	* 返回值:jstring
+	* 来源:https://blog.csdn.net/chunleixiahe/article/details/51394116
 	*/
 	jstring str2jstring(const char* pat);
 	/*
@@ -98,6 +100,11 @@ public:
 		}
 		return str;
 	}
+	/*
+	* JSON转换到String
+	* 来源:https://www.cnblogs.com/zhangdongsheng/p/12731021.html
+	*/
+	std::string JsonToString(const Json::Value& root);
 };
 
 /*静态声明工具对象*/
@@ -347,7 +354,7 @@ class MiraiCode {
 private:
 	string content = "";
 public:
-	 string toString() {
+	string toString() {
 		return content;
 	}
 	MiraiCode(MiraiCodeable* a) {
@@ -448,7 +455,6 @@ public:
 	Friend(unsigned long long);
 	Friend() {};
 	//初始化当前对象，可能抛出异常
-	void init();
 	//昵称
 	string nick;
 	/*
@@ -482,8 +488,6 @@ public:
 	unsigned int permission = 0;
 	// qqid, groupid
 	Member(unsigned long long qqid, unsigned long long groupid);
-	//初始化当前对象，可能抛出异常
-	void init();
 	/*
 	* 上传本地图片，务必要用绝对路径
 	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
@@ -542,8 +546,6 @@ public:
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
 	Image uploadImg(string filename);
-	//初始化当前对象，可能抛出异常
-	void init();
 	Group() {};
 	/*
 	* 设置全员禁言
@@ -583,10 +585,6 @@ public:
 	string message;
 	//消息源
 	MessageSource messageSource;
-	void init() {
-		group.init();
-		sender.init();
-	}
 	GroupMessageEvent(Group g, Member f, string s, MessageSource s1) {
 		this->group = g;
 		this->sender = f;
@@ -604,9 +602,6 @@ public:
 	string message;
 	//信息源
 	MessageSource messageSource;
-	void init() throw(FriendException){
-		this->sender.init();
-	}
 	PrivateMessageEvent(Friend f, string s, MessageSource ms) {
 		this->sender = f;
 		this->message = s;
@@ -621,10 +616,6 @@ public:
 	Friend sender;
 	//被邀请进的组
 	Group group;
-	void init() {
-		sender.init();
-		group.init();
-	}
 	GroupInviteEvent(Group g, Friend f) {
 		this->sender = f;
 		this->group = g;
@@ -638,9 +629,6 @@ public:
 	Friend sender;
 	//附加信息
 	string message;
-	void init() throw (FriendException){
-		this->sender.init();
-	}
 	NewFriendRequestEvent(Friend f, string s) {
 		this->sender = f;
 		this->message = s;
@@ -663,11 +651,6 @@ public:
 	Group group;
 	//邀请人, 当type = 1时存在，否则则和member变量相同
 	Member invitor;
-	void init() throw(MemberException){
-		this->member.init();
-		this->group.init();
-		this->invitor.init();
-	}
 	MemberJoinEvent(int t, Member m, Group g, Member i) {
 		this->type = t;
 		this->member = m;
@@ -691,12 +674,6 @@ public:
 	Group group;
 	/*操作人, 主动退出时与member相同，改成员可能是当前bot，operater以与系统operator区分*/
 	Member operater;
-	//初始化事件
-	void init() throw(MemberException){
-		this->member.init();
-		this->group.init();
-		this->operater.init();
-	}
 	MemberLeaveEvent(int t, Member m, Group g, Member i) {
 		this->type = t;
 		this->member = m;
@@ -734,21 +711,46 @@ public:
 		this->internalids = ii;
 		this->groupid = g;
 	}
-	void init() {}
 };
+
+/*启动定时任务,time是多少毫秒后开始，id是自定义标识符*/
+inline void SetScheduling(long time, std::initializer_list<std::string> args) {
+	Json::Value obj;
+	Json::Value root;
+	for (string it : args) {
+		obj.append(it);
+	}
+	root["value"] = obj;
+	genv->CallStaticVoidMethod(config->CPP_lib, config->Schedule, (jlong)time, tools.str2jstring(tools.JsonToString(root).c_str()));
+}
 
 /*定时任务执行*/
 class SchedulingEvent {
 public:
+	void init() {};
 	/*自定义id标识符*/
-	int id = 0;
-	SchedulingEvent(int ido){
-		id = ido;
+	vector<string> ids;
+	SchedulingEvent(string str) {
+		const auto rawJsonLength = static_cast<int>(str.length());
+		JSONCPP_STRING err;
+		Json::Value root;
+		Json::CharReaderBuilder builder;
+		const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+		if (!reader->parse(str.c_str(), str.c_str() + rawJsonLength, &root,
+			&err)) {
+			//error
+			logger->Error("JSON reader error");
+			APIException("JSON reader error").raise();
+		}
+
+		const Json::Value arrayNum = root["value"];
+		for (int i = 0; i < arrayNum.size(); i++)
+		{
+			ids.push_back(arrayNum[i].asCString());
+		}
+
 	}
 };
-
-/*启动定时任务,time是多少毫秒后开始，id是自定义标识符*/
-void SetScheduling(long time, int id);
 
 /*监听类声明*/
 class Event {
