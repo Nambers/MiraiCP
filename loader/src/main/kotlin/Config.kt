@@ -1,7 +1,7 @@
 package org.example.mirai.plugin
 
 class Config {
-    //ÏûÏ¢ÊÂ¼ş
+    //æ¶ˆæ¯äº‹ä»¶
     data class GroupMessage(
         val groupid: Long,
         val senderid: Long,
@@ -15,19 +15,19 @@ class Config {
         val Source: String,
         val type: Int = 2
     )
-    //ÈºÑûÇë
+    //ç¾¤é‚€è¯·
     data class GroupInvite(
         val groupid: Long,
         val invitorid: Long,
         val type: Int = 3
     )
-    //ºÃÓÑÑûÇë
+    //å¥½å‹é‚€è¯·
     data class NewFriendRequest(
         val friendid: Long,
         val message: String,
         val type: Int = 4
     )
-    //Èº³ÉÔ±¼ÓÈë
+    //ç¾¤æˆå‘˜åŠ å…¥
     data class MemberJoin(
         val groupid: Long,
         val memberid: Long,
@@ -37,11 +37,11 @@ class Config {
         retrieve - 3
          */
         val jointype: Int,
-        //Èç¹ûÃ»ÓĞÔòÎª0
+        //å¦‚æœæ²¡æœ‰åˆ™ä¸º0
         val invitorid: Long = 0,
         val type: Int = 5
     )
-    //Èº³ÉÔ±ÍË³ö
+    //ç¾¤æˆå‘˜é€€å‡º
     data class MemberLeave(
         val groupid: Long,
         val memberid: Long,
@@ -50,11 +50,11 @@ class Config {
         quit - 2
          */
         val leavetype: Int,
-        //Èç¹ûÃ»ÓĞÔòÎª0
+        //å¦‚æœæ²¡æœ‰åˆ™ä¸º0
         val operatorid: Long = 0,
         val type: Int = 6
     )
-    //³·»Ø
+    //æ’¤å›
     data class RecallEvent(
         val Etype: Int,
         val authorid: Long,
@@ -64,5 +64,9 @@ class Config {
         val time: Int,
         val groupid: Long = 0,
         val type: Int = 7
+    )
+    data class TimeOutEvent(
+        val message: String,
+        val type: Int = 8
     )
 }

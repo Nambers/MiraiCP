@@ -257,9 +257,15 @@ object KotlinMain {
     }
 
     //定时任务
-    fun scheduling(time: Long, id: Int) {
+    fun scheduling(time: Long, id: String) {
         Timer("SettingUp", false).schedule(time) {
-            cpp.ScheduleTask(id)
+            cpp.Event(
+                Gson().toJson(
+                    Config.TimeOutEvent(
+                        id
+                    )
+                )
+            )
         }
     }
 

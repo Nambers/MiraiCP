@@ -1,5 +1,6 @@
 package org.example.mirai.plugin
 import kotlinx.coroutines.*
+import okio.ByteString.Companion.encode
 import org.example.mirai.plugin.KotlinMain.BasicSendLog
 import org.example.mirai.plugin.KotlinMain.Send
 import org.example.mirai.plugin.KotlinMain.dll_name
@@ -23,7 +24,7 @@ import org.example.mirai.plugin.KotlinMain.scheduling
 import org.example.mirai.plugin.KotlinMain.uploadImgFriend
 import org.example.mirai.plugin.KotlinMain.uploadImgGroup
 import org.example.mirai.plugin.KotlinMain.uploadImgMember
-import java.net.URL
+import java.nio.charset.Charset
 
 class CPP_lib {
     var ver:String=""
@@ -147,7 +148,7 @@ class CPP_lib {
         }
         //定时任务
         @JvmStatic
-        fun schedule(time:Long, id:Int){
+        fun schedule(time:Long, id:String){
             scheduling(time, id)
         }
         //mute member
@@ -190,9 +191,7 @@ class CPP_lib {
             return getowner(groupid)
         }
     }
-
     external fun Verify(): String
     external fun Event(content: String): String
     external fun PluginDisable(): Void
-    external fun ScheduleTask(id:Int): Void
 }
