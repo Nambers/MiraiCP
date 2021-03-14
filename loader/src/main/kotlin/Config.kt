@@ -1,5 +1,7 @@
 package org.example.mirai.plugin
 
+import com.google.gson.annotations.SerializedName
+
 class Config {
     //消息事件
     data class GroupMessage(
@@ -68,5 +70,25 @@ class Config {
     data class TimeOutEvent(
         val message: String,
         val type: Int = 8
+    )
+    data class ForwardMessageJson (
+
+        @SerializedName("type") val type : Int,
+        @SerializedName("id") val id : Long,
+        @SerializedName("id2") val id2 : Long,
+        @SerializedName("content") val content: Content
+    )
+    data class Content(
+        @SerializedName("type") val type : Int,
+        @SerializedName("id") val id : Long,
+        @SerializedName("id2") val id2 : Long,
+        @SerializedName("value") val value : List<Value>
+    )
+    data class Value (
+
+        @SerializedName("name") val name : String,
+        @SerializedName("id") val id : Long,
+        @SerializedName("time") val time : Int,
+        @SerializedName("message") val message : String
     )
 }
