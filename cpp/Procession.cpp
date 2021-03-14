@@ -17,12 +17,11 @@ void onEnable() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
-		logger->Info(e.message);
-		e.group.SendMsg(e.message);
-		SetScheduling(100, {e.message, to_string(e.group.id)});
-		});
-	procession->registerEvent([](SchedulingEvent e) {
-		Group(stoi(e.ids[1])).SendMsg(e.ids[0]);
+		ForwardMessage(&e.group,
+			{
+				ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
+				ForwardNode(1930893235, "Eritque arcus", "hahaha", -1)
+			}).sendTo(&e.group);
 		});
 	
 

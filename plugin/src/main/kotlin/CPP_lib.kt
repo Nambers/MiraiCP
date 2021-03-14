@@ -13,6 +13,7 @@ import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendGM
 import org.example.mirai.plugin.PluginMain.SendM
 import org.example.mirai.plugin.PluginMain.SendWarning
+import org.example.mirai.plugin.PluginMain.buildforwardMsg
 import org.example.mirai.plugin.PluginMain.getowner
 import org.example.mirai.plugin.PluginMain.kkick
 import org.example.mirai.plugin.PluginMain.kqueryM
@@ -187,6 +188,12 @@ class CPP_lib {
         @JvmStatic
         fun queryOwner(groupid: Long):String{
             return getowner(groupid)
+        }
+        @JvmStatic
+        fun buildforward(text:String):String{
+            return runBlocking {
+                buildforwardMsg(text)
+            }
         }
     }
     external fun Verify(): String

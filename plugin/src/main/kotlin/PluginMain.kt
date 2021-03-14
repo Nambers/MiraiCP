@@ -5,11 +5,10 @@ import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.contact.nameCardOrNick
-import net.mamoe.mirai.event.Event
-import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.broadcast
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
@@ -17,7 +16,6 @@ import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
-import net.mamoe.mirai.message.data.MessageChain.Companion.deserializeFromMiraiCode
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiInternalApi
@@ -352,6 +350,46 @@ object PluginMain : KotlinPlugin(
             return "E1"
         }
         return g.owner.id.toString()
+    }
+
+    //构建转发信息
+    suspend fun buildforwardMsg(text:String):String{
+        logger.info("A $text")
+        val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
+        val c1:Contact = when(t.type) {
+            1 -> AIbot.getFriend(t.id) ?: let {
+                return "E1"
+            }
+            2 -> AIbot.getGroup(t.id) ?: let {
+                return "E1"
+            }
+            3 -> (AIbot.getGroup(t.id) ?: let {
+                return "E1"
+            })[t.id2]?:let {
+                return "E2"
+            }
+            else -> return "E3"
+        }
+        val c:Contact = when(t.content.type) {
+            1 -> AIbot.getFriend(t.content.id) ?: let {
+                return "E1"
+            }
+            2 -> AIbot.getGroup(t.content.id) ?: let {
+                return "E1"
+            }
+            3 -> (AIbot.getGroup(t.content.id) ?: let {
+                return "E1"
+            })[t.content.id2]?:let {
+                return "E2"
+            }
+            else -> return "E3"
+        }
+        val a = ForwardMessageBuilder(c)
+        t.content.value.forEach {
+            a.add(ForwardMessage.Node(it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)))
+        }
+        a.build().sendTo(c1)
+        return "Y"
     }
 
     override fun onDisable() {
