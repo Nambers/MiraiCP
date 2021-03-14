@@ -5,6 +5,7 @@ import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.alsoLogin
+import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.contact.nameCardOrNick
@@ -341,6 +342,46 @@ object KotlinMain {
             return "E1"
         }
         return g.owner.id.toString()
+    }
+
+    //构建聊天记录
+    suspend fun buildforwardMsg(text:String):String{
+        logger.info("A $text")
+        val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
+        val c1:Contact = when(t.type) {
+            1 -> AIbot.getFriend(t.id) ?: let {
+                return "E1"
+            }
+            2 -> AIbot.getGroup(t.id) ?: let {
+                return "E1"
+            }
+            3 -> (AIbot.getGroup(t.id) ?: let {
+                return "E1"
+            })[t.id2]?:let {
+                return "E2"
+            }
+            else -> return "E3"
+        }
+        val c:Contact = when(t.content.type) {
+            1 -> AIbot.getFriend(t.content.id) ?: let {
+                return "E1"
+            }
+            2 -> AIbot.getGroup(t.content.id) ?: let {
+                return "E1"
+            }
+            3 -> (AIbot.getGroup(t.content.id) ?: let {
+                return "E1"
+            })[t.content.id2]?:let {
+                return "E2"
+            }
+            else -> return "E3"
+        }
+        val a = ForwardMessageBuilder(c)
+        t.content.value.forEach {
+            a.add(ForwardMessage.Node(it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)))
+        }
+        a.build().sendTo(c1)
+        return "Y"
     }
 
     @MiraiInternalApi

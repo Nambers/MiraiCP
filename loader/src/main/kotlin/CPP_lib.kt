@@ -1,19 +1,19 @@
 package org.example.mirai.plugin
-import kotlinx.coroutines.*
-import okio.ByteString.Companion.encode
+import kotlinx.coroutines.runBlocking
 import org.example.mirai.plugin.KotlinMain.BasicSendLog
-import org.example.mirai.plugin.KotlinMain.Send
-import org.example.mirai.plugin.KotlinMain.dll_name
 import org.example.mirai.plugin.KotlinMain.GetN
 import org.example.mirai.plugin.KotlinMain.GetNN
 import org.example.mirai.plugin.KotlinMain.QueryImg
 import org.example.mirai.plugin.KotlinMain.QueryML
 import org.example.mirai.plugin.KotlinMain.QueryNG
+import org.example.mirai.plugin.KotlinMain.Send
 import org.example.mirai.plugin.KotlinMain.SendError
 import org.example.mirai.plugin.KotlinMain.SendG
 import org.example.mirai.plugin.KotlinMain.SendGM
 import org.example.mirai.plugin.KotlinMain.SendM
 import org.example.mirai.plugin.KotlinMain.SendWarning
+import org.example.mirai.plugin.KotlinMain.buildforwardMsg
+import org.example.mirai.plugin.KotlinMain.dll_name
 import org.example.mirai.plugin.KotlinMain.getowner
 import org.example.mirai.plugin.KotlinMain.kkick
 import org.example.mirai.plugin.KotlinMain.kqueryM
@@ -24,7 +24,6 @@ import org.example.mirai.plugin.KotlinMain.scheduling
 import org.example.mirai.plugin.KotlinMain.uploadImgFriend
 import org.example.mirai.plugin.KotlinMain.uploadImgGroup
 import org.example.mirai.plugin.KotlinMain.uploadImgMember
-import java.nio.charset.Charset
 
 class CPP_lib {
     var ver:String=""
@@ -189,6 +188,13 @@ class CPP_lib {
         @JvmStatic
         fun queryOwner(groupid: Long):String{
             return getowner(groupid)
+        }
+        //build forward message
+        @JvmStatic
+        fun buildforward(text:String):String{
+            return runBlocking {
+                 buildforwardMsg(text)
+            }
         }
     }
     external fun Verify(): String
