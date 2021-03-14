@@ -19,7 +19,7 @@ application {
     mainClassName = "org.example.mirai.plugin.KotlinMainKt"
 }
 group = "me.Eritque_arcus"
-version = "2.4.5-patch-1"
+version = "2.4.6"
 
 repositories {
     //国内镜像源
