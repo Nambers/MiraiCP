@@ -33,6 +33,7 @@ void Config::Init() throw(InitException) {
 	this->uploadImgM = genv->GetStaticMethodID(config->CPP_lib, "uploadImgM", "(JJLjava/lang/String;)Ljava/lang/String;");
 	this->muteAll = genv->GetStaticMethodID(config->CPP_lib, "muteGroup", "(JZ)Ljava/lang/String;");
 	this->getowner = genv->GetStaticMethodID(config->CPP_lib, "queryOwner", "(J)Ljava/lang/String;");
+	this->buildforward = genv->GetStaticMethodID(config->CPP_lib, "buildforward", "(Ljava/lang/String;)Ljava/lang/String;");
 }
 Config::~Config() {
 	genv->DeleteGlobalRef(this->CPP_lib);
@@ -95,6 +96,30 @@ MessageSource::MessageSource(string t) {
 	this->internalids = tools.replace(this->internalids, "\n", "");
 	this->internalids = tools.replace(this->internalids, " ", "");
 }
+//发送这个聊天记录
+void ForwardMessage::sendTo(Contact* c) {
+	Json::Value temp;
+	temp["id"] = c->id;
+	temp["groupid"] = c->groupid;
+	temp["type"] = c->type;
+	temp["content"] = sendmsg;
+	string re = tools.jstring2str((jstring)genv->
+		CallStaticObjectMethod(config->CPP_lib, config->buildforward,
+			tools.str2jstring(tools.JsonToString(temp).c_str())));
+	if (re == "Y") return;
+	if (re == "E1") {
+		switch (c->type) {
+		case 1:
+			throw FriendException();
+		case 2:
+			throw GroupException();
+		case 3:
+			throw MemberException(1);
+		}
+	}
+	if (re == "E2") throw MemberException(2);
+	if (re == "E3") throw APIException("参数错误");
+}
 
 /*图片类实现*/
 Image::Image(string imageId) {
@@ -121,6 +146,7 @@ string Image::toMiraiCode() {
 
 /*好友类实现*/
 Friend::Friend(unsigned long long id) {
+	this->type = 1;
 	this->id = id;
 	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->NickorNameF, (jlong)id, (jlong)id));
 	if (temp == "E1") {
@@ -156,6 +182,7 @@ MessageSource Friend::SendMsg(string msg)throw(FriendException) {
 
 /*成员类实现*/
 Member::Member(unsigned long long id, unsigned long long groupid) {
+	this->type = 3;
 	this->id = id;
 	this->Mute_id = config->Mute;
 	this->groupid = groupid;
@@ -247,19 +274,20 @@ MessageSource Member::SendMsg(string msg) throw(MemberException) {
 
 /*群聊类实现*/
 Group::Group(unsigned long long id) {
+	this->type = 2;
 	this->id = id;
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib,
 		config->QueryN,
 		(jlong)this->id));
 	if (re == "E1") {
-		throw GroupException(1);
+		throw GroupException();
 	}
 	this->name = re;
 	re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib,
 		config->QueryML,
 		(jlong)this->id));
 	if (re == "E1") {
-		throw GroupException(1);
+		throw GroupException();
 	}
 	this->memberlist = re;
 }
@@ -301,25 +329,25 @@ Image Group::uploadImg(string filename) {
 void Group::setMuteAll(bool sign)throw(GroupException, BotException) {
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->muteAll, (jlong)this->id, (jboolean)sign));
 	if (re == "Y")return;
-	if (re == "E1") throw GroupException(1);
+	if (re == "E1") throw GroupException();
 	if (re == "E2") throw BotException(1);
 }
 Member Group::getOwner() {
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->getowner, (jlong)this->id));
-	if (re == "E1")throw GroupException(1);
+	if (re == "E1")throw GroupException();
 	return Member(stoi(re), this->id);
 }
 MessageSource Group::SendMiraiCode(string msg)throw(GroupException) {
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2G, tools.str2jstring(msg.c_str()), (jlong)this->id));
 	if (re == "E1") {
-		throw GroupException(1);
+		throw GroupException();
 	}
 	return MessageSource(re);
 }
 MessageSource Group::SendMsg(string msg) throw(GroupException) {
 	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2GM, tools.str2jstring(msg.c_str()), (jlong)this->id));
 	if (re == "E1") {
-		throw GroupException(1);
+		throw GroupException();
 	}
 	return MessageSource(re);
 }

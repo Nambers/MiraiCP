@@ -55,6 +55,7 @@ public:
 	jmethodID QueryML = NULL;
 	/*定时任务*/
 	jmethodID Schedule = NULL;
+	jmethodID buildforward = NULL;
 	Config() {};
 	void Init();
 	~Config();
@@ -286,19 +287,9 @@ private:
 class GroupException :public MiraiCPException
 {
 public:
-	/*
-	*   "1" - 找不到群
-	*/
-	int type = 0;
-	GroupException(int type)
+	GroupException()
 	{
-		this->type = type;
-		switch (type)
-		{
-		case 1:
-			this->description = "找不到群";
-			break;
-		}
+		this->description = "找不到群";
 	}
 	//返回错误信息
 	string what()
@@ -448,10 +439,75 @@ public:
 	string toMiraiCode();
 };
 
-/*好友类声明*/
-class Friend {
+class Contact {
 public:
-	unsigned long long id = NULL;
+	//1-Friend, 2-group, 3-member
+	int type;
+	//id
+	unsigned long long id;
+	//当type=3时存在
+	unsigned long long groupid = 0;
+};
+
+class ForwardNode {
+public:
+	unsigned long long id = 0;
+	string name = "";
+	string message = "";
+	int time = 0;
+	/*
+	聊天记录里的每条信息
+		i - 发送者id
+		n - 发送者昵称
+		m - 发送的信息
+		t - 发送时间，以时间戳记
+	*/
+	ForwardNode(unsigned long long i, string n, string m, int t) {
+		this->id = i;
+		this->name = n;
+		this->message = m;
+		this->time = t;
+	}
+};
+
+//聊天记录
+class ForwardMessage {
+private:
+	Json::Value sendmsg;
+public:
+	/*
+	构建一条聊天记录
+	例子:
+			ForwardMessage(&e.group,
+			{
+				ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
+				ForwardNode(1930893235, "Eritque arcus", "hahaha", -1)
+			}).sendTo(&e.group);
+	*/
+	ForwardMessage(Contact* c, initializer_list<ForwardNode> nodes) {
+		Json::Value root;
+		Json::Value value;
+		root["type"] = c->type;
+		root["id"] = c->id;
+		root["id2"] = c->groupid;
+		for (ForwardNode node : nodes) {
+			Json::Value temp;
+			temp["id"] = node.id;
+			temp["time"] = node.time;
+			temp["message"] = node.message;
+			temp["name"] = node.name;
+			value.append(temp);
+		}
+		root["value"] = value;
+		sendmsg = root;
+	}
+	void sendTo(Contact* c);
+};
+string BuildForwardMessage(Contact*, initializer_list<ForwardNode>);
+
+/*好友类声明*/
+class Friend:public Contact{
+public:
 	Friend(unsigned long long);
 	Friend() {};
 	//初始化当前对象，可能抛出异常
@@ -476,14 +532,12 @@ public:
 };
 
 /*群成员类声明*/
-class Member {
+class Member :public Contact {
 private:
 	jmethodID Mute_id = NULL;
 	jmethodID Query_permission = NULL;
 	jmethodID KickM = NULL;
 public:
-	unsigned long long groupid = 0;
-	unsigned long long id = 0;
 	// 权限等级. OWNER群主 为 2, ADMINISTRATOR管理员 为 1, MEMBER群成员 为 0
 	unsigned int permission = 0;
 	// qqid, groupid
@@ -521,12 +575,10 @@ public:
 };
 
 /*群聊类声明*/
-class Group {
+class Group :public Contact {
 private:
 	string memberlist = "";
 public:
-	/*群号*/
-	unsigned long long id = NULL;
 	/*群名称*/
 	string name = "";
 	/*取群成员列表-vector<long>*/
@@ -553,10 +605,10 @@ public:
 	*/
 	void setMuteAll(bool sign) throw(GroupException, BotException);
 	/*发送信息*/
-	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
+	MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
-	 MessageSource SendMiraiCode(MiraiCode msg) {
+	MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
 	MessageSource SendMiraiCode(string msg);
