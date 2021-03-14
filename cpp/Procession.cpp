@@ -20,7 +20,7 @@ void onEnable() {
 		ForwardMessage(&e.group,
 			{
 				ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-				ForwardNode(1930893235, "Eritque arcus", "hahaha", -1)
+				ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
 			}).sendTo(&e.group);
 		});
 	

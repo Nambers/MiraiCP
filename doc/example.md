@@ -6,6 +6,7 @@
 	* [构建群成员](#构建群成员)
 	* [构建好友](#构建好友)
 	* [构建群](#构建群)
+	* [构建并发送聊天记录](#构建并发送聊天记录)
   * [取当前消息里全部照片的下载链接](#取当前消息里全部照片的下载链接)
   * [执行定时任务](#执行定时任务)
   * [发送LightAPP-以小程序形式发送卡片](#发送LightAPP以小程序形式发送卡片)
@@ -43,7 +44,6 @@ void onEnable() {
 	*/
 	procession->registerEvent([](GroupMessageEvent param)->void {
 		//在这写你自己处理群消息的代码
-		param.init();
 		logger->Info("hi");
 		param.group.SendMsg(param.sender.at());
 		});
@@ -60,7 +60,6 @@ void onDisable() {
 ...
 	procession->registerEvent([](PrivateMessageEvent param)->void {
 	/*示例: 取消息里全部图片的下载地址*/
-	param.init();
 	vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
 	for (int i = 0; i < temp.size(); i++) {
 		logger->Info(temp[i]);
@@ -85,6 +84,16 @@ Friend(qqid);
 ```C++
 Group(groupid);
 ```
+## 构建并发送聊天记录
+```C++
+procession->registerEvent([](GroupMessageEvent e) {
+		ForwardMessage(&e.group,
+			{
+				ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
+				ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
+			}).sendTo(&e.group);
+		});
+```
 ## 执行定时任务
 因为env的局部性，所以在c++部分的多线程什么的并不具备反向调用kotlin部分发送消息或其他操作的能力，所以要把延迟调用移到kotlin部分，在miraiCP中封装成一个事件，即`SchedulingEvent`
 ```C++
@@ -101,7 +110,6 @@ unsigned long id = 0;
 		//这里的[&]和[=]分别为以引用和值的方式捕获全部可以捕获的变量，前者可以改变量值，相当于指针，后者无法更改，相当于本地一个局部变量并进行值传递，详细见搜索引擎的c++ lambda
 	procession->registerEvent([&](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
-		param.init();
 		logger->Info("hi");
 		//延迟100ms发送，后面的1为自定义id
 		SetScheduling(100, 1);
@@ -114,7 +122,6 @@ unsigned long id = 0;
 通过模板构建发送:
 ```C++
 	procession->registerEvent([](GroupMessageEvent e) {
-		e.init();
 		//修改里面的属性从而自定义
 		LightAppStyle1 a = LightAppStyle1();
 		LightAppStyle2 b = LightAppStyle2();
@@ -127,7 +134,6 @@ unsigned long id = 0;
 或者通过文本构建
 ```C++
 	procession->registerEvent([](GroupMessageEvent e) {
-		e.init();
 		//风格1，适合文字展示，不能交互,无大图
 		//图标地址，应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接
 		string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
@@ -172,7 +178,7 @@ unsigned long id = 0;
 ## 撤回信息
 ```C++
 	procession->registerEvent([](GroupMessageEvent e) {
-		e.init();
+		
 		try {
 			e.messageSource.recall();
 			e.group.SendMsg("hi").recall();
@@ -188,7 +194,6 @@ unsigned long id = 0;
 
 ```C++
 	procession->registerEvent([](MemberLeaveEvent p) {
-		p.init();
 		p.group.SendMsg(p.member.id + "离开了本群");
 		});
 ```
@@ -197,7 +202,6 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](NewFriendRequestEvent param)->bool {
 		//新好友邀请
-		param.init();
 		logger->Info("新好友申请来自于" + to_string(param.sender.id));
 		//附加信息验证
 		if (param.message == "hhh") {
@@ -212,7 +216,6 @@ unsigned long id = 0;
 ### 新成员入群
 ```C++
 	procession->registerEvent([](MemberJoinEvent param)->void {
-		param.init();
 		if (param.type == INVITE) {
 			//该成员是被邀请进入的，所以有param.invitor，其他类型都没有
 		}
@@ -228,7 +231,6 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](GroupInviteEvent param)->bool {
 		//处理群邀请
-		param.init();
 		if (param.sender.id == 11111) {
 			return ACCEPT;
 		}
@@ -239,7 +241,6 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](PrivateMessageEvent param)->void {
 		//在这写你自己处理私聊消息的代码
-		param.init();
 		logger->Info("hi");
 		param.sender.SendMsg(param.message);
 		});
@@ -249,18 +250,15 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](GroupMessageEvent param)->void {
 		//在这写你自己处理群消息的代码
-		param.init();
 		logger->Info("hi");
 		param.group.SendMsg(param.sender.at());
 		});	
 ```
 ### 撤回信息事件
 ```C++
-	procession->registerEvent([](RecallEvent e) {
-		e.init();
+	procession->registerEvent([](RecallEvent e) {	
 		if (e.type == 2) {
 			Group g = Group(e.groupid);
-			g.init();
 			g.SendMsg(to_string(e.operatorid) + "撤回了" + 
 				to_string(e.authorid) + "的一条信息");
 			
@@ -272,10 +270,8 @@ unsigned long id = 0;
 ### 踢出群成员
 ```C++
 	procession->registerEvent([](GroupMessageEvent e) {
-		e.init();
 		try {
 			Member m = Member(qqid, e.group.id);
-			m.init();
 			m.Kick("this_is_reason");
 		}
 		catch (BotException err) {

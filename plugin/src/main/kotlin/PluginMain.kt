@@ -34,7 +34,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "org.example.miraiCP",
         name = "miraiCP",
-        version = "2.4.5-patch-1"
+        version = "2.4.6"
     )
 ) {
     private val json = Json{
@@ -354,7 +354,6 @@ object PluginMain : KotlinPlugin(
 
     //构建转发信息
     suspend fun buildforwardMsg(text:String):String{
-        logger.info("A $text")
         val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
         val c1:Contact = when(t.type) {
             1 -> AIbot.getFriend(t.id) ?: let {
@@ -397,7 +396,7 @@ object PluginMain : KotlinPlugin(
     }
     @MiraiInternalApi
     override fun onEnable(){
-        val now_tag = "v2.4.5-patch-1"
+        val now_tag = "v2.4.6"
         println("当前MiraiCP框架版本:$now_tag")
         logger.info("启动成功")
         logger.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
