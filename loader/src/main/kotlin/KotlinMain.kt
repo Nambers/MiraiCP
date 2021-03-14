@@ -32,7 +32,7 @@ object KotlinMain {
     private val json = Json{
         serializersModule = MessageSerializers.serializersModule
     }
-    const val now_tag = "v2.4.5-patch-1"
+    const val now_tag = "v2.4.6"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
     private lateinit var AIbot: Bot
@@ -346,7 +346,6 @@ object KotlinMain {
 
     //构建聊天记录
     suspend fun buildforwardMsg(text:String):String{
-        logger.info("A $text")
         val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
         val c1:Contact = when(t.type) {
             1 -> AIbot.getFriend(t.id) ?: let {
