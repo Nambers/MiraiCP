@@ -17,11 +17,7 @@ void onEnable() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
-		ForwardMessage(&e.group,
-			{
-				ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-				ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
-			}).sendTo(&e.group);
+		e.sender.SendMiraiCode("[mirai:image:{036820C0-22C0-7CB1-FC44-04C15CE30D8C}.jpg]");
 		});
 	
 
