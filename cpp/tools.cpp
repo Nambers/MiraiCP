@@ -355,12 +355,19 @@ MessageSource Group::SendMsg(string msg) throw(GroupException) {
 /*工具类实现*/
 string Tools::jstring2str(jstring jstr)
 {	
+	if (jstr == NULL) { 
+		logger->Warning("异常:kotlin返回空字符串");
+		return ""; 
+	}
 	jsize len = genv->GetStringLength(jstr);
 	const jchar* jcstr = genv->GetStringChars(jstr, NULL);
 	int size = 0;
 	char* str = (char*)malloc(static_cast<size_t>(len) * 2 + 1);
 	if ((size = WideCharToMultiByte(CP_ACP, 0, LPCWSTR(jcstr), len, str, len * 2 + 1, NULL, NULL)) == 0)
-		return NULL;
+	{
+		logger->Warning("异常:kotlin返回空字符串");
+		return "";
+	}
 	genv->ReleaseStringChars(jstr, jcstr);
 	str[size] = 0;
 	return str;
