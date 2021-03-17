@@ -16,6 +16,7 @@
 #include <regex>
 #include <fstream>
 #include <vector> 
+#include <thread>
 using namespace std;
 #include "constants.h"
 #include "tools.h"

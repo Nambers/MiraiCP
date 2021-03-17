@@ -1,5 +1,7 @@
 ﻿#include "pch.h"
 JNIEnv* genv;
+JavaVM* gvm;
+int JNIVersion;
 Logger* logger = new Logger();
 Event* procession = new Event();
 Config* config = new Config();
@@ -14,6 +16,8 @@ Config* config = new Config();
 */
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject job) {
 	genv = env;
+	JNIVersion = (int)genv->GetVersion();
+	env->GetJavaVM(&gvm);
 	try {
 		//初始化日志模块
 		logger->init();
