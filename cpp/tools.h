@@ -2,6 +2,19 @@
 
 //全局env变量
 extern JNIEnv* genv;
+extern JavaVM* gvm;
+extern int JNIVersion;
+
+//https://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls
+inline JNIEnv* getEnv(char* threadName = NULL, jobject threadGroupName = NULL){
+	JNIEnv* env;
+	JavaVMAttachArgs args;
+	args.version = JNIVersion; // choose your JNI version
+	args.name = threadName; // you might want to give the java thread a name
+	args.group = threadGroupName; // you might want to assign the java thread to a ThreadGroup
+	gvm->AttachCurrentThread((void**)&env, &args);
+	return env;
+}
 
 /*日志类声明*/
 class Logger {
