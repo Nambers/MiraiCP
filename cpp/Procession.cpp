@@ -1,6 +1,12 @@
 #include "pch.h"
 
-unsigned long groupid = 0;
+void func() {
+	//需要自己构建JNIEnv* 不要用genv
+	JNIEnv* env = getEnv();
+	genv = env;
+	Friend(1930893235).SendMsg("hi");
+	gvm->DetachCurrentThread();
+}
 void onEnable() {
 	/*插件启动*/
 	/*
@@ -17,7 +23,8 @@ void onEnable() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
-		e.sender.SendMiraiCode("[mirai:image:{036820C0-22C0-7CB1-FC44-04C15CE30D8C}.jpg]");
+		thread th1(func);
+		th1.join();
 		});
 	
 
