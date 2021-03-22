@@ -1,6 +1,11 @@
 # 欢迎来到MiraiCP
 ![License](https://img.shields.io/github/license/Nambers/MiraiCP)  ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP) ![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)
 
+>[中文](https://github.com/Nambers/MiraiCP/blob/master/README.md)
+>
+>[English](https://github.com/Nambers/MiraiCP/blob/master/README_en.md)
+
+
 * [欢迎来到MiraiCP](#欢迎来到miraicp)
 * [使用声明](#使用声明)
 * [关于MiraiCP](#关于MiraiCP)
@@ -121,7 +126,7 @@ Copyright (C) 2020-2021 Eritque arcus and contributors.
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of the
-License, or any later version.
+License, or any later version(in your opinion).
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
