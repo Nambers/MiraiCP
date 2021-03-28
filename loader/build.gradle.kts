@@ -18,21 +18,14 @@ application {
     mainClass.set("org.example.mirai.plugin.KotlinMainKt")
     mainClassName = "org.example.mirai.plugin.KotlinMainKt"
 }
-group = "me.Eritque_arcus"
-version = "2.4.6"
+group = "tech.eritquearcus"
+version = "2.5.0"
 
 repositories {
-    //国内镜像源
-    //华为云
-    maven { url =uri("https://mirrors.huaweicloud.com/repository/maven") }
-    //阿里云
-    maven { url =uri("https://maven.aliyun.com/nexus/content/repositories/jcenter")}
-    //mirai-console的仓库
-    maven {url = uri("https://dl.bintray.com/him188moe/mirai")}
-    mavenLocal()
-    mavenCentral()
+    maven{ url =uri("https://maven.aliyun.com/nexus/content/groups/public/")}
     jcenter()
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
+    mavenCentral()
+    mavenLocal()
 }
 
 tasks.withType(KotlinJvmCompile::class.java) {
@@ -42,7 +35,7 @@ tasks.withType(KotlinJvmCompile::class.java) {
 dependencies {
     implementation("org.fusesource.jansi:jansi:1.18")
     implementation("com.google.code.gson:gson:2.8.6")
-    api("net.mamoe:mirai-core:2.4.0")
+    api("net.mamoe:mirai-core:2.5.0")
     // https://mvnrepository.com/artifact/org.json/json
     implementation("org.json:json:20201115")
 

@@ -1,11 +1,12 @@
 #include "pch.h"
 
 void func() {
-	//需要自己获取JNIEnv*
-	JNIEnv* env = getEnv();
 	//重新赋值genv以确保组件可用
-	genv = env;
-	Friend(1930893235).SendMsg("hi");
+	getEnv();
+
+	/*执行操作*/
+	Friend(1111).SendMsg("hi");
+
 	//在jvm结束此线程，env失效
 	gvm->DetachCurrentThread();
 }
