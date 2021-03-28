@@ -32,9 +32,9 @@ import kotlin.concurrent.schedule
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
-        id = "org.example.miraiCP",
+        id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.4.6"
+        version = "2.5.0"
     )
 ) {
     private val json = Json{

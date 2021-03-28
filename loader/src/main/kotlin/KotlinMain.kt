@@ -32,7 +32,7 @@ object KotlinMain {
     private val json = Json{
         serializersModule = MessageSerializers.serializersModule
     }
-    const val now_tag = "v2.4.6"
+    const val now_tag = "v2.5.0"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
     private lateinit var AIbot: Bot
