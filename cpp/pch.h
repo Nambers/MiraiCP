@@ -3,7 +3,7 @@
 */
 #ifndef PCH_H
 #define PCH_H
-// 添加要在此处预编译的标头
+/*MiraiCP依赖*/
 #include <iostream>
 #include "framework.h"
 #include <string>
@@ -16,8 +16,9 @@
 #include <regex>
 #include <fstream>
 #include <vector> 
-#include <thread>
 using namespace std;
 #include "constants.h"
 #include "tools.h"
+/*结束*/
+#include <thread>
 #endif //PCH_H

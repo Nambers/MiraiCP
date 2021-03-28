@@ -2,6 +2,7 @@
 
 * [MiraiCP案例库](#miraicp案例库)
 * [注意事项](#注意事项)
+  * [多线程](#多线程)
   * [构建对象](#构建对象)
 	* [构建群成员](#构建群成员)
 	* [构建好友](#构建好友)
@@ -55,6 +56,27 @@ void onDisable() {
 
 # 注意事项
 从`v2.4.2`开始，记得自行新建Member对象group对象friend对象和事件刚开始都要调用`init()`方法初始化(为了更好的捕获抛出的异常)
+从`v2.5.0`开始，不需要`init()`
+## 多线程
+```C++
+void func() {
+	//重新赋值genv以确保组件可用
+	getEnv();
+	
+	/*执行操作*/
+	Friend(1111).SendMsg("hi");
+	
+	//在jvm结束此线程，env失效
+	gvm->DetachCurrentThread();
+}
+void onEnable() {
+	procession->registerEvent([](GroupMessageEvent e) {
+		thread th1(func);
+		th1.join();
+		});
+}
+	
+```
 ##  取当前消息里全部照片的下载链接
 ```C++
 ...
