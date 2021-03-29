@@ -16,9 +16,7 @@
 #include <regex>
 #include <fstream>
 #include <vector> 
-using namespace std;
 #include "constants.h"
 #include "tools.h"
 /*结束*/
-#include <thread>
 #endif //PCH_H

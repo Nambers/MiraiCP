@@ -38,5 +38,4 @@ dependencies {
     api("net.mamoe:mirai-core:2.5.0")
     // https://mvnrepository.com/artifact/org.json/json
     implementation("org.json:json:20201115")
-
 }

@@ -1,15 +1,5 @@
 #include "pch.h"
 
-void func() {
-	//重新赋值genv以确保组件可用
-	getEnv();
-
-	/*执行操作*/
-	Friend(1111).SendMsg("hi");
-
-	//在jvm结束此线程，env失效
-	gvm->DetachCurrentThread();
-}
 void onEnable() {
 	/*插件启动*/
 	/*
@@ -26,8 +16,6 @@ void onEnable() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
-		thread th1(func);
-		th1.join();
 		});
 	
 

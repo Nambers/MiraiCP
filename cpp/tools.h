@@ -15,11 +15,11 @@ private:
 public:
 	void init();
 	/*发送普通日志*/
-	void Info(string log);
+	void Info(std::string log);
 	/*发送警告*/
-	void Warning(string log);
+	void Warning(std::string log);
 	/*发送错误*/
-	void Error(string log);
+	void Error(std::string log);
 	~Logger();
 };
 
@@ -75,7 +75,7 @@ public:
 	* 返回值:string
 	* 来源:https://blog.csdn.net/chunleixiahe/article/details/51394116
 	*/
-	string jstring2str(jstring jstr);
+	std::string jstring2str(jstring jstr);
 	/*
 	* 名称:str2jstring
 	* 作用:string类型转jstring类型
@@ -90,7 +90,7 @@ public:
 	* 参数:jlong qqid
 	* 返回值:string
 	*/
-	string JLongToString(jlong qqid);
+	std::string JLongToString(jlong qqid);
 	/*
 	* 替换全部
 	* 来源:https://stackoverflow.com/a/24315631/14646226
@@ -99,7 +99,7 @@ public:
 		size_t start_pos = 0;
 		while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
 			str.replace(start_pos, from.length(), to);
-			start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+			start_pos += to.length(); // Handles case where 'to' is a substd::string of 'from'
 		}
 		return str;
 	}
@@ -114,42 +114,42 @@ public:
 static Tools tools;
 
 //总异常
-class MiraiCPException :public exception {
+class MiraiCPException :public std::exception {
 public:
-	virtual string what() { return "C++部分出现了个未捕获的异常"; };
+	virtual std::string what() { return "C++部分出现了个未捕获的异常"; };
 	virtual void raise() {};
 };
 //初始化异常
 class InitException :public MiraiCPException
 {
+private:
+	std::string description;
 public:
 	int step = 0;
-	InitException(string text, int step)
+	InitException(std::string text, int step)
 	{
 		this->description = text;
 		this->step = step;
 	}
 	//返回错误信息
-	string what()
+	std::string what()
 	{
 		return this->description;
 	}
 	void raise() {
-		genv->ThrowNew(config->initexception, (this->description + " step:" + to_string(this->step)).c_str());
+		genv->ThrowNew(config->initexception, (this->description + " step:" + std::to_string(this->step)).c_str());
 	}
-private:
-	string description;
 };
 //文件读取异常
 class IOException :public MiraiCPException
 {
 public:
-	IOException(string text)
+	IOException(std::string text)
 	{
 		this->description = "文件读取异常" + text;
 	}
 	//返回错误信息
-	string what()
+	std::string what()
 	{
 		return this->description;
 	}
@@ -158,18 +158,18 @@ public:
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
-	string description;
+	std::string description;
 };
 //内部异常
 class APIException :public MiraiCPException
 {
 public:
-	APIException(string text)
+	APIException(std::string text)
 	{
 		this->description = "MiraiCP内部无法预料的错误:" + text;
 	}
 	//返回错误信息
-	string what()
+	std::string what()
 	{
 		return this->description;
 	}
@@ -178,7 +178,7 @@ public:
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
-	string description;
+	std::string description;
 };
 //机器人操作异常
 class BotException : public MiraiCPException {
@@ -198,7 +198,7 @@ public:
 		}
 	}
 	//返回错误信息
-	string what()
+	std::string what()
 	{
 		return this->description;
 	}
@@ -206,7 +206,7 @@ public:
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
-	string description;
+	std::string description;
 };
 //禁言异常
 class MuteException :public MiraiCPException
@@ -220,7 +220,7 @@ public:
 		this->description = "禁言时长不在0s~30d中间";
 	}
 	//返回错误信息
-	string what()
+	std::string what()
 	{
 		return this->description;
 	}
@@ -228,7 +228,7 @@ public:
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
-	string description;
+	std::string description;
 };
 //获取群成员错误
 class MemberException :public MiraiCPException
@@ -253,7 +253,7 @@ public:
 		}
 	}
 	//返回错误信息
-	string what()
+	std::string what()
 	{
 		return this->description;
 	}
@@ -261,7 +261,7 @@ public:
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
-	string description;
+	std::string description;
 };
 //获取群成员错误
 class FriendException :public MiraiCPException
@@ -275,7 +275,7 @@ public:
 		this->description = "找不到好友";
 	}
 	//返回错误信息
-	string what()
+	std::string what()
 	{
 		return this->description;
 	}
@@ -283,7 +283,7 @@ public:
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
-	string description;
+	std::string description;
 };
 //获取群错误
 class GroupException :public MiraiCPException
@@ -294,7 +294,7 @@ public:
 		this->description = "找不到群";
 	}
 	//返回错误信息
-	string what()
+	std::string what()
 	{
 		return this->description;
 	}
@@ -302,7 +302,7 @@ public:
 		//genv->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
-	string description;
+	std::string description;
 };
 //撤回异常
 class RecallException: public MiraiCPException{
@@ -310,27 +310,27 @@ public:
 	RecallException() {
 		this->description = "该消息已经被撤回";
 	}
-	string what() {
+	std::string what() {
 		return this->description;
 	}
 private:
-	string description = "";
+	std::string description = "";
 };
 
 //消息源声明
 class MessageSource {
 private:
-	string source;
+	std::string source;
 public:
-	string ids = "";
-	string internalids = "";
-	string toString() {
+	std::string ids = "";
+	std::string internalids = "";
+	std::string toString() {
 		return source;
 	}
 	MessageSource() {};
-	MessageSource(string t);
+	MessageSource(std::string t);
 	void recall() {
-		string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM,
+		std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM,
 			tools.str2jstring(this->toString().c_str())));
 		if (re == "Y") return;
 		if (re == "E1") throw BotException(1);
@@ -341,31 +341,31 @@ public:
 //MiraiCode
 class MiraiCodeable {
 public:
-	virtual string toMiraiCode() = 0;
+	virtual std::string toMiraiCode() = 0;
 };
 class MiraiCode {
 private:
-	string content = "";
+	std::string content = "";
 public:
-	string toString() {
+	std::string toString() {
 		return content;
 	}
 	MiraiCode(MiraiCodeable* a) {
 		content = a->toMiraiCode();
 	}
-	MiraiCode(string a) {
+	MiraiCode(std::string a) {
 		content = a;
 	}
 	MiraiCode operator+(MiraiCodeable* a) {
 		return MiraiCode(content + a->toMiraiCode());
 	}
-	MiraiCode operator+(string a) {
+	MiraiCode operator+(std::string a) {
 		return MiraiCode(content + a);
 	}
 	MiraiCode plus(MiraiCodeable* a) {
 		return MiraiCode(content + a->toMiraiCode());
 	}
-	MiraiCode plus(string a) {
+	MiraiCode plus(std::string a) {
 		return MiraiCode(content + a);
 	}
 };
@@ -373,9 +373,9 @@ public:
 /*小程序发送卡片*/
 class LightApp: public MiraiCodeable {
 public:
-	string content = "";
+	std::string content = "";
 	//使用纯文本构造，推荐使用其他结构体方法构造
-	LightApp(string content) {
+	LightApp(std::string content) {
 		this->content = content;
 	}
 	//样式1,适合文字展示，无大图，不能交互
@@ -405,7 +405,7 @@ public:
 			"\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\"" + c.preview + "\",\"shareTemplateData\":{},\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"" + c.title + "\",\"title\":\"" + c.description + "\","
 			"\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" + c.icon + "\",\"qqdocurl\":\"" + c.url + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
 	}
-	string toMiraiCode() {
+	std::string toMiraiCode() {
 		return "[mirai:app:" + tools.replace(tools.replace(content, "[", "\\["), "]", "\\]") + "]";
 	}
 };
@@ -416,7 +416,7 @@ private:
 	jmethodID Query = NULL;
 public:
 	//图片id，样式:` {xxx}.xx `
-	string id = "";
+	std::string id = "";
 	/*
 	* 从图片id构造，适用于服务器上已经有的图片，即接收到的
 	* 图片miraiCode例子: [mirai:image:{图片id}.jpg]
@@ -428,34 +428,42 @@ public:
 			logger->Info("图片下载地址:" + Image(param.env, temp[i]).queryURL());
 		}
 	*/
-	Image(string);
+	Image(std::string);
 	/*
 	* 获取图片下载url
 	*/
-	string queryURL();
+	std::string queryURL();
 
 	/*取全部的图片id，详情见Image*/
-	static vector<string> GetImgIdsFromMiraiCode(string);
+	static std::vector<std::string> GetImgIdsFromMiraiCode(std::string);
 
 	/*取图片Mirai码*/
-	string toMiraiCode();
+	std::string toMiraiCode();
 };
 
+/*group, friend, member的父类*/
 class Contact {
 public:
-	//1-Friend, 2-group, 3-member
-	int type;
-	//id
-	unsigned long long id;
-	//当type=3时存在
+	//1-Friend好友, 2-group群组, 3-member群成员
+	int type = 0;
+	//id，当type=1的时候是好友qqid，2时是群组id，3是群成员的qqid
+	unsigned long long id = 0;
+	//当type=3时存在，为群成员说在群的群组id
 	unsigned long long groupid = 0;
+	/*群名称，群成员群名片，或好友昵称*/
+	std::string nickOrNameCard = "";
 };
 
+/*聊天记录里每个消息*/
 class ForwardNode {
 public:
+	//发送者id
 	unsigned long long id = 0;
-	string name = "";
-	string message = "";
+	//发送者昵称
+	std::string name = "";
+	//发送信息
+	std::string message = "";
+	//发送时间
 	int time = 0;
 	/*
 	聊天记录里的每条信息
@@ -464,10 +472,22 @@ public:
 		m - 发送的信息
 		t - 发送时间，以时间戳记
 	*/
-	ForwardNode(unsigned long long i, string n, string m, int t) {
+	ForwardNode(unsigned long long i, std::string n, std::string m, int t) {
 		this->id = i;
 		this->name = n;
 		this->message = m;
+		this->time = t;
+	}
+	/*
+	聊天记录里的每条信息
+		c - 一个Contact对象
+		m - 发送的信息
+		t - 发送时间，以时间戳记
+	*/
+	ForwardNode(Contact* c, std::string message, int t) {
+		this->id = c->id;
+		this->name = c->nickOrNameCard;
+		this->message = message;
 		this->time = t;
 	}
 };
@@ -479,6 +499,8 @@ private:
 public:
 	/*
 	构建一条聊天记录
+	第一个参数是聊天记录发生的地方
+	然后是每条信息
 	例子:
 			ForwardMessage(&e.group,
 			{
@@ -486,7 +508,7 @@ public:
 				ForwardNode(1930893235, "Eritque arcus", "hahaha", -1)
 			}).sendTo(&e.group);
 	*/
-	ForwardMessage(Contact* c, initializer_list<ForwardNode> nodes) {
+	ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes) {
 		Json::Value root;
 		Json::Value value;
 		root["type"] = c->type;
@@ -503,9 +525,10 @@ public:
 		root["value"] = value;
 		sendmsg = root;
 	}
+	//发送给群或好友或群成员
 	void sendTo(Contact* c);
 };
-string BuildForwardMessage(Contact*, initializer_list<ForwardNode>);
+std::string BuildForwardMessage(Contact*, std::initializer_list<ForwardNode>);
 
 /*好友类声明*/
 class Friend:public Contact{
@@ -514,23 +537,24 @@ public:
 	Friend() {};
 	//初始化当前对象，可能抛出异常
 	//昵称
-	string nick;
 	/*
 	* 上传本地图片，务必要用绝对路径
 	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到好友
 	* 最大支持图片大小为30MB
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
-	Image uploadImg(string filename);
+	Image uploadImg(std::string filename);
 	/*发送信息*/
+	//发送miraicode
 	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
 	 MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(string msg);
-	MessageSource SendMsg(string msg);
+	MessageSource SendMiraiCode(std::string msg);
+	//发送文本信息
+	MessageSource SendMsg(std::string msg);
 };
 
 /*群成员类声明*/
@@ -550,19 +574,21 @@ public:
 	* 最大支持图片大小为30MB
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
-	Image uploadImg(string filename);
+	Image uploadImg(std::string filename);
 	Member() {};
-	int getPermission();
-	string nameCard = "";
+	//获取权限，会在构造时调用，请使用permission缓存变量
+	unsigned int getPermission();
 	/*发送信息*/
+	//发送miraicode
 	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
 	 MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(string msg);
-	MessageSource SendMsg(string msg);
+	MessageSource SendMiraiCode(std::string msg);
+	//发送文本信息，不进行miraicode解析
+	MessageSource SendMsg(std::string msg);
 	/*禁言当前对象，单位是秒，最少0秒最大30天
 	* 返回值对应报错
 	*	"E1" - 找不到群
@@ -573,25 +599,24 @@ public:
 	*/
 	void Mute(int time);
 	/*踢出这个群成员*/
-	void Kick(string reason);
+	void Kick(std::string reason);
 };
 
 /*群聊类声明*/
 class Group :public Contact {
 private:
-	string memberlist = "";
+	std::string memberlist = "";
 public:
-	/*群名称*/
-	string name = "";
 	/*取群成员列表-vector<long>*/
-	vector<unsigned long long> getMemberList();
+	std::vector<unsigned long long> getMemberList();
 	/*以string格式取群成员列表
 	格式：
 		每个群成员id间用逗号分隔
 	*/
-	string MemberListToString();
+	std::string MemberListToString();
 	//取群主
 	Member getOwner();
+	//构建以群号构建群对象
 	Group(unsigned long long);
 	/*
 	* 上传本地图片，务必要用绝对路径
@@ -599,13 +624,13 @@ public:
 	* 最大支持图片大小为30MB
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
-	Image uploadImg(string filename);
+	Image uploadImg(std::string filename);
 	Group() {};
 	/*
 	* 设置全员禁言
 	* param: sign = true时为开始，false为关闭
 	*/
-	void setMuteAll(bool sign) throw(GroupException, BotException);
+	void setMuteAll(bool sign);
 	/*发送信息*/
 	MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
@@ -613,19 +638,19 @@ public:
 	MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(string msg);
-	MessageSource SendMsg(string msg);
+	MessageSource SendMiraiCode(std::string msg);
+	MessageSource SendMsg(std::string msg);
 };
 
 /*At一个群成员*/
- inline string At(Member a) {
+ inline std::string At(Member a) {
 	/*返回at这个人的miraicode*/
-	return "[mirai:at:" + to_string(a.id) + "]";
+	return "[mirai:at:" + std::to_string(a.id) + "]";
 }
  /*At一个群成员*/
- inline string At(unsigned long long a) {
+ inline std::string At(unsigned long long a) {
 	/*返回at这个人的miraicode*/
-	return "[mirai:at:" + to_string(a) + "]";
+	return "[mirai:at:" + std::to_string(a) + "]";
 }
 
 /*群消息事件声明*/
@@ -636,10 +661,10 @@ public:
 	//发送人
 	Member sender;
 	//信息本体
-	string message;
+	std::string message;
 	//消息源
 	MessageSource messageSource;
-	GroupMessageEvent(Group g, Member f, string s, MessageSource s1) {
+	GroupMessageEvent(Group g, Member f, std::string s, MessageSource s1) {
 		this->group = g;
 		this->sender = f;
 		this->message = s;
@@ -653,10 +678,10 @@ public:
 	//发起人
 	Friend sender;
 	//附带消息
-	string message;
+	std::string message;
 	//信息源
 	MessageSource messageSource;
-	PrivateMessageEvent(Friend f, string s, MessageSource ms) {
+	PrivateMessageEvent(Friend f, std::string s, MessageSource ms) {
 		this->sender = f;
 		this->message = s;
 		this->messageSource = ms;
@@ -682,8 +707,8 @@ public:
 	//发起者
 	Friend sender;
 	//附加信息
-	string message;
-	NewFriendRequestEvent(Friend f, string s) {
+	std::string message;
+	NewFriendRequestEvent(Friend f, std::string s) {
 		this->sender = f;
 		this->message = s;
 	}
@@ -750,13 +775,13 @@ public:
 	//撤回者
 	unsigned long operatorid = 0;
 	//信息id
-	string ids;
+	std::string ids = "";
 	//内部ids
-	string internalids;
+	std::string internalids = "";
 	//当type是2的时候存在，否则为0
-	unsigned long groupid;
+	unsigned long groupid = 0;
 	RecallEvent() {}
-	RecallEvent(int t, int t2, unsigned long a, unsigned long o, string id, string ii, unsigned long g = 0) {
+	RecallEvent(int t, int t2, unsigned long a, unsigned long o, std::string id, std::string ii, unsigned long g = 0) {
 		this->type = t;
 		this->time = t2;
 		this->authorid = a;
@@ -771,7 +796,7 @@ public:
 inline void SetScheduling(long time, std::initializer_list<std::string> args) {
 	Json::Value obj;
 	Json::Value root;
-	for (string it : args) {
+	for (std::string it : args) {
 		obj.append(it);
 	}
 	root["value"] = obj;
@@ -783,10 +808,10 @@ class SchedulingEvent {
 public:
 	void init() {};
 	/*自定义id标识符*/
-	vector<string> ids;
-	SchedulingEvent(string str) {
+	std::vector<std::string> ids;
+	SchedulingEvent(std::string str) {
 		const auto rawJsonLength = static_cast<int>(str.length());
-		JSONCPP_STRING err;
+		Json::String err;
 		Json::Value root;
 		Json::CharReaderBuilder builder;
 		const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
@@ -841,10 +866,10 @@ public:
 	void broadcast(PrivateMessageEvent p) {
 		this->PMEf(p);
 	}
-	string broadcast(GroupInviteEvent g) {
+	std::string broadcast(GroupInviteEvent g) {
 		return (this->GIf(g) ? "true" : "false");
 	}
-	string broadcast(NewFriendRequestEvent g) {
+	std::string broadcast(NewFriendRequestEvent g) {
 		return (this->NFREf(g) ? "true" : "false");
 	}
 	void broadcast(MemberJoinEvent g) {
@@ -892,8 +917,8 @@ public:
 
 //https://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls
 inline void getEnv(char* threadName = NULL, char* threadGroupName = NULL) {
-	JNIEnv* env;
-	JavaVMAttachArgs args;
+	JNIEnv* env = nullptr;
+	JavaVMAttachArgs args{};
 	args.version = JNIVersion; // choose your JNI version
 	args.name = threadName; // you might want to give the java thread a name
 	args.group = (jobject)tools.str2jstring(threadGroupName); // you might want to assign the java thread to a ThreadGroup
