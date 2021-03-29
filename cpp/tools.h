@@ -13,13 +13,13 @@ private:
 	jmethodID swarning = NULL;
 	jmethodID serror = NULL;
 public:
-	void init();
+	void init(JNIEnv* = genv);
 	/*发送普通日志*/
-	void Info(std::string log);
+	void Info(std::string log, JNIEnv* = genv);
 	/*发送警告*/
-	void Warning(std::string log);
+	void Warning(std::string log, JNIEnv* = genv);
 	/*发送错误*/
-	void Error(std::string log);
+	void Error(std::string log, JNIEnv* = genv);
 	~Logger();
 };
 
@@ -59,7 +59,7 @@ public:
 	jmethodID Schedule = NULL;
 	jmethodID buildforward = NULL;
 	Config() {};
-	void Init();
+	void Init(JNIEnv* = genv);
 	~Config();
 };
 
@@ -75,7 +75,7 @@ public:
 	* 返回值:string
 	* 来源:https://blog.csdn.net/chunleixiahe/article/details/51394116
 	*/
-	std::string jstring2str(jstring jstr);
+	std::string jstring2str(jstring jstr, JNIEnv* = genv);
 	/*
 	* 名称:str2jstring
 	* 作用:string类型转jstring类型
@@ -83,7 +83,7 @@ public:
 	* 返回值:jstring
 	* 来源:https://blog.csdn.net/chunleixiahe/article/details/51394116
 	*/
-	jstring str2jstring(const char* pat);
+	jstring str2jstring(const char* pat, JNIEnv* = genv);
 	/*
 	* 名称:JLongToString
 	* 作用:jlong类型转string类型
@@ -432,7 +432,7 @@ public:
 	/*
 	* 获取图片下载url
 	*/
-	std::string queryURL();
+	std::string queryURL(JNIEnv* = genv);
 
 	/*取全部的图片id，详情见Image*/
 	static std::vector<std::string> GetImgIdsFromMiraiCode(std::string);
@@ -526,14 +526,14 @@ public:
 		sendmsg = root;
 	}
 	//发送给群或好友或群成员
-	void sendTo(Contact* c);
+	void sendTo(Contact* c, JNIEnv* = genv);
 };
 std::string BuildForwardMessage(Contact*, std::initializer_list<ForwardNode>);
 
 /*好友类声明*/
 class Friend:public Contact{
 public:
-	Friend(unsigned long long);
+	Friend(unsigned long long, JNIEnv* =genv);
 	Friend() {};
 	//初始化当前对象，可能抛出异常
 	//昵称
@@ -543,7 +543,7 @@ public:
 	* 最大支持图片大小为30MB
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
-	Image uploadImg(std::string filename);
+	Image uploadImg(std::string filename, JNIEnv* = genv);
 	/*发送信息*/
 	//发送miraicode
 	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
@@ -552,9 +552,9 @@ public:
 	 MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(std::string msg);
+	MessageSource SendMiraiCode(std::string msg, JNIEnv* = genv);
 	//发送文本信息
-	MessageSource SendMsg(std::string msg);
+	MessageSource SendMsg(std::string msg, JNIEnv* = genv);
 };
 
 /*群成员类声明*/
@@ -567,17 +567,17 @@ public:
 	// 权限等级. OWNER群主 为 2, ADMINISTRATOR管理员 为 1, MEMBER群成员 为 0
 	unsigned int permission = 0;
 	// qqid, groupid
-	Member(unsigned long long qqid, unsigned long long groupid);
+	Member(unsigned long long qqid, unsigned long long groupid, JNIEnv* = genv);
 	/*
 	* 上传本地图片，务必要用绝对路径
 	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
 	* 最大支持图片大小为30MB
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
-	Image uploadImg(std::string filename);
+	Image uploadImg(std::string filename, JNIEnv* = genv);
 	Member() {};
 	//获取权限，会在构造时调用，请使用permission缓存变量
-	unsigned int getPermission();
+	unsigned int getPermission(JNIEnv* = genv);
 	/*发送信息*/
 	//发送miraicode
 	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
@@ -586,9 +586,9 @@ public:
 	 MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(std::string msg);
+	MessageSource SendMiraiCode(std::string msg, JNIEnv* = genv);
 	//发送文本信息，不进行miraicode解析
-	MessageSource SendMsg(std::string msg);
+	MessageSource SendMsg(std::string msg, JNIEnv* = genv);
 	/*禁言当前对象，单位是秒，最少0秒最大30天
 	* 返回值对应报错
 	*	"E1" - 找不到群
@@ -597,9 +597,9 @@ public:
 	*	"E4" - 禁言时间超出0s~30d
 	*	"Y" - 一切正常
 	*/
-	void Mute(int time);
+	void Mute(int time, JNIEnv* = genv);
 	/*踢出这个群成员*/
-	void Kick(std::string reason);
+	void Kick(std::string reason, JNIEnv* = genv);
 };
 
 /*群聊类声明*/
@@ -615,22 +615,22 @@ public:
 	*/
 	std::string MemberListToString();
 	//取群主
-	Member getOwner();
+	Member getOwner(JNIEnv* = genv);
 	//构建以群号构建群对象
-	Group(unsigned long long);
+	Group(unsigned long long, JNIEnv* = genv);
 	/*
 	* 上传本地图片，务必要用绝对路径
 	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
 	* 最大支持图片大小为30MB
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
-	Image uploadImg(std::string filename);
+	Image uploadImg(std::string filename, JNIEnv* = genv);
 	Group() {};
 	/*
 	* 设置全员禁言
 	* param: sign = true时为开始，false为关闭
 	*/
-	void setMuteAll(bool sign);
+	void setMuteAll(bool sign, JNIEnv* = genv);
 	/*发送信息*/
 	MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
@@ -638,8 +638,8 @@ public:
 	MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(std::string msg);
-	MessageSource SendMsg(std::string msg);
+	MessageSource SendMiraiCode(std::string msg, JNIEnv* = genv);
+	MessageSource SendMsg(std::string msg, JNIEnv* = genv);
 };
 
 /*At一个群成员*/
@@ -915,16 +915,24 @@ public:
 	}
 };
 
-//https://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls
-inline void getEnv(char* threadName = NULL, char* threadGroupName = NULL) {
+/*
+	https://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls
+	取消了threadgroupname 因为不可能在获取env前str to jstring 操作
+*/
+inline JNIEnv* getEnv(char* threadName = NULL) {
 	JNIEnv* env = nullptr;
-	JavaVMAttachArgs args{};
-	args.version = JNIVersion; // choose your JNI version
-	args.name = threadName; // you might want to give the java thread a name
-	args.group = (threadGroupName == NULL ?NULL:(jobject)tools.str2jstring(threadGroupName)); // you might want to assign the java thread to a ThreadGroup
+	JavaVMAttachArgs args{
+		JNIVersion,
+		threadName,
+		NULL
+	};
 	gvm->AttachCurrentThread((void**)&env, &args);
-	genv = env;
+	return env;
 }
+//取消进程
+inline void releaseThread() {
+		gvm->DetachCurrentThread();
+	}
 
 /*声明全局监听对象(广播源)*/
 extern Event* procession;
