@@ -25,8 +25,15 @@ void onEnable() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
-		std::thread t = std::thread(func);
-		t.join();
+		//std::thread t = std::thread(func);
+		//t.join();
+		});
+	procession->registerEvent([](GroupInviteEvent e) {
+		logger->Info("x"); 
+		return true; 
+		});
+	procession->registerEvent([](BotJoinGroupEvent e) {
+		e.group.SendMsg("Hi");
 		});
 	
 
