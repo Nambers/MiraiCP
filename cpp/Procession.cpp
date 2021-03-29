@@ -29,14 +29,8 @@ void onEnable() {
 		//t.join();
 		});
 	procession->registerEvent([](GroupInviteEvent e) {
-		logger->Info("x"); 
 		return true; 
 		});
-	procession->registerEvent([](BotJoinGroupEvent e) {
-		e.group.SendMsg("Hi");
-		});
-	
-
 }
 void onDisable() {
 	/*插件结束,正常退出才会调用*/

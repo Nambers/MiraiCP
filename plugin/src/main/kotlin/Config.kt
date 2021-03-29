@@ -20,7 +20,9 @@ class Config {
     //群邀请
     data class GroupInvite(
         val groupid: Long,
+        val groupname: String,
         val invitorid: Long,
+        val invitorname: String,
         val type: Int = 3
     )
     //好友邀请
@@ -71,6 +73,12 @@ class Config {
         val message: String,
         val type: Int = 8
     )
+    data class BotJoinGroup(
+        val etype: Int,
+        val groupid: Long,
+        val invitorid: Long,
+        val type: Int = 9
+    )
     data class ForwardMessageJson (
 
         @SerializedName("type") val type : Int,
@@ -85,7 +93,6 @@ class Config {
         @SerializedName("value") val value : List<Value>
     )
     data class Value (
-
         @SerializedName("name") val name : String,
         @SerializedName("id") val id : Long,
         @SerializedName("time") val time : Int,

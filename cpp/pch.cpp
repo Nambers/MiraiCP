@@ -96,8 +96,8 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 		case 3:
 			//群聊邀请
 			return tools.str2jstring(procession->broadcast(GroupInviteEvent(
-				root["senderid"].asLargestUInt(),
-				root["sendernick"].asCString(),
+				root["invitorid"].asLargestUInt(),
+				root["invitorname"].asCString(),
 				root["groupid"].asLargestUInt(),
 				root["groupname"].asCString()
 			)).c_str());

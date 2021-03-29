@@ -32,7 +32,7 @@ object KotlinMain {
     private val json = Json{
         serializersModule = MessageSerializers.serializersModule
     }
-    const val now_tag = "v2.5.0"
+    const val now_tag = "v2.5.0-patch-2"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
     private lateinit var AIbot: Bot
@@ -383,6 +383,7 @@ object KotlinMain {
         return "Y"
     }
 
+    @MiraiExperimentalApi
     @MiraiInternalApi
     suspend fun main(id:Long, pass:String, path:String){
         println("当前MiraiCP框架版本:$now_tag")
@@ -413,43 +414,6 @@ object KotlinMain {
         //配置文件目录 "${dataFolder.absolutePath}/"
         globalEventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
-            //针对失效功能的临时补丁
-            //[mirai:service:128,<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-            //<msg serviceID="128" templateID="12345" action="native" brief="[链接]邀请你加入群聊" sourceMsgId="0" url="">
-            //<item layout="2"><picture cover=""/><title>邀请你加入群聊</title><summary /></item>
-            //<data groupcode="1044565129" groupname="mirai 非官方 开发群" msgseq="1613736417225458" msgtype="2"/>
-            //</msg>]
-            if(this.message.contentToString().startsWith("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><msg serviceID=\"128\"")) {
-                val mes = "<data[^>]+>".toRegex().find(this.message.contentToString())?.value
-                val groupid = mes?.let { it1 ->
-                    Regex("groupcode=\"[0-9]+\"").find(it1)?.value
-                        ?.replace("\"", "")
-                        ?.replace("groupcode=", "")
-                }
-                val ida = mes?.let { it3 ->
-                    Regex("msgseq=\"[0-9]+\"").find(it3)?.value
-                        ?.replace("\"", "")
-                        ?.replace("msgseq=", "")
-                }
-                val groupname = mes?.let { it2 ->
-                    Regex("groupname=\"(.*)\" msgseq").find(it2)?.value
-                        ?.replace("\"", "")
-                        ?.replace("msgseq", "")
-                        ?.replace("groupname=", "")
-                }
-                if (ida != null && groupid != null && groupname != null) {
-                    BotInvitedJoinGroupRequestEvent(
-                        this.bot,
-                        ida.toLong(),
-                        this.sender.id,
-                        groupid.toLong(),
-                        groupname,
-                        this.sender.nick
-                    )
-                        .broadcast()
-                }
-                return@subscribeAlways
-            }
             cpp.Event(
                 gson.toJson(
                     Config.PrivateMessage(
@@ -589,20 +553,54 @@ object KotlinMain {
             )
 
         }
+        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Invite>{
+            cpp.Event(
+                gson.toJson(
+                    Config.BotJoinGroup(
+                        1,
+                        this.groupId,
+                        this.invitor.id
+                    )
+                )
+            )
+        }
+        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Active>{
+            cpp.Event(
+                gson.toJson(
+                    Config.BotJoinGroup(
+                        2,
+                        this.groupId,
+                        0
+                    )
+                )
+            )
+        }
+        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve>{
+            cpp.Event(
+                gson.toJson(
+                    Config.BotJoinGroup(
+                        3,
+                        this.groupId,
+                        0
+                    )
+                )
+            )
+        }
         globalEventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
             val r = cpp.Event(
                 gson.toJson(
                     Config.GroupInvite(
                         this.groupId,
-                        this.invitorId
+                        this.groupName,
+                        this.invitorId,
+                        this.invitorNick
                     )
                 )
             )
             when (r) {
                 "true" -> accept()
                 "false" -> ignore()
-                "NULL" -> ignore()
                 else -> {
                     logger.error("BotInvitedJoinGroupRequestEvent return unknown")
                     ignore()

@@ -19,7 +19,7 @@ application {
     mainClassName = "org.example.mirai.plugin.KotlinMainKt"
 }
 group = "tech.eritquearcus"
-version = "2.5.0"
+version = "2.5.0-patch-2"
 
 repositories {
     maven{ url =uri("https://maven.aliyun.com/nexus/content/groups/public/")}
