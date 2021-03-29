@@ -1,10 +1,13 @@
 ﻿#include "pch.h"
 #include <thread>
 void func() {
-	//获取env，如果在插件事件内执行可能可以不用使用本操作
-	getEnv();
+	//获取env，线程中可能不能使用genv
+	//见https://github.com/Nambers/MiraiCP/issues/19
+	JNIEnv* env = getEnv();
+	Friend(111, env).SendMsg("hi", env);
+	Group(111, env).SendMsg("hi", env);
 	//执行操作
-	//gvm->DetachCurrentThread(); 会使genv失效，看情况使用
+	releaseThread();
 }
 void onEnable() {
 	/*插件启动*/
