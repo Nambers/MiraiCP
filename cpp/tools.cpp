@@ -4,7 +4,7 @@
 配置类实现
 throw: InitxException 即找不到对应签名
 */
-void Config::Init() throw(InitException) {
+void Config::Init() {
 	JNIEnv* env = genv;
 	
 	this->initexception = env->FindClass("java/lang/NoSuchMethodException");
@@ -43,7 +43,7 @@ Config::~Config() {
 日志类实现
 throw: InitException 即找不到签名
 */
-void Logger::init()throw(InitException) {
+void Logger::init(){
 	JNIEnv* env = genv;
 	this->CPP_lib = (jclass)(env->NewGlobalRef(env->FindClass("org/example/mirai/plugin/CPP_lib")));
 	this->sinfo = env->GetStaticMethodID(this->CPP_lib, "SendLog", "(Ljava/lang/String;)V");
@@ -62,13 +62,13 @@ void Logger::init()throw(InitException) {
 		throw InitException("logger初始化错误", 4);
 	}
 }
-void Logger::Warning(string log) {
+void Logger::Warning(std::string log) {
 	genv->CallStaticVoidMethod(config->CPP_lib, this->swarning, tools.str2jstring(log.c_str()));
 }
-void Logger::Error(string log) {
+void Logger::Error(std::string log) {
 	genv->CallStaticVoidMethod(config->CPP_lib, this->serror, tools.str2jstring(log.c_str()));
 }
-void Logger::Info(string log) {
+void Logger::Info(std::string log) {
 	genv->CallStaticVoidMethod(config->CPP_lib, this->sinfo, tools.str2jstring(log.c_str()));
 }
 Logger::~Logger() {
@@ -76,10 +76,10 @@ Logger::~Logger() {
 }
 
 //消息源
-MessageSource::MessageSource(string t) {
+MessageSource::MessageSource(std::string t) {
 	this->source = t;
 	const auto rawJsonLength = static_cast<int>(t.length());
-	JSONCPP_STRING err;
+	Json::String err;
 	Json::Value root;
 	Json::CharReaderBuilder builder;
 	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
@@ -103,7 +103,7 @@ void ForwardMessage::sendTo(Contact* c) {
 	temp["groupid"] = c->groupid;
 	temp["type"] = c->type;
 	temp["content"] = sendmsg;
-	string re = tools.jstring2str((jstring)genv->
+	std::string re = tools.jstring2str((jstring)genv->
 		CallStaticObjectMethod(config->CPP_lib, config->buildforward,
 			tools.str2jstring(tools.JsonToString(temp).c_str())));
 	if (re == "Y") return;
@@ -122,25 +122,25 @@ void ForwardMessage::sendTo(Contact* c) {
 }
 
 /*图片类实现*/
-Image::Image(string imageId) {
+Image::Image(std::string imageId) {
 	this->Query = config->Query;
 	this->id = imageId;
 }
-string Image::queryURL() {
+std::string Image::queryURL() {
 	return tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Query, tools.str2jstring(this->id.c_str())));
 }
-vector<string> Image::GetImgIdsFromMiraiCode(string MiraiCode) {
-	vector<string> result = vector<string>();
-	string temp = MiraiCode;
-	smatch m;
-	regex re("\\[mirai:image:(.*?)\\]");
+std::vector<std::string> Image::GetImgIdsFromMiraiCode(std::string MiraiCode) {
+	std::vector<std::string> result = std::vector<std::string>();
+	std::string temp = MiraiCode;
+	std::smatch m;
+	std::regex re("\\[mirai:image:(.*?)\\]");
 	while (std::regex_search(temp, m, re)) {
 		result.push_back(m[1]);
 		temp = m.suffix().str();
 	}
 	return result;
 }
-string Image::toMiraiCode() {
+std::string Image::toMiraiCode() {
 	return "[mirai:image:" + this->id + "]";
 }
 
@@ -148,32 +148,32 @@ string Image::toMiraiCode() {
 Friend::Friend(unsigned long long id) {
 	this->type = 1;
 	this->id = id;
-	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->NickorNameF, (jlong)id, (jlong)id));
+	std::string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->NickorNameF, (jlong)id, (jlong)id));
 	if (temp == "E1") {
 		throw FriendException();
 	}
-	this->nick = temp;
+	this->nickOrNameCard = temp;
 }
-Image Friend::uploadImg(string filename) {
-	ifstream fin(filename);
+Image Friend::uploadImg(std::string filename) {
+	std::ifstream fin(filename);
 	if (!fin) {
 		logger->Error("文件不存在,位置:C-Friend::uploadImg(),文件名:" + filename);
 		fin.close();
-		throw invalid_argument("NO_FILE_ERROR");
+		throw std::invalid_argument("NO_FILE_ERROR");
 	}
 	fin.close();
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgF, (jlong)this->id, tools.str2jstring(filename.c_str())));
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgF, (jlong)this->id, tools.str2jstring(filename.c_str())));
 	return Image(re);
 }
-MessageSource Friend::SendMiraiCode(string msg)throw(FriendException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2F, tools.str2jstring(msg.c_str()), (jlong)this->id));
+MessageSource Friend::SendMiraiCode(std::string msg) {
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2F, tools.str2jstring(msg.c_str()), (jlong)this->id));
 	if (re == "E1") {
 		throw FriendException();
 	}
 	return MessageSource(re);
 }
-MessageSource Friend::SendMsg(string msg)throw(FriendException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2FM, tools.str2jstring(msg.c_str()), (jlong)this->id));
+MessageSource Friend::SendMsg(std::string msg){
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2FM, tools.str2jstring(msg.c_str()), (jlong)this->id));
 	if (re == "E1") {
 		throw FriendException();
 	}
@@ -188,18 +188,18 @@ Member::Member(unsigned long long id, unsigned long long groupid) {
 	this->groupid = groupid;
 	this->Query_permission = config->QueryP;
 	this->KickM = config->KickM;
-	string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->NickorNameM, (jlong)id, (jlong)groupid));
+	std::string temp = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->NickorNameM, (jlong)id, (jlong)groupid));
 	if (temp == "E1") {
 		throw MemberException(1);
 	}
 	if (temp == "E2") {
 		throw MemberException(2);
 	}
-	this->nameCard = temp;
+	this->nickOrNameCard = temp;
 	this->permission = getPermission();
 }
-int Member::getPermission() throw(MemberException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->QueryP, (jlong)id, (jlong)groupid));
+unsigned int Member::getPermission(){
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->QueryP, (jlong)id, (jlong)groupid));
 	if (re == "E1") {
 		throw MemberException(1);
 	}
@@ -208,8 +208,8 @@ int Member::getPermission() throw(MemberException) {
 	}
 	return stoi(re);
 }
-void Member::Mute(int time)throw(MuteException, MemberException, BotException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Mute_id, (jlong)this->id, (jlong)this->groupid, (jint)time));
+void Member::Mute(int time) {
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->Mute_id, (jlong)this->id, (jlong)this->groupid, (jint)time));
 	if (re == "Y") {
 		return;
 	}
@@ -226,8 +226,8 @@ void Member::Mute(int time)throw(MuteException, MemberException, BotException) {
 		throw MuteException();
 	}
 }
-void Member::Kick(string reason) throw(BotException, MemberException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->KickM, (jlong)id, (jlong)groupid, tools.str2jstring(reason.c_str())));
+void Member::Kick(std::string reason) {
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, this->KickM, (jlong)id, (jlong)groupid, tools.str2jstring(reason.c_str())));
 	if (re == "Y") {
 		return;
 	}
@@ -241,18 +241,18 @@ void Member::Kick(string reason) throw(BotException, MemberException) {
 		throw BotException(1);
 	}
 }
-Image Member::uploadImg(string filename) {
-	ifstream fin(filename);
+Image Member::uploadImg(std::string filename) {
+	std::ifstream fin(filename);
 	if (!fin) {
 		fin.close();
 		throw IOException("文件不存在,位置:C++部分 uploadImg2Group(),文件名:" + filename);
 	}
 	fin.close();
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgM, (jlong)groupid, (jlong)id, tools.str2jstring(filename.c_str())));
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgM, (jlong)groupid, (jlong)id, tools.str2jstring(filename.c_str())));
 	return Image(re);
 }
-MessageSource Member::SendMiraiCode(string msg)throw(MemberException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2M, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
+MessageSource Member::SendMiraiCode(std::string msg) {
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2M, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
 	if (re == "E1") {
 		throw MemberException(1);
 	}
@@ -261,8 +261,8 @@ MessageSource Member::SendMiraiCode(string msg)throw(MemberException) {
 	}
 	return MessageSource(re);
 }
-MessageSource Member::SendMsg(string msg) throw(MemberException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2MM, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
+MessageSource Member::SendMsg(std::string msg) {
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2MM, tools.str2jstring(msg.c_str()), (jlong)this->id, (jlong)this->groupid));
 	if (re == "E1") {
 		throw MemberException(1);
 	}
@@ -276,13 +276,13 @@ MessageSource Member::SendMsg(string msg) throw(MemberException) {
 Group::Group(unsigned long long id) {
 	this->type = 2;
 	this->id = id;
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib,
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib,
 		config->QueryN,
 		(jlong)this->id));
 	if (re == "E1") {
 		throw GroupException();
 	}
-	this->name = re;
+	this->nickOrNameCard = re;
 	re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib,
 		config->QueryML,
 		(jlong)this->id));
@@ -291,9 +291,9 @@ Group::Group(unsigned long long id) {
 	}
 	this->memberlist = re;
 }
-vector<unsigned long long> Group::getMemberList() {
-	vector<unsigned long long> result;
-	string temp = this->memberlist;
+std::vector<unsigned long long> Group::getMemberList() {
+	std::vector<unsigned long long> result;
+	std::string temp = this->memberlist;
 	temp.erase(temp.begin());
 	temp.pop_back();
 	std::regex ws_re("[,]+");
@@ -303,8 +303,8 @@ vector<unsigned long long> Group::getMemberList() {
 		result.push_back(atoi(s.c_str()));
 	return result;
 }
-string Group::MemberListToString() {
-	vector<unsigned long long> a = getMemberList();
+std::string Group::MemberListToString() {
+	std::vector<unsigned long long> a = getMemberList();
 	std::stringstream ss;
 	for (size_t i = 0; i < a.size(); ++i)
 	{
@@ -315,37 +315,37 @@ string Group::MemberListToString() {
 	std::string s = ss.str();
 	return s;
 }
-Image Group::uploadImg(string filename) {
-	ifstream fin(filename);
+Image Group::uploadImg(std::string filename) {
+	std::ifstream fin(filename);
 	if (!fin) {
 		logger->Error("文件不存在,位置:C++部分 Group::uploadImg2(),文件名:" + filename);
 		fin.close();
 		//throw invalid_argument("NO_FILE_ERROR");
 	}
 	fin.close();
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgG, (jlong)this->id, tools.str2jstring(filename.c_str())));
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->uploadImgG, (jlong)this->id, tools.str2jstring(filename.c_str())));
 	return Image(re);
 }
-void Group::setMuteAll(bool sign)throw(GroupException, BotException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->muteAll, (jlong)this->id, (jboolean)sign));
-	if (re == "Y")return;
+void Group::setMuteAll(bool sign){
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->muteAll, (jlong)this->id, (jboolean)sign));
+	if (re == "Y") return;
 	if (re == "E1") throw GroupException();
 	if (re == "E2") throw BotException(1);
 }
 Member Group::getOwner() {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->getowner, (jlong)this->id));
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->getowner, (jlong)this->id));
 	if (re == "E1")throw GroupException();
 	return Member(stoi(re), this->id);
 }
-MessageSource Group::SendMiraiCode(string msg)throw(GroupException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2G, tools.str2jstring(msg.c_str()), (jlong)this->id));
+MessageSource Group::SendMiraiCode(std::string msg) {
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2G, tools.str2jstring(msg.c_str()), (jlong)this->id));
 	if (re == "E1") {
 		throw GroupException();
 	}
 	return MessageSource(re);
 }
-MessageSource Group::SendMsg(string msg) throw(GroupException) {
-	string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2GM, tools.str2jstring(msg.c_str()), (jlong)this->id));
+MessageSource Group::SendMsg(std::string msg) {
+	std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2GM, tools.str2jstring(msg.c_str()), (jlong)this->id));
 	if (re == "E1") {
 		throw GroupException();
 	}
@@ -353,7 +353,7 @@ MessageSource Group::SendMsg(string msg) throw(GroupException) {
 }
 
 /*工具类实现*/
-string Tools::jstring2str(jstring jstr)
+std::string Tools::jstring2str(jstring jstr)
 {	
 	if (jstr == NULL) { 
 		logger->Warning("异常:kotlin返回空字符串");
@@ -390,18 +390,18 @@ jstring Tools::str2jstring(const char* str)
 		free(buffer);
 	return rtn;
 }
-string Tools::JLongToString(jlong qqid) {
-	auto id = [qqid]() -> string {
-		stringstream stream;
+std::string Tools::JLongToString(jlong qqid) {
+	auto id = [qqid]() -> std::string {
+		std::stringstream stream;
 		stream << qqid;
-		string a;
+		std::string a;
 		stream >> a;
 		stream.clear();
 		return a;
 	};
 	return id();
 }
-string Tools::JsonToString(const Json::Value& root)
+std::string Tools::JsonToString(const Json::Value& root)
 {
 	std::ostringstream stream;
 	Json::StreamWriterBuilder stream_builder;

@@ -35,38 +35,38 @@ LightApp风格1
 */
 struct LightAppStyle1{
 	//小图标地址
-	string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+	std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
 	//小标题，用逗号分割多个
-	string titles = "{\"title\":\"1\", \"value\":\"t1\"},"
+	std::string titles = "{\"title\":\"1\", \"value\":\"t1\"},"
 					"{\"title\":\"2\", \"value\":\"t2\"}";
 	//下面的按钮，但是不能按，用逗号分割多个
-	string buttons = "{\"name\":\"T1\",\"action\":\"\"}"
+	std::string buttons = "{\"name\":\"T1\",\"action\":\"\"}"
 					"{\"name\":\"T2\",\"action\":\"\"}";
 	//大标题
-	string appName = "test1";
+	std::string appName = "test1";
 	//小标题的标题
-	string title = "test2";
+	std::string title = "test2";
 };
 
 struct LightAppStyle2 {
 	//小图标
-	string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+	std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
 	//预览图大图
-	string preview = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+	std::string preview = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
 	//小图片右侧小标题
-	string title = "Test1";
+	std::string title = "Test1";
 	//图片上标题
-	string title2 = "Test2";
+	std::string title2 = "Test2";
 };
 
 struct LightAppStyle3 {
 	//点击跳转链接
-	string url = "https://www.baidu.com";
-	string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+	std::string url = "https://www.baidu.com";
+	std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
 	//预览图
-	string preview = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+	std::string preview = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
 	//大标题
-	string title = "Test1";
+	std::string title = "Test1";
 	//图片旁描述
-	string description = "Test2";
+	std::string description = "Test2";
 };
