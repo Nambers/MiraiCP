@@ -1,6 +1,6 @@
 #include "pch.h"
 
-
+const std::string MiraiCPVersion = "v2.5.0-patch-1";
 /*需要表态的返回值*/
 
 static const bool REJECT = false;

@@ -23,6 +23,7 @@ Config* config = new Config();
 */
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject) {
 	genv = env;
+	env->GetJavaVM(&gvm);
 	JNIVersion = (int)genv->GetVersion();
 	try {
 		//初始化日志模块
@@ -33,7 +34,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* 
 	catch (MiraiCPException e) {
 		e.raise();
 	}
-	return tools.str2jstring("v2.5.0");//验证机制，返回当前SDK版本
+	return tools.str2jstring(MiraiCPVersion.c_str());//验证机制，返回当前SDK版本
 }
 /* 插件结束事件*/
 JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
@@ -43,9 +44,10 @@ JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
 	delete(logger);
 	delete(procession);
 	delete(config);
+	gvm->DestroyJavaVM();
 	return job;
 }
-jstring returnNullAndDestoryJVM() {
+jstring returnNull() {
 	jstring re = tools.str2jstring("MIRAICP_NULL");
 	gvm->DestroyJavaVM();
 	return re;
@@ -56,7 +58,6 @@ jstring returnNullAndDestoryJVM() {
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 (JNIEnv* env, jobject, jstring content) {
 	genv = env;
-	env->GetJavaVM(&gvm);
 	std::string Rcontent = tools.jstring2str(content);
 	const auto rawJsonLength = static_cast<int>(Rcontent.length());
 	Json::String err;
@@ -80,7 +81,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 				MessageSource(root["Source"].asCString())
 			)
 			);
-			return returnNullAndDestoryJVM();
+			return returnNull();
 		}
 		case 2: {
 			//私聊消息
@@ -90,13 +91,16 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 				MessageSource(root["Source"].asCString())
 			)
 			);
-			return returnNullAndDestoryJVM();
+			return returnNull();
 		}
 		case 3:
 			//群聊邀请
 			return tools.str2jstring(procession->broadcast(GroupInviteEvent(
-				Group(root["groupid"].asLargestUInt()),
-				Friend(root["invitorid"].asLargestUInt()))).c_str());
+				root["senderid"].asLargestUInt(),
+				root["sendernick"].asCString(),
+				root["groupid"].asLargestUInt(),
+				root["groupname"].asCString()
+			)).c_str());
 		case 4:
 			//好友
 			return tools.str2jstring(procession->broadcast(NewFriendRequestEvent(
@@ -113,7 +117,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 					root["invitorid"].asLargestUInt(),
 					root["groupid"].asLargestUInt())
 			));
-			return returnNullAndDestoryJVM();
+			return returnNull();
 		case 6:
 			//群成员退出
 			procession->broadcast(MemberLeaveEvent(
@@ -125,7 +129,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 					root["operatorid"].asLargestUInt(),
 					root["groupid"].asLargestUInt())
 			));
-			return returnNullAndDestoryJVM();
+			return returnNull();
 		case 7:
 			procession->broadcast(RecallEvent(
 				root["Etype"].asInt(),
@@ -136,15 +140,22 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 				root["internalids"].asCString(),
 				root["groupid"].asLargestUInt()
 			));
-			return returnNullAndDestoryJVM();
+			return returnNull();
 		case 8:
 			procession->broadcast(SchedulingEvent(
 				root["message"].asCString()));
-			return returnNullAndDestoryJVM();
+			return returnNull();
+		case 9:
+			procession->broadcast(BotJoinGroupEvent(
+				root["etype"].asInt(),
+				Group(root["groupid"].asLargestUInt()),
+				(root["etyoe"].asInt() == 2?Member(root["invitorid"].asLargestUInt(),root["groupid"].asLargestUInt()):Member())
+			));
+			return returnNull();
 		}
 	}catch (MiraiCPException& e) {
 		e.raise();
-		return returnNullAndDestoryJVM();
+		return returnNull();
 	}
 	logger->Error("unknown type");
 	APIException("未知的消息类型").raise();
