@@ -18,6 +18,7 @@ import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
+import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import java.io.File
@@ -34,7 +35,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.5.0"
+        version = "2.5.0-patch-2"
     )
 ) {
     private val json = Json{
@@ -45,6 +46,7 @@ object PluginMain : KotlinPlugin(
     lateinit var AIbot: Bot
     lateinit var cpp: CPP_lib
     lateinit var gson: Gson
+    private  val now_tag = "v2.5.0-patch-2"
 
     //日志部分实现
     fun BasicSendLog(log: String) {
@@ -394,9 +396,9 @@ object PluginMain : KotlinPlugin(
     override fun onDisable() {
         cpp.PluginDisable()
     }
+    @MiraiExperimentalApi
     @MiraiInternalApi
     override fun onEnable(){
-        val now_tag = "v2.4.6"
         println("当前MiraiCP框架版本:$now_tag")
         logger.info("启动成功")
         logger.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
@@ -427,43 +429,6 @@ object PluginMain : KotlinPlugin(
         //配置文件目录 "${dataFolder.absolutePath}/"
         ec.subscribeAlways<FriendMessageEvent> {
             //好友信息
-            //针对失效功能的临时补丁
-            //[mirai:service:128,<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-            //<msg serviceID="128" templateID="12345" action="native" brief="[链接]邀请你加入群聊" sourceMsgId="0" url="">
-            //<item layout="2"><picture cover=""/><title>邀请你加入群聊</title><summary /></item>
-            //<data groupcode="1044565129" groupname="mirai 非官方 开发群" msgseq="1613736417225458" msgtype="2"/>
-            //</msg>]
-            if(this.message.contentToString().startsWith("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><msg serviceID=\"128\"")) {
-                val mes = "<data[^>]+>".toRegex().find(this.message.contentToString())?.value
-                val groupid = mes?.let { it1 ->
-                    Regex("groupcode=\"[0-9]+\"").find(it1)?.value
-                        ?.replace("\"", "")
-                        ?.replace("groupcode=", "")
-                }
-                val ida = mes?.let { it3 ->
-                    Regex("msgseq=\"[0-9]+\"").find(it3)?.value
-                        ?.replace("\"", "")
-                        ?.replace("msgseq=", "")
-                }
-                val groupname = mes?.let { it2 ->
-                    Regex("groupname=\"(.*)\" msgseq").find(it2)?.value
-                        ?.replace("\"", "")
-                        ?.replace("msgseq", "")
-                        ?.replace("groupname=", "")
-                }
-                if (ida != null && groupid != null && groupname != null) {
-                    BotInvitedJoinGroupRequestEvent(
-                        this.bot,
-                        ida.toLong(),
-                        this.sender.id,
-                        groupid.toLong(),
-                        groupname,
-                        this.sender.nick
-                    )
-                        .broadcast()
-                }
-                return@subscribeAlways
-            }
             cpp.Event(
                 gson.toJson(
                     Config.PrivateMessage(
@@ -590,12 +555,47 @@ object PluginMain : KotlinPlugin(
                 }
             }
         }
+        ec.subscribeAlways<BotJoinGroupEvent.Invite>{
+            cpp.Event(
+                gson.toJson(
+                    Config.BotJoinGroup(
+                        1,
+                        this.groupId,
+                        this.invitor.id
+                    )
+                )
+            )
+        }
+        ec.subscribeAlways<BotJoinGroupEvent.Active>{
+            cpp.Event(
+                gson.toJson(
+                    Config.BotJoinGroup(
+                        2,
+                        this.groupId,
+                        0
+                    )
+                )
+            )
+        }
+        ec.subscribeAlways<BotJoinGroupEvent.Retrieve>{
+            cpp.Event(
+                gson.toJson(
+                    Config.BotJoinGroup(
+                        3,
+                        this.groupId,
+                        0
+                    )
+                )
+            )
+        }
         ec.subscribeAlways<BotInvitedJoinGroupRequestEvent>{
             //自动同意加群申请
             val r = cpp.Event(gson.toJson(
                 Config.GroupInvite(
                     this.groupId,
-                    this.invitorId
+                    this.groupName,
+                    this.invitorId,
+                    this.invitorNick
                 )))
             when(r) {
                 "true" -> accept()
