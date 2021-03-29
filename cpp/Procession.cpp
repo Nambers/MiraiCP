@@ -1,25 +1,33 @@
-#include "pch.h"
-
+ï»¿#include "pch.h"
+#include <thread>
+void func() {
+	//è·å–envï¼Œå¦‚æœåœ¨æ’ä»¶äº‹ä»¶å†…æ‰§è¡Œå¯èƒ½å¯ä»¥ä¸ç”¨ä½¿ç”¨æœ¬æ“ä½œ
+	getEnv();
+	//æ‰§è¡Œæ“ä½œ
+	//gvm->DetachCurrentThread(); ä¼šä½¿genvå¤±æ•ˆï¼Œçœ‹æƒ…å†µä½¿ç”¨
+}
 void onEnable() {
-	/*²å¼şÆô¶¯*/
+	/*æ’ä»¶å¯åŠ¨*/
 	/*
-	×¢²áÊÂ¼ş¼àÌı-ÓÃ»§×Ô¶¨Òå
-	logger - ÈÕÖ¾×é¼ş
-		logger->Info(string)·¢ËÍÏûÏ¢¼¶ÈÕÖ¾
-		logger->Warning(string)·¢ËÍ¾¯¸æ¼¶ÈÕÖ¾
-		logger->Error(string)·¢ËÍ´íÎó¼¶ÈÕÖ¾
-	procession ¹ã²¥Ô´
-		procession->registerEvent(lambda) ×¢²á¼àÌı
-		procession->registerEvent([](GroupMessageEvent param){ \*´¦Àí*\});ÊÇ¼àÌıÈºÏûÏ¢
-		procession->registerEvent([](PrivateMessageEvent param){ \*´¦Àí*\});ÊÇ¼àÌıË½ÁÄÏûÏ¢
+	æ³¨å†Œäº‹ä»¶ç›‘å¬-ç”¨æˆ·è‡ªå®šä¹‰
+	logger - æ—¥å¿—ç»„ä»¶
+		logger->Info(string)å‘é€æ¶ˆæ¯çº§æ—¥å¿—
+		logger->Warning(string)å‘é€è­¦å‘Šçº§æ—¥å¿—
+		logger->Error(string)å‘é€é”™è¯¯çº§æ—¥å¿—
+	procession å¹¿æ’­æº
+		procession->registerEvent(lambda) æ³¨å†Œç›‘å¬
+		procession->registerEvent([](GroupMessageEvent param){ \*å¤„ç†*\});æ˜¯ç›‘å¬ç¾¤æ¶ˆæ¯
+		procession->registerEvent([](PrivateMessageEvent param){ \*å¤„ç†*\});æ˜¯ç›‘å¬ç§èŠæ¶ˆæ¯
 		...
-	²ÎÊı¶¼ÔÚparam±äÁ¿Àï£¬ÔÚlambda¿éÖĞÊ¹ÓÃparam.xxxÀ´µ÷ÓÃ
+	å‚æ•°éƒ½åœ¨paramå˜é‡é‡Œï¼Œåœ¨lambdaå—ä¸­ä½¿ç”¨param.xxxæ¥è°ƒç”¨
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
+		std::thread t = std::thread(func);
+		t.join();
 		});
 	
 
 }
 void onDisable() {
-	/*²å¼ş½áÊø,Õı³£ÍË³ö²Å»áµ÷ÓÃ*/
+	/*æ’ä»¶ç»“æŸ,æ­£å¸¸é€€å‡ºæ‰ä¼šè°ƒç”¨*/
 }

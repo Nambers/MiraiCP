@@ -921,7 +921,7 @@ inline void getEnv(char* threadName = NULL, char* threadGroupName = NULL) {
 	JavaVMAttachArgs args{};
 	args.version = JNIVersion; // choose your JNI version
 	args.name = threadName; // you might want to give the java thread a name
-	args.group = (jobject)tools.str2jstring(threadGroupName); // you might want to assign the java thread to a ThreadGroup
+	args.group = (threadGroupName == NULL ?NULL:(jobject)tools.str2jstring(threadGroupName)); // you might want to assign the java thread to a ThreadGroup
 	gvm->AttachCurrentThread((void**)&env, &args);
 	genv = env;
 }
