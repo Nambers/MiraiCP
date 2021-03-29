@@ -24,7 +24,6 @@ Config* config = new Config();
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject) {
 	genv = env;
 	JNIVersion = (int)genv->GetVersion();
-	env->GetJavaVM(&gvm);
 	try {
 		//初始化日志模块
 		logger->init();
@@ -46,12 +45,18 @@ JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
 	delete(config);
 	return job;
 }
+jstring returnNullAndDestoryJVM() {
+	jstring re = tools.str2jstring("MIRAICP_NULL");
+	gvm->DestroyJavaVM();
+	return re;
+}
 /*
 * 消息解析分流
 */
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 (JNIEnv* env, jobject, jstring content) {
 	genv = env;
+	env->GetJavaVM(&gvm);
 	std::string Rcontent = tools.jstring2str(content);
 	const auto rawJsonLength = static_cast<int>(Rcontent.length());
 	Json::String err;
@@ -75,7 +80,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 				MessageSource(root["Source"].asCString())
 			)
 			);
-			return tools.str2jstring("MIRAICP_NULL");
+			return returnNullAndDestoryJVM();
 		}
 		case 2: {
 			//私聊消息
@@ -85,7 +90,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 				MessageSource(root["Source"].asCString())
 			)
 			);
-			return tools.str2jstring("MIRAICP_NULL");
+			return returnNullAndDestoryJVM();
 		}
 		case 3:
 			//群聊邀请
@@ -108,7 +113,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 					root["invitorid"].asLargestUInt(),
 					root["groupid"].asLargestUInt())
 			));
-			return tools.str2jstring("MIRAICP_NULL");
+			return returnNullAndDestoryJVM();
 		case 6:
 			//群成员退出
 			procession->broadcast(MemberLeaveEvent(
@@ -120,7 +125,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 					root["operatorid"].asLargestUInt(),
 					root["groupid"].asLargestUInt())
 			));
-			return tools.str2jstring("MIRAICP_NULL");
+			return returnNullAndDestoryJVM();
 		case 7:
 			procession->broadcast(RecallEvent(
 				root["Etype"].asInt(),
@@ -131,15 +136,15 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 				root["internalids"].asCString(),
 				root["groupid"].asLargestUInt()
 			));
-			return tools.str2jstring("MIRAICP_NULL");
+			return returnNullAndDestoryJVM();
 		case 8:
 			procession->broadcast(SchedulingEvent(
 				root["message"].asCString()));
-			return tools.str2jstring("MIRAICP_NULL");
+			return returnNullAndDestoryJVM();
 		}
 	}catch (MiraiCPException& e) {
 		e.raise();
-		return tools.str2jstring("MIRAICP_NULL");
+		return returnNullAndDestoryJVM();
 	}
 	logger->Error("unknown type");
 	APIException("未知的消息类型").raise();
