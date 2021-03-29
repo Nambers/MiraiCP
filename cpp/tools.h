@@ -291,7 +291,7 @@ class GroupException :public MiraiCPException
 public:
 	GroupException()
 	{
-		this->description = "找不到群";
+		this->description = "C++:找不到群";
 	}
 	//返回错误信息
 	std::string what()
@@ -692,12 +692,16 @@ public:
 class GroupInviteEvent {
 public:
 	//发起人
-	Friend sender;
+	std::string inviterNick = "";
+	unsigned long long inviterid = 0;
 	//被邀请进的组
-	Group group;
-	GroupInviteEvent(Group g, Friend f) {
-		this->sender = f;
-		this->group = g;
+	std::string groupName = "";
+	unsigned long long groupid = 0;
+	GroupInviteEvent(unsigned long long gi, std::string gn, unsigned long long ii, std::string inick) {
+		this->inviterNick = inick;
+		this->groupid = gi;
+		this->inviterid = ii;
+		this->groupName = gn;
 	}
 };
 
@@ -792,6 +796,22 @@ public:
 	}
 };
 
+/*机器人进入某群*/
+class BotJoinGroupEvent {
+public:
+	//1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
+	int type;
+	//进入的群
+	Group group;
+	//当type=2时存在，为邀请人，否则为NULL
+	Member invitor = Member();
+	BotJoinGroupEvent(int t, Group g, Member i) {
+		this->type = t;
+		this->group = g;
+		this->invitor = i;
+	}
+};
+
 /*启动定时任务,time是多少毫秒后开始，id是自定义标识符*/
 inline void SetScheduling(long time, std::initializer_list<std::string> args) {
 	Json::Value obj;
@@ -834,14 +854,15 @@ public:
 /*监听类声明*/
 class Event {
 private:
-	typedef std::function<void(GroupMessageEvent)> GME;
-	typedef std::function<void(PrivateMessageEvent)> PME;
-	typedef std::function<bool(GroupInviteEvent)> GI;
-	typedef std::function<bool(NewFriendRequestEvent)> NFRE;
-	typedef std::function<void(MemberJoinEvent)> MJ;
-	typedef std::function<void(MemberLeaveEvent)> ML;
-	typedef std::function<void(RecallEvent)> R;
-	typedef std::function<void(SchedulingEvent)> S;
+	using GME = std::function<void(GroupMessageEvent)>;
+	using PME = std::function<void(PrivateMessageEvent)>;
+	using GI = std::function<bool(GroupInviteEvent)>;
+	using NFRE = std::function<bool(NewFriendRequestEvent)>;
+	using MJ = std::function<void(MemberJoinEvent)>;
+	using ML = std::function<void(MemberLeaveEvent)>;
+	using R = std::function<void(RecallEvent)>;
+	using S = std::function<void(SchedulingEvent)>;
+	using BJ = std::function<void(BotJoinGroupEvent)>;
 
 	/*
 	* 不使用vector做可重复监听的部分，因为没有什么必要且vector比变量占内存
@@ -855,6 +876,7 @@ private:
 	ML MLf = [](MemberLeaveEvent)->void {};
 	R RE = [](RecallEvent) -> void {};
 	S Sf = [](SchedulingEvent)->void {};
+	BJ BJf = [](BotJoinGroupEvent)->void {};
 public:
 	/*
 	* 广播函数重载
@@ -884,6 +906,9 @@ public:
 	void broadcast(SchedulingEvent g) {
 		this->Sf(g);
 	}
+	void broadcast(BotJoinGroupEvent b) {
+		this->BJf(b);
+	}
 
 	/*
 	* 监听函数重载
@@ -912,6 +937,9 @@ public:
 	}
 	void registerEvent(S f) {
 		this->Sf = f;
+	}
+	void registerEvent(BJ f) {
+		this->BJf = f;
 	}
 };
 
