@@ -1,9 +1,16 @@
 ﻿#include "pch.h"
-JNIEnv* genv;
-JavaVM* gvm;
-int JNIVersion;
+
+//全局jnienv指针
+JNIEnv* genv = nullptr;
+//全局javavm指针
+JavaVM* gvm = nullptr;
+//JNI版本
+int JNIVersion = 0;
+//全局日志指针
 Logger* logger = new Logger();
+//全局事件指针
 Event* procession = new Event();
+//全局配置指针
 Config* config = new Config();
 /*
 *正文开始
@@ -14,7 +21,7 @@ Config* config = new Config();
 * 参数:env 必备，job 必备
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
-JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject job) {
+JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject) {
 	genv = env;
 	JNIVersion = (int)genv->GetVersion();
 	env->GetJavaVM(&gvm);
@@ -45,9 +52,9 @@ JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 (JNIEnv* env, jobject, jstring content) {
 	genv = env;
-	string Rcontent = tools.jstring2str(content);
+	std::string Rcontent = tools.jstring2str(content);
 	const auto rawJsonLength = static_cast<int>(Rcontent.length());
-	JSONCPP_STRING err;
+	Json::String err;
 	Json::Value root;
 	Json::CharReaderBuilder builder;
 	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
@@ -85,7 +92,6 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 			return tools.str2jstring(procession->broadcast(GroupInviteEvent(
 				Group(root["groupid"].asLargestUInt()),
 				Friend(root["invitorid"].asLargestUInt()))).c_str());
-
 		case 4:
 			//好友
 			return tools.str2jstring(procession->broadcast(NewFriendRequestEvent(
