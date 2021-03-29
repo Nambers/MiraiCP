@@ -373,7 +373,11 @@ std::string Tools::jstring2str(jstring jstr)
 	return str;
 }
 jstring Tools::str2jstring(const char* str)
-{
+{	
+	if (str == NULL || *str == '\0') { 
+		logger->Warning("异常:传入空字符串到kotlin");
+		return NULL; 
+	}
 	jstring rtn = 0;
 	int slen = strlen(str);
 	unsigned short* buffer = 0;
