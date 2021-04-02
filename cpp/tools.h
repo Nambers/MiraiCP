@@ -697,6 +697,8 @@ public:
 	//被邀请进的组
 	std::string groupName = "";
 	unsigned long long groupid = 0;
+	//TODO accept
+	void accept();
 	GroupInviteEvent(unsigned long long gi, std::string gn, unsigned long long ii, std::string inick) {
 		this->inviterNick = inick;
 		this->groupid = gi;
@@ -712,6 +714,7 @@ public:
 	Friend sender;
 	//附加信息
 	std::string message;
+	//TODO accept
 	NewFriendRequestEvent(Friend f, std::string s) {
 		this->sender = f;
 		this->message = s;
@@ -850,14 +853,13 @@ public:
 
 	}
 };
-
 /*监听类声明*/
 class Event {
 private:
 	using GME = std::function<void(GroupMessageEvent)>;
 	using PME = std::function<void(PrivateMessageEvent)>;
-	using GI = std::function<bool(GroupInviteEvent)>;
-	using NFRE = std::function<bool(NewFriendRequestEvent)>;
+	using GI = std::function<void(GroupInviteEvent)>;
+	using NFRE = std::function<void(NewFriendRequestEvent)>;
 	using MJ = std::function<void(MemberJoinEvent)>;
 	using ML = std::function<void(MemberLeaveEvent)>;
 	using R = std::function<void(RecallEvent)>;
@@ -868,46 +870,167 @@ private:
 	* 不使用vector做可重复监听的部分，因为没有什么必要且vector比变量占内存
 	*/
 
-	GME GMEf = [](GroupMessageEvent)->void {};
-	PME PMEf = [](PrivateMessageEvent)->void {};
-	GI GIf = [](GroupInviteEvent)->bool {return true; };
-	NFRE NFREf = [](NewFriendRequestEvent)->bool {return true; };
-	MJ MJf = [](MemberJoinEvent)->void {};
-	ML MLf = [](MemberLeaveEvent)->void {};
-	R RE = [](RecallEvent) -> void {};
-	S Sf = [](SchedulingEvent)->void {};
-	BJ BJf = [](BotJoinGroupEvent)->void {};
+	class GMENode
+	{
+	public: 
+		int id = 0;
+		bool enable = true;
+		GME f = [](GroupMessageEvent)->void {};
+		GMENode* next = nullptr;
+	};
+	class PMENode
+	{
+	public:
+		int id = 0;
+		bool enable = true;
+		PME f = [](PrivateMessageEvent)->void {};
+		PMENode* next = nullptr;
+	};
+	class GINode
+	{
+	public:
+		int id = 0;
+		bool enable = true;
+		GI f = [](GroupInviteEvent) {};
+		GINode* next = nullptr;
+	};
+	class NFRENode
+	{
+	public:
+		int id = 0;
+		bool enable = true;
+		NFRE f = [](NewFriendRequestEvent) {};
+		NFRENode* next = nullptr;
+	};
+	class MJNode
+	{
+	public:
+		int id = 0;
+		bool enable = true;
+		MJ f = [](MemberJoinEvent)->void {};
+		MJNode* next = nullptr;
+	};
+	class MLNode
+	{
+	public:
+		int id = 0;
+		bool enable = true;
+		ML f = [](MemberLeaveEvent)->void {};
+		MLNode* next = nullptr;
+	};
+	class RNode
+	{
+	public:
+		int id = 0;
+		bool enable = true;
+		R f = [](RecallEvent)->void {};
+		RNode* next = nullptr;
+	};
+	class SNode
+	{
+	public:
+		int id = 0;
+		bool enable = true;
+		S f = [](SchedulingEvent)->void {};
+		SNode* next = nullptr;
+	};
+	class BJNode
+	{
+	public:
+		int id = 0;
+		bool enable = true;
+		BJ f = [](BotJoinGroupEvent)->void {};
+		BJNode* next = nullptr;
+	};
+	
+	GMENode* GMHead = new GMENode();
+	PMENode* PMHead = new PMENode();
+	GINode* GHead = new GINode();
+	NFRENode* NFHead = new NFRENode();
+	MJNode* MJHead = new MJNode();
+	MLNode* MLHead = new MLNode();
+	RNode* RHead = new RNode();
+	SNode* SHead = new SNode();
+	BJNode* BHead = new BJNode();
+
+	GMENode* GMTail = GMHead;
+	PMENode* PMTail = PMHead;
+	GINode* GTail = GHead;
+	NFRENode* NFTail = NFHead;
+	MJNode* MJTail = MJHead;
+	MLNode* MLTail = MLHead;
+	RNode* RTail = RHead;
+	SNode* STail = SHead;
+	BJNode* BTail = BHead;
 public:
 	/*
 	* 广播函数重载
 	*/
 
 	void broadcast(GroupMessageEvent g) {
-		this->GMEf(g);
+		GMENode *now = GMHead;
+		while (now != nullptr) {
+			if (now->enable) { now->f(g); }
+			now = now->next;
+		}
 	}
 	void broadcast(PrivateMessageEvent p) {
-		this->PMEf(p);
+		PMENode* now = PMHead;
+		while (now != nullptr) {
+			if (now->enable) { now->f(p); }
+			now = now->next;
+		}
 	}
-	std::string broadcast(GroupInviteEvent g) {
-		return (this->GIf(g) ? "true" : "false");
+	void broadcast(GroupInviteEvent g) {
+		// TODO 改成链表
+		GINode* now = GHead;
+		while (now != nullptr)  {
+			if (now->enable) { now->f(g); }
+			now = now->next;
+		}
 	}
-	std::string broadcast(NewFriendRequestEvent g) {
-		return (this->NFREf(g) ? "true" : "false");
+	void broadcast(NewFriendRequestEvent g) {
+		// TODO 改成链表
+		NFRENode* now = NFHead;
+		while (now != nullptr) {
+			if (now->enable) { now->f(g); }
+			now = now->next;
+		}
 	}
 	void broadcast(MemberJoinEvent g) {
-		this->MJf(g);
+		MJNode* now = MJHead;
+		while (now != nullptr) {
+			if (now->enable) { now->f(g); }
+			now = now->next;
+		}
 	}
 	void broadcast(MemberLeaveEvent g) {
-		this->MLf(g);
+		MLNode* now = MLHead;
+		while (now != nullptr) {
+			if (now->enable) { now->f(g); }
+			now = now->next;
+		}
 	}
 	void broadcast(RecallEvent r) {
-		this->RE(r);
+		RNode* now = RHead;
+		while (now != nullptr) {
+			if (now->enable) { now->f(r); }
+			now = now->next;
+		}
 	}
 	void broadcast(SchedulingEvent g) {
-		this->Sf(g);
+		SNode* now = SHead;
+		while (now != nullptr) {
+			if (now->enable) { now->f(g); }
+			now = now->next;
+		}
 	}
 	void broadcast(BotJoinGroupEvent b) {
-		this->BJf(b);
+		BJNode* now = BHead;
+		while (now != nullptr) {
+			if (now->enable) { now->f(b); }
+			now = now->next;
+		}
 	}
 
 	/*
@@ -915,31 +1038,59 @@ public:
 	*/
 
 	void registerEvent(GME f) {
-		this->GMEf = move(f);
+		GMENode* node = new GMENode();
+		node->f = f;
+		node->id = GMTail->id + 1;
+		GMTail->next = node;
+		GMTail = node;
 	}
 	void registerEvent(PME f) {
-		this->PMEf = move(f);
+		PMENode* node = new PMENode();
+		node->f = f;
+		PMTail->next = node;
+		PMTail = node;
 	}
 	void registerEvent(GI f) {
-		this->GIf = std::move(f);
+		GINode* node = new GINode();
+		node->f = f;
+		GTail->next = node;
+		GTail = node;
 	}
 	void registerEvent(NFRE f) {
-		this->NFREf = std::move(f);
+		NFRENode* node = new NFRENode();
+		node->f = f;
+		NFTail->next = node;
+		NFTail = node;
 	}
 	void registerEvent(MJ f) {
-		this->MJf = move(f);
+		MJNode* node = new MJNode();
+		node->f = f;
+		MJTail->next = node;
+		MJTail = node;
 	}
 	void registerEvent(ML f) {
-		this->MLf = move(f);
+		MLNode* node = new MLNode();
+		node->f = f;
+		MLTail->next = node;
+		MLTail = node;
 	}
 	void registerEvent(R r) {
-		this->RE = move(r);
+		RNode* node = new RNode();
+		node->f = r;
+		RTail->next = node;
+		RTail = node;
 	}
 	void registerEvent(S f) {
-		this->Sf = f;
+		SNode* node = new SNode();
+		node->f = f;
+		STail->next = node;
+		STail = node;
 	}
 	void registerEvent(BJ f) {
-		this->BJf = f;
+		BJNode* node = new BJNode();
+		node->f = f;
+		BTail->next = node;
+		BTail = node;
 	}
 };
 

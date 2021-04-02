@@ -95,17 +95,19 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 		}
 		case 3:
 			//群聊邀请
-			return tools.str2jstring(procession->broadcast(GroupInviteEvent(
+			procession->broadcast(GroupInviteEvent(
 				root["invitorid"].asLargestUInt(),
 				root["invitorname"].asCString(),
 				root["groupid"].asLargestUInt(),
 				root["groupname"].asCString()
-			)).c_str());
+			));
+			return returnNull();
 		case 4:
 			//好友
-			return tools.str2jstring(procession->broadcast(NewFriendRequestEvent(
+			procession->broadcast(NewFriendRequestEvent(
 				Friend(root["friendid"].asLargestUInt()),
-				root["message"].asCString())).c_str());
+				root["message"].asCString()));
+			return returnNull();
 		case 5:
 			//新成员加入
 			procession->broadcast(MemberJoinEvent(
