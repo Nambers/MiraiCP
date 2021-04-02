@@ -31,6 +31,8 @@ void onEnable() {
 	procession->registerEvent([](GroupInviteEvent e) {
 		return true; 
 		});
+	procession->registerEvent([](BotJoinGroupEvent e) {e.group.SendMsg("HI"); });
+	procession->registerEvent([](GroupMessageEvent e) {e.group.SendMsg(e.message); });
 }
 void onDisable() {
 	/*插件结束,正常退出才会调用*/
