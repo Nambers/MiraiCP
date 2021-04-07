@@ -1,9 +1,48 @@
 #include "pch.h"
 
-//全局env变量
-extern JNIEnv* genv;
 extern JavaVM* gvm;
 extern int JNIVersion;
+class threadManager {
+private:
+	std::map <std::string, JNIEnv*> _threads;
+	std::mutex mtx;
+public:
+	static std::string getThreadId() {
+		std::ostringstream oss;
+		oss << std::this_thread::get_id();
+		return oss.str();
+	}
+	threadManager() {
+		this->_threads = std::map <std::string, JNIEnv*>();
+	}
+	void setEnv(JNIEnv* e)noexcept {
+		mtx.lock();
+		this->_threads.insert(std::pair<std::string, JNIEnv*>(this->getThreadId(), e));
+		mtx.unlock();
+	}
+	void start(char* threadName = NULL) noexcept {
+		JNIEnv* env = nullptr;
+		JavaVMAttachArgs args{
+			JNIVersion,
+			threadName,
+			NULL
+		};
+		gvm->AttachCurrentThread((void**)&env, &args);
+		mtx.lock();
+		this->_threads.insert(std::pair<std::string, JNIEnv*>(this->getThreadId() , env));
+		mtx.unlock();
+	};
+	void detach() noexcept {
+		mtx.lock();
+		this->_threads.erase(this->getThreadId());
+		mtx.unlock();
+		gvm->DetachCurrentThread();
+	}
+	JNIEnv* getEnv()noexcept {
+		return this->_threads[this->getThreadId()];
+	}
+};
+extern threadManager* manager;
 
 /*日志类声明*/
 class Logger {
@@ -13,13 +52,13 @@ private:
 	jmethodID swarning = NULL;
 	jmethodID serror = NULL;
 public:
-	void init(JNIEnv* = genv);
+	void init(JNIEnv* = manager->getEnv());
 	/*发送普通日志*/
-	void Info(std::string log, JNIEnv* = genv);
+	void Info(std::string log, JNIEnv* = manager->getEnv());
 	/*发送警告*/
-	void Warning(std::string log, JNIEnv* = genv);
+	void Warning(std::string log, JNIEnv* = manager->getEnv());
 	/*发送错误*/
-	void Error(std::string log, JNIEnv* = genv);
+	void Error(std::string log, JNIEnv* = manager->getEnv());
 	~Logger();
 };
 
@@ -58,8 +97,10 @@ public:
 	/*定时任务*/
 	jmethodID Schedule = NULL;
 	jmethodID buildforward = NULL;
+	jmethodID NFR = NULL;
+	jmethodID GI = NULL;
 	Config() {};
-	void Init(JNIEnv* = genv);
+	void Init(JNIEnv* = manager->getEnv());
 	~Config();
 };
 
@@ -75,7 +116,7 @@ public:
 	* 返回值:string
 	* 来源:https://blog.csdn.net/chunleixiahe/article/details/51394116
 	*/
-	std::string jstring2str(jstring jstr, JNIEnv* = genv);
+	std::string jstring2str(jstring jstr, JNIEnv* = manager->getEnv());
 	/*
 	* 名称:str2jstring
 	* 作用:string类型转jstring类型
@@ -83,7 +124,7 @@ public:
 	* 返回值:jstring
 	* 来源:https://blog.csdn.net/chunleixiahe/article/details/51394116
 	*/
-	jstring str2jstring(const char* pat, JNIEnv* = genv);
+	jstring str2jstring(const char* pat, JNIEnv* = manager->getEnv());
 	/*
 	* 名称:JLongToString
 	* 作用:jlong类型转string类型
@@ -137,7 +178,7 @@ public:
 		return this->description;
 	}
 	void raise() {
-		genv->ThrowNew(config->initexception, (this->description + " step:" + std::to_string(this->step)).c_str());
+		manager->getEnv()->ThrowNew(config->initexception, (this->description + " step:" + std::to_string(this->step)).c_str());
 	}
 };
 //文件读取异常
@@ -155,7 +196,7 @@ public:
 	}
 	void raise() {
 		logger->Error(this->description);
-		//genv->ThrowNew(config->initexception, (this->description).c_str());
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
 	std::string description;
@@ -175,7 +216,7 @@ public:
 	}
 	void raise() {
 		logger->Error(this->description);
-		//genv->ThrowNew(config->initexception, (this->description).c_str());
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
 	std::string description;
@@ -203,7 +244,7 @@ public:
 		return this->description;
 	}
 	void raise() {
-		//genv->ThrowNew(config->initexception, (this->description).c_str());
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
 	std::string description;
@@ -225,7 +266,7 @@ public:
 		return this->description;
 	}
 	void raise() {
-		//genv->ThrowNew(config->initexception, (this->description).c_str());
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
 	std::string description;
@@ -258,7 +299,7 @@ public:
 		return this->description;
 	}
 	void raise() {
-		//genv->ThrowNew(config->initexception, (this->description).c_str());
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
 	std::string description;
@@ -280,7 +321,7 @@ public:
 		return this->description;
 	}
 	void raise() {
-		//genv->ThrowNew(config->initexception, (this->description).c_str());
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
 	std::string description;
@@ -299,7 +340,7 @@ public:
 		return this->description;
 	}
 	void raise() {
-		//genv->ThrowNew(config->initexception, (this->description).c_str());
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
 	}
 private:
 	std::string description;
@@ -330,7 +371,7 @@ public:
 	MessageSource() {};
 	MessageSource(std::string t);
 	void recall() {
-		std::string re = tools.jstring2str((jstring)genv->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM,
+		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM,
 			tools.str2jstring(this->toString().c_str())));
 		if (re == "Y") return;
 		if (re == "E1") throw BotException(1);
@@ -432,7 +473,7 @@ public:
 	/*
 	* 获取图片下载url
 	*/
-	std::string queryURL(JNIEnv* = genv);
+	std::string queryURL(JNIEnv* = manager->getEnv());
 
 	/*取全部的图片id，详情见Image*/
 	static std::vector<std::string> GetImgIdsFromMiraiCode(std::string);
@@ -526,14 +567,14 @@ public:
 		sendmsg = root;
 	}
 	//发送给群或好友或群成员
-	void sendTo(Contact* c, JNIEnv* = genv);
+	void sendTo(Contact* c, JNIEnv* = manager->getEnv());
 };
 std::string BuildForwardMessage(Contact*, std::initializer_list<ForwardNode>);
 
 /*好友类声明*/
 class Friend:public Contact{
 public:
-	Friend(unsigned long long, JNIEnv* =genv);
+	Friend(unsigned long long, JNIEnv* =manager->getEnv());
 	Friend() {};
 	//初始化当前对象，可能抛出异常
 	//昵称
@@ -543,7 +584,7 @@ public:
 	* 最大支持图片大小为30MB
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
-	Image uploadImg(std::string filename, JNIEnv* = genv);
+	Image uploadImg(std::string filename, JNIEnv* = manager->getEnv());
 	/*发送信息*/
 	//发送miraicode
 	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
@@ -552,9 +593,9 @@ public:
 	 MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(std::string msg, JNIEnv* = genv);
+	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
 	//发送文本信息
-	MessageSource SendMsg(std::string msg, JNIEnv* = genv);
+	MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
 };
 
 /*群成员类声明*/
@@ -567,17 +608,17 @@ public:
 	// 权限等级. OWNER群主 为 2, ADMINISTRATOR管理员 为 1, MEMBER群成员 为 0
 	unsigned int permission = 0;
 	// qqid, groupid
-	Member(unsigned long long qqid, unsigned long long groupid, JNIEnv* = genv);
+	Member(unsigned long long qqid, unsigned long long groupid, JNIEnv* = manager->getEnv());
 	/*
 	* 上传本地图片，务必要用绝对路径
 	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
 	* 最大支持图片大小为30MB
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
-	Image uploadImg(std::string filename, JNIEnv* = genv);
+	Image uploadImg(std::string filename, JNIEnv* = manager->getEnv());
 	Member() {};
 	//获取权限，会在构造时调用，请使用permission缓存变量
-	unsigned int getPermission(JNIEnv* = genv);
+	unsigned int getPermission(JNIEnv* = manager->getEnv());
 	/*发送信息*/
 	//发送miraicode
 	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
@@ -586,9 +627,9 @@ public:
 	 MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(std::string msg, JNIEnv* = genv);
+	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
 	//发送文本信息，不进行miraicode解析
-	MessageSource SendMsg(std::string msg, JNIEnv* = genv);
+	MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
 	/*禁言当前对象，单位是秒，最少0秒最大30天
 	* 返回值对应报错
 	*	"E1" - 找不到群
@@ -597,15 +638,13 @@ public:
 	*	"E4" - 禁言时间超出0s~30d
 	*	"Y" - 一切正常
 	*/
-	void Mute(int time, JNIEnv* = genv);
+	void Mute(int time, JNIEnv* = manager->getEnv());
 	/*踢出这个群成员*/
-	void Kick(std::string reason, JNIEnv* = genv);
+	void Kick(std::string reason, JNIEnv* = manager->getEnv());
 };
 
 /*群聊类声明*/
 class Group :public Contact {
-private:
-	std::string memberlist = "";
 public:
 	/*取群成员列表-vector<long>*/
 	std::vector<unsigned long long> getMemberList();
@@ -615,22 +654,22 @@ public:
 	*/
 	std::string MemberListToString();
 	//取群主
-	Member getOwner(JNIEnv* = genv);
+	Member getOwner(JNIEnv* = manager->getEnv());
 	//构建以群号构建群对象
-	Group(unsigned long long, JNIEnv* = genv);
+	Group(unsigned long long, JNIEnv* = manager->getEnv());
 	/*
 	* 上传本地图片，务必要用绝对路径
 	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
 	* 最大支持图片大小为30MB
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
-	Image uploadImg(std::string filename, JNIEnv* = genv);
+	Image uploadImg(std::string filename, JNIEnv* = manager->getEnv());
 	Group() {};
 	/*
 	* 设置全员禁言
 	* param: sign = true时为开始，false为关闭
 	*/
-	void setMuteAll(bool sign, JNIEnv* = genv);
+	void setMuteAll(bool sign, JNIEnv* = manager->getEnv());
 	/*发送信息*/
 	MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
@@ -638,8 +677,8 @@ public:
 	MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
-	MessageSource SendMiraiCode(std::string msg, JNIEnv* = genv);
-	MessageSource SendMsg(std::string msg, JNIEnv* = genv);
+	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
+	MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
 };
 
 /*At一个群成员*/
@@ -690,6 +729,8 @@ public:
 
 /*群聊邀请事件类声明*/
 class GroupInviteEvent {
+private:
+	std::string source;
 public:
 	//发起人
 	std::string inviterNick = "";
@@ -697,27 +738,43 @@ public:
 	//被邀请进的组
 	std::string groupName = "";
 	unsigned long long groupid = 0;
-	//TODO accept
-	void accept();
-	GroupInviteEvent(unsigned long long gi, std::string gn, unsigned long long ii, std::string inick) {
+	static void accept(std::string source) {
+		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->GI, tools.str2jstring(source.c_str()), (jboolean)true));
+		if (re == "Y") return;
+		if (re == "E")logger->Error("accept error");
+	}
+	void accept() {
+		this->accept(this->source);
+	}
+	GroupInviteEvent(unsigned long long gi, std::string gn, unsigned long long ii, std::string inick, std::string s) {
 		this->inviterNick = inick;
 		this->groupid = gi;
 		this->inviterid = ii;
 		this->groupName = gn;
+		this->source = s;
 	}
 };
 
 /*好友申请事件声明*/
 class NewFriendRequestEvent {
 public:
+	std::string source;
 	//发起者
-	Friend sender;
+	unsigned long long senderid;
 	//附加信息
 	std::string message;
-	//TODO accept
-	NewFriendRequestEvent(Friend f, std::string s) {
-		this->sender = f;
-		this->message = s;
+	static void accept(std::string source) {
+		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->NFR, tools.str2jstring(source.c_str()), (jboolean)true));
+		if (re == "Y") return;
+		if (re == "E")logger->Error("accept error");
+	}
+	void accept() {
+		this->accept(this->source);
+	}
+	NewFriendRequestEvent(unsigned long long i, std::string m, std::string s) {
+		this->senderid = i;
+		this->message = m;
+		this->source = s;
 	}
 };
 
@@ -823,7 +880,7 @@ inline void SetScheduling(long time, std::initializer_list<std::string> args) {
 		obj.append(it);
 	}
 	root["value"] = obj;
-	genv->CallStaticVoidMethod(config->CPP_lib, config->Schedule, (jlong)time, tools.str2jstring(tools.JsonToString(root).c_str()));
+	manager->getEnv()->CallStaticVoidMethod(config->CPP_lib, config->Schedule, (jlong)time, tools.str2jstring(tools.JsonToString(root).c_str()));
 }
 
 /*定时任务执行*/
@@ -1094,20 +1151,6 @@ public:
 	}
 };
 
-/*
-	https://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls
-	取消了threadgroupname 因为不可能在获取env前str to jstring 操作
-*/
-inline JNIEnv* getEnv(char* threadName = NULL) {
-	JNIEnv* env = nullptr;
-	JavaVMAttachArgs args{
-		JNIVersion,
-		threadName,
-		NULL
-	};
-	gvm->AttachCurrentThread((void**)&env, &args);
-	return env;
-}
 //取消进程
 inline void releaseThread() {
 		gvm->DetachCurrentThread();

@@ -1,9 +1,11 @@
 package org.example.mirai.plugin
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.BotFactory
+import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.alsoLogin
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.NormalMember
@@ -38,6 +40,10 @@ object KotlinMain {
     private lateinit var AIbot: Bot
     private lateinit var cpp: CPP_lib
     private lateinit var logger:MiraiLogger
+    // 临时解决方案
+    private var finvite = ArrayList<NewFriendRequestEvent>(0)
+    private var ginvite = ArrayList<BotInvitedJoinGroupRequestEvent>(0)
+
     //日志部分实现
     fun BasicSendLog(log: String) {
         logger.info(log)
@@ -166,7 +172,7 @@ object KotlinMain {
     //取群名称
     fun QueryNG(groupid: Long): String {
         val g = AIbot.getGroup(groupid)?:let{
-            logger.error("找不到群")
+            logger.error("取群名称找不到群,位置K-QueryNG")
             return "E1"
         }
         return g.name
@@ -175,7 +181,7 @@ object KotlinMain {
     //取群成员列表
     fun QueryML(groupid: Long): String {
         val g = AIbot.getGroup(groupid) ?: let {
-            logger.error("找不到群")
+            logger.error("取群成员找不到群,位置K-QueryML")
             return "E1"
         }
         val m = ArrayList<Long>()
@@ -383,6 +389,42 @@ object KotlinMain {
         return "Y"
     }
 
+    suspend fun accpetFriendRequest(text:String): String{
+        try {
+            finvite[text.toInt()].accept()
+            finvite.remove(finvite[text.toInt()])
+        }catch (e: JsonSyntaxException){
+            return "E"
+        }
+        return "Y"
+    }
+    suspend fun rejectFriendRequest(text:String):String{
+        try{
+            finvite[text.toInt()].reject()
+            finvite.remove(finvite[text.toInt()])
+        }catch (e: JsonSyntaxException){
+            return "E"
+        }
+        return "Y"
+    }
+    suspend fun accpetGroupInvite(text:String): String{
+        try {
+            ginvite[text.toInt()].accept()
+            ginvite.remove(ginvite[text.toInt()])
+        }catch (e: JsonSyntaxException){
+            return "E"
+        }
+        return "Y"
+    }
+    suspend fun rejectGroupInvite(text:String):String{
+        try{
+            ginvite[text.toInt()].ignore()
+            ginvite.remove(ginvite[text.toInt()])
+        }catch (e: JsonSyntaxException){
+            return "E"
+        }
+        return "Y"
+    }
     @MiraiExperimentalApi
     @MiraiInternalApi
     suspend fun main(id:Long, pass:String, path:String){
@@ -505,22 +547,17 @@ object KotlinMain {
         }
         globalEventChannel.subscribeAlways<NewFriendRequestEvent> {
             //自动同意好友申请
-            val r = cpp.Event(
+            finvite.add(this)
+            cpp.Event(
                 gson.toJson(
                     Config.NewFriendRequest(
                         this.fromId,
-                        this.message
+                        this.message,
+                        (finvite.size - 1).toString()
                     )
                 )
             )
-            when (r) {
-                "true" -> accept()
-                "false" -> reject()
-                else -> {
-                    logger.error("NewFriendRequestEvent return unknown")
-                    reject()
-                }
-            }
+
         }
         globalEventChannel.subscribeAlways<MessageRecallEvent.FriendRecall> {
             cpp.Event(
@@ -588,24 +625,18 @@ object KotlinMain {
         }
         globalEventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
-            val r = cpp.Event(
+            ginvite.add(this)
+            cpp.Event(
                 gson.toJson(
                     Config.GroupInvite(
                         this.groupId,
                         this.groupName,
                         this.invitorId,
-                        this.invitorNick
+                        this.invitorNick,
+                        (ginvite.size).toString()
                     )
                 )
             )
-            when (r) {
-                "true" -> accept()
-                "false" -> ignore()
-                else -> {
-                    logger.error("BotInvitedJoinGroupRequestEvent return unknown")
-                    ignore()
-                }
-            }
         }
 
     }

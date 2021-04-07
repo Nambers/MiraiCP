@@ -32,9 +32,11 @@ void Config::Init(JNIEnv* env) {
 	this->muteAll = env->GetStaticMethodID(config->CPP_lib, "muteGroup", "(JZ)Ljava/lang/String;");
 	this->getowner = env->GetStaticMethodID(config->CPP_lib, "queryOwner", "(J)Ljava/lang/String;");
 	this->buildforward = env->GetStaticMethodID(config->CPP_lib, "buildforward", "(Ljava/lang/String;)Ljava/lang/String;");
+	this->NFR = env->GetStaticMethodID(config->CPP_lib, "nfroperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
+	this->GI = env->GetStaticMethodID(config->CPP_lib, "gioperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
 }
 Config::~Config() {
-	genv->DeleteGlobalRef(this->CPP_lib);
+	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
 }
 
 /*
@@ -69,7 +71,7 @@ void Logger::Info(std::string log, JNIEnv* env) {
 	env->CallStaticVoidMethod(config->CPP_lib, this->sinfo, tools.str2jstring(log.c_str()));
 }
 Logger::~Logger() {
-	genv->DeleteGlobalRef(this->CPP_lib);
+	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
 }
 
 //ÏûÏ¢Ô´
@@ -280,17 +282,16 @@ Group::Group(unsigned long long id, JNIEnv* env) {
 		throw GroupException();
 	}
 	this->nickOrNameCard = re;
-	re = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
+}
+std::vector<unsigned long long> Group::getMemberList() {
+	std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib,
 		config->QueryML,
 		(jlong)this->id));
 	if (re == "E1") {
 		throw GroupException();
 	}
-	this->memberlist = re;
-}
-std::vector<unsigned long long> Group::getMemberList() {
 	std::vector<unsigned long long> result;
-	std::string temp = this->memberlist;
+	std::string temp = re;
 	temp.erase(temp.begin());
 	temp.pop_back();
 	std::regex ws_re("[,]+");
