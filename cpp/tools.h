@@ -2,6 +2,7 @@
 
 extern JavaVM* gvm;
 extern int JNIVersion;
+//JNIEnv和多线程管理
 class threadManager {
 private:
 	std::map <std::string, JNIEnv*> _threads;
@@ -738,10 +739,21 @@ public:
 	//被邀请进的组
 	std::string groupName = "";
 	unsigned long long groupid = 0;
+	static void reject(std::string source) {
+		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->GI, tools.str2jstring(source.c_str()), (jboolean)false));
+		if (re == "Y") return;
+		if (re == "E")if (re == "E")logger->Error("群聊邀请事件同意失败,id:" + source);
+	}
+	void reject() {
+		this->reject(this->source);
+	}
+	std::string getSource() {
+		return this->source;
+	}
 	static void accept(std::string source) {
 		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->GI, tools.str2jstring(source.c_str()), (jboolean)true));
 		if (re == "Y") return;
-		if (re == "E")logger->Error("accept error");
+		if (re == "E")logger->Error("群聊邀请事件同意失败,id:" + source);
 	}
 	void accept() {
 		this->accept(this->source);
@@ -757,16 +769,28 @@ public:
 
 /*好友申请事件声明*/
 class NewFriendRequestEvent {
-public:
+private:
 	std::string source;
+public:
 	//发起者
 	unsigned long long senderid;
 	//附加信息
 	std::string message;
+	static void reject(std::string source) {
+		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->NFR, tools.str2jstring(source.c_str()), (jboolean)false));
+		if (re == "Y") return;
+		if (re == "E")logger->Error("好友申请事件同意失败,id:" + source);
+	}
+	void reject() {
+		this->reject(this->source);
+	}
+	std::string getSource() {
+		return this->source;
+	}
 	static void accept(std::string source) {
 		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->NFR, tools.str2jstring(source.c_str()), (jboolean)true));
 		if (re == "Y") return;
-		if (re == "E")logger->Error("accept error");
+		if (re == "E")logger->Error("好友申请事件同意失败,id:" + source);
 	}
 	void accept() {
 		this->accept(this->source);
