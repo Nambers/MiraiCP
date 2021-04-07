@@ -13,6 +13,8 @@ import org.example.mirai.plugin.PluginMain.SendG
 import org.example.mirai.plugin.PluginMain.SendGM
 import org.example.mirai.plugin.PluginMain.SendM
 import org.example.mirai.plugin.PluginMain.SendWarning
+import org.example.mirai.plugin.PluginMain.accpetFriendRequest
+import org.example.mirai.plugin.PluginMain.accpetGroupInvite
 import org.example.mirai.plugin.PluginMain.buildforwardMsg
 import org.example.mirai.plugin.PluginMain.getowner
 import org.example.mirai.plugin.PluginMain.kkick
@@ -20,6 +22,8 @@ import org.example.mirai.plugin.PluginMain.kqueryM
 import org.example.mirai.plugin.PluginMain.mute
 import org.example.mirai.plugin.PluginMain.muteall
 import org.example.mirai.plugin.PluginMain.recallMsg
+import org.example.mirai.plugin.PluginMain.rejectFriendRequest
+import org.example.mirai.plugin.PluginMain.rejectGroupInvite
 import org.example.mirai.plugin.PluginMain.scheduling
 import org.example.mirai.plugin.PluginMain.uploadImgFriend
 import org.example.mirai.plugin.PluginMain.uploadImgGroup
@@ -189,10 +193,25 @@ class CPP_lib {
         fun queryOwner(groupid: Long):String{
             return getowner(groupid)
         }
+        //build forward message
         @JvmStatic
         fun buildforward(text:String):String{
             return runBlocking {
                 buildforwardMsg(text)
+            }
+        }
+        @JvmStatic
+        fun nfroperation(text: String, sign: Boolean):String{
+            return runBlocking {
+                if (sign) accpetFriendRequest(text)
+                else rejectFriendRequest(text)
+            }
+        }
+        @JvmStatic
+        fun gioperation(text: String, sign:Boolean):String{
+            return runBlocking {
+                if(sign) accpetGroupInvite(text)
+                else rejectGroupInvite(text)
             }
         }
     }

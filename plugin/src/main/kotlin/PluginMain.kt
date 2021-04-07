@@ -1,6 +1,7 @@
 package org.example.mirai.plugin
 
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
@@ -47,6 +48,9 @@ object PluginMain : KotlinPlugin(
     lateinit var cpp: CPP_lib
     lateinit var gson: Gson
     private  val now_tag = "v2.5.0-patch-2"
+    // 临时解决方案
+    private var finvite = ArrayList<NewFriendRequestEvent>(0)
+    private var ginvite = ArrayList<BotInvitedJoinGroupRequestEvent>(0)
 
     //日志部分实现
     fun BasicSendLog(log: String) {
@@ -393,6 +397,43 @@ object PluginMain : KotlinPlugin(
         return "Y"
     }
 
+    suspend fun accpetFriendRequest(text:String): String{
+        try {
+            finvite[text.toInt()].accept()
+            finvite.remove(finvite[text.toInt()])
+        }catch (e: JsonSyntaxException){
+            return "E"
+        }
+        return "Y"
+    }
+    suspend fun rejectFriendRequest(text:String):String{
+        try{
+            finvite[text.toInt()].reject()
+            finvite.remove(finvite[text.toInt()])
+        }catch (e: JsonSyntaxException){
+            return "E"
+        }
+        return "Y"
+    }
+    suspend fun accpetGroupInvite(text:String): String{
+        try {
+            ginvite[text.toInt()].accept()
+            ginvite.remove(ginvite[text.toInt()])
+        }catch (e: JsonSyntaxException){
+            return "E"
+        }
+        return "Y"
+    }
+    suspend fun rejectGroupInvite(text:String):String{
+        try{
+            ginvite[text.toInt()].ignore()
+            ginvite.remove(ginvite[text.toInt()])
+        }catch (e: JsonSyntaxException){
+            return "E"
+        }
+        return "Y"
+    }
+
     override fun onDisable() {
         cpp.PluginDisable()
     }
@@ -539,21 +580,19 @@ object PluginMain : KotlinPlugin(
                 )
             ))
         }
-        ec.subscribeAlways<NewFriendRequestEvent>{
+        ec.subscribeAlways<NewFriendRequestEvent> {
             //自动同意好友申请
-            val r = cpp.Event(gson.toJson(
-                Config.NewFriendRequest(
-                    this.fromId,
-                    this.message
-                )))
-            when(r) {
-                "true" -> accept()
-                "false" -> reject()
-                else -> {
-                    logger.error("NewFriendRequestEvent unknown return")
-                    reject()
-                }
-            }
+            finvite.add(this)
+            cpp.Event(
+                gson.toJson(
+                    Config.NewFriendRequest(
+                        this.fromId,
+                        this.message,
+                        (finvite.size - 1).toString()
+                    )
+                )
+            )
+
         }
         ec.subscribeAlways<BotJoinGroupEvent.Invite>{
             cpp.Event(
@@ -588,24 +627,20 @@ object PluginMain : KotlinPlugin(
                 )
             )
         }
-        ec.subscribeAlways<BotInvitedJoinGroupRequestEvent>{
+        ec.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
-            val r = cpp.Event(gson.toJson(
-                Config.GroupInvite(
-                    this.groupId,
-                    this.groupName,
-                    this.invitorId,
-                    this.invitorNick
-                )))
-            when(r) {
-                "true" -> accept()
-                "false" -> ignore()
-                "NULL" -> ignore()
-                else -> {
-                    logger.error("BotInvitedJoinGroupRequestEvent unknown return")
-                    ignore()
-                }
-            }
+            ginvite.add(this)
+            cpp.Event(
+                gson.toJson(
+                    Config.GroupInvite(
+                        this.groupId,
+                        this.groupName,
+                        this.invitorId,
+                        this.invitorNick,
+                        (ginvite.size).toString()
+                    )
+                )
+            )
         }
     }
 }
