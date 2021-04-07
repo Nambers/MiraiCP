@@ -398,21 +398,11 @@ object PluginMain : KotlinPlugin(
     }
 
     suspend fun accpetFriendRequest(text:String): String{
-        try {
-            finvite[text.toInt()].accept()
-            finvite.remove(finvite[text.toInt()])
-        }catch (e: JsonSyntaxException){
-            return "E"
-        }
+        finvite[text.toInt()].accept()
         return "Y"
     }
     suspend fun rejectFriendRequest(text:String):String{
-        try{
-            finvite[text.toInt()].reject()
-            finvite.remove(finvite[text.toInt()])
-        }catch (e: JsonSyntaxException){
-            return "E"
-        }
+        finvite[text.toInt()].reject()
         return "Y"
     }
     suspend fun accpetGroupInvite(text:String): String{
