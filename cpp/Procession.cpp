@@ -1,14 +1,28 @@
 ﻿#include "pch.h"
-#include <thread>
-void func() {
-	//获取env，线程中可能不能使用genv
-	//见https://github.com/Nambers/MiraiCP/issues/19
-	JNIEnv* env = getEnv();
-	Friend(111, env).SendMsg("hi", env);
-	Group(111, env).SendMsg("hi", env);
-	//执行操作
-	releaseThread();
+void func(unsigned long long i) {
+	manager->start();
+	try {
+		//执行操作
+		Friend(i).SendMsg("hi");
+	}
+	catch (MiraiCPException& e) {	
+		logger->Error(e.what());
+	}
+	manager->detach();
 }
+
+void func2(unsigned long long i) {
+	manager->start();
+	try {
+		//执行操作
+		Group(i).SendMsg("hi");
+	}
+	catch (MiraiCPException& e) {
+		logger->Error(e.what());
+	}
+	manager->detach();
+}
+
 void onEnable() {
 	/*插件启动*/
 	/*
@@ -25,14 +39,14 @@ void onEnable() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
-		//std::thread t = std::thread(func);
-		//t.join();
+		std::thread t = std::thread(func, e.group.getOwner().id);
+		std::thread t1 = std::thread(func2, e.group.id);
+		t.join();
+		t1.join();
 		});
-	procession->registerEvent([](GroupInviteEvent e) {
-		return true; 
+	procession->registerEvent([](NewFriendRequestEvent e) {
+		e.accept();
 		});
-	procession->registerEvent([](BotJoinGroupEvent e) {e.group.SendMsg("HI"); });
-	procession->registerEvent([](GroupMessageEvent e) {e.group.SendMsg(e.message); });
 }
 void onDisable() {
 	/*插件结束,正常退出才会调用*/

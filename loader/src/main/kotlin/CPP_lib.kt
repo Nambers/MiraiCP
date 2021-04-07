@@ -12,6 +12,8 @@ import org.example.mirai.plugin.KotlinMain.SendG
 import org.example.mirai.plugin.KotlinMain.SendGM
 import org.example.mirai.plugin.KotlinMain.SendM
 import org.example.mirai.plugin.KotlinMain.SendWarning
+import org.example.mirai.plugin.KotlinMain.accpetFriendRequest
+import org.example.mirai.plugin.KotlinMain.accpetGroupInvite
 import org.example.mirai.plugin.KotlinMain.buildforwardMsg
 import org.example.mirai.plugin.KotlinMain.dll_name
 import org.example.mirai.plugin.KotlinMain.getowner
@@ -20,6 +22,8 @@ import org.example.mirai.plugin.KotlinMain.kqueryM
 import org.example.mirai.plugin.KotlinMain.mute
 import org.example.mirai.plugin.KotlinMain.muteall
 import org.example.mirai.plugin.KotlinMain.recallMsg
+import org.example.mirai.plugin.KotlinMain.rejectFriendRequest
+import org.example.mirai.plugin.KotlinMain.rejectGroupInvite
 import org.example.mirai.plugin.KotlinMain.scheduling
 import org.example.mirai.plugin.KotlinMain.uploadImgFriend
 import org.example.mirai.plugin.KotlinMain.uploadImgGroup
@@ -194,6 +198,20 @@ class CPP_lib {
         fun buildforward(text:String):String{
             return runBlocking {
                  buildforwardMsg(text)
+            }
+        }
+        @JvmStatic
+        fun nfroperation(text: String, sign: Boolean):String{
+            return runBlocking {
+                if (sign) accpetFriendRequest(text)
+                else rejectFriendRequest(text)
+            }
+        }
+        @JvmStatic
+        fun gioperation(text: String, sign:Boolean):String{
+            return runBlocking {
+                if(sign) accpetGroupInvite(text)
+                else rejectGroupInvite(text)
             }
         }
     }
