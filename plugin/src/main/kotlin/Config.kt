@@ -23,12 +23,14 @@ class Config {
         val groupname: String,
         val invitorid: Long,
         val invitorname: String,
+        val source: String,
         val type: Int = 3
     )
     //好友邀请
     data class NewFriendRequest(
         val friendid: Long,
         val message: String,
+        val eventhandle: String,
         val type: Int = 4
     )
     //群成员加入

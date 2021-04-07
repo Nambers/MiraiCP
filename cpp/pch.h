@@ -16,6 +16,9 @@
 #include <regex>
 #include <fstream>
 #include <vector> 
+#include <thread>
+#include <map>
+#include <mutex>
 #include "constants.h"
 #include "tools.h"
 /*结束*/

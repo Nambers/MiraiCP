@@ -1,7 +1,5 @@
 ﻿#include "pch.h"
 
-//全局jnienv指针
-JNIEnv* genv = nullptr;
 //全局javavm指针
 JavaVM* gvm = nullptr;
 //JNI版本
@@ -12,6 +10,7 @@ Logger* logger = new Logger();
 Event* procession = new Event();
 //全局配置指针
 Config* config = new Config();
+threadManager* manager = new threadManager();
 /*
 *正文开始
 */
@@ -22,9 +21,9 @@ Config* config = new Config();
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject) {
-	genv = env;
+	manager->setEnv(env);
 	env->GetJavaVM(&gvm);
-	JNIVersion = (int)genv->GetVersion();
+	JNIVersion = (int)manager->getEnv()->GetVersion();
 	try {
 		//初始化日志模块
 		logger->init();
@@ -39,7 +38,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* 
 /* 插件结束事件*/
 JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
 (JNIEnv* env, jobject job) {
-	genv = env;
+	manager->setEnv(env);
 	onDisable();
 	delete(logger);
 	delete(procession);
@@ -57,7 +56,7 @@ jstring returnNull() {
 */
 JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 (JNIEnv* env, jobject, jstring content) {
-	genv = env;
+	manager->setEnv(env);
 	std::string Rcontent = tools.jstring2str(content);
 	const auto rawJsonLength = static_cast<int>(Rcontent.length());
 	Json::String err;
@@ -99,14 +98,16 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 				root["invitorid"].asLargestUInt(),
 				root["invitorname"].asCString(),
 				root["groupid"].asLargestUInt(),
-				root["groupname"].asCString()
+				root["groupname"].asCString(),
+				root["source"].asCString()
 			));
 			return returnNull();
 		case 4:
 			//好友
 			procession->broadcast(NewFriendRequestEvent(
-				Friend(root["friendid"].asLargestUInt()),
-				root["message"].asCString()));
+				root["friendid"].asLargestUInt(),
+				root["message"].asCString(),
+				root["eventhandle"].asCString()));
 			return returnNull();
 		case 5:
 			//新成员加入
