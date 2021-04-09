@@ -934,6 +934,7 @@ public:
 
 	}
 };
+
 /*监听类声明*/
 class Event {
 private:
@@ -950,75 +951,77 @@ private:
 	/*
 	* 不使用vector做可重复监听的部分，因为没有什么必要且vector比变量占内存
 	*/
+	class Node {
+	public:
+		Node* nextNode = nullptr;
+		Node() {};
+	};
 
-	class GMENode
+	class GMENode:public Node
 	{
 	public: 
-		int id = 0;
 		bool enable = true;
 		GME f = [](GroupMessageEvent)->void {};
 		GMENode* next = nullptr;
 	};
-	class PMENode
+	class PMENode:public Node
 	{
 	public:
-		int id = 0;
 		bool enable = true;
 		PME f = [](PrivateMessageEvent)->void {};
 		PMENode* next = nullptr;
 	};
-	class GINode
+	class GINode :public Node
 	{
 	public:
-		int id = 0;
 		bool enable = true;
 		GI f = [](GroupInviteEvent) {};
 		GINode* next = nullptr;
 	};
-	class NFRENode
+	class NFRENode :public Node
 	{
 	public:
-		int id = 0;
+		
 		bool enable = true;
 		NFRE f = [](NewFriendRequestEvent) {};
 		NFRENode* next = nullptr;
 	};
-	class MJNode
+	class MJNode :public Node
 	{
 	public:
-		int id = 0;
+		
 		bool enable = true;
 		MJ f = [](MemberJoinEvent)->void {};
 		MJNode* next = nullptr;
 	};
-	class MLNode
+	class MLNode :public Node
 	{
 	public:
-		int id = 0;
+		
 		bool enable = true;
 		ML f = [](MemberLeaveEvent)->void {};
 		MLNode* next = nullptr;
 	};
-	class RNode
+	class RNode :public Node
 	{
 	public:
-		int id = 0;
+		
 		bool enable = true;
 		R f = [](RecallEvent)->void {};
 		RNode* next = nullptr;
 	};
-	class SNode
+	class SNode :public Node
 	{
 	public:
-		int id = 0;
+		
 		bool enable = true;
 		S f = [](SchedulingEvent)->void {};
 		SNode* next = nullptr;
 	};
-	class BJNode
+	class BJNode :public Node
 	{
 	public:
-		int id = 0;
+		
 		bool enable = true;
 		BJ f = [](BotJoinGroupEvent)->void {};
 		BJNode* next = nullptr;
@@ -1043,6 +1046,7 @@ private:
 	RNode* RTail = RHead;
 	SNode* STail = SHead;
 	BJNode* BTail = BHead;
+	
 public:
 	/*
 	* 广播函数重载
@@ -1118,61 +1122,80 @@ public:
 	* 监听函数重载
 	*/
 
-	void registerEvent(GME f) {
+	GMENode* registerEvent(GME f) {
 		GMENode* node = new GMENode();
 		node->f = f;
-		node->id = GMTail->id + 1;
 		GMTail->next = node;
+		GMTail->nextNode = node;
 		GMTail = node;
+		return node;
 	}
-	void registerEvent(PME f) {
+	PMENode* registerEvent(PME f) {
 		PMENode* node = new PMENode();
 		node->f = f;
 		PMTail->next = node;
+		PMTail->nextNode = node;
 		PMTail = node;
+		return node;
 	}
-	void registerEvent(GI f) {
+	GINode* registerEvent(GI f) {
 		GINode* node = new GINode();
 		node->f = f;
 		GTail->next = node;
+		GTail->nextNode = node;
 		GTail = node;
+		return node;
 	}
-	void registerEvent(NFRE f) {
+	NFRENode* registerEvent(NFRE f) {
 		NFRENode* node = new NFRENode();
 		node->f = f;
 		NFTail->next = node;
+		NFTail->nextNode = node;
 		NFTail = node;
+		return node;
 	}
-	void registerEvent(MJ f) {
+	MJNode* registerEvent(MJ f) {
 		MJNode* node = new MJNode();
 		node->f = f;
 		MJTail->next = node;
+		MJTail->nextNode = node;
 		MJTail = node;
+		return node;
 	}
-	void registerEvent(ML f) {
+	MLNode* registerEvent(ML f) {
 		MLNode* node = new MLNode();
 		node->f = f;
 		MLTail->next = node;
+		MLTail->nextNode = node;
 		MLTail = node;
+		return node;
 	}
-	void registerEvent(R r) {
+	RNode* registerEvent(R r) {
 		RNode* node = new RNode();
 		node->f = r;
 		RTail->next = node;
+		RTail->nextNode = node;
 		RTail = node;
+		return node;
 	}
-	void registerEvent(S f) {
+	SNode* registerEvent(S f) {
 		SNode* node = new SNode();
 		node->f = f;
 		STail->next = node;
+		STail->nextNode = node;
 		STail = node;
+		return node;
 	}
-	void registerEvent(BJ f) {
+	BJNode* registerEvent(BJ f) {
 		BJNode* node = new BJNode();
 		node->f = f;
 		BTail->next = node;
+		BTail->nextNode = node;
 		BTail = node;
+		return node;
 	}
+
+	~Event();
 };
 
 //取消进程

@@ -40,6 +40,7 @@ object PluginMain : KotlinPlugin(
     )
 ) {
     private val json = Json{
+        Mirai
         serializersModule = MessageSerializers.serializersModule
     }
     var friend_cache = ArrayList<NormalMember>(0)
