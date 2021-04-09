@@ -39,13 +39,16 @@ void onEnable() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	procession->registerEvent([](GroupMessageEvent e) {
-		std::thread t = std::thread(func, e.group.getOwner().id);
+		/*std::thread t = std::thread(func, e.group.getOwner().id);
 		std::thread t1 = std::thread(func2, e.group.id);
 		t.join();
-		t1.join();
+		t1.join();*/
 		});
 	procession->registerEvent([](NewFriendRequestEvent e) {
 		e.accept();
+		});
+	procession->registerEvent([](PrivateMessageEvent e) {
+		e.sender.SendMsg(e.message);
 		});
 }
 void onDisable() {
