@@ -66,8 +66,8 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 	if (!reader->parse(Rcontent.c_str(), Rcontent.c_str() + rawJsonLength, &root,
 		&err)) {
 		//error
-		logger->Error("JSON reader error");
-		APIException("JSON reader error").raise();
+		APIException("JSON文本异常").raise();
+		tools.str2jstring("ERROR");
 	}
 	try {
 		switch (root["type"].asInt()) {
@@ -160,7 +160,6 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
 		e.raise();
 		return returnNull();
 	}
-	logger->Error("unknown type");
-	APIException("未知的消息类型").raise();
+	APIException("未知的消息类型,位置C-Handle").raise();
 	return tools.str2jstring("ERROR");
 }
