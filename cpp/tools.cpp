@@ -74,6 +74,24 @@ Logger::~Logger() {
 	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
 }
 
+Event::~Event()
+{
+	Node* temp[] = { GMHead, PMHead, GHead, NFHead,MJHead,MLHead,RHead,SHead,BHead };
+	for (Node* ptr : temp) {
+		Node* now = ptr;
+		Node* t = nullptr;
+		while (true) {
+			t = now;
+			if (now->nextNode == nullptr) {
+				delete now;
+				break;
+			}
+			now = now->nextNode;
+			delete t;
+		}
+	}
+}
+
 //消息源
 MessageSource::MessageSource(std::string t) {
 	this->source = t;
@@ -85,8 +103,8 @@ MessageSource::MessageSource(std::string t) {
 	if (!reader->parse(t.c_str(), t.c_str() + rawJsonLength, &root,
 		&err)) {
 		//error
-		logger->Error("JSON reader error");
-		APIException("JSON reader error").raise();
+		throw APIException("JSON reader error,位置:C-MessageSource");
+
 	}
 	this->ids = root["ids"].toStyledString();
 	this->ids = tools.replace(this->ids, "\n", "");
@@ -171,11 +189,12 @@ MessageSource Friend::SendMiraiCode(std::string msg, JNIEnv* env) {
 	}
 	return MessageSource(re);
 }
-MessageSource Friend::SendMsg( std::string msg, JNIEnv* env){
+MessageSource Friend::SendMsg(std::string msg, JNIEnv* env){
 	std::string re = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->SendMsg2FM, tools.str2jstring(msg.c_str()), (jlong)this->id));
 	if (re == "E1") {
 		throw FriendException();
 	}
+	logger->Info("C-Source:\""+re+"\"");
 	return MessageSource(re);
 }
 

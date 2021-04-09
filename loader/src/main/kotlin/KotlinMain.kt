@@ -32,6 +32,7 @@ import kotlin.concurrent.schedule
 
 object KotlinMain {
     private val json = Json{
+        Mirai
         serializersModule = MessageSerializers.serializersModule
     }
     const val now_tag = "v2.5.0-patch-2"
@@ -110,7 +111,9 @@ object KotlinMain {
             logger.error("发送消息找不到好友，位置:K-Send()，id:$id")
             return "E1"
         }
-        return json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
+        val a = json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
+        logger.info("Source:\"$a\"")
+        return a
     }
 
     suspend fun SendM(message: String, id: Long, gid: Long):String {
