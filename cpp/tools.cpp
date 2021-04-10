@@ -6,7 +6,7 @@ throw: InitxException 即找不到对应签名
 */
 void Config::Init(JNIEnv* env) {	
 	this->initexception = env->FindClass("java/lang/NoSuchMethodException");
-	this->CPP_lib = (jclass)env->NewGlobalRef(env->FindClass("org/example/mirai/plugin/CPP_lib"));
+	this->CPP_lib = (jclass)env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/CPP_lib"));
 	if (this->CPP_lib == NULL) {
 		throw InitException("初始化错误", 1);
 	}
@@ -44,7 +44,7 @@ Config::~Config() {
 throw: InitException 即找不到签名
 */
 void Logger::init(JNIEnv* env){
-	this->CPP_lib = (jclass)(env->NewGlobalRef(env->FindClass("org/example/mirai/plugin/CPP_lib")));
+	this->CPP_lib = (jclass)(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/CPP_lib")));
 	this->sinfo = env->GetStaticMethodID(this->CPP_lib, "SendLog", "(Ljava/lang/String;)V");
 	this->swarning = env->GetStaticMethodID(this->CPP_lib, "SendW", "(Ljava/lang/String;)V");
 	this->serror = env->GetStaticMethodID(this->CPP_lib, "SendE", "(Ljava/lang/String;)V");

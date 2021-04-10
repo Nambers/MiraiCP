@@ -15,11 +15,11 @@ tasks {
     }
 }
 application {
-    mainClass.set("org.example.mirai.plugin.KotlinMainKt")
-    mainClassName = "org.example.mirai.plugin.KotlinMainKt"
+    mainClass.set("tech.eritquearcus.miraicp.KotlinMainKt")
+    mainClassName = "tech.eritquearcus.miraicp.KotlinMainKt"
 }
 group = "tech.eritquearcus"
-version = "2.5.0-patch-2"
+version = "2.5.1"
 
 repositories {
     maven{ url =uri("https://maven.aliyun.com/nexus/content/groups/public/")}
