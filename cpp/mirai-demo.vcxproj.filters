@@ -27,6 +27,9 @@
     <ClInclude Include="constants.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="tech_eritquearcus_miraicp_CPP_lib.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
