@@ -1,16 +1,16 @@
-package org.example.mirai.plugin
+package tech.eritquearcus.miraicp
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
+import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.contact.nameCardOrNick
-import net.mamoe.mirai.event.broadcast
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.message.MessageSerializers
@@ -36,7 +36,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.5.0-patch-2"
+        version = "2.5.1"
     )
 ) {
     private val json = Json{
@@ -48,7 +48,7 @@ object PluginMain : KotlinPlugin(
     lateinit var AIbot: Bot
     lateinit var cpp: CPP_lib
     lateinit var gson: Gson
-    private  val now_tag = "v2.5.0-patch-2"
+    private  val now_tag = "v2.5.1"
     // 临时解决方案
     private var finvite = ArrayList<NewFriendRequestEvent>(0)
     private var ginvite = ArrayList<BotInvitedJoinGroupRequestEvent>(0)

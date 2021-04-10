@@ -184,6 +184,7 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="tech_eritquearcus_miraicp_CPP_lib.h" />
     <ClInclude Include="tools.h" />
   </ItemGroup>
   <ItemGroup>

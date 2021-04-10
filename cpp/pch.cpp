@@ -20,7 +20,7 @@ threadManager* manager = new threadManager();
 * 参数:env 必备，job 必备
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
-JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* env, jobject) {
+JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Verify(JNIEnv* env, jobject) {
 	manager->setEnv(env);
 	env->GetJavaVM(&gvm);
 	JNIVersion = (int)manager->getEnv()->GetVersion();
@@ -36,7 +36,7 @@ JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Verify(JNIEnv* 
 	return tools.str2jstring(MiraiCPVersion.c_str());//验证机制，返回当前SDK版本
 }
 /* 插件结束事件*/
-JNIEXPORT jobject JNICALL Java_org_example_mirai_plugin_CPP_1lib_PluginDisable
+JNIEXPORT jobject JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_PluginDisable
 (JNIEnv* env, jobject job) {
 	manager->setEnv(env);
 	onDisable();
@@ -54,7 +54,7 @@ jstring returnNull() {
 /*
 * 消息解析分流
 */
-JNIEXPORT jstring JNICALL Java_org_example_mirai_plugin_CPP_1lib_Event
+JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 (JNIEnv* env, jobject, jstring content) {
 	manager->setEnv(env);
 	std::string Rcontent = tools.jstring2str(content);
