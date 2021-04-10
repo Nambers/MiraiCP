@@ -1,4 +1,4 @@
-package org.example.mirai.plugin
+package tech.eritquearcus.miraicp
 
 import com.google.gson.annotations.SerializedName
 

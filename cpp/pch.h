@@ -10,7 +10,7 @@
 #include <vector>
 #include <functional>
 #include <json.h>
-#include "org_example_mirai_plugin_CPP_lib.h"
+#include "tech_eritquearcus_miraicp_CPP_lib.h"
 #include <jni.h>
 #include <sstream>
 #include <regex>

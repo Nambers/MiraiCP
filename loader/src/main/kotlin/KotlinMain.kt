@@ -1,4 +1,5 @@
-package org.example.mirai.plugin
+package tech.eritquearcus.miraicp
+
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.runBlocking
@@ -11,7 +12,6 @@ import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.contact.nameCardOrNick
-import net.mamoe.mirai.event.broadcast
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.code.MiraiCode
@@ -21,9 +21,9 @@ import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
-import org.example.mirai.plugin.KotlinMain.now_tag
 import org.fusesource.jansi.AnsiConsole
 import org.json.JSONObject
+import tech.eritquearcus.miraicp.KotlinMain.now_tag
 import java.io.File
 import java.lang.Long.valueOf
 import java.net.URL
@@ -35,7 +35,7 @@ object KotlinMain {
         Mirai
         serializersModule = MessageSerializers.serializersModule
     }
-    const val now_tag = "v2.5.0-patch-2"
+    const val now_tag = "v2.5.1"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
     private lateinit var AIbot: Bot
