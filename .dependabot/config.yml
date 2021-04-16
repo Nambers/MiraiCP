@@ -1,0 +1,9 @@
+version: 1
+update_configs:
+  - package_manager: "java:gradle"
+    directory: "/loader"
+    update_schedule: "weekly"
+
+  - package_manager: "java:gradle"
+    directory: "/plugin"
+    update_schedule: "weekly"
