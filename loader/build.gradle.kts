@@ -33,7 +33,7 @@ tasks.withType(KotlinJvmCompile::class.java) {
 }
 
 dependencies {
-    implementation("org.fusesource.jansi:jansi:1.18")
+    implementation("org.fusesource.jansi:jansi:2.3.2")
     implementation("com.google.code.gson:gson:2.8.6")
     api("net.mamoe:mirai-core:2.5.0")
     // https://mvnrepository.com/artifact/org.json/json
