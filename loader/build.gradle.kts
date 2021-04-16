@@ -37,5 +37,5 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.6")
     api("net.mamoe:mirai-core:2.5.0")
     // https://mvnrepository.com/artifact/org.json/json
-    implementation("org.json:json:20201115")
+    implementation("org.json:json:20210307")
 }
