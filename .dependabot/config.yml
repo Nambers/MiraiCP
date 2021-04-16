@@ -1,9 +1,12 @@
-version: 1
-update_configs:
-  - package_manager: "java:gradle"
-    directory: "/loader"
-    update_schedule: "weekly"
-
-  - package_manager: "java:gradle"
-    directory: "/plugin"
-    update_schedule: "weekly"
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/loader"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/plugin"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
