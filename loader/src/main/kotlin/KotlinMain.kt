@@ -423,7 +423,8 @@ object KotlinMain {
     suspend fun main(id:Long, pass:String, path:String){
         println("当前MiraiCP框架版本:$now_tag")
         setDefaultLoggerCreator { identity ->
-            PlatformLogger(identity, AnsiConsole.out::println, true)
+            AnsiConsole.systemInstall()
+            PlatformLogger(identity, AnsiConsole.out()::println, true)
         }
         dll_name = path
         println("启动成功!")
