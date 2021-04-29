@@ -23,11 +23,14 @@ void onEnable() {
 	procession->registerEvent([](NewFriendRequestEvent e) {
 		e.accept();
 		});
-	procession->registerEvent([](PrivateMessageEvent e){
+	procession->registerEvent([](PrivateMessageEvent e) {
 		std::thread func1(func, e.sender.id);
 		e.sender.SendMsg(e.message);
 		func1.detach();
 		// 线程应该在lambda中决定要detach还是join, 否则会报错
+		});
+	procession->registerEvent([](GroupTempMessageEvent e) {
+		e.sender.SendMsg("hi");
 		});
 }
 void onDisable() {

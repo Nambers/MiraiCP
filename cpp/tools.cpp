@@ -260,14 +260,14 @@ Member::Member(unsigned long long id, unsigned long long groupid, JNIEnv* env) {
 	this->Query_permission = config->QueryP;
 	this->KickM = config->KickM;
 	std::string temp = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->NickorNameM, (jlong)id, (jlong)groupid));
+	this->nickOrNameCard = temp;
+	this->permission = getPermission();
 	if (temp == "E1") {
 		throw MemberException(1);
 	}
 	if (temp == "E2") {
 		throw MemberException(2);
 	}
-	this->nickOrNameCard = temp;
-	this->permission = getPermission();
 }
 unsigned int Member::getPermission(JNIEnv* env){
 	std::string re = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->QueryP, (jlong)id, (jlong)groupid));

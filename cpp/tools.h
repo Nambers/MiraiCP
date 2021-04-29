@@ -881,6 +881,24 @@ public:
 	}
 };
 
+class GroupTempMessageEvent {
+public:
+	//来源群
+	Group group;
+	//发送人
+	Member sender;
+	//信息本体
+	std::string message;
+	//消息源
+	MessageSource messageSource;
+	GroupTempMessageEvent(Group g, Member f, std::string s, MessageSource s1) {
+		this->group = g;
+		this->sender = f;
+		this->message = s;
+		this->messageSource = s1;
+	}
+};
+
 /*启动定时任务,time是多少毫秒后开始，id是自定义标识符*/
 inline void SetScheduling(long time, std::initializer_list<std::string> args) {
 	Json::Value obj;
@@ -928,6 +946,7 @@ using ML = std::function<void(MemberLeaveEvent)>;
 using R = std::function<void(RecallEvent)>;
 using S = std::function<void(SchedulingEvent)>;
 using BJ = std::function<void(BotJoinGroupEvent)>;
+using GTME = std::function<void(GroupTempMessageEvent)>;
 /*监听类声明*/
 class Event {
 private:
@@ -1005,6 +1024,14 @@ private:
 		BJ f = [](BotJoinGroupEvent)->void {};
 		BJNode* next = nullptr;
 	};
+	class GTMENode :public Node
+	{
+	public:
+
+		bool enable = true;
+		GTME f = [](GroupTempMessageEvent)->void {};
+		GTMENode* next = nullptr;
+	};
 	
 	GMENode* GMHead = new GMENode();
 	PMENode* PMHead = new PMENode();
@@ -1015,6 +1042,7 @@ private:
 	RNode* RHead = new RNode();
 	SNode* SHead = new SNode();
 	BJNode* BHead = new BJNode();
+	GTMENode* GTMHead = new GTMENode();
 
 	GMENode* GMTail = GMHead;
 	PMENode* PMTail = PMHead;
@@ -1025,6 +1053,7 @@ private:
 	RNode* RTail = RHead;
 	SNode* STail = SHead;
 	BJNode* BTail = BHead;
+	GTMENode* GTMTail = GTMHead;
 	
 public:
 	/*
@@ -1093,6 +1122,13 @@ public:
 		BJNode* now = BHead;
 		while (now) {
 			if (now->enable) { now->f(b); }
+			now = now->next;
+		}
+	}
+	void broadcast(GroupTempMessageEvent g) {
+		GTMENode* now = GTMHead;
+		while (now) {
+			if (now->enable) { now->f(g); }
 			now = now->next;
 		}
 	}
@@ -1171,6 +1207,14 @@ public:
 		BTail->next = node;
 		BTail->nextNode = node;
 		BTail = node;
+		return node;
+	}
+	GTMENode* registerEvent(GTME f) {
+		GTMENode* node = new GTMENode();
+		node->f = f;
+		GTMTail->next = node;
+		GTMTail->nextNode = node;
+		GTMTail = node;
 		return node;
 	}
 
