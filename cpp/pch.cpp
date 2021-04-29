@@ -66,7 +66,6 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 		&err)) {
 		//error
 		APIException("JSON文本异常").raise();
-		tools.str2jstring("ERROR");
 	}
 	try {
 		switch (root["type"].asInt()) {
@@ -79,7 +78,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				MessageSource(root["Source"].asCString())
 			)
 			);
-			return returnNull();
+			break;
 		}
 		case 2: {
 			//私聊消息
@@ -89,7 +88,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				MessageSource(root["Source"].asCString())
 			)
 			);
-			return returnNull();
+			break;
 		}
 		case 3:
 			//群聊邀请
@@ -100,14 +99,14 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				root["groupname"].asCString(),
 				root["source"].asCString()
 			));
-			return returnNull();
+			break;
 		case 4:
 			//好友
 			procession->broadcast(NewFriendRequestEvent(
 				root["friendid"].asLargestUInt(),
 				root["message"].asCString(),
 				root["eventhandle"].asCString()));
-			return returnNull();
+			break;
 		case 5:
 			//新成员加入
 			procession->broadcast(MemberJoinEvent(
@@ -119,7 +118,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 					root["invitorid"].asLargestUInt(),
 					root["groupid"].asLargestUInt())
 			));
-			return returnNull();
+			break;
 		case 6:
 			//群成员退出
 			procession->broadcast(MemberLeaveEvent(
@@ -131,7 +130,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 					root["operatorid"].asLargestUInt(),
 					root["groupid"].asLargestUInt())
 			));
-			return returnNull();
+			break;
 		case 7:
 			procession->broadcast(RecallEvent(
 				root["Etype"].asInt(),
@@ -142,19 +141,29 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				root["internalids"].asCString(),
 				root["groupid"].asLargestUInt()
 			));
-			return returnNull();
+			break;
 		case 8:
 			procession->broadcast(SchedulingEvent(
 				root["message"].asCString()));
-			return returnNull();
+			break;
 		case 9:
 			procession->broadcast(BotJoinGroupEvent(
 				root["etype"].asInt(),
 				Group(root["groupid"].asLargestUInt()),
 				(root["etyoe"].asInt() == 2?Member(root["invitorid"].asLargestUInt(),root["groupid"].asLargestUInt()):Member())
 			));
-			return returnNull();
+			break;
+		case 10:
+			procession->broadcast(GroupTempMessageEvent(
+				Group(root["groupid"].asLargestUInt()),
+				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt()),
+				root["message"].asCString(),
+				MessageSource(root["Source"].asCString())
+			)
+			);
+			break;
 		}
+		return returnNull();
 	}catch (MiraiCPException& e) {
 		e.raise();
 		return returnNull();
