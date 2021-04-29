@@ -8,10 +8,7 @@ import net.mamoe.mirai.Bot
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.alsoLogin
-import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.NormalMember
-import net.mamoe.mirai.contact.PermissionDeniedException
-import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.code.MiraiCode
@@ -104,16 +101,14 @@ object KotlinMain {
 
     //Msg
 
-    suspend fun SendM(message: String, id: Long) :String{
+    suspend fun SendM(message: String, id: Long): String {
         //反向调用
         logger.info("Send message for($id) is $message")
         val f = AIbot.getFriend(id) ?: let {
             logger.error("发送消息找不到好友，位置:K-Send()，id:$id")
             return "E1"
         }
-        val a = json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
-        logger.info("Source:\"$a\"")
-        return a
+        return json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
     }
 
     suspend fun SendM(message: String, id: Long, gid: Long):String {

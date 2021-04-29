@@ -1,25 +1,7 @@
 ﻿#include "pch.h"
 void func(unsigned long long i) {
-	manager->start();
-	try {
-		//执行操作
-		Friend(i).SendMsg("hi");
-	}
-	catch (MiraiCPException& e) {	
-		logger->Error(e.what());
-	}
-	manager->detach();
-}
-
-void func2(unsigned long long i) {
-	manager->start();
-	try {
-		//执行操作
-		Group(i).SendMsg("hi");
-	}
-	catch (MiraiCPException& e) {
-		logger->Error(e.what());
-	}
+	//执行操作
+	Friend(i).SendMsg("hi");
 	manager->detach();
 }
 
@@ -38,17 +20,14 @@ void onEnable() {
 		...
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
-	procession->registerEvent([](GroupMessageEvent e) {
-		/*std::thread t = std::thread(func, e.group.getOwner().id);
-		std::thread t1 = std::thread(func2, e.group.id);
-		t.join();
-		t1.join();*/
-		});
 	procession->registerEvent([](NewFriendRequestEvent e) {
 		e.accept();
 		});
-	procession->registerEvent([](PrivateMessageEvent e) {
+	procession->registerEvent([](PrivateMessageEvent e){
+		std::thread func1(func, e.sender.id);
 		e.sender.SendMsg(e.message);
+		func1.detach();
+		// 线程应该在lambda中决定要detach还是join, 否则会报错
 		});
 }
 void onDisable() {
