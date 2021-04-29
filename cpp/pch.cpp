@@ -48,7 +48,6 @@ JNIEXPORT jobject JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_PluginDisable
 }
 jstring returnNull() {
 	jstring re = tools.str2jstring("MIRAICP_NULL");
-	gvm->DestroyJavaVM();
 	return re;
 }
 /*
