@@ -81,7 +81,6 @@ class Config {
         val type: Int = 9
     )
     data class ForwardMessageJson (
-
         @SerializedName("type") val type : Int,
         @SerializedName("id") val id : Long,
         @SerializedName("id2") val id2 : Long,
@@ -98,5 +97,12 @@ class Config {
         @SerializedName("id") val id : Long,
         @SerializedName("time") val time : Int,
         @SerializedName("message") val message : String
+    )
+    data class GroupTempMessage(
+        val groupid: Long,
+        val senderid: Long,
+        val message: String,
+        val Source: String,
+        val type: Int = 10
     )
 }

@@ -633,5 +633,20 @@ object PluginMain : KotlinPlugin(
                 )
             )
         }
+        ec.subscribeAlways<GroupTempMessageEvent> {
+            //群临时会话
+            cpp.Event(
+                gson.toJson(
+                    Config.GroupTempMessage(
+                        this.group.id,
+                        this.sender.id,
+                        this.message.serializeToMiraiCode(),
+                        json.encodeToString(MessageSource.Serializer,
+                            this.source
+                        )
+                    )
+                )
+            )
+        }
     }
 }
