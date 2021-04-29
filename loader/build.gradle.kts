@@ -38,4 +38,5 @@ dependencies {
     api("net.mamoe:mirai-core:2.5.2")
     // https://mvnrepository.com/artifact/org.json/json
     implementation("org.json:json:20210307")
+    runtimeOnly("net.mamoe:mirai-login-solver-selenium:1.0-dev-17")
 }
