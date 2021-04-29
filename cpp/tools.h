@@ -5,43 +5,28 @@ extern int JNIVersion;
 //JNIEnv和多线程管理
 class threadManager {
 private:
-	std::map <std::string, JNIEnv*> _threads;
-	std::mutex mtx;
+	struct t {
+		JNIEnv* e;
+		bool attach;
+	};
+	std::map <std::string, t> _threads;
+	std::recursive_mutex mtx;
+	void newEnv(char* threadName = NULL);
 public:
-	static std::string getThreadId() {
+	static std::string getThreadId(){
 		std::ostringstream oss;
 		oss << std::this_thread::get_id();
 		return oss.str();
 	}
-	threadManager() {
-		this->_threads = std::map <std::string, JNIEnv*>();
+	bool included(std::string id) {
+		if (this->_threads.empty() || this->_threads.count(id) == 0)
+			return false;
+		return true;
 	}
-	void setEnv(JNIEnv* e)noexcept {
-		mtx.lock();
-		this->_threads.insert(std::pair<std::string, JNIEnv*>(this->getThreadId(), e));
-		mtx.unlock();
-	}
-	void start(char* threadName = NULL) noexcept {
-		JNIEnv* env = nullptr;
-		JavaVMAttachArgs args{
-			JNIVersion,
-			threadName,
-			NULL
-		};
-		gvm->AttachCurrentThread((void**)&env, &args);
-		mtx.lock();
-		this->_threads.insert(std::pair<std::string, JNIEnv*>(this->getThreadId() , env));
-		mtx.unlock();
-	};
-	void detach() noexcept {
-		mtx.lock();
-		this->_threads.erase(this->getThreadId());
-		mtx.unlock();
-		gvm->DetachCurrentThread();
-	}
-	JNIEnv* getEnv()noexcept {
-		return this->_threads[this->getThreadId()];
-	}
+	threadManager();
+	void setEnv(JNIEnv* e);
+	void detach();
+	JNIEnv* getEnv();
 };
 extern threadManager* manager;
 
@@ -934,29 +919,23 @@ public:
 
 	}
 };
-
+using GME = std::function<void(GroupMessageEvent)>;
+using PME = std::function<void(PrivateMessageEvent)>;
+using GI = std::function<void(GroupInviteEvent)>;
+using NFRE = std::function<void(NewFriendRequestEvent)>;
+using MJ = std::function<void(MemberJoinEvent)>;
+using ML = std::function<void(MemberLeaveEvent)>;
+using R = std::function<void(RecallEvent)>;
+using S = std::function<void(SchedulingEvent)>;
+using BJ = std::function<void(BotJoinGroupEvent)>;
 /*监听类声明*/
 class Event {
 private:
-	using GME = std::function<void(GroupMessageEvent)>;
-	using PME = std::function<void(PrivateMessageEvent)>;
-	using GI = std::function<void(GroupInviteEvent)>;
-	using NFRE = std::function<void(NewFriendRequestEvent)>;
-	using MJ = std::function<void(MemberJoinEvent)>;
-	using ML = std::function<void(MemberLeaveEvent)>;
-	using R = std::function<void(RecallEvent)>;
-	using S = std::function<void(SchedulingEvent)>;
-	using BJ = std::function<void(BotJoinGroupEvent)>;
-
-	/*
-	* 不使用vector做可重复监听的部分，因为没有什么必要且vector比变量占内存
-	*/
 	class Node {
 	public:
 		Node* nextNode = nullptr;
 		Node() {};
 	};
-
 	class GMENode:public Node
 	{
 	public: 
@@ -1054,65 +1033,65 @@ public:
 
 	void broadcast(GroupMessageEvent g) {
 		GMENode *now = GMHead;
-		while (now != nullptr) {
+		while (now) {
 			if (now->enable) { now->f(g); }
 			now = now->next;
 		}
 	}
 	void broadcast(PrivateMessageEvent p) {
 		PMENode* now = PMHead;
-		while (now != nullptr) {
-			if (now->enable) { now->f(p); }
+		while (now) {
+			if (now->enable) {
+				now->f(p);
+			}
 			now = now->next;
 		}
 	}
 	void broadcast(GroupInviteEvent g) {
-		// TODO 改成链表
 		GINode* now = GHead;
-		while (now != nullptr)  {
+		while (now)  {
 			if (now->enable) { now->f(g); }
 			now = now->next;
 		}
 	}
 	void broadcast(NewFriendRequestEvent g) {
-		// TODO 改成链表
 		NFRENode* now = NFHead;
-		while (now != nullptr) {
+		while (now) {
 			if (now->enable) { now->f(g); }
 			now = now->next;
 		}
 	}
 	void broadcast(MemberJoinEvent g) {
 		MJNode* now = MJHead;
-		while (now != nullptr) {
+		while (now) {
 			if (now->enable) { now->f(g); }
 			now = now->next;
 		}
 	}
 	void broadcast(MemberLeaveEvent g) {
 		MLNode* now = MLHead;
-		while (now != nullptr) {
+		while (now) {
 			if (now->enable) { now->f(g); }
 			now = now->next;
 		}
 	}
 	void broadcast(RecallEvent r) {
 		RNode* now = RHead;
-		while (now != nullptr) {
+		while (now) {
 			if (now->enable) { now->f(r); }
 			now = now->next;
 		}
 	}
 	void broadcast(SchedulingEvent g) {
 		SNode* now = SHead;
-		while (now != nullptr) {
+		while (now) {
 			if (now->enable) { now->f(g); }
 			now = now->next;
 		}
 	}
 	void broadcast(BotJoinGroupEvent b) {
 		BJNode* now = BHead;
-		while (now != nullptr) {
+		while (now) {
 			if (now->enable) { now->f(b); }
 			now = now->next;
 		}
@@ -1197,11 +1176,6 @@ public:
 
 	~Event();
 };
-
-//取消进程
-inline void releaseThread() {
-		gvm->DetachCurrentThread();
-	}
 
 /*声明全局监听对象(广播源)*/
 extern Event* procession;

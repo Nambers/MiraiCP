@@ -39,6 +39,59 @@ Config::~Config() {
 	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
 }
 
+threadManager::threadManager() {
+	this->_threads = std::map <std::string, t>();
+}
+void threadManager::setEnv(JNIEnv* e){
+	mtx.lock();
+	if (!this->included(this->getThreadId())) {
+		t tmp;
+		tmp.e = e;
+		tmp.attach = false;
+		this->_threads.insert(std::pair<std::string, t>(this->getThreadId(), tmp));
+	}else{
+		this->_threads[this->getThreadId()].e = e;
+	}
+	mtx.unlock();
+}
+void threadManager::newEnv(char* threadName){
+	JNIEnv* env = nullptr;
+	JavaVMAttachArgs args{
+		JNIVersion,
+		threadName,
+		NULL
+	};
+	gvm->AttachCurrentThread((void**)&env, &args);
+	t tmp;
+	tmp.e = env;
+	tmp.attach = true;
+	this->_threads.insert(std::pair<std::string, t>(this->getThreadId(), tmp));
+	logger->Info("refresh env");
+};
+void threadManager::detach(){
+	bool att = false;
+	mtx.lock();
+	if (this->included(this->getThreadId())) {
+		att = this->_threads[this->getThreadId()].attach;
+		this->_threads.erase(this->getThreadId());
+		if (att)
+			gvm->DetachCurrentThread();
+	}
+	else {
+		logger->Error("zbc");
+	}
+	mtx.unlock();
+}
+JNIEnv* threadManager::getEnv(){
+	mtx.lock();
+	if (!this->included(getThreadId())) {
+		this->newEnv();
+	}
+	JNIEnv* tmp = this->_threads[this->getThreadId()].e;
+	mtx.unlock();
+	return tmp;
+}
+
 /*
 日志类实现
 throw: InitException 即找不到签名
