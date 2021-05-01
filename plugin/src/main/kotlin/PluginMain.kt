@@ -36,7 +36,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.5.1"
+        version = "2.6.1"
     )
 ) {
     private val json = Json{
@@ -48,7 +48,7 @@ object PluginMain : KotlinPlugin(
     lateinit var AIbot: Bot
     lateinit var cpp: CPP_lib
     lateinit var gson: Gson
-    private  val now_tag = "v2.5.1"
+    private  val now_tag = "v2.6.1"
     // 临时解决方案
     private var finvite = ArrayList<NewFriendRequestEvent>(0)
     private var ginvite = ArrayList<BotInvitedJoinGroupRequestEvent>(0)

@@ -3,10 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 plugins {
     java
     application
-    val kotlinVersion = "1.4.30"
-    kotlin("jvm") version kotlinVersion
+    kotlin("jvm") version "1.4.32"
     id("com.github.johnrengelman.shadow") version "7.0.0"
-
 }
 
 tasks {
@@ -19,13 +17,14 @@ application {
     mainClassName = "tech.eritquearcus.miraicp.KotlinMainKt"
 }
 group = "tech.eritquearcus"
-version = "2.5.1"
+version = "2.6.1"
 
 repositories {
     maven{ url =uri("https://maven.aliyun.com/nexus/content/groups/public/")}
     jcenter()
     mavenCentral()
     mavenLocal()
+    google()
 }
 
 tasks.withType(KotlinJvmCompile::class.java) {

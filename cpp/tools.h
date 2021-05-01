@@ -1056,6 +1056,21 @@ private:
 	GTMENode* GTMTail = GTMHead;
 	
 public:
+	class NodeHandle {
+	public:
+		bool* enable;
+		NodeHandle(bool* a) {
+			this->enable = a;
+		}
+	};
+	class SuperNodeHandle {
+	public:
+		PMENode* enable;
+		SuperNodeHandle(PMENode* a) {
+			this->enable = a;
+		}
+	};
+
 	/*
 	* ¹ã²¥º¯ÊıÖØÔØ
 	*/
@@ -1137,85 +1152,85 @@ public:
 	* ¼àÌıº¯ÊıÖØÔØ
 	*/
 
-	GMENode* registerEvent(GME f) {
+	NodeHandle registerEvent(GME f) {
 		GMENode* node = new GMENode();
 		node->f = f;
 		GMTail->next = node;
 		GMTail->nextNode = node;
 		GMTail = node;
-		return node;
+		return NodeHandle(&node->enable);
 	}
-	PMENode* registerEvent(PME f) {
+	NodeHandle registerEvent(PME f) {
 		PMENode* node = new PMENode();
 		node->f = f;
 		PMTail->next = node;
 		PMTail->nextNode = node;
 		PMTail = node;
-		return node;
+		return NodeHandle(&node->enable);
 	}
-	GINode* registerEvent(GI f) {
+	NodeHandle registerEvent(GI f) {
 		GINode* node = new GINode();
 		node->f = f;
 		GTail->next = node;
 		GTail->nextNode = node;
 		GTail = node;
-		return node;
+		return NodeHandle(&node->enable);
 	}
-	NFRENode* registerEvent(NFRE f) {
+	NodeHandle registerEvent(NFRE f) {
 		NFRENode* node = new NFRENode();
 		node->f = f;
 		NFTail->next = node;
 		NFTail->nextNode = node;
 		NFTail = node;
-		return node;
+		return NodeHandle(&node->enable);
 	}
-	MJNode* registerEvent(MJ f) {
+	NodeHandle registerEvent(MJ f) {
 		MJNode* node = new MJNode();
 		node->f = f;
 		MJTail->next = node;
 		MJTail->nextNode = node;
 		MJTail = node;
-		return node;
+		return NodeHandle(&node->enable);
 	}
-	MLNode* registerEvent(ML f) {
+	NodeHandle registerEvent(ML f) {
 		MLNode* node = new MLNode();
 		node->f = f;
 		MLTail->next = node;
 		MLTail->nextNode = node;
 		MLTail = node;
-		return node;
+		return NodeHandle(&node->enable);
 	}
-	RNode* registerEvent(R r) {
+	NodeHandle registerEvent(R r) {
 		RNode* node = new RNode();
 		node->f = r;
 		RTail->next = node;
 		RTail->nextNode = node;
 		RTail = node;
-		return node;
+		return NodeHandle(&node->enable);
 	}
-	SNode* registerEvent(S f) {
+	NodeHandle registerEvent(S f) {
 		SNode* node = new SNode();
 		node->f = f;
 		STail->next = node;
 		STail->nextNode = node;
 		STail = node;
-		return node;
+		return NodeHandle(&node->enable);
 	}
-	BJNode* registerEvent(BJ f) {
+	NodeHandle registerEvent(BJ f) {
 		BJNode* node = new BJNode();
 		node->f = f;
 		BTail->next = node;
 		BTail->nextNode = node;
 		BTail = node;
-		return node;
+		return NodeHandle(&node->enable);
 	}
-	GTMENode* registerEvent(GTME f) {
+	NodeHandle registerEvent(GTME f) {
 		GTMENode* node = new GTMENode();
 		node->f = f;
 		GTMTail->next = node;
 		GTMTail->nextNode = node;
 		GTMTail = node;
-		return node;
+		return NodeHandle(&node->enable);
 	}
 
 	~Event();
