@@ -5,7 +5,7 @@ plugins {
     application
     val kotlinVersion = "1.4.30"
     kotlin("jvm") version kotlinVersion
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 
 }
 
