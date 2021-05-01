@@ -247,7 +247,6 @@ MessageSource Friend::SendMsg(std::string msg, JNIEnv* env){
 	if (re == "E1") {
 		throw FriendException();
 	}
-	logger->Info("C-Source:\""+re+"\"");
 	return MessageSource(re);
 }
 
