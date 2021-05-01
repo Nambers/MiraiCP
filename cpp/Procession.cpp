@@ -28,7 +28,7 @@ void onEnable() {
 		e.accept();
 		});
 	// 消息事件
-	procession->registerEvent([](PrivateMessageEvent e) {
+	Event::NodeHandle handle = procession->registerEvent([](PrivateMessageEvent e) {
 		std::thread func1(func, e.sender.id);
 		e.sender.SendMsg(e.message);
 		std::vector <std::string> temp = Image::GetImgIdsFromMiraiCode(e.message);
@@ -38,7 +38,7 @@ void onEnable() {
 			e.sender.SendMsg(a);
 		}
 		});
-	procession->registerEvent([](GroupMessageEvent e) {
+	procession->registerEvent([=](GroupMessageEvent e) {
 		e.group.SendMsg("HI");
 		e.group.SendMiraiCode(At(e.sender));
 		e.group.SendMsg("撤回测试").recall();
@@ -51,6 +51,8 @@ void onEnable() {
 				ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
 				ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
 			}).sendTo(&e.group);
+		// 关闭上面的私聊消息监听器
+		*handle.enable = false;
 		});
 	procession->registerEvent([](GroupTempMessageEvent e) {
 		e.sender.SendMsg("hi");
