@@ -52,7 +52,7 @@ void onEnable() {
 				ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
 			}).sendTo(&e.group);
 		// 关闭上面的私聊消息监听器
-		*handle.enable = false;
+		handle.stop();
 		});
 	procession->registerEvent([](GroupTempMessageEvent e) {
 		e.sender.SendMsg("hi");
