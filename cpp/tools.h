@@ -1057,10 +1057,17 @@ private:
 	
 public:
 	class NodeHandle {
-	public:
+	private:
 		bool* enable;
+	public:
 		NodeHandle(bool* a) {
 			this->enable = a;
+		}
+		void stop() const{
+			*enable = false;
+		}
+		void consume() const {
+			*enable = true;
 		}
 	};
 	class SuperNodeHandle {

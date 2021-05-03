@@ -58,16 +58,14 @@ void onDisable() {
 从`v2.4.2`开始，记得自行新建Member对象group对象friend对象和事件刚开始都要调用`init()`方法初始化(为了更好的捕获抛出的异常)
 从`v2.5.0`开始，不需要`init()`
 ## 多线程
+需在任务结束时调用manager->detach();
 ```C++
 void func() {
-	//重新赋值genv以确保组件可用
-	getEnv();
-	
 	/*执行操作*/
 	Friend(1111).SendMsg("hi");
 	
-	//在jvm结束此线程，env失效
-	gvm->DetachCurrentThread();
+	// 结束线程
+	manager->detach();
 }
 void onEnable() {
 	procession->registerEvent([](GroupMessageEvent e) {

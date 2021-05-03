@@ -77,9 +77,6 @@ void threadManager::detach(){
 		if (att)
 			gvm->DetachCurrentThread();
 	}
-	else {
-		logger->Error("zbc");
-	}
 	mtx.unlock();
 }
 JNIEnv* threadManager::getEnv(){
