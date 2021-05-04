@@ -743,7 +743,7 @@ public:
 	void accept() {
 		this->accept(this->source);
 	}
-	GroupInviteEvent(unsigned long long gi, std::string gn, unsigned long long ii, std::string inick, std::string s) {
+	GroupInviteEvent(unsigned long long ii, std::string inick, unsigned long long gi, std::string gn, std::string s) {
 		this->inviterNick = inick;
 		this->groupid = gi;
 		this->inviterid = ii;
@@ -802,12 +802,12 @@ public:
 	//目标群
 	Group group;
 	//邀请人, 当type = 1时存在，否则则和member变量相同
-	Member invitor;
+	Member inviter;
 	MemberJoinEvent(int t, Member m, Group g, Member i) {
 		this->type = t;
 		this->member = m;
 		this->group = g;
-		this->invitor = i;
+		this->inviter = i;
 	}
 };
 
@@ -873,11 +873,11 @@ public:
 	//进入的群
 	Group group;
 	//当type=2时存在，为邀请人，否则为NULL
-	Member invitor = Member();
+	Member inviter = Member();
 	BotJoinGroupEvent(int t, Group g, Member i) {
 		this->type = t;
 		this->group = g;
-		this->invitor = i;
+		this->inviter = i;
 	}
 };
 

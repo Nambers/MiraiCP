@@ -433,9 +433,9 @@ object KotlinMain {
         val bot = BotFactory.newBot(id, pass) {
             fileBasedDeviceInfo()
         }.alsoLogin()
-        cpp = CPP_lib()
         AIbot = bot
         logger=bot.logger
+        cpp = CPP_lib()
         if(cpp.ver != now_tag){
             logger.error("警告:当前MiraiCP框架版本($now_tag)和加载的C++ SDK(${cpp.ver})不一致")
         }

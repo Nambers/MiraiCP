@@ -21,13 +21,19 @@ void onEnable() {
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
 	// 邀请事件
+	// 好友申请
 	procession->registerEvent([](NewFriendRequestEvent e) {
 		e.accept();
+		Friend(e.senderid).SendMsg("HI");
 		});
+	// 邀请加群
 	procession->registerEvent([](GroupInviteEvent e) {
 		e.accept();
+		logger->Info("x");
+		Group(e.groupid).SendMsg("被" + e.inviterNick + "邀请进入" + e.groupName);
 		});
 	// 消息事件
+	// 监听私聊
 	Event::NodeHandle handle = procession->registerEvent([](PrivateMessageEvent e) {
 		std::thread func1(func, e.sender.id);
 		e.sender.SendMsg(e.message);
@@ -38,22 +44,27 @@ void onEnable() {
 			e.sender.SendMsg(a);
 		}
 		});
+	// 监听群信息
 	procession->registerEvent([=](GroupMessageEvent e) {
-		e.group.SendMsg("HI");
-		e.group.SendMiraiCode(At(e.sender));
-		e.group.SendMsg("撤回测试").recall();
-		// 可以用new传miraicodeable指针进去，也可以用.toMiraiCode()
-		e.group.SendMiraiCode(new LightApp(LightAppStyle1()));
-		e.group.SendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
-		e.group.SendMiraiCode(new LightApp(LightAppStyle3()));
-		ForwardMessage(&e.group,
-			{
-				ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-				ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
-			}).sendTo(&e.group);
+		// 发送文本信息
+		// e.group.SendMsg("HI");
+		// 发送MiraiCode信息，At
+		// e.group.SendMiraiCode(At(e.sender));
+		// 撤回测试
+		// e.group.SendMsg("撤回测试").recall();
+		// 发送xml卡片测试,可以用new传miraicodeable指针进去，也可以用.toMiraiCode()
+		// e.group.SendMiraiCode(new LightApp(LightAppStyle1()));
+		// e.group.SendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
+		// e.group.SendMiraiCode(new LightApp(LightAppStyle3()));
+		// ForwardMessage(&e.group,
+		//	{
+		//		ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
+		//		ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
+		//	}).sendTo(&e.group);
 		// 关闭上面的私聊消息监听器
-		handle.stop();
+		// handle.stop();
 		});
+	// 监听群临时会话
 	procession->registerEvent([](GroupTempMessageEvent e) {
 		e.sender.SendMsg("hi");
 		});

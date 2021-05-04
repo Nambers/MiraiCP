@@ -20,8 +20,8 @@ class Config {
     data class GroupInvite(
         val groupid: Long,
         val groupname: String,
-        val invitorid: Long,
-        val invitorname: String,
+        val inviterid: Long,
+        val invitername: String,
         val source: String,
         val type: Int = 3
     )
@@ -43,7 +43,7 @@ class Config {
          */
         val jointype: Int,
         //如果没有则为0
-        val invitorid: Long = 0,
+        val inviterid: Long = 0,
         val type: Int = 5
     )
     //群成员退出
@@ -77,7 +77,7 @@ class Config {
     data class BotJoinGroup(
         val etype: Int,
         val groupid: Long,
-        val invitorid: Long,
+        val inviterid: Long,
         val type: Int = 9
     )
     data class ForwardMessageJson (
