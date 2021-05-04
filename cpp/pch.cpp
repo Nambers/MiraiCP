@@ -93,8 +93,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 		case 3:
 			//群聊邀请
 			procession->broadcast(GroupInviteEvent(
-				root["invitorid"].asLargestUInt(),
-				root["invitorname"].asCString(),
+				root["inviterid"].asLargestUInt(),
+				root["invitername"].asCString(),
 				root["groupid"].asLargestUInt(),
 				root["groupname"].asCString(),
 				root["source"].asCString()
@@ -115,7 +115,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 					root["groupid"].asLargestUInt()),
 				Group(root["groupid"].asLargestUInt()),
 				Member(
-					root["invitorid"].asLargestUInt(),
+					root["inviterid"].asLargestUInt(),
 					root["groupid"].asLargestUInt())
 			));
 			break;
@@ -150,7 +150,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			procession->broadcast(BotJoinGroupEvent(
 				root["etype"].asInt(),
 				Group(root["groupid"].asLargestUInt()),
-				(root["etyoe"].asInt() == 2?Member(root["invitorid"].asLargestUInt(),root["groupid"].asLargestUInt()):Member())
+				(root["etyoe"].asInt() == 2?Member(root["inviterid"].asLargestUInt(),root["groupid"].asLargestUInt()):Member())
 			));
 			break;
 		case 10:
