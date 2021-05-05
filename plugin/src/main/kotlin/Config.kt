@@ -2,6 +2,16 @@ package tech.eritquearcus.miraicp
 import com.google.gson.annotations.SerializedName
 
 class Config {
+    data class Contact(
+        val type: Int,
+        val id: Long,
+        val groupid: Long,
+        val nickornamecard: String
+    )
+    data class SendRequest(
+        val contact: Contact,
+        val content:String
+    )
     //消息事件
     data class GroupMessage(
         val groupid: Long,
