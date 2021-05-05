@@ -67,6 +67,10 @@ void onEnable() {
 		//	}).sendTo(&e.group);
 		// 关闭上面的私聊消息监听器
 		// handle.stop();
+		// 当前bot属性
+		e.sender.SendMsg(e.bot.nick());
+		e.sender.SendMsg(e.bot.FriendListToString());
+		e.sender.SendMsg(e.bot.GroupListToString());
 		});
 	// 监听群临时会话
 	procession->registerEvent([](GroupTempMessageEvent e) {

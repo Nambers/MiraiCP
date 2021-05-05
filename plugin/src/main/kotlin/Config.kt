@@ -18,12 +18,14 @@ class Config {
         val senderid: Long,
         val message: String,
         val Source: String,
+        val botid: Long,
         val type: Int = 1
     )
     data class PrivateMessage(
         val senderid: Long,
         val message: String,
         val Source: String,
+        val botid: Long,
         val type: Int = 2
     )
     //群邀请
@@ -33,6 +35,7 @@ class Config {
         val inviterid: Long,
         val invitername: String,
         val source: String,
+        val botid: Long,
         val type: Int = 3
     )
     //好友邀请
@@ -40,6 +43,7 @@ class Config {
         val friendid: Long,
         val message: String,
         val eventhandle: String,
+        val botid: Long,
         val type: Int = 4
     )
     //群成员加入
@@ -54,6 +58,7 @@ class Config {
         val jointype: Int,
         //如果没有则为0
         val inviterid: Long = 0,
+        val botid: Long,
         val type: Int = 5
     )
     //群成员退出
@@ -67,6 +72,7 @@ class Config {
         val leavetype: Int,
         //如果没有则为0
         val operatorid: Long = 0,
+        val botid: Long,
         val type: Int = 6
     )
     //撤回
@@ -78,17 +84,28 @@ class Config {
         val internalids: String,
         val time: Int,
         val groupid: Long = 0,
+        val botid: Long,
         val type: Int = 7
     )
     data class TimeOutEvent(
         val message: String,
+        val botid: Long,
         val type: Int = 8
     )
     data class BotJoinGroup(
         val etype: Int,
         val groupid: Long,
         val inviterid: Long,
+        val botid: Long,
         val type: Int = 9
+    )
+    data class GroupTempMessage(
+        val groupid: Long,
+        val senderid: Long,
+        val message: String,
+        val Source: String,
+        val botid: Long,
+        val type: Int = 10
     )
     data class ForwardMessageJson (
         @SerializedName("type") val type : Int,
@@ -108,11 +125,8 @@ class Config {
         @SerializedName("time") val time : Int,
         @SerializedName("message") val message : String
     )
-    data class GroupTempMessage(
-        val groupid: Long,
-        val senderid: Long,
-        val message: String,
-        val Source: String,
-        val type: Int = 10
+    data class ContactInfo(
+        val nickornamecard: String,
+        val avatarUrl: String
     )
 }
