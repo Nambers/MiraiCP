@@ -25,6 +25,7 @@ import java.io.File
 import java.lang.Long.valueOf
 import java.net.URL
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 
 object KotlinMain {
@@ -38,6 +39,7 @@ object KotlinMain {
     private lateinit var AIbot: Bot
     private lateinit var cpp: CPP_lib
     private lateinit var logger:MiraiLogger
+    private val gson = Gson()
     // 临时解决方案
     private var finvite = ArrayList<NewFriendRequestEvent>(0)
     private var ginvite = ArrayList<BotInvitedJoinGroupRequestEvent>(0)
@@ -109,21 +111,21 @@ object KotlinMain {
         return Send0(MiraiCode.deserializeMiraiCode(message), c)
     }
 
-    fun GetNickOrNameCard(c: Config.Contact):String{
+    fun RefreshInfo(c: Config.Contact): String{
         when(c.type){
             1->{
                 val f = AIbot.getFriend(c.id) ?: let {
                     logger.error("找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}")
                     return "E1"
                 }
-                return f.nick
+                return gson.toJson(Config.ContactInfo(f.nick, f.avatarUrl))
             }
             2->{
                 val g = AIbot.getGroup(c.id)?:let{
                     logger.error("取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}")
                     return "E1"
                 }
-                return g.name
+                return gson.toJson(Config.ContactInfo(g.name, g.avatarUrl))
             }
             3->{
                 for (a in friend_cache) {
@@ -136,11 +138,14 @@ object KotlinMain {
                     logger.error("取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}")
                     return "E1"
                 }
-                val member = group[c.id] ?: let {
+                val m = group[c.id] ?: let {
                     logger.error("取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}")
                     return "E2"
                 }
-                return member.nameCard
+                return gson.toJson(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
+            }
+            4->{
+                return gson.toJson(Config.ContactInfo(AIbot.nick, AIbot.avatarUrl))
             }
             else->{
                 return "EE"
@@ -158,7 +163,22 @@ object KotlinMain {
         g.members.forEach{
             m.add(it.id)
         }
-        return Gson().toJson(m)
+        return gson.toJson(m)
+    }
+
+    fun QueryBFL(): String{
+        val tmp = ArrayList<Long>()
+        AIbot.friends.forEach {
+            tmp.add(it.id)
+        }
+        return gson.toJson(tmp)
+    }
+    fun QueryBGL(): String{
+        val tmp = ArrayList<Long>()
+        AIbot.groups.forEach {
+            tmp.add(it.id)
+        }
+        return gson.toJson(tmp)
     }
 
     //图片部分实现
@@ -245,7 +265,8 @@ object KotlinMain {
             cpp.Event(
                 Gson().toJson(
                     Config.TimeOutEvent(
-                        id
+                        id,
+                        AIbot.id
                     )
                 )
             )
@@ -417,7 +438,6 @@ object KotlinMain {
         if(cpp.ver != now_tag){
             logger.error("警告:当前MiraiCP框架版本($now_tag)和加载的C++ SDK(${cpp.ver})不一致")
         }
-        val gson = Gson()
         val globalEventChannel = bot.eventChannel
         logger.info(cpp.ver)//输出版本
         //配置文件目录 "${dataFolder.absolutePath}/"
@@ -429,7 +449,8 @@ object KotlinMain {
                         this.sender.id,
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(MessageSource.Serializer,
-                            this.message[MessageSource]!!)
+                            this.message[MessageSource]!!),
+                        AIbot.id
                     )
                 )
             )
@@ -443,7 +464,8 @@ object KotlinMain {
                         this.group.id,
                         this.sender.id,
                         this.message.serializeToMiraiCode(),
-                        json.encodeToString(MessageSource.Serializer,this.message[MessageSource]!!)
+                        json.encodeToString(MessageSource.Serializer,this.message[MessageSource]!!),
+                        AIbot.id
                     )
                 )
             )
@@ -456,7 +478,8 @@ object KotlinMain {
                         this.group.id,
                         this.member.id,
                         1,
-                        if (this.operator?.id == null) this.bot.id else this.operator!!.id
+                        if (this.operator?.id == null) this.bot.id else this.operator!!.id,
+                        AIbot.id
                     )
                 )
             )
@@ -470,7 +493,8 @@ object KotlinMain {
                         this.group.id,
                         this.member.id,
                         2,
-                        this.member.id
+                        this.member.id,
+                        AIbot.id
                     )
                 )
             )
@@ -483,7 +507,8 @@ object KotlinMain {
                         this.group.id,
                         this.member.id,
                         3,
-                        this.member.id
+                        this.member.id,
+                        AIbot.id
                     )
                 )
             )
@@ -495,7 +520,8 @@ object KotlinMain {
                         this.group.id,
                         this.member.id,
                         2,
-                        this.member.id
+                        this.member.id,
+                        AIbot.id
                     )
                 )
             )
@@ -507,7 +533,8 @@ object KotlinMain {
                         this.group.id,
                         this.member.id,
                         1,
-                        this.invitor.id
+                        this.invitor.id,
+                        AIbot.id
                     )
                 )
             )
@@ -520,7 +547,8 @@ object KotlinMain {
                     Config.NewFriendRequest(
                         this.fromId,
                         this.message,
-                        (finvite.size - 1).toString()
+                        (finvite.size - 1).toString(),
+                        AIbot.id
                     )
                 )
             )
@@ -535,7 +563,9 @@ object KotlinMain {
                         this.operatorId,
                         this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
-                        this.messageTime
+                        this.messageTime,
+                        0,
+                        AIbot.id
                     )
                 )
             )
@@ -551,7 +581,8 @@ object KotlinMain {
                         this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageTime,
-                        this.group.id
+                        this.group.id,
+                        AIbot.id
                     )
                 )
             )
@@ -563,7 +594,8 @@ object KotlinMain {
                     Config.BotJoinGroup(
                         1,
                         this.groupId,
-                        this.invitor.id
+                        this.invitor.id,
+                        AIbot.id
                     )
                 )
             )
@@ -574,7 +606,8 @@ object KotlinMain {
                     Config.BotJoinGroup(
                         2,
                         this.groupId,
-                        0
+                        0,
+                        AIbot.id
                     )
                 )
             )
@@ -585,7 +618,8 @@ object KotlinMain {
                     Config.BotJoinGroup(
                         3,
                         this.groupId,
-                        0
+                        0,
+                        AIbot.id
                     )
                 )
             )
@@ -600,7 +634,8 @@ object KotlinMain {
                         this.groupName,
                         this.invitorId,
                         this.invitorNick,
-                        (ginvite.size).toString()
+                        (ginvite.size).toString(),
+                        AIbot.id
                     )
                 )
             )
@@ -615,7 +650,8 @@ object KotlinMain {
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(MessageSource.Serializer,
                             this.source
-                        )
+                        ),
+                        AIbot.id
                     )
                 )
             )

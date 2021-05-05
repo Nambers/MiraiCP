@@ -66,7 +66,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				Group(root["groupid"].asLargestUInt()),
 				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt()),
 				root["message"].asCString(),
-				MessageSource(root["Source"].asCString())
+				MessageSource(root["Source"].asCString()),
+				root["botid"].asLargestUInt()
 			)
 			);
 			break;
@@ -76,7 +77,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			procession->broadcast(PrivateMessageEvent(
 				Friend(root["senderid"].asLargestUInt()),
 				root["message"].asCString(),
-				MessageSource(root["Source"].asCString())
+				MessageSource(root["Source"].asCString()),
+				root["botid"].asLargestUInt()
 			)
 			);
 			break;
@@ -88,7 +90,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				root["invitername"].asCString(),
 				root["groupid"].asLargestUInt(),
 				root["groupname"].asCString(),
-				root["source"].asCString()
+				root["source"].asCString(),
+				root["botid"].asLargestUInt()
 			));
 			break;
 		case 4:
@@ -96,7 +99,9 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			procession->broadcast(NewFriendRequestEvent(
 				root["friendid"].asLargestUInt(),
 				root["message"].asCString(),
-				root["eventhandle"].asCString()));
+				root["eventhandle"].asCString(),
+				root["botid"].asLargestUInt()
+			));
 			break;
 		case 5:
 			//新成员加入
@@ -107,7 +112,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				Group(root["groupid"].asLargestUInt()),
 				Member(
 					root["inviterid"].asLargestUInt(),
-					root["groupid"].asLargestUInt())
+					root["groupid"].asLargestUInt()),
+				root["botid"].asLargestUInt()
 			));
 			break;
 		case 6:
@@ -119,7 +125,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				Group(root["groupid"].asLargestUInt()),
 				Member(
 					root["operatorid"].asLargestUInt(),
-					root["groupid"].asLargestUInt())
+					root["groupid"].asLargestUInt()),
+				root["botid"].asLargestUInt()
 			));
 			break;
 		case 7:
@@ -130,18 +137,22 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				root["operatorid"].asLargestUInt(),
 				root["ids"].asCString(),
 				root["internalids"].asCString(),
+				root["botid"].asLargestUInt(),
 				root["groupid"].asLargestUInt()
 			));
 			break;
 		case 8:
 			procession->broadcast(SchedulingEvent(
-				root["message"].asCString()));
+				root["message"].asCString(),
+				root["botid"].asLargestUInt()
+			));
 			break;
 		case 9:
 			procession->broadcast(BotJoinGroupEvent(
 				root["etype"].asInt(),
 				Group(root["groupid"].asLargestUInt()),
-				(root["etyoe"].asInt() == 2?Member(root["inviterid"].asLargestUInt(),root["groupid"].asLargestUInt()):Member())
+				(root["etyoe"].asInt() == 2?Member(root["inviterid"].asLargestUInt(),root["groupid"].asLargestUInt()):Member()),
+				root["botid"].asLargestUInt()
 			));
 			break;
 		case 10:
@@ -149,9 +160,9 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				Group(root["groupid"].asLargestUInt()),
 				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt()),
 				root["message"].asCString(),
-				MessageSource(root["Source"].asCString())
-			)
-			);
+				MessageSource(root["Source"].asCString()),
+				root["botid"].asLargestUInt()
+			));
 			break;
 		}
 		return returnNull();
