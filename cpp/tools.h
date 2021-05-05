@@ -35,7 +35,7 @@ class Logger {
 private:
 	jclass CPP_lib = NULL;
 	jmethodID log = NULL;
-	void send0(std::string, JNIEnv*, int);
+	void log0(std::string, JNIEnv*, int);
 public:
 	void init(JNIEnv* = manager->getEnv());
 	/*发送普通日志*/
@@ -57,8 +57,10 @@ public:
 	jclass initexception = NULL;
 	jmethodID recallMsgM = NULL;
 	jmethodID Send = NULL;
-	jmethodID NickorName = NULL;
+	jmethodID refreshInfo = NULL;
 	jmethodID uploadImg = NULL;
+	jmethodID queryBotFriends = NULL;
+	jmethodID queryBotGroups= NULL;
 	/*图像类*/
 	jmethodID Query = NULL;
 	/*好友类*/
@@ -128,6 +130,10 @@ public:
 	std::string JsonToString(const Json::Value& root);
 	// 从string格式化json
 	Json::Value StringToJson(std::string);
+	// vector格式化输出
+	std::string VectorToString(std::vector<unsigned long long>);
+	// 从string格式化到vector
+	std::vector<unsigned long long> StringToVector(std::string);
 };
 
 /*静态声明工具对象*/
@@ -468,6 +474,7 @@ protected:
 	unsigned long long _id;
 	unsigned long long _groupid;
 	std::string _nickOrNameCard;
+	std::string _avatarUrl;
 public:
 	Contact() {
 		_type = 0;
@@ -489,6 +496,8 @@ public:
 	unsigned long long groupid() { return this->_groupid; }
 	/*群名称，群成员群名片，或好友昵称*/
 	std::string nickOrNameCard() { return this->_nickOrNameCard; };
+	// 头像url地址
+	std::string avatarUrl() { return this->_avatarUrl; };
 	Json::Value toJsonValue() {
 		Json::Value root;
 		root["type"] = type();
@@ -519,11 +528,22 @@ public:
 		root["contact"] = c->toJsonValue();
 		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->Send, tools.str2jstring(tools.JsonToString(root).c_str(),env), (jboolean)miraicode), env);
 	}
-	static std::string getnickornamecard0(Contact* c, JNIEnv* env = manager->getEnv()) {
-		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->NickorName, tools.str2jstring(c->toString().c_str(), env)));
+	static std::string getInfoSource(Contact* c, JNIEnv* env = manager->getEnv()) {
+		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->refreshInfo, tools.str2jstring(c->toString().c_str(), env)));
 	}
 	static std::string uploadImg0(std::string path, Contact* c, JNIEnv* env = manager->getEnv()) {
 		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->uploadImg,tools.str2jstring(path.c_str(), env), tools.str2jstring(c->toString().c_str(), env)));
+	}
+	static struct info {
+		std::string nickornamecard;
+		std::string avatarUrl;
+	};
+	static info info0(std::string source) {
+		info re;
+		Json::Value tmp = tools.StringToJson(source);
+		re.avatarUrl = tmp["avatarUrl"].asCString();
+		re.nickornamecard = tmp["nickornamecard"].asCString();
+		return re;
 	}
 };
 
@@ -603,6 +623,58 @@ public:
 };
 std::string BuildForwardMessage(Contact*, std::initializer_list<ForwardNode>);
 
+class Bot {
+private:
+	bool inited = false;
+	unsigned long long _id;
+	std::string _nick;
+	std::string _avatarUrl;
+	void check() {
+		if (!this->inited) { 
+			refreshInfo(); 
+			this->inited = true;
+		}
+	}
+public:
+	void refreshInfo(JNIEnv* env = manager->getEnv()) {
+		LowLevelAPI::info tmp = LowLevelAPI::info0(tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->refreshInfo, tools.str2jstring(Contact(4, this->_id, 0, "").toString().c_str(), env))));
+		this->_avatarUrl = tmp.avatarUrl;
+		this->_nick = tmp.nickornamecard;
+	}
+	Bot(unsigned long long i) {
+		this->_id = i;
+	}
+	Bot() {}
+	unsigned long long id() {
+		return this->_id;
+	}
+	std::string nick() {
+		check();
+		return this->_nick;
+	}
+	std::string avatarUrl() {
+		return this->_avatarUrl;
+	}
+	std::vector<unsigned long long> getFriendList(JNIEnv* env = manager->getEnv()) {
+		std::string temp = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
+			config->queryBotFriends,
+			(jlong)this->id()));
+		return tools.StringToVector(temp);
+	}
+	std::string FriendListToString() {
+		return tools.VectorToString(getFriendList());
+	}
+	std::vector<unsigned long long> getGroupList(JNIEnv* env = manager->getEnv()) {
+		std::string temp = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
+			config->queryBotGroups,
+			(jlong)this->id()));
+		return tools.StringToVector(temp);
+	}
+	std::string GroupListToString() {
+		return tools.VectorToString(getGroupList());
+	}
+};
+
 /*好友类声明*/
 class Friend:public Contact{
 public:
@@ -679,12 +751,22 @@ public:
 class Group :public Contact {
 public:
 	/*取群成员列表-vector<long>*/
-	std::vector<unsigned long long> getMemberList();
+	std::vector<unsigned long long> getMemberList() {
+		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib,
+			config->QueryML,
+			(jlong)this->id()));
+		if (re == "E1") {
+			throw GroupException();
+		}
+		return tools.StringToVector(re);
+	}
 	/*以string格式取群成员列表
 	格式：
 		每个群成员id间用逗号分隔
 	*/
-	std::string MemberListToString();
+	std::string MemberListToString() {
+		return tools.VectorToString(getMemberList());
+	};
 	//取群主
 	Member getOwner(JNIEnv* = manager->getEnv());
 	//构建以群号构建群对象
@@ -724,8 +806,16 @@ public:
 	return "[mirai:at:" + std::to_string(a) + "]";
 }
 
+ class BotEvent {
+ public:
+	 Bot bot;
+	 BotEvent(unsigned long long botid) {
+		 bot = Bot(botid);
+	 }
+ };
+
 /*群消息事件声明*/
-class GroupMessageEvent {
+class GroupMessageEvent:public BotEvent {
 public:
 	//来源群
 	Group group;
@@ -735,7 +825,7 @@ public:
 	std::string message;
 	//消息源
 	MessageSource messageSource;
-	GroupMessageEvent(Group g, Member f, std::string s, MessageSource s1) {
+	GroupMessageEvent(Group g, Member f, std::string s, MessageSource s1, unsigned long long botid) :BotEvent(botid) {
 		this->group = g;
 		this->sender = f;
 		this->message = s;
@@ -744,7 +834,7 @@ public:
 };
 
 /*私聊消息事件类声明*/
-class PrivateMessageEvent {
+class PrivateMessageEvent : public BotEvent {
 public:
 	//发起人
 	Friend sender;
@@ -752,7 +842,7 @@ public:
 	std::string message;
 	//信息源
 	MessageSource messageSource;
-	PrivateMessageEvent(Friend f, std::string s, MessageSource ms) {
+	PrivateMessageEvent(Friend f, std::string s, MessageSource ms, unsigned long long botid) :BotEvent(botid) {
 		this->sender = f;
 		this->message = s;
 		this->messageSource = ms;
@@ -760,7 +850,7 @@ public:
 };
 
 /*群聊邀请事件类声明*/
-class GroupInviteEvent {
+class GroupInviteEvent: public BotEvent {
 private:
 	std::string source;
 public:
@@ -789,7 +879,7 @@ public:
 	void accept() {
 		this->accept(this->source);
 	}
-	GroupInviteEvent(unsigned long long ii, std::string inick, unsigned long long gi, std::string gn, std::string s) {
+	GroupInviteEvent(unsigned long long ii, std::string inick, unsigned long long gi, std::string gn, std::string s, unsigned long long botid):BotEvent(botid) {
 		this->inviterNick = inick;
 		this->groupid = gi;
 		this->inviterid = ii;
@@ -799,7 +889,7 @@ public:
 };
 
 /*好友申请事件声明*/
-class NewFriendRequestEvent {
+class NewFriendRequestEvent : public BotEvent {
 private:
 	std::string source;
 public:
@@ -826,7 +916,7 @@ public:
 	void accept() {
 		this->accept(this->source);
 	}
-	NewFriendRequestEvent(unsigned long long i, std::string m, std::string s) {
+	NewFriendRequestEvent(unsigned long long i, std::string m, std::string s, unsigned long long botid) :BotEvent(botid) {
 		this->senderid = i;
 		this->message = m;
 		this->source = s;
@@ -834,7 +924,7 @@ public:
 };
 
 /*新群成员加入*/
-class MemberJoinEvent {
+class MemberJoinEvent : public BotEvent {
 public:
 	/*
 	事件类型
@@ -849,7 +939,7 @@ public:
 	Group group;
 	//邀请人, 当type = 1时存在，否则则和member变量相同
 	Member inviter;
-	MemberJoinEvent(int t, Member m, Group g, Member i) {
+	MemberJoinEvent(int t, Member m, Group g, Member i, unsigned long long botid) :BotEvent(botid) {
 		this->type = t;
 		this->member = m;
 		this->group = g;
@@ -858,7 +948,7 @@ public:
 };
 
 /*群成员离开*/
-class MemberLeaveEvent {
+class MemberLeaveEvent : public BotEvent {
 public:
 	/*
 	事件类型
@@ -872,7 +962,7 @@ public:
 	Group group;
 	/*操作人, 主动退出时与member相同，改成员可能是当前bot，operater以与系统operator区分*/
 	Member operater;
-	MemberLeaveEvent(int t, Member m, Group g, Member i) {
+	MemberLeaveEvent(int t, Member m, Group g, Member i, unsigned long long botid) :BotEvent(botid) {
 		this->type = t;
 		this->member = m;
 		this->group = g;
@@ -881,7 +971,7 @@ public:
 };
 
 /*撤回信息*/
-class RecallEvent {
+class RecallEvent : public BotEvent {
 public:
 	/*
 	为1时是好友撤回，为2时为群聊内撤回
@@ -899,8 +989,7 @@ public:
 	std::string internalids = "";
 	//当type是2的时候存在，否则为0
 	unsigned long groupid = 0;
-	RecallEvent() {}
-	RecallEvent(int t, int t2, unsigned long a, unsigned long o, std::string id, std::string ii, unsigned long g = 0) {
+	RecallEvent(int t, int t2, unsigned long a, unsigned long o, std::string id, std::string ii, unsigned long long botid, unsigned long g = 0) :BotEvent(botid) {
 		this->type = t;
 		this->time = t2;
 		this->authorid = a;
@@ -912,7 +1001,7 @@ public:
 };
 
 /*机器人进入某群*/
-class BotJoinGroupEvent {
+class BotJoinGroupEvent : public BotEvent {
 public:
 	//1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
 	int type;
@@ -920,14 +1009,15 @@ public:
 	Group group;
 	//当type=2时存在，为邀请人，否则为NULL
 	Member inviter = Member();
-	BotJoinGroupEvent(int t, Group g, Member i) {
+	BotJoinGroupEvent(int t, Group g, Member i, unsigned long long botid) :BotEvent(botid) {
 		this->type = t;
 		this->group = g;
 		this->inviter = i;
 	}
 };
 
-class GroupTempMessageEvent {
+// 群临时会话
+class GroupTempMessageEvent : public BotEvent {
 public:
 	//来源群
 	Group group;
@@ -937,7 +1027,7 @@ public:
 	std::string message;
 	//消息源
 	MessageSource messageSource;
-	GroupTempMessageEvent(Group g, Member f, std::string s, MessageSource s1) {
+	GroupTempMessageEvent(Group g, Member f, std::string s, MessageSource s1, unsigned long long botid) :BotEvent(botid) {
 		this->group = g;
 		this->sender = f;
 		this->message = s;
@@ -957,12 +1047,12 @@ inline void SetScheduling(long time, std::initializer_list<std::string> args) {
 }
 
 /*定时任务执行*/
-class SchedulingEvent {
+class SchedulingEvent:BotEvent {
 public:
 	void init() {};
 	/*自定义id标识符*/
 	std::vector<std::string> ids;
-	SchedulingEvent(std::string str) {
+	SchedulingEvent(std::string str, unsigned long long botid):BotEvent(botid) {
 		const auto rawJsonLength = static_cast<int>(str.length());
 		Json::String err;
 		Json::Value root;
