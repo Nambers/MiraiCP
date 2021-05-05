@@ -1,5 +1,4 @@
 # Welcome to MiraiCP
-![License](https://img.shields.io/github/license/Nambers/MiraiCP)  ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP) ![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)
 
 >[中文](https://github.com/Nambers/MiraiCP/blob/master/README.md)
 >
