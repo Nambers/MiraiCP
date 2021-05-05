@@ -12,7 +12,7 @@ void Config::Init(JNIEnv* env) {
 	}
 	this->Send = env->GetStaticMethodID(CPP_lib, "KSend", "(Ljava/lang/String;Z)Ljava/lang/String;");
 	this->Query = env->GetStaticMethodID(CPP_lib, "KQueryImgUrl", "(Ljava/lang/String;)Ljava/lang/String;");
-	this->NickorName = env->GetStaticMethodID(CPP_lib, "KGetNickOrNameCard", "(Ljava/lang/String;)Ljava/lang/String;");
+	this->refreshInfo = env->GetStaticMethodID(CPP_lib, "KRefreshInfo", "(Ljava/lang/String;)Ljava/lang/String;");
 	this->Schedule = env->GetStaticMethodID(CPP_lib, "KSchedule", "(JLjava/lang/String;)V");
 	this->Mute = env->GetStaticMethodID(CPP_lib, "KMuteM", "(JJI)Ljava/lang/String;");
 	this->QueryP = env->GetStaticMethodID(CPP_lib, "KQueryM", "(JJ)Ljava/lang/String;");
@@ -25,6 +25,8 @@ void Config::Init(JNIEnv* env) {
 	this->buildforward = env->GetStaticMethodID(config->CPP_lib, "KBuildforward", "(Ljava/lang/String;)Ljava/lang/String;");
 	this->NFR = env->GetStaticMethodID(config->CPP_lib, "KNfroperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
 	this->GI = env->GetStaticMethodID(config->CPP_lib, "KGioperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
+	this->queryBotFriends = env->GetStaticMethodID(config->CPP_lib, "KQueryBFL", "(J)Ljava/lang/String;");
+	this->queryBotGroups = env->GetStaticMethodID(config->CPP_lib, "KQueryBGL", "(J)Ljava/lang/String;");
 }
 Config::~Config() {
 	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
@@ -94,17 +96,17 @@ void Logger::init(JNIEnv* env){
 		throw InitException("logger³õÊ¼»¯´íÎó", 2);
 	}
 }
-void Logger::send0(std::string log, JNIEnv* env, int level) {
+void Logger::log0(std::string log, JNIEnv* env, int level) {
 	env->CallStaticVoidMethod(config->CPP_lib, this->log, tools.str2jstring(log.c_str()), (jint)level);
 }
 void Logger::Warning(std::string log, JNIEnv* env) {
-	this->send0(log, env, 1);
+	this->log0(log, env, 1);
 }
 void Logger::Error(std::string log, JNIEnv* env) {
-	this->send0(log, env, 2);
+	this->log0(log, env, 2);
 }
 void Logger::Info(std::string log, JNIEnv* env) {
-	this->send0(log, env, 0);
+	this->log0(log, env, 0);
 }
 Logger::~Logger() {
 	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
@@ -201,11 +203,13 @@ std::string Image::toMiraiCode() {
 Friend::Friend(unsigned long long id, JNIEnv* env) {
 	this->_type = 1;
 	this->_id = id;
-	std::string temp = LowLevelAPI::getnickornamecard0(this, env);
+	std::string temp = LowLevelAPI::getInfoSource(this, env);
 	if (temp == "E1") {
 		throw FriendException();
 	}
-	this->_nickOrNameCard = temp;
+	LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
+	this->_nickOrNameCard = tmp.nickornamecard;
+	this->_avatarUrl = tmp.avatarUrl;
 }
 Image Friend::uploadImg(std::string filename, JNIEnv* env) {
 	std::ifstream fin(filename);
@@ -241,8 +245,10 @@ Member::Member(unsigned long long id, unsigned long long groupid, JNIEnv* env) {
 	this->_groupid = groupid;
 	this->Query_permission = config->QueryP;
 	this->KickM = config->KickM;
-	std::string temp = LowLevelAPI::getnickornamecard0(this, env);
-	this->_nickOrNameCard = temp;
+	std::string temp = LowLevelAPI::getInfoSource(this, env);
+	LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
+	this->_nickOrNameCard = tmp.nickornamecard;
+	this->_avatarUrl = tmp.avatarUrl;
 	this->permission = getPermission();
 	if (temp == "E1") {
 		throw MemberException(1);
@@ -329,41 +335,13 @@ MessageSource Member::SendMsg(std::string msg,JNIEnv* env) {
 Group::Group(unsigned long long id, JNIEnv* env) {
 	this->_type = 2;
 	this->_id = id;
-	std::string re = LowLevelAPI::getnickornamecard0(this, env);
+	std::string re = LowLevelAPI::getInfoSource(this, env);
 	if (re == "E1") {
 		throw GroupException();
 	}
-	this->_nickOrNameCard = re;
-}
-std::vector<unsigned long long> Group::getMemberList() {
-	std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib,
-		config->QueryML,
-		(jlong)this->id()));
-	if (re == "E1") {
-		throw GroupException();
-	}
-	std::vector<unsigned long long> result;
-	std::string temp = re;
-	temp.erase(temp.begin());
-	temp.pop_back();
-	std::regex ws_re("[,]+");
-	std::vector<std::string> v(std::sregex_token_iterator(temp.begin(), temp.end(), ws_re, -1),
-		std::sregex_token_iterator());
-	for (auto&& s : v)
-		result.push_back(atoi(s.c_str()));
-	return result;
-}
-std::string Group::MemberListToString() {
-	std::vector<unsigned long long> a = getMemberList();
-	std::stringstream ss;
-	for (size_t i = 0; i < a.size(); ++i)
-	{
-		if (i != 0)
-			ss << ",";
-		ss << a[i];
-	}
-	std::string s = ss.str();
-	return s;
+	LowLevelAPI::info tmp = LowLevelAPI::info0(re);
+	this->_nickOrNameCard = tmp.nickornamecard;
+	this->_avatarUrl = tmp.avatarUrl;
 }
 Image Group::uploadImg(std::string filename, JNIEnv* env) {
 	std::ifstream fin(filename);
@@ -476,4 +454,26 @@ Json::Value Tools::StringToJson(std::string Rcontent) {
 		return NULL;
 	}
 	return root;
+}
+std::string Tools::VectorToString(std::vector<unsigned long long> a) {
+	std::stringstream ss;
+	for (size_t i = 0; i < a.size(); ++i)
+	{
+		if (i != 0)
+			ss << ",";
+		ss << a[i];
+	}
+	std::string s = ss.str();
+	return s;
+}
+std::vector<unsigned long long> Tools::StringToVector(std::string temp) {
+	std::vector<unsigned long long> result;
+	temp.erase(temp.begin());
+	temp.pop_back();
+	std::regex ws_re("[,]+");
+	std::vector<std::string> v(std::sregex_token_iterator(temp.begin(), temp.end(), ws_re, -1),
+		std::sregex_token_iterator());
+	for (auto&& s : v)
+		result.push_back(atoi(s.c_str()));
+	return result;
 }

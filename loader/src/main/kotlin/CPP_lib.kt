@@ -2,9 +2,11 @@ package tech.eritquearcus.miraicp
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import tech.eritquearcus.miraicp.KotlinMain.BasicSendLog
-import tech.eritquearcus.miraicp.KotlinMain.GetNickOrNameCard
+import tech.eritquearcus.miraicp.KotlinMain.QueryBFL
+import tech.eritquearcus.miraicp.KotlinMain.QueryBGL
 import tech.eritquearcus.miraicp.KotlinMain.QueryImg
 import tech.eritquearcus.miraicp.KotlinMain.QueryML
+import tech.eritquearcus.miraicp.KotlinMain.RefreshInfo
 import tech.eritquearcus.miraicp.KotlinMain.SendError
 import tech.eritquearcus.miraicp.KotlinMain.SendMiraiCode
 import tech.eritquearcus.miraicp.KotlinMain.SendMsg
@@ -69,8 +71,8 @@ class CPP_lib {
             }
         }
         @JvmStatic
-        fun KGetNickOrNameCard(source: String): String {
-            return GetNickOrNameCard(gson.fromJson(source, Config.Contact::class.java))
+        fun KRefreshInfo(source: String): String {
+            return RefreshInfo(gson.fromJson(source, Config.Contact::class.java))
         }
         @JvmStatic
         fun KUploadImg(fileName:String,source:String):String{
@@ -111,6 +113,16 @@ class CPP_lib {
         @JvmStatic
         fun KQueryML(groupid: Long):String{
             return QueryML(groupid)
+        }
+        // query the friend lst of the bot
+        @JvmStatic
+        fun KQueryBFL(botid: Long): String{
+            return QueryBFL()
+        }
+        // query the group list of the bot
+        @JvmStatic
+        fun KQueryBGL(botid: Long): String{
+            return QueryBGL()
         }
         //query the owner of a group
         @JvmStatic

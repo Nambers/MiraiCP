@@ -43,12 +43,12 @@ object PluginMain : KotlinPlugin(
         Mirai
         serializersModule = MessageSerializers.serializersModule
     }
-    var friend_cache = ArrayList<NormalMember>(0)
+    private var friend_cache = ArrayList<NormalMember>(0)
     var dll_name = "mirai-demo.dll"
-    lateinit var AIbot: Bot
-    lateinit var cpp: CPP_lib
-    lateinit var gson: Gson
-    private  val now_tag = "v2.6.1"
+    private lateinit var AIbot: Bot
+    private lateinit var cpp: CPP_lib
+    private lateinit var gson: Gson
+    private const val now_tag = "v2.6.1"
     // 临时解决方案
     private var finvite = ArrayList<NewFriendRequestEvent>(0)
     private var ginvite = ArrayList<BotInvitedJoinGroupRequestEvent>(0)
@@ -65,6 +65,8 @@ object PluginMain : KotlinPlugin(
     fun SendError(log: String) {
         logger.error(log)
     }
+
+    //发送消息部分实现 MiraiCode
 
     suspend fun Send0(message: Message, c:Config.Contact):String{
         when(c.type){
@@ -118,22 +120,21 @@ object PluginMain : KotlinPlugin(
         return Send0(MiraiCode.deserializeMiraiCode(message), c)
     }
 
-    //取昵称或名片
-    fun GetNickOrNameCard(c: Config.Contact):String{
+    fun RefreshInfo(c: Config.Contact): String{
         when(c.type){
             1->{
                 val f = AIbot.getFriend(c.id) ?: let {
                     logger.error("找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}")
                     return "E1"
                 }
-                return f.nick
+                return gson.toJson(Config.ContactInfo(f.nick, f.avatarUrl))
             }
             2->{
                 val g = AIbot.getGroup(c.id)?:let{
                     logger.error("取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}")
                     return "E1"
                 }
-                return g.name
+                return gson.toJson(Config.ContactInfo(g.name, g.avatarUrl))
             }
             3->{
                 for (a in friend_cache) {
@@ -146,11 +147,14 @@ object PluginMain : KotlinPlugin(
                     logger.error("取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}")
                     return "E1"
                 }
-                val member = group[c.id] ?: let {
+                val m = group[c.id] ?: let {
                     logger.error("取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}")
                     return "E2"
                 }
-                return member.nameCard
+                return gson.toJson(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
+            }
+            4->{
+                return gson.toJson(Config.ContactInfo(AIbot.nick, AIbot.avatarUrl))
             }
             else->{
                 return "EE"
@@ -161,17 +165,33 @@ object PluginMain : KotlinPlugin(
     //取群成员列表
     fun QueryML(groupid: Long): String {
         val g = AIbot.getGroup(groupid) ?: let {
-            logger.error("找不到群")
+            logger.error("取群成员找不到群,位置K-QueryML")
             return "E1"
         }
         val m = ArrayList<Long>()
         g.members.forEach{
             m.add(it.id)
         }
-        return Gson().toJson(m)
+        return gson.toJson(m)
+    }
+
+    fun QueryBFL(): String{
+        val tmp = ArrayList<Long>()
+        AIbot.friends.forEach {
+            tmp.add(it.id)
+        }
+        return gson.toJson(tmp)
+    }
+    fun QueryBGL(): String{
+        val tmp = ArrayList<Long>()
+        AIbot.groups.forEach {
+            tmp.add(it.id)
+        }
+        return gson.toJson(tmp)
     }
 
     //图片部分实现
+
     suspend fun uploadImg(file: String, c: Config.Contact):String{
         when(c.type){
             1->{
@@ -254,7 +274,8 @@ object PluginMain : KotlinPlugin(
             cpp.Event(
                 Gson().toJson(
                     Config.TimeOutEvent(
-                        id
+                        id,
+                        AIbot.id
                     )
                 )
             )
@@ -335,7 +356,7 @@ object PluginMain : KotlinPlugin(
         return g.owner.id.toString()
     }
 
-    //构建转发信息
+    //构建聊天记录
     suspend fun buildforwardMsg(text:String):String{
         val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
         val c1:Contact = when(t.type) {
@@ -400,7 +421,6 @@ object PluginMain : KotlinPlugin(
         }
         return "Y"
     }
-
     override fun onDisable() {
         cpp.PluginDisable()
     }
@@ -443,7 +463,8 @@ object PluginMain : KotlinPlugin(
                         this.sender.id,
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(MessageSource.Serializer,
-                            this.message[MessageSource]!!)
+                            this.message[MessageSource]!!),
+                        AIbot.id
                     )
                 )
             )
@@ -457,7 +478,8 @@ object PluginMain : KotlinPlugin(
                         this.group.id,
                         this.sender.id,
                         this.message.serializeToMiraiCode(),
-                        json.encodeToString(MessageSource.Serializer,this.message[MessageSource]!!)
+                        json.encodeToString(MessageSource.Serializer,this.message[MessageSource]!!),
+                        AIbot.id
                     )
                 )
             )
@@ -471,7 +493,9 @@ object PluginMain : KotlinPlugin(
                         this.operatorId,
                         this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
-                        this.messageTime
+                        this.messageTime,
+                        0,
+                        AIbot.id
                     )
                 )
             )
@@ -487,7 +511,8 @@ object PluginMain : KotlinPlugin(
                         this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageTime,
-                        this.group.id
+                        this.group.id,
+                        AIbot.id
                     )
                 )
             )
@@ -500,7 +525,8 @@ object PluginMain : KotlinPlugin(
                     this.group.id,
                     this.member.id,
                     1,
-                    if(this.operator?.id == null) this.bot.id else this.operator!!.id
+                    if(this.operator?.id == null) this.bot.id else this.operator!!.id,
+                    AIbot.id
                 )
             ))
             friend_cache.remove(this.member)
@@ -512,7 +538,8 @@ object PluginMain : KotlinPlugin(
                     this.group.id,
                     this.member.id,
                     2,
-                    this.member.id
+                    this.member.id,
+                    AIbot.id
                 )
             ))
             friend_cache.remove(this.member)
@@ -523,7 +550,8 @@ object PluginMain : KotlinPlugin(
                     this.group.id,
                     this.member.id,
                     3,
-                    this.member.id
+                    this.member.id,
+                    AIbot.id
                 )
             ))
         }
@@ -533,7 +561,8 @@ object PluginMain : KotlinPlugin(
                     this.group.id,
                     this.member.id,
                     2,
-                    this.member.id
+                    this.member.id,
+                    AIbot.id
                 )
             ))
         }
@@ -543,7 +572,8 @@ object PluginMain : KotlinPlugin(
                     this.group.id,
                     this.member.id,
                     1,
-                    this.invitor.id
+                    this.invitor.id,
+                    AIbot.id
                 )
             ))
         }
@@ -555,7 +585,8 @@ object PluginMain : KotlinPlugin(
                     Config.NewFriendRequest(
                         this.fromId,
                         this.message,
-                        (finvite.size - 1).toString()
+                        (finvite.size - 1).toString(),
+                        AIbot.id
                     )
                 )
             )
@@ -567,7 +598,8 @@ object PluginMain : KotlinPlugin(
                     Config.BotJoinGroup(
                         1,
                         this.groupId,
-                        this.invitor.id
+                        this.invitor.id,
+                        AIbot.id
                     )
                 )
             )
@@ -578,7 +610,8 @@ object PluginMain : KotlinPlugin(
                     Config.BotJoinGroup(
                         2,
                         this.groupId,
-                        0
+                        0,
+                        AIbot.id
                     )
                 )
             )
@@ -589,7 +622,8 @@ object PluginMain : KotlinPlugin(
                     Config.BotJoinGroup(
                         3,
                         this.groupId,
-                        0
+                        0,
+                        AIbot.id
                     )
                 )
             )
@@ -604,7 +638,8 @@ object PluginMain : KotlinPlugin(
                         this.groupName,
                         this.invitorId,
                         this.invitorNick,
-                        (ginvite.size).toString()
+                        (ginvite.size).toString(),
+                        AIbot.id
                     )
                 )
             )
@@ -619,7 +654,8 @@ object PluginMain : KotlinPlugin(
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(MessageSource.Serializer,
                             this.source
-                        )
+                        ),
+                        AIbot.id
                     )
                 )
             )
