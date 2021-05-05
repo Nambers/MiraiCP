@@ -35,23 +35,27 @@ void onEnable() {
 	// 消息事件
 	// 监听私聊
 	Event::NodeHandle handle = procession->registerEvent([](PrivateMessageEvent e) {
-		std::thread func1(func, e.sender.id);
+		std::thread func1(func, e.sender.id());
 		e.sender.SendMsg(e.message);
+		// 测试取图片
 		std::vector <std::string> temp = Image::GetImgIdsFromMiraiCode(e.message);
 		func1.detach();
-		// 线程应该在lambda中决定要detach还是join, 否则会报错
+		// 多线程测试,线程应该在lambda中决定要detach还是join, 否则会报错
 		for (std::string a : temp) {
 			e.sender.SendMsg(a);
 		}
+		Image tmp = e.sender.uploadImg("C:\\Users\\19308\\Desktop\\a.jpg");
+		e.sender.SendMsg(tmp.toMiraiCode());
+		e.sender.SendMiraiCode(tmp.toMiraiCode());
 		});
 	// 监听群信息
 	procession->registerEvent([=](GroupMessageEvent e) {
 		// 发送文本信息
-		// e.group.SendMsg("HI");
+		e.group.SendMsg("HI");
 		// 发送MiraiCode信息，At
-		// e.group.SendMiraiCode(At(e.sender));
+		e.group.SendMiraiCode(At(e.sender));
 		// 撤回测试
-		// e.group.SendMsg("撤回测试").recall();
+		e.group.SendMsg("撤回测试").recall();
 		// 发送xml卡片测试,可以用new传miraicodeable指针进去，也可以用.toMiraiCode()
 		// e.group.SendMiraiCode(new LightApp(LightAppStyle1()));
 		// e.group.SendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
@@ -70,10 +74,10 @@ void onEnable() {
 		});
 	// 群事件
 	procession->registerEvent([](MemberJoinEvent e) {
-		e.group.SendMiraiCode(At(e.group.getOwner()) + std::to_string(e.member.id) + "加入了群聊");
+		e.group.SendMiraiCode(At(e.group.getOwner()) + std::to_string(e.member.id()) + "加入了群聊");
 		});
 	procession->registerEvent([](MemberLeaveEvent e) {
-		e.group.SendMiraiCode(At(e.group.getOwner()) + std::to_string(e.member.id) + "退出了群聊");
+		e.group.SendMiraiCode(At(e.group.getOwner()) + std::to_string(e.member.id()) + "退出了群聊");
 		});
 }
 void onDisable() {
