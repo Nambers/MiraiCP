@@ -56,17 +56,8 @@ jstring returnNull() {
 JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 (JNIEnv* env, jobject, jstring content) {
 	manager->setEnv(env);
-	std::string Rcontent = tools.jstring2str(content);
-	const auto rawJsonLength = static_cast<int>(Rcontent.length());
-	Json::String err;
-	Json::Value root;
-	Json::CharReaderBuilder builder;
-	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-	if (!reader->parse(Rcontent.c_str(), Rcontent.c_str() + rawJsonLength, &root,
-		&err)) {
-		//error
-		APIException("JSON文本异常").raise();
-	}
+	Json::Value root = tools.StringToJson(tools.jstring2str(content));
+	if (root == NULL) { APIException("JSON文本异常").raise(); }
 	try {
 		switch (root["type"].asInt()) {
 		case 1: {

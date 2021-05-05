@@ -21,7 +21,6 @@ version = "2.6.1"
 
 repositories {
     maven{ url =uri("https://maven.aliyun.com/nexus/content/groups/public/")}
-    jcenter()
     mavenCentral()
     mavenLocal()
     google()

@@ -34,17 +34,16 @@ extern threadManager* manager;
 class Logger {
 private:
 	jclass CPP_lib = NULL;
-	jmethodID sinfo = NULL;
-	jmethodID swarning = NULL;
-	jmethodID serror = NULL;
+	jmethodID log = NULL;
+	void send0(std::string, JNIEnv*, int);
 public:
 	void init(JNIEnv* = manager->getEnv());
 	/*发送普通日志*/
-	void Info(std::string log, JNIEnv* = manager->getEnv());
+	void Info(std::string, JNIEnv* = manager->getEnv());
 	/*发送警告*/
-	void Warning(std::string log, JNIEnv* = manager->getEnv());
+	void Warning(std::string, JNIEnv* = manager->getEnv());
 	/*发送错误*/
-	void Error(std::string log, JNIEnv* = manager->getEnv());
+	void Error(std::string, JNIEnv* = manager->getEnv());
 	~Logger();
 };
 
@@ -57,27 +56,19 @@ public:
 	jclass CPP_lib = NULL;
 	jclass initexception = NULL;
 	jmethodID recallMsgM = NULL;
+	jmethodID Send = NULL;
+	jmethodID NickorName = NULL;
+	jmethodID uploadImg = NULL;
 	/*图像类*/
 	jmethodID Query = NULL;
 	/*好友类*/
-	jmethodID SendMsg2F = NULL;
-	jmethodID SendMsg2FM = NULL;
-	jmethodID NickorNameF = NULL;
-	jmethodID uploadImgF = NULL;
 	/*群聊成员类*/
-	jmethodID SendMsg2M = NULL;
-	jmethodID SendMsg2MM = NULL;
-	jmethodID NickorNameM = NULL;
 	jmethodID Mute = NULL;
 	jmethodID QueryP = NULL;
-	jmethodID uploadImgM = NULL;
 	jmethodID KickM = NULL;
 	/*群聊类*/
 	jmethodID getowner = NULL;
 	jmethodID muteAll = NULL;
-	jmethodID SendMsg2G = NULL;
-	jmethodID uploadImgG = NULL;
-	jmethodID SendMsg2GM = NULL;
 	jmethodID QueryN = NULL;
 	jmethodID QueryML = NULL;
 	/*定时任务*/
@@ -135,6 +126,8 @@ public:
 	* 来源:https://www.cnblogs.com/zhangdongsheng/p/12731021.html
 	*/
 	std::string JsonToString(const Json::Value& root);
+	// 从string格式化json
+	Json::Value StringToJson(std::string);
 };
 
 /*静态声明工具对象*/
@@ -470,15 +463,68 @@ public:
 
 /*group, friend, member的父类*/
 class Contact {
+protected:
+	int _type;
+	unsigned long long _id;
+	unsigned long long _groupid;
+	std::string _nickOrNameCard;
 public:
+	Contact() {
+		_type = 0;
+		_id = 0;
+		_groupid = 0;
+		_nickOrNameCard = "";
+	}
+	Contact(int type, unsigned long long id, unsigned long long gid, std::string name) {
+		this->_type = type;
+		this->_id = id;
+		this->_groupid = gid;
+		this->_nickOrNameCard = name;
+	};
 	//1-Friend好友, 2-group群组, 3-member群成员
-	int type = 0;
+	int type() {return this->_type;}
 	//id，当type=1的时候是好友qqid，2时是群组id，3是群成员的qqid
-	unsigned long long id = 0;
+	unsigned long long id() { return this->_id; }
 	//当type=3时存在，为群成员说在群的群组id
-	unsigned long long groupid = 0;
+	unsigned long long groupid() { return this->_groupid; }
 	/*群名称，群成员群名片，或好友昵称*/
-	std::string nickOrNameCard = "";
+	std::string nickOrNameCard() { return this->_nickOrNameCard; };
+	Json::Value toJsonValue() {
+		Json::Value root;
+		root["type"] = type();
+		root["id"] = id();
+		root["groupid"] = groupid();
+		root["nickornamecard"] = nickOrNameCard();
+		return root;
+	}
+	std::string toString() {
+		return tools.JsonToString(this->toJsonValue());
+	}
+	static Contact fromString(std::string source) {
+		Json::Value root = tools.StringToJson(source);
+		if (root == NULL) { APIException("JSON格式化错误,位置:C-ContactFromString()").raise(); }
+		return Contact(root["type"].asInt(), 
+			root["id"].asLargestUInt(), 
+			root["groupid"].asLargestUInt(), 
+			root["nickornamecard"].asCString());
+	}
+};
+
+// 较底层api
+class LowLevelAPI {
+public:
+	static std::string send0(std::string content, Contact* c, bool miraicode, JNIEnv* env) {
+		Json::Value root;
+		root["content"] = content;
+		root["contact"] = c->toJsonValue();
+		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->Send, tools.str2jstring(tools.JsonToString(root).c_str(),env), (jboolean)miraicode), env);
+	}
+	static std::string getnickornamecard0(Contact* c, JNIEnv* env = manager->getEnv()) {
+		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->NickorName, tools.str2jstring(c->toString().c_str(), env)));
+	}
+	static std::string uploadImg0(std::string path, Contact* c, JNIEnv* env = manager->getEnv()) {
+		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->uploadImg,tools.str2jstring(path.c_str(), env), tools.str2jstring(c->toString().c_str(), env)));
+	}
 };
 
 /*聊天记录里每个消息*/
@@ -512,8 +558,8 @@ public:
 		t - 发送时间，以时间戳记
 	*/
 	ForwardNode(Contact* c, std::string message, int t) {
-		this->id = c->id;
-		this->name = c->nickOrNameCard;
+		this->id = c->id();
+		this->name = c->nickOrNameCard();
 		this->message = message;
 		this->time = t;
 	}
@@ -538,9 +584,9 @@ public:
 	ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes) {
 		Json::Value root;
 		Json::Value value;
-		root["type"] = c->type;
-		root["id"] = c->id;
-		root["id2"] = c->groupid;
+		root["type"] = c->type();
+		root["id"] = c->id();
+		root["id2"] = c->groupid();
 		for (ForwardNode node : nodes) {
 			Json::Value temp;
 			temp["id"] = node.id;
@@ -670,7 +716,7 @@ public:
 /*At一个群成员*/
  inline std::string At(Member a) {
 	/*返回at这个人的miraicode*/
-	return "[mirai:at:" + std::to_string(a.id) + "]";
+	return "[mirai:at:" + std::to_string(a.id()) + "]";
 }
  /*At一个群成员*/
  inline std::string At(unsigned long long a) {

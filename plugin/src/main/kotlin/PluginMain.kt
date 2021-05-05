@@ -66,125 +66,96 @@ object PluginMain : KotlinPlugin(
         logger.error(log)
     }
 
-    //发送消息部分实现 MiraiCode
-
-    suspend fun Send(message: String, id: Long) :String{
-        //反向调用
-        logger.info("Send message for($id) is $message")
-        val f = AIbot.getFriend(id) ?: let {
-            logger.error("发送消息找不到好友，位置:K-Send()，id:$id")
-            return "E1"
-        }
-        return json.encodeToString(MessageSource.Serializer,
-            f.sendMessage(MiraiCode.deserializeMiraiCode(message)).source)
-    }
-
-    suspend fun Send(message: String, id: Long, gid: Long):String {
-        //反向调用
-        logger.info("Send message for a member($id) is $message")
-        for (a in friend_cache) {
-            if (a.id == id && a.group.id == gid) {
-                a.sendMessage(MiraiCode.deserializeMiraiCode(message, a))
+    suspend fun Send0(message: Message, c:Config.Contact):String{
+        when(c.type){
+            1->{
+                logger.info("Send message for(${c.id}) is $message")
+                val f = AIbot.getFriend(c.id) ?: let {
+                    logger.error("发送消息找不到好友，位置:K-Send()，id:${c.id}")
+                    return "E1"
+                }
                 return json.encodeToString(MessageSource.Serializer,
-                    a.sendMessage(MiraiCode.deserializeMiraiCode(message)).source)
+                    f.sendMessage(message).source)
+            }
+            2->{
+                logger.info("Send message for Group(${c.id}) is $message")
+                val g = AIbot.getGroup(c.id) ?: let {
+                    logger.error("发送群消息异常找不到群组，位置K-SendG，gid:${c.id}")
+                    return "E1"
+                }
+                return json.encodeToString(MessageSource.Serializer,
+                    g.sendMessage(message).source)
+            }
+            3->{
+                logger.info("Send message for a member(${c.id}) is $message")
+                for (a in friend_cache) {
+                    if (a.id == c.id && a.group.id == c.groupid) {
+                        return json.encodeToString(MessageSource.Serializer,
+                            a.sendMessage(message).source)
+                    }
+                }
+                val G = AIbot.getGroup(c.groupid) ?: let {
+                    logger.error("发送消息找不到群聊，位置K-Send()，id:${c.groupid}")
+                    return "E1"
+                }
+                val f = G[c.id] ?: let {
+                    logger.error("发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupid}")
+                    return "E2"
+                }
+                return json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
+            }
+            else->return "E2"
+        }
+    }
+
+    suspend fun SendMsg(message: String, c:Config.Contact):String{
+        val m = MessageChainBuilder()
+        m.add(message)
+        return Send0(m.asMessageChain(), c)
+    }
+
+    suspend fun SendMiraiCode(message: String, c:Config.Contact):String{
+        return Send0(MiraiCode.deserializeMiraiCode(message), c)
+    }
+
+    //取昵称或名片
+    fun GetNickOrNameCard(c: Config.Contact):String{
+        when(c.type){
+            1->{
+                val f = AIbot.getFriend(c.id) ?: let {
+                    logger.error("找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}")
+                    return "E1"
+                }
+                return f.nick
+            }
+            2->{
+                val g = AIbot.getGroup(c.id)?:let{
+                    logger.error("取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}")
+                    return "E1"
+                }
+                return g.name
+            }
+            3->{
+                for (a in friend_cache) {
+                    if (a.id == c.id && a.group.id == c.groupid) {
+                        return a.nameCardOrNick
+                    }
+                }
+
+                val group = AIbot.getGroup(c.groupid) ?: let {
+                    logger.error("取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}")
+                    return "E1"
+                }
+                val member = group[c.id] ?: let {
+                    logger.error("取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}")
+                    return "E2"
+                }
+                return member.nameCard
+            }
+            else->{
+                return "EE"
             }
         }
-        val G = AIbot.getGroup(gid) ?: let {
-            logger.error("发送消息找不到群聊，位置K-Send()，id:$gid")
-            return "E1"
-        }
-        val f = G[id] ?: let {
-            logger.error("发送消息找不到群成员，位置K-Send()，id:$id，gid:$gid")
-            return "E2"
-        }
-        return json.encodeToString(MessageSource.Serializer, f.sendMessage(MiraiCode.deserializeMiraiCode(message)).source)
-    }
-
-    suspend fun SendG(message: String, id: Long):String {
-        logger.info("Send message for Group($id) is $message")
-        val g = AIbot.getGroup(id) ?: let {
-            logger.error("发送群消息异常找不到群组，位置K-SendG，gid:$id")
-            return "E1"
-        }
-        return json.encodeToString(MessageSource.Serializer,
-            g.sendMessage(MiraiCode.deserializeMiraiCode(message)).source)
-    }
-
-    //Msg
-
-    suspend fun SendM(message: String, id: Long) :String{
-        //反向调用
-        logger.info("Send message for($id) is $message")
-        val f = AIbot.getFriend(id) ?: let {
-            logger.error("发送消息找不到好友，位置:K-Send()，id:$id")
-            return "E1"
-        }
-        return json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
-    }
-
-    suspend fun SendM(message: String, id: Long, gid: Long):String {
-        //反向调用
-        logger.info("Send message for a member($id) is $message")
-        for (a in friend_cache) {
-            if (a.id == id && a.group.id == gid) {
-                return json.encodeToString(MessageSource.Serializer, a.sendMessage(message).source)
-            }
-        }
-        val G = AIbot.getGroup(gid) ?: let {
-            logger.error("发送消息找不到群聊，位置K-Send()，id:$gid")
-            return "E1"
-        }
-        val f = G[id] ?: let {
-            logger.error("发送消息找不到群成员，位置K-Send()，id:$id，gid:$gid")
-            return "E2"
-        }
-        return json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
-    }
-
-    suspend fun SendGM(message: String, id: Long):String {
-        logger.info("Send message for Group($id) is $message")
-        val g = AIbot.getGroup(id) ?: let {
-            logger.error("发送群消息异常找不到群组，位置K-SendG，gid:$id")
-            return "E1"
-        }
-        return json.encodeToString(MessageSource.Serializer, g.sendMessage(message).source)
-    }
-
-    //取昵称或名片部分
-    fun GetN(qqid: Long): String {
-        val f = AIbot.getFriend(qqid) ?: let {
-            logger.error("找不到对应好友，位置:K-GetN()，id:$qqid")
-            return "E1"
-        }
-        return f.nick
-    }
-
-    fun GetNN(qqid: Long, groupid: Long): String {
-        for (a in friend_cache) {
-            if (a.id == qqid && a.group.id == groupid) {
-                return a.nameCardOrNick
-            }
-        }
-
-        val group = AIbot.getGroup(groupid) ?: let {
-            logger.error("取群名片找不到对应群组，位置K-GetNN()，gid:$groupid")
-            return "E1"
-        }
-        val member = group[qqid] ?: let {
-            logger.error("取群名片找不到对应群成员，位置K-GetNN()，id:$qqid, gid:$groupid")
-            return "E2"
-        }
-        return member.nameCard
-
-    }
-
-    //取群名称
-    fun QueryNG(groupid: Long): String {
-        val g = AIbot.getGroup(groupid)?:let{
-            logger.error("找不到群")
-            return "E1"
-        }
-        return g.name
     }
 
     //取群成员列表
@@ -201,55 +172,60 @@ object PluginMain : KotlinPlugin(
     }
 
     //图片部分实现
-    suspend fun uploadImgFriend(id: Long, file: String): String {
-        val temp = AIbot.getFriend(id) ?: let {
-            logger.error("发送图片找不到对应好友,位置:K-uploadImgFriend(),id:$id")
-            return ""
-        }
-        return try {
-            File(file).uploadAsImage(temp).imageId
-        } catch (e: OverFileSizeMaxException) {
-            logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-            ""
-        } catch (e: NullPointerException) {
-            logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-            ""
-        }
-    }
-
-    suspend fun uploadImgGroup(id: Long, file: String): String {
-        val temp = AIbot.getGroup(id) ?: let {
-            logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:$id")
-            return ""
-        }
-        return try {
-            File(file).uploadAsImage(temp).imageId
-        } catch (e: OverFileSizeMaxException) {
-            logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-            ""
-        } catch (e: NullPointerException) {
-            logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-            ""
-        }
-    }
-
-    suspend fun uploadImgMember(id: Long, qqid: Long, file: String): String {
-        val temp = AIbot.getGroup(id) ?: let {
-            logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:$id")
-            return ""
-        }
-        val temp1 = temp[qqid] ?: let {
-            logger.error("发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:$qqid,群聊id:$id")
-            return ""
-        }
-        return try {
-            File(file).uploadAsImage(temp1).imageId
-        } catch (e: OverFileSizeMaxException) {
-            logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-            ""
-        } catch (e: NullPointerException) {
-            logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-            ""
+    suspend fun uploadImg(file: String, c: Config.Contact):String{
+        when(c.type){
+            1->{
+                val temp = AIbot.getFriend(c.id) ?: let {
+                    logger.error("发送图片找不到对应好友,位置:K-uploadImgFriend(),id:${c.id}")
+                    return ""
+                }
+                return try {
+                    File(file).uploadAsImage(temp).imageId
+                } catch (e: OverFileSizeMaxException) {
+                    logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
+                    ""
+                } catch (e: NullPointerException) {
+                    logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
+                    ""
+                }
+            }
+            2->{
+                val temp = AIbot.getGroup(c.id) ?: let {
+                    logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.id}")
+                    return ""
+                }
+                return try {
+                    File(file).uploadAsImage(temp).imageId
+                } catch (e: OverFileSizeMaxException) {
+                    logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
+                    ""
+                } catch (e: NullPointerException) {
+                    logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
+                    ""
+                }
+            }
+            3->{
+                val temp = AIbot.getGroup(c.groupid) ?: let {
+                    logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.groupid}")
+                    return ""
+                }
+                val temp1 = temp[c.id] ?: let {
+                    logger.error("发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:${c.id},群聊id:${c.groupid}")
+                    return ""
+                }
+                return try {
+                    File(file).uploadAsImage(temp1).imageId
+                } catch (e: OverFileSizeMaxException) {
+                    logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
+                    ""
+                } catch (e: NullPointerException) {
+                    logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
+                    ""
+                }
+            }
+            else->{
+                return ""
+            }
         }
     }
 
