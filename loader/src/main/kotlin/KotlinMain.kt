@@ -2,8 +2,16 @@ package tech.eritquearcus.miraicp
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.forEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.sample
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.Mirai
@@ -18,6 +26,8 @@ import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
+import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
+import net.mamoe.mirai.utils.RemoteFile.ProgressionCallback.Companion.asProgressionCallback
 import org.fusesource.jansi.AnsiConsole
 import org.json.JSONObject
 import tech.eritquearcus.miraicp.KotlinMain.now_tag
@@ -27,6 +37,8 @@ import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
+import kotlin.time.ExperimentalTime
+import kotlin.time.seconds
 
 object KotlinMain {
     private val json = Json{
@@ -284,7 +296,8 @@ object KotlinMain {
             return "E2"
         }
         try {
-            member.mute(time)
+            if(time != 0) member.mute(time)
+            else member.unmute()
         }catch (e: PermissionDeniedException){
             logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:$groupid，目标成员id:$qqid")
             return "E3"
@@ -294,7 +307,53 @@ object KotlinMain {
         }
         return "Y"
     }
+    private suspend fun fileInfo0(temp: RemoteFile):String{
+        val dinfo = temp.getDownloadInfo()!!
+        val finfo = temp.getInfo()!!
+        return gson.toJson(Config.FileInfo(
+            id = finfo.id,
+            name=finfo.name,
+            path= finfo.path,
+            dinfo = Config.DInfo(dinfo.url, dinfo.md5.toString(), dinfo.sha1.toString()),
+            fInfo = Config.FInfo(finfo.length, finfo.uploaderId, finfo.downloadTimes, finfo.uploaderId, finfo.lastModifyTime))
+        )
+    }
+    suspend fun uploadFile(path: String, file: String, c: Config.Contact): String {
+        val group = AIbot.getGroup(c.id) ?: let {
+            logger.error("找不到对应群组，位置K-uploadfile()，gid:${c.id}")
+            return "E1"
+        }
+        val f = File(file)
+        if (!f.exists() || !f.isFile) {
+            return "E2"
+        }
+        val tmp =
+            try {
+                group.uploadFile(path, f)
+            } catch (e: IllegalStateException) {
+                return "E3"
+            } catch (e: Exception){
+                logger.error(e.message)
+                e.printStackTrace()
+                return "E3"
+            }
+        val temp = tmp.toRemoteFile(group)?:let{
+            return "E3"
+        }
+        logger.info(fileInfo0(temp))
+        return fileInfo0(temp)
+    }
 
+    suspend fun remoteFileInfo(path: String, id: String, c: Config.Contact):String{
+        val group = AIbot.getGroup(c.id) ?: let {
+            logger.error("找不到对应群组，位置K-uploadfile()，gid:${c.id}")
+            return "E1"
+        }
+        val tmp = group.filesRoot.resolve(path).resolveById(id)?:let{
+            return "E2"
+        }
+        return fileInfo0(tmp)
+    }
     //查询权限
     fun kqueryM(qqid: Long, groupid: Long): String{
         val group = AIbot.getGroup(groupid) ?: let {

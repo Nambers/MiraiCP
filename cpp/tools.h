@@ -61,6 +61,8 @@ public:
 	jmethodID uploadImg = NULL;
 	jmethodID queryBotFriends = NULL;
 	jmethodID queryBotGroups= NULL;
+	jmethodID uploadFile = NULL;
+	jmethodID queryFile = NULL;
 	/*图像类*/
 	jmethodID Query = NULL;
 	/*好友类*/
@@ -342,6 +344,18 @@ public:
 private:
 	std::string description = "";
 };
+//上传异常
+class RemoteFileException : public MiraiCPException {
+public:
+	RemoteFileException(std::string e) {
+		this->description = e;
+	}
+	std::string what() {
+		return this->description;
+	}
+private:
+	std::string description = "";
+};
 
 //消息源声明
 class MessageSource {
@@ -516,6 +530,85 @@ public:
 			root["id"].asLargestUInt(), 
 			root["groupid"].asLargestUInt(), 
 			root["nickornamecard"].asCString());
+	}
+};
+
+// 群文件
+
+struct dinfo {
+	// 下载地址
+	std::string url;
+	// md5
+	std::string md5;
+	// sha1
+	std::string sha1;
+};
+struct finfo {
+	// 文件大小
+	unsigned long long size;
+	// 上传者id
+	unsigned long long uploaderid;
+	// 下载次数
+	unsigned int downloadtime;
+	// 上传时间
+	unsigned long long uploadtime;
+	// 上次更改时间
+	unsigned long long lastmodifytime;
+};
+class RemoteFile : public MiraiCodeable {
+private:
+	std::string _id;
+	unsigned int _internalid;
+	std::string _name;
+	long long _size;
+	std::string _path;
+	dinfo _dinfo;
+	finfo _finfo;
+public:
+	// 文件唯一id
+	std::string id() { return this->_id; }
+	// 文件内部id
+	unsigned int internalid() { return this->_internalid; }
+	// 文件名
+	std::string name() { return this->_name; }
+	// 文件大小
+	long long size() { return this->_size; }
+	// 文件在群文件的路径
+	std::string path() { return this->_path; }
+	static RemoteFile buildFromString(std::string source) {
+		Json::Value tmp = tools.StringToJson(source);
+		Json::Value droot = tmp["dinfo"];
+		dinfo d;
+		d.md5 = droot["md5"].asCString();
+		d.sha1 = droot["sha1"].asCString();
+		d.url = droot["url"].asCString();
+		Json::Value froot = tmp["finfo"];
+		finfo f;
+		f.downloadtime = froot["downloadtime"].asInt();
+		f.lastmodifytime = froot["lastmodifytime"].asLargestUInt();
+		f.size = froot["size"].asLargestUInt();
+		f.uploaderid = froot["uploaderid"].asLargestUInt();
+		f.uploadtime = froot["uploadtime"].asLargestUInt();
+		return RemoteFile(tmp["id"].asCString(), tmp["internalid"].asLargestUInt(), tmp["name"].asCString(), tmp["size"].asLargestUInt(), d, f);
+	}
+	// 由完整信息构造
+	RemoteFile(std::string i, unsigned int ii, std::string n, long long s, dinfo d, finfo f) {
+		this->_id = i;
+		this->_internalid = ii;
+		this->_name = n;
+		this->_size = s;
+		this->_dinfo = d;
+		this->_finfo = f;
+	}
+	// 由路径和群查找
+	RemoteFile(unsigned long long groupid, std::string path) {}
+	// 仅在上传后有效, 即获取到internalid时(internalid != 0) 否则重新上传
+	std::string toMiraiCode() {
+		if (internalid() == 0) {
+			// 重新上传
+			throw RemoteFileException("toMiraiCode error: internalid错误，重新上传");
+		}
+		return "[mirai:file:" + id() + "," + std::to_string(internalid()) + "," + name() + "," + std::to_string(size()) + "]";
 	}
 };
 
@@ -778,6 +871,10 @@ public:
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
 	Image uploadImg(std::string filename, JNIEnv* = manager->getEnv());
+	// 上传到的群文件路径(带文件名)根目录为/, 文件名, 如 group.uploadFIle("/test.txt", "D:\\xxxx")
+	RemoteFile uploadFile(std::string path, std::string filename, JNIEnv* = manager->getEnv());
+	// 群文件路径(不带文件名), 文件id
+	RemoteFile getFile(std::string path, std::string id, JNIEnv* = manager->getEnv());
 	Group() {};
 	/*
 	* 设置全员禁言
