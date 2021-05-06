@@ -23,7 +23,9 @@ import tech.eritquearcus.miraicp.PluginMain.muteall
 import tech.eritquearcus.miraicp.PluginMain.recallMsg
 import tech.eritquearcus.miraicp.PluginMain.rejectFriendRequest
 import tech.eritquearcus.miraicp.PluginMain.rejectGroupInvite
+import tech.eritquearcus.miraicp.PluginMain.remoteFileInfo
 import tech.eritquearcus.miraicp.PluginMain.scheduling
+import tech.eritquearcus.miraicp.PluginMain.uploadFile
 import tech.eritquearcus.miraicp.PluginMain.uploadImg
 
 class CPP_lib {
@@ -78,6 +80,18 @@ class CPP_lib {
         fun KUploadImg(fileName:String,source:String):String{
             return runBlocking {
                 uploadImg(fileName, gson.fromJson(source, Config.Contact::class.java))
+            }
+        }
+        @JvmStatic
+        fun KUploadFile(path:String, fileName: String, contactSource:String):String{
+            return runBlocking {
+                uploadFile(path, fileName, gson.fromJson(contactSource, Config.Contact::class.java))
+            }
+        }
+        @JvmStatic
+        fun KRemoteFileInfo(path: String, id: String, contactSource: String):String{
+            return runBlocking {
+                remoteFileInfo(path, id, gson.fromJson(contactSource, Config.Contact::class.java))
             }
         }
         //定时任务
