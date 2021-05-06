@@ -129,4 +129,24 @@ class Config {
         val nickornamecard: String,
         val avatarUrl: String
     )
+    data class DInfo(
+        val url: String,
+        val md5: String,
+        val sha1: String
+    )
+    data class FInfo(
+        val size: Long,
+        val uploaderid: Long,
+        val downloadtime: Int,
+        val uploadtime: Long,
+        val lastmodifytime: Long,
+    )
+    data class FileInfo(
+        val id: String,
+        val internalid: Int = 0,
+        val name: String = "",
+        val path: String = "/",
+        val dinfo: DInfo,
+        val fInfo: FInfo
+    )
 }

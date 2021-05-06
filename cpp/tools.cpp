@@ -27,6 +27,8 @@ void Config::Init(JNIEnv* env) {
 	this->GI = env->GetStaticMethodID(config->CPP_lib, "KGioperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
 	this->queryBotFriends = env->GetStaticMethodID(config->CPP_lib, "KQueryBFL", "(J)Ljava/lang/String;");
 	this->queryBotGroups = env->GetStaticMethodID(config->CPP_lib, "KQueryBGL", "(J)Ljava/lang/String;");
+	this->uploadFile = env->GetStaticMethodID(config->CPP_lib, "KUploadFile", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+	this->queryFile = env->GetStaticMethodID(config->CPP_lib, "KRemoteFileInfo", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
 }
 Config::~Config() {
 	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
@@ -353,6 +355,20 @@ Image Group::uploadImg(std::string filename, JNIEnv* env) {
 	fin.close();
 	std::string re = LowLevelAPI::uploadImg0(filename, this, env);
 	return Image(re);
+}
+RemoteFile Group::uploadFile(std::string path, std::string filename, JNIEnv* env)
+{
+	std::string callback = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->uploadFile, tools.str2jstring(path.c_str(), env), tools.str2jstring(filename.c_str(), env), tools.str2jstring(this->toString().c_str(), env)), env);
+	if (callback == "E1") throw GroupException();
+	if (callback == "E2") throw IOException("找不到" + filename + "位置:C-uploadfile");
+	if (callback == "E3") throw RemoteFileException("Upload Error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
+	return RemoteFile::buildFromString(callback);
+}
+RemoteFile Group::getFile(std::string path, std::string id, JNIEnv* env) {
+	std::string re = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->queryFile, tools.str2jstring(path.c_str(), env), tools.str2jstring(std::to_string(this->id()).c_str(), env), tools.str2jstring(this->toString().c_str(), env)), env);
+	if (re == "E1") throw GroupException();
+	if (re == "E2") throw RemoteFileException("Get Error: 文件路径不存在, path:" + path);
+	return RemoteFile::buildFromString(re);
 }
 void Group::setMuteAll(bool sign, JNIEnv* env){
 	std::string re = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->muteAll, (jlong)this->id(), (jboolean)sign));
