@@ -1,9 +1,98 @@
 #include "pch.h"
 
+/*线程管理*/
+
+threadManager::threadManager() {
+	this->_threads = std::map <std::string, t>();
+}
+void threadManager::setEnv(JNIEnv* e) {
+	mtx.lock();
+	if (!this->included(this->getThreadId())) {
+		t tmp;
+		tmp.e = e;
+		tmp.attach = false;
+		this->_threads.insert(std::pair<std::string, t>(this->getThreadId(), tmp));
+	}
+	else {
+		this->_threads[this->getThreadId()].e = e;
+	}
+	mtx.unlock();
+}
+void threadManager::newEnv(char* threadName) {
+	JNIEnv* env = nullptr;
+	JavaVMAttachArgs args{
+		JNIVersion,
+		threadName,
+		NULL
+	};
+	gvm->AttachCurrentThread((void**)&env, &args);
+	t tmp;
+	tmp.e = env;
+	tmp.attach = true;
+	this->_threads.insert(std::pair<std::string, t>(this->getThreadId(), tmp));
+	logger->Info("refresh env");
+};
+void threadManager::detach() {
+	mtx.lock();
+	if (this->included(this->getThreadId())) {
+		bool att = this->_threads[this->getThreadId()].attach;
+		this->_threads.erase(this->getThreadId());
+		if (att)
+			gvm->DetachCurrentThread();
+	}
+	mtx.unlock();
+}
+bool threadManager::included(std::string id) {
+	if (this->_threads.empty() || this->_threads.count(id) == 0)
+		return false;
+	return true;
+}
+JNIEnv* threadManager::getEnv() {
+	mtx.lock();
+	if (!this->included(getThreadId())) {
+		this->newEnv();
+	}
+	JNIEnv* tmp = this->_threads[this->getThreadId()].e;
+	mtx.unlock();
+	return tmp;
+}
+
+/*
+日志类实现
+throw: InitException 即找不到签名
+*/
+
+void Logger::init(JNIEnv* env) {
+	this->CPP_lib = (jclass)(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/CPP_lib")));
+	this->log = env->GetStaticMethodID(this->CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
+	if (this->CPP_lib == NULL) {
+		throw InitException("logger初始化错误", 1);
+	}
+	if (this->log == NULL) {
+		throw InitException("logger初始化错误", 2);
+	}
+}
+void Logger::log0(std::string log, JNIEnv* env, int level) {
+	env->CallStaticVoidMethod(config->CPP_lib, this->log, tools.str2jstring(log.c_str()), (jint)level);
+}
+void Logger::Warning(std::string log, JNIEnv* env) {
+	this->log0(log, env, 1);
+}
+void Logger::Error(std::string log, JNIEnv* env) {
+	this->log0(log, env, 2);
+}
+void Logger::Info(std::string log, JNIEnv* env) {
+	this->log0(log, env, 0);
+}
+Logger::~Logger() {
+	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
+}
+
 /*
 配置类实现
 throw: InitxException 即找不到对应签名
 */
+
 void Config::Init(JNIEnv* env) {	
 	this->initexception = env->FindClass("java/lang/NoSuchMethodException");
 	this->CPP_lib = (jclass)env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/CPP_lib"));
@@ -34,86 +123,6 @@ Config::~Config() {
 	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
 }
 
-threadManager::threadManager() {
-	this->_threads = std::map <std::string, t>();
-}
-void threadManager::setEnv(JNIEnv* e){
-	mtx.lock();
-	if (!this->included(this->getThreadId())) {
-		t tmp;
-		tmp.e = e;
-		tmp.attach = false;
-		this->_threads.insert(std::pair<std::string, t>(this->getThreadId(), tmp));
-	}else{
-		this->_threads[this->getThreadId()].e = e;
-	}
-	mtx.unlock();
-}
-void threadManager::newEnv(char* threadName){
-	JNIEnv* env = nullptr;
-	JavaVMAttachArgs args{
-		JNIVersion,
-		threadName,
-		NULL
-	};
-	gvm->AttachCurrentThread((void**)&env, &args);
-	t tmp;
-	tmp.e = env;
-	tmp.attach = true;
-	this->_threads.insert(std::pair<std::string, t>(this->getThreadId(), tmp));
-	logger->Info("refresh env");
-};
-void threadManager::detach(){
-	bool att = false;
-	mtx.lock();
-	if (this->included(this->getThreadId())) {
-		att = this->_threads[this->getThreadId()].attach;
-		this->_threads.erase(this->getThreadId());
-		if (att)
-			gvm->DetachCurrentThread();
-	}
-	mtx.unlock();
-}
-JNIEnv* threadManager::getEnv(){
-	mtx.lock();
-	if (!this->included(getThreadId())) {
-		this->newEnv();
-	}
-	JNIEnv* tmp = this->_threads[this->getThreadId()].e;
-	mtx.unlock();
-	return tmp;
-}
-
-/*
-日志类实现
-throw: InitException 即找不到签名
-*/
-void Logger::init(JNIEnv* env){
-	this->CPP_lib = (jclass)(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/CPP_lib")));
-	this->log = env->GetStaticMethodID(this->CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
-	if (this->CPP_lib == NULL) {
-		throw InitException("logger初始化错误", 1);
-	}
-	if (this->log== NULL) {
-		throw InitException("logger初始化错误", 2);
-	}
-}
-void Logger::log0(std::string log, JNIEnv* env, int level) {
-	env->CallStaticVoidMethod(config->CPP_lib, this->log, tools.str2jstring(log.c_str()), (jint)level);
-}
-void Logger::Warning(std::string log, JNIEnv* env) {
-	this->log0(log, env, 1);
-}
-void Logger::Error(std::string log, JNIEnv* env) {
-	this->log0(log, env, 2);
-}
-void Logger::Info(std::string log, JNIEnv* env) {
-	this->log0(log, env, 0);
-}
-Logger::~Logger() {
-	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
-}
-
 Event::~Event()
 {
 	Node* temp[] = { GMHead, PMHead, GHead, NFHead,MJHead,MLHead,RHead,SHead,BHead };
@@ -129,6 +138,25 @@ Event::~Event()
 			now = now->nextNode;
 			delete t;
 		}
+	}
+}
+
+SchedulingEvent::SchedulingEvent(std::string str, unsigned long long botid) :BotEvent(botid) {
+	const auto rawJsonLength = static_cast<int>(str.length());
+	Json::String err;
+	Json::Value root;
+	Json::CharReaderBuilder builder;
+	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+	if (!reader->parse(str.c_str(), str.c_str() + rawJsonLength, &root,
+		&err)) {
+		//error
+		logger->Error("JSON reader error");
+		APIException("JSON reader error").raise();
+	}
+	const Json::Value arrayNum = root["value"];
+	for (int i = 0; i < arrayNum.size(); i++)
+	{
+		ids.push_back(arrayNum[i].asCString());
 	}
 }
 
@@ -153,6 +181,40 @@ MessageSource::MessageSource(std::string t) {
 	this->internalids = tools.replace(this->internalids, "\n", "");
 	this->internalids = tools.replace(this->internalids, " ", "");
 }
+void MessageSource::recall() {
+	std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM,
+		tools.str2jstring(this->toString().c_str())));
+	if (re == "Y") return;
+	if (re == "E1") throw BotException(1);
+	if (re == "E2") throw RecallException();
+}
+
+//远程文件(群文件)
+RemoteFile RemoteFile::buildFromString(std::string source) {
+	Json::Value tmp = tools.StringToJson(source);
+	Json::Value droot = tmp["dinfo"];
+	dinfo d;
+	d.md5 = droot["md5"].asCString();
+	d.sha1 = droot["sha1"].asCString();
+	d.url = droot["url"].asCString();
+	Json::Value froot = tmp["finfo"];
+	finfo f;
+	f.downloadtime = froot["downloadtime"].asInt();
+	f.lastmodifytime = froot["lastmodifytime"].asLargestUInt();
+	f.size = froot["size"].asLargestUInt();
+	f.uploaderid = froot["uploaderid"].asLargestUInt();
+	f.uploadtime = froot["uploadtime"].asLargestUInt();
+	return RemoteFile(tmp["id"].asCString(), tmp["internalid"].asLargestUInt(), tmp["name"].asCString(), tmp["size"].asLargestUInt(), d, f);
+}
+RemoteFile::RemoteFile(std::string i, unsigned int ii, std::string n, long long s, dinfo d, finfo f) {
+	this->_id = i;
+	this->_internalid = ii;
+	this->_name = n;
+	this->_size = s;
+	this->_dinfo = d;
+	this->_finfo = f;
+}
+
 //发送这个聊天记录
 void ForwardMessage::sendTo(Contact* c, JNIEnv* env) {
 	Json::Value temp;
@@ -176,6 +238,23 @@ void ForwardMessage::sendTo(Contact* c, JNIEnv* env) {
 	}
 	if (re == "E2") throw MemberException(2);
 	if (re == "E3") throw APIException("参数错误");
+}
+ForwardMessage::ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes) {
+	Json::Value root;
+	Json::Value value;
+	root["type"] = c->type();
+	root["id"] = c->id();
+	root["id2"] = c->groupid();
+	for (ForwardNode node : nodes) {
+		Json::Value temp;
+		temp["id"] = node.id;
+		temp["time"] = node.time;
+		temp["message"] = node.message;
+		temp["name"] = node.name;
+		value.append(temp);
+	}
+	root["value"] = value;
+	sendmsg = root;
 }
 
 /*图片类实现*/
