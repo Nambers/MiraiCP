@@ -30,7 +30,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Verify(JNIEnv*
 		config->Init();
 		onEnable();
 	}
-	catch (MiraiCPException e) {
+	catch (MiraiCPException& e) {
 		e.raise();
 	}
 	return tools.str2jstring(MiraiCPVersion.c_str());//验证机制，返回当前SDK版本
