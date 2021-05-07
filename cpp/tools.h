@@ -12,20 +12,23 @@ private:
 	std::map <std::string, t> _threads;
 	std::recursive_mutex mtx;
 	void newEnv(char* threadName = NULL);
+	bool included(std::string id);
 public:
+	// 获取线程id
 	static std::string getThreadId(){
 		std::ostringstream oss;
 		oss << std::this_thread::get_id();
 		return oss.str();
 	}
-	bool included(std::string id) {
-		if (this->_threads.empty() || this->_threads.count(id) == 0)
-			return false;
-		return true;
-	}
 	threadManager();
+	// 设置env给当前线程
 	void setEnv(JNIEnv* e);
+	/*
+	结束当前线程的env，也就是释放当前线程缓存的env
+	不过继续调用getEnv()将再次获取，所以在线程任务最后调用本方法释放
+	*/
 	void detach();
+	// 取env
 	JNIEnv* getEnv();
 };
 extern threadManager* manager;
@@ -53,32 +56,47 @@ extern Logger* logger;
 /*配置类声明*/
 class Config {
 public:
+	// kt中JNI接口类
 	jclass CPP_lib = NULL;
+	// 异常类
 	jclass initexception = NULL;
+	// 撤回信息
 	jmethodID recallMsgM = NULL;
+	// 发送信息
 	jmethodID Send = NULL;
+	// 查询信息接口
 	jmethodID refreshInfo = NULL;
+	// 上传图片
 	jmethodID uploadImg = NULL;
+	// 取好友列表
 	jmethodID queryBotFriends = NULL;
+	// 取群组列表
 	jmethodID queryBotGroups= NULL;
+	// 上传文件
 	jmethodID uploadFile = NULL;
+	// 查询文件信息
 	jmethodID queryFile = NULL;
-	/*图像类*/
+	// 查询图片下载地址
 	jmethodID Query = NULL;
-	/*好友类*/
-	/*群聊成员类*/
+	// 禁言
 	jmethodID Mute = NULL;
+	// 查询权限
 	jmethodID QueryP = NULL;
+	// 踢出
 	jmethodID KickM = NULL;
-	/*群聊类*/
+	// 取群主
 	jmethodID getowner = NULL;
+	// 全员禁言
 	jmethodID muteAll = NULL;
-	jmethodID QueryN = NULL;
+	// 查询群成员列表
 	jmethodID QueryML = NULL;
 	/*定时任务*/
 	jmethodID Schedule = NULL;
+	// 构建转发信息
 	jmethodID buildforward = NULL;
+	// 好友申请事件
 	jmethodID NFR = NULL;
+	// 群聊邀请事件
 	jmethodID GI = NULL;
 	Config() {};
 	void Init(JNIEnv* = manager->getEnv());
@@ -369,13 +387,8 @@ public:
 	}
 	MessageSource() {};
 	MessageSource(std::string t);
-	void recall() {
-		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->recallMsgM,
-			tools.str2jstring(this->toString().c_str())));
-		if (re == "Y") return;
-		if (re == "E1") throw BotException(1);
-		if (re == "E2") throw RecallException();
-	}
+	// 撤回该消息
+	void recall();
 };
 
 //MiraiCode
@@ -575,31 +588,9 @@ public:
 	long long size() { return this->_size; }
 	// 文件在群文件的路径
 	std::string path() { return this->_path; }
-	static RemoteFile buildFromString(std::string source) {
-		Json::Value tmp = tools.StringToJson(source);
-		Json::Value droot = tmp["dinfo"];
-		dinfo d;
-		d.md5 = droot["md5"].asCString();
-		d.sha1 = droot["sha1"].asCString();
-		d.url = droot["url"].asCString();
-		Json::Value froot = tmp["finfo"];
-		finfo f;
-		f.downloadtime = froot["downloadtime"].asInt();
-		f.lastmodifytime = froot["lastmodifytime"].asLargestUInt();
-		f.size = froot["size"].asLargestUInt();
-		f.uploaderid = froot["uploaderid"].asLargestUInt();
-		f.uploadtime = froot["uploadtime"].asLargestUInt();
-		return RemoteFile(tmp["id"].asCString(), tmp["internalid"].asLargestUInt(), tmp["name"].asCString(), tmp["size"].asLargestUInt(), d, f);
-	}
+	static RemoteFile buildFromString(std::string source);
 	// 由完整信息构造
-	RemoteFile(std::string i, unsigned int ii, std::string n, long long s, dinfo d, finfo f) {
-		this->_id = i;
-		this->_internalid = ii;
-		this->_name = n;
-		this->_size = s;
-		this->_dinfo = d;
-		this->_finfo = f;
-	}
+	RemoteFile(std::string i, unsigned int ii, std::string n, long long s, dinfo d, finfo f);
 	// 由路径和群查找
 	RemoteFile(unsigned long long groupid, std::string path) {}
 	// 仅在上传后有效, 即获取到internalid时(internalid != 0) 否则重新上传
@@ -694,28 +685,13 @@ public:
 				ForwardNode(1930893235, "Eritque arcus", "hahaha", -1)
 			}).sendTo(&e.group);
 	*/
-	ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes) {
-		Json::Value root;
-		Json::Value value;
-		root["type"] = c->type();
-		root["id"] = c->id();
-		root["id2"] = c->groupid();
-		for (ForwardNode node : nodes) {
-			Json::Value temp;
-			temp["id"] = node.id;
-			temp["time"] = node.time;
-			temp["message"] = node.message;
-			temp["name"] = node.name;
-			value.append(temp);
-		}
-		root["value"] = value;
-		sendmsg = root;
-	}
+	ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes);
 	//发送给群或好友或群成员
 	void sendTo(Contact* c, JNIEnv* = manager->getEnv());
 };
 std::string BuildForwardMessage(Contact*, std::initializer_list<ForwardNode>);
 
+// 当前bot账号信息
 class Bot {
 private:
 	bool inited = false;
@@ -746,6 +722,7 @@ public:
 		return this->_nick;
 	}
 	std::string avatarUrl() {
+		check();
 		return this->_avatarUrl;
 	}
 	std::vector<unsigned long long> getFriendList(JNIEnv* env = manager->getEnv()) {
@@ -784,10 +761,10 @@ public:
 	Image uploadImg(std::string filename, JNIEnv* = manager->getEnv());
 	/*发送信息*/
 	//发送miraicode
-	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
+	MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
-	 MessageSource SendMiraiCode(MiraiCode msg) {
+	MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
 	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
@@ -1149,27 +1126,9 @@ public:
 	void init() {};
 	/*自定义id标识符*/
 	std::vector<std::string> ids;
-	SchedulingEvent(std::string str, unsigned long long botid):BotEvent(botid) {
-		const auto rawJsonLength = static_cast<int>(str.length());
-		Json::String err;
-		Json::Value root;
-		Json::CharReaderBuilder builder;
-		const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-		if (!reader->parse(str.c_str(), str.c_str() + rawJsonLength, &root,
-			&err)) {
-			//error
-			logger->Error("JSON reader error");
-			APIException("JSON reader error").raise();
-		}
-
-		const Json::Value arrayNum = root["value"];
-		for (int i = 0; i < arrayNum.size(); i++)
-		{
-			ids.push_back(arrayNum[i].asCString());
-		}
-
-	}
+	SchedulingEvent(std::string str, unsigned long long botid);
 };
+
 using GME = std::function<void(GroupMessageEvent)>;
 using PME = std::function<void(PrivateMessageEvent)>;
 using GI = std::function<void(GroupInviteEvent)>;
@@ -1301,13 +1260,6 @@ public:
 		}
 		void consume() const {
 			*enable = true;
-		}
-	};
-	class SuperNodeHandle {
-	public:
-		PMENode* enable;
-		SuperNodeHandle(PMENode* a) {
-			this->enable = a;
 		}
 	};
 
