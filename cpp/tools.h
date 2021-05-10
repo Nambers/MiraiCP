@@ -591,8 +591,6 @@ public:
 	static RemoteFile buildFromString(std::string source);
 	// 由完整信息构造
 	RemoteFile(std::string i, unsigned int ii, std::string n, long long s, dinfo d, finfo f);
-	// 由路径和群查找
-	RemoteFile(unsigned long long groupid, std::string path) {}
 	// 仅在上传后有效, 即获取到internalid时(internalid != 0) 否则重新上传
 	std::string toMiraiCode() {
 		if (internalid() == 0) {
@@ -848,10 +846,33 @@ public:
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
 	Image uploadImg(std::string filename, JNIEnv* = manager->getEnv());
-	// 上传到的群文件路径(带文件名)根目录为/, 文件名, 如 group.uploadFIle("/test.txt", "D:\\xxxx")
-	RemoteFile uploadFile(std::string path, std::string filename, JNIEnv* = manager->getEnv());
-	// 群文件路径(不带文件名), 文件id
-	RemoteFile getFile(std::string path, std::string id, JNIEnv* = manager->getEnv());
+	/*
+	上传并发送
+	path-群文件路径(带文件名),根目录为/
+	filepath-本地文件路径
+	如 group.uploadFIle("/test.txt", "D:\\xxxx.xxx")
+	*/
+	RemoteFile sendFile(std::string path, std::string filepath, JNIEnv* = manager->getEnv());
+	/* 
+	取群文件信息,会自动搜索子目录
+	path-群文件路径(不带文件名)
+	id-文件id,可空，空则为用路径查找(此时路径要带文件名)
+	因为群文件允许重名文件存在的特性，该查找并不可靠，只能返回重名文件中的其中一个文件
+	*/
+	RemoteFile getFile(std::string path, std::string id = "", JNIEnv* = manager->getEnv());
+	struct short_info {
+		// 路径带文件名
+		std::string path = "";
+		// 唯一id
+		std::string id = "";
+	};
+	/*
+	获取path路径下全部文件信息
+	返回值为一个vector容器, 每一项为short_info
+	*/
+	std::vector<short_info> getFileList(std::string path, JNIEnv* = manager->getEnv());
+	// 取文件列表返回值是字符串
+	std::string getFileListString(std::string path, JNIEnv* = manager->getEnv());
 	Group() {};
 	/*
 	* 设置全员禁言

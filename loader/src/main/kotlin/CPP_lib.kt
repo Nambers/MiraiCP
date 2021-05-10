@@ -1,6 +1,7 @@
 package tech.eritquearcus.miraicp
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 import tech.eritquearcus.miraicp.KotlinMain.BasicSendLog
 import tech.eritquearcus.miraicp.KotlinMain.QueryBFL
 import tech.eritquearcus.miraicp.KotlinMain.QueryBGL
@@ -33,7 +34,7 @@ class CPP_lib {
     init {
         ver=Verify()
     }
-    //"C:\Program Files\Java\jdk1.8.0_261\bin\javah.exe" org.example.mirai.plugin.CPP_lib
+    //"C:\Program Files\Java\jdk1.8.0_261\bin\javap.exe" -s tech.eritquearcus.miraicp.CPP_lib
     companion object{
         private val gson = Gson()
         init {
@@ -89,9 +90,14 @@ class CPP_lib {
             }
         }
         @JvmStatic
-        fun KRemoteFileInfo(path: String, id: String, contactSource: String):String{
+        fun KRemoteFileInfo(source: String, contactSource: String):String {
             return runBlocking {
-                remoteFileInfo(path, id, gson.fromJson(contactSource, Config.Contact::class.java))
+                val t = JSONObject(source)
+                return@runBlocking remoteFileInfo(
+                    t.getString("path"),
+                    t.getString("id"),
+                    gson.fromJson(contactSource, Config.Contact::class.java)
+                )
             }
         }
         //定时任务

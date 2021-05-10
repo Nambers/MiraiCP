@@ -94,8 +94,9 @@ throw: InitxException 即找不到对应签名
 */
 
 void Config::Init(JNIEnv* env) {	
-	this->initexception = env->FindClass("java/lang/NoSuchMethodException");
-	this->CPP_lib = (jclass)env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/CPP_lib"));
+	// int x = (int)env->EnsureLocalCapacity((jint)22);
+	this->initexception = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("java/lang/NoSuchMethodException")));
+	this->CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/CPP_lib")));
 	if (this->CPP_lib == NULL) {
 		throw InitException("初始化错误", 1);
 	}
@@ -117,7 +118,7 @@ void Config::Init(JNIEnv* env) {
 	this->queryBotFriends = env->GetStaticMethodID(config->CPP_lib, "KQueryBFL", "(J)Ljava/lang/String;");
 	this->queryBotGroups = env->GetStaticMethodID(config->CPP_lib, "KQueryBGL", "(J)Ljava/lang/String;");
 	this->uploadFile = env->GetStaticMethodID(config->CPP_lib, "KUploadFile", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-	this->queryFile = env->GetStaticMethodID(config->CPP_lib, "KRemoteFileInfo", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+	this->queryFile = env->GetStaticMethodID(config->CPP_lib, "KRemoteFileInfo", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
 }
 Config::~Config() {
 	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
@@ -435,7 +436,7 @@ Image Group::uploadImg(std::string filename, JNIEnv* env) {
 	std::string re = LowLevelAPI::uploadImg0(filename, this, env);
 	return Image(re);
 }
-RemoteFile Group::uploadFile(std::string path, std::string filename, JNIEnv* env)
+RemoteFile Group::sendFile(std::string path, std::string filename, JNIEnv* env)
 {
 	std::string callback = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->uploadFile, tools.str2jstring(path.c_str(), env), tools.str2jstring(filename.c_str(), env), tools.str2jstring(this->toString().c_str(), env)), env);
 	if (callback == "E1") throw GroupException();
@@ -444,7 +445,10 @@ RemoteFile Group::uploadFile(std::string path, std::string filename, JNIEnv* env
 	return RemoteFile::buildFromString(callback);
 }
 RemoteFile Group::getFile(std::string path, std::string id, JNIEnv* env) {
-	std::string re = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->queryFile, tools.str2jstring(path.c_str(), env), tools.str2jstring(std::to_string(this->id()).c_str(), env), tools.str2jstring(this->toString().c_str(), env)), env);
+	Json::Value tmp;
+	tmp["id"] = id;
+	tmp["path"] = path;
+	std::string re = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->queryFile, tools.str2jstring(tools.JsonToString(tmp).c_str(), env), tools.str2jstring(this->toString().c_str(), env)), env);
 	if (re == "E1") throw GroupException();
 	if (re == "E2") throw RemoteFileException("Get Error: 文件路径不存在, path:" + path);
 	return RemoteFile::buildFromString(re);
@@ -473,6 +477,26 @@ MessageSource Group::SendMsg(std::string msg, JNIEnv* env) {
 		throw GroupException();
 	}
 	return MessageSource(re);
+}
+std::string Group::getFileListString(std::string path, JNIEnv* env) {
+	Json::Value temp;
+	temp["id"] = "-1";
+	temp["path"] = path;
+	std::string tmp = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->queryFile, tools.str2jstring(tools.JsonToString(temp).c_str(), env), tools.str2jstring(this->toString().c_str(), env)), env);
+	if (tmp == "E1") throw GroupException();
+	return tmp;
+}
+std::vector<Group::short_info> Group::getFileList(std::string path, JNIEnv* env) {
+	std::vector<short_info> re = std::vector<short_info>();
+	std::string tmp = getFileListString(path, env);
+	Json::Value root = tools.StringToJson(tmp);
+	for (int i = 0; i < root.size(); i++) {
+		short_info t;
+		t.path = root[i][0].asCString();
+		t.id = root[i][1].asCString();
+		re.push_back(t);
+	}
+	return re;
 }
 
 /*工具类实现*/
