@@ -52,7 +52,7 @@ void onEnable() {
 	// 监听群信息
 	procession->registerEvent([=](GroupMessageEvent e) {
 		// 发送文本信息
-		e.group.SendMsg("HI");
+		//e.group.SendMsg("HI");
 		// 发送MiraiCode信息，At
 		//e.group.SendMiraiCode(At(e.sender));
 		// 撤回测试
@@ -72,9 +72,20 @@ void onEnable() {
 		//e.sender.SendMsg(e.bot.nick());
 		//e.sender.SendMsg(e.bot.FriendListToString());
 		//e.sender.SendMsg(e.bot.GroupListToString());
-		RemoteFile tmp = e.group.uploadFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
-		e.group.SendMiraiCode(tmp.toMiraiCode());
-		e.group.getFile("/", tmp.id());
+		//RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
+		//e.group.SendMsg(e.group.getFile("/", tmp.id()).name());
+		//e.group.SendMsg(e.group.getFile("/test.txt").name());
+		e.group.SendMsg(e.group.getFileListString("/"));
+		std::vector<Group::short_info> a = e.group.getFileList("/");
+		std::stringstream ss;
+		for (size_t i = 0; i < a.size(); ++i)
+		{
+			if (i != 0)
+				ss << ",";
+			ss << "{" << a[i].path << "," << a[i].id << "}";
+		}
+		std::string s = ss.str();
+		e.group.SendMsg(s);
 		});
 	// 监听群临时会话
 	procession->registerEvent([](GroupTempMessageEvent e) {

@@ -24,11 +24,13 @@ import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.*
+import net.mamoe.mirai.utils.ExternalResource.Companion.sendAsImageTo
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
 import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import net.mamoe.mirai.utils.RemoteFile.ProgressionCallback.Companion.asProgressionCallback
 import org.fusesource.jansi.AnsiConsole
+import org.json.JSONArray
 import org.json.JSONObject
 import tech.eritquearcus.miraicp.KotlinMain.now_tag
 import java.io.File
@@ -307,12 +309,13 @@ object KotlinMain {
         }
         return "Y"
     }
+
     private suspend fun fileInfo0(temp: RemoteFile):String{
         val dinfo = temp.getDownloadInfo()!!
         val finfo = temp.getInfo()!!
         return gson.toJson(Config.FileInfo(
             id = finfo.id,
-            name=finfo.name,
+            name = finfo.name,
             path= finfo.path,
             dinfo = Config.DInfo(dinfo.url, dinfo.md5.toString(), dinfo.sha1.toString()),
             fInfo = Config.FInfo(finfo.length, finfo.uploaderId, finfo.downloadTimes, finfo.uploaderId, finfo.lastModifyTime))
@@ -337,23 +340,58 @@ object KotlinMain {
                 e.printStackTrace()
                 return "E3"
             }
-        val temp = tmp.toRemoteFile(group)?:let{
+        tmp.sendTo(group)
+        val temp = group.filesRoot.resolveById(tmp.id)?:let{
+            logger.error("cannot find the file, 位置:K-uploadFile, id:${tmp.id}")
             return "E3"
         }
-        logger.info(fileInfo0(temp))
-        return fileInfo0(temp)
+        val t = fileInfo0(temp)
+        return t
     }
 
-    suspend fun remoteFileInfo(path: String, id: String, c: Config.Contact):String{
+    private suspend fun remoteFileList(path: String, c: Config.Contact):String{
         val group = AIbot.getGroup(c.id) ?: let {
-            logger.error("找不到对应群组，位置K-uploadfile()，gid:${c.id}")
+            logger.error("找不到对应群组，位置K-remoteFileInfo，gid:${c.id}")
             return "E1"
         }
-        val tmp = group.filesRoot.resolve(path).resolveById(id)?:let{
+        var tmp = "["
+        group.filesRoot.resolve(path).listFilesCollection().forEach {
+            tmp += "[\"${it.path}\", \"${it.id}\"],"
+        }
+        tmp = tmp.substring(0, tmp.length - 1)
+        tmp += "]"
+        return tmp
+    }
+
+    private suspend fun remoteFileInfo0(path: String, c:Config.Contact):String {
+        val group = AIbot.getGroup(c.id) ?: let {
+            logger.error("找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}")
+            return "E1"
+        }
+        val tmp = group.filesRoot.resolve(path)
+        if (!tmp.isFile() || !tmp.exists()) {
+            logger.error("cannot find the file,位置:K-remoteFileinfo0, path: $path")
             return "E2"
         }
         return fileInfo0(tmp)
     }
+
+    suspend fun remoteFileInfo(path: String, id: String, c: Config.Contact):String{
+        if(id == "")
+            return remoteFileInfo0(path, c)
+        if(id == "-1")
+            return remoteFileList(path, c)
+        val group = AIbot.getGroup(c.id) ?: let {
+            logger.error("找不到对应群组，位置K-remoteFileInfo，gid:${c.id}")
+            return "E1"
+        }
+        val tmp = group.filesRoot.resolve(path).resolveById(id)?:let{
+            logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id")
+            return "E2"
+        }
+        return fileInfo0(tmp)
+    }
+
     //查询权限
     fun kqueryM(qqid: Long, groupid: Long): String{
         val group = AIbot.getGroup(groupid) ?: let {
