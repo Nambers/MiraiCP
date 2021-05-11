@@ -47,7 +47,7 @@ object KotlinMain {
         Mirai
         serializersModule = MessageSerializers.serializersModule
     }
-    const val now_tag = "v2.6.1"
+    const val now_tag = "v2.6.2"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
     private lateinit var AIbot: Bot
@@ -74,6 +74,7 @@ object KotlinMain {
     //发送消息部分实现 MiraiCode
 
     suspend fun Send0(message: Message, c:Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
         when(c.type){
             1->{
                 logger.info("Send message for(${c.id}) is $message")
@@ -126,6 +127,7 @@ object KotlinMain {
     }
 
     fun RefreshInfo(c: Config.Contact): String{
+        val AIbot = Bot.getInstance(c.botid)
         when(c.type){
             1->{
                 val f = AIbot.getFriend(c.id) ?: let {
@@ -168,27 +170,30 @@ object KotlinMain {
     }
 
     //取群成员列表
-    fun QueryML(groupid: Long): String {
-        val g = AIbot.getGroup(groupid) ?: let {
+    fun QueryML(c: Config.Contact): String {
+        val AIbot = Bot.getInstance(c.botid)
+        val g = AIbot.getGroup(c.id) ?: let {
             logger.error("取群成员找不到群,位置K-QueryML")
             return "E1"
         }
-        val m = ArrayList<Long>()
+        val m = java.util.ArrayList<Long>()
         g.members.forEach{
             m.add(it.id)
         }
         return gson.toJson(m)
     }
 
-    fun QueryBFL(): String{
-        val tmp = ArrayList<Long>()
+    fun QueryBFL(bid: Long): String{
+        val AIbot = Bot.getInstance(bid)
+        val tmp = java.util.ArrayList<Long>()
         AIbot.friends.forEach {
             tmp.add(it.id)
         }
         return gson.toJson(tmp)
     }
-    fun QueryBGL(): String{
-        val tmp = ArrayList<Long>()
+    fun QueryBGL(bid: Long): String{
+        val AIbot = Bot.getInstance(bid)
+        val tmp = java.util.ArrayList<Long>()
         AIbot.groups.forEach {
             tmp.add(it.id)
         }
@@ -198,6 +203,7 @@ object KotlinMain {
     //图片部分实现
 
     suspend fun uploadImg(file: String, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
         when(c.type){
             1->{
                 val temp = AIbot.getFriend(c.id) ?: let {
@@ -279,8 +285,7 @@ object KotlinMain {
             cpp.Event(
                 Gson().toJson(
                     Config.TimeOutEvent(
-                        id,
-                        AIbot.id
+                        id
                     )
                 )
             )
@@ -288,20 +293,20 @@ object KotlinMain {
     }
 
     //禁言
-    suspend fun mute(qqid: Long, groupid: Long, time:Int):String{
-        val group = AIbot.getGroup(groupid) ?: let{
-            logger.error("禁言找不到对应群组，位置K-mute()，gid:$groupid")
+    suspend fun mute(time:Int, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
+        val group = AIbot.getGroup(c.groupid) ?: let{
+            logger.error("禁言找不到对应群组，位置K-mute()，gid:${c.groupid}")
             return "E1"
         }
-        val member = group[qqid] ?: let {
-            logger.error("禁言找不到对应群成员，位置K-mute()，id:$qqid, gid:$groupid")
+        val member = group[c.id] ?: let {
+            logger.error("禁言找不到对应群成员，位置K-mute()，id:${c.id}, gid:${c.id}")
             return "E2"
         }
         try {
-            if(time != 0) member.mute(time)
-            else member.unmute()
+            member.mute(time)
         }catch (e: PermissionDeniedException){
-            logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:$groupid，目标成员id:$qqid")
+            logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:${c.groupid}，目标成员id:${c.id}")
             return "E3"
         }catch (e:IllegalStateException){
             logger.error("执行禁言失败禁言时间超出0s~30d，位置:K-mute()，时间:$time")
@@ -322,6 +327,7 @@ object KotlinMain {
         )
     }
     suspend fun sendFile(path: String, file: String, c: Config.Contact): String {
+        val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-uploadfile()，gid:${c.id}")
             return "E1"
@@ -350,6 +356,7 @@ object KotlinMain {
     }
 
     private suspend fun remoteFileList(path: String, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-remoteFileInfo，gid:${c.id}")
             return "E1"
@@ -364,6 +371,7 @@ object KotlinMain {
     }
 
     private suspend fun remoteFileInfo0(path: String, c:Config.Contact):String {
+        val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}")
             return "E1"
@@ -377,6 +385,7 @@ object KotlinMain {
     }
 
     suspend fun remoteFileInfo(path: String, id: String, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
         if(id == "")
             return remoteFileInfo0(path, c)
         if(id == "-1")
@@ -393,26 +402,28 @@ object KotlinMain {
     }
 
     //查询权限
-    fun kqueryM(qqid: Long, groupid: Long): String{
-        val group = AIbot.getGroup(groupid) ?: let {
-            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:$groupid")
+    fun kqueryM(c: Config.Contact): String{
+        val AIbot = Bot.getInstance(c.botid)
+        val group = AIbot.getGroup(c.groupid) ?: let {
+            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}")
             return "E1"
         }
-        val member = group[qqid] ?: let {
-            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:$qqid, gid:$groupid")
+        val member = group[c.id] ?: let {
+            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.groupid}")
             return "E2"
         }
         return member.permission.level.toString()
 
     }
 
-    suspend fun kkick(qqid: Long, groupid: Long, message: String):String{
-        val group = AIbot.getGroup(groupid) ?: let {
-            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:$groupid")
+    suspend fun kkick(message: String, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
+        val group = AIbot.getGroup(c.groupid) ?: let {
+            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}")
             return "E1"
         }
-        val member = group[qqid] ?: let {
-            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:$qqid, gid:$groupid")
+        val member = group[c.id] ?: let {
+            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.id}")
             return "E2"
         }
         try {
@@ -424,8 +435,10 @@ object KotlinMain {
     }
 
     //全员禁言
-    fun muteall(groupid: Long, sign: Boolean):String{
-        val g =AIbot.getGroup(groupid)?:let{
+    fun muteall(sign: Boolean, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
+        val g =AIbot.getGroup(c.id)?:let{
+            logger.error("找不到群,位置:K-muteall, gid:${c.id}")
             return "E1"
         }
         try {
@@ -437,15 +450,18 @@ object KotlinMain {
     }
 
     //取群主
-    fun getowner(groupid: Long):String{
-        val g = AIbot.getGroup(groupid)?:let {
+    fun getowner(c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
+        val g = AIbot.getGroup(c.id)?:let {
+            logger.error("找不到群,位置:K-getowner,gid:${c.id}")
             return "E1"
         }
         return g.owner.id.toString()
     }
 
     //构建聊天记录
-    suspend fun buildforwardMsg(text:String):String{
+    suspend fun buildforwardMsg(text:String, bid: Long):String{
+        val AIbot = Bot.getInstance(bid)
         val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
         val c1:Contact = when(t.type) {
             1 -> AIbot.getFriend(t.id) ?: let {

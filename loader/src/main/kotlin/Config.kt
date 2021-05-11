@@ -6,7 +6,8 @@ class Config {
         val type: Int,
         val id: Long,
         val groupid: Long,
-        val nickornamecard: String
+        val nickornamecard: String,
+        val botid: Long
     )
     data class SendRequest(
         val contact: Contact,
@@ -89,7 +90,6 @@ class Config {
     )
     data class TimeOutEvent(
         val message: String,
-        val botid: Long,
         val type: Int = 8
     )
     data class BotJoinGroup(

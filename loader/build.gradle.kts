@@ -16,7 +16,7 @@ application {
     mainClassName = "tech.eritquearcus.miraicp.KotlinMainKt"
 }
 group = "tech.eritquearcus"
-version = "2.6.1"
+version = "2.6.2"
 
 repositories {
     maven{ url =uri("https://maven.aliyun.com/nexus/content/groups/public/")}

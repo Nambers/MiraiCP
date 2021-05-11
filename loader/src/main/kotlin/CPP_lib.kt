@@ -84,9 +84,10 @@ class CPP_lib {
             }
         }
         @JvmStatic
-        fun KSendFile(path:String, fileName: String, contactSource:String):String{
+        fun KSendFile(source:String, contactSource:String):String{
             return runBlocking {
-                sendFile(path, fileName, gson.fromJson(contactSource, Config.Contact::class.java))
+                val t = JSONObject(source)
+                sendFile(t.getString("path"), t.getString("filename"), gson.fromJson(contactSource, Config.Contact::class.java))
             }
         }
         @JvmStatic
@@ -107,53 +108,53 @@ class CPP_lib {
         }
         //mute member
         @JvmStatic
-        fun KMuteM(qqid: Long, groupid: Long, time: Int): String{
+        fun KMuteM(time: Int, contactSource: String): String{
             return runBlocking {
-                mute(qqid, groupid, time)
+                mute(time, gson.fromJson(contactSource, Config.Contact::class.java))
             }
         }
         //query the permission of a member in a group
         @JvmStatic
-        fun KQueryM(qqid: Long, groupid: Long): String{
-            return kqueryM(qqid, groupid)
+        fun KQueryM(contactSource: String): String{
+            return kqueryM(gson.fromJson(contactSource, Config.Contact::class.java))
         }
         //kick a member
         @JvmStatic
-        fun KKickM(qqid: Long, groupid: Long, message: String):String{
+        fun KKickM(message: String, contactSource: String):String{
             return runBlocking {
-                kkick(qqid, groupid, message)
+                kkick(message, gson.fromJson(contactSource, Config.Contact::class.java))
             }
         }
         //Mute the whole group
         @JvmStatic
-        fun KMuteGroup(groupid: Long, sign: Boolean):String{
-            return muteall(groupid, sign)
+        fun KMuteGroup(sign: Boolean, contactSource: String):String{
+            return muteall(sign, gson.fromJson(contactSource, Config.Contact::class.java))
         }
         //query the member list of a group
         @JvmStatic
-        fun KQueryML(groupid: Long):String{
-            return QueryML(groupid)
+        fun KQueryML(contactSource: String):String{
+            return QueryML(gson.fromJson(contactSource, Config.Contact::class.java))
         }
         // query the friend lst of the bot
         @JvmStatic
         fun KQueryBFL(botid: Long): String{
-            return QueryBFL()
+            return QueryBFL(botid)
         }
         // query the group list of the bot
         @JvmStatic
         fun KQueryBGL(botid: Long): String{
-            return QueryBGL()
+            return QueryBGL(botid)
         }
         //query the owner of a group
         @JvmStatic
-        fun KQueryOwner(groupid: Long):String{
-            return getowner(groupid)
+        fun KQueryOwner(contactSource: String):String{
+            return getowner(gson.fromJson(contactSource, Config.Contact::class.java))
         }
         //build forward message
         @JvmStatic
-        fun KBuildforward(text:String):String{
+        fun KBuildforward(text:String, botid: Long):String{
             return runBlocking {
-                 buildforwardMsg(text)
+                buildforwardMsg(text, botid)
             }
         }
         @JvmStatic
