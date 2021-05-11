@@ -1,6 +1,7 @@
 package tech.eritquearcus.miraicp
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 import tech.eritquearcus.miraicp.PluginMain.BasicSendLog
 import tech.eritquearcus.miraicp.PluginMain.QueryBFL
 import tech.eritquearcus.miraicp.PluginMain.QueryBGL
@@ -25,7 +26,7 @@ import tech.eritquearcus.miraicp.PluginMain.rejectFriendRequest
 import tech.eritquearcus.miraicp.PluginMain.rejectGroupInvite
 import tech.eritquearcus.miraicp.PluginMain.remoteFileInfo
 import tech.eritquearcus.miraicp.PluginMain.scheduling
-import tech.eritquearcus.miraicp.PluginMain.uploadFile
+import tech.eritquearcus.miraicp.PluginMain.sendFile
 import tech.eritquearcus.miraicp.PluginMain.uploadImg
 
 class CPP_lib {
@@ -33,7 +34,7 @@ class CPP_lib {
     init {
         ver=Verify()
     }
-    //"C:\Program Files\Java\jdk1.8.0_261\bin\javah.exe" org.example.mirai.plugin.CPP_lib
+    //"C:\Program Files\Java\jdk1.8.0_261\bin\javap.exe" -s tech.eritquearcus.miraicp.CPP_lib
     companion object{
         private val gson = Gson()
         init {
@@ -83,15 +84,20 @@ class CPP_lib {
             }
         }
         @JvmStatic
-        fun KUploadFile(path:String, fileName: String, contactSource:String):String{
+        fun KSendFile(path:String, fileName: String, contactSource:String):String{
             return runBlocking {
-                uploadFile(path, fileName, gson.fromJson(contactSource, Config.Contact::class.java))
+                sendFile(path, fileName, gson.fromJson(contactSource, Config.Contact::class.java))
             }
         }
         @JvmStatic
-        fun KRemoteFileInfo(path: String, id: String, contactSource: String):String{
+        fun KRemoteFileInfo(source: String, contactSource: String):String {
             return runBlocking {
-                remoteFileInfo(path, id, gson.fromJson(contactSource, Config.Contact::class.java))
+                val t = JSONObject(source)
+                return@runBlocking remoteFileInfo(
+                    t.getString("path"),
+                    t.getString("id"),
+                    gson.fromJson(contactSource, Config.Contact::class.java)
+                )
             }
         }
         //定时任务
