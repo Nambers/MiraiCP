@@ -26,7 +26,7 @@ import tech.eritquearcus.miraicp.KotlinMain.rejectFriendRequest
 import tech.eritquearcus.miraicp.KotlinMain.rejectGroupInvite
 import tech.eritquearcus.miraicp.KotlinMain.remoteFileInfo
 import tech.eritquearcus.miraicp.KotlinMain.scheduling
-import tech.eritquearcus.miraicp.KotlinMain.uploadFile
+import tech.eritquearcus.miraicp.KotlinMain.sendFile
 import tech.eritquearcus.miraicp.KotlinMain.uploadImg
 
 class CPP_lib {
@@ -84,9 +84,9 @@ class CPP_lib {
             }
         }
         @JvmStatic
-        fun KUploadFile(path:String, fileName: String, contactSource:String):String{
+        fun KSendFile(path:String, fileName: String, contactSource:String):String{
             return runBlocking {
-                uploadFile(path, fileName, gson.fromJson(contactSource, Config.Contact::class.java))
+                sendFile(path, fileName, gson.fromJson(contactSource, Config.Contact::class.java))
             }
         }
         @JvmStatic

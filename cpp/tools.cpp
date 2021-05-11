@@ -117,7 +117,7 @@ void Config::Init(JNIEnv* env) {
 	this->GI = env->GetStaticMethodID(config->CPP_lib, "KGioperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
 	this->queryBotFriends = env->GetStaticMethodID(config->CPP_lib, "KQueryBFL", "(J)Ljava/lang/String;");
 	this->queryBotGroups = env->GetStaticMethodID(config->CPP_lib, "KQueryBGL", "(J)Ljava/lang/String;");
-	this->uploadFile = env->GetStaticMethodID(config->CPP_lib, "KUploadFile", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+	this->uploadFile = env->GetStaticMethodID(config->CPP_lib, "KSendFile", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
 	this->queryFile = env->GetStaticMethodID(config->CPP_lib, "KRemoteFileInfo", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
 }
 Config::~Config() {
