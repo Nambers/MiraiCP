@@ -61,43 +61,43 @@ public:
 	// 异常类
 	jclass initexception = NULL;
 	// 撤回信息
-	jmethodID recallMsgM = NULL;
+	jmethodID KRecall = NULL;
 	// 发送信息
-	jmethodID Send = NULL;
+	jmethodID KSend = NULL;
 	// 查询信息接口
-	jmethodID refreshInfo = NULL;
+	jmethodID KRefreshInfo = NULL;
 	// 上传图片
-	jmethodID uploadImg = NULL;
+	jmethodID KUploadImg = NULL;
 	// 取好友列表
-	jmethodID queryBotFriends = NULL;
+	jmethodID KQueryBFL = NULL;
 	// 取群组列表
-	jmethodID queryBotGroups= NULL;
+	jmethodID KQueryBGL= NULL;
 	// 上传文件
-	jmethodID uploadFile = NULL;
+	jmethodID KSendFile = NULL;
 	// 查询文件信息
-	jmethodID queryFile = NULL;
+	jmethodID KRemoteFileInfo = NULL;
 	// 查询图片下载地址
-	jmethodID Query = NULL;
+	jmethodID KQueryImgUrl = NULL;
 	// 禁言
-	jmethodID Mute = NULL;
+	jmethodID KMuteM = NULL;
 	// 查询权限
-	jmethodID QueryP = NULL;
+	jmethodID KQueryM = NULL;
 	// 踢出
-	jmethodID KickM = NULL;
+	jmethodID KKickM = NULL;
 	// 取群主
-	jmethodID getowner = NULL;
+	jmethodID KQueryOwner = NULL;
 	// 全员禁言
-	jmethodID muteAll = NULL;
+	jmethodID KMuteGroup = NULL;
 	// 查询群成员列表
-	jmethodID QueryML = NULL;
+	jmethodID KQueryML = NULL;
 	/*定时任务*/
-	jmethodID Schedule = NULL;
+	jmethodID KSchedule = NULL;
 	// 构建转发信息
-	jmethodID buildforward = NULL;
+	jmethodID KBuildforward = NULL;
 	// 好友申请事件
-	jmethodID NFR = NULL;
+	jmethodID KNfroperation = NULL;
 	// 群聊邀请事件
-	jmethodID GI = NULL;
+	jmethodID KGioperation = NULL;
 	Config() {};
 	void Init(JNIEnv* = manager->getEnv());
 	~Config();
@@ -497,23 +497,26 @@ public:
 /*group, friend, member的父类*/
 class Contact {
 protected:
-	int _type;
+	int _type = 0;
 	unsigned long long _id;
 	unsigned long long _groupid;
 	std::string _nickOrNameCard;
 	std::string _avatarUrl;
+	unsigned long long _botid;
 public:
 	Contact() {
-		_type = 0;
-		_id = 0;
-		_groupid = 0;
-		_nickOrNameCard = "";
+		this->_type = 0;
+		this->_id = 0;
+		this->_groupid = 0;
+		this->_nickOrNameCard = "";
+		this->_botid = 0;
 	}
-	Contact(int type, unsigned long long id, unsigned long long gid, std::string name) {
+	Contact(int type, unsigned long long id, unsigned long long gid, std::string name, unsigned long long botid) {
 		this->_type = type;
 		this->_id = id;
 		this->_groupid = gid;
 		this->_nickOrNameCard = name;
+		this->_botid = botid;
 	};
 	//1-Friend好友, 2-group群组, 3-member群成员
 	int type() {return this->_type;}
@@ -525,12 +528,15 @@ public:
 	std::string nickOrNameCard() { return this->_nickOrNameCard; };
 	// 头像url地址
 	std::string avatarUrl() { return this->_avatarUrl; };
+	// 所属bot
+	unsigned long long botid() { return this->_botid; };
 	Json::Value toJsonValue() {
 		Json::Value root;
 		root["type"] = type();
 		root["id"] = id();
 		root["groupid"] = groupid();
 		root["nickornamecard"] = nickOrNameCard();
+		root["botid"] = botid();
 		return root;
 	}
 	std::string toString() {
@@ -542,7 +548,8 @@ public:
 		return Contact(root["type"].asInt(), 
 			root["id"].asLargestUInt(), 
 			root["groupid"].asLargestUInt(), 
-			root["nickornamecard"].asCString());
+			root["nickornamecard"].asCString(),
+			root["botid"].asLargestUInt());
 	}
 };
 
@@ -608,13 +615,13 @@ public:
 		Json::Value root;
 		root["content"] = content;
 		root["contact"] = c->toJsonValue();
-		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->Send, tools.str2jstring(tools.JsonToString(root).c_str(),env), (jboolean)miraicode), env);
+		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KSend, tools.str2jstring(tools.JsonToString(root).c_str(),env), (jboolean)miraicode), env);
 	}
 	static std::string getInfoSource(Contact* c, JNIEnv* env = manager->getEnv()) {
-		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->refreshInfo, tools.str2jstring(c->toString().c_str(), env)));
+		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo, tools.str2jstring(c->toString().c_str(), env)));
 	}
 	static std::string uploadImg0(std::string path, Contact* c, JNIEnv* env = manager->getEnv()) {
-		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->uploadImg,tools.str2jstring(path.c_str(), env), tools.str2jstring(c->toString().c_str(), env)));
+		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KUploadImg,tools.str2jstring(path.c_str(), env), tools.str2jstring(c->toString().c_str(), env)));
 	}
 	static struct info {
 		std::string nickornamecard;
@@ -687,7 +694,6 @@ public:
 	//发送给群或好友或群成员
 	void sendTo(Contact* c, JNIEnv* = manager->getEnv());
 };
-std::string BuildForwardMessage(Contact*, std::initializer_list<ForwardNode>);
 
 // 当前bot账号信息
 class Bot {
@@ -704,7 +710,7 @@ private:
 	}
 public:
 	void refreshInfo(JNIEnv* env = manager->getEnv()) {
-		LowLevelAPI::info tmp = LowLevelAPI::info0(tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->refreshInfo, tools.str2jstring(Contact(4, this->_id, 0, "").toString().c_str(), env))));
+		LowLevelAPI::info tmp = LowLevelAPI::info0(tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo, tools.str2jstring(Contact(4, 0, 0, "", this->_id).toString().c_str(), env))));
 		this->_avatarUrl = tmp.avatarUrl;
 		this->_nick = tmp.nickornamecard;
 	}
@@ -725,7 +731,7 @@ public:
 	}
 	std::vector<unsigned long long> getFriendList(JNIEnv* env = manager->getEnv()) {
 		std::string temp = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
-			config->queryBotFriends,
+			config->KQueryBFL,
 			(jlong)this->id()));
 		return tools.StringToVector(temp);
 	}
@@ -734,7 +740,7 @@ public:
 	}
 	std::vector<unsigned long long> getGroupList(JNIEnv* env = manager->getEnv()) {
 		std::string temp = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
-			config->queryBotGroups,
+			config->KQueryBGL,
 			(jlong)this->id()));
 		return tools.StringToVector(temp);
 	}
@@ -746,8 +752,8 @@ public:
 /*好友类声明*/
 class Friend:public Contact{
 public:
-	Friend(unsigned long long, JNIEnv* =manager->getEnv());
-	Friend() {};
+	Friend(unsigned long long friendid, unsigned long long botid, JNIEnv* =manager->getEnv());
+	Friend():Contact(){};
 	//初始化当前对象，可能抛出异常
 	//昵称
 	/*
@@ -780,7 +786,7 @@ public:
 	// 权限等级. OWNER群主 为 2, ADMINISTRATOR管理员 为 1, MEMBER群成员 为 0
 	unsigned int permission = 0;
 	// qqid, groupid
-	Member(unsigned long long qqid, unsigned long long groupid, JNIEnv* = manager->getEnv());
+	Member(unsigned long long qqid, unsigned long long groupid, unsigned long long botid, JNIEnv* = manager->getEnv());
 	/*
 	* 上传本地图片，务必要用绝对路径
 	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
@@ -788,15 +794,15 @@ public:
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
 	Image uploadImg(std::string filename, JNIEnv* = manager->getEnv());
-	Member() {};
+	Member():Contact() {};
 	//获取权限，会在构造时调用，请使用permission缓存变量
 	unsigned int getPermission(JNIEnv* = manager->getEnv());
 	/*发送信息*/
 	//发送miraicode
-	 MessageSource SendMiraiCode(MiraiCodeable* msg) {
+	MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
-	 MessageSource SendMiraiCode(MiraiCode msg) {
+	MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
 	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
@@ -821,8 +827,8 @@ public:
 	/*取群成员列表-vector<long>*/
 	std::vector<unsigned long long> getMemberList() {
 		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib,
-			config->QueryML,
-			(jlong)this->id()));
+			config->KQueryML,
+			tools.str2jstring(this->toString().c_str())));
 		if (re == "E1") {
 			throw GroupException();
 		}
@@ -838,7 +844,7 @@ public:
 	//取群主
 	Member getOwner(JNIEnv* = manager->getEnv());
 	//构建以群号构建群对象
-	Group(unsigned long long, JNIEnv* = manager->getEnv());
+	Group(unsigned long long groupid, unsigned long long botid, JNIEnv* = manager->getEnv());
 	/*
 	* 上传本地图片，务必要用绝对路径
 	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
@@ -873,7 +879,7 @@ public:
 	std::vector<short_info> getFileList(std::string path, JNIEnv* = manager->getEnv());
 	// 取文件列表返回值是字符串
 	std::string getFileListString(std::string path, JNIEnv* = manager->getEnv());
-	Group() {};
+	Group():Contact() {};
 	/*
 	* 设置全员禁言
 	* param: sign = true时为开始，false为关闭
@@ -956,7 +962,7 @@ public:
 	std::string groupName = "";
 	unsigned long long groupid = 0;
 	static void reject(std::string source) {
-		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->GI, tools.str2jstring(source.c_str()), (jboolean)false));
+		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation, tools.str2jstring(source.c_str()), (jboolean)false));
 		if (re == "Y") return;
 		if (re == "E")if (re == "E")logger->Error("群聊邀请事件同意失败,id:" + source);
 	}
@@ -967,7 +973,7 @@ public:
 		return this->source;
 	}
 	static void accept(std::string source) {
-		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->GI, tools.str2jstring(source.c_str()), (jboolean)true));
+		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation, tools.str2jstring(source.c_str()), (jboolean)true));
 		if (re == "Y") return;
 		if (re == "E")logger->Error("群聊邀请事件同意失败,id:" + source);
 	}
@@ -993,7 +999,7 @@ public:
 	//附加信息
 	std::string message;
 	static void reject(std::string source) {
-		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->NFR, tools.str2jstring(source.c_str()), (jboolean)false));
+		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation, tools.str2jstring(source.c_str()), (jboolean)false));
 		if (re == "Y") return;
 		if (re == "E")logger->Error("好友申请事件同意失败,id:" + source);
 	}
@@ -1004,7 +1010,7 @@ public:
 		return this->source;
 	}
 	static void accept(std::string source) {
-		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->NFR, tools.str2jstring(source.c_str()), (jboolean)true));
+		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation, tools.str2jstring(source.c_str()), (jboolean)true));
 		if (re == "Y") return;
 		if (re == "E")logger->Error("好友申请事件同意失败,id:" + source);
 	}
@@ -1131,23 +1137,23 @@ public:
 };
 
 /*启动定时任务,time是多少毫秒后开始，id是自定义标识符*/
-inline void SetScheduling(long time, std::initializer_list<std::string> args) {
+inline void SetScheduling(long time, std::initializer_list<std::string> args, BotEvent* e) {
 	Json::Value obj;
 	Json::Value root;
 	for (std::string it : args) {
 		obj.append(it);
 	}
 	root["value"] = obj;
-	manager->getEnv()->CallStaticVoidMethod(config->CPP_lib, config->Schedule, (jlong)time, tools.str2jstring(tools.JsonToString(root).c_str()));
+	manager->getEnv()->CallStaticVoidMethod(config->CPP_lib, config->KSchedule, (jlong)time, tools.str2jstring(tools.JsonToString(root).c_str()));
 }
 
 /*定时任务执行*/
-class SchedulingEvent:BotEvent {
+class SchedulingEvent{
 public:
 	void init() {};
 	/*自定义id标识符*/
 	std::vector<std::string> ids;
-	SchedulingEvent(std::string str, unsigned long long botid);
+	SchedulingEvent(std::string str);
 };
 
 using GME = std::function<void(GroupMessageEvent)>;
