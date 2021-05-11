@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 plugins {
-    java
     application
     kotlin("jvm") version "1.4.30"
     id("com.github.johnrengelman.shadow") version "7.0.0"

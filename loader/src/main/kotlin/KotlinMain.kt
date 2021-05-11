@@ -321,7 +321,7 @@ object KotlinMain {
             fInfo = Config.FInfo(finfo.length, finfo.uploaderId, finfo.downloadTimes, finfo.uploaderId, finfo.lastModifyTime))
         )
     }
-    suspend fun uploadFile(path: String, file: String, c: Config.Contact): String {
+    suspend fun sendFile(path: String, file: String, c: Config.Contact): String {
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-uploadfile()，gid:${c.id}")
             return "E1"
