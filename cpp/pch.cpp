@@ -63,8 +63,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 		case 1: {
 			//GroupMessage
 			procession->broadcast(GroupMessageEvent(
-				Group(root["groupid"].asLargestUInt()),
-				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt()),
+				Group(root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()),
+				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()),
 				root["message"].asCString(),
 				MessageSource(root["Source"].asCString()),
 				root["botid"].asLargestUInt()
@@ -75,7 +75,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 		case 2: {
 			//私聊消息
 			procession->broadcast(PrivateMessageEvent(
-				Friend(root["senderid"].asLargestUInt()),
+				Friend(root["senderid"].asLargestUInt(), root["botid"].asLargestUInt()),
 				root["message"].asCString(),
 				MessageSource(root["Source"].asCString()),
 				root["botid"].asLargestUInt()
@@ -108,11 +108,13 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			procession->broadcast(MemberJoinEvent(
 				root["jointype"].asInt(),
 				Member(root["memberid"].asLargestUInt(),
-					root["groupid"].asLargestUInt()),
-				Group(root["groupid"].asLargestUInt()),
+					root["groupid"].asLargestUInt(),
+					root["botid"].asLargestUInt()),
+				Group(root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()),
 				Member(
 					root["inviterid"].asLargestUInt(),
-					root["groupid"].asLargestUInt()),
+					root["groupid"].asLargestUInt(),
+					root["botid"].asLargestUInt()),
 				root["botid"].asLargestUInt()
 			));
 			break;
@@ -121,11 +123,14 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			procession->broadcast(MemberLeaveEvent(
 				root["leavetype"].asInt(),
 				Member(root["memberid"].asLargestUInt(),
-					root["groupid"].asLargestUInt()),
-				Group(root["groupid"].asLargestUInt()),
+					root["groupid"].asLargestUInt(),
+					root["botid"].asLargestUInt()),
+				Group(root["groupid"].asLargestUInt(),
+					root["botid"].asLargestUInt()),
 				Member(
 					root["operatorid"].asLargestUInt(),
-					root["groupid"].asLargestUInt()),
+					root["groupid"].asLargestUInt(),
+					root["botid"].asLargestUInt()),
 				root["botid"].asLargestUInt()
 			));
 			break;
@@ -143,22 +148,21 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			break;
 		case 8:
 			procession->broadcast(SchedulingEvent(
-				root["message"].asCString(),
-				root["botid"].asLargestUInt()
+				root["message"].asCString()
 			));
 			break;
 		case 9:
 			procession->broadcast(BotJoinGroupEvent(
 				root["etype"].asInt(),
-				Group(root["groupid"].asLargestUInt()),
-				(root["etyoe"].asInt() == 2?Member(root["inviterid"].asLargestUInt(),root["groupid"].asLargestUInt()):Member()),
+				Group(root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()),
+				(root["etyoe"].asInt() == 2?Member(root["inviterid"].asLargestUInt(),root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()):Member()),
 				root["botid"].asLargestUInt()
 			));
 			break;
 		case 10:
 			procession->broadcast(GroupTempMessageEvent(
-				Group(root["groupid"].asLargestUInt()),
-				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt()),
+				Group(root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()),
+				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()),
 				root["message"].asCString(),
 				MessageSource(root["Source"].asCString()),
 				root["botid"].asLargestUInt()
