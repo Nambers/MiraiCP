@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
+import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -38,7 +39,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.6.1"
+        version = "2.6.2"
     )
 ) {
     private val json = Json{
@@ -47,10 +48,9 @@ object PluginMain : KotlinPlugin(
     }
     private var friend_cache = ArrayList<NormalMember>(0)
     var dll_name = "mirai-demo.dll"
-    private lateinit var AIbot: Bot
     private lateinit var cpp: CPP_lib
     private lateinit var gson: Gson
-    private const val now_tag = "v2.6.1"
+    private const val now_tag = "v2.6.2"
     // 临时解决方案
     private var finvite = ArrayList<NewFriendRequestEvent>(0)
     private var ginvite = ArrayList<BotInvitedJoinGroupRequestEvent>(0)
@@ -71,6 +71,7 @@ object PluginMain : KotlinPlugin(
     //发送消息部分实现 MiraiCode
 
     suspend fun Send0(message: Message, c:Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
         when(c.type){
             1->{
                 logger.info("Send message for(${c.id}) is $message")
@@ -123,6 +124,7 @@ object PluginMain : KotlinPlugin(
     }
 
     fun RefreshInfo(c: Config.Contact): String{
+        val AIbot = Bot.getInstance(c.botid)
         when(c.type){
             1->{
                 val f = AIbot.getFriend(c.id) ?: let {
@@ -165,8 +167,9 @@ object PluginMain : KotlinPlugin(
     }
 
     //取群成员列表
-    fun QueryML(groupid: Long): String {
-        val g = AIbot.getGroup(groupid) ?: let {
+    fun QueryML(c: Config.Contact): String {
+        val AIbot = Bot.getInstance(c.botid)
+        val g = AIbot.getGroup(c.id) ?: let {
             logger.error("取群成员找不到群,位置K-QueryML")
             return "E1"
         }
@@ -177,14 +180,16 @@ object PluginMain : KotlinPlugin(
         return gson.toJson(m)
     }
 
-    fun QueryBFL(): String{
+    fun QueryBFL(bid: Long): String{
+        val AIbot = Bot.getInstance(bid)
         val tmp = ArrayList<Long>()
         AIbot.friends.forEach {
             tmp.add(it.id)
         }
         return gson.toJson(tmp)
     }
-    fun QueryBGL(): String{
+    fun QueryBGL(bid: Long): String{
+        val AIbot = Bot.getInstance(bid)
         val tmp = ArrayList<Long>()
         AIbot.groups.forEach {
             tmp.add(it.id)
@@ -195,6 +200,7 @@ object PluginMain : KotlinPlugin(
     //图片部分实现
 
     suspend fun uploadImg(file: String, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
         when(c.type){
             1->{
                 val temp = AIbot.getFriend(c.id) ?: let {
@@ -276,8 +282,7 @@ object PluginMain : KotlinPlugin(
             cpp.Event(
                 Gson().toJson(
                     Config.TimeOutEvent(
-                        id,
-                        AIbot.id
+                        id
                     )
                 )
             )
@@ -285,19 +290,20 @@ object PluginMain : KotlinPlugin(
     }
 
     //禁言
-    suspend fun mute(qqid: Long, groupid: Long, time:Int):String{
-        val group = AIbot.getGroup(groupid) ?: let{
-            logger.error("禁言找不到对应群组，位置K-mute()，gid:$groupid")
+    suspend fun mute(time:Int, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
+        val group = AIbot.getGroup(c.groupid) ?: let{
+            logger.error("禁言找不到对应群组，位置K-mute()，gid:${c.groupid}")
             return "E1"
         }
-        val member = group[qqid] ?: let {
-            logger.error("禁言找不到对应群成员，位置K-mute()，id:$qqid, gid:$groupid")
+        val member = group[c.id] ?: let {
+            logger.error("禁言找不到对应群成员，位置K-mute()，id:${c.id}, gid:${c.id}")
             return "E2"
         }
         try {
             member.mute(time)
         }catch (e: PermissionDeniedException){
-            logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:$groupid，目标成员id:$qqid")
+            logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:${c.groupid}，目标成员id:${c.id}")
             return "E3"
         }catch (e:IllegalStateException){
             logger.error("执行禁言失败禁言时间超出0s~30d，位置:K-mute()，时间:$time")
@@ -318,6 +324,7 @@ object PluginMain : KotlinPlugin(
         )
     }
     suspend fun sendFile(path: String, file: String, c: Config.Contact): String {
+        val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-uploadfile()，gid:${c.id}")
             return "E1"
@@ -346,6 +353,7 @@ object PluginMain : KotlinPlugin(
     }
 
     private suspend fun remoteFileList(path: String, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-remoteFileInfo，gid:${c.id}")
             return "E1"
@@ -360,6 +368,7 @@ object PluginMain : KotlinPlugin(
     }
 
     private suspend fun remoteFileInfo0(path: String, c:Config.Contact):String {
+        val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}")
             return "E1"
@@ -373,6 +382,7 @@ object PluginMain : KotlinPlugin(
     }
 
     suspend fun remoteFileInfo(path: String, id: String, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
         if(id == "")
             return remoteFileInfo0(path, c)
         if(id == "-1")
@@ -389,26 +399,28 @@ object PluginMain : KotlinPlugin(
     }
 
     //查询权限
-    fun kqueryM(qqid: Long, groupid: Long): String{
-        val group = AIbot.getGroup(groupid) ?: let {
-            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:$groupid")
+    fun kqueryM(c: Config.Contact): String{
+        val AIbot = Bot.getInstance(c.botid)
+        val group = AIbot.getGroup(c.groupid) ?: let {
+            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}")
             return "E1"
         }
-        val member = group[qqid] ?: let {
-            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:$qqid, gid:$groupid")
+        val member = group[c.id] ?: let {
+            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.groupid}")
             return "E2"
         }
         return member.permission.level.toString()
 
     }
 
-    suspend fun kkick(qqid: Long, groupid: Long, message: String):String{
-        val group = AIbot.getGroup(groupid) ?: let {
-            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:$groupid")
+    suspend fun kkick(message: String, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
+        val group = AIbot.getGroup(c.groupid) ?: let {
+            logger.error("查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}")
             return "E1"
         }
-        val member = group[qqid] ?: let {
-            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:$qqid, gid:$groupid")
+        val member = group[c.id] ?: let {
+            logger.error("查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.id}")
             return "E2"
         }
         try {
@@ -420,8 +432,10 @@ object PluginMain : KotlinPlugin(
     }
 
     //全员禁言
-    fun muteall(groupid: Long, sign: Boolean):String{
-        val g =AIbot.getGroup(groupid)?:let{
+    fun muteall(sign: Boolean, c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
+        val g =AIbot.getGroup(c.id)?:let{
+            logger.error("找不到群,位置:K-muteall, gid:${c.id}")
             return "E1"
         }
         try {
@@ -433,15 +447,18 @@ object PluginMain : KotlinPlugin(
     }
 
     //取群主
-    fun getowner(groupid: Long):String{
-        val g = AIbot.getGroup(groupid)?:let {
+    fun getowner(c: Config.Contact):String{
+        val AIbot = Bot.getInstance(c.botid)
+        val g = AIbot.getGroup(c.id)?:let {
+            logger.error("找不到群,位置:K-getowner,gid:${c.id}")
             return "E1"
         }
         return g.owner.id.toString()
     }
 
     //构建聊天记录
-    suspend fun buildforwardMsg(text:String):String{
+    suspend fun buildforwardMsg(text:String, bid: Long):String{
+        val AIbot = Bot.getInstance(bid)
         val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
         val c1:Contact = when(t.type) {
             1 -> AIbot.getFriend(t.id) ?: let {
@@ -535,9 +552,6 @@ object PluginMain : KotlinPlugin(
             logger.error("警告:当前MiraiCP框架版本($now_tag)和加载的C++ SDK(${cpp.ver})不一致")
         }
         gson = Gson()
-        ec.subscribeAlways<BotOnlineEvent> {
-            AIbot = this.bot
-        }
         //配置文件目录 "${dataFolder.absolutePath}/"
         ec.subscribeAlways<FriendMessageEvent> {
             //好友信息
@@ -548,7 +562,7 @@ object PluginMain : KotlinPlugin(
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(MessageSource.Serializer,
                             this.message[MessageSource]!!),
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -563,7 +577,7 @@ object PluginMain : KotlinPlugin(
                         this.sender.id,
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(MessageSource.Serializer,this.message[MessageSource]!!),
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -579,7 +593,7 @@ object PluginMain : KotlinPlugin(
                         this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageTime,
                         0,
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -596,7 +610,7 @@ object PluginMain : KotlinPlugin(
                         this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageTime,
                         this.group.id,
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -610,7 +624,7 @@ object PluginMain : KotlinPlugin(
                     this.member.id,
                     1,
                     if(this.operator?.id == null) this.bot.id else this.operator!!.id,
-                    AIbot.id
+                    this.bot.id
                 )
             ))
             friend_cache.remove(this.member)
@@ -623,7 +637,7 @@ object PluginMain : KotlinPlugin(
                     this.member.id,
                     2,
                     this.member.id,
-                    AIbot.id
+                    this.bot.id
                 )
             ))
             friend_cache.remove(this.member)
@@ -635,7 +649,7 @@ object PluginMain : KotlinPlugin(
                     this.member.id,
                     3,
                     this.member.id,
-                    AIbot.id
+                    this.bot.id
                 )
             ))
         }
@@ -646,7 +660,7 @@ object PluginMain : KotlinPlugin(
                     this.member.id,
                     2,
                     this.member.id,
-                    AIbot.id
+                    this.bot.id
                 )
             ))
         }
@@ -657,7 +671,7 @@ object PluginMain : KotlinPlugin(
                     this.member.id,
                     1,
                     this.invitor.id,
-                    AIbot.id
+                    this.bot.id
                 )
             ))
         }
@@ -670,7 +684,7 @@ object PluginMain : KotlinPlugin(
                         this.fromId,
                         this.message,
                         (finvite.size - 1).toString(),
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -683,7 +697,7 @@ object PluginMain : KotlinPlugin(
                         1,
                         this.groupId,
                         this.invitor.id,
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -695,7 +709,7 @@ object PluginMain : KotlinPlugin(
                         2,
                         this.groupId,
                         0,
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -707,7 +721,7 @@ object PluginMain : KotlinPlugin(
                         3,
                         this.groupId,
                         0,
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -723,7 +737,7 @@ object PluginMain : KotlinPlugin(
                         this.invitorId,
                         this.invitorNick,
                         (ginvite.size).toString(),
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -739,7 +753,7 @@ object PluginMain : KotlinPlugin(
                         json.encodeToString(MessageSource.Serializer,
                             this.source
                         ),
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
