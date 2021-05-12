@@ -9,6 +9,9 @@
 	* [构建群](#构建群)
 	* [构建并发送聊天记录](#构建并发送聊天记录)
   * [取当前消息里全部照片的下载链接](#取当前消息里全部照片的下载链接)
+  * [群文件操作](#群文件操作)
+	* [发送群文件](#发送群文件)
+	* [取群文件信息](#取群文件信息)
   * [执行定时任务](#执行定时任务)
   * [发送LightAPP-以小程序形式发送卡片](#发送LightAPP以小程序形式发送卡片)
   * [撤回信息](#撤回信息)
@@ -88,21 +91,45 @@ void onEnable() {
 	});
 ...
 ```
+# 群文件操作
+**qq群文件远程路径(文件路径)以`/`开始，即`/`为根目录以及路径分隔符**
+**qq群文件远程路径(文件路径)当前mirai只支持最多一层文件夹，即/xx/xx.xxx**
+## 发送群文件
+参数有2个，第一个是发送到了qq群文件路径(需要带文件名，文件名和本地文件名可以不是相同的)，第二个是本地文件路径
+```C++
+	procession->registerEvent([](GroupMessageEvent e) {
+		// 发送D:\\ValveUnhandledExceptionFilter.txt本地文件到qq群的 /test.txt 路径
+		RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
+	});
+```
+## 取群文件信息
+有三种方式取
+- 根据qq群远程路径(不带文件名)和文件id,文件id可以在上传返回的RemoteFile类型中获得, 会在子目录中查找如果当前目录未找到
+- 根据qq群远程路径(带文件名)找,不过由于qq群文件运行同名文件这一特性,返回的文件为群文件中同名文件中随机一个
+- 根据qq群远程路径(不带文件名)返回文件列表(包含文件夹),然后再根据取到的列表里分析
+```C++
+	procession->registerEvent([](GroupMessageEvent e) {
+		e.group.SendMsg(e.group.getFile("/", id).name());
+		e.group.SendMsg(e.group.getFile("/test.txt").name());
+		e.group.SendMsg(e.group.getFileListString("/"));
+		});
+```
 # 构建对象
+
 ## 构建群成员
 用群号和群成员qq号构建一个群成员对象，失败时会抛出MemberException，可以对群成员对象执行mute, kick, getnamecard，以及sendmsg
 ```C++
-Member(groupid, qqid);
+Member(groupid, qqid, botid);
 ```
 ## 构建好友
 用qq号构建一个好友对象，失败时会抛出FriendException，可以对好友对象sendmsg
 ```C++
-Friend(qqid);
+Friend(qqid, botid);
 ```
 ## 构建群
 用群号构建一个群对象，失败时抛出GroupException，可以对群对象sendmsg，getMemberList,和取群名称
 ```C++
-Group(groupid);
+Group(groupid, botid);
 ```
 ## 构建并发送聊天记录
 ```C++
@@ -133,7 +160,7 @@ unsigned long id = 0;
 		logger->Info("hi");
 		//延迟100ms发送，后面的1为自定义id
 		SetScheduling(100, 1);
-		id = param.sender.id;
+		id = param.sender.id();
 		param.sender.SendMsg(param.message);
 		});
 ...
@@ -214,7 +241,7 @@ unsigned long id = 0;
 
 ```C++
 	procession->registerEvent([](MemberLeaveEvent p) {
-		p.group.SendMsg(p.member.id + "离开了本群");
+		p.group.SendMsg(p.member.id() + "离开了本群");
 		});
 ```
 
@@ -222,7 +249,7 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](NewFriendRequestEvent param)->bool {
 		//新好友邀请
-		logger->Info("新好友申请来自于" + to_string(param.sender.id));
+		logger->Info("新好友申请来自于" + to_string(param.sender.id()));
 		//附加信息验证
 		if (param.message == "hhh") {
 			//拒绝
@@ -242,8 +269,8 @@ unsigned long id = 0;
 		else if (param.type == ACTIVE) {
 			//该成员是主动加入的
 		}
-		logger->Info(to_string(param.member.id) + "加入本群");
-		param.group.SendMsg("欢迎" + param.member.nameCard + "加入本群");
+		logger->Info(to_string(param.member.id()) + "加入本群");
+		param.group.SendMsg("欢迎" + param.member.nameCard() + "加入本群");
 		});
 ```
 
@@ -251,7 +278,7 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](GroupInviteEvent param)->bool {
 		//处理群邀请
-		if (param.sender.id == 11111) {
+		if (param.sender.id() == 11111) {
 			return ACCEPT;
 		}
 		return ACCEPT;
@@ -291,7 +318,7 @@ unsigned long id = 0;
 ```C++
 	procession->registerEvent([](GroupMessageEvent e) {
 		try {
-			Member m = Member(qqid, e.group.id);
+			Member m = Member(qqid, e.group.id(), e.bot.id());
 			m.Kick("this_is_reason");
 		}
 		catch (BotException err) {
