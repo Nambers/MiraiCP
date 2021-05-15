@@ -15,36 +15,35 @@ class Config {
     )
     //消息事件
     data class GroupMessage(
-        val groupid: Long,
-        val senderid: Long,
+        val group: Contact,
         val message: String,
         val Source: String,
-        val botid: Long,
         val type: Int = 1
     )
     data class PrivateMessage(
-        val senderid: Long,
+        val friend: Contact,
         val message: String,
         val Source: String,
-        val botid: Long,
         val type: Int = 2
     )
     //群邀请
     data class GroupInvite(
-        val groupid: Long,
-        val groupname: String,
-        val inviterid: Long,
-        val invitername: String,
+        val group: Contact,
+        val inviter: Contact,
         val source: String,
-        val botid: Long,
         val type: Int = 3
+    )
+    data class NewFriendRequestSource(
+        val botid: Long,
+        val eventid: Long,
+        val message: String,
+        val fromid: Long,
+        val fromgroupid: Long,
+        val fromnick: String
     )
     //好友邀请
     data class NewFriendRequest(
-        val friendid: Long,
-        val message: String,
-        val eventhandle: String,
-        val botid: Long,
+        val source: NewFriendRequestSource,
         val type: Int = 4
     )
     //群成员加入
