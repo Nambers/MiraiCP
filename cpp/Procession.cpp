@@ -24,7 +24,7 @@ void onEnable() {
 	// 好友申请
 	procession->registerEvent([](NewFriendRequestEvent e) {
 		e.accept();
-		Friend(e.senderid, e.bot.id()).SendMsg("HI");
+		Friend(e.fromid(), e.bot.id()).SendMsg("HI");
 		});
 	// 邀请加群
 	procession->registerEvent([](GroupInviteEvent e) {

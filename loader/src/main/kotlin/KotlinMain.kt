@@ -208,50 +208,50 @@ object KotlinMain {
             1->{
                 val temp = AIbot.getFriend(c.id) ?: let {
                     logger.error("发送图片找不到对应好友,位置:K-uploadImgFriend(),id:${c.id}")
-                    return ""
+                    return "E1"
                 }
                 return try {
                     File(file).uploadAsImage(temp).imageId
                 } catch (e: OverFileSizeMaxException) {
                     logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E2"
                 } catch (e: NullPointerException) {
                     logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E3"
                 }
             }
             2->{
                 val temp = AIbot.getGroup(c.id) ?: let {
                     logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.id}")
-                    return ""
+                    return "E1"
                 }
                 return try {
                     File(file).uploadAsImage(temp).imageId
                 } catch (e: OverFileSizeMaxException) {
                     logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E2"
                 } catch (e: NullPointerException) {
                     logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E3"
                 }
             }
             3->{
                 val temp = AIbot.getGroup(c.groupid) ?: let {
                     logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.groupid}")
-                    return ""
+                    return "E1"
                 }
                 val temp1 = temp[c.id] ?: let {
                     logger.error("发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:${c.id},群聊id:${c.groupid}")
-                    return ""
+                    return "E2"
                 }
                 return try {
                     File(file).uploadAsImage(temp1).imageId
                 } catch (e: OverFileSizeMaxException) {
                     logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E3"
                 } catch (e: NullPointerException) {
                     logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E4"
                 }
             }
             else->{
@@ -499,12 +499,24 @@ object KotlinMain {
         return "Y"
     }
 
-    suspend fun accpetFriendRequest(text:String): String{
-        finvite[text.toInt()].accept()
+    @Suppress("INVISIBLE_MEMBER")
+    suspend fun accpetFriendRequest(info: Config.NewFriendRequestSource): String{
+        NewFriendRequestEvent(Bot.getInstance(info.botid),
+            info.eventid,
+            info.message,
+            info.fromid,
+            info.fromgroupid,
+            info.fromnick).accept()
         return "Y"
     }
-    suspend fun rejectFriendRequest(text:String):String{
-        finvite[text.toInt()].reject()
+    @Suppress("INVISIBLE_MEMBER")
+    suspend fun rejectFriendRequest(info: Config.NewFriendRequestSource):String{
+        NewFriendRequestEvent(Bot.getInstance(info.botid),
+            info.eventid,
+            info.message,
+            info.fromid,
+            info.fromgroupid,
+            info.fromnick).reject()
         return "Y"
     }
     suspend fun accpetGroupInvite(text:String): String{
@@ -658,10 +670,14 @@ object KotlinMain {
             cpp.Event(
                 gson.toJson(
                     Config.NewFriendRequest(
-                        this.fromId,
-                        this.message,
-                        (finvite.size - 1).toString(),
-                        AIbot.id
+                        Config.NewFriendRequestSource(
+                            this.bot.id,
+                            this.eventId,
+                            this.message,
+                            this.fromId,
+                            this.fromGroupId,
+                            this.fromNick
+                        )
                     )
                 )
             )

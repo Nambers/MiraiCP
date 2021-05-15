@@ -1,7 +1,4 @@
-﻿/*
-*define some informations
-*/
-#ifndef PCH_H
+﻿#ifndef PCH_H
 #define PCH_H
 /*MiraiCP依赖*/
 #include <iostream>
@@ -9,17 +6,18 @@
 #include <string>
 #include <vector>
 #include <functional>
-#include <json.h>
+#include "json/json.h"
+#include "json.hpp"
 #include "tech_eritquearcus_miraicp_CPP_lib.h"
-#include <jni.h>
+#include "include/jni.h"
 #include <sstream>
 #include <regex>
 #include <fstream>
-#include <vector> 
+#include <vector>
 #include <thread>
 #include <map>
 #include <mutex>
 #include "constants.h"
 #include "tools.h"
 /*结束*/
-#endif //PCH_H
+#endif
