@@ -1,30 +1,29 @@
 /*
- * Copyright (c) 2003, 2011, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright (c) 2002, 2020, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
  *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
  *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
  */
 
-    /* AUTOMATICALLY GENERATED FILE - DO NOT EDIT */
-
+ /* AUTOMATICALLY GENERATED FILE - DO NOT EDIT */
 
     /* Include file for the Java(tm) Virtual Machine Tool Interface */
 
@@ -42,8 +41,10 @@ enum {
     JVMTI_VERSION_1_0 = 0x30010000,
     JVMTI_VERSION_1_1 = 0x30010100,
     JVMTI_VERSION_1_2 = 0x30010200,
+    JVMTI_VERSION_9   = 0x30090000,
+    JVMTI_VERSION_11  = 0x300B0000,
 
-    JVMTI_VERSION = 0x30000000 + (1 * 0x10000) + (2 * 0x100) + 1  /* version: 1.2.1 */
+    JVMTI_VERSION = 0x30000000 + (15 * 0x10000) + ( 0 * 0x100) + 0  /* version: 15.0.0 */
 };
 
 JNIEXPORT jint JNICALL
@@ -348,6 +349,7 @@ typedef enum {
     JVMTI_ERROR_INVALID_METHODID = 23,
     JVMTI_ERROR_INVALID_LOCATION = 24,
     JVMTI_ERROR_INVALID_FIELDID = 25,
+    JVMTI_ERROR_INVALID_MODULE = 26,
     JVMTI_ERROR_NO_MORE_FRAMES = 31,
     JVMTI_ERROR_OPAQUE_FRAME = 32,
     JVMTI_ERROR_TYPE_MISMATCH = 34,
@@ -369,7 +371,9 @@ typedef enum {
     JVMTI_ERROR_NAMES_DONT_MATCH = 69,
     JVMTI_ERROR_UNSUPPORTED_REDEFINITION_CLASS_MODIFIERS_CHANGED = 70,
     JVMTI_ERROR_UNSUPPORTED_REDEFINITION_METHOD_MODIFIERS_CHANGED = 71,
+    JVMTI_ERROR_UNSUPPORTED_REDEFINITION_CLASS_ATTRIBUTE_CHANGED = 72,
     JVMTI_ERROR_UNMODIFIABLE_CLASS = 79,
+    JVMTI_ERROR_UNMODIFIABLE_MODULE = 80,
     JVMTI_ERROR_NOT_AVAILABLE = 98,
     JVMTI_ERROR_MUST_POSSESS_CAPABILITY = 99,
     JVMTI_ERROR_NULL_POINTER = 100,
@@ -422,7 +426,8 @@ typedef enum {
     JVMTI_EVENT_GARBAGE_COLLECTION_FINISH = 82,
     JVMTI_EVENT_OBJECT_FREE = 83,
     JVMTI_EVENT_VM_OBJECT_ALLOC = 84,
-    JVMTI_MAX_EVENT_TYPE_VAL = 84
+    JVMTI_EVENT_SAMPLED_OBJECT_ALLOC = 86,
+    JVMTI_MAX_EVENT_TYPE_VAL = 86
 } jvmtiEvent;
 
 
@@ -703,7 +708,10 @@ typedef struct {
     unsigned int can_retransform_any_class : 1;
     unsigned int can_generate_resource_exhaustion_heap_events : 1;
     unsigned int can_generate_resource_exhaustion_threads_events : 1;
-    unsigned int : 7;
+    unsigned int can_generate_early_vmstart : 1;
+    unsigned int can_generate_early_class_hook_events : 1;
+    unsigned int can_generate_sampled_object_alloc_events : 1;
+    unsigned int : 4;
     unsigned int : 16;
     unsigned int : 16;
     unsigned int : 16;
@@ -883,6 +891,14 @@ typedef void (JNICALL *jvmtiEventResourceExhausted)
      const void* reserved,
      const char* description);
 
+typedef void (JNICALL *jvmtiEventSampledObjectAlloc)
+    (jvmtiEnv *jvmti_env,
+     JNIEnv* jni_env,
+     jthread thread,
+     jobject object,
+     jclass object_klass,
+     jlong size);
+
 typedef void (JNICALL *jvmtiEventSingleStep)
     (jvmtiEnv *jvmti_env,
      JNIEnv* jni_env,
@@ -994,6 +1010,10 @@ typedef struct {
     jvmtiEventObjectFree ObjectFree;
                               /*   84 : VM Object Allocation */
     jvmtiEventVMObjectAlloc VMObjectAlloc;
+                              /*   85 */
+    jvmtiEventReserved reserved85;
+                              /*   86 : Sampled Object Allocation */
+    jvmtiEventSampledObjectAlloc SampledObjectAlloc;
 } jvmtiEventCallbacks;
 
 
@@ -1011,8 +1031,10 @@ typedef struct jvmtiInterface_1_ {
     jthread event_thread,
      ...);
 
-  /*   3 :  RESERVED */
-  void *reserved3;
+  /*   3 : Get All Modules */
+  jvmtiError (JNICALL *GetAllModules) (jvmtiEnv* env,
+    jint* module_count_ptr,
+    jobject** modules_ptr);
 
   /*   4 : Get All Threads */
   jvmtiError (JNICALL *GetAllThreads) (jvmtiEnv* env,
@@ -1213,8 +1235,11 @@ typedef struct jvmtiInterface_1_ {
     jmethodID method,
     jlocation location);
 
-  /*   40 :  RESERVED */
-  void *reserved40;
+  /*   40 : Get Named Module */
+  jvmtiError (JNICALL *GetNamedModule) (jvmtiEnv* env,
+    jobject class_loader,
+    const char* package_name,
+    jobject* module_ptr);
 
   /*   41 : Set Field Access Watch */
   jvmtiError (JNICALL *SetFieldAccessWatch) (jvmtiEnv* env,
@@ -1492,23 +1517,38 @@ typedef struct jvmtiInterface_1_ {
     const jthread* request_list,
     jvmtiError* results);
 
-  /*   94 :  RESERVED */
-  void *reserved94;
+  /*   94 : Add Module Reads */
+  jvmtiError (JNICALL *AddModuleReads) (jvmtiEnv* env,
+    jobject module,
+    jobject to_module);
 
-  /*   95 :  RESERVED */
-  void *reserved95;
+  /*   95 : Add Module Exports */
+  jvmtiError (JNICALL *AddModuleExports) (jvmtiEnv* env,
+    jobject module,
+    const char* pkg_name,
+    jobject to_module);
 
-  /*   96 :  RESERVED */
-  void *reserved96;
+  /*   96 : Add Module Opens */
+  jvmtiError (JNICALL *AddModuleOpens) (jvmtiEnv* env,
+    jobject module,
+    const char* pkg_name,
+    jobject to_module);
 
-  /*   97 :  RESERVED */
-  void *reserved97;
+  /*   97 : Add Module Uses */
+  jvmtiError (JNICALL *AddModuleUses) (jvmtiEnv* env,
+    jobject module,
+    jclass service);
 
-  /*   98 :  RESERVED */
-  void *reserved98;
+  /*   98 : Add Module Provides */
+  jvmtiError (JNICALL *AddModuleProvides) (jvmtiEnv* env,
+    jobject module,
+    jclass service,
+    jclass impl_class);
 
-  /*   99 :  RESERVED */
-  void *reserved99;
+  /*   99 : Is Modifiable Module */
+  jvmtiError (JNICALL *IsModifiableModule) (jvmtiEnv* env,
+    jobject module,
+    jboolean* is_modifiable_module_ptr);
 
   /*   100 : Get All Stack Traces */
   jvmtiError (JNICALL *GetAllStackTraces) (jvmtiEnv* env,
@@ -1675,7 +1715,7 @@ typedef struct jvmtiInterface_1_ {
   /*   132 : Set System Property */
   jvmtiError (JNICALL *SetSystemProperty) (jvmtiEnv* env,
     const char* property,
-    const char* value);
+    const char* value_ptr);
 
   /*   133 : Get Phase */
   jvmtiError (JNICALL *GetPhase) (jvmtiEnv* env,
@@ -1780,6 +1820,10 @@ typedef struct jvmtiInterface_1_ {
     jthread thread,
     jint depth,
     jobject* value_ptr);
+
+  /*   156 : Set Heap Sampling Interval */
+  jvmtiError (JNICALL *SetHeapSamplingInterval) (jvmtiEnv* env,
+    jint sampling_interval);
 
 } jvmtiInterface_1;
 
@@ -2137,6 +2181,50 @@ struct _jvmtiEnv {
     return functions->ClearFieldModificationWatch(this, klass, field);
   }
 
+  jvmtiError GetAllModules(jint* module_count_ptr,
+            jobject** modules_ptr) {
+    return functions->GetAllModules(this, module_count_ptr, modules_ptr);
+  }
+
+  jvmtiError GetNamedModule(jobject class_loader,
+            const char* package_name,
+            jobject* module_ptr) {
+    return functions->GetNamedModule(this, class_loader, package_name, module_ptr);
+  }
+
+  jvmtiError AddModuleReads(jobject module,
+            jobject to_module) {
+    return functions->AddModuleReads(this, module, to_module);
+  }
+
+  jvmtiError AddModuleExports(jobject module,
+            const char* pkg_name,
+            jobject to_module) {
+    return functions->AddModuleExports(this, module, pkg_name, to_module);
+  }
+
+  jvmtiError AddModuleOpens(jobject module,
+            const char* pkg_name,
+            jobject to_module) {
+    return functions->AddModuleOpens(this, module, pkg_name, to_module);
+  }
+
+  jvmtiError AddModuleUses(jobject module,
+            jclass service) {
+    return functions->AddModuleUses(this, module, service);
+  }
+
+  jvmtiError AddModuleProvides(jobject module,
+            jclass service,
+            jclass impl_class) {
+    return functions->AddModuleProvides(this, module, service, impl_class);
+  }
+
+  jvmtiError IsModifiableModule(jobject module,
+            jboolean* is_modifiable_module_ptr) {
+    return functions->IsModifiableModule(this, module, is_modifiable_module_ptr);
+  }
+
   jvmtiError GetLoadedClasses(jint* class_count_ptr,
             jclass** classes_ptr) {
     return functions->GetLoadedClasses(this, class_count_ptr, classes_ptr);
@@ -2484,8 +2572,8 @@ struct _jvmtiEnv {
   }
 
   jvmtiError SetSystemProperty(const char* property,
-            const char* value) {
-    return functions->SetSystemProperty(this, property, value);
+            const char* value_ptr) {
+    return functions->SetSystemProperty(this, property, value_ptr);
   }
 
   jvmtiError GetPhase(jvmtiPhase* phase_ptr) {
@@ -2522,6 +2610,10 @@ struct _jvmtiEnv {
     return functions->GetJLocationFormat(this, format_ptr);
   }
 
+  jvmtiError SetHeapSamplingInterval(jint sampling_interval) {
+    return functions->SetHeapSamplingInterval(this, sampling_interval);
+  }
+
 #endif /* __cplusplus */
 };
 
@@ -2531,4 +2623,3 @@ struct _jvmtiEnv {
 #endif /* __cplusplus */
 
 #endif /* !_JAVA_JVMTI_H_ */
-
