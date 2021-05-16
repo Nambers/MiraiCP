@@ -1,22 +1,16 @@
 package tech.eritquearcus.miraicp
 
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.forEach
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.sample
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.alsoLogin
-import net.mamoe.mirai.contact.*
+import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.contact.NormalMember
+import net.mamoe.mirai.contact.PermissionDeniedException
+import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.code.MiraiCode
@@ -24,23 +18,17 @@ import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.*
-import net.mamoe.mirai.utils.ExternalResource.Companion.sendAsImageTo
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
 import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
-import net.mamoe.mirai.utils.RemoteFile.ProgressionCallback.Companion.asProgressionCallback
 import org.fusesource.jansi.AnsiConsole
-import org.json.JSONArray
 import org.json.JSONObject
 import tech.eritquearcus.miraicp.KotlinMain.now_tag
 import java.io.File
 import java.lang.Long.valueOf
 import java.net.URL
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
-import kotlin.time.ExperimentalTime
-import kotlin.time.seconds
 
 object KotlinMain {
     private val json = Json{
@@ -500,46 +488,78 @@ object KotlinMain {
     }
 
     @Suppress("INVISIBLE_MEMBER")
-    suspend fun accpetFriendRequest(info: Config.NewFriendRequestSource): String{
-        NewFriendRequestEvent(Bot.getInstance(info.botid),
-            info.eventid,
-            info.message,
-            info.fromid,
-            info.fromgroupid,
-            info.fromnick).accept()
-        return "Y"
-    }
-    @Suppress("INVISIBLE_MEMBER")
-    suspend fun rejectFriendRequest(info: Config.NewFriendRequestSource):String{
-        NewFriendRequestEvent(Bot.getInstance(info.botid),
-            info.eventid,
-            info.message,
-            info.fromid,
-            info.fromgroupid,
-            info.fromnick).reject()
-        return "Y"
-    }
-    suspend fun accpetGroupInvite(text:String): String{
+    suspend fun accpetFriendRequest(info: Config.NewFriendRequestSource): String {
         try {
-            ginvite[text.toInt()].accept()
-            ginvite.remove(ginvite[text.toInt()])
-        }catch (e: JsonSyntaxException){
+            NewFriendRequestEvent(
+                Bot.getInstance(info.botid),
+                info.eventid,
+                info.message,
+                info.fromid,
+                info.fromgroupid,
+                info.fromnick
+            ).accept()
+        } catch (e: IllegalStateException) {
             return "E"
         }
         return "Y"
     }
-    suspend fun rejectGroupInvite(text:String):String{
-        try{
-            ginvite[text.toInt()].ignore()
-            ginvite.remove(ginvite[text.toInt()])
-        }catch (e: JsonSyntaxException){
+
+    @Suppress("INVISIBLE_MEMBER")
+    suspend fun rejectFriendRequest(info: Config.NewFriendRequestSource): String {
+        try {
+            NewFriendRequestEvent(
+                Bot.getInstance(info.botid),
+                info.eventid,
+                info.message,
+                info.fromid,
+                info.fromgroupid,
+                info.fromnick
+            ).reject()
+        } catch (e: IllegalStateException) {
             return "E"
         }
         return "Y"
     }
+
+    @OptIn(MiraiInternalApi::class)
+    @Suppress("INVISIBLE_MEMBER")
+    suspend fun accpetGroupInvite(info: Config.GroupInviteSource): String {
+        try {
+            BotInvitedJoinGroupRequestEvent(
+                Bot.getInstance(info.botid),
+                info.eventid,
+                info.inviterid,
+                info.groupid,
+                info.groupname,
+                info.inviternick
+            ).accept()
+        } catch (e: IllegalStateException) {
+            return "E"
+        }
+        return "Y"
+    }
+
+    @OptIn(MiraiInternalApi::class)
+    @Suppress("INVISIBLE_MEMBER")
+    suspend fun rejectGroupInvite(info: Config.GroupInviteSource): String {
+        try {
+            BotInvitedJoinGroupRequestEvent(
+                Bot.getInstance(info.botid),
+                info.eventid,
+                info.inviterid,
+                info.groupid,
+                info.groupname,
+                info.inviternick
+            ).ignore()
+        } catch (e: IllegalStateException) {
+            return "E"
+        }
+        return "Y"
+    }
+
     @MiraiExperimentalApi
     @MiraiInternalApi
-    suspend fun main(id:Long, pass:String, path:String){
+    suspend fun main(id: Long, pass: String, path: String) {
         println("当前MiraiCP框架版本:$now_tag")
         setDefaultLoggerCreator { identity ->
             AnsiConsole.systemInstall()
@@ -557,7 +577,6 @@ object KotlinMain {
         val bot = BotFactory.newBot(id, pass) {
             fileBasedDeviceInfo()
         }.alsoLogin()
-        AIbot = bot
         logger=bot.logger
         cpp = CPP_lib()
         if(cpp.ver != now_tag){
@@ -571,11 +590,12 @@ object KotlinMain {
             cpp.Event(
                 gson.toJson(
                     Config.PrivateMessage(
-                        this.sender.id,
+                        Config.Contact(1, this.sender.id, 0, this.senderName, this.bot.id),
                         this.message.serializeToMiraiCode(),
-                        json.encodeToString(MessageSource.Serializer,
-                            this.message[MessageSource]!!),
-                        AIbot.id
+                        json.encodeToString(
+                            MessageSource.Serializer,
+                            this.message[MessageSource]!!
+                        )
                     )
                 )
             )
@@ -583,28 +603,31 @@ object KotlinMain {
 
         globalEventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
-            cpp.Event(
-                gson.toJson(
-                    Config.GroupMessage(
-                        this.group.id,
-                        this.sender.id,
-                        this.message.serializeToMiraiCode(),
-                        json.encodeToString(MessageSource.Serializer,this.message[MessageSource]!!),
-                        AIbot.id
+            try {
+                cpp.Event(
+                    gson.toJson(
+                        Config.GroupMessage(
+                            Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                            Config.Contact(3, this.sender.id, this.group.id, this.senderName, this.bot.id),
+                            this.message.serializeToMiraiCode(),
+                            json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
+                        )
                     )
                 )
-            )
+            } catch (e: Exception) {
+                logger.error(e.message)
+                e.printStackTrace()
+            }
         }
         globalEventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
             cpp.Event(
                 gson.toJson(
                     Config.MemberLeave(
-                        this.group.id,
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
                         this.member.id,
                         1,
-                        if (this.operator?.id == null) this.bot.id else this.operator!!.id,
-                        AIbot.id
+                        if (this.operator?.id == null) this.bot.id else this.operator!!.id
                     )
                 )
             )
@@ -615,11 +638,10 @@ object KotlinMain {
             cpp.Event(
                 gson.toJson(
                     Config.MemberLeave(
-                        this.group.id,
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
                         this.member.id,
                         2,
-                        this.member.id,
-                        AIbot.id
+                        this.member.id
                     )
                 )
             )
@@ -629,11 +651,10 @@ object KotlinMain {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
-                        this.group.id,
-                        this.member.id,
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        Config.Contact(3, this.member.id, 0, this.member.nameCardOrNick, this.bot.id),
                         3,
-                        this.member.id,
-                        AIbot.id
+                        this.member.id
                     )
                 )
             )
@@ -642,11 +663,10 @@ object KotlinMain {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
-                        this.group.id,
-                        this.member.id,
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        Config.Contact(3, this.member.id, 0, this.member.nameCardOrNick, this.bot.id),
                         2,
-                        this.member.id,
-                        AIbot.id
+                        this.member.id
                     )
                 )
             )
@@ -655,11 +675,10 @@ object KotlinMain {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
-                        this.group.id,
-                        this.member.id,
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        Config.Contact(3, this.member.id, 0, this.member.nameCardOrNick, this.bot.id),
                         1,
-                        this.invitor.id,
-                        AIbot.id
+                        this.invitor.id
                     )
                 )
             )
@@ -722,9 +741,8 @@ object KotlinMain {
                 gson.toJson(
                     Config.BotJoinGroup(
                         1,
-                        this.groupId,
-                        this.invitor.id,
-                        AIbot.id
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.invitor.id
                     )
                 )
             )
@@ -734,9 +752,8 @@ object KotlinMain {
                 gson.toJson(
                     Config.BotJoinGroup(
                         2,
-                        this.groupId,
-                        0,
-                        AIbot.id
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        0
                     )
                 )
             )
@@ -746,9 +763,8 @@ object KotlinMain {
                 gson.toJson(
                     Config.BotJoinGroup(
                         3,
-                        this.groupId,
-                        0,
-                        AIbot.id
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        0
                     )
                 )
             )
@@ -759,12 +775,14 @@ object KotlinMain {
             cpp.Event(
                 gson.toJson(
                     Config.GroupInvite(
-                        this.groupId,
-                        this.groupName,
-                        this.invitorId,
-                        this.invitorNick,
-                        (ginvite.size).toString(),
-                        AIbot.id
+                        Config.GroupInviteSource(
+                            this.bot.id,
+                            this.eventId,
+                            this.invitorId,
+                            this.groupId,
+                            this.groupName,
+                            this.invitorNick
+                        )
                     )
                 )
             )
@@ -774,13 +792,13 @@ object KotlinMain {
             cpp.Event(
                 gson.toJson(
                     Config.GroupTempMessage(
-                        this.group.id,
-                        this.sender.id,
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        Config.Contact(3, this.sender.id, 0, this.sender.nameCardOrNick, this.bot.id),
                         this.message.serializeToMiraiCode(),
-                        json.encodeToString(MessageSource.Serializer,
+                        json.encodeToString(
+                            MessageSource.Serializer,
                             this.source
-                        ),
-                        AIbot.id
+                        )
                     )
                 )
             )

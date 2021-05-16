@@ -1,3 +1,4 @@
+#pragma once
 #include "pch.h"
 
 /// @brief 全局JavaVM对象，用于多线程管理中新建线程的JNIEnv
@@ -174,21 +175,6 @@ public:
 		}
 		return str;
 	}
-	/*!
-	 * @brief 根据Json::Value生成string
-	 * @param root Json::Value类型
-	 * @attention 本方法转换出的字符串没有美化格式
-	 * @attention 如果自己生成需要注意，结果需要转码
-	 * @return
-	 * @note 来源:https://www.cnblogs.com/zhangdongsheng/p/12731021.html
-	 */
-	static std::string JsonToString(const Json::Value& root);
-	/*!
-	 * @brief 从string格式化json
-	 * @param source 原字符串
-	 * @return Json::Value类型
-	 */
-	static Json::Value StringToJson(const std::string& source);
 	/// @brief long long 类型的vector格式化输出
 	/// @param v vector
 	/// @return string
@@ -428,11 +414,13 @@ public:
 	std::string toString(){
 	    return this->source;
 	}
-    MessageSource(std::string ids, std::string internalids, std::string source);
-    /// @brief 构造个消息源，可用于撤回，未来应该可以用于引用
-	/// @param source 序列化文本
-	/// @param root json节点
-	MessageSource(std::string source, Json::Value root):source(source), ids(Tools::replace(Tools::replace(root["ids"].toStyledString(), " ", ""), "\n", "")), internalids(Tools::replace(Tools::replace(root["internalIds"].toStyledString(), " ", ""), "\n", "")){};
+	/*!
+	 * @brief 构建消息源
+	 * @param ids
+	 * @param internalids
+	 * @param source
+	 */
+    MessageSource(const std::string &ids, const std::string &internalids, const std::string &source);
 	/*!
 	 * @breif 从json字符串反序列化到MessageSource对象
 	 * @note json应该为以下格式
@@ -640,6 +628,12 @@ public:
 	std::string serializationToString() {
 		return this->serialization().dump();
 	}
+    /*!
+     * @brief 从json节点反序列化
+     * @param root json节点
+     * @return Contact
+     */
+    static Contact deserializationFromJson(nlohmann::json root);
     /// 反序列化成bot，可以通过serializationToString序列化，利于保存
     /// @see Contact::serializationToString()
     /// @param source 序列化后的文本
@@ -745,9 +739,9 @@ public:
 	/// @see LowLevelAPI::info
 	static info info0(std::string source) {
 		info re;
-		Json::Value tmp = Tools::StringToJson(source);
-		re.avatarUrl = tmp["avatarUrl"].asCString();
-		re.nickornamecard = tmp["nickornamecard"].asCString();
+		nlohmann::json j = nlohmann::json::parse(source);
+		re.avatarUrl = j["avatarUrl"];
+		re.nickornamecard = j["nickornamecard"];
 		return re;
 	}
 };
@@ -782,7 +776,7 @@ public:
 /// @see class ForwardNode
 class ForwardMessage {
 public:
-	Json::Value sendmsg;
+	nlohmann::json sendmsg;
 	/*!
 	*@brief 构建一条聊天记录
 	*@details 第一个参数是聊天记录发生的地方
@@ -868,7 +862,7 @@ public:
 class Friend:public Contact{
 public:
 	Friend(unsigned long long friendid, unsigned long long botid, JNIEnv* =manager->getEnv());
-	Friend():Contact(){};
+	Friend(Contact c):Contact(c){};
 	
 	/** 
 	 * @brief 上传本地图片，务必要用绝对路径. 
@@ -918,7 +912,7 @@ public:
 	* 可能抛出invalid_argument异常代表路径无效
 	*/
 	Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
-	Member():Contact() {};
+	Member(Contact c):Contact(c) {};
 	//获取权限，会在构造时调用，请使用permission缓存变量
 	unsigned int getPermission(JNIEnv* = manager->getEnv());
 	/*发送信息*/
@@ -969,7 +963,7 @@ public:
 	Member getOwner(JNIEnv* = manager->getEnv());
 	//构建以群号构建群对象
 	Group(unsigned long long groupid, unsigned long long botid, JNIEnv* = manager->getEnv());
-	Group(Contact c):Contact(c);
+	Group(Contact c):Contact(c){};
 	/*
 	* 上传本地图片，务必要用绝对路径
 	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
@@ -1004,7 +998,6 @@ public:
 	std::vector<short_info> getFileList(const std::string& path, JNIEnv* = manager->getEnv());
 	// 取文件列表返回值是字符串
 	std::string getFileListString(const std::string& path, JNIEnv* = manager->getEnv());
-	Group():Contact() {};
 	/*
 	* 设置全员禁言
 	* param: sign = true时为开始，false为关闭
@@ -1035,7 +1028,7 @@ inline std::string At(unsigned long long a) {
 /// 所以事件处理timeoutevent都是机器人事件，指都有机器人实例
 class BotEvent {
  public:
-	 const Bot bot;
+	 Bot bot;
 	 BotEvent(unsigned long long botid):bot(Bot(botid)) {
 	 }
  };
@@ -1044,13 +1037,13 @@ class BotEvent {
 class GroupMessageEvent:public BotEvent {
 public:
 	///来源群
-	const Group group;
+    Group group;
 	///发送人
-	const Member sender;
+	Member sender;
 	///信息本体
 	const std::string message;
 	///消息源
-	const MessageSource messageSource;
+	MessageSource messageSource;
     GroupMessageEvent(unsigned long long int botid, const Group &group, const Member &sender,
                       const std::string &message, const MessageSource &messageSource) : BotEvent(botid), group(group),
                                                                                         sender(sender),
@@ -1062,12 +1055,19 @@ public:
 class PrivateMessageEvent : public BotEvent {
 public:
 	/// 发起人
-	const Friend sender;
+	Friend sender;
 	/// 附带消息
 	const std::string message;
 	/// 信息源
-	const MessageSource messageSource;
-    PrivateMessageEvent(unsigned long long int botid, const Friend &sender, const std::string &message,
+	MessageSource messageSource;
+	/*!
+	 * @brief 构建私聊信息
+	 * @param botid 对应botid
+	 * @param sender 发送者
+	 * @param message 消息
+	 * @param messageSource 消息源
+	 */
+    PrivateMessageEvent(unsigned long long int botid, const Friend sender, const std::string &message,
                         const MessageSource &messageSource) : BotEvent(botid), sender(sender), message(message),
                                                               messageSource(messageSource) {}
 };
@@ -1153,6 +1153,15 @@ public:
 	void accept() {
 		this->accept(this->source);
 	}
+	/*!
+	 * @brief 好友申请事件
+	 * @param botid 对应botid
+	 * @param source 序列化后信息
+	 * @param fromid 对方id
+	 * @param fromgroupid 从哪个群申请的，否则为0
+	 * @param nick 对方昵称
+	 * @param message 申请理由
+	 */
     NewFriendRequestEvent(unsigned long long int botid, const std::string &source, const unsigned long long int fromid,
                           const unsigned long long int fromgroupid, const std::string &nick, const std::string &message)
             : BotEvent(botid), source(source), fromid(fromid), fromgroupid(fromgroupid), nick(nick), message(message) {}
@@ -1169,22 +1178,22 @@ public:
 	*/
 	const int type = 0;
 	///新进入的成员
-	const Member member;
+	Member member;
 	///目标群
-	const Group group;
+	Group group;
 	///邀请人, 当type = 1时存在，否则则和member变量相同
-	const Member inviter;
+	const unsigned long long inviterid;
     /*!
      * @brief 新群成员入群事件
      * @param botid botid
      * @param type 类别 @see MemberJoinEvent::type
      * @param member 入群群成员
      * @param group 群组
-     * @param inviter 邀请群成员，如果不存在和member参数一致
+     * @param inviterid 邀请群成员id，如果不存在和member id参数一致
      */
     MemberJoinEvent(unsigned long long int botid, const int type, const Member &member, const Group &group,
-                    const Member &inviter) : BotEvent(botid), type(type), member(member), group(group),
-                                             inviter(inviter) {}
+                    const unsigned long long &inviterid) : BotEvent(botid), type(type), member(member), group(group),
+                                             inviterid(inviterid) {}
 };
 
 /// 群成员离开
@@ -1199,20 +1208,20 @@ public:
 	/// 退出的成员q号
 	const unsigned long long memberid;
 	/// 目标群
-	const Group group;
+	Group group;
 	/// 操作人, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
-	const Member operater;
+	const unsigned long long operaterid;
     /*!
-     * @brief
+     * @brief 群成员离开
      * @param botid
      * @param type
-     * @param member 退出的群成员
+     * @param memberid 退出的群成员
      * @param group 群
-     * @param operater 操作人, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
+     * @param operaterid 操作人id, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
      */
     MemberLeaveEvent(unsigned long long int botid, const int type, const unsigned long long memberid, const Group &group,
-                     const Member &operater) : BotEvent(botid), type(type), memberid(memberid), group(group),
-                                               operater(operater) {}
+                     const unsigned long long &operaterid) : BotEvent(botid), type(type), memberid(memberid), group(group),
+                                               operaterid(operaterid) {}
 };
 
 /// 撤回信息
@@ -1256,9 +1265,9 @@ public:
 	/// 1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
 	const int type;
 	/// 进入的群
-	const Group group;
+	Group group;
 	/// 当type=2时存在，为邀请人，否则为空，调用可能会报错
-	const Member inviter;
+	const unsigned long long inviterid;
     /*!
      * @brief bot加入群
      * @param botid 对应bot
@@ -1266,21 +1275,21 @@ public:
      * @param group 加入的群
      * @param inviter 邀请人
      */
-    BotJoinGroupEvent(unsigned long long int botid, const int type, const Group &group, const Member &inviter)
-            : BotEvent(botid), type(type), group(group), inviter(inviter) {}
+    BotJoinGroupEvent(unsigned long long int botid, const int type, const Group &group, const unsigned long long inviter)
+            : BotEvent(botid), type(type), group(group), inviterid(inviterid) {}
 };
 
 /// 群临时会话
 class GroupTempMessageEvent : public BotEvent {
 public:
 	/// 来源群
-	const Group group;
+	Group group;
 	/// 发送人
-	const Member sender;
+	Member sender;
 	/// 信息本体
 	const std::string message;
 	/// 消息源
-	const MessageSource messageSource;
+	MessageSource messageSource;
     /*!
      * @brief 群临时会话消息事件
      * @param botid 对应bot
@@ -1300,13 +1309,13 @@ public:
 
 /// 启动定时任务,time是多少毫秒后开始，id是自定义标识符
 inline void SetScheduling(long time, std::initializer_list<std::string> args, BotEvent* e) {
-	Json::Value obj;
-	Json::Value root;
+	nlohmann::json obj;
+	nlohmann::json root;
 	for (const std::string& it : args) {
-		obj.append(it);
+		obj.push_back(it);
 	}
 	root["value"] = obj;
-	manager->getEnv()->CallStaticVoidMethod(config->CPP_lib, config->KSchedule, (jlong)time, Tools::str2jstring(Tools::JsonToString(root).c_str()));
+	manager->getEnv()->CallStaticVoidMethod(config->CPP_lib, config->KSchedule, (jlong)time, Tools::str2jstring(root.dump().c_str()));
 }
 
 /*定时任务执行*/
