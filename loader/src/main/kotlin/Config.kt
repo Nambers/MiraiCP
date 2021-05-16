@@ -16,21 +16,31 @@ class Config {
     //消息事件
     data class GroupMessage(
         val group: Contact,
+        val member: Contact,
         val message: String,
-        val Source: String,
+        val source: String,
         val type: Int = 1
     )
+
     data class PrivateMessage(
         val friend: Contact,
         val message: String,
-        val Source: String,
+        val source: String,
         val type: Int = 2
     )
+
     //群邀请
+    data class GroupInviteSource(
+        val botid: Long,
+        val eventid: Long,
+        val inviterid: Long,
+        val groupid: Long,
+        val groupname: String,
+        val inviternick: String
+    )
+
     data class GroupInvite(
-        val group: Contact,
-        val inviter: Contact,
-        val source: String,
+        val source: GroupInviteSource,
         val type: Int = 3
     )
     data class NewFriendRequestSource(
@@ -48,36 +58,34 @@ class Config {
     )
     //群成员加入
     data class MemberJoin(
-        val groupid: Long,
-        val memberid: Long,
+        val group: Contact,
+        val member: Contact,
         /*
         invite - 1
         active - 2
         retrieve - 3
          */
         val jointype: Int,
-        //如果没有则为0
+        //如果没有则为member.id
         val inviterid: Long = 0,
-        val botid: Long,
         val type: Int = 5
     )
     //群成员退出
     data class MemberLeave(
-        val groupid: Long,
+        val group: Contact,
         val memberid: Long,
         /*
         kick - 1
         quit - 2
          */
         val leavetype: Int,
-        //如果没有则为0
+        //如果没有则为memberid
         val operatorid: Long = 0,
-        val botid: Long,
         val type: Int = 6
     )
     //撤回
     data class RecallEvent(
-        val Etype: Int,
+        val etype: Int,
         val authorid: Long,
         val operatorid: Long,
         val ids: String,
@@ -93,17 +101,15 @@ class Config {
     )
     data class BotJoinGroup(
         val etype: Int,
-        val groupid: Long,
+        val group: Contact,
         val inviterid: Long,
-        val botid: Long,
         val type: Int = 9
     )
     data class GroupTempMessage(
-        val groupid: Long,
-        val senderid: Long,
+        val group: Contact,
+        val sender: Contact,
         val message: String,
-        val Source: String,
-        val botid: Long,
+        val source: String,
         val type: Int = 10
     )
     data class ForwardMessageJson (

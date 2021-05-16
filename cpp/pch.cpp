@@ -1,16 +1,17 @@
 ﻿#include "pch.h"
 
+using json = nlohmann::json;
 //全局javavm指针
-JavaVM* gvm = nullptr;
+JavaVM *gvm = nullptr;
 //JNI版本
 int JNIVersion = 0;
 //全局日志指针
-Logger* logger = new Logger();
+Logger *logger = new Logger();
 //全局事件指针
-Event* procession = new Event();
+Event *procession = new Event();
 //全局配置指针
-Config* config = new Config();
-threadManager* manager = new threadManager();
+Config *config = new Config();
+threadManager *manager = new threadManager();
 /*
 *正文开始
 */
@@ -20,157 +21,159 @@ threadManager* manager = new threadManager();
 * 参数:env 必备，job 必备
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
-JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Verify(JNIEnv* env, jobject) {
-	manager->setEnv(env);
-	env->GetJavaVM(&gvm);
-	JNIVersion = (int)manager->getEnv()->GetVersion();
-	try {
-		//初始化日志模块
-		logger->init();
-		config->Init();
-		onEnable();
-	}
-	catch (MiraiCPException& e) {
-		e.raise();
-	}
-	return Tools::str2jstring(MiraiCPVersion.c_str());//验证机制，返回当前SDK版本
+JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Verify(JNIEnv *env, jobject) {
+    manager->setEnv(env);
+    env->GetJavaVM(&gvm);
+    JNIVersion = (int) manager->getEnv()->GetVersion();
+    try {
+        //初始化日志模块
+        logger->init();
+        config->Init();
+        onEnable();
+    }
+    catch (MiraiCPException &e) {
+        e.raise();
+    }
+    return Tools::str2jstring(MiraiCPVersion.c_str());//验证机制，返回当前SDK版本
 }
 /* 插件结束事件*/
 JNIEXPORT jobject JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_PluginDisable
-(JNIEnv* env, jobject job) {
-	manager->setEnv(env);
-	onDisable();
-	delete(logger);
-	delete(procession);
-	delete(config);
-	gvm->DestroyJavaVM();
-	return job;
+        (JNIEnv *env, jobject job) {
+    manager->setEnv(env);
+    onDisable();
+    delete (logger);
+    delete (procession);
+    delete (config);
+    gvm->DestroyJavaVM();
+    return job;
 }
+
 jstring returnNull() {
-	return Tools::str2jstring("MIRAICP_NULL");
+    return Tools::str2jstring("MIRAICP_NULL");
 }
 /*
 * 消息解析分流
 */
 JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
-(JNIEnv* env, jobject, jstring content) {
-	manager->setEnv(env);
-	Json::Value root = Tools::StringToJson(Tools::jstring2str(content));
-	if (root == Json::nullValue) { APIException("JSON文本异常").raise(); }
-	try {
-		switch (root["type"].asInt()) {
-		case 1: {
-			//GroupMessage
-			procession->broadcast(
-                GroupMessageEvent(root["botid"].asLargestUInt(),
-                                  Group(root["groupid"].asLargestUInt(), root["botid"].asLargestUInt(), env),
-                                  Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt(), root["botid"].asLargestUInt(), env),
-                                  root["message"].asCString(),
-                                  MessageSource(root["Source"].asCString(), root)
-                                  )
-			);
-			break;
-		}
-		case 2: {
-			//私聊消息
-			procession->broadcast(
-            PrivateMessageEvent(root["botid"].asLargestUInt(),
-                                Friend(root["senderid"].asLargestUInt(), root["botid"].asLargestUInt(), env),
-                              root["message"].asCString(),
-                              MessageSource(root["Source"].asCString(), root)
-            ));
-			break;
-		}
-		case 3:
-			//群聊邀请
-			procession->broadcast(
-			        GroupInviteEvent(
-                            root["botid"].asLargestUInt(),
-                            root["source"].asCString(),
-                            root["invitername"].asCString(),
-                            root["inviterid"].asLargestUInt(),
-                            root["groupname"].asCString(),
-				            root["groupid"].asLargestUInt()
-			));
-			break;
-		case 4:
-			//好友
-			procession->broadcast(NewFriendRequestEvent(
-			        root["source"],
-				root["botid"].asLargestUInt()
-			));
-			break;
-		case 5:
-			//新成员加入
-			procession->broadcast(MemberJoinEvent(
-				root["jointype"].asInt(),
-				Member(root["memberid"].asLargestUInt(),
-					root["groupid"].asLargestUInt(),
-					root["botid"].asLargestUInt()),
-				Group(root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()),
-				Member(
-					root["inviterid"].asLargestUInt(),
-					root["groupid"].asLargestUInt(),
-					root["botid"].asLargestUInt()),
-				root["botid"].asLargestUInt()
-			));
-			break;
-		case 6:
-			//群成员退出
-			procession->broadcast(MemberLeaveEvent(
-				root["leavetype"].asInt(),
-				Member(root["memberid"].asLargestUInt(),
-					root["groupid"].asLargestUInt(),
-					root["botid"].asLargestUInt()),
-				Group(root["groupid"].asLargestUInt(),
-					root["botid"].asLargestUInt()),
-				Member(
-					root["operatorid"].asLargestUInt(),
-					root["groupid"].asLargestUInt(),
-					root["botid"].asLargestUInt()),
-				root["botid"].asLargestUInt()
-			));
-			break;
-		case 7:
-			procession->broadcast(RecallEvent(
-				root["Etype"].asInt(),
-				root["time"].asInt(),
-				root["authorid"].asLargestUInt(),
-				root["operatorid"].asLargestUInt(),
-				root["ids"].asCString(),
-				root["internalids"].asCString(),
-				root["botid"].asLargestUInt(),
-				root["groupid"].asLargestUInt()
-			));
-			break;
-		case 8:
-			procession->broadcast(SchedulingEvent(
-				root["message"].asCString()
-			));
-			break;
-		case 9:
-			procession->broadcast(BotJoinGroupEvent(
-				root["etype"].asInt(),
-				Group(root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()),
-				(root["etyoe"].asInt() == 2?Member(root["inviterid"].asLargestUInt(),root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()):Member()),
-				root["botid"].asLargestUInt()
-			));
-			break;
-		case 10:
-			procession->broadcast(GroupTempMessageEvent(
-				Group(root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()),
-				Member(root["senderid"].asLargestUInt(), root["groupid"].asLargestUInt(), root["botid"].asLargestUInt()),
-				root["message"].asCString(),
-				MessageSource(root["Source"].asCString()),
-				root["botid"].asLargestUInt()
-			));
-			break;
-		}
-		return returnNull();
-	}catch (MiraiCPException& e) {
-		e.raise();
-		return returnNull();
-	}
-	APIException("未知的消息类型,位置C-Handle").raise();
-	return Tools::str2jstring("ERROR");
+        (JNIEnv *env, jobject, jstring content) {
+    manager->setEnv(env);
+    json j;
+    try {
+        j = json::parse(Tools::jstring2str(content));
+    } catch (json::parse_error &e) {
+        logger->Error("格式化json错误, JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event");
+        logger->Error(j.dump());
+        logger->Error(e.what());
+        APIException("JSON文本异常").raise();
+        return returnNull();
+    }
+    try {
+        switch ((int) j["type"]) {
+            case 1: {
+                //GroupMessage
+                procession->broadcast(
+                        GroupMessageEvent(j["group"]["botid"],
+                                          Group::deserializationFromJson(j["group"]),
+                                          Member::deserializationFromJson(j["member"]),
+                                          j["message"],
+                                          MessageSource::deserializeFromString(j["source"])
+                        )
+                );
+                break;
+            }
+            case 2: {
+                //私聊消息
+                procession->broadcast(
+                        PrivateMessageEvent(j["friend"]["botid"],
+                                            Friend::deserializationFromJson(j["friend"]),
+                                            j["message"],
+                                            MessageSource::deserializeFromString(j["source"])
+                        ));
+                break;
+            }
+            case 3:
+                //群聊邀请
+                procession->broadcast(
+                        GroupInviteEvent(
+                                j["botid"],
+                                j["source"],
+                                j["source"]["inviternick"],
+                                j["source"]["inviterid"],
+                                j["source"]["groupname"],
+                                j["source"]["groupid"]
+                        ));
+                break;
+            case 4:
+                //好友
+                procession->broadcast(NewFriendRequestEvent(
+                        j["botid"],
+                        j["source"],
+                        j["source"]["fromid"],
+                        j["source"]["fromgroupid"],
+                        j["source"]["fromnick"],
+                        j["source"]["message"]
+                ));
+                break;
+            case 5:
+                //新成员加入
+                procession->broadcast(MemberJoinEvent(
+                        j["group"]["botid"],
+                        j["jointype"],
+                        Member::deserializationFromJson(j["member"]),
+                        Group::deserializationFromJson(j["group"]),
+                        j["inviterid"]
+                ));
+                break;
+            case 6:
+                //群成员退出
+                procession->broadcast(MemberLeaveEvent(
+                        j["group"]["botid"],
+                        j["leavetype"],
+                        j["memberid"],
+                        Group::deserializationFromJson(j["group"]),
+                        j["operatorid"]
+                ));
+                break;
+            case 7:
+                procession->broadcast(RecallEvent(
+                        j["botid"],
+                        j["etype"],
+                        j["time"],
+                        j["authorid"],
+                        j["operatorid"],
+                        j["ids"],
+                        j["internalids"],
+                        j["groupid"]
+                ));
+                break;
+            case 8:
+                procession->broadcast(SchedulingEvent(
+                        j["message"]
+                ));
+                break;
+            case 9:
+                procession->broadcast(BotJoinGroupEvent(
+                        j["group"]["botid"],
+                        j["etype"],
+                        Group::deserializationFromJson(j["group"]),
+                        j["inviterid"]
+                ));
+                break;
+            case 10:
+                procession->broadcast(GroupTempMessageEvent(
+                        j["group"]["botid"],
+                        Group::deserializationFromJson(j["group"]),
+                        Member::deserializationFromJson(j["member"]),
+                        j["message"],
+                        MessageSource::deserializeFromString(j["source"])
+                ));
+                break;
+        }
+    } catch (json::type_error &e) {
+        logger->Error("json格式化异常,位置C-Handle");
+        logger->Error(j.dump());
+        logger->Error(e.what());
+        return Tools::str2jstring("ERROR");
+    }
+    return returnNull();
 }
