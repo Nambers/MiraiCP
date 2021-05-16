@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "tools.h"
 
 #include <utility>
 
@@ -152,21 +151,10 @@ Event::~Event()
 }
 
 SchedulingEvent::SchedulingEvent(const std::string& str) {
-	const auto rawJsonLength = static_cast<int>(str.length());
-	Json::String err;
-	Json::Value root;
-	Json::CharReaderBuilder builder;
-	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-	if (!reader->parse(str.c_str(), str.c_str() + rawJsonLength, &root,
-		&err)) {
-		//error
-		logger->Error("JSON reader error");
-		APIException("JSON reader error").raise();
-	}
-	const Json::Value arrayNum = root["value"];
+	const json arrayNum = json::parse(str)["value"];
 	for (const auto & i : arrayNum)
 	{
-		ids.emplace_back(i.asCString());
+		ids.emplace_back(i);
 	}
 }
 void MessageSource::recall() {
@@ -177,8 +165,8 @@ void MessageSource::recall() {
 	if (re == "E2") throw RecallException();
 }
 
-MessageSource::MessageSource(std::string ids, std::string internalids, std::string source) : ids(std::move(
-        ids)), internalids(std::move(internalids)), source(std::move(source)) {}
+MessageSource::MessageSource(const std::string &ids, const std::string &internalids, const std::string &source) : ids(
+        ids), internalids(internalids), source(source) {}
 
 std::string MessageSource::serializeToString() {
     return source;
@@ -187,9 +175,10 @@ std::string MessageSource::serializeToString() {
 MessageSource MessageSource::deserializeFromString(const std::string &source) {
     json j = json::parse(source);
     try {
-        return MessageSource(j["ids"], j["internalids"], source);
+        return MessageSource(j["ids"].dump(), j["internalIds"].dump(), source);
     }catch(json::type_error &e){
         logger->Error("消息源序列化出错，格式不符合(MessageSource::deserializeFromString)");
+        logger->Error(source);
         logger->Error(e.what());
         throw e;
     }
@@ -200,8 +189,9 @@ RemoteFile RemoteFile::deserializeFromString(const std::string& source) {
     json j;
     try {
         j = json::parse(source);
-    }catch(json::parse_error e){
+    }catch(json::parse_error &e){
         logger->Error("格式化json失败，RemoteFile::deserializeFromString");
+        logger->Error(source);
         logger->Error(e.what());
         throw e;
     }
@@ -239,14 +229,14 @@ std::string RemoteFile::serializeToString() {
 
 //发送这个聊天记录
 void ForwardMessage::sendTo(Contact* c, JNIEnv* env) const {
-	Json::Value temp;
+	json temp;
 	temp["id"] = c->id();
 	temp["groupid"] = c->groupid();
 	temp["type"] = c->type();
 	temp["content"] = sendmsg;
 	std::string re = Tools::jstring2str((jstring)env->
 		CallStaticObjectMethod(config->CPP_lib, config->KBuildforward,
-			Tools::str2jstring(Tools::JsonToString(temp).c_str(), env),
+			Tools::str2jstring(temp.dump().c_str(), env),
 			(jlong)c->botid()), env);
 	if (re == "Y") return;
 	if (re == "E1") {
@@ -263,18 +253,18 @@ void ForwardMessage::sendTo(Contact* c, JNIEnv* env) const {
 	if (re == "E3") throw APIException("参数错误");
 }
 ForwardMessage::ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes) {
-	Json::Value root;
-	Json::Value value;
+	json root;
+	json value;
 	root["type"] = c->type();
 	root["id"] = c->id();
 	root["id2"] = c->groupid();
 	for (const ForwardNode& node : nodes) {
-		Json::Value temp;
+		json temp;
 		temp["id"] = node.id;
 		temp["time"] = node.time;
 		temp["message"] = node.message;
 		temp["name"] = node.name;
-		value.append(temp);
+		value.push_back(temp);
 	}
 	root["value"] = value;
 	sendmsg = root;
@@ -332,14 +322,14 @@ MessageSource Friend::SendMiraiCode(std::string msg, JNIEnv* env) {
 	if (re == "E1") {
 		throw FriendException();
 	}
-	return MessageSource(re, Tools::StringToJson(re));
+	return MessageSource::deserializeFromString(re);
 }
 MessageSource Friend::SendMsg(std::string msg, JNIEnv* env){
 	std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
 	if (re == "E1") {
 		throw FriendException();
 	}
-	return MessageSource(re, Tools::StringToJson(re));
+	return MessageSource::deserializeFromString(re);
 }
 
 /*成员类实现*/
@@ -368,7 +358,7 @@ Member::Member(unsigned long long id, unsigned long long groupid, unsigned long 
 	}
 }
 unsigned int Member::getPermission(JNIEnv* env){
-	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KQueryM, Tools::str2jstring(this->toString().c_str(), env)), env);
+	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KQueryM, Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (re == "E1") {
 		throw MemberException(1);
 	}
@@ -378,7 +368,7 @@ unsigned int Member::getPermission(JNIEnv* env){
 	return stoi(re);
 }
 void Member::Mute(int time, JNIEnv* env) {
-	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, this->Mute_id, (jint)time, Tools::str2jstring(this->toString().c_str(), env)), env);
+	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, this->Mute_id, (jint)time, Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (re == "Y") {
 		return;
 	}
@@ -396,7 +386,7 @@ void Member::Mute(int time, JNIEnv* env) {
 	}
 }
 void Member::Kick(const std::string& reason, JNIEnv* env) {
-	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, this->KickM, Tools::str2jstring(reason.c_str(), env), Tools::str2jstring(this->toString().c_str(), env)), env);
+	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, this->KickM, Tools::str2jstring(reason.c_str(), env), Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (re == "Y") {
 		return;
 	}
@@ -428,7 +418,7 @@ MessageSource Member::SendMiraiCode(std::string msg, JNIEnv* env) {
 	if (re == "E2") {
 		throw MemberException(2);
 	}
-	return MessageSource(re, Tools::StringToJson(re));
+	return MessageSource::deserializeFromString(re);
 }
 MessageSource Member::SendMsg(std::string msg,JNIEnv* env) {
 	std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
@@ -438,7 +428,7 @@ MessageSource Member::SendMsg(std::string msg,JNIEnv* env) {
 	if (re == "E2") {
 		throw MemberException(2);
 	}
-	return MessageSource(re, Tools::StringToJson(re));
+	return MessageSource::deserializeFromString(re);
 }
 
 /*群聊类实现*/
@@ -467,32 +457,32 @@ Image Group::uploadImg(const std::string& filename, JNIEnv* env) {
 }
 RemoteFile Group::sendFile(const std::string& path, const std::string& filename, JNIEnv* env)
 {
-	Json::Value tmp;
+	json tmp;
 	tmp["path"] = path;
 	tmp["filename"] = filename;
-	std::string callback = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KSendFile, Tools::str2jstring(Tools::JsonToString(tmp).c_str(), env), Tools::str2jstring(this->toString().c_str(), env)), env);
+	std::string callback = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KSendFile, Tools::str2jstring(tmp.dump().c_str(), env), Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (callback == "E1") throw GroupException();
 	if (callback == "E2") throw IOException("找不到" + filename + "位置:C-uploadfile");
 	if (callback == "E3") throw RemoteFileException("Upload Error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
 	return RemoteFile::deserializeFromString(callback);
 }
 RemoteFile Group::getFile(const std::string& path, const std::string& id, JNIEnv* env) {
-	Json::Value tmp;
+	json tmp;
 	tmp["id"] = id;
 	tmp["path"] = path;
-	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KRemoteFileInfo, Tools::str2jstring(Tools::JsonToString(tmp).c_str(), env), Tools::str2jstring(this->toString().c_str(), env)), env);
+	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KRemoteFileInfo, Tools::str2jstring(tmp.dump().c_str(), env), Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (re == "E1") throw GroupException();
 	if (re == "E2") throw RemoteFileException("Get Error: 文件路径不存在, path:" + path);
 	return RemoteFile::deserializeFromString(re);
 }
 void Group::setMuteAll(bool sign, JNIEnv* env){
-	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KMuteGroup, (jboolean)sign, Tools::str2jstring(this->toString().c_str(), env)), env);
+	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KMuteGroup, (jboolean)sign, Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (re == "Y") return;
 	if (re == "E1") throw GroupException();
 	if (re == "E2") throw BotException(1);
 }
 Member Group::getOwner(JNIEnv* env) {
-	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KQueryOwner, Tools::str2jstring(this->toString().c_str(), env)), env);
+	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KQueryOwner, Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (re == "E1")throw GroupException();
 	return Member(stoi(re), this->id(), this->botid());
 }
@@ -501,38 +491,34 @@ MessageSource Group::SendMiraiCode(std::string msg, JNIEnv* env) {
 	if (re == "E1") {
 		throw GroupException();
 	}
-	return MessageSource(re, Tools::StringToJson(re));
+	return MessageSource::deserializeFromString(re);
 }
 MessageSource Group::SendMsg(std::string msg, JNIEnv* env) {
 	std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
 	if (re == "E1") {
 		throw GroupException();
 	}
-	return MessageSource(re, Tools::StringToJson(re));
+	return MessageSource::deserializeFromString(re);
 }
 std::string Group::getFileListString(const std::string& path, JNIEnv* env) {
-	Json::Value temp;
+	json temp;
 	temp["id"] = "-1";
 	temp["path"] = path;
-	std::string tmp = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KRemoteFileInfo, Tools::str2jstring(Tools::JsonToString(temp).c_str(), env), Tools::str2jstring(this->toString().c_str(), env)), env);
+	std::string tmp = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KRemoteFileInfo, Tools::str2jstring(temp.dump().c_str(), env), Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (tmp == "E1") throw GroupException();
 	return tmp;
 }
 std::vector<Group::short_info> Group::getFileList(const std::string& path, JNIEnv* env) {
 	std::vector<short_info> re = std::vector<short_info>();
 	std::string tmp = getFileListString(path, env);
-	Json::Value root = Tools::StringToJson(tmp);
-	for (int i = 0; i < root.size(); i++) {
+	json root = json::parse(tmp);
+	for (auto & i : root) {
 		short_info t;
-		t.path = root[i][0].asCString();
-		t.id = root[i][1].asCString();
+		t.path = i[0];
+		t.id = i[1];
 		re.push_back(t);
 	}
 	return re;
-}
-
-Group::Group(Contact c) {
-
 }
 
 /*工具类实现*/
@@ -588,28 +574,6 @@ std::string Tools::JLongToString(jlong qqid) {
 	};
 	return id();
 }
-std::string Tools::JsonToString(const Json::Value& root)
-{
-	std::ostringstream stream;
-	Json::StreamWriterBuilder stream_builder;
-	stream_builder.settings_["emitUTF8"] = true;//Config emitUTF8
-	std::unique_ptr<Json::StreamWriter> writer(stream_builder.newStreamWriter());
-	writer->write(root, &stream);
-	return stream.str();
-}
-Json::Value Tools::StringToJson(const std::string& Rcontent) {
-	const auto rawJsonLength = static_cast<int>(Rcontent.length());
-	Json::String err;
-	Json::Value root;
-	Json::CharReaderBuilder builder;
-	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-	if (!reader->parse(Rcontent.c_str(), Rcontent.c_str() + rawJsonLength, &root,
-		&err)) {
-		//error
-		return Json::nullValue;
-	}
-	return root;
-}
 std::string Tools::VectorToString(std::vector<unsigned long long> a) {
 	std::stringstream ss;
 	for (size_t i = 0; i < a.size(); ++i)
@@ -642,9 +606,13 @@ Contact Contact::deserializationFromString(const std::string &source) {
         logger->Error(source);
         logger->Error(e.what());
     }
-    return Contact(j["type"].asInt(),
-                   j["id"].asLargestUInt(),
-                   j["groupid"].asLargestUInt(),
-                   j["nickornamecard"].asCString(),
-                   j["botid"].asLargestUInt());
+    return Contact::deserializationFromJson(j);
+}
+
+Contact Contact::deserializationFromJson(nlohmann::json j) {
+    return Contact(j["type"],
+                   j["id"],
+                   j["groupid"],
+                   j["nickornamecard"],
+                   j["botid"]);
 }

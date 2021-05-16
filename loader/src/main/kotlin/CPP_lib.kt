@@ -170,8 +170,8 @@ class CPP_lib {
         @JvmStatic
         fun KGioperation(text: String, sign:Boolean):String{
             return runBlocking {
-                if(sign) accpetGroupInvite(text)
-                else rejectGroupInvite(text)
+                if (sign) accpetGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
+                else rejectGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
             }
         }
     }
