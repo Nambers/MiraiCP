@@ -1,3 +1,0 @@
-D:/Git/mirai/MiraiCP/cpp/out/build/x64-Debug/CMakeFiles/cpp.dir
-D:/Git/mirai/MiraiCP/cpp/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-D:/Git/mirai/MiraiCP/cpp/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
