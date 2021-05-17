@@ -107,7 +107,7 @@ class Config {
     )
     data class GroupTempMessage(
         val group: Contact,
-        val sender: Contact,
+        val member: Contact,
         val message: String,
         val source: String,
         val type: Int = 10
@@ -152,6 +152,6 @@ class Config {
         val name: String = "",
         val path: String = "/",
         val dinfo: DInfo,
-        val fInfo: FInfo
+        val finfo: FInfo
     )
 }
