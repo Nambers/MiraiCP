@@ -1,12 +1,10 @@
-﻿#ifndef PCH_H
-#define PCH_H
+#pragma once
 /*MiraiCP依赖*/
 #include <iostream>
 #include "framework.h"
 #include <string>
 #include <vector>
 #include <functional>
-#include "json/json.h"
 #include "json.hpp"
 #include "tech_eritquearcus_miraicp_CPP_lib.h"
 #include "include/jni.h"
@@ -20,4 +18,3 @@
 #include "constants.h"
 #include "tools.h"
 /*结束*/
-#endif

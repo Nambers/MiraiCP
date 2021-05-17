@@ -51,9 +51,6 @@ object PluginMain : KotlinPlugin(
     private lateinit var cpp: CPP_lib
     private lateinit var gson: Gson
     private const val now_tag = "v2.6.2"
-    // 临时解决方案
-    private var finvite = ArrayList<NewFriendRequestEvent>(0)
-    private var ginvite = ArrayList<BotInvitedJoinGroupRequestEvent>(0)
 
     //日志部分实现
     fun BasicSendLog(log: String) {
@@ -173,7 +170,7 @@ object PluginMain : KotlinPlugin(
             logger.error("取群成员找不到群,位置K-QueryML")
             return "E1"
         }
-        val m = ArrayList<Long>()
+        val m = java.util.ArrayList<Long>()
         g.members.forEach{
             m.add(it.id)
         }
@@ -182,7 +179,7 @@ object PluginMain : KotlinPlugin(
 
     fun QueryBFL(bid: Long): String{
         val AIbot = Bot.getInstance(bid)
-        val tmp = ArrayList<Long>()
+        val tmp = java.util.ArrayList<Long>()
         AIbot.friends.forEach {
             tmp.add(it.id)
         }
@@ -190,7 +187,7 @@ object PluginMain : KotlinPlugin(
     }
     fun QueryBGL(bid: Long): String{
         val AIbot = Bot.getInstance(bid)
-        val tmp = ArrayList<Long>()
+        val tmp = java.util.ArrayList<Long>()
         AIbot.groups.forEach {
             tmp.add(it.id)
         }
@@ -205,50 +202,50 @@ object PluginMain : KotlinPlugin(
             1->{
                 val temp = AIbot.getFriend(c.id) ?: let {
                     logger.error("发送图片找不到对应好友,位置:K-uploadImgFriend(),id:${c.id}")
-                    return ""
+                    return "E1"
                 }
                 return try {
                     File(file).uploadAsImage(temp).imageId
                 } catch (e: OverFileSizeMaxException) {
                     logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E2"
                 } catch (e: NullPointerException) {
                     logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E3"
                 }
             }
             2->{
                 val temp = AIbot.getGroup(c.id) ?: let {
                     logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.id}")
-                    return ""
+                    return "E1"
                 }
                 return try {
                     File(file).uploadAsImage(temp).imageId
                 } catch (e: OverFileSizeMaxException) {
                     logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E2"
                 } catch (e: NullPointerException) {
                     logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E3"
                 }
             }
             3->{
                 val temp = AIbot.getGroup(c.groupid) ?: let {
                     logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.groupid}")
-                    return ""
+                    return "E1"
                 }
                 val temp1 = temp[c.id] ?: let {
                     logger.error("发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:${c.id},群聊id:${c.groupid}")
-                    return ""
+                    return "E2"
                 }
                 return try {
                     File(file).uploadAsImage(temp1).imageId
                 } catch (e: OverFileSizeMaxException) {
                     logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E3"
                 } catch (e: NullPointerException) {
                     logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-                    ""
+                    "E4"
                 }
             }
             else->{
@@ -320,7 +317,7 @@ object PluginMain : KotlinPlugin(
             name = finfo.name,
             path= finfo.path,
             dinfo = Config.DInfo(dinfo.url, dinfo.md5.toString(), dinfo.sha1.toString()),
-            fInfo = Config.FInfo(finfo.length, finfo.uploaderId, finfo.downloadTimes, finfo.uploaderId, finfo.lastModifyTime))
+            finfo = Config.FInfo(finfo.length, finfo.uploaderId, finfo.downloadTimes, finfo.uploaderId, finfo.lastModifyTime))
         )
     }
     suspend fun sendFile(path: String, file: String, c: Config.Contact): String {
@@ -496,28 +493,71 @@ object PluginMain : KotlinPlugin(
         return "Y"
     }
 
-    suspend fun accpetFriendRequest(text:String): String{
-        finvite[text.toInt()].accept()
-        return "Y"
-    }
-    suspend fun rejectFriendRequest(text:String):String{
-        finvite[text.toInt()].reject()
-        return "Y"
-    }
-    suspend fun accpetGroupInvite(text:String): String{
+    @Suppress("INVISIBLE_MEMBER")
+    suspend fun accpetFriendRequest(info: Config.NewFriendRequestSource): String {
         try {
-            ginvite[text.toInt()].accept()
-            ginvite.remove(ginvite[text.toInt()])
-        }catch (e: JsonSyntaxException){
+            NewFriendRequestEvent(
+                Bot.getInstance(info.botid),
+                info.eventid,
+                info.message,
+                info.fromid,
+                info.fromgroupid,
+                info.fromnick
+            ).accept()
+        } catch (e: IllegalStateException) {
             return "E"
         }
         return "Y"
     }
-    suspend fun rejectGroupInvite(text:String):String{
-        try{
-            ginvite[text.toInt()].ignore()
-            ginvite.remove(ginvite[text.toInt()])
-        }catch (e: JsonSyntaxException){
+
+    @Suppress("INVISIBLE_MEMBER")
+    suspend fun rejectFriendRequest(info: Config.NewFriendRequestSource): String {
+        try {
+            NewFriendRequestEvent(
+                Bot.getInstance(info.botid),
+                info.eventid,
+                info.message,
+                info.fromid,
+                info.fromgroupid,
+                info.fromnick
+            ).reject()
+        } catch (e: IllegalStateException) {
+            return "E"
+        }
+        return "Y"
+    }
+
+    @OptIn(MiraiInternalApi::class)
+    @Suppress("INVISIBLE_MEMBER")
+    suspend fun accpetGroupInvite(info: Config.GroupInviteSource): String {
+        try {
+            BotInvitedJoinGroupRequestEvent(
+                Bot.getInstance(info.botid),
+                info.eventid,
+                info.inviterid,
+                info.groupid,
+                info.groupname,
+                info.inviternick
+            ).accept()
+        } catch (e: IllegalStateException) {
+            return "E"
+        }
+        return "Y"
+    }
+
+    @OptIn(MiraiInternalApi::class)
+    @Suppress("INVISIBLE_MEMBER")
+    suspend fun rejectGroupInvite(info: Config.GroupInviteSource): String {
+        try {
+            BotInvitedJoinGroupRequestEvent(
+                Bot.getInstance(info.botid),
+                info.eventid,
+                info.inviterid,
+                info.groupid,
+                info.groupname,
+                info.inviternick
+            ).ignore()
+        } catch (e: IllegalStateException) {
             return "E"
         }
         return "Y"
@@ -546,43 +586,129 @@ object PluginMain : KotlinPlugin(
         if(!File(dll_name).exists()){
             logger.error("c++文件$dll_name 不存在")
         }
-        val ec = globalEventChannel()
         cpp = CPP_lib()
         if(cpp.ver != now_tag){
             logger.error("警告:当前MiraiCP框架版本($now_tag)和加载的C++ SDK(${cpp.ver})不一致")
         }
         gson = Gson()
+        val globalEventChannel = this.globalEventChannel()
         //配置文件目录 "${dataFolder.absolutePath}/"
-        ec.subscribeAlways<FriendMessageEvent> {
+        globalEventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
             cpp.Event(
                 gson.toJson(
                     Config.PrivateMessage(
-                        this.sender.id,
+                        Config.Contact(1, this.sender.id, 0, this.senderName, this.bot.id),
                         this.message.serializeToMiraiCode(),
-                        json.encodeToString(MessageSource.Serializer,
-                            this.message[MessageSource]!!),
-                        this.bot.id
+                        json.encodeToString(
+                            MessageSource.Serializer,
+                            this.message[MessageSource]!!
+                        )
                     )
                 )
             )
         }
-
-        ec.subscribeAlways<GroupMessageEvent> {
+        globalEventChannel.subscribeAlways<FriendMessageEvent> {
             //群消息
+            try {
+                cpp.Event(
+                    gson.toJson(
+                        Config.GroupMessage(
+                            Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                            Config.Contact(3, this.sender.id, this.group.id, this.senderName, this.bot.id),
+                            this.message.serializeToMiraiCode(),
+                            json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
+                        )
+                    )
+                )
+            } catch (e: Exception) {
+                logger.error(e.message)
+                e.printStackTrace()
+            }
+        }
+        globalEventChannel.subscribeAlways<GroupMessageEvent> {
+            friend_cache.add(this.member)
             cpp.Event(
                 gson.toJson(
-                    Config.GroupMessage(
-                        this.group.id,
-                        this.sender.id,
-                        this.message.serializeToMiraiCode(),
-                        json.encodeToString(MessageSource.Serializer,this.message[MessageSource]!!),
-                        this.bot.id
+                    Config.MemberLeave(
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.member.id,
+                        1,
+                        if (this.operator?.id == null) this.bot.id else this.operator!!.id
+                    )
+                )
+            )
+            friend_cache.remove(this.member)
+        }
+        globalEventChannel.subscribeAlways<MemberLeaveEvent.Quit> {
+            friend_cache.add(this.member)
+            cpp.Event(
+                gson.toJson(
+                    Config.MemberLeave(
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.member.id,
+                        2,
+                        this.member.id
+                    )
+                )
+            )
+            friend_cache.remove(this.member)
+        }
+        globalEventChannel.subscribeAlways<MemberLeaveEvent.Retrieve> {
+            cpp.Event(
+                gson.toJson(
+                    Config.MemberJoin(
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        Config.Contact(3, this.member.id, this.groupId, this.member.nameCardOrNick, this.bot.id),
+                        3,
+                        this.member.id
                     )
                 )
             )
         }
-        ec.subscribeAlways<MessageRecallEvent.FriendRecall> {
+        globalEventChannel.subscribeAlways<MemberJoinEvent.Active> {
+            cpp.Event(
+                gson.toJson(
+                    Config.MemberJoin(
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        Config.Contact(3, this.member.id, this.groupId, this.member.nameCardOrNick, this.bot.id),
+                        2,
+                        this.member.id
+                    )
+                )
+            )
+        }
+        globalEventChannel.subscribeAlways<MemberJoinEvent.Invite> {
+            cpp.Event(
+                gson.toJson(
+                    Config.MemberJoin(
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        Config.Contact(3, this.member.id, this.groupId, this.member.nameCardOrNick, this.bot.id),
+                        1,
+                        this.invitor.id
+                    )
+                )
+            )
+        }
+        globalEventChannel.subscribeAlways<NewFriendRequestEvent> {
+            //自动同意好友申请
+            cpp.Event(
+                gson.toJson(
+                    Config.NewFriendRequest(
+                        Config.NewFriendRequestSource(
+                            this.bot.id,
+                            this.eventId,
+                            this.message,
+                            this.fromId,
+                            this.fromGroupId,
+                            this.fromNick
+                        )
+                    )
+                )
+            )
+
+        }
+        globalEventChannel.subscribeAlways<NewFriendRequestEvent> {
             cpp.Event(
                 gson.toJson(
                     Config.RecallEvent(
@@ -599,7 +725,7 @@ object PluginMain : KotlinPlugin(
             )
 
         }
-        ec.subscribeAlways<MessageRecallEvent.GroupRecall> {
+        globalEventChannel.subscribeAlways<MessageRecallEvent.GroupRecall> {
             cpp.Event(
                 gson.toJson(
                     Config.RecallEvent(
@@ -616,144 +742,68 @@ object PluginMain : KotlinPlugin(
             )
 
         }
-        ec.subscribeAlways<MemberLeaveEvent.Kick> {
-            friend_cache.add(this.member)
-            cpp.Event(gson.toJson(
-                Config.MemberLeave(
-                    this.group.id,
-                    this.member.id,
-                    1,
-                    if(this.operator?.id == null) this.bot.id else this.operator!!.id,
-                    this.bot.id
-                )
-            ))
-            friend_cache.remove(this.member)
-        }
-        ec.subscribeAlways<MemberLeaveEvent.Quit> {
-            friend_cache.add(this.member)
-            cpp.Event(gson.toJson(
-                Config.MemberLeave(
-                    this.group.id,
-                    this.member.id,
-                    2,
-                    this.member.id,
-                    this.bot.id
-                )
-            ))
-            friend_cache.remove(this.member)
-        }
-        ec.subscribeAlways<MemberJoinEvent.Retrieve> {
-            cpp.Event(gson.toJson(
-                Config.MemberJoin(
-                    this.group.id,
-                    this.member.id,
-                    3,
-                    this.member.id,
-                    this.bot.id
-                )
-            ))
-        }
-        ec.subscribeAlways<MemberJoinEvent.Active> {
-            cpp.Event(gson.toJson(
-                Config.MemberJoin(
-                    this.group.id,
-                    this.member.id,
-                    2,
-                    this.member.id,
-                    this.bot.id
-                )
-            ))
-        }
-        ec.subscribeAlways<MemberJoinEvent.Invite> {
-            cpp.Event(gson.toJson(
-                Config.MemberJoin(
-                    this.group.id,
-                    this.member.id,
-                    1,
-                    this.invitor.id,
-                    this.bot.id
-                )
-            ))
-        }
-        ec.subscribeAlways<NewFriendRequestEvent> {
-            //自动同意好友申请
-            finvite.add(this)
-            cpp.Event(
-                gson.toJson(
-                    Config.NewFriendRequest(
-                        this.fromId,
-                        this.message,
-                        (finvite.size - 1).toString(),
-                        this.bot.id
-                    )
-                )
-            )
-
-        }
-        ec.subscribeAlways<BotJoinGroupEvent.Invite>{
+        globalEventChannel.subscribeAlways<MessageRecallEvent.Invite>{
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
                         1,
-                        this.groupId,
-                        this.invitor.id,
-                        this.bot.id
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.invitor.id
                     )
                 )
             )
         }
-        ec.subscribeAlways<BotJoinGroupEvent.Active>{
+        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Active>{
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
                         2,
-                        this.groupId,
-                        0,
-                        this.bot.id
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        0
                     )
                 )
             )
         }
-        ec.subscribeAlways<BotJoinGroupEvent.Retrieve>{
+        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve>{
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
                         3,
-                        this.groupId,
-                        0,
-                        this.bot.id
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        0
                     )
                 )
             )
         }
-        ec.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
+        globalEventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
-            ginvite.add(this)
             cpp.Event(
                 gson.toJson(
                     Config.GroupInvite(
-                        this.groupId,
-                        this.groupName,
-                        this.invitorId,
-                        this.invitorNick,
-                        (ginvite.size).toString(),
-                        this.bot.id
+                        Config.GroupInviteSource(
+                            this.bot.id,
+                            this.eventId,
+                            this.invitorId,
+                            this.groupId,
+                            this.groupName,
+                            this.invitorNick
+                        )
                     )
                 )
             )
         }
-        ec.subscribeAlways<GroupTempMessageEvent> {
+        globalEventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //群临时会话
             cpp.Event(
                 gson.toJson(
                     Config.GroupTempMessage(
-                        this.group.id,
-                        this.sender.id,
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        Config.Contact(3, this.sender.id, this.group.id, this.sender.nameCardOrNick, this.bot.id),
                         this.message.serializeToMiraiCode(),
-                        json.encodeToString(MessageSource.Serializer,
+                        json.encodeToString(
+                            MessageSource.Serializer,
                             this.source
-                        ),
-                        this.bot.id
+                        )
                     )
                 )
             )

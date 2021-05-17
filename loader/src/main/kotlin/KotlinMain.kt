@@ -38,13 +38,9 @@ object KotlinMain {
     const val now_tag = "v2.6.2"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
-    private lateinit var AIbot: Bot
     private lateinit var cpp: CPP_lib
     private lateinit var logger:MiraiLogger
     private val gson = Gson()
-    // 临时解决方案
-    private var finvite = ArrayList<NewFriendRequestEvent>(0)
-    private var ginvite = ArrayList<BotInvitedJoinGroupRequestEvent>(0)
 
     //日志部分实现
     fun BasicSendLog(log: String) {
@@ -309,9 +305,16 @@ object KotlinMain {
         return gson.toJson(Config.FileInfo(
             id = finfo.id,
             name = finfo.name,
-            path= finfo.path,
+            path = finfo.path,
             dinfo = Config.DInfo(dinfo.url, dinfo.md5.toString(), dinfo.sha1.toString()),
-            fInfo = Config.FInfo(finfo.length, finfo.uploaderId, finfo.downloadTimes, finfo.uploaderId, finfo.lastModifyTime))
+            finfo = Config.FInfo(
+                finfo.length,
+                finfo.uploaderId,
+                finfo.downloadTimes,
+                finfo.uploaderId,
+                finfo.lastModifyTime
+            )
+        )
         )
     }
     suspend fun sendFile(path: String, file: String, c: Config.Contact): String {
@@ -600,7 +603,6 @@ object KotlinMain {
                 )
             )
         }
-
         globalEventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
             try {
@@ -652,7 +654,7 @@ object KotlinMain {
                 gson.toJson(
                     Config.MemberJoin(
                         Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
-                        Config.Contact(3, this.member.id, 0, this.member.nameCardOrNick, this.bot.id),
+                        Config.Contact(3, this.member.id, this.groupId, this.member.nameCardOrNick, this.bot.id),
                         3,
                         this.member.id
                     )
@@ -664,7 +666,7 @@ object KotlinMain {
                 gson.toJson(
                     Config.MemberJoin(
                         Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
-                        Config.Contact(3, this.member.id, 0, this.member.nameCardOrNick, this.bot.id),
+                        Config.Contact(3, this.member.id, this.groupId, this.member.nameCardOrNick, this.bot.id),
                         2,
                         this.member.id
                     )
@@ -676,7 +678,7 @@ object KotlinMain {
                 gson.toJson(
                     Config.MemberJoin(
                         Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
-                        Config.Contact(3, this.member.id, 0, this.member.nameCardOrNick, this.bot.id),
+                        Config.Contact(3, this.member.id, this.groupId, this.member.nameCardOrNick, this.bot.id),
                         1,
                         this.invitor.id
                     )
@@ -685,7 +687,6 @@ object KotlinMain {
         }
         globalEventChannel.subscribeAlways<NewFriendRequestEvent> {
             //自动同意好友申请
-            finvite.add(this)
             cpp.Event(
                 gson.toJson(
                     Config.NewFriendRequest(
@@ -713,7 +714,7 @@ object KotlinMain {
                         this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageTime,
                         0,
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -730,7 +731,7 @@ object KotlinMain {
                         this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
                         this.messageTime,
                         this.group.id,
-                        AIbot.id
+                        this.bot.id
                     )
                 )
             )
@@ -771,7 +772,6 @@ object KotlinMain {
         }
         globalEventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
-            ginvite.add(this)
             cpp.Event(
                 gson.toJson(
                     Config.GroupInvite(
@@ -793,7 +793,7 @@ object KotlinMain {
                 gson.toJson(
                     Config.GroupTempMessage(
                         Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
-                        Config.Contact(3, this.sender.id, 0, this.sender.nameCardOrNick, this.bot.id),
+                        Config.Contact(3, this.sender.id, this.group.id, this.sender.nameCardOrNick, this.bot.id),
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(
                             MessageSource.Serializer,

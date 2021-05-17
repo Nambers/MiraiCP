@@ -1,3 +1,5 @@
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 cmake_minimum_required(VERSION 3.19)
 project(cpp)
 
@@ -8,7 +10,6 @@ include_directories(.)
 include_directories(include)
 include_directories(include/win32)
 include_directories(include/win32/bridge)
-include_directories(json)
 
 set(
         SOURCE_TEMPLATES
@@ -17,7 +18,6 @@ set(
 set(
         SOURCE_FILES
         dllmain.cpp
-        jsoncpp.cpp
         pch.cpp
         Procession.cpp
         tools.cpp
@@ -36,8 +36,6 @@ set(
         include/jni.h
         include/jvmti.h
         include/jvmticmlr.h
-        json/json-forwards.h
-        json/json.h
         constants.h
         framework.h
         pch.h
