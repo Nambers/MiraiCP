@@ -66,7 +66,7 @@ class CPP_lib {
             }
         }
         @JvmStatic
-        fun KSendLog(log:String, level: Int){
+        fun KSendLog(log:String, level: Int):Unit{
             when(level){
                 0-> BasicSendLog(log)
                 1-> SendWarning(log)
@@ -161,16 +161,17 @@ class CPP_lib {
         // new friend request operation
         fun KNfroperation(text: String, sign: Boolean):String{
             return runBlocking {
-                if (sign) accpetFriendRequest(text)
-                else rejectFriendRequest(text)
+                val tmp = gson.fromJson(text, Config.NewFriendRequestSource::class.java)
+                if (sign) accpetFriendRequest(tmp)
+                else rejectFriendRequest(tmp)
             }
         }
         // Group invite operation
         @JvmStatic
         fun KGioperation(text: String, sign:Boolean):String{
             return runBlocking {
-                if(sign) accpetGroupInvite(text)
-                else rejectGroupInvite(text)
+                if (sign) accpetGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
+                else rejectGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
             }
         }
     }

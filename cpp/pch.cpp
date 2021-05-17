@@ -1,15 +1,16 @@
-﻿#include "pch.h"
-
+#include "pch.h"
 using json = nlohmann::json;
-//全局javavm指针
+using string = std::string;
+
+///全局javavm指针
 JavaVM *gvm = nullptr;
-//JNI版本
+///JNI版本
 int JNIVersion = 0;
-//全局日志指针
+///全局日志指针
 Logger *logger = new Logger();
-//全局事件指针
+///全局事件指针
 Event *procession = new Event();
-//全局配置指针
+///全局配置指针
 Config *config = new Config();
 threadManager *manager = new threadManager();
 /*
@@ -57,14 +58,14 @@ jstring returnNull() {
 JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
         (JNIEnv *env, jobject, jstring content) {
     manager->setEnv(env);
+    string tmp = Tools::jstring2str(content,env);
     json j;
     try {
-        j = json::parse(Tools::jstring2str(content));
+        j = json::parse(tmp);
     } catch (json::parse_error &e) {
-        logger->Error("格式化json错误, JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event");
-        logger->Error(j.dump());
+        APIException("格式化json错误, JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event").raise();
+        logger->Error("For debug:" + j.dump());
         logger->Error(e.what());
-        APIException("JSON文本异常").raise();
         return returnNull();
     }
     try {
@@ -106,8 +107,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
             case 4:
                 //好友
                 procession->broadcast(NewFriendRequestEvent(
-                        j["botid"],
-                        j["source"],
+                        j["source"]["botid"],
+                        j["source"].dump(),
                         j["source"]["fromid"],
                         j["source"]["fromgroupid"],
                         j["source"]["fromnick"],
