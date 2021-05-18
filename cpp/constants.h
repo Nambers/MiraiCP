@@ -1,72 +1,92 @@
+#pragma once
 #include "pch.h"
 
-const std::string MiraiCPVersion = "v2.6.2";
-/*ĞèÒª±íÌ¬µÄ·µ»ØÖµ*/
-
+/// MiraiCPå½“å‰ç‰ˆæœ¬
+const std::string MiraiCPVersion = "v2.6.3-RC";
+/*! @addtogroup éœ€è¦è¡¨æ€çš„å€¼, å¦‚å¥½å‹ç”³è¯·
+ @{*/
+///æ‹’ç»
 static const bool REJECT = false;
+/// åŒæ„
 static const bool ACCEPT = true;
+/// }
 
-/*Èº³ÉÔ±ÍË³öÊÂ¼ş*/
+/*! @addtogroup ç¾¤æˆå‘˜é€€å‡ºäº‹ä»¶
+ * @{*/
 
-//±»Ìß³ö
+///è¢«è¸¢å‡º
 static const int T_KICK = 1;
-//Ö÷¶¯ÍË³ö
+///ä¸»åŠ¨é€€å‡º
 static const int T_QUIT = 2;
+/// @}
 
-/*ĞÂÈº³ÉÔ±ÊÂ¼ş*/
-
-/*±»ÑûÇë½øÈë*/
+/*!
+ * @addtogroup æ–°ç¾¤æˆå‘˜äº‹ä»¶
+ * @{
+ * */
+/*!è¢«é‚€è¯·è¿›å…¥*/
 static const int T_INVITE = 1;
-/*Ö÷¶¯¼ÓÈë*/
+/*!ä¸»åŠ¨åŠ å…¥*/
 static const int T_ACTIVE = 2;
-/*¾ÉÈºÖ÷»Ö¸´ÈºÖ÷Î»ÖÃ*/
+/*!æ—§ç¾¤ä¸»æ¢å¤ç¾¤ä¸»ä½ç½®*/
 static const int T_Retrieve = 3;
+/// @}
 
-/*Èº³ÉÔ±È¨ÏŞ*/
-//ÈºÖ÷
+/*!@addtogroup ç¾¤æˆå‘˜æƒé™
+ * @{*/
+/// ç¾¤ä¸»
 static const int P_Owner = 2;
-//¹ÜÀíÔ±
+/// ç®¡ç†å‘˜
 static const int P_Administer = 1;
-//Èº³ÉÔ±
+/// ç¾¤æˆå‘˜
 static const int P_Member = 0;
+///@}
 
-/*
-LightApp·ç¸ñ1
+/*!
+ * @addtogroup LightAppé£æ ¼
+ * @{
+ */
+/*!
+LightAppé£æ ¼1
 */
 struct LightAppStyle1{
-	//Ğ¡Í¼±êµØÖ·
-	std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
-	//Ğ¡±êÌâ£¬ÓÃ¶ººÅ·Ö¸î¶à¸ö
-	std::string titles = "{\"title\":\"1\", \"value\":\"t1\"},"
-					"{\"title\":\"2\", \"value\":\"t2\"}";
-	//ÏÂÃæµÄ°´Å¥£¬µ«ÊÇ²»ÄÜ°´£¬ÓÃ¶ººÅ·Ö¸î¶à¸ö
-	std::string buttons = "{\"name\":\"T1\",\"action\":\"\"}"
-					"{\"name\":\"T2\",\"action\":\"\"}";
-	//´ó±êÌâ
-	std::string appName = "test1";
-	//Ğ¡±êÌâµÄ±êÌâ
-	std::string title = "test2";
+    ///å°å›¾æ ‡åœ°å€
+    std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+    ///å°æ ‡é¢˜ï¼Œç”¨é€—å·åˆ†å‰²å¤šä¸ª
+    std::string titles = "{\"title\":\"1\", \"value\":\"t1\"},"
+                         "{\"title\":\"2\", \"value\":\"t2\"}";
+    ///ä¸‹é¢çš„æŒ‰é’®ï¼Œä½†æ˜¯ä¸èƒ½æŒ‰ï¼Œç”¨é€—å·åˆ†å‰²å¤šä¸ª
+    std::string buttons = "{\"name\":\"T1\",\"action\":\"\"}"
+                          "{\"name\":\"T2\",\"action\":\"\"}";
+    ///å¤§æ ‡é¢˜
+    std::string appName = "test1";
+    ///å°æ ‡é¢˜çš„æ ‡é¢˜
+    std::string title = "test2";
 };
 
+/// é£æ ¼2
 struct LightAppStyle2 {
-	//Ğ¡Í¼±ê
-	std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
-	//Ô¤ÀÀÍ¼´óÍ¼
-	std::string preview = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
-	//Ğ¡Í¼Æ¬ÓÒ²àĞ¡±êÌâ
-	std::string title = "Test1";
-	//Í¼Æ¬ÉÏ±êÌâ
-	std::string title2 = "Test2";
+    ///å°å›¾æ ‡
+    std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+    ///é¢„è§ˆå›¾å¤§å›¾
+    std::string preview = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+    ///å°å›¾ç‰‡å³ä¾§å°æ ‡é¢˜
+    std::string title = "Test1";
+    ///å›¾ç‰‡ä¸Šæ ‡é¢˜
+    std::string title2 = "Test2";
 };
 
+/// é£æ ¼3
 struct LightAppStyle3 {
-	//µã»÷Ìø×ªÁ´½Ó
-	std::string url = "https://www.baidu.com";
-	std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
-	//Ô¤ÀÀÍ¼
-	std::string preview = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
-	//´ó±êÌâ
-	std::string title = "Test1";
-	//Í¼Æ¬ÅÔÃèÊö
-	std::string description = "Test2";
+    /// ç‚¹å‡»è·³è½¬é“¾æ¥
+    std::string url = "https://www.baidu.com";
+    /// å›¾æ ‡
+    std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+    ///é¢„è§ˆå›¾
+    std::string preview = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+    ///å¤§æ ‡é¢˜
+    std::string title = "Test1";
+    ///å›¾ç‰‡æ—æè¿°
+    std::string description = "Test2";
 };
+///@}
