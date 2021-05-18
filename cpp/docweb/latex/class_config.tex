@@ -1,0 +1,95 @@
+\hypertarget{class_config}{}\doxysection{Config类 参考}
+\label{class_config}\index{Config@{Config}}
+
+
+配置类声明, 主要存放各种jmethodid, Mirai\+CP内部使用, 不需要更改或其他操作  
+
+
+
+
+{\ttfamily \#include $<$tools.\+h$>$}
+
+\doxysubsection*{Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_config_a379658b5044c19b2e2016aae0e326d59}\label{class_config_a379658b5044c19b2e2016aae0e326d59}} 
+void {\bfseries Init} (JNIEnv $\ast$=manager-\/$>$get\+Env())
+\end{DoxyCompactItemize}
+\doxysubsection*{Public 属性}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_config_a4527012e3db22223852e754ae2241e9c}\label{class_config_a4527012e3db22223852e754ae2241e9c}} 
+jclass \mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\+\_\+lib}} = NULL
+\begin{DoxyCompactList}\small\item\em kt中\+JNI接口类 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a7e26286ce329125869281cd979c94fc5}\label{class_config_a7e26286ce329125869281cd979c94fc5}} 
+jclass \mbox{\hyperlink{class_config_a7e26286ce329125869281cd979c94fc5}{initexception}} = NULL
+\begin{DoxyCompactList}\small\item\em 异常类 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a35e4d5278a105691e18471281e83947d}\label{class_config_a35e4d5278a105691e18471281e83947d}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a35e4d5278a105691e18471281e83947d}{KRecall}} = NULL
+\begin{DoxyCompactList}\small\item\em 撤回信息 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a79ec5659e47627677e41247b860d76ee}\label{class_config_a79ec5659e47627677e41247b860d76ee}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a79ec5659e47627677e41247b860d76ee}{KSend}} = NULL
+\begin{DoxyCompactList}\small\item\em 发送信息 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a941c92e01cef6da2301b11422f29afd4}\label{class_config_a941c92e01cef6da2301b11422f29afd4}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a941c92e01cef6da2301b11422f29afd4}{KRefresh\+Info}} = NULL
+\begin{DoxyCompactList}\small\item\em 查询信息接口 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a0697469c6fcaac6dde444e8780b437c5}\label{class_config_a0697469c6fcaac6dde444e8780b437c5}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a0697469c6fcaac6dde444e8780b437c5}{KUpload\+Img}} = NULL
+\begin{DoxyCompactList}\small\item\em 上传图片 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a6828d41c3b1f79565e7fdf756b3c2aac}\label{class_config_a6828d41c3b1f79565e7fdf756b3c2aac}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a6828d41c3b1f79565e7fdf756b3c2aac}{KQuery\+BFL}} = NULL
+\begin{DoxyCompactList}\small\item\em 取好友列表 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a88c77bf58af912391d3ab19bc6c66046}\label{class_config_a88c77bf58af912391d3ab19bc6c66046}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a88c77bf58af912391d3ab19bc6c66046}{KQuery\+BGL}} = NULL
+\begin{DoxyCompactList}\small\item\em 取群组列表 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_ab4c7c1fa8e2f5788e71ae05cd8e095f9}\label{class_config_ab4c7c1fa8e2f5788e71ae05cd8e095f9}} 
+jmethod\+ID \mbox{\hyperlink{class_config_ab4c7c1fa8e2f5788e71ae05cd8e095f9}{KSend\+File}} = NULL
+\begin{DoxyCompactList}\small\item\em 上传文件 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a85e0c82aba983f80aa56b1428f8acd54}\label{class_config_a85e0c82aba983f80aa56b1428f8acd54}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a85e0c82aba983f80aa56b1428f8acd54}{KRemote\+File\+Info}} = NULL
+\begin{DoxyCompactList}\small\item\em 查询文件信息 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a7be31e17b33b721573e0855c1166d665}\label{class_config_a7be31e17b33b721573e0855c1166d665}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a7be31e17b33b721573e0855c1166d665}{KQuery\+Img\+Url}} = NULL
+\begin{DoxyCompactList}\small\item\em 查询图片下载地址 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_ac614d847a1359b2618c48fa779517e8d}\label{class_config_ac614d847a1359b2618c48fa779517e8d}} 
+jmethod\+ID \mbox{\hyperlink{class_config_ac614d847a1359b2618c48fa779517e8d}{KMuteM}} = NULL
+\begin{DoxyCompactList}\small\item\em 禁言 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a7964ef89426d2f8b0c3508024f0b20ca}\label{class_config_a7964ef89426d2f8b0c3508024f0b20ca}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a7964ef89426d2f8b0c3508024f0b20ca}{KQueryM}} = NULL
+\begin{DoxyCompactList}\small\item\em 查询权限 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a9d35eb18487783f8ee6e8a53a85a0539}\label{class_config_a9d35eb18487783f8ee6e8a53a85a0539}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a9d35eb18487783f8ee6e8a53a85a0539}{KKickM}} = NULL
+\begin{DoxyCompactList}\small\item\em 踢出 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_affbb043f1d3eb8e3587a1b8fc1a6682e}\label{class_config_affbb043f1d3eb8e3587a1b8fc1a6682e}} 
+jmethod\+ID \mbox{\hyperlink{class_config_affbb043f1d3eb8e3587a1b8fc1a6682e}{KQuery\+Owner}} = NULL
+\begin{DoxyCompactList}\small\item\em 取群主 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_aef82ed33c4ce4b85792172dcacb552f0}\label{class_config_aef82ed33c4ce4b85792172dcacb552f0}} 
+jmethod\+ID \mbox{\hyperlink{class_config_aef82ed33c4ce4b85792172dcacb552f0}{KMute\+Group}} = NULL
+\begin{DoxyCompactList}\small\item\em 全员禁言 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_ae7ebb0f5ecce9db4141fbf7d1005a023}\label{class_config_ae7ebb0f5ecce9db4141fbf7d1005a023}} 
+jmethod\+ID \mbox{\hyperlink{class_config_ae7ebb0f5ecce9db4141fbf7d1005a023}{KQuery\+ML}} = NULL
+\begin{DoxyCompactList}\small\item\em 查询群成员列表 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a722889565f844a0f533eb1eb7bfe74bf}\label{class_config_a722889565f844a0f533eb1eb7bfe74bf}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a722889565f844a0f533eb1eb7bfe74bf}{KSchedule}} = NULL
+\begin{DoxyCompactList}\small\item\em 定时任务 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_aefc337c0124f3ed88a175a3a6b17e620}\label{class_config_aefc337c0124f3ed88a175a3a6b17e620}} 
+jmethod\+ID \mbox{\hyperlink{class_config_aefc337c0124f3ed88a175a3a6b17e620}{KBuildforward}} = NULL
+\begin{DoxyCompactList}\small\item\em 构建转发信息 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_ac9c81894cd0eff7edcea916b296ee97f}\label{class_config_ac9c81894cd0eff7edcea916b296ee97f}} 
+jmethod\+ID \mbox{\hyperlink{class_config_ac9c81894cd0eff7edcea916b296ee97f}{KNfroperation}} = NULL
+\begin{DoxyCompactList}\small\item\em 好友申请事件 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_config_a9ba4760b8ea690b6e69faff11d6b1ef5}\label{class_config_a9ba4760b8ea690b6e69faff11d6b1ef5}} 
+jmethod\+ID \mbox{\hyperlink{class_config_a9ba4760b8ea690b6e69faff11d6b1ef5}{KGioperation}} = NULL
+\begin{DoxyCompactList}\small\item\em 群聊邀请事件 \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{详细描述}
+配置类声明, 主要存放各种jmethodid, Mirai\+CP内部使用, 不需要更改或其他操作 \begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+该类的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+cpp\end{DoxyCompactItemize}
