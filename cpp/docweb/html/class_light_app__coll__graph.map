@@ -1,4 +1,0 @@
-<map id="LightApp" name="LightApp">
-<area shape="rect" id="node1" title="小程序" alt="" coords="21,80,94,107"/>
-<area shape="rect" id="node2" href="$class_mirai_codeable.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,5,109,32"/>
-</map>

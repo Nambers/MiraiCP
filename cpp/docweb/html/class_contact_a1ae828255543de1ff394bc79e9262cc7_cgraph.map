@@ -1,5 +1,0 @@
-<map id="Contact::deserializationFromString" name="Contact::deserializationFromString">
-<area shape="rect" id="node1" title=" " alt="" coords="5,35,164,76"/>
-<area shape="rect" id="node2" href="$class_contact.html#aafc428cdb4c1920864bf747ad7dce9f2" title="从json节点反序列化" alt="" coords="212,5,371,47"/>
-<area shape="rect" id="node3" href="$class_logger.html#abb690146dbd2c6fb7e603caf123096dd" title="发送错误(error级日志)" alt="" coords="243,71,340,98"/>
-</map>
