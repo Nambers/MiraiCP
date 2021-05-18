@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <filesystem>
 
 using json = nlohmann::json;
 
@@ -334,14 +333,12 @@ Friend::Friend(unsigned long long id, unsigned long long botid, JNIEnv *env) : C
 }
 
 Image Friend::uploadImg(const std::string &filename, JNIEnv *env) {
-    std::ifstream fin(filename);
-    if (!fin) {
+    std::filesystem::path tmp = std::filesystem::path(filename);
+    if (!exists(tmp)) {
         logger->Error("文件不存在,位置:C-Friend::uploadImg(),文件名:" + filename);
-        fin.close();
         throw UploadException("上传图片不存在,路径:" + filename);
     }
-    fin.close();
-    std::string re = LowLevelAPI::uploadImg0(filename, this, env);
+    std::string re = LowLevelAPI::uploadImg0((const char *const)absolute(tmp).u8string().c_str(), this, env);
     if(re == "E1")
         throw FriendException();
     if(re == "E2")
@@ -445,13 +442,11 @@ void Member::Kick(const std::string &reason, JNIEnv *env) {
 }
 
 Image Member::uploadImg(const std::string &filename, JNIEnv *env) {
-    std::ifstream fin(filename);
-    if (!fin) {
-        fin.close();
+    std::filesystem::path tmp = std::filesystem::path(filename);
+    if (!exists(tmp)) {
         throw UploadException("上传图片不存在,路径:" + filename);
     }
-    fin.close();
-    std::string re = LowLevelAPI::uploadImg0(filename, this, env);
+    std::string re = LowLevelAPI::uploadImg0((const char *const)absolute(tmp).u8string().c_str(), this, env);
     if(re == "E1")
         throw MemberException(1);
     if(re == "E2")
@@ -498,14 +493,12 @@ Group::Group(unsigned long long i, unsigned long long bi, JNIEnv *env) : Contact
 }
 
 Image Group::uploadImg(const std::string &filename, JNIEnv *env) {
-    std::ifstream fin(filename);
-    if (!fin) {
+    std::filesystem::path tmp = std::filesystem::path(filename);
+    if (!exists(tmp)) {
         logger->Error("文件不存在,位置:C++部分 Group::uploadImg2(),文件名:" + filename);
-        fin.close();
         throw UploadException("上传图片不存在,路径:" + filename);
     }
-    fin.close();
-    std::string re = LowLevelAPI::uploadImg0(filename, this, env);
+    std::string re = LowLevelAPI::uploadImg0((const char *const)absolute(tmp).u8string().c_str(), this, env);
     if(re == "E1")
         throw GroupException();
     if(re == "E2")
@@ -514,9 +507,13 @@ Image Group::uploadImg(const std::string &filename, JNIEnv *env) {
 }
 
 RemoteFile Group::sendFile(const std::string &path, const std::string &filename, JNIEnv *env) {
+    std::filesystem::path temp = std::filesystem::path(filename);
+    if(!exists(temp)){
+        throw UploadException("上传远程(群)文件找不到文件, 位置:" + filename);
+    }
     json tmp;
     tmp["path"] = path;
-    tmp["filename"] = filename;
+    tmp["filename"] = (const char* const)absolute(temp).u8string().c_str();
     std::string callback = Tools::jstring2str((jstring) env->CallStaticObjectMethod(config->CPP_lib, config->KSendFile,
                                                                                     Tools::str2jstring(
                                                                                             tmp.dump().c_str(), env),
