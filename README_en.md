@@ -46,11 +46,14 @@ You can see all this content in[Config.kt](https://github.com/Nambers/MiraiCP/bl
 | New group member join                                        | MemberJoinEvent       |
 | group member leave                                           | MemberLeaveEvent      |
 | Message recall                                               | RecallEvent           |
+| Group temporary Message Event				       | GroupTempMessageEvent |
 | Timed out event(when the time of a registered time task out) | SchedulingEvent       |
 
 </details>
 
-**Example code [example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)**
+**[Online API documentation](https://eritque-arcus.tech/MiraiCP/html/)**
+
+Example code [example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)
 
 Design flow chart of this project [intro.md](https://github.com/Nambers/MiraiCP/blob/master/doc/intro.md)
 
