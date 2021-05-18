@@ -61,3 +61,5 @@ x64/
 cache/
 test.kt
 selenium/
+cmake-build-debug/
+cpp/out/

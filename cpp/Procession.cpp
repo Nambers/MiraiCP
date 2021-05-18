@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 void func(unsigned long long i, unsigned long long botid) {
 	//执行操作
 	Friend(i, botid).SendMsg("hi");
@@ -24,58 +24,60 @@ void onEnable() {
 	// 好友申请
 	procession->registerEvent([](NewFriendRequestEvent e) {
 		e.accept();
-		Friend(e.senderid, e.bot.id()).SendMsg("HI");
+		Friend(e.fromid, e.bot.id).SendMsg("HI");
 		});
 	// 邀请加群
 	procession->registerEvent([](GroupInviteEvent e) {
 		e.accept();
 		logger->Info("x");
-		Group(e.groupid, e.bot.id()).SendMsg("被" + e.inviterNick + "邀请进入" + e.groupName);
+		Group(e.groupid, e.bot.id).SendMsg("被" + e.inviterNick + "邀请进入" + e.groupName);
 		});
 	// 消息事件
 	// 监听私聊
 	Event::NodeHandle handle = procession->registerEvent([](PrivateMessageEvent e) {
-		//std::thread func1(func, e.sender.id(), e.bot.id());
-		e.sender.SendMsg(e.message);
-		//func1.detach();
-		// 多线程测试,线程应该在lambda中决定要detach还是join, 否则会报错
-		// 测试取图片
-		std::vector <std::string> temp = Image::GetImgIdsFromMiraiCode(e.message);
-		for (std::string a : temp) {
-			e.sender.SendMsg(a);
-		}
-		// 发送图片
-		Image tmp = e.sender.uploadImg("C:\\Users\\19308\\Desktop\\a.jpg");
-		e.sender.SendMsg(tmp.toMiraiCode());
-		e.sender.SendMiraiCode(tmp.toMiraiCode());
+		unsigned long long id = e.bot.id;
+		logger->Info(std::to_string(id));
+		//        std::thread func1(func, e.sender.id(), e.bot.id());
+		//        e.sender.SendMsg(e.message);
+		//        func1.detach();
+		//        // 多线程测试,线程应该在lambda中决定要detach还是join, 否则会报错
+		//        // 测试取图片
+		//         std::vector <std::string> temp = Image::GetImgIdsFromMiraiCode(e.message);
+		//         for (std::string a : temp) {
+		//             e.sender.SendMsg(a);
+		//         }
+		//        // 发送图片
+		//         Image tmp = e.sender.uploadImg("C:\\Users\\19308\\Desktop\\a.jpg");
+		//         e.sender.SendMsg(tmp.toMiraiCode());
+		//         e.sender.SendMiraiCode(tmp.toMiraiCode());
 		});
 
 	// 监听群信息
 	procession->registerEvent([=](GroupMessageEvent e) {
-		// 发送文本信息
-		//e.group.SendMsg("HI");
-		// 发送MiraiCode信息，At
-		//e.group.SendMiraiCode(At(e.sender));
-		// 撤回测试
-		//e.group.SendMsg("撤回测试").recall();
-		// 发送xml卡片测试,可以用new传miraicodeable指针进去，也可以用.toMiraiCode()
-		//e.group.SendMiraiCode(new LightApp(LightAppStyle1()));
-		//e.group.SendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
-		//e.group.SendMiraiCode(new LightApp(LightAppStyle3()));
-		//ForwardMessage(&e.group,
-		//{
-		//	ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-		//	ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
-		//}).sendTo(&e.group);
-		// 关闭上面的私聊消息监听器
-		 //handle.stop();
-		// 当前bot属性
-		//e.sender.SendMsg(e.bot.nick());
-		//e.sender.SendMsg(e.bot.FriendListToString());
-		//e.sender.SendMsg(e.bot.GroupListToString());
+		//        // 发送文本信息
+		//        e.group.SendMsg("HI");
+		//        // 发送MiraiCode信息，At
+		//        e.group.SendMiraiCode(At(e.sender));
+		//        // 撤回测试
+		//        e.group.SendMsg("撤回测试").recall();
+		//        // 发送xml卡片测试,可以用new传miraicodeable指针进去，也可以用.toMiraiCode()
+		//        e.group.SendMiraiCode(new LightApp(LightAppStyle1()));
+		//        e.group.SendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
+		//        e.group.SendMiraiCode(new LightApp(LightAppStyle3()));
+		//        ForwardMessage(&e.group,
+		//        {
+		//        	ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
+		//        	ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
+		//        }).sendTo(&e.group);
+		//        // 关闭上面的私聊消息监听器
+		//        handle.stop();
+		//        // 当前bot属性
+		//        e.sender.SendMsg(e.bot.nick());
+		//        e.sender.SendMsg(e.bot.FriendListToString());
+		//        e.sender.SendMsg(e.bot.GroupListToString());
 		RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
-		e.group.SendMsg(e.group.getFile("/", tmp.id()).name());
-		e.group.SendMsg(e.group.getFile("/test.txt").name());
+		e.group.SendMsg(e.group.getFile("/", tmp.id).name);
+		e.group.SendMsg(e.group.getFile("/test.txt").name);
 		e.group.SendMsg(e.group.getFileListString("/"));
 		std::vector<Group::short_info> a = e.group.getFileList("/");
 		std::stringstream ss;
@@ -87,6 +89,7 @@ void onEnable() {
 		}
 		std::string s = ss.str();
 		e.group.SendMsg(s);
+		e.group.SendMsg(e.group.MemberListToString());
 		});
 	// 监听群临时会话
 	procession->registerEvent([](GroupTempMessageEvent e) {
@@ -97,7 +100,7 @@ void onEnable() {
 		e.group.SendMiraiCode(At(e.group.getOwner()) + std::to_string(e.member.id()) + "加入了群聊");
 		});
 	procession->registerEvent([](MemberLeaveEvent e) {
-		e.group.SendMiraiCode(At(e.group.getOwner()) + std::to_string(e.member.id()) + "退出了群聊");
+		e.group.SendMiraiCode(At(e.group.getOwner()) + std::to_string(e.memberid) + "退出了群聊");
 		});
 }
 void onDisable() {
