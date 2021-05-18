@@ -7,7 +7,16 @@ extern JavaVM *gvm;
 /// @brief JNI 版本.
 extern int JNIVersion;
 
-/// @brief 多线程管理.
+/*!@brief 多线程管理.
+ * @note 一个完整的线程应该在结束时调用detach
+ * @example
+ * @code
+ * void func(){
+ *      //do some things
+ *      manager->detch();
+ * }
+ * @endcode
+ */
 class threadManager {
 private:
     /// @brief 每个线程实例.
@@ -18,6 +27,7 @@ private:
     std::map<std::string, t> _threads;/// < 线程池(线程id:env).
     std::recursive_mutex mtx; ///< 线程池读写锁.
     void newEnv(const char *threadName = NULL);///< 新建一个env，于getEnv中没取到env时调用.
+    /// 判断该线程id是否包含在线程池里
     bool included(const std::string &id);
 
 public:
@@ -33,18 +43,27 @@ public:
     /// @brief 设置env给当前线程.
     void setEnv(JNIEnv *e);
 
-    /*!v
+    /*!
      * 	@brief 结束当前线程的env，也就是释放当前线程缓存的env.
-     *  @note 不过继续调用getEnv()将再次获取，所以本方法调用后线程也可以通过getEnv重新获取一个env，本线程的作用就是在结束后释放空间.
+     *  @note 不过继续调用getEnv()将再次获取，所以本方法调用后线程也可以通过getEnv重新获取一个env，本线程的作用就是在结束后释放空间
      */
     void detach();
 
     JNIEnv *getEnv();///< @brief 取env,如果不存在重新获取.
 };
 
+/// 线程管理实例
 extern threadManager *manager;
 
-/// @brief 日志
+/*! @brief 日志
+ *  @example
+ *  发送消息级日志
+ *  @code logger->Info(string) @endcode
+ *  发送警告级日志
+ *  @code logger->Warning(string) @endcode
+ *  发送错误级日志
+ *  @code logger->Error(string) @endcode
+ */
 class Logger {
 private:
     jclass CPP_lib = NULL;
@@ -69,6 +88,7 @@ public:
         Logger::action action = [](std::string content, int level) {};
     } loggerhandler;
 
+    // 初始化 获取methodid
     void init(JNIEnv * = manager->getEnv());
 
     ///发送普通(info级日志)
@@ -83,62 +103,67 @@ public:
     /// @brief 设置loggerhandler的action
     /// @param action 执行的操作
     /// @see Logger::handler
+    /// @example
+    /// @code logger->registerHandle([](std::string content, int level){
+    ///     \\do some things
+    /// });@endcode
     inline void registerHandle(action action);
 
     /// @brief 设置handler的启用状态
     /// @param state 状态，启用或者关闭
+    /// @example @code logger->setHandleState(ture); @endcode
     inline void setHandleState(bool state);
 
     ~Logger();
 };
 
-/*声明全局日志对象*/
+/// 声明全局日志对象
 extern Logger *logger;
 
-/// 配置类声明，主要存放各种jmethodid
+/// 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
 class Config {
 public:
-    // kt中JNI接口类
+    /// kt中JNI接口类
     jclass CPP_lib = NULL;
-    // 异常类
+    /// 异常类
     jclass initexception = NULL;
-    // 撤回信息
+    /// 撤回信息
     jmethodID KRecall = NULL;
-    // 发送信息
+    /// 发送信息
     jmethodID KSend = NULL;
-    // 查询信息接口
+    /// 查询信息接口
     jmethodID KRefreshInfo = NULL;
-    // 上传图片
+    /// 上传图片
     jmethodID KUploadImg = NULL;
-    // 取好友列表
+    /// 取好友列表
     jmethodID KQueryBFL = NULL;
-    // 取群组列表
+    /// 取群组列表
     jmethodID KQueryBGL = NULL;
-    // 上传文件
+    /// 上传文件
     jmethodID KSendFile = NULL;
-    // 查询文件信息
+    /// 查询文件信息
     jmethodID KRemoteFileInfo = NULL;
-    // 查询图片下载地址
+    /// 查询图片下载地址
     jmethodID KQueryImgUrl = NULL;
-    // 禁言
+    /// 禁言
     jmethodID KMuteM = NULL;
-    // 查询权限
+    /// 查询权限
     jmethodID KQueryM = NULL;
-    // 踢出
+    /// 踢出
     jmethodID KKickM = NULL;
-    // 取群主
+    /// 取群主
     jmethodID KQueryOwner = NULL;
-    // 全员禁言
+    /// 全员禁言
     jmethodID KMuteGroup = NULL;
-    // 查询群成员列表
+    /// 查询群成员列表
     jmethodID KQueryML = NULL;
-    /*定时任务*/
+    /// 定时任务
     jmethodID KSchedule = NULL;
-    // 构建转发信息
+    /// 构建转发信息
     jmethodID KBuildforward = NULL;
-    // 好友申请事件
+    /// 好友申请事件
     jmethodID KNfroperation = NULL;
-    // 群聊邀请事件
+    /// 群聊邀请事件
     jmethodID KGioperation = NULL;
 
     Config() {};
@@ -150,13 +175,12 @@ public:
 
 extern Config *config;
 
-/*工具类声明*/
+/// 工具类声明
 class Tools {
 public:
     /*!
      * @name jstring2str
-     * @brief string类型转码转换到jstring类型
-     * @attention 因为java和cpp的字符编码不一样，所以要转码
+     * @brief string类型转码转换到jstring类型, UTF16 -> UTF8
      * @note 来源https://blog.csdn.net/chunleixiahe/article/details/51394116
      * @param jstr 转换内容,jstring类型
      * @param env 可选，JNIEnv
@@ -166,7 +190,7 @@ public:
 
     /*!
      * @name str2jstring
-     * @brief string类型到jsting类型
+     * @brief string类型到jsting类型 UTF8 -> UTF16
      * @note 来源https://blog.csdn.net/chunleixiahe/article/details/51394116
      * @param pat const char*(string.c_str())转换的内容
      * @param env 可选JNIEnv
@@ -183,7 +207,7 @@ public:
     static std::string JLongToString(jlong val);
 
     /*!
-     * @brief 替换全部.
+     * @brief 替换全部在一个字符串中.
      * @param str 原字符串.
      * @param from 需要被替换的字符.
      * @param to 替换到的字符.
@@ -210,15 +234,17 @@ public:
     static std::vector<unsigned long long> StringToVector(std::string s);
 };
 
-///总异常
+/// 总异常抽象类
 class MiraiCPException : public std::exception {
 public:
-    virtual std::string what() { return "C++部分出现了个未捕获的异常"; };
-
+    /// 异常信息
+    virtual std::string what() { return "MiraiCP异常"; };
+    /// raise 抛出方法
     virtual void raise() {};
 };
 
 /// 初始化异常
+/// @see MiraiCPException
 class InitException : public MiraiCPException {
 private:
     std::string description;
@@ -230,7 +256,7 @@ public:
         this->step = step;
     }
 
-    //返回错误信息
+    /// 返回错误信息
     std::string what() {
         return this->description;
     }
@@ -242,6 +268,7 @@ public:
 };
 
 /// 文件读取异常.
+/// @see MiraiCPException
 class UploadException : public MiraiCPException {
 public:
     UploadException(std::string text) {
@@ -262,7 +289,8 @@ private:
     std::string description;
 };
 
-/// 内部异常
+/// 内部异常, 通常为json读写问题
+/// @see MiraiCPException
 class APIException : public MiraiCPException {
 public:
     APIException(std::string text) {
@@ -284,6 +312,7 @@ private:
 };
 
 /// 机器人操作异常
+/// @see MiraiCPException
 class BotException : public MiraiCPException {
 public:
     /*
@@ -314,6 +343,7 @@ private:
 };
 
 /// 禁言异常
+/// @see MiraiCPException
 class MuteException : public MiraiCPException {
 public:
     /*
@@ -337,6 +367,7 @@ private:
 };
 
 /// 获取群成员错误
+/// @see MiraiCPException
 class MemberException : public MiraiCPException {
 public:
     /*
@@ -371,6 +402,7 @@ private:
 };
 
 /// 获取群成员错误
+/// @see MiraiCPException
 class FriendException : public MiraiCPException {
 public:
     /*
@@ -394,6 +426,7 @@ private:
 };
 
 /// 获取群错误
+/// @see MiraiCPException
 class GroupException : public MiraiCPException {
 public:
     GroupException() {
@@ -414,6 +447,7 @@ private:
 };
 
 /// 撤回异常
+/// @see MiraiCPException
 class RecallException : public MiraiCPException {
 public:
     RecallException() {
@@ -429,6 +463,7 @@ private:
 };
 
 /// 上传异常
+/// @see MiraiCPException
 class RemoteFileException : public MiraiCPException {
 public:
     RemoteFileException(std::string e) {
@@ -944,12 +979,12 @@ public:
         this->_nick = tmp.nickornamecard;
     }
 
+    /// 用id构建机器人
     Bot(unsigned long long i) {
         this->_id = i;
     }
 
-    Bot() {}
-
+    ///取id
     unsigned long long id() {
         return this->_id;
     }
@@ -996,6 +1031,11 @@ public:
 /// 好友类声明
 class Friend : public Contact {
 public:
+    /*!
+     * @brief 构建好友对象
+     * @param friendid q号
+     * @param botid 对应机器人id
+     */
     Friend(unsigned long long friendid, unsigned long long botid, JNIEnv * = manager->getEnv());
 
     Friend(Contact c) : Contact(c) {};
@@ -1019,10 +1059,12 @@ public:
         return SendMiraiCode(msg->toMiraiCode());
     }
 
+    /// 发送miraicode
     MessageSource SendMiraiCode(MiraiCode msg) {
         return SendMiraiCode(msg.toString());
     }
 
+    /// 发送miraicode
     MessageSource SendMiraiCode(std::string msg, JNIEnv * = manager->getEnv());
 
     /// 发送纯文本信息
@@ -1043,7 +1085,12 @@ public:
     /// @note 上面那些变量在constants.h中有定义
     unsigned int permission = 0;
 
-    /// qqid, groupid
+    /// @brief 构建群成员对象
+    /// @param qqid 该成员q号
+    /// @param groupid 所在群号
+    /// @param botid 机器人id
+    /// @example 在事件中构建
+    /// @code Member(this.sender.id, this.group.id, this.bot.id)@endcode
     Member(unsigned long long qqid, unsigned long long groupid, unsigned long long botid, JNIEnv * = manager->getEnv());
 
     /*!
@@ -1059,33 +1106,33 @@ public:
     Member(Contact c) : Contact(c) {};
 
     /// 获取权限，会在构造时调用，请使用permission缓存变量
+    /// @see Member::permission
     unsigned int getPermission(JNIEnv * = manager->getEnv());
     /*发送信息*/
-    //发送miraicode
+    ///发送miraicode
     MessageSource SendMiraiCode(MiraiCodeable *msg) {
         return SendMiraiCode(msg->toMiraiCode());
     }
 
+    ///发送miraicode
     MessageSource SendMiraiCode(MiraiCode msg) {
         return SendMiraiCode(msg.toString());
     }
 
+    ///发送miraicode
     MessageSource SendMiraiCode(std::string msg, JNIEnv * = manager->getEnv());
 
-    //发送文本信息，不进行miraicode解析
+    ///发送文本信息，不进行miraicode解析
     MessageSource SendMsg(std::string msg, JNIEnv * = manager->getEnv());
 
-    /*禁言当前对象，单位是秒，最少0秒最大30天
-    * 返回值对应报错
-    *	"E1" - 找不到群
-    *	"E2" - 找不到群成员
-    *	"E3" - 机器人无权限禁言对方
-    *	"E4" - 禁言时间超出0s~30d
-    *	"Y" - 一切正常
+    /*!
+     * 禁言当前对象，单位是秒，最少0秒最大30天
+     * @throws 可能抛出不同错误
     */
     void Mute(int time, JNIEnv * = manager->getEnv());
 
-    /*踢出这个群成员*/
+    /// 踢出这个群成员
+    /// @param reason - 原因
     void Kick(const std::string &reason, JNIEnv * = manager->getEnv());
 };
 
@@ -1116,7 +1163,11 @@ public:
     /// 取群主
     Member getOwner(JNIEnv * = manager->getEnv());
 
-    /// 构建以群号构建群对象
+    ///  @brief 构建以群号构建群对象
+    /// @param groupid 群号
+    /// @param botid 机器人id
+    /// @example 在事件中构建
+    /// @code Group(this.group.id, this.bot.id) @endcode
     Group(unsigned long long groupid, unsigned long long botid, JNIEnv * = manager->getEnv());
 
     Group(Contact c) : Contact(c) {};
@@ -1129,19 +1180,19 @@ public:
     */
     Image uploadImg(const std::string &filename, JNIEnv * = manager->getEnv());
 
-    /*
-    上传并发送
-    path-群文件路径(带文件名),根目录为/
-    filepath-本地文件路径
-    如 group.uploadFIle("/test.txt", "D:\\xxxx.xxx")
+    /*!
+    上传并发送远程(群)文件
+    @param path-群文件路径(带文件名),根目录为/
+    @param filepath-本地文件路径
+    @example group.uploadFIle("/test.txt", "D:\\xxxx.xxx")
     */
     RemoteFile sendFile(const std::string &path, const std::string &filepath, JNIEnv * = manager->getEnv());
 
-    /*
+    /*!
     取群文件信息,会自动搜索子目录
-    path-群文件路径(不带文件名)
-    id-文件id,可空，空则为用路径查找(此时路径要带文件名)
-    因为群文件允许重名文件存在的特性，该查找并不可靠，只能返回重名文件中的其中一个文件
+    @param path-群文件路径(不带文件名)
+    @param id-文件id,可空，空则为用路径查找(此时路径要带文件名)
+    @attention 因为群文件允许重名文件存在的特性，该查找并不可靠，只能返回重名文件中的其中一个文件
     */
     RemoteFile getFile(const std::string &path, const std::string &id = "", JNIEnv * = manager->getEnv());
 
@@ -1152,32 +1203,36 @@ public:
         std::string id = "";
     };
 
-    /*
-    获取path路径下全部文件信息
-    返回值为一个vector容器, 每一项为short_info
+    /*!
+     * 获取path路径下全部文件信息
+     * @param path - 远程路径
+     * @return 返回值为一个vector容器, 每一项为short_info
     */
     std::vector<short_info> getFileList(const std::string &path, JNIEnv * = manager->getEnv());
 
-    // 取文件列表返回值是字符串
+    /// 取文件列表以字符串形式返回
     std::string getFileListString(const std::string &path, JNIEnv * = manager->getEnv());
 
-    /*
+    /*!
     * 设置全员禁言
-    * param: sign = true时为开始，false为关闭
+    * @param: sign = true时为开始，false为关闭
     */
     void setMuteAll(bool sign, JNIEnv * = manager->getEnv());
 
-    /*发送信息*/
+    /// 发送MiraiCode信息
     MessageSource SendMiraiCode(MiraiCodeable *msg) {
         return SendMiraiCode(msg->toMiraiCode());
     }
 
+    /// 发送MiraiCode信息
     MessageSource SendMiraiCode(MiraiCode msg) {
         return SendMiraiCode(msg.toString());
     }
 
+    /// 发送MiraiCode信息
     MessageSource SendMiraiCode(std::string msg, JNIEnv * = manager->getEnv());
 
+    /// 发送信息
     MessageSource SendMsg(std::string msg, JNIEnv * = manager->getEnv());
 };
 
