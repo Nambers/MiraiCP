@@ -1,7 +1,0 @@
-<map id="LowLevelAPI::send0" name="LowLevelAPI::send0">
-<area shape="rect" id="node1" title="抽象封装底层发送信息接口" alt="" coords="219,81,357,108"/>
-<area shape="rect" id="node2" href="$class_friend.html#a2f376e17df7c86cb0366d94abf932a3d" title="发送miraicode" alt="" coords="11,5,165,32"/>
-<area shape="rect" id="node3" href="$class_member.html#af9970405f6e4f3861ca8d03bf45846e7" title="发送miraicode" alt="" coords="5,56,171,83"/>
-<area shape="rect" id="node4" href="$class_friend.html#a0f32b2c4784f164847c69c6908d5ffc7" title="发送纯文本信息" alt="" coords="27,107,149,133"/>
-<area shape="rect" id="node5" href="$class_member.html#a20b2f9a17d4e2e4f07dbb707f95177e3" title="发送文本信息，不进行miraicode解析" alt="" coords="22,157,154,184"/>
-</map>
