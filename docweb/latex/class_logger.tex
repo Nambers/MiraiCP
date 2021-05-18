@@ -1,0 +1,89 @@
+\hypertarget{class_logger}{}\doxysection{Logger类 参考}
+\label{class_logger}\index{Logger@{Logger}}
+
+
+Logger 的协作图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=183pt]{class_logger__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{类}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_logger_1_1handler}{handler}}
+\begin{DoxyCompactList}\small\item\em loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public 类型}
+\begin{DoxyCompactItemize}
+\item 
+typedef std\+::function$<$ void(std\+::string, int)$>$ \mbox{\hyperlink{class_logger_a3cc655404f5a2d454085b9047ee21cd0}{action}}
+\begin{DoxyCompactList}\small\item\em 封装lambda类型 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_logger_a4b9d5f4a3eaf23db64c6d0eabc8c3b31}\label{class_logger_a4b9d5f4a3eaf23db64c6d0eabc8c3b31}} 
+void {\bfseries init} (JNIEnv $\ast$=manager-\/$>$get\+Env())
+\item 
+\mbox{\Hypertarget{class_logger_a13e1837413a7cdecd8ea11909f1842be}\label{class_logger_a13e1837413a7cdecd8ea11909f1842be}} 
+void \mbox{\hyperlink{class_logger_a13e1837413a7cdecd8ea11909f1842be}{Info}} (const std\+::string \&, JNIEnv $\ast$=manager-\/$>$get\+Env())
+\begin{DoxyCompactList}\small\item\em 发送普通(info级日志) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_logger_aefc80c70d2253aed0119c468d7999ff1}\label{class_logger_aefc80c70d2253aed0119c468d7999ff1}} 
+void \mbox{\hyperlink{class_logger_aefc80c70d2253aed0119c468d7999ff1}{Warning}} (const std\+::string \&, JNIEnv $\ast$=manager-\/$>$get\+Env())
+\begin{DoxyCompactList}\small\item\em 发送警告(warning级日志) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_logger_abb690146dbd2c6fb7e603caf123096dd}\label{class_logger_abb690146dbd2c6fb7e603caf123096dd}} 
+void \mbox{\hyperlink{class_logger_abb690146dbd2c6fb7e603caf123096dd}{Error}} (const std\+::string \&, JNIEnv $\ast$=manager-\/$>$get\+Env())
+\begin{DoxyCompactList}\small\item\em 发送错误(error级日志) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_logger_aae91535858f620e4f5f1938683d601d5}\label{class_logger_aae91535858f620e4f5f1938683d601d5}} 
+void {\bfseries register\+Handle} (\mbox{\hyperlink{class_logger_a3cc655404f5a2d454085b9047ee21cd0}{action}} \mbox{\hyperlink{class_logger_a3cc655404f5a2d454085b9047ee21cd0}{action}})
+\item 
+\mbox{\Hypertarget{class_logger_ae5ec9c28bca82dcb1b0a48b8160e5653}\label{class_logger_ae5ec9c28bca82dcb1b0a48b8160e5653}} 
+void {\bfseries set\+Handle\+State} (bool state)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public 属性}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_logger_ad57356ecf8edbf450c996b50622cc85d}\label{class_logger_ad57356ecf8edbf450c996b50622cc85d}} 
+struct \mbox{\hyperlink{struct_logger_1_1handler}{Logger\+::handler}} {\bfseries loggerhandler}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{详细描述}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+\doxysubsection{成员类型定义说明}
+\mbox{\Hypertarget{class_logger_a3cc655404f5a2d454085b9047ee21cd0}\label{class_logger_a3cc655404f5a2d454085b9047ee21cd0}} 
+\index{Logger@{Logger}!action@{action}}
+\index{action@{action}!Logger@{Logger}}
+\doxysubsubsection{\texorpdfstring{action}{action}}
+{\footnotesize\ttfamily typedef std\+::function$<$void(std\+::string, int)$>$ \mbox{\hyperlink{class_logger_a3cc655404f5a2d454085b9047ee21cd0}{Logger\+::action}}}
+
+
+
+封装lambda类型 
+
+
+\begin{DoxyParams}{参数}
+{\em string} & 日志内容 \\
+\hline
+{\em 日志级别} & 
+\begin{DoxyItemize}
+\item 0 info
+\item 1 warning
+\item 2 error 
+\end{DoxyItemize}\\
+\hline
+\end{DoxyParams}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+该类的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+cpp\end{DoxyCompactItemize}
