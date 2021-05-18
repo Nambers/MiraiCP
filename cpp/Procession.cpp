@@ -24,18 +24,18 @@ void onEnable() {
 	// 好友申请
 	procession->registerEvent([](NewFriendRequestEvent e) {
 		e.accept();
-		Friend(e.fromid, e.bot.id()).SendMsg("HI");
+		Friend(e.fromid, e.bot.id).SendMsg("HI");
 		});
 	// 邀请加群
 	procession->registerEvent([](GroupInviteEvent e) {
 		e.accept();
 		logger->Info("x");
-		Group(e.groupid, e.bot.id()).SendMsg("被" + e.inviterNick + "邀请进入" + e.groupName);
+		Group(e.groupid, e.bot.id).SendMsg("被" + e.inviterNick + "邀请进入" + e.groupName);
 		});
 	// 消息事件
 	// 监听私聊
 	Event::NodeHandle handle = procession->registerEvent([](PrivateMessageEvent e) {
-		unsigned long long id = e.bot.id();
+		unsigned long long id = e.bot.id;
 		logger->Info(std::to_string(id));
 		//        std::thread func1(func, e.sender.id(), e.bot.id());
 		//        e.sender.SendMsg(e.message);
