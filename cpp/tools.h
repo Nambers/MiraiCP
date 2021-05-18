@@ -1,141 +1,229 @@
+#pragma once
+
 #include "pch.h"
 
+/// @brief å…¨å±€JavaVMå¯¹è±¡ï¼Œç”¨äºå¤šçº¿ç¨‹ç®¡ç†ä¸­æ–°å»ºçº¿ç¨‹çš„JNIEnv.
 extern JavaVM* gvm;
+/// @brief JNI ç‰ˆæœ¬.
 extern int JNIVersion;
-//JNIEnvºÍ¶àÏß³Ì¹ÜÀí
+
+/*!
+ * @class threadManager
+ * @brief å¤šçº¿ç¨‹ç®¡ç†.
+ */
 class threadManager {
 private:
+	/// @brief æ¯ä¸ªçº¿ç¨‹å®ä¾‹.
 	struct t {
 		JNIEnv* e;
 		bool attach;
 	};
-	std::map <std::string, t> _threads;
-	std::recursive_mutex mtx;
-	void newEnv(char* threadName = NULL);
-	bool included(std::string id);
+	std::map<std::string, t> _threads;/// < çº¿ç¨‹æ± (çº¿ç¨‹id:env).
+	std::recursive_mutex mtx; ///< çº¿ç¨‹æ± è¯»å†™é”.
+	void newEnv(const char* threadName = NULL);///< æ–°å»ºä¸€ä¸ªenvï¼ŒäºgetEnvä¸­æ²¡å–åˆ°envæ—¶è°ƒç”¨.
+	/// åˆ¤æ–­è¯¥çº¿ç¨‹idæ˜¯å¦åŒ…å«åœ¨çº¿ç¨‹æ± é‡Œ
+	bool included(const std::string& id);
 public:
-	// »ñÈ¡Ïß³Ìid
-	static std::string getThreadId(){
+	/// @brief è·å–çº¿ç¨‹id.
+	static std::string getThreadId() {
 		std::ostringstream oss;
 		oss << std::this_thread::get_id();
 		return oss.str();
 	}
+
 	threadManager();
-	// ÉèÖÃenv¸øµ±Ç°Ïß³Ì
+
+	/// @brief è®¾ç½®envç»™å½“å‰çº¿ç¨‹.
 	void setEnv(JNIEnv* e);
-	/*
-	½áÊøµ±Ç°Ïß³ÌµÄenv£¬Ò²¾ÍÊÇÊÍ·Åµ±Ç°Ïß³Ì»º´æµÄenv
-	²»¹ı¼ÌĞøµ÷ÓÃgetEnv()½«ÔÙ´Î»ñÈ¡£¬ËùÒÔÔÚÏß³ÌÈÎÎñ×îºóµ÷ÓÃ±¾·½·¨ÊÍ·Å
-	*/
+
+	/*!
+	 * 	@brief ç»“æŸå½“å‰çº¿ç¨‹çš„envï¼Œä¹Ÿå°±æ˜¯é‡Šæ”¾å½“å‰çº¿ç¨‹ç¼“å­˜çš„env.
+	 *  @note ä¸è¿‡ç»§ç»­è°ƒç”¨getEnv()å°†å†æ¬¡è·å–ï¼Œæ‰€ä»¥æœ¬æ–¹æ³•è°ƒç”¨åçº¿ç¨‹ä¹Ÿå¯ä»¥é€šè¿‡getEnvé‡æ–°è·å–ä¸€ä¸ªenvï¼Œæœ¬æ–¹æ³•çš„ä½œç”¨å°±æ˜¯åœ¨ç»“æŸåé‡Šæ”¾ç©ºé—´
+     * @example å¤šçº¿ç¨‹ç®¡ç†
+     * @code
+     * void func(){
+     *      //do some things
+     *      // ä¸€ä¸ªå®Œæ•´çš„çº¿ç¨‹åº”è¯¥åœ¨ç»“æŸæ—¶è°ƒç”¨detachæ¥é‡Šæ”¾envçš„ç©ºé—´
+     *      manager->detch();
+     * }
+     * @endcode
+	 */
 	void detach();
-	// È¡env
+
+    /// @brief å–env,å¦‚æœä¸å­˜åœ¨é‡æ–°è·å–
+    /// @internal ä¸€èˆ¬ä¸ºmiraicpå†…éƒ¨è°ƒç”¨jniæ¥å£æ—¶è°ƒç”¨
 	JNIEnv* getEnv();
 };
+
+/// çº¿ç¨‹ç®¡ç†å®ä¾‹
 extern threadManager* manager;
 
-/*ÈÕÖ¾ÀàÉùÃ÷*/
+/*!
+ * @class Logger
+ * @brief æ—¥å¿—
+ * @example å‘é€æ—¥å¿—
+	 *  å‘é€æ¶ˆæ¯çº§æ—¥å¿—
+	 *  @code logger->Info(string) @endcode
+	 *  å‘é€è­¦å‘Šçº§æ—¥å¿—
+	 *  @code logger->Warning(string) @endcode
+	 *  å‘é€é”™è¯¯çº§æ—¥å¿—
+	 *  @code logger->Error(string) @endcode
+ */
 class Logger {
 private:
 	jclass CPP_lib = NULL;
-	jmethodID log = NULL;
-	void log0(std::string, JNIEnv*, int);
+	jmethodID log = nullptr;
+
+	/// æ—¥å¿—åº•å±‚å®ç°å°è£…
+	void log0(const std::string&, JNIEnv*, int);
+
 public:
+	/// @brief å°è£…lambdaç±»å‹
+	/// @param string æ—¥å¿—å†…å®¹
+	/// @param æ—¥å¿—çº§åˆ«
+	///     - 0 info
+	///     - 1 warning
+	///     - 2 error
+	typedef std::function<void(std::string, int)> action;
+	/// @brief loggerhandlerä¼šåœ¨æ¯æ¬¡logæ‰§è¡Œå‰æ‰§è¡Œä¸€éï¼Œå¯ç”¨äºæ‰§è¡Œè‡ªå®šä¹‰çš„ä¿å­˜æ“ä½œç­‰
+	struct handler {
+		/// @brief æ˜¯å¦å¯ç”¨
+		bool enable = true;
+		/// @brief æ‰§è¡Œçš„æ“ä½œï¼Œæ ¼å¼ä¸ºlambda
+		Logger::action action = [](std::string content, int level) {};
+	} loggerhandler;
+
+	// åˆå§‹åŒ– è·å–methodid
 	void init(JNIEnv* = manager->getEnv());
-	/*·¢ËÍÆÕÍ¨ÈÕÖ¾*/
-	void Info(std::string, JNIEnv* = manager->getEnv());
-	/*·¢ËÍ¾¯¸æ*/
-	void Warning(std::string, JNIEnv* = manager->getEnv());
-	/*·¢ËÍ´íÎó*/
-	void Error(std::string, JNIEnv* = manager->getEnv());
+
+	///å‘é€æ™®é€š(infoçº§æ—¥å¿—)
+	void Info(const std::string&, JNIEnv* = manager->getEnv());
+
+	///å‘é€è­¦å‘Š(warningçº§æ—¥å¿—)
+	void Warning(const std::string&, JNIEnv* = manager->getEnv());
+
+	///å‘é€é”™è¯¯(errorçº§æ—¥å¿—)
+	void Error(const std::string&, JNIEnv* = manager->getEnv());
+
+	/// @brief è®¾ç½®loggerhandlerçš„action
+	/// @param action æ‰§è¡Œçš„æ“ä½œ
+	/// @see Logger::handler
+	/// @example è®¾ç½®loggerhandlerçš„action
+	/// @code logger->registerHandle([](std::string content, int level){
+	///     \\do some things
+	/// });@endcode
+	inline void registerHandle(action action);
+
+	/// @brief è®¾ç½®handlerçš„å¯ç”¨çŠ¶æ€
+	/// @param state çŠ¶æ€ï¼Œå¯ç”¨æˆ–è€…å…³é—­
+	/// @example è®¾ç½®handlerçš„å¯ç”¨çŠ¶æ€
+	/// @code logger->setHandleState(ture); @endcode
+	inline void setHandleState(bool state);
+
 	~Logger();
 };
 
-/*ÉùÃ÷È«¾ÖÈÕÖ¾¶ÔÏó*/
+/// å£°æ˜å…¨å±€æ—¥å¿—å¯¹è±¡
 extern Logger* logger;
 
-/*ÅäÖÃÀàÉùÃ÷*/
+/// @brief é…ç½®ç±»å£°æ˜, ä¸»è¦å­˜æ”¾å„ç§jmethodid, MiraiCPå†…éƒ¨ä½¿ç”¨, ä¸éœ€è¦æ›´æ”¹æˆ–å…¶ä»–æ“ä½œ
+/// @internal ä¸€èˆ¬ä¸ºMiraiCPå†…éƒ¨è°ƒç”¨jniæ¥å£ä½¿ç”¨
+/// @class Config
 class Config {
 public:
-	// ktÖĞJNI½Ó¿ÚÀà
+	/// ktä¸­JNIæ¥å£ç±»
 	jclass CPP_lib = NULL;
-	// Òì³£Àà
+	/// å¼‚å¸¸ç±»
 	jclass initexception = NULL;
-	// ³·»ØĞÅÏ¢
+	/// æ’¤å›ä¿¡æ¯
 	jmethodID KRecall = NULL;
-	// ·¢ËÍĞÅÏ¢
+	/// å‘é€ä¿¡æ¯
 	jmethodID KSend = NULL;
-	// ²éÑ¯ĞÅÏ¢½Ó¿Ú
+	/// æŸ¥è¯¢ä¿¡æ¯æ¥å£
 	jmethodID KRefreshInfo = NULL;
-	// ÉÏ´«Í¼Æ¬
+	/// ä¸Šä¼ å›¾ç‰‡
 	jmethodID KUploadImg = NULL;
-	// È¡ºÃÓÑÁĞ±í
+	/// å–å¥½å‹åˆ—è¡¨
 	jmethodID KQueryBFL = NULL;
-	// È¡Èº×éÁĞ±í
-	jmethodID KQueryBGL= NULL;
-	// ÉÏ´«ÎÄ¼ş
+	/// å–ç¾¤ç»„åˆ—è¡¨
+	jmethodID KQueryBGL = NULL;
+	/// ä¸Šä¼ æ–‡ä»¶
 	jmethodID KSendFile = NULL;
-	// ²éÑ¯ÎÄ¼şĞÅÏ¢
+	/// æŸ¥è¯¢æ–‡ä»¶ä¿¡æ¯
 	jmethodID KRemoteFileInfo = NULL;
-	// ²éÑ¯Í¼Æ¬ÏÂÔØµØÖ·
+	/// æŸ¥è¯¢å›¾ç‰‡ä¸‹è½½åœ°å€
 	jmethodID KQueryImgUrl = NULL;
-	// ½ûÑÔ
+	/// ç¦è¨€
 	jmethodID KMuteM = NULL;
-	// ²éÑ¯È¨ÏŞ
+	/// æŸ¥è¯¢æƒé™
 	jmethodID KQueryM = NULL;
-	// Ìß³ö
+	/// è¸¢å‡º
 	jmethodID KKickM = NULL;
-	// È¡ÈºÖ÷
+	/// å–ç¾¤ä¸»
 	jmethodID KQueryOwner = NULL;
-	// È«Ô±½ûÑÔ
+	/// å…¨å‘˜ç¦è¨€
 	jmethodID KMuteGroup = NULL;
-	// ²éÑ¯Èº³ÉÔ±ÁĞ±í
+	/// æŸ¥è¯¢ç¾¤æˆå‘˜åˆ—è¡¨
 	jmethodID KQueryML = NULL;
-	/*¶¨Ê±ÈÎÎñ*/
+	/// å®šæ—¶ä»»åŠ¡
 	jmethodID KSchedule = NULL;
-	// ¹¹½¨×ª·¢ĞÅÏ¢
+	/// æ„å»ºè½¬å‘ä¿¡æ¯
 	jmethodID KBuildforward = NULL;
-	// ºÃÓÑÉêÇëÊÂ¼ş
+	/// å¥½å‹ç”³è¯·äº‹ä»¶
 	jmethodID KNfroperation = NULL;
-	// ÈºÁÄÑûÇëÊÂ¼ş
+	/// ç¾¤èŠé‚€è¯·äº‹ä»¶
 	jmethodID KGioperation = NULL;
+
 	Config() {};
+
 	void Init(JNIEnv* = manager->getEnv());
+
 	~Config();
 };
 
 extern Config* config;
 
-/*¹¤¾ßÀàÉùÃ÷*/
+/// @brief å·¥å…·ç±»å£°æ˜, å¸¸ç”¨çš„ä¸€äº›è½¬æ¢å·¥å…·, å¦‚éœ€è½¬ç ä½¿ç”¨std::filesystem
+/// @class Tools
 class Tools {
 public:
-	/*
-	* Ãû³Æ:jstring2str
-	* ×÷ÓÃ:jstringµ½string×ª»»
-	* ²ÎÊı:env:JNIEnv ±ØĞë,jstr:jstring ×ª»»µÄÎÄ±¾
-	* ·µ»ØÖµ:string
-	* À´Ô´:https://blog.csdn.net/chunleixiahe/article/details/51394116
-	*/
-	std::string jstring2str(jstring jstr, JNIEnv* = manager->getEnv());
-	/*
-	* Ãû³Æ:str2jstring
-	* ×÷ÓÃ:stringÀàĞÍ×ªjstringÀàĞÍ
-	* ²ÎÊı:JNIEnv,const char*(string)
-	* ·µ»ØÖµ:jstring
-	* À´Ô´:https://blog.csdn.net/chunleixiahe/article/details/51394116
-	*/
-	jstring str2jstring(const char* pat, JNIEnv* = manager->getEnv());
-	/*
-	* Ãû³Æ:JLongToString
-	* ×÷ÓÃ:jlongÀàĞÍ×ªstringÀàĞÍ
-	* ²ÎÊı:jlong qqid
-	* ·µ»ØÖµ:string
-	*/
-	std::string JLongToString(jlong qqid);
-	/*
-	* Ìæ»»È«²¿
-	* À´Ô´:https://stackoverflow.com/a/24315631/14646226
-	*/
-	std::string replace(std::string str, const std::string& from, const std::string& to) {
+	/*!
+	 * @name jstring2str
+	 * @brief stringç±»å‹è½¬ç è½¬æ¢åˆ°jstringç±»å‹, UTF16 -> UTF8
+	 * @note æ¥æºhttps://blog.csdn.net/chunleixiahe/article/details/51394116
+	 * @param jstr è½¬æ¢å†…å®¹,jstringç±»å‹
+	 * @param env å¯é€‰ï¼ŒJNIEnv
+	 * @return å†…å®¹è½¬æ¢æˆjstringç±»å‹
+	 */
+	static std::string jstring2str(jstring jstr, JNIEnv* = manager->getEnv());
+
+	/*!
+	 * @name str2jstring
+	 * @brief stringç±»å‹åˆ°jstingç±»å‹ UTF8 -> UTF16
+	 * @note æ¥æºhttps://blog.csdn.net/chunleixiahe/article/details/51394116
+	 * @param pat const char*(string.c_str())è½¬æ¢çš„å†…å®¹
+	 * @param env å¯é€‰JNIEnv
+	 * @return è½¬æ¢åjstringç±»å‹
+	 */
+	static jstring str2jstring(const char* pat, JNIEnv* = manager->getEnv());
+
+	/*!
+	 * @name JLongToString
+	 * @brief jlongç±»å‹åˆ°stringç±»å‹
+	 * @param val éœ€è¦è½¬æ¢çš„æ•°å€¼
+	 * @return è½¬æ¢åstringç±»å‹
+	 */
+	static std::string JLongToString(jlong val);
+
+	/*!
+	 * @brief æ›¿æ¢å…¨éƒ¨åœ¨ä¸€ä¸ªå­—ç¬¦ä¸²ä¸­.
+	 * @param str åŸå­—ç¬¦ä¸².
+	 * @param from éœ€è¦è¢«æ›¿æ¢çš„å­—ç¬¦.
+	 * @param to æ›¿æ¢åˆ°çš„å­—ç¬¦.
+	 * @return è¿”å›æ›¿æ¢åçš„å­—ç¬¦ä¸².
+	 * @note æ¥æº:https://stackoverflow.com/a/24315631/14646226
+	 */
+	static std::string replace(std::string str, const std::string& from, const std::string& to) {
 		size_t start_pos = 0;
 		while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
 			str.replace(start_pos, from.length(), to);
@@ -143,358 +231,543 @@ public:
 		}
 		return str;
 	}
-	/*
-	* JSON×ª»»µ½String
-	* À´Ô´:https://www.cnblogs.com/zhangdongsheng/p/12731021.html
-	*/
-	std::string JsonToString(const Json::Value& root);
-	// ´Óstring¸ñÊ½»¯json
-	Json::Value StringToJson(std::string);
-	// vector¸ñÊ½»¯Êä³ö
-	std::string VectorToString(std::vector<unsigned long long>);
-	// ´Óstring¸ñÊ½»¯µ½vector
-	std::vector<unsigned long long> StringToVector(std::string);
+
+	/// @brief long long ç±»å‹çš„vectoræ ¼å¼åŒ–è¾“å‡º
+	/// @param v vector
+	/// @return string
+	static std::string VectorToString(std::vector<unsigned long long> v);
+
+	/// @brief ä»stringæ ¼å¼åŒ–åˆ°vector
+	/// @param s string
+	/// @return vector
+	static std::vector<unsigned long long> StringToVector(std::string s);
 };
 
-/*¾²Ì¬ÉùÃ÷¹¤¾ß¶ÔÏó*/
-static Tools tools;
-
-//×ÜÒì³£
-class MiraiCPException :public std::exception {
+/// @brief æ€»å¼‚å¸¸æŠ½è±¡ç±»
+/// @interface MiraiCPException
+class MiraiCPException : public std::exception {
 public:
-	virtual std::string what() { return "C++²¿·Ö³öÏÖÁË¸öÎ´²¶»ñµÄÒì³£"; };
+	/// å¼‚å¸¸ä¿¡æ¯
+	virtual std::string what() { return "MiraiCPå¼‚å¸¸"; };
+	/// raise æŠ›å‡ºæ–¹æ³•
 	virtual void raise() {};
 };
-//³õÊ¼»¯Òì³£
-class InitException :public MiraiCPException
-{
+
+/// åˆå§‹åŒ–å¼‚å¸¸
+/// @see MiraiCPException
+class InitException : public MiraiCPException {
 private:
 	std::string description;
 public:
 	int step = 0;
-	InitException(std::string text, int step)
-	{
+
+	InitException(std::string text, int step) {
 		this->description = text;
 		this->step = step;
 	}
-	//·µ»Ø´íÎóĞÅÏ¢
-	std::string what()
-	{
-		return this->description;
-	}
-	void raise() {
-		manager->getEnv()->ThrowNew(config->initexception, (this->description + " step:" + std::to_string(this->step)).c_str());
-	}
-};
-//ÎÄ¼ş¶ÁÈ¡Òì³£
-class IOException :public MiraiCPException
-{
-public:
-	IOException(std::string text)
-	{
-		this->description = "ÎÄ¼ş¶ÁÈ¡Òì³£" + text;
-	}
-	//·µ»Ø´íÎóĞÅÏ¢
-	std::string what()
-	{
-		return this->description;
-	}
-	void raise() {
-		logger->Error(this->description);
-		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
-	}
-private:
-	std::string description;
-};
-//ÄÚ²¿Òì³£
-class APIException :public MiraiCPException
-{
-public:
-	APIException(std::string text)
-	{
-		this->description = "MiraiCPÄÚ²¿ÎŞ·¨Ô¤ÁÏµÄ´íÎó:" + text;
-	}
-	//·µ»Ø´íÎóĞÅÏ¢
-	std::string what()
-	{
-		return this->description;
-	}
-	void raise() {
-		logger->Error(this->description);
-		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
-	}
-private:
-	std::string description;
-};
-//»úÆ÷ÈË²Ù×÷Òì³£
-class BotException : public MiraiCPException {
-public:
-	/*
-	*	1 - »úÆ÷ÈËÎŞÈ¨ÏŞÖ´ĞĞ
-	*/
-	int type = 0;
-	BotException(int type)
-	{
-		this->type = type;
-		switch (type)
-		{
-		case 1:
-			this->description = "Ã»ÓĞÈ¨ÏŞÖ´ĞĞ¸Ã²Ù×÷";
-			break;
-		}
-	}
-	//·µ»Ø´íÎóĞÅÏ¢
-	std::string what()
-	{
-		return this->description;
-	}
-	void raise() {
-		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
-	}
-private:
-	std::string description;
-};
-//½ûÑÔÒì³£
-class MuteException :public MiraiCPException
-{
-public:
-	/*
-	*	 ½ûÑÔÊ±¼ä³¬³ö0s~30d
-	*/
-	MuteException()
-	{
-		this->description = "½ûÑÔÊ±³¤²»ÔÚ0s~30dÖĞ¼ä";
-	}
-	//·µ»Ø´íÎóĞÅÏ¢
-	std::string what()
-	{
-		return this->description;
-	}
-	void raise() {
-		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
-	}
-private:
-	std::string description;
-};
-//»ñÈ¡Èº³ÉÔ±´íÎó
-class MemberException :public MiraiCPException
-{
-public:
-	/*
-	*   "1" - ÕÒ²»µ½Èº
-	*	"2" - ÕÒ²»µ½Èº³ÉÔ±
-	*/
-	int type = 0;
-	MemberException(int type)
-	{
-		this->type = type;
-		switch (type)
-		{
-		case 1:
-			this->description = "ÕÒ²»µ½Èº";
-			break;
-		case 2:
-			this->description = "ÕÒ²»µ½Èº³ÉÔ±";
-			break;
-		}
-	}
-	//·µ»Ø´íÎóĞÅÏ¢
-	std::string what()
-	{
-		return this->description;
-	}
-	void raise() {
-		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
-	}
-private:
-	std::string description;
-};
-//»ñÈ¡Èº³ÉÔ±´íÎó
-class FriendException :public MiraiCPException
-{
-public:
-	/*
-	*   ÕÒ²»µ½ºÃÓÑ
-	*/
-	FriendException()
-	{
-		this->description = "ÕÒ²»µ½ºÃÓÑ";
-	}
-	//·µ»Ø´íÎóĞÅÏ¢
-	std::string what()
-	{
-		return this->description;
-	}
-	void raise() {
-		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
-	}
-private:
-	std::string description;
-};
-//»ñÈ¡Èº´íÎó
-class GroupException :public MiraiCPException
-{
-public:
-	GroupException()
-	{
-		this->description = "C++:ÕÒ²»µ½Èº";
-	}
-	//·µ»Ø´íÎóĞÅÏ¢
-	std::string what()
-	{
-		return this->description;
-	}
-	void raise() {
-		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
-	}
-private:
-	std::string description;
-};
-//³·»ØÒì³£
-class RecallException: public MiraiCPException{
-public:
-	RecallException() {
-		this->description = "¸ÃÏûÏ¢ÒÑ¾­±»³·»Ø";
-	}
+
+	/// è¿”å›é”™è¯¯ä¿¡æ¯
 	std::string what() {
 		return this->description;
 	}
+
+	void raise() {
+		manager->getEnv()->ThrowNew(config->initexception,
+			(this->description + " step:" + std::to_string(this->step)).c_str());
+	}
+};
+
+/// æ–‡ä»¶è¯»å–å¼‚å¸¸.
+/// @see MiraiCPException
+class UploadException : public MiraiCPException {
+public:
+	UploadException(std::string text) {
+		this->description = "ä¸Šä¼ (å›¾ç‰‡/æ–‡ä»¶)å¼‚å¸¸" + text;
+	}
+
+	//è¿”å›é”™è¯¯ä¿¡æ¯
+	std::string what() {
+		return this->description;
+	}
+
+	void raise() {
+		logger->Error(this->description);
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
+	}
+
+private:
+	std::string description;
+};
+
+/// å†…éƒ¨å¼‚å¸¸, é€šå¸¸ä¸ºjsonè¯»å†™é—®é¢˜
+/// @see MiraiCPException
+class APIException : public MiraiCPException {
+public:
+	APIException(std::string text) {
+		this->description = "MiraiCPå†…éƒ¨æ— æ³•é¢„æ–™çš„é”™è¯¯:" + text;
+	}
+
+	//è¿”å›é”™è¯¯ä¿¡æ¯
+	std::string what() {
+		return this->description;
+	}
+
+	void raise() {
+		logger->Error(this->description);
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
+	}
+
+private:
+	std::string description;
+};
+
+/// æœºå™¨äººæ“ä½œå¼‚å¸¸
+/// @see MiraiCPException
+class BotException : public MiraiCPException {
+public:
+	/*
+	*	1 - æœºå™¨äººæ— æƒé™æ‰§è¡Œ
+	*/
+	int type = 0;
+
+	BotException(int type) {
+		this->type = type;
+		switch (type) {
+		case 1:
+			this->description = "æ²¡æœ‰æƒé™æ‰§è¡Œè¯¥æ“ä½œ";
+			break;
+		}
+	}
+
+	//è¿”å›é”™è¯¯ä¿¡æ¯
+	std::string what() {
+		return this->description;
+	}
+
+	void raise() {
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
+	}
+
+private:
+	std::string description;
+};
+
+/// ç¦è¨€å¼‚å¸¸
+/// @see MiraiCPException
+class MuteException : public MiraiCPException {
+public:
+	/*
+	*	 ç¦è¨€æ—¶é—´è¶…å‡º0s~30d
+	*/
+	MuteException() {
+		this->description = "ç¦è¨€æ—¶é•¿ä¸åœ¨0s~30dä¸­é—´";
+	}
+
+	//è¿”å›é”™è¯¯ä¿¡æ¯
+	std::string what() {
+		return this->description;
+	}
+
+	void raise() {
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
+	}
+
+private:
+	std::string description;
+};
+
+/// è·å–ç¾¤æˆå‘˜é”™è¯¯
+/// @see MiraiCPException
+class MemberException : public MiraiCPException {
+public:
+	/*
+	*   "1" - æ‰¾ä¸åˆ°ç¾¤
+	*	"2" - æ‰¾ä¸åˆ°ç¾¤æˆå‘˜
+	*/
+	int type = 0;
+
+	MemberException(int type) {
+		this->type = type;
+		switch (type) {
+		case 1:
+			this->description = "æ‰¾ä¸åˆ°ç¾¤";
+			break;
+		case 2:
+			this->description = "æ‰¾ä¸åˆ°ç¾¤æˆå‘˜";
+			break;
+		}
+	}
+
+	//è¿”å›é”™è¯¯ä¿¡æ¯
+	std::string what() {
+		return this->description;
+	}
+
+	void raise() {
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
+	}
+
+private:
+	std::string description;
+};
+
+/// è·å–ç¾¤æˆå‘˜é”™è¯¯
+/// @see MiraiCPException
+class FriendException : public MiraiCPException {
+public:
+	/*
+	*   æ‰¾ä¸åˆ°å¥½å‹
+	*/
+	FriendException() {
+		this->description = "æ‰¾ä¸åˆ°å¥½å‹";
+	}
+
+	//è¿”å›é”™è¯¯ä¿¡æ¯
+	std::string what() {
+		return this->description;
+	}
+
+	void raise() {
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
+	}
+
+private:
+	std::string description;
+};
+
+/// è·å–ç¾¤é”™è¯¯
+/// @see MiraiCPException
+class GroupException : public MiraiCPException {
+public:
+	GroupException() {
+		this->description = "C++:æ‰¾ä¸åˆ°ç¾¤";
+	}
+
+	//è¿”å›é”™è¯¯ä¿¡æ¯
+	std::string what() {
+		return this->description;
+	}
+
+	void raise() {
+		//manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
+	}
+
+private:
+	std::string description;
+};
+
+/// æ’¤å›å¼‚å¸¸
+/// @see MiraiCPException
+class RecallException : public MiraiCPException {
+public:
+	RecallException() {
+		this->description = "è¯¥æ¶ˆæ¯å·²ç»è¢«æ’¤å›";
+	}
+
+	std::string what() {
+		return this->description;
+	}
+
 private:
 	std::string description = "";
 };
-//ÉÏ´«Òì³£
+
+/// ä¸Šä¼ å¼‚å¸¸
+/// @see MiraiCPException
 class RemoteFileException : public MiraiCPException {
 public:
 	RemoteFileException(std::string e) {
 		this->description = e;
 	}
+
 	std::string what() {
 		return this->description;
 	}
+
 private:
 	std::string description = "";
 };
 
-//ÏûÏ¢Ô´ÉùÃ÷
+/// æ¶ˆæ¯æºå£°æ˜
 class MessageSource {
-private:
-	std::string source;
 public:
-	std::string ids = "";
-	std::string internalids = "";
-	std::string toString() {
-		return source;
-	}
+	/// æ¶ˆæ¯çš„ids
+	const std::string ids;
+	/// æ¶ˆæ¯çš„internalids
+	const std::string internalids;
+	/// æ¶ˆæ¯æºåºåˆ—åŒ–
+	const std::string source;
+
 	MessageSource() {};
-	MessageSource(std::string t);
-	// ³·»Ø¸ÃÏûÏ¢
+
+	std::string toString() {
+		return this->source;
+	}
+
+	/*!
+	 * @brief æ„å»ºæ¶ˆæ¯æº
+	 * @param ids
+	 * @param internalids
+	 * @param source
+	 */
+	MessageSource(const std::string& ids, const std::string& internalids, const std::string& source);
+
+	/*!
+	 * @brief ä»jsonå­—ç¬¦ä¸²ååºåˆ—åŒ–åˆ°MessageSourceå¯¹è±¡
+	 * @note jsonåº”è¯¥ä¸ºä»¥ä¸‹æ ¼å¼
+	 * @code
+	 * {"ids":"", "internalids":""}
+	 * @endcode
+	 */
+	static MessageSource deserializeFromString(const std::string& source);
+
+	std::string serializeToString();
+
+	/*!
+	 * @brief æ’¤å›è¯¥ä¿¡æ¯
+	 * @example æ’¤å›ä¿¡æ¯
+	 * @code
+	 * procession->registerEvent([](GroupMessageEvent e) {
+		try {
+			e.messageSource.recall();
+			e.group.SendMsg("hi").recall();
+		}
+		catch (MiraiCPException &e) {
+			logger->Error("é”™è¯¯");
+		}
+		});
+	 * @endcode
+	*/
 	void recall();
 };
 
-//MiraiCode
+/// MiraiCodeçˆ¶ç±», æŒ‡å¯ä»¥è¢«è½¬æ¢æˆmiraicodeçš„ç±»å‹
 class MiraiCodeable {
 public:
 	virtual std::string toMiraiCode() = 0;
 };
+
+/// @brief miraicodeå­—ç¬¦ä¸²
 class MiraiCode {
 private:
 	std::string content = "";
 public:
+	/// è¾“å‡ºå½“å‰å†…å®¹
 	std::string toString() {
 		return content;
 	}
+
+	/// å’ŒtoStringä½œç”¨ä¸€æ ·
+	std::string toMiraiCode() {
+		return toString();
+	}
+
+	/// ä»MiraiCodeableç±»å‹åˆå§‹åŒ–ä¸€ä¸ªmiraicodeå­—ç¬¦ä¸²
 	MiraiCode(MiraiCodeable* a) {
 		content = a->toMiraiCode();
 	}
+
+	/// ä»æ–‡æœ¬åˆå§‹åŒ–ä¸€ä¸ªmiraicodeå­—ç¬¦ä¸²
 	MiraiCode(std::string a) {
 		content = a;
 	}
+
 	MiraiCode operator+(MiraiCodeable* a) {
 		return MiraiCode(content + a->toMiraiCode());
 	}
+
 	MiraiCode operator+(std::string a) {
 		return MiraiCode(content + a);
 	}
+
+	MiraiCode operator+=(MiraiCodeable* a) {
+		return MiraiCode(this->content + a->toMiraiCode());
+	}
+
+	MiraiCode operator+=(std::string a) {
+		return MiraiCode(this->content + a);
+	}
+
+	MiraiCode operator=(MiraiCodeable* a) {
+		return MiraiCode(a->toMiraiCode());
+	}
+
+	MiraiCode operator=(std::string a) {
+		return MiraiCode(a);
+	}
+
 	MiraiCode plus(MiraiCodeable* a) {
 		return MiraiCode(content + a->toMiraiCode());
 	}
+
 	MiraiCode plus(std::string a) {
 		return MiraiCode(content + a);
 	}
 };
 
-/*Ğ¡³ÌĞò·¢ËÍ¿¨Æ¬*/
-class LightApp: public MiraiCodeable {
+/*!
+ * @brief å°ç¨‹åºå¡ç‰‡
+ * @see LightAppStyle1, LightAppStyle2, LightAppStyle3
+ * @example é€šè¿‡å¸¸é‡æ„å»ºå¹¶å‘é€å°ç¨‹åºå¡ç‰‡
+ * @code
+ * procession->registerEvent([](GroupMessageEvent e) {
+		//ä¿®æ”¹é‡Œé¢çš„å±æ€§ä»è€Œè‡ªå®šä¹‰
+		LightAppStyle1 a = LightAppStyle1();
+		LightAppStyle2 b = LightAppStyle2();
+		LightAppStyle3 c = LightAppStyle3();
+		e.group.SendMiraiCode(LightApp(a).toMiraiCode());
+		e.group.SendMiraiCode(LightApp(b).toMiraiCode());
+		e.group.SendMiraiCode(LightApp(c).toMiraiCode());
+	});
+ * @endcode
+ * @example é€šè¿‡æ–‡æœ¬æ„å»ºå¹¶å‘é€å°ç¨‹åºå¡ç‰‡
+ * @code
+ * procession->registerEvent([](GroupMessageEvent e) {
+		//é£æ ¼1ï¼Œé€‚åˆæ–‡å­—å±•ç¤ºï¼Œä¸èƒ½äº¤äº’,æ— å¤§å›¾
+		//å›¾æ ‡åœ°å€ï¼Œåº”è¯¥æ˜¯è¦qqçš„æœåŠ¡å™¨é‡Œæœ‰çš„å›¾ç‰‡ï¼Œä¹Ÿå°±æ˜¯è¯´å…ˆä¸Šä¼ (å‘é€)å›¾ç‰‡ç„¶åå–ä¸‹è½½é“¾æ¥
+		string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+		//å°æ ‡é¢˜
+		string titles = "{\"title\":\"hi\", \"value\":\"test3\"}";
+		//ä¸‹é¢çš„æŒ‰é’®ï¼Œä½†æ˜¯ä¸èƒ½æŒ‰
+		string buttons = "{\"name\":\"Test4\",\"action\":\"plugin\",\"actionData\":\"https://baidu.com\"}";
+		string x = "{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"0.0.0.1\",\"prompt\":\"[åº”ç”¨]\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"notification\":{\"appInfo\":"
+			"{\"appName\":\"Test1\",\"appType\":4,\"appid\":1109659848,"
+			"\"iconUrl\":\""+icon+"\"},"
+			"\"data\":["+titles+"],"
+			"\"title\":\"Test2\",\"button\":"
+			"["+buttons+"],"
+			"\"emphasis_keyword\":\"\"}},\"text\":\"\",\"sourceAd\":\"\"}";
+		e.group.SendMiraiCode(LightApp(x).toString());
+		//é£æ ¼2ï¼Œä¸èƒ½äº¤äº’ï¼Œæœ‰é¢„è§ˆå›¾
+		//iconå›¾æ ‡,åº”è¯¥æ˜¯è¦qqçš„æœåŠ¡å™¨é‡Œæœ‰çš„å›¾ç‰‡ï¼Œä¹Ÿå°±æ˜¯è¯´å…ˆä¸Šä¼ (å‘é€)å›¾ç‰‡ç„¶åå–ä¸‹è½½é“¾æ¥
+		string icon1 = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+		//é¢„è§ˆå›¾(å¤§å›¾),åº”è¯¥æ˜¯è¦qqçš„æœåŠ¡å™¨é‡Œæœ‰çš„å›¾ç‰‡ï¼Œä¹Ÿå°±æ˜¯è¯´å…ˆä¸Šä¼ (å‘é€)å›¾ç‰‡ç„¶åå–ä¸‹è½½é“¾æ¥
+		string preview1 = icon1;
+		string a = "{\"config\":"
+			"{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
+			"\"prompt\":\"[QQå°ç¨‹åº]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"1.0.0.103\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
+			"\"meta\":{\"detail_1\":{\"appid\":\"1110081493\",\"preview\":\""+preview1+"\",\"shareTemplateData\":{},"
+			"\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"Test5\",\"title\":\"Test6\","
+			"\"host\":{\"uin\":1000000,\"nick\":\"åº”ç”¨æ¶ˆæ¯\"},"
+			"\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\""+icon1+"\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
+		e.group.SendMiraiCode(LightApp(a).toString());
+		//é£æ ¼3ï¼Œå¯ä»¥è·³è½¬åˆ°ç½‘å€ï¼Œæœ‰é¢„è§ˆå›¾
+		//è·³è½¬é“¾æ¥
+		string url = "https://www.baidu.com";
+		//iconå›¾æ ‡,åº”è¯¥æ˜¯è¦qqçš„æœåŠ¡å™¨é‡Œæœ‰çš„å›¾ç‰‡ï¼Œä¹Ÿå°±æ˜¯è¯´å…ˆä¸Šä¼ (å‘é€)å›¾ç‰‡ç„¶åå–ä¸‹è½½é“¾æ¥
+		string icon2 = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+		//é¢„è§ˆå›¾(å¤§å›¾),åº”è¯¥æ˜¯è¦qqçš„æœåŠ¡å™¨é‡Œæœ‰çš„å›¾ç‰‡ï¼Œä¹Ÿå°±æ˜¯è¯´å…ˆä¸Šä¼ (å‘é€)å›¾ç‰‡ç„¶åå–ä¸‹è½½é“¾æ¥
+		string preview = icon2;
+		string b = "{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
+			"\"prompt\":\"[QQå°ç¨‹åº]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"0.0.0.1\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
+			"\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\""+preview+"\",\"shareTemplateData\":{},\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"Test1\",\"title\":\"Test3\",\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\""+icon+"\",\"qqdocurl\":\""+url+"\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
+		e.group.SendMiraiCode(LightApp(b).toString());
+		});
+ * @endcode
+ */
+class LightApp : public MiraiCodeable {
 public:
 	std::string content = "";
-	//Ê¹ÓÃ´¿ÎÄ±¾¹¹Ôì£¬ÍÆ¼öÊ¹ÓÃÆäËû½á¹¹Ìå·½·¨¹¹Ôì
+
+	/// @brief ä½¿ç”¨çº¯æ–‡æœ¬æ„é€ ï¼Œæ¨èä½¿ç”¨å…¶ä»–ç»“æ„ä½“æ–¹æ³•æ„é€ 
+	/// @param content æ„é€ æ–‡æœ¬
 	LightApp(std::string content) {
 		this->content = content;
 	}
-	//ÑùÊ½1,ÊÊºÏÎÄ×ÖÕ¹Ê¾£¬ÎŞ´óÍ¼£¬²»ÄÜ½»»¥
+
+	/// ä½¿ç”¨æ ·å¼1,é€‚åˆæ–‡å­—å±•ç¤ºï¼Œæ— å¤§å›¾ï¼Œä¸èƒ½äº¤äº’
+	/// @param c ç»“æ„ä½“ï¼Œç”¨äºè‡ªå®šä¹‰é‡Œé¢çš„æ•°æ®
+	/// @see LightAppStyle1 in constants.h
 	LightApp(LightAppStyle1 c) {
-		this->content = "{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"0.0.0.1\",\"prompt\":\"[Ó¦ÓÃ]\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"notification\":{\"appInfo\":"
+		this->content =
+			"{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"0.0.0.1\",\"prompt\":\"[åº”ç”¨]\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"notification\":{\"appInfo\":"
 			"{\"appName\":\"" + c.appName + "\",\"appType\":4,\"appid\":1109659848,"
 			"\"iconUrl\":\"" + c.icon + "\"},"
 			"\"data\":[" + c.titles + "],"
-			"\"title\":\"" + c.title + "\",\"button\":"
+			"\"title\":\"" +
+			c.title + "\",\"button\":"
 			"[" + c.buttons + "],"
 			"\"emphasis_keyword\":\"\"}},\"text\":\"\",\"sourceAd\":\"\"}";
 	}
-	//ÑùÊ½2£¬ÓĞ´óÍ¼£¬²»ÄÜ½»»¥
+
+	/// ä½¿ç”¨æ ·å¼2ï¼Œæœ‰å¤§å›¾ï¼Œä¸èƒ½äº¤äº’
+	/// @param c ç»“æ„ä½“ï¼Œç”¨äºè‡ªå®šä¹‰é‡Œé¢çš„æ•°æ®
+	/// @see LightAppStyle1 in constants.h
 	LightApp(LightAppStyle2 c) {
 		this->content = "{\"config\":"
 			"{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
-			"\"prompt\":\"[QQĞ¡³ÌĞò]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"1.0.0.103\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
-			"\"meta\":{\"detail_1\":{\"appid\":\"1110081493\",\"preview\":\"" + c.preview + "\",\"shareTemplateData\":{},"
-			"\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"" + c.title2 + "\",\"title\":\"" + c.title + "\","
+			"\"prompt\":\"[QQå°ç¨‹åº]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"1.0.0.103\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
+			"\"meta\":{\"detail_1\":{\"appid\":\"1110081493\",\"preview\":\"" + c.preview +
+			"\",\"shareTemplateData\":{},"
+			"\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"" +
+			c.title2 + "\",\"title\":\"" + c.title + "\","
 			"\"host\":{\"uin\":0,\"nick\":\"\"},"
-			"\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" + c.icon + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
+			"\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" +
+			c.icon + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
 	}
-	//ÑùÊ½3£¬ÓĞ´óÍ¼£¬¿ÉÒÔÔÚµçÄÔqqÏÔÊ¾£¬²¢ÔÚµçÄÔÉÏµã»÷µÄÁ´½Ó»áÌø×ª
+
+	/// æ ·å¼3ï¼Œæœ‰å¤§å›¾ï¼Œå¯ä»¥åœ¨ç”µè„‘qqæ˜¾ç¤ºï¼Œå¹¶åœ¨ç”µè„‘ä¸Šç‚¹å‡»çš„é“¾æ¥ä¼šè·³è½¬
+	/// @param c ç»“æ„ä½“ï¼Œç”¨äºè‡ªå®šä¹‰é‡Œé¢çš„æ•°æ®
+	/// @see LightAppStyle1 in constants.h
 	LightApp(LightAppStyle3 c) {
-		this->content = "{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
-			"\"prompt\":\"[QQĞ¡³ÌĞò]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"0.0.0.1\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
-			"\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\"" + c.preview + "\",\"shareTemplateData\":{},\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"" + c.title + "\",\"title\":\"" + c.description + "\","
-			"\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" + c.icon + "\",\"qqdocurl\":\"" + c.url + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
+		this->content =
+			"{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
+			"\"prompt\":\"[QQå°ç¨‹åº]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"0.0.0.1\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
+			"\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\"" + c.preview +
+			"\",\"shareTemplateData\":{},\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"" +
+			c.title + "\",\"title\":\"" + c.description + "\","
+			"\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" +
+			c.icon + "\",\"qqdocurl\":\"" + c.url + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
 	}
+
 	std::string toMiraiCode() {
-		return "[mirai:app:" + tools.replace(tools.replace(content, "[", "\\["), "]", "\\]") + "]";
+		return "[mirai:app:" + Tools::replace(Tools::replace(content, "[", "\\["), "]", "\\]") + "]";
 	}
 };
 
-/*Í¼ÏñÀàÉùÃ÷*/
-class Image: public MiraiCodeable {
-private:
-	jmethodID Query = NULL;
+/// å›¾åƒç±»å£°æ˜
+class Image : public MiraiCodeable {
 public:
-	//Í¼Æ¬id£¬ÑùÊ½:` {xxx}.xx `
+	const jmethodID Query = NULL;
+	//å›¾ç‰‡idï¼Œæ ·å¼:` {xxx}.xx `
 	std::string id = "";
-	/*
-	* ´ÓÍ¼Æ¬id¹¹Ôì£¬ÊÊÓÃÓÚ·şÎñÆ÷ÉÏÒÑ¾­ÓĞµÄÍ¼Æ¬£¬¼´½ÓÊÕµ½µÄ
-	* Í¼Æ¬miraiCodeÀı×Ó: [mirai:image:{Í¼Æ¬id}.jpg]
-	* ¿ÉÒÔÓÃÕâ¸öÕıÔò±í´ïÊ½ÕÒ³öid ` \\[mirai:image:(.*?)\\] `
-	* Ê¾Àı:
-		vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
-		for (int i = 0; i < temp.size(); i++) {
-			logger->Info(temp[i]);
-			logger->Info("Í¼Æ¬ÏÂÔØµØÖ·:" + Image(param.env, temp[i]).queryURL());
-		}
+
+	/*!
+	* @brief ä»å›¾ç‰‡idæ„é€ ï¼Œé€‚ç”¨äºæœåŠ¡å™¨ä¸Šå·²ç»æœ‰çš„å›¾ç‰‡ï¼Œå³æ¥æ”¶åˆ°çš„
+	* @example å›¾ç‰‡miraiCodeæ ¼å¼ä¾‹å­
+	 * @code [mirai:image:{å›¾ç‰‡id}.jpg] @endcode
+	* @note å¯ä»¥ç”¨è¿™ä¸ªæ­£åˆ™è¡¨è¾¾å¼æ‰¾å‡ºid ` \\[mirai:image:(.*?)\\] `
 	*/
 	Image(std::string);
-	/*
-	* »ñÈ¡Í¼Æ¬ÏÂÔØurl
-	*/
-	std::string queryURL(JNIEnv* = manager->getEnv());
 
-	/*È¡È«²¿µÄÍ¼Æ¬id£¬ÏêÇé¼ûImage*/
+	/*
+	* è·å–å›¾ç‰‡ä¸‹è½½url
+	*/
+	std::string queryURL(JNIEnv* = manager->getEnv()) const;
+
+	/*!
+	 * @brief å–ä¸€ä¸ªmiraicodeå­—ç¬¦ä¸²ä¸­å…¨éƒ¨çš„å›¾ç‰‡idï¼Œè¯¦æƒ…è§Image
+	 * @see Image
+	 *  @param  miraicodeçš„å­—ç¬¦ä¸²
+	 *  @return vectorå®¹å™¨ï¼Œæ¯ä¸€é¡¹ä¸ºä¸€ä¸ªå›¾ç‰‡id
+	 *  @example å–ä¸€ä¸ªmiraicodeå­—ç¬¦ä¸²ä¸­å…¨éƒ¨çš„å›¾ç‰‡id
+	 *		@code
+	 *          vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
+	 *	        for (int i = 0; i < temp.size(); i++) {
+	 *	    	    logger->Info(temp[i]);
+	 *	    	    logger->Info("å›¾ç‰‡ä¸‹è½½åœ°å€:" + Image(param.env, temp[i]).queryURL());
+	 *	         }
+	 *		@endcode
+	 */
 	static std::vector<std::string> GetImgIdsFromMiraiCode(std::string);
 
-	/*È¡Í¼Æ¬MiraiÂë*/
+	/// å–å›¾ç‰‡Miraiç 
 	std::string toMiraiCode();
 };
 
-/*group, friend, memberµÄ¸¸Àà*/
+/*!
+ * @brief group, friend, memberçš„çˆ¶ç±»
+ */
 class Contact {
 protected:
 	int _type = 0;
@@ -504,6 +777,10 @@ protected:
 	std::string _avatarUrl;
 	unsigned long long _botid;
 public:
+    /*!
+     * @brief æ— å‚åˆå§‹åŒ–Contactç±»å‹
+     * @internal ä¸€èˆ¬åœ¨MiraiCpå†…éƒ¨æ„é€ 
+     */
 	Contact() {
 		this->_type = 0;
 		this->_id = 0;
@@ -511,6 +788,19 @@ public:
 		this->_nickOrNameCard = "";
 		this->_botid = 0;
 	}
+
+	/*!
+	 * @brief æ„é€ contactç±»å‹
+	 * @param type ç±»å‹
+	 *  @see Contact::type()
+	 * @param id ID
+	 *  @see Contact::id()
+	 * @param gid æ˜¯memberçš„æ—¶å€™æ˜¯ç¾¤idï¼Œå¦åˆ™ä¸º0
+	 *  @see Contact::groupid
+	 * @param name ç¾¤åç‰‡æˆ–æ˜µç§°æˆ–ç¾¤å
+	 *  @see Contact::name()
+	 * @param botid å¯¹åº”çš„botid
+	 */
 	Contact(int type, unsigned long long id, unsigned long long gid, std::string name, unsigned long long botid) {
 		this->_type = type;
 		this->_id = id;
@@ -518,642 +808,954 @@ public:
 		this->_nickOrNameCard = name;
 		this->_botid = botid;
 	};
-	//1-FriendºÃÓÑ, 2-groupÈº×é, 3-memberÈº³ÉÔ±
-	int type() {return this->_type;}
-	//id£¬µ±type=1µÄÊ±ºòÊÇºÃÓÑqqid£¬2Ê±ÊÇÈº×éid£¬3ÊÇÈº³ÉÔ±µÄqqid
+
+	/// @brief å½“å‰å¯¹è±¡ç±»å‹
+	///     - 1 Friend å¥½å‹
+	///     - 2 Group ç¾¤èŠ
+	///     - 3 Member ç¾¤æˆå‘˜
+	int type() { return this->_type; }
+
+	/// @brief idåœ¨å…¨éƒ¨æƒ…å†µå­˜åœ¨
+	///     - å½“å½“å‰typeä¸º1(Friend)æ—¶ï¼Œä¸ºå¥½å‹id
+	///     - å½“å½“å‰typeä¸º2(Group)æ—¶ï¼Œä¸ºç¾¤id
+	///     - å½“å½“å‰typeä¸º3(Member)æ—¶ï¼Œä¸ºç¾¤æˆå‘˜id
 	unsigned long long id() { return this->_id; }
-	//µ±type=3Ê±´æÔÚ£¬ÎªÈº³ÉÔ±ËµÔÚÈºµÄÈº×éid
+
+	/// @brief å½“typeä¸º3çš„æ—¶å€™å­˜åœ¨ï¼Œå¦åˆ™ä¸º0ï¼Œå¯ä»¥çœ‹ä½œè¡¥å……id
+	///     - å½“å½“å‰typeä¸º1(Friend)æ—¶ï¼Œä¸º0
+	///     - å½“å½“å‰typeä¸º2(Group)æ—¶ï¼Œä¸º0
+	///     - å½“å½“å‰typeä¸º3(Member)æ—¶ï¼Œä¸ºç¾¤å·
+	/// @attention å½“å½“å‰typeä¸º2(Group)æ—¶ï¼Œä¸º0ï¼Œä¸ä¸ºç¾¤å·ï¼Œidæ‰æ˜¯ç¾¤å·
 	unsigned long long groupid() { return this->_groupid; }
-	/*ÈºÃû³Æ£¬Èº³ÉÔ±ÈºÃûÆ¬£¬»òºÃÓÑêÇ³Æ*/
+
+	/// ç¾¤åç§°ï¼Œç¾¤æˆå‘˜ç¾¤åç‰‡ï¼Œæˆ–å¥½å‹æ˜µç§°
 	std::string nickOrNameCard() { return this->_nickOrNameCard; };
-	// Í·ÏñurlµØÖ·
+
+	/// å¤´åƒurlåœ°å€
 	std::string avatarUrl() { return this->_avatarUrl; };
-	// ËùÊôbot
+
+	/// æ‰€å±bot
 	unsigned long long botid() { return this->_botid; };
-	Json::Value toJsonValue() {
-		Json::Value root;
-		root["type"] = type();
-		root["id"] = id();
-		root["groupid"] = groupid();
-		root["nickornamecard"] = nickOrNameCard();
-		root["botid"] = botid();
-		return root;
+
+	nlohmann::json serialization() {
+		nlohmann::json j;
+		j["type"] = type();
+		j["id"] = id();
+		j["groupid"] = groupid();
+		j["nickornamecard"] = nickOrNameCard();
+		j["botid"] = botid();
+		return j;
 	}
-	std::string toString() {
-		return tools.JsonToString(this->toJsonValue());
+
+	/// åºåˆ—åŒ–æˆæ–‡æœ¬ï¼Œå¯ä»¥é€šè¿‡deserializationFromStringååºåˆ—åŒ–ï¼Œåˆ©äºä¿å­˜
+	/// @see Contact::fromString()
+	std::string serializationToString() {
+		return this->serialization().dump();
 	}
-	static Contact fromString(std::string source) {
-		Json::Value root = tools.StringToJson(source);
-		if (root == NULL) { APIException("JSON¸ñÊ½»¯´íÎó,Î»ÖÃ:C-ContactFromString()").raise(); }
-		return Contact(root["type"].asInt(), 
-			root["id"].asLargestUInt(), 
-			root["groupid"].asLargestUInt(), 
-			root["nickornamecard"].asCString(),
-			root["botid"].asLargestUInt());
-	}
+
+	/*!
+	 * @brief ä»jsonèŠ‚ç‚¹ååºåˆ—åŒ–
+	 * @param root jsonèŠ‚ç‚¹
+	 * @return Contact
+	 */
+	static Contact deserializationFromJson(nlohmann::json root);
+
+	/// ååºåˆ—åŒ–æˆbotï¼Œå¯ä»¥é€šè¿‡serializationToStringåºåˆ—åŒ–ï¼Œåˆ©äºä¿å­˜
+	/// @see Contact::serializationToString()
+	/// @param source åºåˆ—åŒ–åçš„æ–‡æœ¬
+	/// @throw APIException
+	static Contact deserializationFromString(const std::string& source);
 };
 
-// ÈºÎÄ¼ş
+// ç¾¤æ–‡ä»¶
 
+/// @brief ä¸‹è½½ä¿¡æ¯
 struct dinfo {
-	// ÏÂÔØµØÖ·
+	/// ä¸‹è½½åœ°å€
 	std::string url;
-	// md5
+	/// md5 å¯ç”¨äºæ ¡éªŒ
 	std::string md5;
-	// sha1
+	/// sha1 å¯ç”¨äºæ ¡éªŒ
 	std::string sha1;
 };
+/// @brief æ–‡ä»¶ä¿¡æ¯
 struct finfo {
-	// ÎÄ¼ş´óĞ¡
+	/// æ–‡ä»¶å¤§å°
 	unsigned long long size;
-	// ÉÏ´«Õßid
+	/// ä¸Šä¼ è€…id
 	unsigned long long uploaderid;
-	// ÏÂÔØ´ÎÊı
+	/// ä¸‹è½½æ¬¡æ•°
 	unsigned int downloadtime;
-	// ÉÏ´«Ê±¼ä
+	/// ä¸Šä¼ æ—¶é—´, æ—¶é—´æˆ³æ ¼å¼
 	unsigned long long uploadtime;
-	// ÉÏ´Î¸ü¸ÄÊ±¼ä
+	/// ä¸Šæ¬¡æ›´æ”¹æ—¶é—´, æ—¶é—´æˆ³æ ¼å¼
 	unsigned long long lastmodifytime;
 };
+
+/// @brief è¿œç¨‹(ç¾¤)æ–‡ä»¶ç±»å‹
 class RemoteFile : public MiraiCodeable {
-private:
-	std::string _id;
-	unsigned int _internalid;
-	std::string _name;
-	long long _size;
-	std::string _path;
-	dinfo _dinfo;
-	finfo _finfo;
 public:
-	// ÎÄ¼şÎ¨Ò»id
-	std::string id() { return this->_id; }
-	// ÎÄ¼şÄÚ²¿id
-	unsigned int internalid() { return this->_internalid; }
-	// ÎÄ¼şÃû
-	std::string name() { return this->_name; }
-	// ÎÄ¼ş´óĞ¡
-	long long size() { return this->_size; }
-	// ÎÄ¼şÔÚÈºÎÄ¼şµÄÂ·¾¶
-	std::string path() { return this->_path; }
-	static RemoteFile buildFromString(std::string source);
-	// ÓÉÍêÕûĞÅÏ¢¹¹Ôì
-	RemoteFile(std::string i, unsigned int ii, std::string n, long long s, dinfo d, finfo f);
-	// ½öÔÚÉÏ´«ºóÓĞĞ§, ¼´»ñÈ¡µ½internalidÊ±(internalid != 0) ·ñÔòÖØĞÂÉÏ´«
+	/// æ–‡ä»¶å”¯ä¸€id, ç”¨äºè¯†åˆ«
+	const std::string id;
+	/// æ–‡ä»¶å†…éƒ¨id, ç”¨äºæ„é€ miraiCodeå‘é€
+	const unsigned int internalid;
+	/// æ–‡ä»¶å
+	const std::string name;
+	/// æ–‡ä»¶å¤§å°
+	const long long size;
+	/// æ–‡ä»¶åœ¨ç¾¤æ–‡ä»¶çš„è·¯å¾„
+	const std::string path;
+	/// æ–‡ä»¶ä¸‹è½½ä¿¡æ¯
+	/// @see dinfo
+	const dinfo dinfo;
+	/// æ–‡ä»¶ä¿¡æ¯
+	/// @see finfo
+	const finfo finfo;
+
+	std::string serializeToString();
+
+	static RemoteFile deserializeFromString(const std::string& source);
+
+	/*!
+	 * @brief æ„é€ è¿œç¨‹(ç¾¤)æ–‡ä»¶
+	 * @param i ids
+	 * @param ii internalids
+	 * @param n name
+	 * @param s size
+	 * @param p path
+	 * @param d dinfo
+	 * @param f finfo
+	 */
+	RemoteFile(const std::string& i, unsigned int ii, const std::string& n, long long s, const std::string& p, struct dinfo d, struct finfo f) : id(i),
+		internalid(
+			ii),
+		name(n),
+		size(s),
+		path(p),
+		dinfo(d),
+		finfo(f) {};
+
+	/// ä»…åœ¨ä¸Šä¼ åæ„å»ºçš„æœ‰æ•ˆ, å³è·å–åˆ°internalidæ—¶(internalid != 0) å¦åˆ™é‡æ–°ä¸Šä¼ å¹¶é‡æ–°è·å–internalidå†è½¬æ¢
 	std::string toMiraiCode() {
-		if (internalid() == 0) {
-			// ÖØĞÂÉÏ´«
-			throw RemoteFileException("toMiraiCode error: internalid´íÎó£¬ÖØĞÂÉÏ´«");
+		if (internalid == 0) {
+			// é‡æ–°ä¸Šä¼ 
+			throw RemoteFileException("toMiraiCode error: internalidé”™è¯¯ï¼Œé‡æ–°ä¸Šä¼ ");
 		}
-		return "[mirai:file:" + id() + "," + std::to_string(internalid()) + "," + name() + "," + std::to_string(size()) + "]";
+		return "[mirai:file:" + id + "," + std::to_string(internalid) + "," + name + "," + std::to_string(size) + "]";
 	}
 };
 
-// ½Ïµ×²ãapi
+/// è¾ƒåº•å±‚api
 class LowLevelAPI {
 public:
+	/// @brief æŠ½è±¡å°è£…åº•å±‚å‘é€ä¿¡æ¯æ¥å£
+	/// @param content ä¿¡æ¯å­—ç¬¦ä¸²
+	/// @param c ç›®æ ‡ContactæŒ‡é’ˆ
+	/// @param miraicode æ˜¯å¦ä¸ºmiraicodeæ ¼å¼
+	/// @param env JNIEnv
+	/// @return
 	static std::string send0(std::string content, Contact* c, bool miraicode, JNIEnv* env) {
-		Json::Value root;
-		root["content"] = content;
-		root["contact"] = c->toJsonValue();
-		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KSend, tools.str2jstring(tools.JsonToString(root).c_str(),env), (jboolean)miraicode), env);
+		nlohmann::json j;
+		j["content"] = content;
+		j["contact"] = c->serialization();
+		return Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KSend,
+			Tools::str2jstring(j.dump().c_str(), env),
+			(jboolean)miraicode), env);
 	}
-	static std::string getInfoSource(Contact* c, JNIEnv* env = manager->getEnv()) {
-		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo, tools.str2jstring(c->toString().c_str(), env)));
+
+	/// @brief å–è¯¥è”ç³»äººçš„ä¸€äº›ä¿¡æ¯
+	/// @param c è¯¥è”ç³»äººContactæŒ‡é’ˆ
+	/// @return jsonæ ¼å¼å­—ç¬¦ä¸²ï¼Œå¾…è§£æ
+	static inline std::string getInfoSource(Contact* c, JNIEnv* env = manager->getEnv()) {
+		return Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo,
+			Tools::str2jstring(c->serializationToString().c_str(),
+				env)));
 	}
-	static std::string uploadImg0(std::string path, Contact* c, JNIEnv* env = manager->getEnv()) {
-		return tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KUploadImg,tools.str2jstring(path.c_str(), env), tools.str2jstring(c->toString().c_str(), env)));
+
+	/*!
+	 * @brief ä¸Šä¼ å›¾ç‰‡
+	 * @param path æœ¬åœ°åœ°å€
+	 * @param c ä¸Šä¼ çš„å¯¹è±¡
+	 * @param env JNIEnv
+	 * @return string å¾…è§£æjson
+	 */
+	static inline std::string uploadImg0(std::string path, Contact* c, JNIEnv* env = manager->getEnv()) {
+		return Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KUploadImg,
+			Tools::str2jstring(path.c_str(), env),
+			Tools::str2jstring(c->serializationToString().c_str(),
+				env)));
 	}
-	static struct info {
+
+	/// æ¯ä¸ªå¯¹è±¡çš„å¿…æœ‰ä¿¡æ¯
+	struct info {
 		std::string nickornamecard;
 		std::string avatarUrl;
 	};
+
+	/// è·å–æ¯ä¸ªå¯¹è±¡å¿…æœ‰ä¿¡æ¯
+	/// @see LowLevelAPI::info
 	static info info0(std::string source) {
 		info re;
-		Json::Value tmp = tools.StringToJson(source);
-		re.avatarUrl = tmp["avatarUrl"].asCString();
-		re.nickornamecard = tmp["nickornamecard"].asCString();
+		nlohmann::json j = nlohmann::json::parse(source);
+		re.avatarUrl = j["avatarUrl"];
+		re.nickornamecard = j["nickornamecard"];
 		return re;
 	}
 };
 
-/*ÁÄÌì¼ÇÂ¼ÀïÃ¿¸öÏûÏ¢*/
+///èŠå¤©è®°å½•é‡Œæ¯ä¸ªæ¶ˆæ¯
 class ForwardNode {
 public:
-	//·¢ËÍÕßid
-	unsigned long long id = 0;
-	//·¢ËÍÕßêÇ³Æ
-	std::string name = "";
-	//·¢ËÍĞÅÏ¢
-	std::string message = "";
-	//·¢ËÍÊ±¼ä
-	int time = 0;
-	/*
-	ÁÄÌì¼ÇÂ¼ÀïµÄÃ¿ÌõĞÅÏ¢
-		i - ·¢ËÍÕßid
-		n - ·¢ËÍÕßêÇ³Æ
-		m - ·¢ËÍµÄĞÅÏ¢
-		t - ·¢ËÍÊ±¼ä£¬ÒÔÊ±¼ä´Á¼Ç
-	*/
-	ForwardNode(unsigned long long i, std::string n, std::string m, int t) {
-		this->id = i;
-		this->name = n;
-		this->message = m;
-		this->time = t;
-	}
-	/*
-	ÁÄÌì¼ÇÂ¼ÀïµÄÃ¿ÌõĞÅÏ¢
-		c - Ò»¸öContact¶ÔÏó
-		m - ·¢ËÍµÄĞÅÏ¢
-		t - ·¢ËÍÊ±¼ä£¬ÒÔÊ±¼ä´Á¼Ç
-	*/
-	ForwardNode(Contact* c, std::string message, int t) {
-		this->id = c->id();
-		this->name = c->nickOrNameCard();
-		this->message = message;
-		this->time = t;
-	}
+	///å‘é€è€…id
+	const unsigned long long id = 0;
+	///å‘é€è€…æ˜µç§°
+	const std::string name = "";
+	///å‘é€ä¿¡æ¯
+	const std::string message = "";
+	///å‘é€æ—¶é—´
+	const int time = 0;
+
+	/// @brief èŠå¤©è®°å½•é‡Œçš„æ¯æ¡ä¿¡æ¯
+	/// @param i - å‘é€è€…id
+	/// @param n - å‘é€è€…æ˜µç§°
+	/// @param m - å‘é€çš„ä¿¡æ¯
+	/// @param t - å‘é€æ—¶é—´ï¼Œä»¥æ—¶é—´æˆ³è®°
+	ForwardNode(const unsigned long long int id, const std::string& name, const std::string& message, const int time)
+		: id(id), name(name), message(message), time(time) {}
+
+	/// @brief æ„é€ èŠå¤©è®°å½•é‡Œæ¯æ¡ä¿¡æ¯
+	/// @param c - å‘é€è€…çš„contactæŒ‡é’ˆ
+	/// @prama m - å‘é€çš„ä¿¡æ¯
+	/// @param t - å‘é€æ—¶é—´ï¼Œæ—¶é—´æˆ³æ ¼å¼
+	ForwardNode(Contact* c, std::string& message, int t) : id(c->id()), name(c->nickOrNameCard()), message(message),
+		time(t) {}
 };
 
-//ÁÄÌì¼ÇÂ¼
+///èŠå¤©è®°å½•, ç”±ForwardNodeç»„æˆ
+/// @see class ForwardNode
 class ForwardMessage {
-private:
-	Json::Value sendmsg;
 public:
-	/*
-	¹¹½¨Ò»ÌõÁÄÌì¼ÇÂ¼
-	µÚÒ»¸ö²ÎÊıÊÇÁÄÌì¼ÇÂ¼·¢ÉúµÄµØ·½
-	È»ºóÊÇÃ¿ÌõĞÅÏ¢
-	Àı×Ó:
-			ForwardMessage(&e.group,
-			{
-				ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-				ForwardNode(1930893235, "Eritque arcus", "hahaha", -1)
-			}).sendTo(&e.group);
+	nlohmann::json sendmsg;
+
+	/*!
+	*@brief æ„å»ºä¸€æ¡èŠå¤©è®°å½•
+	*@details ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯èŠå¤©è®°å½•å‘ç”Ÿçš„åœ°æ–¹
+	* ç„¶åæ˜¯æ¯æ¡ä¿¡æ¯
+	*@example æ„å»ºèŠå¤©è®°å½•
+	 * @code
+	*ForwardMessage(&e.group,
+	*{
+	*	ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
+	*	ForwardNode(1930893235, "Eritque arcus", "hahaha", -1)
+	*}).sendTo(&e.group);
+	* @endcode
 	*/
 	ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes);
-	//·¢ËÍ¸øÈº»òºÃÓÑ»òÈº³ÉÔ±
-	void sendTo(Contact* c, JNIEnv* = manager->getEnv());
+
+	/// å‘é€ç»™ç¾¤æˆ–å¥½å‹æˆ–ç¾¤æˆå‘˜
+	void sendTo(Contact* c, JNIEnv* = manager->getEnv()) const;
 };
 
-// µ±Ç°botÕËºÅĞÅÏ¢
+/// å½“å‰botè´¦å·ä¿¡æ¯
 class Bot {
 private:
 	bool inited = false;
-	unsigned long long _id;
 	std::string _nick;
 	std::string _avatarUrl;
+
 	void check() {
-		if (!this->inited) { 
-			refreshInfo(); 
+		if (!this->inited) {
+			refreshInfo();
 			this->inited = true;
 		}
 	}
+
 public:
+    /// è¯¥botid
+    const unsigned long long id;
+	/*!
+	 * @brief åˆ·æ–°botä¿¡æ¯
+	 * @param env
+	 */
 	void refreshInfo(JNIEnv* env = manager->getEnv()) {
-		LowLevelAPI::info tmp = LowLevelAPI::info0(tools.jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo, tools.str2jstring(Contact(4, 0, 0, "", this->_id).toString().c_str(), env))));
+		LowLevelAPI::info tmp = LowLevelAPI::info0(Tools::jstring2str(
+			(jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo, Tools::str2jstring(
+				Contact(4, 0, 0, "", this->id).serializationToString().c_str(), env))));
 		this->_avatarUrl = tmp.avatarUrl;
 		this->_nick = tmp.nickornamecard;
 	}
-	Bot(unsigned long long i) {
-		this->_id = i;
-	}
-	Bot() {}
-	unsigned long long id() {
-		return this->_id;
-	}
+
+	/// ç”¨idæ„å»ºæœºå™¨äºº
+	Bot(unsigned long long i): id(i){}
+
+	/// æ˜µç§°
 	std::string nick() {
 		check();
 		return this->_nick;
 	}
+
+	/// å¤´åƒä¸‹è½½é“¾æ¥
 	std::string avatarUrl() {
 		check();
 		return this->_avatarUrl;
 	}
+
+	/// å–å¥½å‹åˆ—è¡¨
 	std::vector<unsigned long long> getFriendList(JNIEnv* env = manager->getEnv()) {
-		std::string temp = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
+		std::string temp = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
 			config->KQueryBFL,
-			(jlong)this->id()));
-		return tools.StringToVector(temp);
+			(jlong)this->id));
+		return Tools::StringToVector(temp);
 	}
+
+	/// å¥½å‹åˆ—è¡¨stringå½¢å¼è¿”å›ï¼Œåˆ©äºä¿å­˜
 	std::string FriendListToString() {
-		return tools.VectorToString(getFriendList());
+		return Tools::VectorToString(getFriendList());
 	}
+
+	/// å–ç¾¤åˆ—è¡¨
 	std::vector<unsigned long long> getGroupList(JNIEnv* env = manager->getEnv()) {
-		std::string temp = tools.jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
+		std::string temp = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
 			config->KQueryBGL,
-			(jlong)this->id()));
-		return tools.StringToVector(temp);
+			(jlong)this->id));
+		return Tools::StringToVector(temp);
 	}
+
+	/// ç¾¤åˆ—è¡¨stringå½¢å¼è¿”å›ï¼Œåˆ©äºä¿å­˜
 	std::string GroupListToString() {
-		return tools.VectorToString(getGroupList());
+		return Tools::VectorToString(getGroupList());
 	}
 };
 
-/*ºÃÓÑÀàÉùÃ÷*/
-class Friend:public Contact{
+/// å¥½å‹ç±»å£°æ˜
+class Friend : public Contact {
 public:
-	Friend(unsigned long long friendid, unsigned long long botid, JNIEnv* =manager->getEnv());
-	Friend():Contact(){};
-	//³õÊ¼»¯µ±Ç°¶ÔÏó£¬¿ÉÄÜÅ×³öÒì³£
-	//êÇ³Æ
-	/*
-	* ÉÏ´«±¾µØÍ¼Æ¬£¬Îñ±ØÒªÓÃ¾ø¶ÔÂ·¾¶
-	* ÓÉÓÚmiraiÒªÇø·ÖÍ¼Æ¬·¢ËÍ¶ÔÏó£¬ËùÒÔÊ¹ÓÃ±¾º¯ÊıÉÏ´«µÄÍ¼Æ¬Ö»ÄÜ·¢µ½ºÃÓÑ
-	* ×î´óÖ§³ÖÍ¼Æ¬´óĞ¡Îª30MB
-	* ¿ÉÄÜÅ×³öinvalid_argumentÒì³£´ú±íÂ·¾¶ÎŞĞ§
+	/*!
+	 * @brief æ„å»ºå¥½å‹å¯¹è±¡
+	 * @param friendid qå·
+	 * @param botid å¯¹åº”æœºå™¨äººid
+	 */
+	Friend(unsigned long long friendid, unsigned long long botid, JNIEnv* = manager->getEnv());
+
+	Friend(Contact c) : Contact(c) {};
+
+	/**
+	 * @brief ä¸Šä¼ æœ¬åœ°å›¾ç‰‡ï¼ŒåŠ¡å¿…è¦ç”¨ç»å¯¹è·¯å¾„.
+	 * ç”±äºmiraiè¦åŒºåˆ†å›¾ç‰‡å‘é€å¯¹è±¡ï¼Œæ‰€ä»¥ä½¿ç”¨æœ¬å‡½æ•°ä¸Šä¼ çš„å›¾ç‰‡åªèƒ½å‘åˆ°å¥½å‹.
+	 * æœ€å¤§æ”¯æŒå›¾ç‰‡å¤§å°ä¸º30MB.
+	 * @exception invalid_argumentä»£è¡¨è·¯å¾„æ— æ•ˆ
+	 * @param filename æ–‡ä»¶è·¯å¾„
+	 * @return å›¾ç‰‡å®ä¾‹
 	*/
-	Image uploadImg(std::string filename, JNIEnv* = manager->getEnv());
-	/*·¢ËÍĞÅÏ¢*/
-	//·¢ËÍmiraicode
+	Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
+
+	/*å‘é€ä¿¡æ¯*/
+	/**
+	 * @brief å‘é€miraicode
+	 * @param msg - MiraiCodeableç±»å‹æŒ‡é’ˆ - å†…å®¹
+	*/
 	MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
+
+	/// å‘é€miraicode
 	MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
+
+	/// å‘é€miraicode
 	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
-	//·¢ËÍÎÄ±¾ĞÅÏ¢
+
+	/// å‘é€çº¯æ–‡æœ¬ä¿¡æ¯
 	MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
 };
 
-/*Èº³ÉÔ±ÀàÉùÃ÷*/
-class Member :public Contact {
+/// ç¾¤æˆå‘˜ç±»å£°æ˜
+class Member : public Contact {
 private:
 	jmethodID Mute_id = NULL;
 	jmethodID Query_permission = NULL;
 	jmethodID KickM = NULL;
 public:
-	// È¨ÏŞµÈ¼¶. OWNERÈºÖ÷ Îª 2, ADMINISTRATOR¹ÜÀíÔ± Îª 1, MEMBERÈº³ÉÔ± Îª 0
+	/// @brief æƒé™ç­‰çº§
+	///     - OWNERç¾¤ä¸» ä¸º 2
+	///     - ADMINISTRATORç®¡ç†å‘˜ ä¸º 1
+	///     - MEMBERç¾¤æˆå‘˜ ä¸º 0
+	/// @note ä¸Šé¢é‚£äº›å˜é‡åœ¨constants.hä¸­æœ‰å®šä¹‰
 	unsigned int permission = 0;
-	// qqid, groupid
+
+	/// @brief æ„å»ºç¾¤æˆå‘˜å¯¹è±¡
+	/// @param qqid è¯¥æˆå‘˜qå·
+	/// @param groupid æ‰€åœ¨ç¾¤å·
+	/// @param botid æœºå™¨äººid
+	/// @example åœ¨äº‹ä»¶ä¸­æ„å»ºMemberå¯¹è±¡
+	/// @code
+	///  Member(this.sender.id, this.group.id, this.bot.id)
+	/// @endcode
 	Member(unsigned long long qqid, unsigned long long groupid, unsigned long long botid, JNIEnv* = manager->getEnv());
-	/*
-	* ÉÏ´«±¾µØÍ¼Æ¬£¬Îñ±ØÒªÓÃ¾ø¶ÔÂ·¾¶
-	* ÓÉÓÚmiraiÒªÇø·ÖÍ¼Æ¬·¢ËÍ¶ÔÏó£¬ËùÒÔÊ¹ÓÃ±¾º¯ÊıÉÏ´«µÄÍ¼Æ¬Ö»ÄÜ·¢µ½Èº
-	* ×î´óÖ§³ÖÍ¼Æ¬´óĞ¡Îª30MB
-	* ¿ÉÄÜÅ×³öinvalid_argumentÒì³£´ú±íÂ·¾¶ÎŞĞ§
+
+	/*!
+	* @briefä¸Šä¼ æœ¬åœ°å›¾ç‰‡ï¼ŒåŠ¡å¿…è¦ç”¨ç»å¯¹è·¯å¾„
+	* ç”±äºmiraiè¦åŒºåˆ†å›¾ç‰‡å‘é€å¯¹è±¡ï¼Œæ‰€ä»¥ä½¿ç”¨æœ¬å‡½æ•°ä¸Šä¼ çš„å›¾ç‰‡åªèƒ½å‘åˆ°ç¾¤
+	* @attention æœ€å¤§æ”¯æŒå›¾ç‰‡å¤§å°ä¸º30MB
+	* @throws
+	 * -å¯èƒ½æŠ›å‡ºUploadExceptionå¼‚å¸¸ä»£è¡¨è·¯å¾„æ— æ•ˆæˆ–å¤§å°å¤§äº30MB
+	 * -å¯èƒ½æŠ›å‡ºMemberExceptionæ‰¾ä¸åˆ°ç¾¤æˆ–ç¾¤æˆå‘˜
 	*/
-	Image uploadImg(std::string filename, JNIEnv* = manager->getEnv());
-	Member():Contact() {};
-	//»ñÈ¡È¨ÏŞ£¬»áÔÚ¹¹ÔìÊ±µ÷ÓÃ£¬ÇëÊ¹ÓÃpermission»º´æ±äÁ¿
+	Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
+
+	Member(Contact c) : Contact(c) {};
+
+	/// è·å–æƒé™ï¼Œä¼šåœ¨æ„é€ æ—¶è°ƒç”¨ï¼Œè¯·ä½¿ç”¨permissionç¼“å­˜å˜é‡
+	/// @see Member::permission
 	unsigned int getPermission(JNIEnv* = manager->getEnv());
-	/*·¢ËÍĞÅÏ¢*/
-	//·¢ËÍmiraicode
+	/*å‘é€ä¿¡æ¯*/
+	///å‘é€miraicode
 	MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
+
+	///å‘é€miraicode
 	MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
+
+	///å‘é€miraicode
 	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
-	//·¢ËÍÎÄ±¾ĞÅÏ¢£¬²»½øĞĞmiraicode½âÎö
+
+	///å‘é€æ–‡æœ¬ä¿¡æ¯ï¼Œä¸è¿›è¡Œmiraicodeè§£æ
 	MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
-	/*½ûÑÔµ±Ç°¶ÔÏó£¬µ¥Î»ÊÇÃë£¬×îÉÙ0Ãë×î´ó30Ìì
-	* ·µ»ØÖµ¶ÔÓ¦±¨´í
-	*	"E1" - ÕÒ²»µ½Èº
-	*	"E2" - ÕÒ²»µ½Èº³ÉÔ±
-	*	"E3" - »úÆ÷ÈËÎŞÈ¨ÏŞ½ûÑÔ¶Ô·½
-	*	"E4" - ½ûÑÔÊ±¼ä³¬³ö0s~30d
-	*	"Y" - Ò»ÇĞÕı³£
+
+	/*!
+	 * ç¦è¨€å½“å‰å¯¹è±¡ï¼Œå•ä½æ˜¯ç§’ï¼Œæœ€å°‘0ç§’æœ€å¤§30å¤©
+	 * @throws å¯èƒ½æŠ›å‡ºä¸åŒé”™è¯¯
 	*/
 	void Mute(int time, JNIEnv* = manager->getEnv());
-	/*Ìß³öÕâ¸öÈº³ÉÔ±*/
-	void Kick(std::string reason, JNIEnv* = manager->getEnv());
+
+	/*! è¸¢å‡ºè¿™ä¸ªç¾¤æˆå‘˜
+	* @param reason - åŸå› 
+	 * @example è¸¢å‡ºç¾¤æˆå‘˜
+	 * @code
+	 * procession->registerEvent([](GroupMessageEvent e) {
+		try {
+			Member m = Member(qqid, e.group.id(), e.bot.id());
+			m.Kick("this_is_reason");
+		}
+		catch (BotException err) {
+			//æƒé™ä¸è¶³
+			logger->Error(err.what());
+		}
+		catch (MemberException err) {
+			if (err.type == 1) {
+				//æ‰¾ä¸åˆ°ç¾¤
+			}
+			if (err.type == 2) {
+				//æ‰¾ä¸åˆ°ç¾¤æˆå‘˜
+			}
+		}
+		});
+	 * @endcode
+	*/
+	void Kick(const std::string& reason, JNIEnv* = manager->getEnv());
 };
 
-/*ÈºÁÄÀàÉùÃ÷*/
-class Group :public Contact {
+/// ç¾¤èŠç±»å£°æ˜
+class Group : public Contact {
 public:
-	/*È¡Èº³ÉÔ±ÁĞ±í-vector<long>*/
+	/// å–ç¾¤æˆå‘˜åˆ—è¡¨-vector<long>
 	std::vector<unsigned long long> getMemberList() {
-		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib,
+		std::string re = Tools::jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib,
 			config->KQueryML,
-			tools.str2jstring(this->toString().c_str())));
+			Tools::str2jstring(
+				this->serializationToString().c_str())));
 		if (re == "E1") {
 			throw GroupException();
 		}
-		return tools.StringToVector(re);
+		return Tools::StringToVector(re);
 	}
-	/*ÒÔstring¸ñÊ½È¡Èº³ÉÔ±ÁĞ±í
-	¸ñÊ½£º
-		Ã¿¸öÈº³ÉÔ±id¼äÓÃ¶ººÅ·Ö¸ô
+
+	/*!
+	 * ä»¥stringæ ¼å¼å–ç¾¤æˆå‘˜åˆ—è¡¨
+	 * @note æ ¼å¼:
+	 *  æ¯ä¸ªç¾¤æˆå‘˜idé—´ç”¨é€—å·åˆ†éš”
 	*/
 	std::string MemberListToString() {
-		return tools.VectorToString(getMemberList());
+		return Tools::VectorToString(getMemberList());
 	};
-	//È¡ÈºÖ÷
+
+	/// å–ç¾¤ä¸»
 	Member getOwner(JNIEnv* = manager->getEnv());
-	//¹¹½¨ÒÔÈººÅ¹¹½¨Èº¶ÔÏó
+
+	///  @brief æ„å»ºä»¥ç¾¤å·æ„å»ºç¾¤å¯¹è±¡
+	/// @param groupid ç¾¤å·
+	/// @param botid æœºå™¨äººid
+	/// @example åœ¨äº‹ä»¶ä¸­æ„å»ºGroupå¯¹è±¡
+	/// @code Group(this.group.id, this.bot.id) @endcode
 	Group(unsigned long long groupid, unsigned long long botid, JNIEnv* = manager->getEnv());
-	/*
-	* ÉÏ´«±¾µØÍ¼Æ¬£¬Îñ±ØÒªÓÃ¾ø¶ÔÂ·¾¶
-	* ÓÉÓÚmiraiÒªÇø·ÖÍ¼Æ¬·¢ËÍ¶ÔÏó£¬ËùÒÔÊ¹ÓÃ±¾º¯ÊıÉÏ´«µÄÍ¼Æ¬Ö»ÄÜ·¢µ½Èº
-	* ×î´óÖ§³ÖÍ¼Æ¬´óĞ¡Îª30MB
-	* ¿ÉÄÜÅ×³öinvalid_argumentÒì³£´ú±íÂ·¾¶ÎŞĞ§
+
+	Group(Contact c) : Contact(c) {};
+
+	/*!
+	* @brief ä¸Šä¼ æœ¬åœ°å›¾ç‰‡ï¼ŒåŠ¡å¿…è¦ç”¨ç»å¯¹è·¯å¾„
+	* ç”±äºmiraiè¦åŒºåˆ†å›¾ç‰‡å‘é€å¯¹è±¡ï¼Œæ‰€ä»¥ä½¿ç”¨æœ¬å‡½æ•°ä¸Šä¼ çš„å›¾ç‰‡åªèƒ½å‘åˆ°ç¾¤
+	* @note æœ€å¤§æ”¯æŒå›¾ç‰‡å¤§å°ä¸º30MB
+	* @throw å¯èƒ½æŠ›å‡ºinvalid_argumentå¼‚å¸¸ä»£è¡¨è·¯å¾„æ— æ•ˆ
 	*/
-	Image uploadImg(std::string filename, JNIEnv* = manager->getEnv());
-	/*
-	ÉÏ´«²¢·¢ËÍ
-	path-ÈºÎÄ¼şÂ·¾¶(´øÎÄ¼şÃû),¸ùÄ¿Â¼Îª/
-	filepath-±¾µØÎÄ¼şÂ·¾¶
-	Èç group.uploadFIle("/test.txt", "D:\\xxxx.xxx")
+	Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
+
+	/*!
+	@brief ä¸Šä¼ å¹¶å‘é€è¿œç¨‹(ç¾¤)æ–‡ä»¶
+	@param path-ç¾¤æ–‡ä»¶è·¯å¾„(å¸¦æ–‡ä»¶å),æ ¹ç›®å½•ä¸º/
+	@param filepath-æœ¬åœ°æ–‡ä»¶è·¯å¾„
+	@example ä¸Šä¼ å¹¶å‘é€è¿œç¨‹(ç¾¤)æ–‡ä»¶
+	 @code
+	 procession->registerEvent([](GroupMessageEvent e) {
+		// å‘é€D:\\ValveUnhandledExceptionFilter.txtæœ¬åœ°æ–‡ä»¶åˆ°qqç¾¤çš„ /test.txt è·¯å¾„
+		RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
+	    });
+	 @endcode
 	*/
-	RemoteFile sendFile(std::string path, std::string filepath, JNIEnv* = manager->getEnv());
-	/* 
-	È¡ÈºÎÄ¼şĞÅÏ¢,»á×Ô¶¯ËÑË÷×ÓÄ¿Â¼
-	path-ÈºÎÄ¼şÂ·¾¶(²»´øÎÄ¼şÃû)
-	id-ÎÄ¼şid,¿É¿Õ£¬¿ÕÔòÎªÓÃÂ·¾¶²éÕÒ(´ËÊ±Â·¾¶Òª´øÎÄ¼şÃû)
-	ÒòÎªÈºÎÄ¼şÔÊĞíÖØÃûÎÄ¼ş´æÔÚµÄÌØĞÔ£¬¸Ã²éÕÒ²¢²»¿É¿¿£¬Ö»ÄÜ·µ»ØÖØÃûÎÄ¼şÖĞµÄÆäÖĞÒ»¸öÎÄ¼ş
+	RemoteFile sendFile(const std::string& path, const std::string& filepath, JNIEnv* = manager->getEnv());
+
+	/*!
+	å–ç¾¤æ–‡ä»¶ä¿¡æ¯,ä¼šè‡ªåŠ¨æœç´¢å­ç›®å½•
+	@param path-ç¾¤æ–‡ä»¶è·¯å¾„(ä¸å¸¦æ–‡ä»¶å)
+	@param id-æ–‡ä»¶id,å¯ç©ºï¼Œç©ºåˆ™ä¸ºç”¨è·¯å¾„æŸ¥æ‰¾(æ­¤æ—¶è·¯å¾„è¦å¸¦æ–‡ä»¶å)
+	@attention å› ä¸ºç¾¤æ–‡ä»¶å…è®¸é‡åæ–‡ä»¶å­˜åœ¨çš„ç‰¹æ€§ï¼Œè¯¥æŸ¥æ‰¾å¹¶ä¸å¯é ï¼Œåªèƒ½è¿”å›é‡åæ–‡ä»¶ä¸­çš„å…¶ä¸­ä¸€ä¸ªæ–‡ä»¶
+	@see RemoteFile
+	 @example å–ç¾¤æ–‡ä»¶ä¿¡æ¯
+	 @code
+	 //æ ¹æ®qqç¾¤è¿œç¨‹è·¯å¾„(ä¸å¸¦æ–‡ä»¶å)å’Œæ–‡ä»¶id, æ–‡ä»¶idå¯ä»¥åœ¨ä¸Šä¼ è¿”å›çš„RemoteFileç±»å‹ä¸­è·å¾—, ä¼šåœ¨å­ç›®å½•ä¸­æŸ¥æ‰¾å¦‚æœå½“å‰ç›®å½•æœªæ‰¾åˆ°
+     //æ ¹æ®qqç¾¤è¿œç¨‹è·¯å¾„(å¸¦æ–‡ä»¶å)æ‰¾, ä¸è¿‡ç”±äºqqç¾¤æ–‡ä»¶å…è®¸åŒåæ–‡ä»¶è¿™ä¸€ç‰¹æ€§, è¿”å›çš„æ–‡ä»¶ä¸ºç¾¤æ–‡ä»¶ä¸­åŒåæ–‡ä»¶ä¸­éšæœºä¸€ä¸ª
+	 procession->registerEvent([](GroupMessageEvent e) {
+		e.group.SendMsg(e.group.getFile("/", id).name());
+		e.group.SendMsg(e.group.getFile("/test.txt").name());
+		e.group.SendMsg(e.group.getFileListString("/"));
+		});
+	 @endcode
 	*/
-	RemoteFile getFile(std::string path, std::string id = "", JNIEnv* = manager->getEnv());
+	RemoteFile getFile(const std::string& path, const std::string& id = "", JNIEnv* = manager->getEnv());
+
 	struct short_info {
-		// Â·¾¶´øÎÄ¼şÃû
+		// è·¯å¾„å¸¦æ–‡ä»¶å
 		std::string path = "";
-		// Î¨Ò»id
+		// å”¯ä¸€id
 		std::string id = "";
 	};
-	/*
-	»ñÈ¡pathÂ·¾¶ÏÂÈ«²¿ÎÄ¼şĞÅÏ¢
-	·µ»ØÖµÎªÒ»¸övectorÈİÆ÷, Ã¿Ò»ÏîÎªshort_info
+
+	/*!
+	 * è·å–pathè·¯å¾„ä¸‹å…¨éƒ¨æ–‡ä»¶ä¿¡æ¯
+	 * @param path - è¿œç¨‹è·¯å¾„
+	 * @return è¿”å›å€¼ä¸ºä¸€ä¸ªvectorå®¹å™¨, æ¯ä¸€é¡¹ä¸ºshort_info
 	*/
-	std::vector<short_info> getFileList(std::string path, JNIEnv* = manager->getEnv());
-	// È¡ÎÄ¼şÁĞ±í·µ»ØÖµÊÇ×Ö·û´®
-	std::string getFileListString(std::string path, JNIEnv* = manager->getEnv());
-	Group():Contact() {};
-	/*
-	* ÉèÖÃÈ«Ô±½ûÑÔ
-	* param: sign = trueÊ±Îª¿ªÊ¼£¬falseÎª¹Ø±Õ
+	std::vector<short_info> getFileList(const std::string& path, JNIEnv* = manager->getEnv());
+
+	/// å–æ–‡ä»¶åˆ—è¡¨ä»¥å­—ç¬¦ä¸²å½¢å¼è¿”å›
+	///@example å–stringæ ¼å¼ç¾¤æ–‡ä»¶åˆ—è¡¨
+	/// @code
+    /// e.group.SendMsg(e.group.getFileListString("/"));
+	/// @endcode
+	std::string getFileListString(const std::string& path, JNIEnv* = manager->getEnv());
+
+	/*!
+	* è®¾ç½®å…¨å‘˜ç¦è¨€
+	* @param: sign = trueæ—¶ä¸ºå¼€å§‹ï¼Œfalseä¸ºå…³é—­
 	*/
 	void setMuteAll(bool sign, JNIEnv* = manager->getEnv());
-	/*·¢ËÍĞÅÏ¢*/
+
+	/// å‘é€MiraiCodeä¿¡æ¯
 	MessageSource SendMiraiCode(MiraiCodeable* msg) {
 		return SendMiraiCode(msg->toMiraiCode());
 	}
+
+	/// å‘é€MiraiCodeä¿¡æ¯
 	MessageSource SendMiraiCode(MiraiCode msg) {
 		return SendMiraiCode(msg.toString());
 	}
+
+	/// å‘é€MiraiCodeä¿¡æ¯
 	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
+
+	/// å‘é€ä¿¡æ¯
 	MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
 };
 
-/*AtÒ»¸öÈº³ÉÔ±*/
- inline std::string At(Member a) {
-	/*·µ»ØatÕâ¸öÈËµÄmiraicode*/
+/// Atä¸€ä¸ªç¾¤æˆå‘˜
+inline std::string At(Member a) {
+	/*è¿”å›atè¿™ä¸ªäººçš„miraicode*/
 	return "[mirai:at:" + std::to_string(a.id()) + "]";
 }
- /*AtÒ»¸öÈº³ÉÔ±*/
- inline std::string At(unsigned long long a) {
-	/*·µ»ØatÕâ¸öÈËµÄmiraicode*/
+
+/// Atä¸€ä¸ªç¾¤æˆå‘˜
+inline std::string At(unsigned long long a) {
+	/*è¿”å›atè¿™ä¸ªäººçš„miraicode*/
 	return "[mirai:at:" + std::to_string(a) + "]";
 }
 
- class BotEvent {
- public:
-	 Bot bot;
-	 BotEvent(unsigned long long botid) {
-		 bot = Bot(botid);
-	 }
- };
-
-/*ÈºÏûÏ¢ÊÂ¼şÉùÃ÷*/
-class GroupMessageEvent:public BotEvent {
+/// æ‰€ä»¥äº‹ä»¶å¤„ç†timeouteventéƒ½æ˜¯æœºå™¨äººäº‹ä»¶ï¼ŒæŒ‡éƒ½æœ‰æœºå™¨äººå®ä¾‹
+class BotEvent {
 public:
-	//À´Ô´Èº
-	Group group;
-	//·¢ËÍÈË
-	Member sender;
-	//ĞÅÏ¢±¾Ìå
-	std::string message;
-	//ÏûÏ¢Ô´
-	MessageSource messageSource;
-	GroupMessageEvent(Group g, Member f, std::string s, MessageSource s1, unsigned long long botid) :BotEvent(botid) {
-		this->group = g;
-		this->sender = f;
-		this->message = s;
-		this->messageSource = s1;
+	Bot bot;
+
+	BotEvent(unsigned long long botid) : bot(Bot(botid)) {
 	}
 };
 
-/*Ë½ÁÄÏûÏ¢ÊÂ¼şÀàÉùÃ÷*/
+///ç¾¤æ¶ˆæ¯äº‹ä»¶å£°æ˜
+class GroupMessageEvent : public BotEvent {
+public:
+	///æ¥æºç¾¤
+	Group group;
+	///å‘é€äºº
+	Member sender;
+	///ä¿¡æ¯æœ¬ä½“
+	const std::string message;
+	///æ¶ˆæ¯æº
+	MessageSource messageSource;
+
+	GroupMessageEvent(unsigned long long int botid, const Group& group, const Member& sender,
+		const std::string& message, const MessageSource& messageSource) : BotEvent(botid), group(group),
+		sender(sender),
+		message(message),
+		messageSource(messageSource) {}
+};
+
+/// ç§èŠæ¶ˆæ¯äº‹ä»¶ç±»å£°æ˜
 class PrivateMessageEvent : public BotEvent {
 public:
-	//·¢ÆğÈË
+	/// å‘èµ·äºº
 	Friend sender;
-	//¸½´øÏûÏ¢
-	std::string message;
-	//ĞÅÏ¢Ô´
+	/// é™„å¸¦æ¶ˆæ¯
+	const std::string message;
+	/// ä¿¡æ¯æº
 	MessageSource messageSource;
-	PrivateMessageEvent(Friend f, std::string s, MessageSource ms, unsigned long long botid) :BotEvent(botid) {
-		this->sender = f;
-		this->message = s;
-		this->messageSource = ms;
-	}
+
+	/*!
+	 * @brief æ„å»ºç§èŠä¿¡æ¯
+	 * @param botid å¯¹åº”botid
+	 * @param sender å‘é€è€…
+	 * @param message æ¶ˆæ¯
+	 * @param messageSource æ¶ˆæ¯æº
+	 */
+	PrivateMessageEvent(unsigned long long int botid, const Friend sender, const std::string& message,
+		const MessageSource& messageSource) : BotEvent(botid), sender(sender), message(message),
+		messageSource(messageSource) {}
 };
 
-/*ÈºÁÄÑûÇëÊÂ¼şÀàÉùÃ÷*/
-class GroupInviteEvent: public BotEvent {
-private:
-	std::string source;
+/// ç¾¤èŠé‚€è¯·äº‹ä»¶ç±»å£°æ˜
+class GroupInviteEvent : public BotEvent {
 public:
-	//·¢ÆğÈË
-	std::string inviterNick = "";
-	unsigned long long inviterid = 0;
-	//±»ÑûÇë½øµÄ×é
-	std::string groupName = "";
-	unsigned long long groupid = 0;
+	/// äº‹ä»¶åºåˆ—åŒ–æ–‡æœ¬
+	const std::string source;
+	/// å‘èµ·äººæ˜µç§°
+	const std::string inviterNick = "";
+	/// å‘èµ·äººid
+	const unsigned long long inviterid = 0;
+	/// è¢«é‚€è¯·è¿›çš„ç»„
+	const std::string groupName = "";
+	/// ç¾¤å·
+	const unsigned long long groupid = 0;
+
 	static void reject(std::string source) {
-		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation, tools.str2jstring(source.c_str()), (jboolean)false));
+		std::string re = Tools::jstring2str(
+			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation,
+				Tools::str2jstring(source.c_str()),
+				(jboolean)false));
 		if (re == "Y") return;
-		if (re == "E")if (re == "E")logger->Error("ÈºÁÄÑûÇëÊÂ¼şÍ¬ÒâÊ§°Ü,id:" + source);
+		if (re == "E")logger->Error("ç¾¤èŠé‚€è¯·äº‹ä»¶åŒæ„å¤±è´¥(å¯èƒ½å› ä¸ºé‡å¤å¤„ç†),id:" + source);
 	}
+
 	void reject() {
 		this->reject(this->source);
 	}
+
 	std::string getSource() {
 		return this->source;
 	}
+
 	static void accept(std::string source) {
-		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation, tools.str2jstring(source.c_str()), (jboolean)true));
+		std::string re = Tools::jstring2str(
+			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation,
+				Tools::str2jstring(source.c_str()),
+				(jboolean)true));
 		if (re == "Y") return;
-		if (re == "E")logger->Error("ÈºÁÄÑûÇëÊÂ¼şÍ¬ÒâÊ§°Ü,id:" + source);
+		if (re == "E")logger->Error("ç¾¤èŠé‚€è¯·äº‹ä»¶åŒæ„å¤±è´¥(å¯èƒ½å› ä¸ºé‡å¤å¤„ç†),id:" + source);
 	}
+
 	void accept() {
 		this->accept(this->source);
 	}
-	GroupInviteEvent(unsigned long long ii, std::string inick, unsigned long long gi, std::string gn, std::string s, unsigned long long botid):BotEvent(botid) {
-		this->inviterNick = inick;
-		this->groupid = gi;
-		this->inviterid = ii;
-		this->groupName = gn;
-		this->source = s;
-	}
+
+	/*!
+	 * @brief ç¾¤é‚€è¯·äº‹ä»¶
+	 * @param botid å½“å‰botid
+	 * @param source åºåˆ—åŒ–åå­—ç¬¦ä¸²
+	 * @param inviterNick é‚€è¯·äººæ˜µç§°
+	 * @param inviterid é‚€è¯·äººid
+	 * @param groupName ç¾¤èŠåç§°
+	 * @param groupid ç¾¤å·
+	 */
+	GroupInviteEvent(unsigned long long int botid, const std::string& source, const std::string& inviterNick,
+		unsigned long long int inviterid, const std::string& groupName, unsigned long long int groupid)
+		: BotEvent(botid), source(source), inviterNick(inviterNick), inviterid(inviterid), groupName(groupName),
+		groupid(groupid) {}
 };
 
-/*ºÃÓÑÉêÇëÊÂ¼şÉùÃ÷*/
+/// å¥½å‹ç”³è¯·äº‹ä»¶å£°æ˜
 class NewFriendRequestEvent : public BotEvent {
-private:
-	std::string source;
 public:
-	//·¢ÆğÕß
-	unsigned long long senderid;
-	//¸½¼ÓĞÅÏ¢
-	std::string message;
+	/// @brief åºåˆ—åŒ–çš„äº‹ä»¶ä¿¡æ¯
+	const std::string source;
+	/// @brief å¯¹æ–¹id
+	const unsigned long long fromid;
+	const unsigned long long fromgroupid;
+	/// @brief å¯¹æ–¹æ˜µç§°
+	const std::string nick;
+	/// @brief ç”³è¯·ç†ç”±
+	const std::string message;
+
+	/// @brief æ‹’ç»å¥½å‹ç”³è¯·
+	/// @param source äº‹ä»¶åºåˆ—åŒ–ä¿¡æ¯
 	static void reject(std::string source) {
-		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation, tools.str2jstring(source.c_str()), (jboolean)false));
+		std::string re = Tools::jstring2str(
+			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
+				Tools::str2jstring(source.c_str()),
+				(jboolean)false));
 		if (re == "Y") return;
-		if (re == "E")logger->Error("ºÃÓÑÉêÇëÊÂ¼şÍ¬ÒâÊ§°Ü,id:" + source);
+		if (re == "E")logger->Error("å¥½å‹ç”³è¯·äº‹ä»¶æ‹’ç»å¤±è´¥(å¯èƒ½å› ä¸ºé‡å¤å¤„ç†),id:" + source);
 	}
+
+	/// @brief æ‹’ç»å¥½å‹ç”³è¯·
 	void reject() {
 		this->reject(this->source);
 	}
-	std::string getSource() {
-		return this->source;
-	}
+
+	/// @brief æ¥å—å¥½å‹ç”³è¯·
+	/// @param source äº‹ä»¶åºåˆ—åŒ–ä¿¡æ¯
 	static void accept(std::string source) {
-		std::string re = tools.jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation, tools.str2jstring(source.c_str()), (jboolean)true));
+		std::string re = Tools::jstring2str(
+			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
+				Tools::str2jstring(source.c_str()),
+				(jboolean)true));
 		if (re == "Y") return;
-		if (re == "E")logger->Error("ºÃÓÑÉêÇëÊÂ¼şÍ¬ÒâÊ§°Ü,id:" + source);
+		if (re == "E")logger->Error("å¥½å‹ç”³è¯·äº‹ä»¶åŒæ„å¤±è´¥(å¯èƒ½å› ä¸ºé‡å¤å¤„ç†),id:" + source);
 	}
+
+	/// @brief æ¥å—ç”³è¯·
 	void accept() {
 		this->accept(this->source);
 	}
-	NewFriendRequestEvent(unsigned long long i, std::string m, std::string s, unsigned long long botid) :BotEvent(botid) {
-		this->senderid = i;
-		this->message = m;
-		this->source = s;
-	}
+
+	/*!
+	 * @brief å¥½å‹ç”³è¯·äº‹ä»¶
+	 * @param botid å¯¹åº”botid
+	 * @param source åºåˆ—åŒ–åä¿¡æ¯
+	 * @param fromid å¯¹æ–¹id
+	 * @param fromgroupid ä»å“ªä¸ªç¾¤ç”³è¯·çš„ï¼Œå¦åˆ™ä¸º0
+	 * @param nick å¯¹æ–¹æ˜µç§°
+	 * @param message ç”³è¯·ç†ç”±
+	 */
+	NewFriendRequestEvent(unsigned long long int botid, const std::string& source, const unsigned long long int fromid,
+		const unsigned long long int fromgroupid, const std::string& nick, const std::string& message)
+		: BotEvent(botid), source(source), fromid(fromid), fromgroupid(fromgroupid), nick(nick), message(message) {}
 };
 
-/*ĞÂÈº³ÉÔ±¼ÓÈë*/
+/// æ–°ç¾¤æˆå‘˜åŠ å…¥
 class MemberJoinEvent : public BotEvent {
 public:
-	/*
-	ÊÂ¼şÀàĞÍ
-	1 - ±»ÑûÇë½øÀ´
-	2 - Ö÷¶¯¼ÓÈë
-	3 - Ô­ÈºÖ÷Í¨¹ı https://huifu.qq.com/ »Ö¸´Ô­À´ÈºÖ÷Éí·İ²¢ÈëÈº
+	/*!
+	* @brief äº‹ä»¶ç±»å‹
+	*   1 - è¢«é‚€è¯·è¿›æ¥
+	*   2 - ä¸»åŠ¨åŠ å…¥
+	*   3 - åŸç¾¤ä¸»é€šè¿‡ https://huifu.qq.com/ æ¢å¤åŸæ¥ç¾¤ä¸»èº«ä»½å¹¶å…¥ç¾¤
 	*/
-	int type = NULL;
-	//ĞÂ½øÈëµÄ³ÉÔ±
+	const int type = 0;
+	///æ–°è¿›å…¥çš„æˆå‘˜
 	Member member;
-	//Ä¿±êÈº
+	///ç›®æ ‡ç¾¤
 	Group group;
-	//ÑûÇëÈË, µ±type = 1Ê±´æÔÚ£¬·ñÔòÔòºÍmember±äÁ¿ÏàÍ¬
-	Member inviter;
-	MemberJoinEvent(int t, Member m, Group g, Member i, unsigned long long botid) :BotEvent(botid) {
-		this->type = t;
-		this->member = m;
-		this->group = g;
-		this->inviter = i;
-	}
+	///é‚€è¯·äºº, å½“type = 1æ—¶å­˜åœ¨ï¼Œå¦åˆ™åˆ™å’Œmemberå˜é‡ç›¸åŒ
+	const unsigned long long inviterid;
+
+	/*!
+	 * @brief æ–°ç¾¤æˆå‘˜å…¥ç¾¤äº‹ä»¶
+	 * @param botid botid
+	 * @param type ç±»åˆ« @see MemberJoinEvent::type
+	 * @param member å…¥ç¾¤ç¾¤æˆå‘˜
+	 * @param group ç¾¤ç»„
+	 * @param inviterid é‚€è¯·ç¾¤æˆå‘˜idï¼Œå¦‚æœä¸å­˜åœ¨å’Œmember idå‚æ•°ä¸€è‡´
+	 */
+	MemberJoinEvent(unsigned long long int botid, const int type, const Member& member, const Group& group,
+		const unsigned long long& inviterid) : BotEvent(botid), type(type), member(member), group(group),
+		inviterid(inviterid) {}
 };
 
-/*Èº³ÉÔ±Àë¿ª*/
+/// ç¾¤æˆå‘˜ç¦»å¼€
 class MemberLeaveEvent : public BotEvent {
 public:
-	/*
-	ÊÂ¼şÀàĞÍ
-	1 - ±»Ìß³ö
-	2 - Ö÷¶¯ÍË³ö
+	/*!
+	* @brief äº‹ä»¶ç±»å‹
+	*           1 - è¢«è¸¢å‡º
+	*           2 - ä¸»åŠ¨é€€å‡º
 	*/
-	int type = NULL;
-	/*ÍË³öµÄ³ÉÔ±µÄ³ÉÔ±*/
-	Member member;
-	/*Ä¿±êÈº*/
+	const int type = 0;
+	/// é€€å‡ºçš„æˆå‘˜qå·
+	const unsigned long long memberid;
+	/// ç›®æ ‡ç¾¤
 	Group group;
-	/*²Ù×÷ÈË, Ö÷¶¯ÍË³öÊ±ÓëmemberÏàÍ¬£¬¸Ä³ÉÔ±¿ÉÄÜÊÇµ±Ç°bot£¬operaterÒÔÓëÏµÍ³operatorÇø·Ö*/
-	Member operater;
-	MemberLeaveEvent(int t, Member m, Group g, Member i, unsigned long long botid) :BotEvent(botid) {
-		this->type = t;
-		this->member = m;
-		this->group = g;
-		this->operater = i;
-	}
+	/// æ“ä½œäºº, ä¸»åŠ¨é€€å‡ºæ—¶ä¸memberç›¸åŒï¼Œè¯¥æˆå‘˜å¯èƒ½æ˜¯å½“å‰botï¼Œåç§°ä¸ºoperaterä»¥ä¸ç³»ç»ŸoperatoråŒºåˆ†
+	const unsigned long long operaterid;
+
+	/*!
+	 * @brief ç¾¤æˆå‘˜ç¦»å¼€
+	 * @param botid
+	 * @param type
+	 * @param memberid é€€å‡ºçš„ç¾¤æˆå‘˜
+	 * @param group ç¾¤
+	 * @param operaterid æ“ä½œäººid, ä¸»åŠ¨é€€å‡ºæ—¶ä¸memberç›¸åŒï¼Œè¯¥æˆå‘˜å¯èƒ½æ˜¯å½“å‰botï¼Œåç§°ä¸ºoperaterä»¥ä¸ç³»ç»ŸoperatoråŒºåˆ†
+	 */
+	MemberLeaveEvent(unsigned long long int botid, const int type, const unsigned long long memberid,
+		const Group& group,
+		const unsigned long long& operaterid) : BotEvent(botid), type(type), memberid(memberid),
+		group(group),
+		operaterid(operaterid) {}
 };
 
-/*³·»ØĞÅÏ¢*/
+/// æ’¤å›ä¿¡æ¯
 class RecallEvent : public BotEvent {
 public:
-	/*
-	Îª1Ê±ÊÇºÃÓÑ³·»Ø£¬Îª2Ê±ÎªÈºÁÄÄÚ³·»Ø
-	*/
-	int type = 0;
-	//Ê±¼ä´Á
-	int time = 0;
-	//Ô­·¢ËÍÕß
-	unsigned long authorid = 0;
-	//³·»ØÕß
-	unsigned long operatorid = 0;
-	//ĞÅÏ¢id
-	std::string ids = "";
-	//ÄÚ²¿ids
-	std::string internalids = "";
-	//µ±typeÊÇ2µÄÊ±ºò´æÔÚ£¬·ñÔòÎª0
-	unsigned long groupid = 0;
-	RecallEvent(int t, int t2, unsigned long a, unsigned long o, std::string id, std::string ii, unsigned long long botid, unsigned long g = 0) :BotEvent(botid) {
-		this->type = t;
-		this->time = t2;
-		this->authorid = a;
-		this->operatorid = o;
-		this->ids = id;
-		this->internalids = ii;
-		this->groupid = g;
-	}
+	/// ä¸º1æ—¶æ˜¯å¥½å‹ç§èŠä¸­æ’¤å›ï¼Œä¸º2æ—¶ä¸ºç¾¤èŠå†…æ’¤å›
+	const int type = 0;
+	/// æ—¶é—´æˆ³
+	const int time = 0;
+	/// åŸå‘é€è€…
+	const unsigned long long authorid = 0;
+	/// æ’¤å›è€…
+	const unsigned long long operatorid = 0;
+	/// ä¿¡æ¯id
+	const std::string ids = "";
+	//å†…éƒ¨ids
+	const std::string internalids = "";
+	//å½“typeæ˜¯2çš„æ—¶å€™å­˜åœ¨ï¼Œå¦åˆ™ä¸º0
+	const unsigned long long groupid = 0;
+
+	/*!
+	 * @brief æ’¤å›äº‹ä»¶
+	 * @param botid å¯¹åº”bot
+	 * @param type ç±»å‹
+	 * @param time æ—¶é—´
+	 * @param authorid å‘é€è€…id
+	 * @param operatorid æ’¤å›è€…id
+	 * @param ids æ¶ˆæ¯æºids
+	 * @param internalids æ¶ˆæ¯æºinternalids
+	 * @param groupid
+	 */
+	RecallEvent(unsigned long long int botid, const int type, const int time, const unsigned long long int authorid,
+		const unsigned long long int operatorid, const std::string& ids, const std::string& internalids,
+		const unsigned long long int groupid) : BotEvent(botid), type(type), time(time), authorid(authorid),
+		operatorid(operatorid), ids(ids), internalids(internalids),
+		groupid(groupid) {}
 };
 
-/*»úÆ÷ÈË½øÈëÄ³Èº*/
+/// æœºå™¨äººè¿›å…¥æŸç¾¤
 class BotJoinGroupEvent : public BotEvent {
 public:
-	//1-Ö÷¶¯¼ÓÈë,2-±»ÑûÇë¼ÓÈë,3-Ìá¹©»Ö¸´ÈºÖ÷Éí·İ¼ÓÈë
-	int type;
-	//½øÈëµÄÈº
+	/// 1-ä¸»åŠ¨åŠ å…¥,2-è¢«é‚€è¯·åŠ å…¥,3-æä¾›æ¢å¤ç¾¤ä¸»èº«ä»½åŠ å…¥
+	const int type;
+	/// è¿›å…¥çš„ç¾¤
 	Group group;
-	//µ±type=2Ê±´æÔÚ£¬ÎªÑûÇëÈË£¬·ñÔòÎªNULL
-	Member inviter = Member();
-	BotJoinGroupEvent(int t, Group g, Member i, unsigned long long botid) :BotEvent(botid) {
-		this->type = t;
-		this->group = g;
-		this->inviter = i;
-	}
+	/// å½“type=2æ—¶å­˜åœ¨ï¼Œä¸ºé‚€è¯·äººï¼Œå¦åˆ™ä¸ºç©ºï¼Œè°ƒç”¨å¯èƒ½ä¼šæŠ¥é”™
+	const unsigned long long inviterid;
+
+	/*!
+	 * @brief botåŠ å…¥ç¾¤
+	 * @param botid å¯¹åº”bot
+	 * @param type ç±»åˆ«
+	 * @param group åŠ å…¥çš„ç¾¤
+	 * @param inviter é‚€è¯·äºº
+	 */
+	BotJoinGroupEvent(unsigned long long int botid, const int type, const Group& group,
+		const unsigned long long inviter)
+		: BotEvent(botid), type(type), group(group), inviterid(inviterid) {}
 };
 
-// ÈºÁÙÊ±»á»°
+/// ç¾¤ä¸´æ—¶ä¼šè¯
 class GroupTempMessageEvent : public BotEvent {
 public:
-	//À´Ô´Èº
+	/// æ¥æºç¾¤
 	Group group;
-	//·¢ËÍÈË
+	/// å‘é€äºº
 	Member sender;
-	//ĞÅÏ¢±¾Ìå
-	std::string message;
-	//ÏûÏ¢Ô´
+	/// ä¿¡æ¯æœ¬ä½“
+	const std::string message;
+	/// æ¶ˆæ¯æº
 	MessageSource messageSource;
-	GroupTempMessageEvent(Group g, Member f, std::string s, MessageSource s1, unsigned long long botid) :BotEvent(botid) {
-		this->group = g;
-		this->sender = f;
-		this->message = s;
-		this->messageSource = s1;
-	}
+
+	/*!
+	 * @brief ç¾¤ä¸´æ—¶ä¼šè¯æ¶ˆæ¯äº‹ä»¶
+	 * @param botid å¯¹åº”bot
+	 * @param group å‘èµ·çš„ç¾¤
+	 * @param sender å‘é€æ¶ˆæ¯å¯¹è±¡
+	 * @param message æ¶ˆæ¯
+	 * @param messageSource æ¶ˆæ¯æº
+	 */
+	GroupTempMessageEvent(unsigned long long int botid, const Group& group, const Member& sender,
+		const std::string& message, const MessageSource& messageSource) : BotEvent(botid),
+		group(group),
+		sender(sender),
+		message(message),
+		messageSource(
+			messageSource) {}
 };
 
-/*Æô¶¯¶¨Ê±ÈÎÎñ,timeÊÇ¶àÉÙºÁÃëºó¿ªÊ¼£¬idÊÇ×Ô¶¨Òå±êÊ¶·û*/
+/*!
+ * @brief å¯åŠ¨å®šæ—¶ä»»åŠ¡,timeæ˜¯å¤šå°‘æ¯«ç§’åå¼€å§‹ï¼Œidæ˜¯è‡ªå®šä¹‰æ ‡è¯†ç¬¦
+ * @param time
+ * @param args
+ * @param e
+ * @example ä½¿ç”¨å®šæ—¶ä»»åŠ¡
+ * @code
+ * //æ³¨ï¼Œéœ€ä¸ºå…¨å±€å˜é‡
+     unsigned long id = 0;
+    ...
+	procession->registerEvent([=](SchedulingEvent e) {
+		//æ­¤å¤„çš„e.idä¸ºè‡ªå®šä¹‰idï¼Œéœ€åœ¨è°ƒç”¨å®šæ—¶ä»»åŠ¡æ—¶è‡ªå®šä¹‰ä¼ å…¥
+		if (e.id == 1) {
+			//do something
+        Friend(id).SendMsg("è¿™æ˜¯å®šæ—¶ä»»åŠ¡");
+        }
+        });
+        //è¿™é‡Œçš„[&]å’Œ[=]åˆ†åˆ«ä¸ºä»¥å¼•ç”¨å’Œå€¼çš„æ–¹å¼æ•è·å…¨éƒ¨å¯ä»¥æ•è·çš„å˜é‡ï¼Œå‰è€…å¯ä»¥æ”¹å˜é‡å€¼ï¼Œç›¸å½“äºæŒ‡é’ˆï¼Œåè€…æ— æ³•æ›´æ”¹ï¼Œç›¸å½“äºæœ¬åœ°ä¸€ä¸ªå±€éƒ¨å˜é‡å¹¶è¿›è¡Œå€¼ä¼ é€’ï¼Œè¯¦ç»†è§æœç´¢å¼•æ“çš„c++ lambda
+        procession->registerEvent([&](PrivateMessageEvent param)->void {
+        //åœ¨è¿™å†™ä½ è‡ªå·±å¤„ç†ç§èŠæ¶ˆæ¯çš„ä»£ç 
+        logger->Info("hi");
+        //å»¶è¿Ÿ100mså‘é€ï¼Œåé¢çš„1ä¸ºè‡ªå®šä¹‰id
+        SetScheduling(100, 1);
+        id = param.sender.id();
+        param.sender.SendMsg(param.message);
+        });
+        ...
+ * @endcode
+ */
 inline void SetScheduling(long time, std::initializer_list<std::string> args, BotEvent* e) {
-	Json::Value obj;
-	Json::Value root;
-	for (std::string it : args) {
-		obj.append(it);
+	nlohmann::json obj;
+	nlohmann::json root;
+	for (const std::string& it : args) {
+		obj.push_back(it);
 	}
 	root["value"] = obj;
-	manager->getEnv()->CallStaticVoidMethod(config->CPP_lib, config->KSchedule, (jlong)time, tools.str2jstring(tools.JsonToString(root).c_str()));
+	manager->getEnv()->CallStaticVoidMethod(config->CPP_lib, config->KSchedule, (jlong)time,
+		Tools::str2jstring(root.dump().c_str()));
 }
 
-/*¶¨Ê±ÈÎÎñÖ´ĞĞ*/
-class SchedulingEvent{
+/// å®šæ—¶ä»»åŠ¡æ‰§è¡Œ
+class SchedulingEvent {
 public:
 	void init() {};
-	/*×Ô¶¨Òåid±êÊ¶·û*/
+	/*è‡ªå®šä¹‰idæ ‡è¯†ç¬¦*/
 	std::vector<std::string> ids;
-	SchedulingEvent(std::string str);
+
+	SchedulingEvent(const std::string& str);
 };
 
 using GME = std::function<void(GroupMessageEvent)>;
@@ -1166,92 +1768,94 @@ using R = std::function<void(RecallEvent)>;
 using S = std::function<void(SchedulingEvent)>;
 using BJ = std::function<void(BotJoinGroupEvent)>;
 using GTME = std::function<void(GroupTempMessageEvent)>;
-/*¼àÌıÀàÉùÃ÷*/
+
+/*ç›‘å¬ç±»å£°æ˜*/
 class Event {
 private:
 	class Node {
 	public:
 		Node* nextNode = nullptr;
+
 		Node() {};
 	};
-	class GMENode:public Node
-	{
-	public: 
-		bool enable = true;
-		GME f = [](GroupMessageEvent)->void {};
-		GMENode* next = nullptr;
-	};
-	class PMENode:public Node
-	{
+
+	class GMENode : public Node {
 	public:
 		bool enable = true;
-		PME f = [](PrivateMessageEvent)->void {};
+		GME f = [](GroupMessageEvent) -> void {};
+		GMENode* next = nullptr;
+	};
+
+	class PMENode : public Node {
+	public:
+		bool enable = true;
+		PME f = [](PrivateMessageEvent) -> void {};
 		PMENode* next = nullptr;
 	};
-	class GINode :public Node
-	{
+
+	class GINode : public Node {
 	public:
 		bool enable = true;
 		GI f = [](GroupInviteEvent) {};
 		GINode* next = nullptr;
 	};
-	class NFRENode :public Node
-	{
+
+	class NFRENode : public Node {
 	public:
-		
+
 		bool enable = true;
 		NFRE f = [](NewFriendRequestEvent) {};
 		NFRENode* next = nullptr;
 	};
-	class MJNode :public Node
-	{
-	public:
-		
-		bool enable = true;
-		MJ f = [](MemberJoinEvent)->void {};
-		MJNode* next = nullptr;
-	};
-	class MLNode :public Node
-	{
-	public:
-		
-		bool enable = true;
-		ML f = [](MemberLeaveEvent)->void {};
-		MLNode* next = nullptr;
-	};
-	class RNode :public Node
-	{
-	public:
-		
-		bool enable = true;
-		R f = [](RecallEvent)->void {};
-		RNode* next = nullptr;
-	};
-	class SNode :public Node
-	{
-	public:
-		
-		bool enable = true;
-		S f = [](SchedulingEvent)->void {};
-		SNode* next = nullptr;
-	};
-	class BJNode :public Node
-	{
-	public:
-		
-		bool enable = true;
-		BJ f = [](BotJoinGroupEvent)->void {};
-		BJNode* next = nullptr;
-	};
-	class GTMENode :public Node
-	{
+
+	class MJNode : public Node {
 	public:
 
 		bool enable = true;
-		GTME f = [](GroupTempMessageEvent)->void {};
+		MJ f = [](MemberJoinEvent) -> void {};
+		MJNode* next = nullptr;
+	};
+
+	class MLNode : public Node {
+	public:
+
+		bool enable = true;
+		ML f = [](MemberLeaveEvent) -> void {};
+		MLNode* next = nullptr;
+	};
+
+	class RNode : public Node {
+	public:
+
+		bool enable = true;
+		R f = [](RecallEvent) -> void {};
+		RNode* next = nullptr;
+	};
+
+	class SNode : public Node {
+	public:
+
+		bool enable = true;
+		S f = [](SchedulingEvent) -> void {};
+		SNode* next = nullptr;
+	};
+
+	class BJNode : public Node {
+	public:
+
+		bool enable = true;
+		BJ f = [](BotJoinGroupEvent) -> void {};
+		BJNode* next = nullptr;
+	};
+
+	class GTMENode : public Node {
+	public:
+
+		bool enable = true;
+		GTME f = [](GroupTempMessageEvent) -> void {};
 		GTMENode* next = nullptr;
 	};
-	
+
 	GMENode* GMHead = new GMENode();
 	PMENode* PMHead = new PMENode();
 	GINode* GHead = new GINode();
@@ -1273,7 +1877,7 @@ private:
 	SNode* STail = SHead;
 	BJNode* BTail = BHead;
 	GTMENode* GTMTail = GTMHead;
-	
+
 public:
 	class NodeHandle {
 	private:
@@ -1282,25 +1886,28 @@ public:
 		NodeHandle(bool* a) {
 			this->enable = a;
 		}
-		void stop() const{
+
+		void stop() const {
 			*enable = false;
 		}
+
 		void consume() const {
 			*enable = true;
 		}
 	};
 
 	/*
-	* ¹ã²¥º¯ÊıÖØÔØ
+	* å¹¿æ’­å‡½æ•°é‡è½½
 	*/
 
 	void broadcast(GroupMessageEvent g) {
-		GMENode *now = GMHead;
+		GMENode* now = GMHead;
 		while (now) {
 			if (now->enable) { now->f(g); }
 			now = now->next;
 		}
 	}
+
 	void broadcast(PrivateMessageEvent p) {
 		PMENode* now = PMHead;
 		while (now) {
@@ -1310,13 +1917,15 @@ public:
 			now = now->next;
 		}
 	}
+
 	void broadcast(GroupInviteEvent g) {
 		GINode* now = GHead;
-		while (now)  {
+		while (now) {
 			if (now->enable) { now->f(g); }
 			now = now->next;
 		}
 	}
+
 	void broadcast(NewFriendRequestEvent g) {
 		NFRENode* now = NFHead;
 		while (now) {
@@ -1324,6 +1933,7 @@ public:
 			now = now->next;
 		}
 	}
+
 	void broadcast(MemberJoinEvent g) {
 		MJNode* now = MJHead;
 		while (now) {
@@ -1331,6 +1941,7 @@ public:
 			now = now->next;
 		}
 	}
+
 	void broadcast(MemberLeaveEvent g) {
 		MLNode* now = MLHead;
 		while (now) {
@@ -1338,6 +1949,7 @@ public:
 			now = now->next;
 		}
 	}
+
 	void broadcast(RecallEvent r) {
 		RNode* now = RHead;
 		while (now) {
@@ -1345,6 +1957,7 @@ public:
 			now = now->next;
 		}
 	}
+
 	void broadcast(SchedulingEvent g) {
 		SNode* now = SHead;
 		while (now) {
@@ -1352,6 +1965,7 @@ public:
 			now = now->next;
 		}
 	}
+
 	void broadcast(BotJoinGroupEvent b) {
 		BJNode* now = BHead;
 		while (now) {
@@ -1359,6 +1973,7 @@ public:
 			now = now->next;
 		}
 	}
+
 	void broadcast(GroupTempMessageEvent g) {
 		GTMENode* now = GTMHead;
 		while (now) {
@@ -1368,7 +1983,7 @@ public:
 	}
 
 	/*
-	* ¼àÌıº¯ÊıÖØÔØ
+	* ç›‘å¬å‡½æ•°é‡è½½
 	*/
 
 	NodeHandle registerEvent(GME f) {
@@ -1379,6 +1994,7 @@ public:
 		GMTail = node;
 		return NodeHandle(&node->enable);
 	}
+
 	NodeHandle registerEvent(PME f) {
 		PMENode* node = new PMENode();
 		node->f = f;
@@ -1387,6 +2003,7 @@ public:
 		PMTail = node;
 		return NodeHandle(&node->enable);
 	}
+
 	NodeHandle registerEvent(GI f) {
 		GINode* node = new GINode();
 		node->f = f;
@@ -1395,6 +2012,7 @@ public:
 		GTail = node;
 		return NodeHandle(&node->enable);
 	}
+
 	NodeHandle registerEvent(NFRE f) {
 		NFRENode* node = new NFRENode();
 		node->f = f;
@@ -1403,6 +2021,7 @@ public:
 		NFTail = node;
 		return NodeHandle(&node->enable);
 	}
+
 	NodeHandle registerEvent(MJ f) {
 		MJNode* node = new MJNode();
 		node->f = f;
@@ -1411,6 +2030,7 @@ public:
 		MJTail = node;
 		return NodeHandle(&node->enable);
 	}
+
 	NodeHandle registerEvent(ML f) {
 		MLNode* node = new MLNode();
 		node->f = f;
@@ -1419,6 +2039,7 @@ public:
 		MLTail = node;
 		return NodeHandle(&node->enable);
 	}
+
 	NodeHandle registerEvent(R r) {
 		RNode* node = new RNode();
 		node->f = r;
@@ -1427,6 +2048,7 @@ public:
 		RTail = node;
 		return NodeHandle(&node->enable);
 	}
+
 	NodeHandle registerEvent(S f) {
 		SNode* node = new SNode();
 		node->f = f;
@@ -1435,6 +2057,7 @@ public:
 		STail = node;
 		return NodeHandle(&node->enable);
 	}
+
 	NodeHandle registerEvent(BJ f) {
 		BJNode* node = new BJNode();
 		node->f = f;
@@ -1443,6 +2066,7 @@ public:
 		BTail = node;
 		return NodeHandle(&node->enable);
 	}
+
 	NodeHandle registerEvent(GTME f) {
 		GTMENode* node = new GTMENode();
 		node->f = f;
@@ -1455,9 +2079,10 @@ public:
 	~Event();
 };
 
-/*ÉùÃ÷È«¾Ö¼àÌı¶ÔÏó(¹ã²¥Ô´)*/
+/*å£°æ˜å…¨å±€ç›‘å¬å¯¹è±¡(å¹¿æ’­æº)*/
 extern Event* procession;
 
-/*ÉùÃ÷²å¼şÆôÓÃºÍ½áÊøº¯Êı*/
+/*å£°æ˜æ’ä»¶å¯ç”¨å’Œç»“æŸå‡½æ•°*/
 void onDisable();
+
 void onEnable();

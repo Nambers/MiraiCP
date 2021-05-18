@@ -59,6 +59,7 @@ void onDisable() {
 
 # 注意事项
 从`v2.4.2`开始，记得自行新建Member对象group对象friend对象和事件刚开始都要调用`init()`方法初始化(为了更好的捕获抛出的异常)
+
 从`v2.5.0`开始，不需要`init()`
 ## 多线程
 需在任务结束时调用manager->detach();
