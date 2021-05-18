@@ -48,11 +48,14 @@
 | 新群成员加入 | MemberJoinEvent       |
 | 群成员离开   | MemberLeaveEvent      |
 | 消息撤回     | RecallEvent           |
+| 群临时会话   | GroupTempMessageEvent |
 | 定时事件执行 | SchedulingEvent       |
 
 </details>
 
-**代码示例 [example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)**
+**[在线API文档(包含示例)](https://eritque-arcus.tech/MiraiCP/html/)**
+
+代码示例 [example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)
 
 本项目设计流程结构 [intro.md](https://github.com/Nambers/MiraiCP/blob/master/doc/intro.md)
 
