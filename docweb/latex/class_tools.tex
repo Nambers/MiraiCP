@@ -1,0 +1,180 @@
+\hypertarget{class_tools}{}\doxysection{Tools类 参考}
+\label{class_tools}\index{Tools@{Tools}}
+
+
+工具类声明  
+
+
+
+
+{\ttfamily \#include $<$tools.\+h$>$}
+
+\doxysubsection*{静态 Public 成员函数}
+\begin{Indent}\textbf{ jstring2str}\par
+{\em string类型转码转换到jstring类型, UTF16 -\/$>$ UTF8
+
+\begin{DoxyNote}{注解}
+来源https\+://blog.csdn.\+net/chunleixiahe/article/details/51394116 
+\end{DoxyNote}
+
+\begin{DoxyParams}{参数}
+{\em jstr} & 转换内容,jstring类型 \\
+\hline
+{\em env} & 可选，\+JNIEnv \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{返回}
+内容转换成jstring类型 
+\end{DoxyReturn}
+}\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_tools_aabf8a80dcd00513cb7516e8251109313}\label{class_tools_aabf8a80dcd00513cb7516e8251109313}} 
+static std\+::string {\bfseries jstring2str} (jstring jstr, JNIEnv $\ast$=manager-\/$>$get\+Env())
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ str2jstring}\par
+{\em string类型到jsting类型 UTF8 -\/$>$ UTF16
+
+\begin{DoxyNote}{注解}
+来源https\+://blog.csdn.\+net/chunleixiahe/article/details/51394116 
+\end{DoxyNote}
+
+\begin{DoxyParams}{参数}
+{\em pat} & const char$\ast$(string.\+c\+\_\+str())转换的内容 \\
+\hline
+{\em env} & 可选\+JNIEnv \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{返回}
+转换后jstring类型 
+\end{DoxyReturn}
+}\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_tools_ae0606aeddaa91c91435ec3a4e3a0d0dc}\label{class_tools_ae0606aeddaa91c91435ec3a4e3a0d0dc}} 
+static jstring {\bfseries str2jstring} (const char $\ast$pat, JNIEnv $\ast$=manager-\/$>$get\+Env())
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ JLong\+To\+String}\par
+{\em jlong类型到string类型
+
+
+\begin{DoxyParams}{参数}
+{\em val} & 需要转换的数值 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{返回}
+转换后string类型 
+\end{DoxyReturn}
+}\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_tools_adcb84f7e2d172133f56b3ec8c84a40fc}\label{class_tools_adcb84f7e2d172133f56b3ec8c84a40fc}} 
+static std\+::string {\bfseries JLong\+To\+String} (jlong val)
+\item 
+static std\+::string \mbox{\hyperlink{class_tools_a73a5bbcbdd583d014bf3f8e5db3a89eb}{replace}} (std\+::string str, const std\+::string \&from, const std\+::string \&to)
+\begin{DoxyCompactList}\small\item\em 替换全部在一个字符串中. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{class_tools_a937cd10ba7720be62817d6cf078c2a22}{Vector\+To\+String}} (std\+::vector$<$ unsigned long long $>$ v)
+\begin{DoxyCompactList}\small\item\em long long 类型的vector格式化输出 \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned long long $>$ \mbox{\hyperlink{class_tools_a7c61d205bdc3f53c96417b26f262da94}{String\+To\+Vector}} (std\+::string s)
+\begin{DoxyCompactList}\small\item\em 从string格式化到vector \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+
+
+\doxysubsection{详细描述}
+工具类声明 \begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+\doxysubsection{成员函数说明}
+\mbox{\Hypertarget{class_tools_a73a5bbcbdd583d014bf3f8e5db3a89eb}\label{class_tools_a73a5bbcbdd583d014bf3f8e5db3a89eb}} 
+\index{Tools@{Tools}!replace@{replace}}
+\index{replace@{replace}!Tools@{Tools}}
+\doxysubsubsection{\texorpdfstring{replace()}{replace()}}
+{\footnotesize\ttfamily static std\+::string Tools\+::replace (\begin{DoxyParamCaption}\item[{std\+::string}]{str,  }\item[{const std\+::string \&}]{from,  }\item[{const std\+::string \&}]{to }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+替换全部在一个字符串中. 
+
+
+\begin{DoxyParams}{参数}
+{\em str} & 原字符串. \\
+\hline
+{\em from} & 需要被替换的字符. \\
+\hline
+{\em to} & 替换到的字符. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{返回}
+返回替换后的字符串. 
+\end{DoxyReturn}
+\begin{DoxyNote}{注解}
+来源\+:https\+://stackoverflow.com/a/24315631/14646226 
+\end{DoxyNote}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+\mbox{\Hypertarget{class_tools_a7c61d205bdc3f53c96417b26f262da94}\label{class_tools_a7c61d205bdc3f53c96417b26f262da94}} 
+\index{Tools@{Tools}!StringToVector@{StringToVector}}
+\index{StringToVector@{StringToVector}!Tools@{Tools}}
+\doxysubsubsection{\texorpdfstring{StringToVector()}{StringToVector()}}
+{\footnotesize\ttfamily std\+::vector$<$ unsigned long long $>$ Tools\+::\+String\+To\+Vector (\begin{DoxyParamCaption}\item[{std\+::string}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+从string格式化到vector 
+
+
+\begin{DoxyParams}{参数}
+{\em s} & string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{返回}
+vector 
+\end{DoxyReturn}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+这是这个函数的调用关系图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_tools_a7c61d205bdc3f53c96417b26f262da94_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{class_tools_a937cd10ba7720be62817d6cf078c2a22}\label{class_tools_a937cd10ba7720be62817d6cf078c2a22}} 
+\index{Tools@{Tools}!VectorToString@{VectorToString}}
+\index{VectorToString@{VectorToString}!Tools@{Tools}}
+\doxysubsubsection{\texorpdfstring{VectorToString()}{VectorToString()}}
+{\footnotesize\ttfamily std\+::string Tools\+::\+Vector\+To\+String (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned long long $>$}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+long long 类型的vector格式化输出 
+
+
+\begin{DoxyParams}{参数}
+{\em v} & vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{返回}
+string 
+\end{DoxyReturn}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+这是这个函数的调用关系图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=342pt]{class_tools_a937cd10ba7720be62817d6cf078c2a22_icgraph}
+\end{center}
+\end{figure}
+
+
+该类的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+cpp\end{DoxyCompactItemize}
