@@ -1,0 +1,80 @@
+\hypertarget{class_bot}{}\doxysection{Bot类 参考}
+\label{class_bot}\index{Bot@{Bot}}
+
+
+当前bot账号信息  
+
+
+
+
+{\ttfamily \#include $<$tools.\+h$>$}
+
+\doxysubsection*{Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_bot_a3354dc4fbf569d19e11ac04ac8bf0b01}{refresh\+Info}} (JNIEnv $\ast$env=manager-\/$>$get\+Env())
+\begin{DoxyCompactList}\small\item\em 刷新bot信息 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bot_a98733a6bf8724f78a402b97480955d67}\label{class_bot_a98733a6bf8724f78a402b97480955d67}} 
+\mbox{\hyperlink{class_bot_a98733a6bf8724f78a402b97480955d67}{Bot}} (unsigned long long i)
+\begin{DoxyCompactList}\small\item\em 用id构建机器人 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bot_a24d56f1b3e802988718995639d8d79bc}\label{class_bot_a24d56f1b3e802988718995639d8d79bc}} 
+unsigned long long \mbox{\hyperlink{class_bot_a24d56f1b3e802988718995639d8d79bc}{id}} ()
+\begin{DoxyCompactList}\small\item\em 取id \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bot_af1538b49ce58759e210c41c402ff6680}\label{class_bot_af1538b49ce58759e210c41c402ff6680}} 
+std\+::string \mbox{\hyperlink{class_bot_af1538b49ce58759e210c41c402ff6680}{nick}} ()
+\begin{DoxyCompactList}\small\item\em 昵称 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bot_a94279cd991ebd5665e67246ff7563af0}\label{class_bot_a94279cd991ebd5665e67246ff7563af0}} 
+std\+::string \mbox{\hyperlink{class_bot_a94279cd991ebd5665e67246ff7563af0}{avatar\+Url}} ()
+\begin{DoxyCompactList}\small\item\em 头像下载链接 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bot_a6584044628bd3754e52d1dac2cebe789}\label{class_bot_a6584044628bd3754e52d1dac2cebe789}} 
+std\+::vector$<$ unsigned long long $>$ \mbox{\hyperlink{class_bot_a6584044628bd3754e52d1dac2cebe789}{get\+Friend\+List}} (JNIEnv $\ast$env=manager-\/$>$get\+Env())
+\begin{DoxyCompactList}\small\item\em 取好友列表 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bot_a2734db2add77775b1b8ec5b66b749d74}\label{class_bot_a2734db2add77775b1b8ec5b66b749d74}} 
+std\+::string \mbox{\hyperlink{class_bot_a2734db2add77775b1b8ec5b66b749d74}{Friend\+List\+To\+String}} ()
+\begin{DoxyCompactList}\small\item\em 好友列表string形式返回，利于保存 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bot_acda3c7f35156966087c8f55340f9b48f}\label{class_bot_acda3c7f35156966087c8f55340f9b48f}} 
+std\+::vector$<$ unsigned long long $>$ \mbox{\hyperlink{class_bot_acda3c7f35156966087c8f55340f9b48f}{get\+Group\+List}} (JNIEnv $\ast$env=manager-\/$>$get\+Env())
+\begin{DoxyCompactList}\small\item\em 取群列表 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bot_add67cc5d276fd34f57406dbe1043394b}\label{class_bot_add67cc5d276fd34f57406dbe1043394b}} 
+std\+::string \mbox{\hyperlink{class_bot_add67cc5d276fd34f57406dbe1043394b}{Group\+List\+To\+String}} ()
+\begin{DoxyCompactList}\small\item\em 群列表string形式返回，利于保存 \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{详细描述}
+当前bot账号信息 \begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+\doxysubsection{成员函数说明}
+\mbox{\Hypertarget{class_bot_a3354dc4fbf569d19e11ac04ac8bf0b01}\label{class_bot_a3354dc4fbf569d19e11ac04ac8bf0b01}} 
+\index{Bot@{Bot}!refreshInfo@{refreshInfo}}
+\index{refreshInfo@{refreshInfo}!Bot@{Bot}}
+\doxysubsubsection{\texorpdfstring{refreshInfo()}{refreshInfo()}}
+{\footnotesize\ttfamily void Bot\+::refresh\+Info (\begin{DoxyParamCaption}\item[{JNIEnv $\ast$}]{env = {\ttfamily manager-\/$>$getEnv()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+刷新bot信息 
+
+
+\begin{DoxyParams}{参数}
+{\em env} & \\
+\hline
+\end{DoxyParams}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+函数调用图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=296pt]{class_bot_a3354dc4fbf569d19e11ac04ac8bf0b01_cgraph}
+\end{center}
+\end{figure}
+
+
+该类的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h\end{DoxyCompactItemize}

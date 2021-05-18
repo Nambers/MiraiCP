@@ -1,0 +1,58 @@
+\hypertarget{classthread_manager}{}\doxysection{thread\+Manager类 参考}
+\label{classthread_manager}\index{threadManager@{threadManager}}
+\doxysubsection*{Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classthread_manager_af9c06705302ca26890977cd3a2054d3e}\label{classthread_manager_af9c06705302ca26890977cd3a2054d3e}} 
+void \mbox{\hyperlink{classthread_manager_af9c06705302ca26890977cd3a2054d3e}{set\+Env}} (JNIEnv $\ast$e)
+\begin{DoxyCompactList}\small\item\em 设置env给当前线程. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classthread_manager_a807b673ce4d4199cf0bfdfff5521d2c0}{detach}} ()
+\begin{DoxyCompactList}\small\item\em 结束当前线程的env，也就是释放当前线程缓存的env. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}\label{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}} 
+JNIEnv $\ast$ \mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{get\+Env}} ()
+\begin{DoxyCompactList}\small\item\em 取env,如果不存在重新获取. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{静态 Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classthread_manager_a3401a8976c99d293ef1b8b8c7a1db9d1}\label{classthread_manager_a3401a8976c99d293ef1b8b8c7a1db9d1}} 
+static std\+::string \mbox{\hyperlink{classthread_manager_a3401a8976c99d293ef1b8b8c7a1db9d1}{get\+Thread\+Id}} ()
+\begin{DoxyCompactList}\small\item\em 获取线程id. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{详细描述}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+\doxysubsection{成员函数说明}
+\mbox{\Hypertarget{classthread_manager_a807b673ce4d4199cf0bfdfff5521d2c0}\label{classthread_manager_a807b673ce4d4199cf0bfdfff5521d2c0}} 
+\index{threadManager@{threadManager}!detach@{detach}}
+\index{detach@{detach}!threadManager@{threadManager}}
+\doxysubsubsection{\texorpdfstring{detach()}{detach()}}
+{\footnotesize\ttfamily void thread\+Manager\+::detach (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+结束当前线程的env，也就是释放当前线程缓存的env. 
+
+\begin{DoxyNote}{注解}
+不过继续调用get\+Env()将再次获取，所以本方法调用后线程也可以通过get\+Env重新获取一个env，本线程的作用就是在结束后释放空间 
+\end{DoxyNote}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+函数调用图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classthread_manager_a807b673ce4d4199cf0bfdfff5521d2c0_cgraph}
+\end{center}
+\end{figure}
+
+
+该类的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+cpp\end{DoxyCompactItemize}

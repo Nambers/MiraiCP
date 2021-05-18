@@ -1,0 +1,1394 @@
+\hypertarget{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{}\doxysection{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}
+多线程管理. \begin{DoxyNote}{注解}
+一个完整的线程应该在结束时调用detach
+\end{DoxyNote}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordtype}{void} func()\{}
+\DoxyCodeLine{     \textcolor{comment}{//do some things}}
+\DoxyCodeLine{     manager-\/>detch();}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyCodeInclude}{0}
+\DoxyCodeLine{\textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include "{}pch.h"{}}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{extern} JavaVM *gvm;}
+\DoxyCodeLine{\textcolor{keyword}{extern} \textcolor{keywordtype}{int} JNIVersion;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{classthread_manager}{threadManager}} \{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    \textcolor{keyword}{struct }t \{}
+\DoxyCodeLine{        JNIEnv *e;}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} attach;}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{    std::map<std::string, t> \_threads;}
+\DoxyCodeLine{    std::recursive\_mutex mtx; }
+\DoxyCodeLine{    \textcolor{keywordtype}{void} newEnv(\textcolor{keyword}{const} \textcolor{keywordtype}{char} *threadName = NULL);}
+\DoxyCodeLine{    \textcolor{keywordtype}{bool} included(\textcolor{keyword}{const} std::string \&\textcolor{keywordtype}{id});}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{static} std::string \mbox{\hyperlink{classthread_manager_a3401a8976c99d293ef1b8b8c7a1db9d1}{getThreadId}}() \{}
+\DoxyCodeLine{        std::ostringstream oss;}
+\DoxyCodeLine{        oss << std::this\_thread::get\_id();}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} oss.str();}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{classthread_manager}{threadManager}}();}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{classthread_manager_af9c06705302ca26890977cd3a2054d3e}{setEnv}}(JNIEnv *e);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{classthread_manager_a807b673ce4d4199cf0bfdfff5521d2c0}{detach}}();}
+\DoxyCodeLine{}
+\DoxyCodeLine{    JNIEnv *\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}();}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{extern} \mbox{\hyperlink{classthread_manager}{threadManager}} *manager;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_logger}{Logger}} \{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    jclass CPP\_lib = NULL;}
+\DoxyCodeLine{    jmethodID log = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} log0(\textcolor{keyword}{const} std::string \&, JNIEnv *, \textcolor{keywordtype}{int});}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{typedef} std::function<void(std::string, \textcolor{keywordtype}{int})> \mbox{\hyperlink{class_logger_a3cc655404f5a2d454085b9047ee21cd0}{action}};}
+\DoxyCodeLine{    \textcolor{keyword}{struct }handler \{}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} \mbox{\hyperlink{struct_logger_1_1handler_accd2c8dc9018e1f272eb9680e86ca52c}{enable}} = \textcolor{keyword}{true};}
+\DoxyCodeLine{        \mbox{\hyperlink{class_logger_a3cc655404f5a2d454085b9047ee21cd0}{Logger::action}} \mbox{\hyperlink{struct_logger_1_1handler_aee0685129675fde6da3c13d032eb821b}{action}} = [](std::string content, \textcolor{keywordtype}{int} level) \{\};}
+\DoxyCodeLine{    \} loggerhandler;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{// 初始化 获取methodid}}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} init(JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{class_logger_a13e1837413a7cdecd8ea11909f1842be}{Info}}(\textcolor{keyword}{const} std::string \&, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{class_logger_aefc80c70d2253aed0119c468d7999ff1}{Warning}}(\textcolor{keyword}{const} std::string \&, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{class_logger_abb690146dbd2c6fb7e603caf123096dd}{Error}}(\textcolor{keyword}{const} std::string \&, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{inline} \textcolor{keywordtype}{void} registerHandle(\mbox{\hyperlink{class_logger_a3cc655404f5a2d454085b9047ee21cd0}{action}} \mbox{\hyperlink{class_logger_a3cc655404f5a2d454085b9047ee21cd0}{action}});}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{inline} \textcolor{keywordtype}{void} setHandleState(\textcolor{keywordtype}{bool} state);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \string~\mbox{\hyperlink{class_logger}{Logger}}();}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{extern} \mbox{\hyperlink{class_logger}{Logger}} *logger;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_config}{Config}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    jclass \mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}} = NULL;}
+\DoxyCodeLine{    jclass \mbox{\hyperlink{class_config_a7e26286ce329125869281cd979c94fc5}{initexception}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a35e4d5278a105691e18471281e83947d}{KRecall}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a79ec5659e47627677e41247b860d76ee}{KSend}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a941c92e01cef6da2301b11422f29afd4}{KRefreshInfo}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a0697469c6fcaac6dde444e8780b437c5}{KUploadImg}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a6828d41c3b1f79565e7fdf756b3c2aac}{KQueryBFL}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a88c77bf58af912391d3ab19bc6c66046}{KQueryBGL}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_ab4c7c1fa8e2f5788e71ae05cd8e095f9}{KSendFile}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a85e0c82aba983f80aa56b1428f8acd54}{KRemoteFileInfo}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a7be31e17b33b721573e0855c1166d665}{KQueryImgUrl}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_ac614d847a1359b2618c48fa779517e8d}{KMuteM}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a7964ef89426d2f8b0c3508024f0b20ca}{KQueryM}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a9d35eb18487783f8ee6e8a53a85a0539}{KKickM}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_affbb043f1d3eb8e3587a1b8fc1a6682e}{KQueryOwner}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_aef82ed33c4ce4b85792172dcacb552f0}{KMuteGroup}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_ae7ebb0f5ecce9db4141fbf7d1005a023}{KQueryML}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a722889565f844a0f533eb1eb7bfe74bf}{KSchedule}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_aefc337c0124f3ed88a175a3a6b17e620}{KBuildforward}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_ac9c81894cd0eff7edcea916b296ee97f}{KNfroperation}} = NULL;}
+\DoxyCodeLine{    jmethodID \mbox{\hyperlink{class_config_a9ba4760b8ea690b6e69faff11d6b1ef5}{KGioperation}} = NULL;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_config}{Config}}() \{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} Init(JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \string~\mbox{\hyperlink{class_config}{Config}}();}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{extern} \mbox{\hyperlink{class_config}{Config}} *config;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_tools}{Tools}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{static} std::string jstring2str(jstring jstr, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} jstring str2jstring(\textcolor{keyword}{const} \textcolor{keywordtype}{char} *pat, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} std::string JLongToString(jlong val);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} std::string \mbox{\hyperlink{class_tools_a73a5bbcbdd583d014bf3f8e5db3a89eb}{replace}}(std::string str, \textcolor{keyword}{const} std::string \&from, \textcolor{keyword}{const} std::string \&to) \{}
+\DoxyCodeLine{        \textcolor{keywordtype}{size\_t} start\_pos = 0;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} ((start\_pos = str.find(from, start\_pos)) != std::string::npos) \{}
+\DoxyCodeLine{            str.replace(start\_pos, from.length(), to);}
+\DoxyCodeLine{            start\_pos += to.length(); \textcolor{comment}{// Handles case where 'to' is a substd::string of 'from'}}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} str;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} std::string \mbox{\hyperlink{class_tools_a937cd10ba7720be62817d6cf078c2a22}{VectorToString}}(std::vector<unsigned long long> v);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} std::vector<unsigned long long> \mbox{\hyperlink{class_tools_a7c61d205bdc3f53c96417b26f262da94}{StringToVector}}(std::string s);}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} : \textcolor{keyword}{public} std::exception \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{virtual} std::string \mbox{\hyperlink{class_mirai_c_p_exception_a5b0e3cd0989dd814bba45db073c2f513}{what}}() \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}MiraiCP异常"{}}; \};}
+\DoxyCodeLine{    \textcolor{keyword}{virtual} \textcolor{keywordtype}{void} \textcolor{keyword}{raise}() \{\};}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_init_exception}{InitException}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} \{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string description;}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keywordtype}{int} step = 0;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_init_exception}{InitException}}(std::string text, \textcolor{keywordtype}{int} step) \{}
+\DoxyCodeLine{        this-\/>description = text;}
+\DoxyCodeLine{        this-\/>step = step;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_init_exception_af82fa193c655355fbc6ac6291e252ee4}{what}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>description;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \textcolor{keyword}{raise}() \{}
+\DoxyCodeLine{        manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()-\/>ThrowNew(config-\/>\mbox{\hyperlink{class_config_a7e26286ce329125869281cd979c94fc5}{initexception}},}
+\DoxyCodeLine{                                    (this-\/>description + \textcolor{stringliteral}{"{} step:"{}} + std::to\_string(this-\/>step)).c\_str());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_upload_exception}{UploadException}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \mbox{\hyperlink{class_upload_exception}{UploadException}}(std::string text) \{}
+\DoxyCodeLine{        this-\/>description = \textcolor{stringliteral}{"{}上传(图片/文件)异常"{}} + text;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{//返回错误信息}}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_upload_exception_ac860caa219fb769a64225f4c2d088b9d}{what}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>description;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \textcolor{keyword}{raise}() \{}
+\DoxyCodeLine{        logger-\/>\mbox{\hyperlink{class_logger_abb690146dbd2c6fb7e603caf123096dd}{Error}}(this-\/>description);}
+\DoxyCodeLine{        \textcolor{comment}{//manager-\/>getEnv()-\/>ThrowNew(config-\/>initexception, (this-\/>description).c\_str());}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string description;}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_a_p_i_exception}{APIException}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \mbox{\hyperlink{class_a_p_i_exception}{APIException}}(std::string text) \{}
+\DoxyCodeLine{        this-\/>description = \textcolor{stringliteral}{"{}MiraiCP内部无法预料的错误:"{}} + text;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{//返回错误信息}}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_a_p_i_exception_a9e052d0e2c72c75215b462fdfb8d4dfc}{what}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>description;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \textcolor{keyword}{raise}() \{}
+\DoxyCodeLine{        logger-\/>\mbox{\hyperlink{class_logger_abb690146dbd2c6fb7e603caf123096dd}{Error}}(this-\/>description);}
+\DoxyCodeLine{        \textcolor{comment}{//manager-\/>getEnv()-\/>ThrowNew(config-\/>initexception, (this-\/>description).c\_str());}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string description;}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_bot_exception}{BotException}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{comment}{/*}}
+\DoxyCodeLine{\textcolor{comment}{    *   1 -\/ 机器人无权限执行}}
+\DoxyCodeLine{\textcolor{comment}{    */}}
+\DoxyCodeLine{    \textcolor{keywordtype}{int} type = 0;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_bot_exception}{BotException}}(\textcolor{keywordtype}{int} type) \{}
+\DoxyCodeLine{        this-\/>type = type;}
+\DoxyCodeLine{        \textcolor{keywordflow}{switch} (type) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{case} 1:}
+\DoxyCodeLine{                this-\/>description = \textcolor{stringliteral}{"{}没有权限执行该操作"{}};}
+\DoxyCodeLine{                \textcolor{keywordflow}{break};}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{//返回错误信息}}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_bot_exception_aa258b23e0ee5b2ad20abca6c080d77f8}{what}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>description;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \textcolor{keyword}{raise}() \{}
+\DoxyCodeLine{        \textcolor{comment}{//manager-\/>getEnv()-\/>ThrowNew(config-\/>initexception, (this-\/>description).c\_str());}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string description;}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_mute_exception}{MuteException}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{comment}{/*}}
+\DoxyCodeLine{\textcolor{comment}{    *    禁言时间超出0s\string~30d}}
+\DoxyCodeLine{\textcolor{comment}{    */}}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mute_exception}{MuteException}}() \{}
+\DoxyCodeLine{        this-\/>description = \textcolor{stringliteral}{"{}禁言时长不在0s\string~30d中间"{}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{//返回错误信息}}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_mute_exception_a02778dbb96d07fb5eecd972968cbe0a5}{what}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>description;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \textcolor{keyword}{raise}() \{}
+\DoxyCodeLine{        \textcolor{comment}{//manager-\/>getEnv()-\/>ThrowNew(config-\/>initexception, (this-\/>description).c\_str());}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string description;}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_member_exception}{MemberException}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{comment}{/*}}
+\DoxyCodeLine{\textcolor{comment}{    *   "{}1"{} -\/ 找不到群}}
+\DoxyCodeLine{\textcolor{comment}{    *   "{}2"{} -\/ 找不到群成员}}
+\DoxyCodeLine{\textcolor{comment}{    */}}
+\DoxyCodeLine{    \textcolor{keywordtype}{int} type = 0;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_member_exception}{MemberException}}(\textcolor{keywordtype}{int} type) \{}
+\DoxyCodeLine{        this-\/>type = type;}
+\DoxyCodeLine{        \textcolor{keywordflow}{switch} (type) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{case} 1:}
+\DoxyCodeLine{                this-\/>description = \textcolor{stringliteral}{"{}找不到群"{}};}
+\DoxyCodeLine{                \textcolor{keywordflow}{break};}
+\DoxyCodeLine{            \textcolor{keywordflow}{case} 2:}
+\DoxyCodeLine{                this-\/>description = \textcolor{stringliteral}{"{}找不到群成员"{}};}
+\DoxyCodeLine{                \textcolor{keywordflow}{break};}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{//返回错误信息}}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_member_exception_ac286a2e97a098397d97a616945e07b1d}{what}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>description;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \textcolor{keyword}{raise}() \{}
+\DoxyCodeLine{        \textcolor{comment}{//manager-\/>getEnv()-\/>ThrowNew(config-\/>initexception, (this-\/>description).c\_str());}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string description;}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_friend_exception}{FriendException}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{comment}{/*}}
+\DoxyCodeLine{\textcolor{comment}{    *   找不到好友}}
+\DoxyCodeLine{\textcolor{comment}{    */}}
+\DoxyCodeLine{    \mbox{\hyperlink{class_friend_exception}{FriendException}}() \{}
+\DoxyCodeLine{        this-\/>description = \textcolor{stringliteral}{"{}找不到好友"{}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{//返回错误信息}}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_friend_exception_a9a971ca3748c4436f3e1b1574578c946}{what}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>description;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \textcolor{keyword}{raise}() \{}
+\DoxyCodeLine{        \textcolor{comment}{//manager-\/>getEnv()-\/>ThrowNew(config-\/>initexception, (this-\/>description).c\_str());}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string description;}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_group_exception}{GroupException}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \mbox{\hyperlink{class_group_exception}{GroupException}}() \{}
+\DoxyCodeLine{        this-\/>description = \textcolor{stringliteral}{"{}C++:找不到群"{}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{//返回错误信息}}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_group_exception_a3e9cfa08fee6cf489ec37908f33f620c}{what}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>description;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \textcolor{keyword}{raise}() \{}
+\DoxyCodeLine{        \textcolor{comment}{//manager-\/>getEnv()-\/>ThrowNew(config-\/>initexception, (this-\/>description).c\_str());}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string description;}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_recall_exception}{RecallException}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \mbox{\hyperlink{class_recall_exception}{RecallException}}() \{}
+\DoxyCodeLine{        this-\/>description = \textcolor{stringliteral}{"{}该消息已经被撤回"{}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_recall_exception_aa8fe3dc3b16af078242f145685082087}{what}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>description;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string description = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_remote_file_exception}{RemoteFileException}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_c_p_exception}{MiraiCPException}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \mbox{\hyperlink{class_remote_file_exception}{RemoteFileException}}(std::string e) \{}
+\DoxyCodeLine{        this-\/>description = e;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_remote_file_exception_a2e0955404faee8e69bf782c03231fada}{what}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>description;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string description = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_message_source}{MessageSource}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_message_source_a6ca741546591aa2b1f0fe25e63378a52}{ids}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_message_source_aa8ded0b60806204dfa188c269f0f8cc7}{internalids}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_message_source_ad20429a51dd52cb069e8b48cfd696486}{source}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}}() \{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string toString() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>\mbox{\hyperlink{class_message_source_ad20429a51dd52cb069e8b48cfd696486}{source}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}}(\textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_message_source_a6ca741546591aa2b1f0fe25e63378a52}{ids}}, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_message_source_aa8ded0b60806204dfa188c269f0f8cc7}{internalids}}, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_message_source_ad20429a51dd52cb069e8b48cfd696486}{source}});}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_message_source_a593939fc75a52d99f210da0482a85443}{deserializeFromString}}(\textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_message_source_ad20429a51dd52cb069e8b48cfd696486}{source}});}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string serializeToString();}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{class_message_source_a5a90d563a930cd5e8c8b471954bab509}{recall}}();}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{virtual} std::string toMiraiCode() = 0;}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_mirai_code}{MiraiCode}} \{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    std::string content = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_mirai_code_a05f947c86d38440157efc9ce849cca20}{toString}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} content;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_mirai_code_a9279ff512d981c04de4117c8b7737818}{toMiraiCode}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_mirai_code_a05f947c86d38440157efc9ce849cca20}{toString}}();}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mirai_code_a03a0bc66a6fa10cda5b195047e2496a7}{MiraiCode}}(\mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} *a) \{}
+\DoxyCodeLine{        content = a-\/>toMiraiCode();}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mirai_code_a03a0bc66a6fa10cda5b195047e2496a7}{MiraiCode}}(std::string a) \{}
+\DoxyCodeLine{        content = a;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mirai_code}{MiraiCode}} operator+(\mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} *a) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_mirai_code_a03a0bc66a6fa10cda5b195047e2496a7}{MiraiCode}}(content + a-\/>toMiraiCode());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mirai_code}{MiraiCode}} operator+(std::string a) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_mirai_code_a03a0bc66a6fa10cda5b195047e2496a7}{MiraiCode}}(content + a);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mirai_code}{MiraiCode}} operator+=(\mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} *a) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_mirai_code_a03a0bc66a6fa10cda5b195047e2496a7}{MiraiCode}}(this-\/>content + a-\/>toMiraiCode());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mirai_code}{MiraiCode}} operator+=(std::string a) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_mirai_code_a03a0bc66a6fa10cda5b195047e2496a7}{MiraiCode}}(this-\/>content + a);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mirai_code}{MiraiCode}} operator=(\mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} *a) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_mirai_code_a03a0bc66a6fa10cda5b195047e2496a7}{MiraiCode}}(a-\/>toMiraiCode());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mirai_code}{MiraiCode}} operator=(std::string a) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_mirai_code_a03a0bc66a6fa10cda5b195047e2496a7}{MiraiCode}}(a);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mirai_code}{MiraiCode}} plus(\mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} *a) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_mirai_code_a03a0bc66a6fa10cda5b195047e2496a7}{MiraiCode}}(content + a-\/>toMiraiCode());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_mirai_code}{MiraiCode}} plus(std::string a) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_mirai_code_a03a0bc66a6fa10cda5b195047e2496a7}{MiraiCode}}(content + a);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_light_app}{LightApp}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    std::string content = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_light_app_aef71a2710e3d7994bc896da6b4e5d6db}{LightApp}}(std::string content) \{}
+\DoxyCodeLine{        this-\/>content = content;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_light_app_aef71a2710e3d7994bc896da6b4e5d6db}{LightApp}}(\mbox{\hyperlink{struct_light_app_style1}{LightAppStyle1}} c) \{}
+\DoxyCodeLine{        this-\/>content =}
+\DoxyCodeLine{                \textcolor{stringliteral}{"{}\{\(\backslash\)"{}app\(\backslash\)"{}:\(\backslash\)"{}com.tencent.miniapp\(\backslash\)"{},\(\backslash\)"{}desc\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}view\(\backslash\)"{}:\(\backslash\)"{}notification\(\backslash\)"{},\(\backslash\)"{}ver\(\backslash\)"{}:\(\backslash\)"{}0.0.0.1\(\backslash\)"{},\(\backslash\)"{}prompt\(\backslash\)"{}:\(\backslash\)"{}[应用]\(\backslash\)"{},\(\backslash\)"{}appID\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}sourceName\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}actionData\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}actionData\_A\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}sourceUrl\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}meta\(\backslash\)"{}:\{\(\backslash\)"{}notification\(\backslash\)"{}:\{\(\backslash\)"{}appInfo\(\backslash\)"{}:"{}}}
+\DoxyCodeLine{                \textcolor{stringliteral}{"{}\{\(\backslash\)"{}appName\(\backslash\)"{}:\(\backslash\)"{}"{}} + c.appName + \textcolor{stringliteral}{"{}\(\backslash\)"{},\(\backslash\)"{}appType\(\backslash\)"{}:4,\(\backslash\)"{}appid\(\backslash\)"{}:1109659848,"{}}}
+\DoxyCodeLine{                                                \textcolor{stringliteral}{"{}\(\backslash\)"{}iconUrl\(\backslash\)"{}:\(\backslash\)"{}"{}} + c.icon + \textcolor{stringliteral}{"{}\(\backslash\)"{}\},"{}}}
+\DoxyCodeLine{                                                                            \textcolor{stringliteral}{"{}\(\backslash\)"{}data\(\backslash\)"{}:["{}} + c.titles + \textcolor{stringliteral}{"{}],"{}}}
+\DoxyCodeLine{                                                                                                      \textcolor{stringliteral}{"{}\(\backslash\)"{}title\(\backslash\)"{}:\(\backslash\)"{}"{}} +}
+\DoxyCodeLine{                c.title + \textcolor{stringliteral}{"{}\(\backslash\)"{},\(\backslash\)"{}button\(\backslash\)"{}:"{}}}
+\DoxyCodeLine{                          \textcolor{stringliteral}{"{}["{}} + c.buttons + \textcolor{stringliteral}{"{}],"{}}}
+\DoxyCodeLine{                                            \textcolor{stringliteral}{"{}\(\backslash\)"{}emphasis\_keyword\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{}\}\},\(\backslash\)"{}text\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}sourceAd\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{}\}"{}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_light_app_aef71a2710e3d7994bc896da6b4e5d6db}{LightApp}}(\mbox{\hyperlink{struct_light_app_style2}{LightAppStyle2}} c) \{}
+\DoxyCodeLine{        this-\/>content = \textcolor{stringliteral}{"{}\{\(\backslash\)"{}config\(\backslash\)"{}:"{}}}
+\DoxyCodeLine{                        \textcolor{stringliteral}{"{}\{\(\backslash\)"{}height\(\backslash\)"{}:0,\(\backslash\)"{}forward\(\backslash\)"{}:1,\(\backslash\)"{}ctime\(\backslash\)"{}:0,\(\backslash\)"{}width\(\backslash\)"{}:0,\(\backslash\)"{}type\(\backslash\)"{}:\(\backslash\)"{}normal\(\backslash\)"{},\(\backslash\)"{}token\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}autoSize\(\backslash\)"{}:0\},"{}}}
+\DoxyCodeLine{                        \textcolor{stringliteral}{"{}\(\backslash\)"{}prompt\(\backslash\)"{}:\(\backslash\)"{}[QQ小程序]\(\backslash\)"{},\(\backslash\)"{}app\(\backslash\)"{}:\(\backslash\)"{}com.tencent.miniapp\_01\(\backslash\)"{},\(\backslash\)"{}ver\(\backslash\)"{}:\(\backslash\)"{}1.0.0.103\(\backslash\)"{},\(\backslash\)"{}view\(\backslash\)"{}:\(\backslash\)"{}view\_8C8E89B49BE609866298ADDFF2DBABA4\(\backslash\)"{},"{}}}
+\DoxyCodeLine{                        \textcolor{stringliteral}{"{}\(\backslash\)"{}meta\(\backslash\)"{}:\{\(\backslash\)"{}detail\_1\(\backslash\)"{}:\{\(\backslash\)"{}appid\(\backslash\)"{}:\(\backslash\)"{}1110081493\(\backslash\)"{},\(\backslash\)"{}preview\(\backslash\)"{}:\(\backslash\)"{}"{}} + c.preview +}
+\DoxyCodeLine{                        \textcolor{stringliteral}{"{}\(\backslash\)"{},\(\backslash\)"{}shareTemplateData\(\backslash\)"{}:\{\},"{}}}
+\DoxyCodeLine{                        \textcolor{stringliteral}{"{}\(\backslash\)"{}gamePointsUrl\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}gamePoints\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}url\(\backslash\)"{}:\(\backslash\)"{}m.q.qq.com\(\backslash\)"{},\(\backslash\)"{}scene\(\backslash\)"{}:0,\(\backslash\)"{}desc\(\backslash\)"{}:\(\backslash\)"{}"{}} +}
+\DoxyCodeLine{                        c.title2 + \textcolor{stringliteral}{"{}\(\backslash\)"{},\(\backslash\)"{}title\(\backslash\)"{}:\(\backslash\)"{}"{}} + c.title + \textcolor{stringliteral}{"{}\(\backslash\)"{},"{}}}
+\DoxyCodeLine{                                                                 \textcolor{stringliteral}{"{}\(\backslash\)"{}host\(\backslash\)"{}:\{\(\backslash\)"{}uin\(\backslash\)"{}:0,\(\backslash\)"{}nick\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{}\},"{}}}
+\DoxyCodeLine{                                                                 \textcolor{stringliteral}{"{}\(\backslash\)"{}shareTemplateId\(\backslash\)"{}:\(\backslash\)"{}8C8E89B49BE609866298ADDFF2DBABA4\(\backslash\)"{},\(\backslash\)"{}icon\(\backslash\)"{}:\(\backslash\)"{}"{}} +}
+\DoxyCodeLine{                        c.icon + \textcolor{stringliteral}{"{}\(\backslash\)"{},\(\backslash\)"{}showLittleTail\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{}\}\},\(\backslash\)"{}desc\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{}\}"{}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_light_app_aef71a2710e3d7994bc896da6b4e5d6db}{LightApp}}(\mbox{\hyperlink{struct_light_app_style3}{LightAppStyle3}} c) \{}
+\DoxyCodeLine{        this-\/>content =}
+\DoxyCodeLine{                \textcolor{stringliteral}{"{}\{\(\backslash\)"{}config\(\backslash\)"{}:\{\(\backslash\)"{}height\(\backslash\)"{}:0,\(\backslash\)"{}forward\(\backslash\)"{}:1,\(\backslash\)"{}ctime\(\backslash\)"{}:0,\(\backslash\)"{}width\(\backslash\)"{}:0,\(\backslash\)"{}type\(\backslash\)"{}:\(\backslash\)"{}normal\(\backslash\)"{},\(\backslash\)"{}token\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}autoSize\(\backslash\)"{}:0\},"{}}}
+\DoxyCodeLine{                \textcolor{stringliteral}{"{}\(\backslash\)"{}prompt\(\backslash\)"{}:\(\backslash\)"{}[QQ小程序]\(\backslash\)"{},\(\backslash\)"{}app\(\backslash\)"{}:\(\backslash\)"{}com.tencent.miniapp\_01\(\backslash\)"{},\(\backslash\)"{}ver\(\backslash\)"{}:\(\backslash\)"{}0.0.0.1\(\backslash\)"{},\(\backslash\)"{}view\(\backslash\)"{}:\(\backslash\)"{}view\_8C8E89B49BE609866298ADDFF2DBABA4\(\backslash\)"{},"{}}}
+\DoxyCodeLine{                \textcolor{stringliteral}{"{}\(\backslash\)"{}meta\(\backslash\)"{}:\{\(\backslash\)"{}detail\_1\(\backslash\)"{}:\{\(\backslash\)"{}appid\(\backslash\)"{}:\(\backslash\)"{}1109937557\(\backslash\)"{},\(\backslash\)"{}preview\(\backslash\)"{}:\(\backslash\)"{}"{}} + c.preview +}
+\DoxyCodeLine{                \textcolor{stringliteral}{"{}\(\backslash\)"{},\(\backslash\)"{}shareTemplateData\(\backslash\)"{}:\{\},\(\backslash\)"{}gamePointsUrl\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}gamePoints\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{},\(\backslash\)"{}url\(\backslash\)"{}:\(\backslash\)"{}m.q.qq.com\(\backslash\)"{},\(\backslash\)"{}scene\(\backslash\)"{}:0,\(\backslash\)"{}desc\(\backslash\)"{}:\(\backslash\)"{}"{}} +}
+\DoxyCodeLine{                c.title + \textcolor{stringliteral}{"{}\(\backslash\)"{},\(\backslash\)"{}title\(\backslash\)"{}:\(\backslash\)"{}"{}} + c.description + \textcolor{stringliteral}{"{}\(\backslash\)"{},"{}}}
+\DoxyCodeLine{                                                              \textcolor{stringliteral}{"{}\(\backslash\)"{}host\(\backslash\)"{}:\{\(\backslash\)"{}uin\(\backslash\)"{}:0,\(\backslash\)"{}nick\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{}\},\(\backslash\)"{}shareTemplateId\(\backslash\)"{}:\(\backslash\)"{}8C8E89B49BE609866298ADDFF2DBABA4\(\backslash\)"{},\(\backslash\)"{}icon\(\backslash\)"{}:\(\backslash\)"{}"{}} +}
+\DoxyCodeLine{                c.icon + \textcolor{stringliteral}{"{}\(\backslash\)"{},\(\backslash\)"{}qqdocurl\(\backslash\)"{}:\(\backslash\)"{}"{}} + c.url + \textcolor{stringliteral}{"{}\(\backslash\)"{},\(\backslash\)"{}showLittleTail\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{}\}\},\(\backslash\)"{}desc\(\backslash\)"{}:\(\backslash\)"{}\(\backslash\)"{}\}"{}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string toMiraiCode() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}[mirai:app:"{}} + \mbox{\hyperlink{class_tools_a73a5bbcbdd583d014bf3f8e5db3a89eb}{Tools::replace}}(\mbox{\hyperlink{class_tools_a73a5bbcbdd583d014bf3f8e5db3a89eb}{Tools::replace}}(content, \textcolor{stringliteral}{"{}["{}}, \textcolor{stringliteral}{"{}\(\backslash\)\(\backslash\)["{}}), \textcolor{stringliteral}{"{}]"{}}, \textcolor{stringliteral}{"{}\(\backslash\)\(\backslash\)]"{}}) + \textcolor{stringliteral}{"{}]"{}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*图像类声明*/}}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_image}{Image}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{const} jmethodID Query = NULL;}
+\DoxyCodeLine{    \textcolor{comment}{//图片id，样式:` \{xxx\}.xx `}}
+\DoxyCodeLine{    std::string \textcolor{keywordtype}{id} = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_image}{Image}}(std::string);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{/*}}
+\DoxyCodeLine{\textcolor{comment}{    * 获取图片下载url}}
+\DoxyCodeLine{\textcolor{comment}{    */}}
+\DoxyCodeLine{    std::string queryURL(JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()) \textcolor{keyword}{const};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} std::vector<std::string> GetImgIdsFromMiraiCode(std::string);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_image_a1f23cd8327ee4b8814ad8574b6a35e82}{toMiraiCode}}();}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_contact}{Contact}} \{}
+\DoxyCodeLine{\textcolor{keyword}{protected}:}
+\DoxyCodeLine{    \textcolor{keywordtype}{int} \_type = 0;}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \_id;}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \_groupid;}
+\DoxyCodeLine{    std::string \_nickOrNameCard;}
+\DoxyCodeLine{    std::string \_avatarUrl;}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \_botid;}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \mbox{\hyperlink{class_contact}{Contact}}() \{}
+\DoxyCodeLine{        this-\/>\_type = 0;}
+\DoxyCodeLine{        this-\/>\_id = 0;}
+\DoxyCodeLine{        this-\/>\_groupid = 0;}
+\DoxyCodeLine{        this-\/>\_nickOrNameCard = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{        this-\/>\_botid = 0;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_contact}{Contact}}(\textcolor{keywordtype}{int} \mbox{\hyperlink{class_contact_a182b686fa824fe5c9a3a5181f873e2a1}{type}}, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} gid, std::string name, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_contact_a869c10fc8e1abeedc10d805576b1450a}{botid}}) \{}
+\DoxyCodeLine{        this-\/>\_type = \mbox{\hyperlink{class_contact_a182b686fa824fe5c9a3a5181f873e2a1}{type}};}
+\DoxyCodeLine{        this-\/>\_id = \mbox{\hyperlink{class_contact_a220e55b907d54958cd2afb95e65da5a1}{id}};}
+\DoxyCodeLine{        this-\/>\_groupid = gid;}
+\DoxyCodeLine{        this-\/>\_nickOrNameCard = name;}
+\DoxyCodeLine{        this-\/>\_botid = \mbox{\hyperlink{class_contact_a869c10fc8e1abeedc10d805576b1450a}{botid}};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{int} \mbox{\hyperlink{class_contact_a182b686fa824fe5c9a3a5181f873e2a1}{type}}() \{ \textcolor{keywordflow}{return} this-\/>\_type; \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_contact_a220e55b907d54958cd2afb95e65da5a1}{id}}() \{ \textcolor{keywordflow}{return} this-\/>\_id; \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_contact_a07e7ddca539bf8e5ac2d2ad00d8b7ba4}{groupid}}() \{ \textcolor{keywordflow}{return} this-\/>\_groupid; \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_contact_a3f78c5f66d0b71ad06267c6a3b492066}{nickOrNameCard}}() \{ \textcolor{keywordflow}{return} this-\/>\_nickOrNameCard; \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_contact_a10cf00a3c2dfef0bdc29c3f89e508293}{avatarUrl}}() \{ \textcolor{keywordflow}{return} this-\/>\_avatarUrl; \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_contact_a869c10fc8e1abeedc10d805576b1450a}{botid}}() \{ \textcolor{keywordflow}{return} this-\/>\_botid; \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    nlohmann::json serialization() \{}
+\DoxyCodeLine{        nlohmann::json j;}
+\DoxyCodeLine{        j[\textcolor{stringliteral}{"{}type"{}}] = \mbox{\hyperlink{class_contact_a182b686fa824fe5c9a3a5181f873e2a1}{type}}();}
+\DoxyCodeLine{        j[\textcolor{stringliteral}{"{}id"{}}] = \mbox{\hyperlink{class_contact_a220e55b907d54958cd2afb95e65da5a1}{id}}();}
+\DoxyCodeLine{        j[\textcolor{stringliteral}{"{}groupid"{}}] = \mbox{\hyperlink{class_contact_a07e7ddca539bf8e5ac2d2ad00d8b7ba4}{groupid}}();}
+\DoxyCodeLine{        j[\textcolor{stringliteral}{"{}nickornamecard"{}}] = \mbox{\hyperlink{class_contact_a3f78c5f66d0b71ad06267c6a3b492066}{nickOrNameCard}}();}
+\DoxyCodeLine{        j[\textcolor{stringliteral}{"{}botid"{}}] = \mbox{\hyperlink{class_contact_a869c10fc8e1abeedc10d805576b1450a}{botid}}();}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} j;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_contact_a190dd1c2ecfccf67edc3d2b1cff87835}{serializationToString}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>serialization().dump();}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} \mbox{\hyperlink{class_contact}{Contact}} \mbox{\hyperlink{class_contact_aafc428cdb4c1920864bf747ad7dce9f2}{deserializationFromJson}}(nlohmann::json root);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} \mbox{\hyperlink{class_contact}{Contact}} \mbox{\hyperlink{class_contact_a1ae828255543de1ff394bc79e9262cc7}{deserializationFromString}}(\textcolor{keyword}{const} std::string \&source);}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{// 群文件}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{struct }\mbox{\hyperlink{structdinfo}{dinfo}} \{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{structdinfo_a27f1fe72da17504a88993b1895bff874}{url}};}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{structdinfo_af7b7245d4b94bb72cae65c5cf0b40a9f}{md5}};}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{structdinfo_aa13ebef9ac586704f4913eeb7dae1a7c}{sha1}};}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{\textcolor{keyword}{struct }\mbox{\hyperlink{structfinfo}{finfo}} \{}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{structfinfo_a94de667500b2c0dba038f7e654ba90f2}{size}};}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{structfinfo_a2bd8a352da0950f3b549dbd754585dd6}{uploaderid}};}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{structfinfo_a6257f5202f67d71af216e8328d6ee28f}{downloadtime}};}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{structfinfo_a7b36d35ddbf52b18572e2dce56faf362}{uploadtime}};}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{structfinfo_ab073417dd65e95533b012011aa74a8b0}{lastmodifytime}};}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_remote_file}{RemoteFile}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_remote_file_a28376539b0566ae41036143dad94fad0}{id}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_remote_file_a95f6a801ddb786ce006542e028d6d337}{internalid}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_remote_file_aaeef98e2d5caaa1521950a5a4446efe7}{name}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_remote_file_a4669b902794a33fbc60fa99c809a22e5}{size}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_remote_file_aed6d46f89c5cb0d83236b4b7e1b5c873}{path}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \mbox{\hyperlink{structdinfo}{dinfo}} \mbox{\hyperlink{class_remote_file_a2a819afb5208ce0d816a073b6d2dbb98}{dinfo}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \mbox{\hyperlink{structfinfo}{finfo}} \mbox{\hyperlink{class_remote_file_a5c04bb6347e3783a9b6c083e7ee5586d}{finfo}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string serializeToString();}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} \mbox{\hyperlink{class_remote_file}{RemoteFile}} deserializeFromString(\textcolor{keyword}{const} std::string \&source);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_remote_file_a2a606d3e0fddf6251ded708a089dfdb5}{RemoteFile}}(\textcolor{keyword}{const} std::string \&i, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} ii, \textcolor{keyword}{const} std::string \&n, \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} s, \textcolor{keyword}{const} std::string \&p, \textcolor{keyword}{struct} \mbox{\hyperlink{structdinfo}{dinfo}} d, \textcolor{keyword}{struct} \mbox{\hyperlink{structfinfo}{finfo}} f) : \mbox{\hyperlink{class_remote_file_a28376539b0566ae41036143dad94fad0}{id}}(i),}
+\DoxyCodeLine{                                                                                                             \mbox{\hyperlink{class_remote_file_a95f6a801ddb786ce006542e028d6d337}{internalid}}(}
+\DoxyCodeLine{                                                                                                                     ii),}
+\DoxyCodeLine{                                                                                                             \mbox{\hyperlink{class_remote_file_aaeef98e2d5caaa1521950a5a4446efe7}{name}}(n),}
+\DoxyCodeLine{                                                                                                             \mbox{\hyperlink{class_remote_file_a4669b902794a33fbc60fa99c809a22e5}{size}}(s),}
+\DoxyCodeLine{                                                                                                             \mbox{\hyperlink{class_remote_file_aed6d46f89c5cb0d83236b4b7e1b5c873}{path}}(p),}
+\DoxyCodeLine{                                                                                                             \mbox{\hyperlink{structdinfo}{dinfo}}(d),}
+\DoxyCodeLine{                                                                                                             \mbox{\hyperlink{structfinfo}{finfo}}(f) \{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_remote_file_a1ca55a2e4cead686e9ea5f0e9260dfa0}{toMiraiCode}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (\mbox{\hyperlink{class_remote_file_a95f6a801ddb786ce006542e028d6d337}{internalid}} == 0) \{}
+\DoxyCodeLine{            \textcolor{comment}{// 重新上传}}
+\DoxyCodeLine{            \textcolor{keywordflow}{throw} \mbox{\hyperlink{class_remote_file_exception}{RemoteFileException}}(\textcolor{stringliteral}{"{}toMiraiCode error: internalid错误，重新上传"{}});}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}[mirai:file:"{}} + \textcolor{keywordtype}{id} + \textcolor{stringliteral}{"{},"{}} + std::to\_string(\mbox{\hyperlink{class_remote_file_a95f6a801ddb786ce006542e028d6d337}{internalid}}) + \textcolor{stringliteral}{"{},"{}} + \mbox{\hyperlink{class_remote_file_aaeef98e2d5caaa1521950a5a4446efe7}{name}} + \textcolor{stringliteral}{"{},"{}} + std::to\_string(\mbox{\hyperlink{class_remote_file_a4669b902794a33fbc60fa99c809a22e5}{size}}) + \textcolor{stringliteral}{"{}]"{}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_low_level_a_p_i}{LowLevelAPI}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{static} std::string \mbox{\hyperlink{class_low_level_a_p_i_ac6e830ba53c3477de726793a26357256}{send0}}(std::string content, \mbox{\hyperlink{class_contact}{Contact}} *c, \textcolor{keywordtype}{bool} miraicode, JNIEnv *env) \{}
+\DoxyCodeLine{        nlohmann::json j;}
+\DoxyCodeLine{        j[\textcolor{stringliteral}{"{}content"{}}] = content;}
+\DoxyCodeLine{        j[\textcolor{stringliteral}{"{}contact"{}}] = c-\/>serialization();}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} Tools::jstring2str((jstring) env-\/>CallObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}}, config-\/>\mbox{\hyperlink{class_config_a79ec5659e47627677e41247b860d76ee}{KSend}},}
+\DoxyCodeLine{                                                                  Tools::str2jstring(j.dump().c\_str(), env),}
+\DoxyCodeLine{                                                                  (jboolean) miraicode), env);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} \textcolor{keyword}{inline} std::string \mbox{\hyperlink{class_low_level_a_p_i_ad285de08b2fb584b482db3e0144c1196}{getInfoSource}}(\mbox{\hyperlink{class_contact}{Contact}} *c, JNIEnv *env = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} Tools::jstring2str((jstring) env-\/>CallObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}}, config-\/>\mbox{\hyperlink{class_config_a941c92e01cef6da2301b11422f29afd4}{KRefreshInfo}},}
+\DoxyCodeLine{                                                                  Tools::str2jstring(c-\/>\mbox{\hyperlink{class_contact_a190dd1c2ecfccf67edc3d2b1cff87835}{serializationToString}}().c\_str(),}
+\DoxyCodeLine{                                                                                     env)));}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} \textcolor{keyword}{inline} std::string \mbox{\hyperlink{class_low_level_a_p_i_a34e8b356a0298a68876c21b64373d5af}{uploadImg0}}(std::string path, \mbox{\hyperlink{class_contact}{Contact}} *c, JNIEnv *env = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} Tools::jstring2str((jstring) env-\/>CallObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}}, config-\/>\mbox{\hyperlink{class_config_a0697469c6fcaac6dde444e8780b437c5}{KUploadImg}},}
+\DoxyCodeLine{                                                                  Tools::str2jstring(path.c\_str(), env),}
+\DoxyCodeLine{                                                                  Tools::str2jstring(c-\/>\mbox{\hyperlink{class_contact_a190dd1c2ecfccf67edc3d2b1cff87835}{serializationToString}}().c\_str(),}
+\DoxyCodeLine{                                                                                     env)));}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{struct }info \{}
+\DoxyCodeLine{        std::string nickornamecard;}
+\DoxyCodeLine{        std::string avatarUrl;}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} info \mbox{\hyperlink{class_low_level_a_p_i_a9bb2f0a4e7c0cb7eee2e100b791d38d7}{info0}}(std::string source) \{}
+\DoxyCodeLine{        info re;}
+\DoxyCodeLine{        nlohmann::json j = nlohmann::json::parse(source);}
+\DoxyCodeLine{        re.avatarUrl = j[\textcolor{stringliteral}{"{}avatarUrl"{}}];}
+\DoxyCodeLine{        re.nickornamecard = j[\textcolor{stringliteral}{"{}nickornamecard"{}}];}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} re;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_forward_node}{ForwardNode}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{id} = 0;}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_forward_node_ae41172edb72a9170e333df82c4e26057}{name}} = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_forward_node_a163afb3054e6bd7841ff622f4909b686}{message}} = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_forward_node_a0b0920001d3c5f8371d1321e804bda1e}{time}} = 0;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_forward_node_a6c668b871edbc04ecf9a09ab51f2d2f0}{ForwardNode}}(\textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_forward_node_ae41172edb72a9170e333df82c4e26057}{name}}, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_forward_node_a163afb3054e6bd7841ff622f4909b686}{message}}, \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_forward_node_a0b0920001d3c5f8371d1321e804bda1e}{time}})}
+\DoxyCodeLine{            : \mbox{\hyperlink{class_forward_node_a62b34a92a68a6383171a38797491a084}{id}}(\mbox{\hyperlink{class_forward_node_a62b34a92a68a6383171a38797491a084}{id}}), \mbox{\hyperlink{class_forward_node_ae41172edb72a9170e333df82c4e26057}{name}}(\mbox{\hyperlink{class_forward_node_ae41172edb72a9170e333df82c4e26057}{name}}), \mbox{\hyperlink{class_forward_node_a163afb3054e6bd7841ff622f4909b686}{message}}(\mbox{\hyperlink{class_forward_node_a163afb3054e6bd7841ff622f4909b686}{message}}), \mbox{\hyperlink{class_forward_node_a0b0920001d3c5f8371d1321e804bda1e}{time}}(\mbox{\hyperlink{class_forward_node_a0b0920001d3c5f8371d1321e804bda1e}{time}}) \{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_forward_node_a6c668b871edbc04ecf9a09ab51f2d2f0}{ForwardNode}}(\mbox{\hyperlink{class_contact}{Contact}} *c, std::string \&\mbox{\hyperlink{class_forward_node_a163afb3054e6bd7841ff622f4909b686}{message}}, \textcolor{keywordtype}{int} t) : \mbox{\hyperlink{class_forward_node_a62b34a92a68a6383171a38797491a084}{id}}(c-\/>\mbox{\hyperlink{class_forward_node_a62b34a92a68a6383171a38797491a084}{id}}()), \mbox{\hyperlink{class_forward_node_ae41172edb72a9170e333df82c4e26057}{name}}(c-\/>nickOrNameCard()), \mbox{\hyperlink{class_forward_node_a163afb3054e6bd7841ff622f4909b686}{message}}(\mbox{\hyperlink{class_forward_node_a163afb3054e6bd7841ff622f4909b686}{message}}),}
+\DoxyCodeLine{                                                           \mbox{\hyperlink{class_forward_node_a0b0920001d3c5f8371d1321e804bda1e}{time}}(t) \{\}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_forward_message}{ForwardMessage}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    nlohmann::json sendmsg;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_forward_message}{ForwardMessage}}(\mbox{\hyperlink{class_contact}{Contact}} *c, std::initializer\_list<ForwardNode> nodes);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{class_forward_message_a3dccf0e2db76db7767507a1e71e9b788}{sendTo}}(\mbox{\hyperlink{class_contact}{Contact}} *c, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()) \textcolor{keyword}{const};}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_bot}{Bot}} \{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    \textcolor{keywordtype}{bool} inited = \textcolor{keyword}{false};}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \_id;}
+\DoxyCodeLine{    std::string \_nick;}
+\DoxyCodeLine{    std::string \_avatarUrl;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} check() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (!this-\/>inited) \{}
+\DoxyCodeLine{            \mbox{\hyperlink{class_bot_a3354dc4fbf569d19e11ac04ac8bf0b01}{refreshInfo}}();}
+\DoxyCodeLine{            this-\/>inited = \textcolor{keyword}{true};}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{class_bot_a3354dc4fbf569d19e11ac04ac8bf0b01}{refreshInfo}}(JNIEnv *env = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()) \{}
+\DoxyCodeLine{        \mbox{\hyperlink{struct_low_level_a_p_i_1_1info}{LowLevelAPI::info}} tmp = \mbox{\hyperlink{class_low_level_a_p_i_a9bb2f0a4e7c0cb7eee2e100b791d38d7}{LowLevelAPI::info0}}(Tools::jstring2str(}
+\DoxyCodeLine{                (jstring) env-\/>CallObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}}, config-\/>\mbox{\hyperlink{class_config_a941c92e01cef6da2301b11422f29afd4}{KRefreshInfo}}, Tools::str2jstring(}
+\DoxyCodeLine{                        \mbox{\hyperlink{class_contact}{Contact}}(4, 0, 0, \textcolor{stringliteral}{"{}"{}}, this-\/>\_id).serializationToString().c\_str(), env))));}
+\DoxyCodeLine{        this-\/>\_avatarUrl = tmp.avatarUrl;}
+\DoxyCodeLine{        this-\/>\_nick = tmp.nickornamecard;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_bot_a98733a6bf8724f78a402b97480955d67}{Bot}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} i) \{}
+\DoxyCodeLine{        this-\/>\_id = i;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_bot_a24d56f1b3e802988718995639d8d79bc}{id}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>\_id;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_bot_af1538b49ce58759e210c41c402ff6680}{nick}}() \{}
+\DoxyCodeLine{        check();}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>\_nick;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_bot_a94279cd991ebd5665e67246ff7563af0}{avatarUrl}}() \{}
+\DoxyCodeLine{        check();}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>\_avatarUrl;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::vector<unsigned long long> \mbox{\hyperlink{class_bot_a6584044628bd3754e52d1dac2cebe789}{getFriendList}}(JNIEnv *env = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()) \{}
+\DoxyCodeLine{        std::string temp = Tools::jstring2str((jstring) env-\/>CallStaticObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}},}
+\DoxyCodeLine{                                                                                    config-\/>\mbox{\hyperlink{class_config_a6828d41c3b1f79565e7fdf756b3c2aac}{KQueryBFL}},}
+\DoxyCodeLine{                                                                                    (jlong) this-\/>id()));}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_tools_a7c61d205bdc3f53c96417b26f262da94}{Tools::StringToVector}}(temp);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_bot_a2734db2add77775b1b8ec5b66b749d74}{FriendListToString}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_tools_a937cd10ba7720be62817d6cf078c2a22}{Tools::VectorToString}}(\mbox{\hyperlink{class_bot_a6584044628bd3754e52d1dac2cebe789}{getFriendList}}());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::vector<unsigned long long> \mbox{\hyperlink{class_bot_acda3c7f35156966087c8f55340f9b48f}{getGroupList}}(JNIEnv *env = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()) \{}
+\DoxyCodeLine{        std::string temp = Tools::jstring2str((jstring) env-\/>CallStaticObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}},}
+\DoxyCodeLine{                                                                                    config-\/>\mbox{\hyperlink{class_config_a88c77bf58af912391d3ab19bc6c66046}{KQueryBGL}},}
+\DoxyCodeLine{                                                                                    (jlong) this-\/>id()));}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_tools_a7c61d205bdc3f53c96417b26f262da94}{Tools::StringToVector}}(temp);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string \mbox{\hyperlink{class_bot_add67cc5d276fd34f57406dbe1043394b}{GroupListToString}}() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_tools_a937cd10ba7720be62817d6cf078c2a22}{Tools::VectorToString}}(\mbox{\hyperlink{class_bot_acda3c7f35156966087c8f55340f9b48f}{getGroupList}}());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_friend}{Friend}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_contact}{Contact}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \mbox{\hyperlink{class_friend_a24d5d1e22b735f5f78ac30da904bbc73}{Friend}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} friendid, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_contact_a869c10fc8e1abeedc10d805576b1450a}{botid}}, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_friend_a24d5d1e22b735f5f78ac30da904bbc73}{Friend}}(\mbox{\hyperlink{class_contact}{Contact}} c) : \mbox{\hyperlink{class_contact}{Contact}}(c) \{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_image}{Image}} \mbox{\hyperlink{class_friend_ac271985962999f208d7d3f4b24572ef7}{uploadImg}}(\textcolor{keyword}{const} std::string \&filename, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{/*发送信息*/}}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_friend_af9a80b1d0cc93c166dea7dd08cb516c9}{SendMiraiCode}}(\mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} *msg) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_friend_af9a80b1d0cc93c166dea7dd08cb516c9}{SendMiraiCode}}(msg-\/>toMiraiCode());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_friend_af9a80b1d0cc93c166dea7dd08cb516c9}{SendMiraiCode}}(\mbox{\hyperlink{class_mirai_code}{MiraiCode}} msg) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_friend_af9a80b1d0cc93c166dea7dd08cb516c9}{SendMiraiCode}}(msg.\mbox{\hyperlink{class_mirai_code_a05f947c86d38440157efc9ce849cca20}{toString}}());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_friend_af9a80b1d0cc93c166dea7dd08cb516c9}{SendMiraiCode}}(std::string msg, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_friend_a0f32b2c4784f164847c69c6908d5ffc7}{SendMsg}}(std::string msg, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_member}{Member}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_contact}{Contact}} \{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    jmethodID Mute\_id = NULL;}
+\DoxyCodeLine{    jmethodID Query\_permission = NULL;}
+\DoxyCodeLine{    jmethodID KickM = NULL;}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_member_a34070a5524ede3ecb35c6ea7dba21f9f}{permission}} = 0;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_member}{Member}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} qqid, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_contact_a07e7ddca539bf8e5ac2d2ad00d8b7ba4}{groupid}}, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_contact_a869c10fc8e1abeedc10d805576b1450a}{botid}}, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_image}{Image}} \mbox{\hyperlink{class_member_aba78f8099187033776154e6a3e60b881}{uploadImg}}(\textcolor{keyword}{const} std::string \&filename, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_member}{Member}}(\mbox{\hyperlink{class_contact}{Contact}} c) : \mbox{\hyperlink{class_contact}{Contact}}(c) \{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_member_a37b4986d11cd5c950d92dbc5d9296684}{getPermission}}(JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{    \textcolor{comment}{/*发送信息*/}}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_member_a7b4b9cbf9705a28f41fcb96164b149a9}{SendMiraiCode}}(\mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} *msg) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_member_a7b4b9cbf9705a28f41fcb96164b149a9}{SendMiraiCode}}(msg-\/>toMiraiCode());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_member_a7b4b9cbf9705a28f41fcb96164b149a9}{SendMiraiCode}}(\mbox{\hyperlink{class_mirai_code}{MiraiCode}} msg) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_member_a7b4b9cbf9705a28f41fcb96164b149a9}{SendMiraiCode}}(msg.\mbox{\hyperlink{class_mirai_code_a05f947c86d38440157efc9ce849cca20}{toString}}());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_member_a7b4b9cbf9705a28f41fcb96164b149a9}{SendMiraiCode}}(std::string msg, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_member_a20b2f9a17d4e2e4f07dbb707f95177e3}{SendMsg}}(std::string msg, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{class_member_a58a543e956ab5c1d77f29a2c15e675cb}{Mute}}(\textcolor{keywordtype}{int} time, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{class_member_ae23c4a4ff625eb0c29f27a0c66a76aee}{Kick}}(\textcolor{keyword}{const} std::string \&reason, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }Group : \textcolor{keyword}{public} \mbox{\hyperlink{class_contact}{Contact}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    std::vector<unsigned long long> getMemberList() \{}
+\DoxyCodeLine{        std::string re = Tools::jstring2str((jstring) manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()-\/>CallStaticObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}},}
+\DoxyCodeLine{                                                                                                config-\/>\mbox{\hyperlink{class_config_ae7ebb0f5ecce9db4141fbf7d1005a023}{KQueryML}},}
+\DoxyCodeLine{                                                                                                Tools::str2jstring(}
+\DoxyCodeLine{                                                                                                        this-\/>serializationToString().c\_str())));}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (re == \textcolor{stringliteral}{"{}E1"{}}) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{throw} \mbox{\hyperlink{class_group_exception}{GroupException}}();}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_tools_a7c61d205bdc3f53c96417b26f262da94}{Tools::StringToVector}}(re);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string MemberListToString() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} \mbox{\hyperlink{class_tools_a937cd10ba7720be62817d6cf078c2a22}{Tools::VectorToString}}(getMemberList());}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_member}{Member}} getOwner(JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    Group(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} groupid, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} botid, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    Group(\mbox{\hyperlink{class_contact}{Contact}} c) : \mbox{\hyperlink{class_contact}{Contact}}(c) \{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_image}{Image}} uploadImg(\textcolor{keyword}{const} std::string \&filename, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_remote_file}{RemoteFile}} sendFile(\textcolor{keyword}{const} std::string \&path, \textcolor{keyword}{const} std::string \&filepath, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_remote_file}{RemoteFile}} getFile(\textcolor{keyword}{const} std::string \&path, \textcolor{keyword}{const} std::string \&\textcolor{keywordtype}{id} = \textcolor{stringliteral}{"{}"{}}, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{struct }short\_info \{}
+\DoxyCodeLine{        \textcolor{comment}{// 路径带文件名}}
+\DoxyCodeLine{        std::string path = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{        \textcolor{comment}{// 唯一id}}
+\DoxyCodeLine{        std::string \textcolor{keywordtype}{id} = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::vector<short\_info> getFileList(\textcolor{keyword}{const} std::string \&path, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string getFileListString(\textcolor{keyword}{const} std::string \&path, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} setMuteAll(\textcolor{keywordtype}{bool} sign, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} SendMiraiCode(\mbox{\hyperlink{class_mirai_codeable}{MiraiCodeable}} *msg) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} SendMiraiCode(msg-\/>toMiraiCode());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} SendMiraiCode(\mbox{\hyperlink{class_mirai_code}{MiraiCode}} msg) \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} SendMiraiCode(msg.\mbox{\hyperlink{class_mirai_code_a05f947c86d38440157efc9ce849cca20}{toString}}());}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} SendMiraiCode(std::string msg, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} SendMsg(std::string msg, JNIEnv * = manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}());}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{inline} std::string At(\mbox{\hyperlink{class_member}{Member}} a) \{}
+\DoxyCodeLine{    \textcolor{comment}{/*返回at这个人的miraicode*/}}
+\DoxyCodeLine{    \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}[mirai:at:"{}} + std::to\_string(a.\mbox{\hyperlink{class_contact_a220e55b907d54958cd2afb95e65da5a1}{id}}()) + \textcolor{stringliteral}{"{}]"{}};}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{inline} std::string At(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} a) \{}
+\DoxyCodeLine{    \textcolor{comment}{/*返回at这个人的miraicode*/}}
+\DoxyCodeLine{    \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}[mirai:at:"{}} + std::to\_string(a) + \textcolor{stringliteral}{"{}]"{}};}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_bot_event}{BotEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \mbox{\hyperlink{class_bot}{Bot}} bot;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_bot_event}{BotEvent}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} botid) : bot(\mbox{\hyperlink{class_bot}{Bot}}(botid)) \{}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_group_message_event}{GroupMessageEvent}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_bot_event}{BotEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    Group \mbox{\hyperlink{class_group_message_event_acbc031790011ba7b520a21aec2299f08}{group}};}
+\DoxyCodeLine{    \mbox{\hyperlink{class_member}{Member}} \mbox{\hyperlink{class_group_message_event_af42c8d253640cbe965406843367bb0f3}{sender}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_group_message_event_ad1544e2d8bdbc27ffbae3b268cf88ed0}{message}};}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_group_message_event_ac0fbbe7ebc93f69ab521d745ebe04f5d}{messageSource}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_group_message_event}{GroupMessageEvent}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} botid, \textcolor{keyword}{const} Group \&\mbox{\hyperlink{class_group_message_event_acbc031790011ba7b520a21aec2299f08}{group}}, \textcolor{keyword}{const} \mbox{\hyperlink{class_member}{Member}} \&\mbox{\hyperlink{class_group_message_event_af42c8d253640cbe965406843367bb0f3}{sender}},}
+\DoxyCodeLine{                      \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_group_message_event_ad1544e2d8bdbc27ffbae3b268cf88ed0}{message}}, \textcolor{keyword}{const} \mbox{\hyperlink{class_message_source}{MessageSource}} \&\mbox{\hyperlink{class_group_message_event_ac0fbbe7ebc93f69ab521d745ebe04f5d}{messageSource}}) : \mbox{\hyperlink{class_bot_event}{BotEvent}}(botid), \mbox{\hyperlink{class_group_message_event_acbc031790011ba7b520a21aec2299f08}{group}}(\mbox{\hyperlink{class_group_message_event_acbc031790011ba7b520a21aec2299f08}{group}}),}
+\DoxyCodeLine{                                                                                        \mbox{\hyperlink{class_group_message_event_af42c8d253640cbe965406843367bb0f3}{sender}}(\mbox{\hyperlink{class_group_message_event_af42c8d253640cbe965406843367bb0f3}{sender}}),}
+\DoxyCodeLine{                                                                                        \mbox{\hyperlink{class_group_message_event_ad1544e2d8bdbc27ffbae3b268cf88ed0}{message}}(\mbox{\hyperlink{class_group_message_event_ad1544e2d8bdbc27ffbae3b268cf88ed0}{message}}),}
+\DoxyCodeLine{                                                                                        \mbox{\hyperlink{class_group_message_event_ac0fbbe7ebc93f69ab521d745ebe04f5d}{messageSource}}(\mbox{\hyperlink{class_group_message_event_ac0fbbe7ebc93f69ab521d745ebe04f5d}{messageSource}}) \{\}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_private_message_event}{PrivateMessageEvent}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_bot_event}{BotEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \mbox{\hyperlink{class_friend}{Friend}} \mbox{\hyperlink{class_private_message_event_a62b26ff1072eb68c418b12a87a26cd31}{sender}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_private_message_event_a2ac801fe68e8c19126dbd679bf6dc9cf}{message}};}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_private_message_event_a73df3e24b11ec35b21edab614a5d89c2}{messageSource}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_private_message_event_a935deafbe1f8ecb73e08c6386b2b8410}{PrivateMessageEvent}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} botid, \textcolor{keyword}{const} \mbox{\hyperlink{class_friend}{Friend}} \mbox{\hyperlink{class_private_message_event_a62b26ff1072eb68c418b12a87a26cd31}{sender}}, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_private_message_event_a2ac801fe68e8c19126dbd679bf6dc9cf}{message}},}
+\DoxyCodeLine{                        \textcolor{keyword}{const} \mbox{\hyperlink{class_message_source}{MessageSource}} \&\mbox{\hyperlink{class_private_message_event_a73df3e24b11ec35b21edab614a5d89c2}{messageSource}}) : \mbox{\hyperlink{class_bot_event}{BotEvent}}(botid), \mbox{\hyperlink{class_private_message_event_a62b26ff1072eb68c418b12a87a26cd31}{sender}}(\mbox{\hyperlink{class_private_message_event_a62b26ff1072eb68c418b12a87a26cd31}{sender}}), \mbox{\hyperlink{class_private_message_event_a2ac801fe68e8c19126dbd679bf6dc9cf}{message}}(\mbox{\hyperlink{class_private_message_event_a2ac801fe68e8c19126dbd679bf6dc9cf}{message}}),}
+\DoxyCodeLine{                                                              \mbox{\hyperlink{class_private_message_event_a73df3e24b11ec35b21edab614a5d89c2}{messageSource}}(\mbox{\hyperlink{class_private_message_event_a73df3e24b11ec35b21edab614a5d89c2}{messageSource}}) \{\}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_group_invite_event}{GroupInviteEvent}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_bot_event}{BotEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_group_invite_event_a52981f0279e776c480bba2a3412b08ce}{inviterNick}} = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_group_invite_event_a1fd38f381c6fff45ab83467618291fe0}{inviterid}} = 0;}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_group_invite_event_af5a94c1169cd372073c1f7a1bf731828}{groupName}} = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_group_invite_event_a5c218ea77c17ce8aa7cd1bfa56765ee4}{groupid}} = 0;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} \textcolor{keywordtype}{void} reject(std::string \mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}}) \{}
+\DoxyCodeLine{        std::string re = Tools::jstring2str(}
+\DoxyCodeLine{                (jstring) manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()-\/>CallStaticObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}}, config-\/>\mbox{\hyperlink{class_config_a9ba4760b8ea690b6e69faff11d6b1ef5}{KGioperation}},}
+\DoxyCodeLine{                                                                    Tools::str2jstring(\mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}}.c\_str()),}
+\DoxyCodeLine{                                                                    (jboolean) \textcolor{keyword}{false}));}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (re == \textcolor{stringliteral}{"{}Y"{}}) \textcolor{keywordflow}{return};}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (re == \textcolor{stringliteral}{"{}E"{}})logger-\/>\mbox{\hyperlink{class_logger_abb690146dbd2c6fb7e603caf123096dd}{Error}}(\textcolor{stringliteral}{"{}群聊邀请事件同意失败(可能因为重复处理),id:"{}} + \mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}});}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} reject() \{}
+\DoxyCodeLine{        this-\/>reject(this-\/>source);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::string getSource() \{}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} this-\/>\mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}};}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} \textcolor{keywordtype}{void} accept(std::string \mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}}) \{}
+\DoxyCodeLine{        std::string re = Tools::jstring2str(}
+\DoxyCodeLine{                (jstring) manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()-\/>CallStaticObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}}, config-\/>\mbox{\hyperlink{class_config_a9ba4760b8ea690b6e69faff11d6b1ef5}{KGioperation}},}
+\DoxyCodeLine{                                                                    Tools::str2jstring(\mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}}.c\_str()),}
+\DoxyCodeLine{                                                                    (jboolean) \textcolor{keyword}{true}));}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (re == \textcolor{stringliteral}{"{}Y"{}}) \textcolor{keywordflow}{return};}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (re == \textcolor{stringliteral}{"{}E"{}})logger-\/>\mbox{\hyperlink{class_logger_abb690146dbd2c6fb7e603caf123096dd}{Error}}(\textcolor{stringliteral}{"{}群聊邀请事件同意失败(可能因为重复处理),id:"{}} + \mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}});}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} accept() \{}
+\DoxyCodeLine{        this-\/>accept(this-\/>source);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_group_invite_event_a459cf6aaf1060070a5a7b9670f76a51e}{GroupInviteEvent}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} botid, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}}, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_group_invite_event_a52981f0279e776c480bba2a3412b08ce}{inviterNick}},}
+\DoxyCodeLine{                     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_group_invite_event_a1fd38f381c6fff45ab83467618291fe0}{inviterid}}, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_group_invite_event_af5a94c1169cd372073c1f7a1bf731828}{groupName}}, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_group_invite_event_a5c218ea77c17ce8aa7cd1bfa56765ee4}{groupid}})}
+\DoxyCodeLine{            : \mbox{\hyperlink{class_bot_event}{BotEvent}}(botid), \mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}}(\mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}}), \mbox{\hyperlink{class_group_invite_event_a52981f0279e776c480bba2a3412b08ce}{inviterNick}}(\mbox{\hyperlink{class_group_invite_event_a52981f0279e776c480bba2a3412b08ce}{inviterNick}}), \mbox{\hyperlink{class_group_invite_event_a1fd38f381c6fff45ab83467618291fe0}{inviterid}}(\mbox{\hyperlink{class_group_invite_event_a1fd38f381c6fff45ab83467618291fe0}{inviterid}}), \mbox{\hyperlink{class_group_invite_event_af5a94c1169cd372073c1f7a1bf731828}{groupName}}(\mbox{\hyperlink{class_group_invite_event_af5a94c1169cd372073c1f7a1bf731828}{groupName}}),}
+\DoxyCodeLine{              \mbox{\hyperlink{class_group_invite_event_a5c218ea77c17ce8aa7cd1bfa56765ee4}{groupid}}(\mbox{\hyperlink{class_group_invite_event_a5c218ea77c17ce8aa7cd1bfa56765ee4}{groupid}}) \{\}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_new_friend_request_event}{NewFriendRequestEvent}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_bot_event}{BotEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_new_friend_request_event_afa0c9b11cedce50f30e5cdec6b527168}{source}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_new_friend_request_event_a8c83cea29dbc653489d83dbd7ac15121}{fromid}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} fromgroupid;}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_new_friend_request_event_a41d9f54c00030a6467697865ae5bfeaf}{nick}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_new_friend_request_event_a7e2c2b251034d8986e18eae5d6c100b9}{message}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{class_new_friend_request_event_a30ef44b5b9eccb9fc93bd1c40a16ca4b}{reject}}(std::string \mbox{\hyperlink{class_new_friend_request_event_afa0c9b11cedce50f30e5cdec6b527168}{source}}) \{}
+\DoxyCodeLine{        std::string re = Tools::jstring2str(}
+\DoxyCodeLine{                (jstring) manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()-\/>CallStaticObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}}, config-\/>\mbox{\hyperlink{class_config_ac9c81894cd0eff7edcea916b296ee97f}{KNfroperation}},}
+\DoxyCodeLine{                                                                    Tools::str2jstring(\mbox{\hyperlink{class_new_friend_request_event_afa0c9b11cedce50f30e5cdec6b527168}{source}}.c\_str()),}
+\DoxyCodeLine{                                                                    (jboolean) \textcolor{keyword}{false}));}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (re == \textcolor{stringliteral}{"{}Y"{}}) \textcolor{keywordflow}{return};}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (re == \textcolor{stringliteral}{"{}E"{}})logger-\/>\mbox{\hyperlink{class_logger_abb690146dbd2c6fb7e603caf123096dd}{Error}}(\textcolor{stringliteral}{"{}好友申请事件拒绝失败(可能因为重复处理),id:"{}} + \mbox{\hyperlink{class_new_friend_request_event_afa0c9b11cedce50f30e5cdec6b527168}{source}});}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{class_new_friend_request_event_a30ef44b5b9eccb9fc93bd1c40a16ca4b}{reject}}() \{}
+\DoxyCodeLine{        this-\/>\mbox{\hyperlink{class_new_friend_request_event_a30ef44b5b9eccb9fc93bd1c40a16ca4b}{reject}}(this-\/>source);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{class_new_friend_request_event_ac1c8d0828f1b98d9eeb6d95c20406eb7}{accept}}(std::string \mbox{\hyperlink{class_new_friend_request_event_afa0c9b11cedce50f30e5cdec6b527168}{source}}) \{}
+\DoxyCodeLine{        std::string re = Tools::jstring2str(}
+\DoxyCodeLine{                (jstring) manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()-\/>CallStaticObjectMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}}, config-\/>\mbox{\hyperlink{class_config_ac9c81894cd0eff7edcea916b296ee97f}{KNfroperation}},}
+\DoxyCodeLine{                                                                    Tools::str2jstring(\mbox{\hyperlink{class_new_friend_request_event_afa0c9b11cedce50f30e5cdec6b527168}{source}}.c\_str()),}
+\DoxyCodeLine{                                                                    (jboolean) \textcolor{keyword}{true}));}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (re == \textcolor{stringliteral}{"{}Y"{}}) \textcolor{keywordflow}{return};}
+\DoxyCodeLine{        \textcolor{keywordflow}{if} (re == \textcolor{stringliteral}{"{}E"{}})logger-\/>\mbox{\hyperlink{class_logger_abb690146dbd2c6fb7e603caf123096dd}{Error}}(\textcolor{stringliteral}{"{}好友申请事件同意失败(可能因为重复处理),id:"{}} + \mbox{\hyperlink{class_new_friend_request_event_afa0c9b11cedce50f30e5cdec6b527168}{source}});}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} \mbox{\hyperlink{class_new_friend_request_event_ac1c8d0828f1b98d9eeb6d95c20406eb7}{accept}}() \{}
+\DoxyCodeLine{        this-\/>\mbox{\hyperlink{class_new_friend_request_event_ac1c8d0828f1b98d9eeb6d95c20406eb7}{accept}}(this-\/>source);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_new_friend_request_event_a476e7a5b53d9fe96435354cc8f59c361}{NewFriendRequestEvent}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} botid, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_new_friend_request_event_afa0c9b11cedce50f30e5cdec6b527168}{source}}, \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_new_friend_request_event_a8c83cea29dbc653489d83dbd7ac15121}{fromid}},}
+\DoxyCodeLine{                          \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} fromgroupid, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_new_friend_request_event_a41d9f54c00030a6467697865ae5bfeaf}{nick}}, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_new_friend_request_event_a7e2c2b251034d8986e18eae5d6c100b9}{message}})}
+\DoxyCodeLine{            : \mbox{\hyperlink{class_bot_event}{BotEvent}}(botid), \mbox{\hyperlink{class_new_friend_request_event_afa0c9b11cedce50f30e5cdec6b527168}{source}}(\mbox{\hyperlink{class_new_friend_request_event_afa0c9b11cedce50f30e5cdec6b527168}{source}}), \mbox{\hyperlink{class_new_friend_request_event_a8c83cea29dbc653489d83dbd7ac15121}{fromid}}(\mbox{\hyperlink{class_new_friend_request_event_a8c83cea29dbc653489d83dbd7ac15121}{fromid}}), fromgroupid(fromgroupid), \mbox{\hyperlink{class_new_friend_request_event_a41d9f54c00030a6467697865ae5bfeaf}{nick}}(\mbox{\hyperlink{class_new_friend_request_event_a41d9f54c00030a6467697865ae5bfeaf}{nick}}), \mbox{\hyperlink{class_new_friend_request_event_a7e2c2b251034d8986e18eae5d6c100b9}{message}}(\mbox{\hyperlink{class_new_friend_request_event_a7e2c2b251034d8986e18eae5d6c100b9}{message}}) \{\}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_member_join_event}{MemberJoinEvent}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_bot_event}{BotEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_member_join_event_af131d9d5dcc818c492ba7955cc23c275}{type}} = 0;}
+\DoxyCodeLine{    \mbox{\hyperlink{class_member}{Member}} \mbox{\hyperlink{class_member_join_event_ada3229d4de20a619e6c641f9c97c505b}{member}};}
+\DoxyCodeLine{    Group \mbox{\hyperlink{class_member_join_event_aae5866945dfb9d1b39504f111bccaa52}{group}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_member_join_event_ade2bd23f4b5cb0e6bac3cf36d7c794a2}{inviterid}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_member_join_event_ad536c8db11e375d702476aa113a19cc1}{MemberJoinEvent}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} botid, \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_member_join_event_af131d9d5dcc818c492ba7955cc23c275}{type}}, \textcolor{keyword}{const} \mbox{\hyperlink{class_member}{Member}} \&\mbox{\hyperlink{class_member_join_event_ada3229d4de20a619e6c641f9c97c505b}{member}}, \textcolor{keyword}{const} Group \&\mbox{\hyperlink{class_member_join_event_aae5866945dfb9d1b39504f111bccaa52}{group}},}
+\DoxyCodeLine{                    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \&\mbox{\hyperlink{class_member_join_event_ade2bd23f4b5cb0e6bac3cf36d7c794a2}{inviterid}}) : \mbox{\hyperlink{class_bot_event}{BotEvent}}(botid), \mbox{\hyperlink{class_member_join_event_af131d9d5dcc818c492ba7955cc23c275}{type}}(\mbox{\hyperlink{class_member_join_event_af131d9d5dcc818c492ba7955cc23c275}{type}}), \mbox{\hyperlink{class_member_join_event_ada3229d4de20a619e6c641f9c97c505b}{member}}(\mbox{\hyperlink{class_member_join_event_ada3229d4de20a619e6c641f9c97c505b}{member}}), \mbox{\hyperlink{class_member_join_event_aae5866945dfb9d1b39504f111bccaa52}{group}}(\mbox{\hyperlink{class_member_join_event_aae5866945dfb9d1b39504f111bccaa52}{group}}),}
+\DoxyCodeLine{                                                           \mbox{\hyperlink{class_member_join_event_ade2bd23f4b5cb0e6bac3cf36d7c794a2}{inviterid}}(\mbox{\hyperlink{class_member_join_event_ade2bd23f4b5cb0e6bac3cf36d7c794a2}{inviterid}}) \{\}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_member_leave_event}{MemberLeaveEvent}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_bot_event}{BotEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_member_leave_event_a222486c46fa7a56db8a06906b145f42b}{type}} = 0;}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_member_leave_event_a8dbb981f7e9b4ecaf618a443999385ce}{memberid}};}
+\DoxyCodeLine{    Group \mbox{\hyperlink{class_member_leave_event_a9be3eefd061ba47025d683779f6ed008}{group}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_member_leave_event_afe223b1e1d8a2591c013995eb4466184}{operaterid}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_member_leave_event_ac714a3add4ac210728a26acd8bdf6f00}{MemberLeaveEvent}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} botid, \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_member_leave_event_a222486c46fa7a56db8a06906b145f42b}{type}}, \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_member_leave_event_a8dbb981f7e9b4ecaf618a443999385ce}{memberid}},}
+\DoxyCodeLine{                     \textcolor{keyword}{const} Group \&\mbox{\hyperlink{class_member_leave_event_a9be3eefd061ba47025d683779f6ed008}{group}},}
+\DoxyCodeLine{                     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \&\mbox{\hyperlink{class_member_leave_event_afe223b1e1d8a2591c013995eb4466184}{operaterid}}) : \mbox{\hyperlink{class_bot_event}{BotEvent}}(botid), \mbox{\hyperlink{class_member_leave_event_a222486c46fa7a56db8a06906b145f42b}{type}}(\mbox{\hyperlink{class_member_leave_event_a222486c46fa7a56db8a06906b145f42b}{type}}), \mbox{\hyperlink{class_member_leave_event_a8dbb981f7e9b4ecaf618a443999385ce}{memberid}}(\mbox{\hyperlink{class_member_leave_event_a8dbb981f7e9b4ecaf618a443999385ce}{memberid}}),}
+\DoxyCodeLine{                                                             \mbox{\hyperlink{class_member_leave_event_a9be3eefd061ba47025d683779f6ed008}{group}}(\mbox{\hyperlink{class_member_leave_event_a9be3eefd061ba47025d683779f6ed008}{group}}),}
+\DoxyCodeLine{                                                             \mbox{\hyperlink{class_member_leave_event_afe223b1e1d8a2591c013995eb4466184}{operaterid}}(\mbox{\hyperlink{class_member_leave_event_afe223b1e1d8a2591c013995eb4466184}{operaterid}}) \{\}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_recall_event}{RecallEvent}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_bot_event}{BotEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_recall_event_a5b6ba1dd154963933e1c3dc2880f0d14}{type}} = 0;}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_recall_event_a78201065317c32c62ea39d597ca036c3}{time}} = 0;}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_recall_event_a6ca09703cf5ca62b54c2f4f08465fd15}{authorid}} = 0;}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_recall_event_a79c894271697ce5798850b259417dcaf}{operatorid}} = 0;}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_recall_event_a6977185f71894989b7a01fa1ef755046}{ids}} = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{    \textcolor{comment}{//内部ids}}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string internalids = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{    \textcolor{comment}{//当type是2的时候存在，否则为0}}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} groupid = 0;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_recall_event_a6b5b2940bdfd72fcb3042d42354f83d6}{RecallEvent}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} botid, \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_recall_event_a5b6ba1dd154963933e1c3dc2880f0d14}{type}}, \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_recall_event_a78201065317c32c62ea39d597ca036c3}{time}}, \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_recall_event_a6ca09703cf5ca62b54c2f4f08465fd15}{authorid}},}
+\DoxyCodeLine{                \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_recall_event_a79c894271697ce5798850b259417dcaf}{operatorid}}, \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_recall_event_a6977185f71894989b7a01fa1ef755046}{ids}}, \textcolor{keyword}{const} std::string \&internalids,}
+\DoxyCodeLine{                \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} groupid) : \mbox{\hyperlink{class_bot_event}{BotEvent}}(botid), \mbox{\hyperlink{class_recall_event_a5b6ba1dd154963933e1c3dc2880f0d14}{type}}(\mbox{\hyperlink{class_recall_event_a5b6ba1dd154963933e1c3dc2880f0d14}{type}}), \mbox{\hyperlink{class_recall_event_a78201065317c32c62ea39d597ca036c3}{time}}(\mbox{\hyperlink{class_recall_event_a78201065317c32c62ea39d597ca036c3}{time}}), \mbox{\hyperlink{class_recall_event_a6ca09703cf5ca62b54c2f4f08465fd15}{authorid}}(\mbox{\hyperlink{class_recall_event_a6ca09703cf5ca62b54c2f4f08465fd15}{authorid}}),}
+\DoxyCodeLine{                                                        \mbox{\hyperlink{class_recall_event_a79c894271697ce5798850b259417dcaf}{operatorid}}(\mbox{\hyperlink{class_recall_event_a79c894271697ce5798850b259417dcaf}{operatorid}}), \mbox{\hyperlink{class_recall_event_a6977185f71894989b7a01fa1ef755046}{ids}}(\mbox{\hyperlink{class_recall_event_a6977185f71894989b7a01fa1ef755046}{ids}}), internalids(internalids),}
+\DoxyCodeLine{                                                        groupid(groupid) \{\}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_bot_join_group_event}{BotJoinGroupEvent}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_bot_event}{BotEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_bot_join_group_event_a93fb1138fcd5634ee8ac84ce49a25c68}{type}};}
+\DoxyCodeLine{    Group \mbox{\hyperlink{class_bot_join_group_event_aebfd8af45c5114db549d2782b982396b}{group}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{class_bot_join_group_event_a9a1e07c65f1e4f0cc7055ad82e252f3b}{inviterid}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_bot_join_group_event_a152067b678802d1c2124ffc31d8a523d}{BotJoinGroupEvent}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} botid, \textcolor{keyword}{const} \textcolor{keywordtype}{int} \mbox{\hyperlink{class_bot_join_group_event_a93fb1138fcd5634ee8ac84ce49a25c68}{type}}, \textcolor{keyword}{const} Group \&\mbox{\hyperlink{class_bot_join_group_event_aebfd8af45c5114db549d2782b982396b}{group}},}
+\DoxyCodeLine{                      \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} inviter)}
+\DoxyCodeLine{            : \mbox{\hyperlink{class_bot_event}{BotEvent}}(botid), \mbox{\hyperlink{class_bot_join_group_event_a93fb1138fcd5634ee8ac84ce49a25c68}{type}}(\mbox{\hyperlink{class_bot_join_group_event_a93fb1138fcd5634ee8ac84ce49a25c68}{type}}), \mbox{\hyperlink{class_bot_join_group_event_aebfd8af45c5114db549d2782b982396b}{group}}(\mbox{\hyperlink{class_bot_join_group_event_aebfd8af45c5114db549d2782b982396b}{group}}), \mbox{\hyperlink{class_bot_join_group_event_a9a1e07c65f1e4f0cc7055ad82e252f3b}{inviterid}}(\mbox{\hyperlink{class_bot_join_group_event_a9a1e07c65f1e4f0cc7055ad82e252f3b}{inviterid}}) \{\}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_group_temp_message_event}{GroupTempMessageEvent}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_bot_event}{BotEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    Group \mbox{\hyperlink{class_group_temp_message_event_a6d14c27401f0a2fe06b6ae251ba9c910}{group}};}
+\DoxyCodeLine{    \mbox{\hyperlink{class_member}{Member}} \mbox{\hyperlink{class_group_temp_message_event_a0bedfdfd01cd0f70b3ab0ada73e9d8a8}{sender}};}
+\DoxyCodeLine{    \textcolor{keyword}{const} std::string \mbox{\hyperlink{class_group_temp_message_event_a1b1d75c4db2f0ebd6e44fc09d8d42fe6}{message}};}
+\DoxyCodeLine{    \mbox{\hyperlink{class_message_source}{MessageSource}} \mbox{\hyperlink{class_group_temp_message_event_a956411be5e59ea35d42269098dd2fd47}{messageSource}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_group_temp_message_event_a059fbdbd7154e0cad307533335daa72c}{GroupTempMessageEvent}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \textcolor{keywordtype}{int} botid, \textcolor{keyword}{const} Group \&\mbox{\hyperlink{class_group_temp_message_event_a6d14c27401f0a2fe06b6ae251ba9c910}{group}}, \textcolor{keyword}{const} \mbox{\hyperlink{class_member}{Member}} \&\mbox{\hyperlink{class_group_temp_message_event_a0bedfdfd01cd0f70b3ab0ada73e9d8a8}{sender}},}
+\DoxyCodeLine{                          \textcolor{keyword}{const} std::string \&\mbox{\hyperlink{class_group_temp_message_event_a1b1d75c4db2f0ebd6e44fc09d8d42fe6}{message}}, \textcolor{keyword}{const} \mbox{\hyperlink{class_message_source}{MessageSource}} \&\mbox{\hyperlink{class_group_temp_message_event_a956411be5e59ea35d42269098dd2fd47}{messageSource}}) : \mbox{\hyperlink{class_bot_event}{BotEvent}}(botid),}
+\DoxyCodeLine{                                                                                            \mbox{\hyperlink{class_group_temp_message_event_a6d14c27401f0a2fe06b6ae251ba9c910}{group}}(\mbox{\hyperlink{class_group_temp_message_event_a6d14c27401f0a2fe06b6ae251ba9c910}{group}}),}
+\DoxyCodeLine{                                                                                            \mbox{\hyperlink{class_group_temp_message_event_a0bedfdfd01cd0f70b3ab0ada73e9d8a8}{sender}}(\mbox{\hyperlink{class_group_temp_message_event_a0bedfdfd01cd0f70b3ab0ada73e9d8a8}{sender}}),}
+\DoxyCodeLine{                                                                                            \mbox{\hyperlink{class_group_temp_message_event_a1b1d75c4db2f0ebd6e44fc09d8d42fe6}{message}}(\mbox{\hyperlink{class_group_temp_message_event_a1b1d75c4db2f0ebd6e44fc09d8d42fe6}{message}}),}
+\DoxyCodeLine{                                                                                            \mbox{\hyperlink{class_group_temp_message_event_a956411be5e59ea35d42269098dd2fd47}{messageSource}}(}
+\DoxyCodeLine{                                                                                                    \mbox{\hyperlink{class_group_temp_message_event_a956411be5e59ea35d42269098dd2fd47}{messageSource}}) \{\}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{inline} \textcolor{keywordtype}{void} SetScheduling(\textcolor{keywordtype}{long} time, std::initializer\_list<std::string> args, \mbox{\hyperlink{class_bot_event}{BotEvent}} *e) \{}
+\DoxyCodeLine{    nlohmann::json obj;}
+\DoxyCodeLine{    nlohmann::json root;}
+\DoxyCodeLine{    \textcolor{keywordflow}{for} (\textcolor{keyword}{const} std::string \&it : args) \{}
+\DoxyCodeLine{        obj.push\_back(it);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{    root[\textcolor{stringliteral}{"{}value"{}}] = obj;}
+\DoxyCodeLine{    manager-\/>\mbox{\hyperlink{classthread_manager_a75639792816fe3f8af8a5a3fde89e4af}{getEnv}}()-\/>CallStaticVoidMethod(config-\/>\mbox{\hyperlink{class_config_a4527012e3db22223852e754ae2241e9c}{CPP\_lib}}, config-\/>\mbox{\hyperlink{class_config_a722889565f844a0f533eb1eb7bfe74bf}{KSchedule}}, (jlong) time,}
+\DoxyCodeLine{                                            Tools::str2jstring(root.dump().c\_str()));}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*定时任务执行*/}}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_scheduling_event}{SchedulingEvent}} \{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} init() \{\};}
+\DoxyCodeLine{    \textcolor{comment}{/*自定义id标识符*/}}
+\DoxyCodeLine{    std::vector<std::string> ids;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \mbox{\hyperlink{class_scheduling_event}{SchedulingEvent}}(\textcolor{keyword}{const} std::string \&str);}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{using} GME = std::function<void(\mbox{\hyperlink{class_group_message_event}{GroupMessageEvent}})>;}
+\DoxyCodeLine{\textcolor{keyword}{using} PME = std::function<void(\mbox{\hyperlink{class_private_message_event}{PrivateMessageEvent}})>;}
+\DoxyCodeLine{\textcolor{keyword}{using} GI = std::function<void(\mbox{\hyperlink{class_group_invite_event}{GroupInviteEvent}})>;}
+\DoxyCodeLine{\textcolor{keyword}{using} NFRE = std::function<void(\mbox{\hyperlink{class_new_friend_request_event}{NewFriendRequestEvent}})>;}
+\DoxyCodeLine{\textcolor{keyword}{using} MJ = std::function<void(\mbox{\hyperlink{class_member_join_event}{MemberJoinEvent}})>;}
+\DoxyCodeLine{\textcolor{keyword}{using} ML = std::function<void(\mbox{\hyperlink{class_member_leave_event}{MemberLeaveEvent}})>;}
+\DoxyCodeLine{\textcolor{keyword}{using} R = std::function<void(\mbox{\hyperlink{class_recall_event}{RecallEvent}})>;}
+\DoxyCodeLine{\textcolor{keyword}{using} S = std::function<void(\mbox{\hyperlink{class_scheduling_event}{SchedulingEvent}})>;}
+\DoxyCodeLine{\textcolor{keyword}{using} BJ = std::function<void(\mbox{\hyperlink{class_bot_join_group_event}{BotJoinGroupEvent}})>;}
+\DoxyCodeLine{\textcolor{keyword}{using} GTME = std::function<void(\mbox{\hyperlink{class_group_temp_message_event}{GroupTempMessageEvent}})>;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*监听类声明*/}}
+\DoxyCodeLine{\textcolor{keyword}{class }\mbox{\hyperlink{class_event}{Event}} \{}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{    \textcolor{keyword}{class }Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{        Node *nextNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{}
+\DoxyCodeLine{        Node() \{\};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{class }GMENode : \textcolor{keyword}{public} Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        GME f = [](\mbox{\hyperlink{class_group_message_event}{GroupMessageEvent}}) -\/> \textcolor{keywordtype}{void} \{\};}
+\DoxyCodeLine{        GMENode *next = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{class }PMENode : \textcolor{keyword}{public} Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        PME f = [](\mbox{\hyperlink{class_private_message_event}{PrivateMessageEvent}}) -\/> \textcolor{keywordtype}{void} \{\};}
+\DoxyCodeLine{        PMENode *next = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{class }GINode : \textcolor{keyword}{public} Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        GI f = [](\mbox{\hyperlink{class_group_invite_event}{GroupInviteEvent}}) \{\};}
+\DoxyCodeLine{        GINode *next = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{class }NFRENode : \textcolor{keyword}{public} Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        NFRE f = [](\mbox{\hyperlink{class_new_friend_request_event}{NewFriendRequestEvent}}) \{\};}
+\DoxyCodeLine{        NFRENode *next = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{class }MJNode : \textcolor{keyword}{public} Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        MJ f = [](\mbox{\hyperlink{class_member_join_event}{MemberJoinEvent}}) -\/> \textcolor{keywordtype}{void} \{\};}
+\DoxyCodeLine{        MJNode *next = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{class }MLNode : \textcolor{keyword}{public} Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        ML f = [](\mbox{\hyperlink{class_member_leave_event}{MemberLeaveEvent}}) -\/> \textcolor{keywordtype}{void} \{\};}
+\DoxyCodeLine{        MLNode *next = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{class }RNode : \textcolor{keyword}{public} Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        R f = [](\mbox{\hyperlink{class_recall_event}{RecallEvent}}) -\/> \textcolor{keywordtype}{void} \{\};}
+\DoxyCodeLine{        RNode *next = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{class }SNode : \textcolor{keyword}{public} Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        S f = [](\mbox{\hyperlink{class_scheduling_event}{SchedulingEvent}}) -\/> \textcolor{keywordtype}{void} \{\};}
+\DoxyCodeLine{        SNode *next = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{class }BJNode : \textcolor{keyword}{public} Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        BJ f = [](\mbox{\hyperlink{class_bot_join_group_event}{BotJoinGroupEvent}}) -\/> \textcolor{keywordtype}{void} \{\};}
+\DoxyCodeLine{        BJNode *next = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keyword}{class }GTMENode : \textcolor{keyword}{public} Node \{}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        GTME f = [](\mbox{\hyperlink{class_group_temp_message_event}{GroupTempMessageEvent}}) -\/> \textcolor{keywordtype}{void} \{\};}
+\DoxyCodeLine{        GTMENode *next = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    GMENode *GMHead = \textcolor{keyword}{new} GMENode();}
+\DoxyCodeLine{    PMENode *PMHead = \textcolor{keyword}{new} PMENode();}
+\DoxyCodeLine{    GINode *GHead = \textcolor{keyword}{new} GINode();}
+\DoxyCodeLine{    NFRENode *NFHead = \textcolor{keyword}{new} NFRENode();}
+\DoxyCodeLine{    MJNode *MJHead = \textcolor{keyword}{new} MJNode();}
+\DoxyCodeLine{    MLNode *MLHead = \textcolor{keyword}{new} MLNode();}
+\DoxyCodeLine{    RNode *RHead = \textcolor{keyword}{new} RNode();}
+\DoxyCodeLine{    SNode *SHead = \textcolor{keyword}{new} SNode();}
+\DoxyCodeLine{    BJNode *BHead = \textcolor{keyword}{new} BJNode();}
+\DoxyCodeLine{    GTMENode *GTMHead = \textcolor{keyword}{new} GTMENode();}
+\DoxyCodeLine{}
+\DoxyCodeLine{    GMENode *GMTail = GMHead;}
+\DoxyCodeLine{    PMENode *PMTail = PMHead;}
+\DoxyCodeLine{    GINode *GTail = GHead;}
+\DoxyCodeLine{    NFRENode *NFTail = NFHead;}
+\DoxyCodeLine{    MJNode *MJTail = MJHead;}
+\DoxyCodeLine{    MLNode *MLTail = MLHead;}
+\DoxyCodeLine{    RNode *RTail = RHead;}
+\DoxyCodeLine{    SNode *STail = SHead;}
+\DoxyCodeLine{    BJNode *BTail = BHead;}
+\DoxyCodeLine{    GTMENode *GTMTail = GTMHead;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{public}:}
+\DoxyCodeLine{    \textcolor{keyword}{class }NodeHandle \{}
+\DoxyCodeLine{    \textcolor{keyword}{private}:}
+\DoxyCodeLine{        \textcolor{keywordtype}{bool} *enable;}
+\DoxyCodeLine{    \textcolor{keyword}{public}:}
+\DoxyCodeLine{        NodeHandle(\textcolor{keywordtype}{bool} *a) \{}
+\DoxyCodeLine{            this-\/>enable = a;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{        \textcolor{keywordtype}{void} stop()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{            *enable = \textcolor{keyword}{false};}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{        \textcolor{keywordtype}{void} consume()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{            *enable = \textcolor{keyword}{true};}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \};}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{/*}}
+\DoxyCodeLine{\textcolor{comment}{    * 广播函数重载}}
+\DoxyCodeLine{\textcolor{comment}{    */}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} broadcast(\mbox{\hyperlink{class_group_message_event}{GroupMessageEvent}} g) \{}
+\DoxyCodeLine{        GMENode *now = GMHead;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} (now) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{if} (now-\/>enable) \{ now-\/>f(g); \}}
+\DoxyCodeLine{            now = now-\/>next;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} broadcast(\mbox{\hyperlink{class_private_message_event}{PrivateMessageEvent}} p) \{}
+\DoxyCodeLine{        PMENode *now = PMHead;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} (now) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{if} (now-\/>enable) \{}
+\DoxyCodeLine{                now-\/>f(p);}
+\DoxyCodeLine{            \}}
+\DoxyCodeLine{            now = now-\/>next;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} broadcast(\mbox{\hyperlink{class_group_invite_event}{GroupInviteEvent}} g) \{}
+\DoxyCodeLine{        GINode *now = GHead;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} (now) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{if} (now-\/>enable) \{ now-\/>f(g); \}}
+\DoxyCodeLine{            now = now-\/>next;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} broadcast(\mbox{\hyperlink{class_new_friend_request_event}{NewFriendRequestEvent}} g) \{}
+\DoxyCodeLine{        NFRENode *now = NFHead;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} (now) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{if} (now-\/>enable) \{ now-\/>f(g); \}}
+\DoxyCodeLine{            now = now-\/>next;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} broadcast(\mbox{\hyperlink{class_member_join_event}{MemberJoinEvent}} g) \{}
+\DoxyCodeLine{        MJNode *now = MJHead;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} (now) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{if} (now-\/>enable) \{ now-\/>f(g); \}}
+\DoxyCodeLine{            now = now-\/>next;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} broadcast(\mbox{\hyperlink{class_member_leave_event}{MemberLeaveEvent}} g) \{}
+\DoxyCodeLine{        MLNode *now = MLHead;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} (now) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{if} (now-\/>enable) \{ now-\/>f(g); \}}
+\DoxyCodeLine{            now = now-\/>next;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} broadcast(\mbox{\hyperlink{class_recall_event}{RecallEvent}} r) \{}
+\DoxyCodeLine{        RNode *now = RHead;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} (now) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{if} (now-\/>enable) \{ now-\/>f(r); \}}
+\DoxyCodeLine{            now = now-\/>next;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} broadcast(\mbox{\hyperlink{class_scheduling_event}{SchedulingEvent}} g) \{}
+\DoxyCodeLine{        SNode *now = SHead;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} (now) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{if} (now-\/>enable) \{ now-\/>f(g); \}}
+\DoxyCodeLine{            now = now-\/>next;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} broadcast(\mbox{\hyperlink{class_bot_join_group_event}{BotJoinGroupEvent}} b) \{}
+\DoxyCodeLine{        BJNode *now = BHead;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} (now) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{if} (now-\/>enable) \{ now-\/>f(b); \}}
+\DoxyCodeLine{            now = now-\/>next;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{keywordtype}{void} broadcast(\mbox{\hyperlink{class_group_temp_message_event}{GroupTempMessageEvent}} g) \{}
+\DoxyCodeLine{        GTMENode *now = GTMHead;}
+\DoxyCodeLine{        \textcolor{keywordflow}{while} (now) \{}
+\DoxyCodeLine{            \textcolor{keywordflow}{if} (now-\/>enable) \{ now-\/>f(g); \}}
+\DoxyCodeLine{            now = now-\/>next;}
+\DoxyCodeLine{        \}}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \textcolor{comment}{/*}}
+\DoxyCodeLine{\textcolor{comment}{    * 监听函数重载}}
+\DoxyCodeLine{\textcolor{comment}{    */}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NodeHandle registerEvent(GME f) \{}
+\DoxyCodeLine{        GMENode *node = \textcolor{keyword}{new} GMENode();}
+\DoxyCodeLine{        node-\/>f = f;}
+\DoxyCodeLine{        GMTail-\/>next = node;}
+\DoxyCodeLine{        GMTail-\/>nextNode = node;}
+\DoxyCodeLine{        GMTail = node;}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} NodeHandle(\&node-\/>enable);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NodeHandle registerEvent(PME f) \{}
+\DoxyCodeLine{        PMENode *node = \textcolor{keyword}{new} PMENode();}
+\DoxyCodeLine{        node-\/>f = f;}
+\DoxyCodeLine{        PMTail-\/>next = node;}
+\DoxyCodeLine{        PMTail-\/>nextNode = node;}
+\DoxyCodeLine{        PMTail = node;}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} NodeHandle(\&node-\/>enable);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NodeHandle registerEvent(GI f) \{}
+\DoxyCodeLine{        GINode *node = \textcolor{keyword}{new} GINode();}
+\DoxyCodeLine{        node-\/>f = f;}
+\DoxyCodeLine{        GTail-\/>next = node;}
+\DoxyCodeLine{        GTail-\/>nextNode = node;}
+\DoxyCodeLine{        GTail = node;}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} NodeHandle(\&node-\/>enable);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NodeHandle registerEvent(NFRE f) \{}
+\DoxyCodeLine{        NFRENode *node = \textcolor{keyword}{new} NFRENode();}
+\DoxyCodeLine{        node-\/>f = f;}
+\DoxyCodeLine{        NFTail-\/>next = node;}
+\DoxyCodeLine{        NFTail-\/>nextNode = node;}
+\DoxyCodeLine{        NFTail = node;}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} NodeHandle(\&node-\/>enable);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NodeHandle registerEvent(MJ f) \{}
+\DoxyCodeLine{        MJNode *node = \textcolor{keyword}{new} MJNode();}
+\DoxyCodeLine{        node-\/>f = f;}
+\DoxyCodeLine{        MJTail-\/>next = node;}
+\DoxyCodeLine{        MJTail-\/>nextNode = node;}
+\DoxyCodeLine{        MJTail = node;}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} NodeHandle(\&node-\/>enable);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NodeHandle registerEvent(ML f) \{}
+\DoxyCodeLine{        MLNode *node = \textcolor{keyword}{new} MLNode();}
+\DoxyCodeLine{        node-\/>f = f;}
+\DoxyCodeLine{        MLTail-\/>next = node;}
+\DoxyCodeLine{        MLTail-\/>nextNode = node;}
+\DoxyCodeLine{        MLTail = node;}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} NodeHandle(\&node-\/>enable);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NodeHandle registerEvent(R r) \{}
+\DoxyCodeLine{        RNode *node = \textcolor{keyword}{new} RNode();}
+\DoxyCodeLine{        node-\/>f = r;}
+\DoxyCodeLine{        RTail-\/>next = node;}
+\DoxyCodeLine{        RTail-\/>nextNode = node;}
+\DoxyCodeLine{        RTail = node;}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} NodeHandle(\&node-\/>enable);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NodeHandle registerEvent(S f) \{}
+\DoxyCodeLine{        SNode *node = \textcolor{keyword}{new} SNode();}
+\DoxyCodeLine{        node-\/>f = f;}
+\DoxyCodeLine{        STail-\/>next = node;}
+\DoxyCodeLine{        STail-\/>nextNode = node;}
+\DoxyCodeLine{        STail = node;}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} NodeHandle(\&node-\/>enable);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NodeHandle registerEvent(BJ f) \{}
+\DoxyCodeLine{        BJNode *node = \textcolor{keyword}{new} BJNode();}
+\DoxyCodeLine{        node-\/>f = f;}
+\DoxyCodeLine{        BTail-\/>next = node;}
+\DoxyCodeLine{        BTail-\/>nextNode = node;}
+\DoxyCodeLine{        BTail = node;}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} NodeHandle(\&node-\/>enable);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NodeHandle registerEvent(GTME f) \{}
+\DoxyCodeLine{        GTMENode *node = \textcolor{keyword}{new} GTMENode();}
+\DoxyCodeLine{        node-\/>f = f;}
+\DoxyCodeLine{        GTMTail-\/>next = node;}
+\DoxyCodeLine{        GTMTail-\/>nextNode = node;}
+\DoxyCodeLine{        GTMTail = node;}
+\DoxyCodeLine{        \textcolor{keywordflow}{return} NodeHandle(\&node-\/>enable);}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    \string~\mbox{\hyperlink{class_event}{Event}}();}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*声明全局监听对象(广播源)*/}}
+\DoxyCodeLine{\textcolor{keyword}{extern} \mbox{\hyperlink{class_event}{Event}} *procession;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*声明插件启用和结束函数*/}}
+\DoxyCodeLine{\textcolor{keywordtype}{void} onDisable();}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordtype}{void} onEnable();}
+
+\end{DoxyCodeInclude}
+ 
