@@ -1,0 +1,159 @@
+\hypertarget{class_friend}{}\doxysection{Friend类 参考}
+\label{class_friend}\index{Friend@{Friend}}
+
+
+好友类声明  
+
+
+
+
+{\ttfamily \#include $<$tools.\+h$>$}
+
+
+
+类 Friend 继承关系图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=130pt]{class_friend__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Friend 的协作图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=130pt]{class_friend__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_friend_a24d5d1e22b735f5f78ac30da904bbc73}{Friend}} (unsigned long long friendid, unsigned long long \mbox{\hyperlink{class_contact_a869c10fc8e1abeedc10d805576b1450a}{botid}}, JNIEnv $\ast$=manager-\/$>$get\+Env())
+\begin{DoxyCompactList}\small\item\em 构建好友对象 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_friend_a4f453179ab383da2d6a15aff7618fc11}\label{class_friend_a4f453179ab383da2d6a15aff7618fc11}} 
+{\bfseries Friend} (\mbox{\hyperlink{class_contact}{Contact}} c)
+\item 
+\mbox{\hyperlink{class_image}{Image}} \mbox{\hyperlink{class_friend_ac271985962999f208d7d3f4b24572ef7}{upload\+Img}} (const std\+::string \&filename, JNIEnv $\ast$=manager-\/$>$get\+Env())
+\begin{DoxyCompactList}\small\item\em 上传本地图片，务必要用绝对路径. 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到好友. 最大支持图片大小为30\+MB. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_message_source}{Message\+Source}} \mbox{\hyperlink{class_friend_af9a80b1d0cc93c166dea7dd08cb516c9}{Send\+Mirai\+Code}} (\mbox{\hyperlink{class_mirai_codeable}{Mirai\+Codeable}} $\ast$msg)
+\begin{DoxyCompactList}\small\item\em 发送miraicode \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_friend_aa09d60a4befb6901d1f4ee2c1a3e43bf}\label{class_friend_aa09d60a4befb6901d1f4ee2c1a3e43bf}} 
+\mbox{\hyperlink{class_message_source}{Message\+Source}} \mbox{\hyperlink{class_friend_aa09d60a4befb6901d1f4ee2c1a3e43bf}{Send\+Mirai\+Code}} (\mbox{\hyperlink{class_mirai_code}{Mirai\+Code}} msg)
+\begin{DoxyCompactList}\small\item\em 发送miraicode \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_friend_a2f376e17df7c86cb0366d94abf932a3d}\label{class_friend_a2f376e17df7c86cb0366d94abf932a3d}} 
+\mbox{\hyperlink{class_message_source}{Message\+Source}} \mbox{\hyperlink{class_friend_a2f376e17df7c86cb0366d94abf932a3d}{Send\+Mirai\+Code}} (std\+::string msg, JNIEnv $\ast$=manager-\/$>$get\+Env())
+\begin{DoxyCompactList}\small\item\em 发送miraicode \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_friend_a0f32b2c4784f164847c69c6908d5ffc7}\label{class_friend_a0f32b2c4784f164847c69c6908d5ffc7}} 
+\mbox{\hyperlink{class_message_source}{Message\+Source}} \mbox{\hyperlink{class_friend_a0f32b2c4784f164847c69c6908d5ffc7}{Send\+Msg}} (std\+::string msg, JNIEnv $\ast$=manager-\/$>$get\+Env())
+\begin{DoxyCompactList}\small\item\em 发送纯文本信息 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{额外继承的成员函数}
+
+
+\doxysubsection{详细描述}
+好友类声明 \begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+\doxysubsection{构造及析构函数说明}
+\mbox{\Hypertarget{class_friend_a24d5d1e22b735f5f78ac30da904bbc73}\label{class_friend_a24d5d1e22b735f5f78ac30da904bbc73}} 
+\index{Friend@{Friend}!Friend@{Friend}}
+\index{Friend@{Friend}!Friend@{Friend}}
+\doxysubsubsection{\texorpdfstring{Friend()}{Friend()}}
+{\footnotesize\ttfamily Friend\+::\+Friend (\begin{DoxyParamCaption}\item[{unsigned long long}]{friendid,  }\item[{unsigned long long}]{botid,  }\item[{JNIEnv $\ast$}]{env = {\ttfamily manager-\/$>$getEnv()} }\end{DoxyParamCaption})}
+
+
+
+构建好友对象 
+
+
+\begin{DoxyParams}{参数}
+{\em friendid} & q号 \\
+\hline
+{\em botid} & 对应机器人id \\
+\hline
+\end{DoxyParams}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+函数调用图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_friend_a24d5d1e22b735f5f78ac30da904bbc73_cgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{成员函数说明}
+\mbox{\Hypertarget{class_friend_af9a80b1d0cc93c166dea7dd08cb516c9}\label{class_friend_af9a80b1d0cc93c166dea7dd08cb516c9}} 
+\index{Friend@{Friend}!SendMiraiCode@{SendMiraiCode}}
+\index{SendMiraiCode@{SendMiraiCode}!Friend@{Friend}}
+\doxysubsubsection{\texorpdfstring{SendMiraiCode()}{SendMiraiCode()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_message_source}{Message\+Source}} Friend\+::\+Send\+Mirai\+Code (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_mirai_codeable}{Mirai\+Codeable}} $\ast$}]{msg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+发送miraicode 
+
+
+\begin{DoxyParams}{参数}
+{\em msg} & -\/ Mirai\+Codeable类型指针 -\/ 内容 \\
+\hline
+\end{DoxyParams}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+这是这个函数的调用关系图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{class_friend_af9a80b1d0cc93c166dea7dd08cb516c9_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{class_friend_ac271985962999f208d7d3f4b24572ef7}\label{class_friend_ac271985962999f208d7d3f4b24572ef7}} 
+\index{Friend@{Friend}!uploadImg@{uploadImg}}
+\index{uploadImg@{uploadImg}!Friend@{Friend}}
+\doxysubsubsection{\texorpdfstring{uploadImg()}{uploadImg()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_image}{Image}} Friend\+::upload\+Img (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename,  }\item[{JNIEnv $\ast$}]{env = {\ttfamily manager-\/$>$getEnv()} }\end{DoxyParamCaption})}
+
+
+
+上传本地图片，务必要用绝对路径. 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到好友. 最大支持图片大小为30\+MB. 
+
+
+\begin{DoxyExceptions}{异常}
+{\em invalid\+\_\+argument代表路径无效} & \\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyParams}{参数}
+{\em filename} & 文件路径 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{返回}
+图片实例 
+\end{DoxyReturn}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+函数调用图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_friend_ac271985962999f208d7d3f4b24572ef7_cgraph}
+\end{center}
+\end{figure}
+
+
+该类的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+cpp\end{DoxyCompactItemize}

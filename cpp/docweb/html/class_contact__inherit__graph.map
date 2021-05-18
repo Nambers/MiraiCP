@@ -1,0 +1,5 @@
+<map id="Contact" name="Contact">
+<area shape="rect" id="node1" title="group, friend, member的父类" alt="" coords="45,5,112,32"/>
+<area shape="rect" id="node2" href="$class_friend.html" title="好友类声明" alt="" coords="5,80,64,107"/>
+<area shape="rect" id="node3" href="$class_member.html" title="群成员类声明" alt="" coords="88,80,157,107"/>
+</map>

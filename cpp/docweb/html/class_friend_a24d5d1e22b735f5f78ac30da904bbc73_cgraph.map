@@ -1,0 +1,8 @@
+<map id="Friend::Friend" name="Friend::Friend">
+<area shape="rect" id="node1" title="构建好友对象" alt="" coords="5,81,108,108"/>
+<area shape="rect" id="node2" href="$class_contact.html#a869c10fc8e1abeedc10d805576b1450a" title="所属bot" alt="" coords="196,5,299,32"/>
+<area shape="rect" id="node3" href="$class_low_level_a_p_i.html#ad285de08b2fb584b482db3e0144c1196" title="取该联系人的一些信息" alt="" coords="156,56,339,83"/>
+<area shape="rect" id="node5" href="$class_contact.html#a220e55b907d54958cd2afb95e65da5a1" title="id在全部情况存在" alt="" coords="205,107,290,133"/>
+<area shape="rect" id="node6" href="$class_low_level_a_p_i.html#a9bb2f0a4e7c0cb7eee2e100b791d38d7" title=" " alt="" coords="182,157,313,184"/>
+<area shape="rect" id="node4" href="$class_contact.html#a190dd1c2ecfccf67edc3d2b1cff87835" title=" " alt="" coords="387,49,545,90"/>
+</map>

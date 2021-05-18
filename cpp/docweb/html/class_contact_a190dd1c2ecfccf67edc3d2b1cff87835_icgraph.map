@@ -1,0 +1,8 @@
+<map id="Contact::serializationToString" name="Contact::serializationToString">
+<area shape="rect" id="node1" title=" " alt="" coords="420,23,579,65"/>
+<area shape="rect" id="node2" href="$class_low_level_a_p_i.html#ad285de08b2fb584b482db3e0144c1196" title="取该联系人的一些信息" alt="" coords="189,5,372,32"/>
+<area shape="rect" id="node4" href="$class_low_level_a_p_i.html#a34e8b356a0298a68876c21b64373d5af" title="上传图片" alt="" coords="196,56,365,83"/>
+<area shape="rect" id="node3" href="$class_friend.html#a24d5d1e22b735f5f78ac30da904bbc73" title="构建好友对象" alt="" coords="22,5,125,32"/>
+<area shape="rect" id="node5" href="$class_friend.html#ac271985962999f208d7d3f4b24572ef7" title="上传本地图片，务必要用绝对路径. 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到好友. 最大支持图片大小为30MB." alt="" coords="11,56,136,83"/>
+<area shape="rect" id="node6" href="$class_member.html#aba78f8099187033776154e6a3e60b881" title="上传本地图片，务必要用绝对路径 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群" alt="" coords="5,107,141,133"/>
+</map>

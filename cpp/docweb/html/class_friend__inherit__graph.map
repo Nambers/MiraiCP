@@ -1,0 +1,4 @@
+<map id="Friend" name="Friend">
+<area shape="rect" id="node1" title="好友类声明" alt="" coords="9,80,68,107"/>
+<area shape="rect" id="node2" href="$class_contact.html" title="group, friend, member的父类" alt="" coords="5,5,72,32"/>
+</map>

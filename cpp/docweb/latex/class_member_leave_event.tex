@@ -1,0 +1,91 @@
+\hypertarget{class_member_leave_event}{}\doxysection{Member\+Leave\+Event类 参考}
+\label{class_member_leave_event}\index{MemberLeaveEvent@{MemberLeaveEvent}}
+
+
+群成员离开  
+
+
+
+
+{\ttfamily \#include $<$tools.\+h$>$}
+
+
+
+类 Member\+Leave\+Event 继承关系图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=181pt]{class_member_leave_event__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Member\+Leave\+Event 的协作图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=181pt]{class_member_leave_event__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_member_leave_event_ac714a3add4ac210728a26acd8bdf6f00}{Member\+Leave\+Event}} (unsigned long long int botid, const int \mbox{\hyperlink{class_member_leave_event_a222486c46fa7a56db8a06906b145f42b}{type}}, const unsigned long long \mbox{\hyperlink{class_member_leave_event_a8dbb981f7e9b4ecaf618a443999385ce}{memberid}}, const Group \&\mbox{\hyperlink{class_member_leave_event_a9be3eefd061ba47025d683779f6ed008}{group}}, const unsigned long long \&\mbox{\hyperlink{class_member_leave_event_afe223b1e1d8a2591c013995eb4466184}{operaterid}})
+\begin{DoxyCompactList}\small\item\em 群成员离开 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public 属性}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_member_leave_event_a222486c46fa7a56db8a06906b145f42b}\label{class_member_leave_event_a222486c46fa7a56db8a06906b145f42b}} 
+const int \mbox{\hyperlink{class_member_leave_event_a222486c46fa7a56db8a06906b145f42b}{type}} = 0
+\begin{DoxyCompactList}\small\item\em 事件类型 1 -\/ 被踢出 2 -\/ 主动退出 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_member_leave_event_a8dbb981f7e9b4ecaf618a443999385ce}\label{class_member_leave_event_a8dbb981f7e9b4ecaf618a443999385ce}} 
+const unsigned long long \mbox{\hyperlink{class_member_leave_event_a8dbb981f7e9b4ecaf618a443999385ce}{memberid}}
+\begin{DoxyCompactList}\small\item\em 退出的成员q号 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_member_leave_event_a9be3eefd061ba47025d683779f6ed008}\label{class_member_leave_event_a9be3eefd061ba47025d683779f6ed008}} 
+Group \mbox{\hyperlink{class_member_leave_event_a9be3eefd061ba47025d683779f6ed008}{group}}
+\begin{DoxyCompactList}\small\item\em 目标群 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_member_leave_event_afe223b1e1d8a2591c013995eb4466184}\label{class_member_leave_event_afe223b1e1d8a2591c013995eb4466184}} 
+const unsigned long long \mbox{\hyperlink{class_member_leave_event_afe223b1e1d8a2591c013995eb4466184}{operaterid}}
+\begin{DoxyCompactList}\small\item\em 操作人, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分 \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{详细描述}
+群成员离开 \begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+\doxysubsection{构造及析构函数说明}
+\mbox{\Hypertarget{class_member_leave_event_ac714a3add4ac210728a26acd8bdf6f00}\label{class_member_leave_event_ac714a3add4ac210728a26acd8bdf6f00}} 
+\index{MemberLeaveEvent@{MemberLeaveEvent}!MemberLeaveEvent@{MemberLeaveEvent}}
+\index{MemberLeaveEvent@{MemberLeaveEvent}!MemberLeaveEvent@{MemberLeaveEvent}}
+\doxysubsubsection{\texorpdfstring{MemberLeaveEvent()}{MemberLeaveEvent()}}
+{\footnotesize\ttfamily Member\+Leave\+Event\+::\+Member\+Leave\+Event (\begin{DoxyParamCaption}\item[{unsigned long long int}]{botid,  }\item[{const int}]{type,  }\item[{const unsigned long long}]{memberid,  }\item[{const Group \&}]{group,  }\item[{const unsigned long long \&}]{operaterid }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+群成员离开 
+
+
+\begin{DoxyParams}{参数}
+{\em botid} & \\
+\hline
+{\em type} & \\
+\hline
+{\em memberid} & 退出的群成员 \\
+\hline
+{\em group} & 群 \\
+\hline
+{\em operaterid} & 操作人id, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分 \\
+\hline
+\end{DoxyParams}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+该类的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h\end{DoxyCompactItemize}

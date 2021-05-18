@@ -1,0 +1,114 @@
+\hypertarget{class_group_invite_event}{}\doxysection{Group\+Invite\+Event类 参考}
+\label{class_group_invite_event}\index{GroupInviteEvent@{GroupInviteEvent}}
+
+
+群聊邀请事件类声明  
+
+
+
+
+{\ttfamily \#include $<$tools.\+h$>$}
+
+
+
+类 Group\+Invite\+Event 继承关系图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=169pt]{class_group_invite_event__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Group\+Invite\+Event 的协作图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=169pt]{class_group_invite_event__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_group_invite_event_a37bc0ddb350abb31cbebc6126ea9b5d9}\label{class_group_invite_event_a37bc0ddb350abb31cbebc6126ea9b5d9}} 
+void {\bfseries reject} ()
+\item 
+\mbox{\Hypertarget{class_group_invite_event_a59ffd10fc428295561098137d123a129}\label{class_group_invite_event_a59ffd10fc428295561098137d123a129}} 
+std\+::string {\bfseries get\+Source} ()
+\item 
+\mbox{\Hypertarget{class_group_invite_event_a7eca11d2982d510111a733665013e1d7}\label{class_group_invite_event_a7eca11d2982d510111a733665013e1d7}} 
+void {\bfseries accept} ()
+\item 
+\mbox{\hyperlink{class_group_invite_event_a459cf6aaf1060070a5a7b9670f76a51e}{Group\+Invite\+Event}} (unsigned long long int botid, const std\+::string \&\mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}}, const std\+::string \&\mbox{\hyperlink{class_group_invite_event_a52981f0279e776c480bba2a3412b08ce}{inviter\+Nick}}, unsigned long long int \mbox{\hyperlink{class_group_invite_event_a1fd38f381c6fff45ab83467618291fe0}{inviterid}}, const std\+::string \&\mbox{\hyperlink{class_group_invite_event_af5a94c1169cd372073c1f7a1bf731828}{group\+Name}}, unsigned long long int \mbox{\hyperlink{class_group_invite_event_a5c218ea77c17ce8aa7cd1bfa56765ee4}{groupid}})
+\begin{DoxyCompactList}\small\item\em 群邀请事件 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{静态 Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_group_invite_event_af85780c24f7212c9cc50b9d83ef55594}\label{class_group_invite_event_af85780c24f7212c9cc50b9d83ef55594}} 
+static void {\bfseries reject} (std\+::string \mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}})
+\item 
+\mbox{\Hypertarget{class_group_invite_event_a8baf6dc678651bd959477dcd87b86df2}\label{class_group_invite_event_a8baf6dc678651bd959477dcd87b86df2}} 
+static void {\bfseries accept} (std\+::string \mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Public 属性}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}\label{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}} 
+const std\+::string \mbox{\hyperlink{class_group_invite_event_a6f69065d6970e5984dfa29c37bda9870}{source}}
+\begin{DoxyCompactList}\small\item\em 事件序列化文本 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_group_invite_event_a52981f0279e776c480bba2a3412b08ce}\label{class_group_invite_event_a52981f0279e776c480bba2a3412b08ce}} 
+const std\+::string \mbox{\hyperlink{class_group_invite_event_a52981f0279e776c480bba2a3412b08ce}{inviter\+Nick}} = \char`\"{}\char`\"{}
+\begin{DoxyCompactList}\small\item\em 发起人昵称 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_group_invite_event_a1fd38f381c6fff45ab83467618291fe0}\label{class_group_invite_event_a1fd38f381c6fff45ab83467618291fe0}} 
+const unsigned long long \mbox{\hyperlink{class_group_invite_event_a1fd38f381c6fff45ab83467618291fe0}{inviterid}} = 0
+\begin{DoxyCompactList}\small\item\em 发起人id \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_group_invite_event_af5a94c1169cd372073c1f7a1bf731828}\label{class_group_invite_event_af5a94c1169cd372073c1f7a1bf731828}} 
+const std\+::string \mbox{\hyperlink{class_group_invite_event_af5a94c1169cd372073c1f7a1bf731828}{group\+Name}} = \char`\"{}\char`\"{}
+\begin{DoxyCompactList}\small\item\em 被邀请进的组 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_group_invite_event_a5c218ea77c17ce8aa7cd1bfa56765ee4}\label{class_group_invite_event_a5c218ea77c17ce8aa7cd1bfa56765ee4}} 
+const unsigned long long \mbox{\hyperlink{class_group_invite_event_a5c218ea77c17ce8aa7cd1bfa56765ee4}{groupid}} = 0
+\begin{DoxyCompactList}\small\item\em 群号 \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{详细描述}
+群聊邀请事件类声明 \begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+\doxysubsection{构造及析构函数说明}
+\mbox{\Hypertarget{class_group_invite_event_a459cf6aaf1060070a5a7b9670f76a51e}\label{class_group_invite_event_a459cf6aaf1060070a5a7b9670f76a51e}} 
+\index{GroupInviteEvent@{GroupInviteEvent}!GroupInviteEvent@{GroupInviteEvent}}
+\index{GroupInviteEvent@{GroupInviteEvent}!GroupInviteEvent@{GroupInviteEvent}}
+\doxysubsubsection{\texorpdfstring{GroupInviteEvent()}{GroupInviteEvent()}}
+{\footnotesize\ttfamily Group\+Invite\+Event\+::\+Group\+Invite\+Event (\begin{DoxyParamCaption}\item[{unsigned long long int}]{botid,  }\item[{const std\+::string \&}]{source,  }\item[{const std\+::string \&}]{inviter\+Nick,  }\item[{unsigned long long int}]{inviterid,  }\item[{const std\+::string \&}]{group\+Name,  }\item[{unsigned long long int}]{groupid }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+群邀请事件 
+
+
+\begin{DoxyParams}{参数}
+{\em botid} & 当前botid \\
+\hline
+{\em source} & 序列化后字符串 \\
+\hline
+{\em inviter\+Nick} & 邀请人昵称 \\
+\hline
+{\em inviterid} & 邀请人id \\
+\hline
+{\em group\+Name} & 群聊名称 \\
+\hline
+{\em groupid} & 群号 \\
+\hline
+\end{DoxyParams}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+该类的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h\end{DoxyCompactItemize}

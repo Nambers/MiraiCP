@@ -1,0 +1,5 @@
+<map id="MemberLeaveEvent" name="MemberLeaveEvent">
+<area shape="rect" id="node1" title="群成员离开" alt="" coords="5,171,140,197"/>
+<area shape="rect" id="node2" href="$class_bot_event.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="35,95,110,121"/>
+<area shape="rect" id="node3" href="$class_bot.html" title="当前bot账号信息" alt="" coords="51,5,94,32"/>
+</map>

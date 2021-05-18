@@ -1,0 +1,142 @@
+\hypertarget{class_remote_file}{}\doxysection{Remote\+File类 参考}
+\label{class_remote_file}\index{RemoteFile@{RemoteFile}}
+
+
+远程(群)文件类型  
+
+
+
+
+{\ttfamily \#include $<$tools.\+h$>$}
+
+
+
+类 Remote\+File 继承关系图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=158pt]{class_remote_file__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Remote\+File 的协作图\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=266pt]{class_remote_file__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_remote_file_a971914cc9e832e785ec9667761bb49a2}\label{class_remote_file_a971914cc9e832e785ec9667761bb49a2}} 
+std\+::string {\bfseries serialize\+To\+String} ()
+\item 
+\mbox{\hyperlink{class_remote_file_a2a606d3e0fddf6251ded708a089dfdb5}{Remote\+File}} (const std\+::string \&i, unsigned int ii, const std\+::string \&n, long long s, const std\+::string \&p, struct \mbox{\hyperlink{structdinfo}{dinfo}} d, struct \mbox{\hyperlink{structfinfo}{finfo}} f)
+\begin{DoxyCompactList}\small\item\em 构造远程(群)文件 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_remote_file_a1ca55a2e4cead686e9ea5f0e9260dfa0}\label{class_remote_file_a1ca55a2e4cead686e9ea5f0e9260dfa0}} 
+std\+::string \mbox{\hyperlink{class_remote_file_a1ca55a2e4cead686e9ea5f0e9260dfa0}{to\+Mirai\+Code}} ()
+\begin{DoxyCompactList}\small\item\em 仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{静态 Public 成员函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_remote_file_a4f9a12c1a71dfea6ba98624fb29d3f2f}\label{class_remote_file_a4f9a12c1a71dfea6ba98624fb29d3f2f}} 
+static \mbox{\hyperlink{class_remote_file}{Remote\+File}} {\bfseries deserialize\+From\+String} (const std\+::string \&source)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public 属性}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_remote_file_a28376539b0566ae41036143dad94fad0}\label{class_remote_file_a28376539b0566ae41036143dad94fad0}} 
+const std\+::string \mbox{\hyperlink{class_remote_file_a28376539b0566ae41036143dad94fad0}{id}}
+\begin{DoxyCompactList}\small\item\em 文件唯一id, 用于试别 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_remote_file_a95f6a801ddb786ce006542e028d6d337}\label{class_remote_file_a95f6a801ddb786ce006542e028d6d337}} 
+const unsigned int \mbox{\hyperlink{class_remote_file_a95f6a801ddb786ce006542e028d6d337}{internalid}}
+\begin{DoxyCompactList}\small\item\em 文件内部id, 用于构造mirai\+Code发送 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_remote_file_aaeef98e2d5caaa1521950a5a4446efe7}\label{class_remote_file_aaeef98e2d5caaa1521950a5a4446efe7}} 
+const std\+::string \mbox{\hyperlink{class_remote_file_aaeef98e2d5caaa1521950a5a4446efe7}{name}}
+\begin{DoxyCompactList}\small\item\em 文件名 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_remote_file_a4669b902794a33fbc60fa99c809a22e5}\label{class_remote_file_a4669b902794a33fbc60fa99c809a22e5}} 
+const long long \mbox{\hyperlink{class_remote_file_a4669b902794a33fbc60fa99c809a22e5}{size}}
+\begin{DoxyCompactList}\small\item\em 文件大小 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_remote_file_aed6d46f89c5cb0d83236b4b7e1b5c873}\label{class_remote_file_aed6d46f89c5cb0d83236b4b7e1b5c873}} 
+const std\+::string \mbox{\hyperlink{class_remote_file_aed6d46f89c5cb0d83236b4b7e1b5c873}{path}}
+\begin{DoxyCompactList}\small\item\em 文件在群文件的路径 \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{structdinfo}{dinfo}} \mbox{\hyperlink{class_remote_file_a2a819afb5208ce0d816a073b6d2dbb98}{dinfo}}
+\item 
+const \mbox{\hyperlink{structfinfo}{finfo}} \mbox{\hyperlink{class_remote_file_a5c04bb6347e3783a9b6c083e7ee5586d}{finfo}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{详细描述}
+远程(群)文件类型 \begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+\doxysubsection{构造及析构函数说明}
+\mbox{\Hypertarget{class_remote_file_a2a606d3e0fddf6251ded708a089dfdb5}\label{class_remote_file_a2a606d3e0fddf6251ded708a089dfdb5}} 
+\index{RemoteFile@{RemoteFile}!RemoteFile@{RemoteFile}}
+\index{RemoteFile@{RemoteFile}!RemoteFile@{RemoteFile}}
+\doxysubsubsection{\texorpdfstring{RemoteFile()}{RemoteFile()}}
+{\footnotesize\ttfamily Remote\+File\+::\+Remote\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{i,  }\item[{unsigned int}]{ii,  }\item[{const std\+::string \&}]{n,  }\item[{long long}]{s,  }\item[{const std\+::string \&}]{p,  }\item[{struct \mbox{\hyperlink{structdinfo}{dinfo}}}]{d,  }\item[{struct \mbox{\hyperlink{structfinfo}{finfo}}}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+构造远程(群)文件 
+
+
+\begin{DoxyParams}{参数}
+{\em i} & ids \\
+\hline
+{\em ii} & internalids \\
+\hline
+{\em n} & name \\
+\hline
+{\em s} & size \\
+\hline
+{\em p} & path \\
+\hline
+{\em d} & dinfo \\
+\hline
+{\em f} & finfo \\
+\hline
+\end{DoxyParams}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+\doxysubsection{类成员变量说明}
+\mbox{\Hypertarget{class_remote_file_a2a819afb5208ce0d816a073b6d2dbb98}\label{class_remote_file_a2a819afb5208ce0d816a073b6d2dbb98}} 
+\index{RemoteFile@{RemoteFile}!dinfo@{dinfo}}
+\index{dinfo@{dinfo}!RemoteFile@{RemoteFile}}
+\doxysubsubsection{\texorpdfstring{dinfo}{dinfo}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structdinfo}{dinfo}} Remote\+File\+::dinfo}
+
+文件下载信息 \begin{DoxySeeAlso}{参见}
+\mbox{\hyperlink{structdinfo}{dinfo}} 
+\end{DoxySeeAlso}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+\mbox{\Hypertarget{class_remote_file_a5c04bb6347e3783a9b6c083e7ee5586d}\label{class_remote_file_a5c04bb6347e3783a9b6c083e7ee5586d}} 
+\index{RemoteFile@{RemoteFile}!finfo@{finfo}}
+\index{finfo@{finfo}!RemoteFile@{RemoteFile}}
+\doxysubsubsection{\texorpdfstring{finfo}{finfo}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structfinfo}{finfo}} Remote\+File\+::finfo}
+
+文件信息 \begin{DoxySeeAlso}{参见}
+\mbox{\hyperlink{structfinfo}{finfo}} 
+\end{DoxySeeAlso}
+\begin{Desc}
+\item[示例]\par
+\mbox{\hyperlink{_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example}{D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h}}.\end{Desc}
+
+
+该类的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+h\item 
+D\+:/\+Git/mirai/\+Mirai\+CP/cpp/tools.\+cpp\end{DoxyCompactItemize}
