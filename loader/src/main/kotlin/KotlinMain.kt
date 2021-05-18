@@ -35,7 +35,7 @@ object KotlinMain {
         Mirai
         serializersModule = MessageSerializers.serializersModule
     }
-    const val now_tag = "v2.6.2"
+    const val now_tag = "v2.6.3-RC"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
     private lateinit var cpp: CPP_lib

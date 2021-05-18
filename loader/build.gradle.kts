@@ -85,7 +85,7 @@ application {
     mainClass.set("tech.eritquearcus.miraicp.KotlinMainKt")
 }
 group = "tech.eritquearcus"
-version = "2.6.2"
+version = "2.6.3-RC"
 
 repositories {
     mavenCentral()
