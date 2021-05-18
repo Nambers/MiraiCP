@@ -1,5 +1,0 @@
-<map id="LowLevelAPI::uploadImg0" name="LowLevelAPI::uploadImg0">
-<area shape="rect" id="node1" title="上传图片" alt="" coords="189,31,359,57"/>
-<area shape="rect" id="node2" href="$class_friend.html#ac271985962999f208d7d3f4b24572ef7" title="上传本地图片，务必要用绝对路径. 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到好友. 最大支持图片大小为30MB." alt="" coords="11,5,136,32"/>
-<area shape="rect" id="node3" href="$class_member.html#aba78f8099187033776154e6a3e60b881" title="上传本地图片，务必要用绝对路径 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群" alt="" coords="5,56,141,83"/>
-</map>

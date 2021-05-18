@@ -1,4 +1,0 @@
-<map id="threadManager::detach" name="threadManager::detach">
-<area shape="rect" id="node1" title="结束当前线程的env，也就是释放当前线程缓存的env." alt="" coords="5,5,160,32"/>
-<area shape="rect" id="node2" href="$classthread_manager.html#a3401a8976c99d293ef1b8b8c7a1db9d1" title="获取线程id." alt="" coords="208,5,391,32"/>
-</map>
