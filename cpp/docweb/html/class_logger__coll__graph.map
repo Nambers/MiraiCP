@@ -1,0 +1,4 @@
+<map id="Logger" name="Logger">
+<area shape="rect" id="node1" title=" " alt="" coords="30,95,91,121"/>
+<area shape="rect" id="node2" href="$struct_logger_1_1handler.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="5,5,116,32"/>
+</map>

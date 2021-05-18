@@ -1,0 +1,5 @@
+<map id="类继承关系图" name="类继承关系图">
+<area shape="rect" id="node1" href="$class_contact.html" title="group, friend, member的父类" alt="" coords="5,31,72,57"/>
+<area shape="rect" id="node2" href="$class_friend.html" title="好友类声明" alt="" coords="125,5,184,32"/>
+<area shape="rect" id="node3" href="$class_member.html" title="群成员类声明" alt="" coords="120,56,189,83"/>
+</map>

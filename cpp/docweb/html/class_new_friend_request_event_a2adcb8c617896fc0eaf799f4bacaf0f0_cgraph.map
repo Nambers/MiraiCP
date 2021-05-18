@@ -1,0 +1,6 @@
+<map id="NewFriendRequestEvent::accept" name="NewFriendRequestEvent::accept">
+<area shape="rect" id="node1" title="接受好友申请" alt="" coords="5,23,168,65"/>
+<area shape="rect" id="node2" href="$class_logger.html#abb690146dbd2c6fb7e603caf123096dd" title="发送错误(error级日志)" alt="" coords="245,5,342,32"/>
+<area shape="rect" id="node3" href="$classthread_manager.html#a75639792816fe3f8af8a5a3fde89e4af" title="取env,如果不存在重新获取." alt="" coords="216,56,371,83"/>
+<area shape="rect" id="node4" href="$classthread_manager.html#a3401a8976c99d293ef1b8b8c7a1db9d1" title="获取线程id." alt="" coords="419,56,601,83"/>
+</map>
