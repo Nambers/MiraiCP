@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "tech.eritquearcus"
-version = "2.6.2"
+version = "2.6.3-RC"
 
 repositories {
     maven{ url =uri("https://maven.aliyun.com/nexus/content/groups/public/")}

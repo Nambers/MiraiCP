@@ -765,7 +765,9 @@ public:
 	std::string toMiraiCode();
 };
 
-/// group, friend, member的父类
+/*!
+ * @brief group, friend, member的父类
+ */
 class Contact {
 protected:
 	int _type = 0;
@@ -775,6 +777,10 @@ protected:
 	std::string _avatarUrl;
 	unsigned long long _botid;
 public:
+    /*!
+     * @brief 无参初始化Contact类型
+     * @internal 一般在MiraiCp内部构造
+     */
 	Contact() {
 		this->_type = 0;
 		this->_id = 0;
@@ -783,6 +789,18 @@ public:
 		this->_botid = 0;
 	}
 
+	/*!
+	 * @brief 构造contact类型
+	 * @param type 类型
+	 *  @see Contact::type()
+	 * @param id ID
+	 *  @see Contact::id()
+	 * @param gid 是member的时候是群id，否则为0
+	 *  @see Contact::groupid
+	 * @param name 群名片或昵称或群名
+	 *  @see Contact::name()
+	 * @param botid 对应的botid
+	 */
 	Contact(int type, unsigned long long id, unsigned long long gid, std::string name, unsigned long long botid) {
 		this->_type = type;
 		this->_id = id;
@@ -1042,7 +1060,6 @@ public:
 class Bot {
 private:
 	bool inited = false;
-	unsigned long long _id;
 	std::string _nick;
 	std::string _avatarUrl;
 
@@ -1054,6 +1071,8 @@ private:
 	}
 
 public:
+    /// 该botid
+    const unsigned long long id;
 	/*!
 	 * @brief 刷新bot信息
 	 * @param env
@@ -1061,20 +1080,13 @@ public:
 	void refreshInfo(JNIEnv* env = manager->getEnv()) {
 		LowLevelAPI::info tmp = LowLevelAPI::info0(Tools::jstring2str(
 			(jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo, Tools::str2jstring(
-				Contact(4, 0, 0, "", this->_id).serializationToString().c_str(), env))));
+				Contact(4, 0, 0, "", this->id).serializationToString().c_str(), env))));
 		this->_avatarUrl = tmp.avatarUrl;
 		this->_nick = tmp.nickornamecard;
 	}
 
 	/// 用id构建机器人
-	Bot(unsigned long long i) {
-		this->_id = i;
-	}
-
-	///取id
-	unsigned long long id() {
-		return this->_id;
-	}
+	Bot(unsigned long long i): id(i){}
 
 	/// 昵称
 	std::string nick() {
@@ -1092,7 +1104,7 @@ public:
 	std::vector<unsigned long long> getFriendList(JNIEnv* env = manager->getEnv()) {
 		std::string temp = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
 			config->KQueryBFL,
-			(jlong)this->id()));
+			(jlong)this->id));
 		return Tools::StringToVector(temp);
 	}
 
@@ -1105,7 +1117,7 @@ public:
 	std::vector<unsigned long long> getGroupList(JNIEnv* env = manager->getEnv()) {
 		std::string temp = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
 			config->KQueryBGL,
-			(jlong)this->id()));
+			(jlong)this->id));
 		return Tools::StringToVector(temp);
 	}
 

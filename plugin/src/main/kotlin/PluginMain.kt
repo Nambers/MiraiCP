@@ -39,7 +39,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.6.2"
+        version = "2.6.3-RC"
     )
 ) {
     private val json = Json{
@@ -50,7 +50,7 @@ object PluginMain : KotlinPlugin(
     var dll_name = "mirai-demo.dll"
     private lateinit var cpp: CPP_lib
     private lateinit var gson: Gson
-    private const val now_tag = "v2.6.2"
+    private const val now_tag = "v2.6.3-RC"
 
     //日志部分实现
     fun BasicSendLog(log: String) {
@@ -591,9 +591,8 @@ object PluginMain : KotlinPlugin(
             logger.error("警告:当前MiraiCP框架版本($now_tag)和加载的C++ SDK(${cpp.ver})不一致")
         }
         gson = Gson()
-        val globalEventChannel = this.globalEventChannel()
         //配置文件目录 "${dataFolder.absolutePath}/"
-        globalEventChannel.subscribeAlways<FriendMessageEvent> {
+        globalEventChannel().subscribeAlways<FriendMessageEvent> {
             //好友信息
             cpp.Event(
                 gson.toJson(
@@ -608,7 +607,7 @@ object PluginMain : KotlinPlugin(
                 )
             )
         }
-        globalEventChannel.subscribeAlways<FriendMessageEvent> {
+        globalEventChannel().subscribeAlways<GroupMessageEvent> {
             //群消息
             try {
                 cpp.Event(
@@ -626,7 +625,7 @@ object PluginMain : KotlinPlugin(
                 e.printStackTrace()
             }
         }
-        globalEventChannel.subscribeAlways<GroupMessageEvent> {
+        globalEventChannel().subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
             cpp.Event(
                 gson.toJson(
@@ -640,7 +639,7 @@ object PluginMain : KotlinPlugin(
             )
             friend_cache.remove(this.member)
         }
-        globalEventChannel.subscribeAlways<MemberLeaveEvent.Quit> {
+        globalEventChannel().subscribeAlways<MemberLeaveEvent.Quit> {
             friend_cache.add(this.member)
             cpp.Event(
                 gson.toJson(
@@ -654,7 +653,7 @@ object PluginMain : KotlinPlugin(
             )
             friend_cache.remove(this.member)
         }
-        globalEventChannel.subscribeAlways<MemberLeaveEvent.Retrieve> {
+        globalEventChannel().subscribeAlways<MemberJoinEvent.Retrieve> {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
@@ -666,7 +665,7 @@ object PluginMain : KotlinPlugin(
                 )
             )
         }
-        globalEventChannel.subscribeAlways<MemberJoinEvent.Active> {
+        globalEventChannel().subscribeAlways<MemberJoinEvent.Active> {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
@@ -678,7 +677,7 @@ object PluginMain : KotlinPlugin(
                 )
             )
         }
-        globalEventChannel.subscribeAlways<MemberJoinEvent.Invite> {
+        globalEventChannel().subscribeAlways<MemberJoinEvent.Invite> {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
@@ -690,7 +689,7 @@ object PluginMain : KotlinPlugin(
                 )
             )
         }
-        globalEventChannel.subscribeAlways<NewFriendRequestEvent> {
+        globalEventChannel().subscribeAlways<NewFriendRequestEvent> {
             //自动同意好友申请
             cpp.Event(
                 gson.toJson(
@@ -708,7 +707,7 @@ object PluginMain : KotlinPlugin(
             )
 
         }
-        globalEventChannel.subscribeAlways<NewFriendRequestEvent> {
+        globalEventChannel().subscribeAlways<MessageRecallEvent.FriendRecall> {
             cpp.Event(
                 gson.toJson(
                     Config.RecallEvent(
@@ -725,7 +724,7 @@ object PluginMain : KotlinPlugin(
             )
 
         }
-        globalEventChannel.subscribeAlways<MessageRecallEvent.GroupRecall> {
+        globalEventChannel().subscribeAlways<MessageRecallEvent.GroupRecall> {
             cpp.Event(
                 gson.toJson(
                     Config.RecallEvent(
@@ -742,7 +741,7 @@ object PluginMain : KotlinPlugin(
             )
 
         }
-        globalEventChannel.subscribeAlways<MessageRecallEvent.Invite>{
+        globalEventChannel().subscribeAlways<BotJoinGroupEvent.Invite>{
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
@@ -753,7 +752,7 @@ object PluginMain : KotlinPlugin(
                 )
             )
         }
-        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Active>{
+        globalEventChannel().subscribeAlways<BotJoinGroupEvent.Active>{
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
@@ -764,7 +763,7 @@ object PluginMain : KotlinPlugin(
                 )
             )
         }
-        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve>{
+        globalEventChannel().subscribeAlways<BotJoinGroupEvent.Retrieve>{
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
@@ -775,7 +774,7 @@ object PluginMain : KotlinPlugin(
                 )
             )
         }
-        globalEventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
+        globalEventChannel().subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
             cpp.Event(
                 gson.toJson(
@@ -792,7 +791,7 @@ object PluginMain : KotlinPlugin(
                 )
             )
         }
-        globalEventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
+        globalEventChannel().subscribeAlways<GroupTempMessageEvent> {
             //群临时会话
             cpp.Event(
                 gson.toJson(
