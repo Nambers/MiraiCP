@@ -1,6 +1,0 @@
-<map id="类继承关系图" name="类继承关系图">
-<area shape="rect" id="node1" href="$class_mirai_codeable.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,56,109,83"/>
-<area shape="rect" id="node2" href="$class_image.html" title=" " alt="" coords="173,5,230,32"/>
-<area shape="rect" id="node3" href="$class_light_app.html" title="小程序" alt="" coords="165,56,238,83"/>
-<area shape="rect" id="node4" href="$class_remote_file.html" title="远程(群)文件类型" alt="" coords="157,107,245,133"/>
-</map>

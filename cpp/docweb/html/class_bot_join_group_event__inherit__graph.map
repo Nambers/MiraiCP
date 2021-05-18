@@ -1,4 +1,0 @@
-<map id="BotJoinGroupEvent" name="BotJoinGroupEvent">
-<area shape="rect" id="node1" title="机器人进入某群" alt="" coords="5,80,137,107"/>
-<area shape="rect" id="node2" href="$class_bot_event.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="34,5,109,32"/>
-</map>

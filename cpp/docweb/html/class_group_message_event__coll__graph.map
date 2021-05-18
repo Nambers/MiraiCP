@@ -1,8 +1,0 @@
-<map id="GroupMessageEvent" name="GroupMessageEvent">
-<area shape="rect" id="node1" title="群消息事件声明" alt="" coords="67,184,210,211"/>
-<area shape="rect" id="node2" href="$class_bot_event.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="5,95,80,121"/>
-<area shape="rect" id="node3" href="$class_bot.html" title="当前bot账号信息" alt="" coords="21,5,64,32"/>
-<area shape="rect" id="node4" href="$class_member.html" title="群成员类声明" alt="" coords="104,95,173,121"/>
-<area shape="rect" id="node5" href="$class_contact.html" title="group, friend, member的父类" alt="" coords="105,5,172,32"/>
-<area shape="rect" id="node6" href="$class_message_source.html" title="消息源声明" alt="" coords="198,95,314,121"/>
-</map>
