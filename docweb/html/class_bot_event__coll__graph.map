@@ -1,0 +1,4 @@
+<map id="BotEvent" name="BotEvent">
+<area shape="rect" id="node1" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="5,95,80,121"/>
+<area shape="rect" id="node2" href="$class_bot.html" title="当前bot账号信息" alt="" coords="21,5,64,32"/>
+</map>

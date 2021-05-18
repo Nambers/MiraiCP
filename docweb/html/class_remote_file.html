@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MiraiCP: RemoteFile类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">MiraiCP
+   &#160;<span id="projectnumber">v2.6.3-RC</span>
+   </div>
+   <div id="projectbrief">MiraiCP API文档</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.9.1 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('class_remote_file.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="class_remote_file-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">RemoteFile类 参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>远程(群)文件类型  
+ <a href="class_remote_file.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="tools_8h_source.html">tools.h</a>&gt;</code></p>
+<div class="dynheader">
+类 RemoteFile 继承关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_remote_file__inherit__graph.png" border="0" usemap="#a_remote_file_inherit__map" alt="Inheritance graph"/></div>
+<map name="a_remote_file_inherit__map" id="a_remote_file_inherit__map">
+<area shape="rect" title="远程(群)文件类型" alt="" coords="13,80,101,107"/>
+<area shape="rect" href="class_mirai_codeable.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,5,109,32"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">图例</a>]</span></center></div>
+<div class="dynheader">
+RemoteFile 的协作图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_remote_file__coll__graph.png" border="0" usemap="#a_remote_file_coll__map" alt="Collaboration graph"/></div>
+<map name="a_remote_file_coll__map" id="a_remote_file_coll__map">
+<area shape="rect" title="远程(群)文件类型" alt="" coords="115,95,203,121"/>
+<area shape="rect" href="class_mirai_codeable.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,5,109,32"/>
+<area shape="rect" href="structdinfo.html" title="下载信息" alt="" coords="134,5,183,32"/>
+<area shape="rect" href="structfinfo.html" title="文件信息" alt="" coords="208,5,253,32"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">图例</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a971914cc9e832e785ec9667761bb49a2"><td class="memItemLeft" align="right" valign="top"><a id="a971914cc9e832e785ec9667761bb49a2"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>serializeToString</b> ()</td></tr>
+<tr class="separator:a971914cc9e832e785ec9667761bb49a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a606d3e0fddf6251ded708a089dfdb5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote_file.html#a2a606d3e0fddf6251ded708a089dfdb5">RemoteFile</a> (const std::string &amp;i, unsigned int ii, const std::string &amp;n, long long s, const std::string &amp;p, struct <a class="el" href="structdinfo.html">dinfo</a> d, struct <a class="el" href="structfinfo.html">finfo</a> f)</td></tr>
+<tr class="memdesc:a2a606d3e0fddf6251ded708a089dfdb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造远程(群)文件  <a href="class_remote_file.html#a2a606d3e0fddf6251ded708a089dfdb5">更多...</a><br /></td></tr>
+<tr class="separator:a2a606d3e0fddf6251ded708a089dfdb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ca55a2e4cead686e9ea5f0e9260dfa0"><td class="memItemLeft" align="right" valign="top"><a id="a1ca55a2e4cead686e9ea5f0e9260dfa0"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote_file.html#a1ca55a2e4cead686e9ea5f0e9260dfa0">toMiraiCode</a> ()</td></tr>
+<tr class="memdesc:a1ca55a2e4cead686e9ea5f0e9260dfa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换 <br /></td></tr>
+<tr class="separator:a1ca55a2e4cead686e9ea5f0e9260dfa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a4f9a12c1a71dfea6ba98624fb29d3f2f"><td class="memItemLeft" align="right" valign="top"><a id="a4f9a12c1a71dfea6ba98624fb29d3f2f"></a>
+static <a class="el" href="class_remote_file.html">RemoteFile</a>&#160;</td><td class="memItemRight" valign="bottom"><b>deserializeFromString</b> (const std::string &amp;source)</td></tr>
+<tr class="separator:a4f9a12c1a71dfea6ba98624fb29d3f2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a28376539b0566ae41036143dad94fad0"><td class="memItemLeft" align="right" valign="top"><a id="a28376539b0566ae41036143dad94fad0"></a>
+const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote_file.html#a28376539b0566ae41036143dad94fad0">id</a></td></tr>
+<tr class="memdesc:a28376539b0566ae41036143dad94fad0"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件唯一id, 用于试别 <br /></td></tr>
+<tr class="separator:a28376539b0566ae41036143dad94fad0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95f6a801ddb786ce006542e028d6d337"><td class="memItemLeft" align="right" valign="top"><a id="a95f6a801ddb786ce006542e028d6d337"></a>
+const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote_file.html#a95f6a801ddb786ce006542e028d6d337">internalid</a></td></tr>
+<tr class="memdesc:a95f6a801ddb786ce006542e028d6d337"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件内部id, 用于构造miraiCode发送 <br /></td></tr>
+<tr class="separator:a95f6a801ddb786ce006542e028d6d337"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaeef98e2d5caaa1521950a5a4446efe7"><td class="memItemLeft" align="right" valign="top"><a id="aaeef98e2d5caaa1521950a5a4446efe7"></a>
+const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote_file.html#aaeef98e2d5caaa1521950a5a4446efe7">name</a></td></tr>
+<tr class="memdesc:aaeef98e2d5caaa1521950a5a4446efe7"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件名 <br /></td></tr>
+<tr class="separator:aaeef98e2d5caaa1521950a5a4446efe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4669b902794a33fbc60fa99c809a22e5"><td class="memItemLeft" align="right" valign="top"><a id="a4669b902794a33fbc60fa99c809a22e5"></a>
+const long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote_file.html#a4669b902794a33fbc60fa99c809a22e5">size</a></td></tr>
+<tr class="memdesc:a4669b902794a33fbc60fa99c809a22e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件大小 <br /></td></tr>
+<tr class="separator:a4669b902794a33fbc60fa99c809a22e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed6d46f89c5cb0d83236b4b7e1b5c873"><td class="memItemLeft" align="right" valign="top"><a id="aed6d46f89c5cb0d83236b4b7e1b5c873"></a>
+const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote_file.html#aed6d46f89c5cb0d83236b4b7e1b5c873">path</a></td></tr>
+<tr class="memdesc:aed6d46f89c5cb0d83236b4b7e1b5c873"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件在群文件的路径 <br /></td></tr>
+<tr class="separator:aed6d46f89c5cb0d83236b4b7e1b5c873"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a819afb5208ce0d816a073b6d2dbb98"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structdinfo.html">dinfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote_file.html#a2a819afb5208ce0d816a073b6d2dbb98">dinfo</a></td></tr>
+<tr class="separator:a2a819afb5208ce0d816a073b6d2dbb98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c04bb6347e3783a9b6c083e7ee5586d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structfinfo.html">finfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote_file.html#a5c04bb6347e3783a9b6c083e7ee5586d">finfo</a></td></tr>
+<tr class="separator:a5c04bb6347e3783a9b6c083e7ee5586d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>远程(群)文件类型 </p>
+<dl class="section examples"><dt>示例</dt><dd><a class="el" href="_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example.html#_a113">D:/Git/mirai/MiraiCP/cpp/tools.h</a>.</dd>
+</dl>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2a606d3e0fddf6251ded708a089dfdb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a606d3e0fddf6251ded708a089dfdb5">&#9670;&nbsp;</a></span>RemoteFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">RemoteFile::RemoteFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>ii</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long long&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="structdinfo.html">dinfo</a>&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="structfinfo.html">finfo</a>&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>构造远程(群)文件 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">i</td><td>ids </td></tr>
+    <tr><td class="paramname">ii</td><td>internalids </td></tr>
+    <tr><td class="paramname">n</td><td>name </td></tr>
+    <tr><td class="paramname">s</td><td>size </td></tr>
+    <tr><td class="paramname">p</td><td>path </td></tr>
+    <tr><td class="paramname">d</td><td>dinfo </td></tr>
+    <tr><td class="paramname">f</td><td>finfo </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>示例</dt><dd><a class="el" href="_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example.html#a121">D:/Git/mirai/MiraiCP/cpp/tools.h</a>.</dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a2a819afb5208ce0d816a073b6d2dbb98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a819afb5208ce0d816a073b6d2dbb98">&#9670;&nbsp;</a></span>dinfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structdinfo.html">dinfo</a> RemoteFile::dinfo</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>文件下载信息 </p><dl class="section see"><dt>参见</dt><dd><a class="el" href="structdinfo.html" title="下载信息">dinfo</a> </dd></dl>
+<dl class="section examples"><dt>示例</dt><dd><a class="el" href="_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example.html#a119">D:/Git/mirai/MiraiCP/cpp/tools.h</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a5c04bb6347e3783a9b6c083e7ee5586d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c04bb6347e3783a9b6c083e7ee5586d">&#9670;&nbsp;</a></span>finfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structfinfo.html">finfo</a> RemoteFile::finfo</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>文件信息 </p><dl class="section see"><dt>参见</dt><dd><a class="el" href="structfinfo.html" title="文件信息">finfo</a> </dd></dl>
+<dl class="section examples"><dt>示例</dt><dd><a class="el" href="_d_1_2_git_2mirai_2_mirai_c_p_2cpp_2tools_8h-example.html#a120">D:/Git/mirai/MiraiCP/cpp/tools.h</a>.</dd>
+</dl>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>D:/Git/mirai/MiraiCP/cpp/<a class="el" href="tools_8h_source.html">tools.h</a></li>
+<li>D:/Git/mirai/MiraiCP/cpp/tools.cpp</li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="class_remote_file.html">RemoteFile</a></li>
+    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+  </ul>
+</div>
+</body>
+</html>

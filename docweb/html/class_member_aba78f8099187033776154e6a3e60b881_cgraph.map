@@ -1,0 +1,5 @@
+<map id="Member::uploadImg" name="Member::uploadImg">
+<area shape="rect" id="node1" title="上传本地图片，务必要用绝对路径 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群" alt="" coords="5,13,141,39"/>
+<area shape="rect" id="node2" href="$class_low_level_a_p_i.html#a34e8b356a0298a68876c21b64373d5af" title="上传图片" alt="" coords="189,13,359,39"/>
+<area shape="rect" id="node3" href="$class_contact.html#a190dd1c2ecfccf67edc3d2b1cff87835" title=" " alt="" coords="407,5,565,47"/>
+</map>

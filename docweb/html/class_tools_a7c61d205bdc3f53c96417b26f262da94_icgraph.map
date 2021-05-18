@@ -1,0 +1,7 @@
+<map id="Tools::StringToVector" name="Tools::StringToVector">
+<area shape="rect" id="node1" title="从string格式化到vector" alt="" coords="381,31,528,57"/>
+<area shape="rect" id="node2" href="$class_bot.html#a6584044628bd3754e52d1dac2cebe789" title="取好友列表" alt="" coords="208,5,333,32"/>
+<area shape="rect" id="node4" href="$class_bot.html#acda3c7f35156966087c8f55340f9b48f" title="取群列表" alt="" coords="209,56,333,83"/>
+<area shape="rect" id="node3" href="$class_bot.html#a2734db2add77775b1b8ec5b66b749d74" title="好友列表string形式返回，利于保存" alt="" coords="5,5,160,32"/>
+<area shape="rect" id="node5" href="$class_bot.html#add67cc5d276fd34f57406dbe1043394b" title="群列表string形式返回，利于保存" alt="" coords="5,56,160,83"/>
+</map>
