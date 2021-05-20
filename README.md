@@ -34,6 +34,12 @@
 
 # 关于MiraiCP
 
+> 从v2.6.3-RC开始，使用utf8作为编码
+> 
+> vs需要加/utf8编译参数，见[微软文档](https://docs.microsoft.com/zh-cn/cpp/build/reference/utf-8-set-source-and-executable-character-sets-to-utf-8?view=msvc-160&viewFallbackFrom=vs-2017)
+> 
+> cmake方式已经加了以utf8编译不用改
+
 <details>
 <summary>支持的事件</summary>
 
