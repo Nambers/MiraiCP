@@ -1772,111 +1772,118 @@ using GTME = std::function<void(GroupTempMessageEvent)>;
 /*监听类声明*/
 class Event {
 private:
-	class Node {
+	class Node0 {
 	public:
-		Node* nextNode = nullptr;
-
-		Node() {};
+		Node0* nextNode = nullptr;
+        bool enable = true;
 	};
 
-	class GMENode : public Node {
-	public:
-		bool enable = true;
-		GME f = [](GroupMessageEvent) -> void {};
-		GMENode* next = nullptr;
-	};
+    template <class T>
+    class Node: public Node0{
+    public:
+        std::function<void(T)> f = [](T) -> void{};
+        Node* next = nullptr;
+    };
 
-	class PMENode : public Node {
-	public:
-		bool enable = true;
-		PME f = [](PrivateMessageEvent) -> void {};
-		PMENode* next = nullptr;
-	};
+	Node<GroupMessageEvent>* GMHead = new Node<GroupMessageEvent>();
+	Node<PrivateMessageEvent>* PMHead = new Node<PrivateMessageEvent>();
+	Node<GroupInviteEvent>* GHead = new Node<GroupInviteEvent>;
+	Node<NewFriendRequestEvent>* NFHead = new Node<NewFriendRequestEvent>();
+	Node<MemberJoinEvent>* MJHead = new Node<MemberJoinEvent>();
+	Node<MemberLeaveEvent>* MLHead = new Node<MemberLeaveEvent>();
+	Node<RecallEvent>* RHead = new Node<RecallEvent>();
+	Node<SchedulingEvent>* SHead = new Node<SchedulingEvent>();
+	Node<BotJoinGroupEvent>* BHead = new Node<BotJoinGroupEvent>();
+	Node<GroupTempMessageEvent>* GTMHead = new Node<GroupTempMessageEvent>();
 
-	class GINode : public Node {
-	public:
-		bool enable = true;
-		GI f = [](GroupInviteEvent) {};
-		GINode* next = nullptr;
-	};
+	template <class T>
+    Node<T> *head(){
+        if constexpr(std::is_same_v<T, GroupMessageEvent>){
+            return GMHead;
+        }else if constexpr(std::is_same_v<T, PrivateMessageEvent>){
+            return PMHead;
+        }else if constexpr(std::is_same_v<T, GroupInviteEvent>){
+            return GHead;
+        }else if constexpr(std::is_same_v<T, NewFriendRequestEvent>){
+            return NFHead;
+        }else if constexpr(std::is_same_v<T, MemberJoinEvent>){
+            return MJHead;
+        }else if constexpr(std::is_same_v<T, MemberLeaveEvent>){
+            return MLHead;
+        }else if constexpr(std::is_same_v<T, RecallEvent>){
+            return RHead;
+        }else if constexpr(std::is_same_v<T, SchedulingEvent>){
+            return SHead;
+        }else if constexpr(std::is_same_v<T, BotJoinGroupEvent>){
+            return BHead;
+        }else if constexpr(std::is_same_v<T, GroupTempMessageEvent>){
+            return GTMHead;
+        }
+        logger->Error("内部错误, 位置:C-Head");
+        return nullptr;
+    }
 
-	class NFRENode : public Node {
-	public:
+    template <class T>
+    bool* tail(std::function<void(T)> f){
+        Node<T>* temp = new Node<T>();
+        temp->f = f;
+        if constexpr(std::is_same_v<T, GroupMessageEvent>){
+            GMTail->next = temp;
+            GMTail->nextNode = temp;
+            GMTail = temp;
+        }else if constexpr(std::is_same_v<T, PrivateMessageEvent>){
+            PMTail->next = temp;
+            PMTail->nextNode = temp;
+            PMTail = temp;
+        }else if constexpr(std::is_same_v<T, GroupInviteEvent>){
+            GTail->next = temp;
+            GTail->nextNode = temp;
+            GTail = temp;
+        }else if constexpr(std::is_same_v<T, NewFriendRequestEvent>){
+            NFTail->next = temp;
+            NFTail->nextNode = temp;
+            NFTail = temp;
+        }else if constexpr(std::is_same_v<T, MemberJoinEvent>){
+            MJTail->next = temp;
+            MJTail->nextNode = temp;
+            MJTail = temp;
+        }else if constexpr(std::is_same_v<T, MemberLeaveEvent>){
+            MLTail->next = temp;
+            MLTail->nextNode = temp;
+            MLTail = temp;
+        }else if constexpr(std::is_same_v<T, RecallEvent>){
+            RTail->next = temp;
+            RTail->nextNode = temp;
+            RTail = temp;
+        }else if constexpr(std::is_same_v<T, SchedulingEvent>){
+            STail->next = temp;
+            STail->nextNode = temp;
+            STail = temp;
+        }else if constexpr(std::is_same_v<T, BotJoinGroupEvent>){
+            BTail->next = temp;
+            BTail->nextNode = temp;
+            BTail = temp;
+        }else if constexpr(std::is_same_v<T, GroupTempMessageEvent>){
+            GTMTail->next = temp;
+            GTMTail->nextNode = temp;
+            GTMTail = temp;
+        }else {
+            logger->Error("内部错误, 位置:C-Tail");
+            return nullptr;
+        }
+        return &temp->enable;
+    }
 
-		bool enable = true;
-		NFRE f = [](NewFriendRequestEvent) {};
-		NFRENode* next = nullptr;
-	};
-
-	class MJNode : public Node {
-	public:
-
-		bool enable = true;
-		MJ f = [](MemberJoinEvent) -> void {};
-		MJNode* next = nullptr;
-	};
-
-	class MLNode : public Node {
-	public:
-
-		bool enable = true;
-		ML f = [](MemberLeaveEvent) -> void {};
-		MLNode* next = nullptr;
-	};
-
-	class RNode : public Node {
-	public:
-
-		bool enable = true;
-		R f = [](RecallEvent) -> void {};
-		RNode* next = nullptr;
-	};
-
-	class SNode : public Node {
-	public:
-
-		bool enable = true;
-		S f = [](SchedulingEvent) -> void {};
-		SNode* next = nullptr;
-	};
-
-	class BJNode : public Node {
-	public:
-
-		bool enable = true;
-		BJ f = [](BotJoinGroupEvent) -> void {};
-		BJNode* next = nullptr;
-	};
-
-	class GTMENode : public Node {
-	public:
-
-		bool enable = true;
-		GTME f = [](GroupTempMessageEvent) -> void {};
-		GTMENode* next = nullptr;
-	};
-
-	GMENode* GMHead = new GMENode();
-	PMENode* PMHead = new PMENode();
-	GINode* GHead = new GINode();
-	NFRENode* NFHead = new NFRENode();
-	MJNode* MJHead = new MJNode();
-	MLNode* MLHead = new MLNode();
-	RNode* RHead = new RNode();
-	SNode* SHead = new SNode();
-	BJNode* BHead = new BJNode();
-	GTMENode* GTMHead = new GTMENode();
-
-	GMENode* GMTail = GMHead;
-	PMENode* PMTail = PMHead;
-	GINode* GTail = GHead;
-	NFRENode* NFTail = NFHead;
-	MJNode* MJTail = MJHead;
-	MLNode* MLTail = MLHead;
-	RNode* RTail = RHead;
-	SNode* STail = SHead;
-	BJNode* BTail = BHead;
-	GTMENode* GTMTail = GTMHead;
+	Node<GroupMessageEvent>* GMTail = GMHead;
+	Node<PrivateMessageEvent>* PMTail = PMHead;
+	Node<GroupInviteEvent>* GTail = GHead;
+	Node<NewFriendRequestEvent>* NFTail = NFHead;
+	Node<MemberJoinEvent>* MJTail = MJHead;
+	Node<MemberLeaveEvent>* MLTail = MLHead;
+	Node<RecallEvent>* RTail = RHead;
+	Node<SchedulingEvent>* STail = SHead;
+	Node<BotJoinGroupEvent>* BTail = BHead;
+	Node<GroupTempMessageEvent>* GTMTail = GTMHead;
 
 public:
 	class NodeHandle {
@@ -1896,185 +1903,29 @@ public:
 		}
 	};
 
-	/*
+	/*!
 	* 广播函数重载
 	*/
-
-	void broadcast(GroupMessageEvent g) {
-		GMENode* now = GMHead;
-		while (now) {
-			if (now->enable) { now->f(g); }
-			now = now->next;
-		}
+	template <class T>
+	void broadcast(T e){
+        Node<T>* now = Event::head<T>();
+        while(now){
+            if(now->enable){now->f(e);}
+            now = now->next;
+        }
 	}
 
-	void broadcast(PrivateMessageEvent p) {
-		PMENode* now = PMHead;
-		while (now) {
-			if (now->enable) {
-				now->f(p);
-			}
-			now = now->next;
-		}
-	}
-
-	void broadcast(GroupInviteEvent g) {
-		GINode* now = GHead;
-		while (now) {
-			if (now->enable) { now->f(g); }
-			now = now->next;
-		}
-	}
-
-	void broadcast(NewFriendRequestEvent g) {
-		NFRENode* now = NFHead;
-		while (now) {
-			if (now->enable) { now->f(g); }
-			now = now->next;
-		}
-	}
-
-	void broadcast(MemberJoinEvent g) {
-		MJNode* now = MJHead;
-		while (now) {
-			if (now->enable) { now->f(g); }
-			now = now->next;
-		}
-	}
-
-	void broadcast(MemberLeaveEvent g) {
-		MLNode* now = MLHead;
-		while (now) {
-			if (now->enable) { now->f(g); }
-			now = now->next;
-		}
-	}
-
-	void broadcast(RecallEvent r) {
-		RNode* now = RHead;
-		while (now) {
-			if (now->enable) { now->f(r); }
-			now = now->next;
-		}
-	}
-
-	void broadcast(SchedulingEvent g) {
-		SNode* now = SHead;
-		while (now) {
-			if (now->enable) { now->f(g); }
-			now = now->next;
-		}
-	}
-
-	void broadcast(BotJoinGroupEvent b) {
-		BJNode* now = BHead;
-		while (now) {
-			if (now->enable) { now->f(b); }
-			now = now->next;
-		}
-	}
-
-	void broadcast(GroupTempMessageEvent g) {
-		GTMENode* now = GTMHead;
-		while (now) {
-			if (now->enable) { now->f(g); }
-			now = now->next;
-		}
-	}
-
-	/*
-	* 监听函数重载
+	/*!
+	* @brief 监听函数
+	* @note 在极其少见(MiraiCP内部出问题的时候)会返回nullptr
 	*/
-
-	NodeHandle registerEvent(GME f) {
-		GMENode* node = new GMENode();
-		node->f = f;
-		GMTail->next = node;
-		GMTail->nextNode = node;
-		GMTail = node;
-		return NodeHandle(&node->enable);
-	}
-
-	NodeHandle registerEvent(PME f) {
-		PMENode* node = new PMENode();
-		node->f = f;
-		PMTail->next = node;
-		PMTail->nextNode = node;
-		PMTail = node;
-		return NodeHandle(&node->enable);
-	}
-
-	NodeHandle registerEvent(GI f) {
-		GINode* node = new GINode();
-		node->f = f;
-		GTail->next = node;
-		GTail->nextNode = node;
-		GTail = node;
-		return NodeHandle(&node->enable);
-	}
-
-	NodeHandle registerEvent(NFRE f) {
-		NFRENode* node = new NFRENode();
-		node->f = f;
-		NFTail->next = node;
-		NFTail->nextNode = node;
-		NFTail = node;
-		return NodeHandle(&node->enable);
-	}
-
-	NodeHandle registerEvent(MJ f) {
-		MJNode* node = new MJNode();
-		node->f = f;
-		MJTail->next = node;
-		MJTail->nextNode = node;
-		MJTail = node;
-		return NodeHandle(&node->enable);
-	}
-
-	NodeHandle registerEvent(ML f) {
-		MLNode* node = new MLNode();
-		node->f = f;
-		MLTail->next = node;
-		MLTail->nextNode = node;
-		MLTail = node;
-		return NodeHandle(&node->enable);
-	}
-
-	NodeHandle registerEvent(R r) {
-		RNode* node = new RNode();
-		node->f = r;
-		RTail->next = node;
-		RTail->nextNode = node;
-		RTail = node;
-		return NodeHandle(&node->enable);
-	}
-
-	NodeHandle registerEvent(S f) {
-		SNode* node = new SNode();
-		node->f = f;
-		STail->next = node;
-		STail->nextNode = node;
-		STail = node;
-		return NodeHandle(&node->enable);
-	}
-
-	NodeHandle registerEvent(BJ f) {
-		BJNode* node = new BJNode();
-		node->f = f;
-		BTail->next = node;
-		BTail->nextNode = node;
-		BTail = node;
-		return NodeHandle(&node->enable);
-	}
-
-	NodeHandle registerEvent(GTME f) {
-		GTMENode* node = new GTMENode();
-		node->f = f;
-		GTMTail->next = node;
-		GTMTail->nextNode = node;
-		GTMTail = node;
-		return NodeHandle(&node->enable);
-	}
+	template<class T>
+    NodeHandle registerEvent(std::function<void(T)> f){
+        bool* e = Event::tail(f);
+        if(e != nullptr)
+            return NodeHandle(e);
+        return nullptr;
+    }
 
 	~Event();
 };
