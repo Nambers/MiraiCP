@@ -73,7 +73,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 		switch ((int)j["type"]) {
 		case 1: {
 			//GroupMessage
-			procession->broadcast(
+			procession->broadcast<GroupMessageEvent>(
 				GroupMessageEvent(j["group"]["botid"],
 					Group::deserializationFromJson(j["group"]),
 					Member::deserializationFromJson(j["member"]),
@@ -85,7 +85,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 		}
 		case 2: {
 			//私聊消息
-			procession->broadcast(
+			procession->broadcast<PrivateMessageEvent>(
 				PrivateMessageEvent(j["friend"]["botid"],
 					Friend::deserializationFromJson(j["friend"]),
 					j["message"],
@@ -95,7 +95,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 		}
 		case 3:
 			//群聊邀请
-			procession->broadcast(
+			procession->broadcast<GroupInviteEvent>(
 				GroupInviteEvent(
 					j["botid"],
 					j["source"],
@@ -107,7 +107,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			break;
 		case 4:
 			//好友
-			procession->broadcast(NewFriendRequestEvent(
+			procession->broadcast<NewFriendRequestEvent>(
+			        NewFriendRequestEvent(
 				j["source"]["botid"],
 				j["source"].dump(),
 				j["source"]["fromid"],
@@ -118,7 +119,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			break;
 		case 5:
 			//新成员加入
-			procession->broadcast(MemberJoinEvent(
+			procession->broadcast<MemberJoinEvent>(
+			        MemberJoinEvent(
 				j["group"]["botid"],
 				j["jointype"],
 				Member::deserializationFromJson(j["member"]),
@@ -128,7 +130,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			break;
 		case 6:
 			//群成员退出
-			procession->broadcast(MemberLeaveEvent(
+			procession->broadcast<MemberLeaveEvent>(MemberLeaveEvent(
 				j["group"]["botid"],
 				j["leavetype"],
 				j["memberid"],
@@ -137,7 +139,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			));
 			break;
 		case 7:
-			procession->broadcast(RecallEvent(
+			procession->broadcast<RecallEvent>(RecallEvent(
 				j["botid"],
 				j["etype"],
 				j["time"],
@@ -149,12 +151,12 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			));
 			break;
 		case 8:
-			procession->broadcast(SchedulingEvent(
+			procession->broadcast<SchedulingEvent>(SchedulingEvent(
 				j["message"]
 			));
 			break;
 		case 9:
-			procession->broadcast(BotJoinGroupEvent(
+			procession->broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
 				j["group"]["botid"],
 				j["etype"],
 				Group::deserializationFromJson(j["group"]),
@@ -162,7 +164,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 			));
 			break;
 		case 10:
-			procession->broadcast(GroupTempMessageEvent(
+			procession->broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
 				j["group"]["botid"],
 				Group::deserializationFromJson(j["group"]),
 				Member::deserializationFromJson(j["member"]),

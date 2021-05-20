@@ -22,19 +22,19 @@ void onEnable() {
 	*/
 	// 邀请事件
 	// 好友申请
-	procession->registerEvent([](NewFriendRequestEvent e) {
+	procession->registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent e) {
 		e.accept();
 		Friend(e.fromid, e.bot.id).SendMsg("HI");
 		});
 	// 邀请加群
-	procession->registerEvent([](GroupInviteEvent e) {
+	procession->registerEvent<GroupInviteEvent>([](GroupInviteEvent e) {
 		e.accept();
 		logger->Info("x");
 		Group(e.groupid, e.bot.id).SendMsg("被" + e.inviterNick + "邀请进入" + e.groupName);
 		});
 	// 消息事件
 	// 监听私聊
-	Event::NodeHandle handle = procession->registerEvent([](PrivateMessageEvent e) {
+	Event::NodeHandle handle = procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
 		unsigned long long id = e.bot.id;
 		logger->Info(std::to_string(id));
 		//        std::thread func1(func, e.sender.id(), e.bot.id());
@@ -53,7 +53,7 @@ void onEnable() {
 		});
 
 	// 监听群信息
-	procession->registerEvent([=](GroupMessageEvent e) {
+	procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
 		//        // 发送文本信息
 		//        e.group.SendMsg("HI");
 		//        // 发送MiraiCode信息，At
@@ -92,14 +92,14 @@ void onEnable() {
 		e.group.SendMsg(e.group.MemberListToString());
 		});
 	// 监听群临时会话
-	procession->registerEvent([](GroupTempMessageEvent e) {
+	procession->registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
 		e.sender.SendMsg("hi");
 		});
 	// 群事件
-	procession->registerEvent([](MemberJoinEvent e) {
+	procession->registerEvent<MemberJoinEvent>([](MemberJoinEvent e) {
 		e.group.SendMiraiCode(At(e.group.getOwner()) + std::to_string(e.member.id()) + "加入了群聊");
 		});
-	procession->registerEvent([](MemberLeaveEvent e) {
+	procession->registerEvent<MemberLeaveEvent>([](MemberLeaveEvent e) {
 		e.group.SendMiraiCode(At(e.group.getOwner()) + std::to_string(e.memberid) + "退出了群聊");
 		});
 }
