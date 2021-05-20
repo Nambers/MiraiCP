@@ -148,10 +148,10 @@ Config::~Config() {
 }
 
 Event::~Event() {
-	Node* temp[] = { GMHead, PMHead, GHead, NFHead, MJHead, MLHead, RHead, SHead, BHead };
-	for (Node* ptr : temp) {
-		Node* now = ptr;
-		Node* t = nullptr;
+	Node0* temp[] = { GMHead, PMHead, GHead, NFHead, MJHead, MLHead, RHead, SHead, BHead };
+	for (Node0* ptr : temp) {
+		Node0* now = ptr;
+		Node0* t = nullptr;
 		while (true) {
 			t = now;
 			if (now->nextNode == nullptr) {

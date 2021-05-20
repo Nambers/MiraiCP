@@ -3,13 +3,15 @@
 
 /// MiraiCP当前版本
 const std::string MiraiCPVersion = "v2.6.3-RC";
-/*! @addtogroup 需要表态的值, 如好友申请
- @{*/
+
+/*! @addtogroup 需要表态的值
+ * @brief 如加好友事件
+ * @{*/
 ///拒绝
 static const bool REJECT = false;
 /// 同意
 static const bool ACCEPT = true;
-/// }
+/// @}
 
 /*! @addtogroup 群成员退出事件
  * @{*/
