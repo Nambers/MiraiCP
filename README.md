@@ -76,11 +76,9 @@ mirai需要java环境 **>=11**
 
 > MiraiCP版本规则: 从2.2.0开始 *(2021/1/31)*,版本前两位为Mirai的版本，后一位为SDK更新迭代版本
 
-1. 因为JNIEnv是局部变量，不了解jni请勿在SDK中使用多线程，如果要使用多线程的话，要保存全局`JavaVM`变量然后在多线程开头使用`genv = JavaVM.GetEnv()`覆盖全局Env，否则mirai部分可能无法成功调用，目前已添加定时计划的实现[代码详见](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md#%E6%89%A7%E8%A1%8C%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1)
+1. 目前只确定win下可用，其他操作系统未测试，理论上liunx应该可用，生成so文件替换dll文件即可
 
-2. 目前只确定win下可用，其他操作系统未测试，理论上liunx应该可用，生成so文件替换dll文件即可
-
-3. 如果vs报错找不到jni.h，把cpp/include文件夹加入到vs的库里面去(项目->属性->C++->常规)，include文件夹里包含了jni.h以及他的依赖文件
+2. 如果vs报错找不到jni.h，把cpp/include文件夹加入到vs的库里面去(项目->属性->C++->常规)，include文件夹里包含了jni.h以及他的依赖文件
 
 ## 3 使用方法:
 以下2种选择任意一种
