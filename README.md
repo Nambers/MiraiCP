@@ -70,7 +70,7 @@ Mirai支持的qq表情(对应miraicode的face)对应序号 [faces.md](https://gi
 # 使用流程:
 
 ## 1 配置环境
-mirai需要openjdk而不是甲骨文的jdk,如下载openjdk15/openjdk11
+mirai需要java环境 **>=11**
 
 ## 2 注意事项
 
