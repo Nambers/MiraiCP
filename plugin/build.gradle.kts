@@ -1,10 +1,10 @@
 plugins {
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.4.32"
     id("net.mamoe.mirai-console") version "2.6.4"
 }
 
 group = "tech.eritquearcus"
-version = "2.6.3-RC"
+version = "2.6.3"
 
 repositories {
     maven{ url =uri("https://maven.aliyun.com/nexus/content/groups/public/")}
