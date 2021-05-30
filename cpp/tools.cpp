@@ -372,7 +372,6 @@ Member::Member(unsigned long long id, unsigned long long groupid, unsigned long 
 	this->_id = id;
 	this->Mute_id = config->KMuteM;
 	this->_groupid = groupid;
-	this->Query_permission = config->KQueryM;
 	this->KickM = config->KKickM;
 	this->_botid = botid;
 	std::string temp = LowLevelAPI::getInfoSource(this, env);
