@@ -1174,7 +1174,6 @@ public:
 class Member : public Contact {
 private:
 	jmethodID Mute_id = NULL;
-	jmethodID Query_permission = NULL;
 	jmethodID KickM = NULL;
 public:
 	/// @brief 权限等级
@@ -1758,18 +1757,8 @@ public:
 	SchedulingEvent(const std::string& str);
 };
 
-using GME = std::function<void(GroupMessageEvent)>;
-using PME = std::function<void(PrivateMessageEvent)>;
-using GI = std::function<void(GroupInviteEvent)>;
-using NFRE = std::function<void(NewFriendRequestEvent)>;
-using MJ = std::function<void(MemberJoinEvent)>;
-using ML = std::function<void(MemberLeaveEvent)>;
-using R = std::function<void(RecallEvent)>;
-using S = std::function<void(SchedulingEvent)>;
-using BJ = std::function<void(BotJoinGroupEvent)>;
-using GTME = std::function<void(GroupTempMessageEvent)>;
 
-/*监听类声明*/
+/**监听类声明*/
 class Event {
 private:
 	class Node0 {
@@ -1796,6 +1785,7 @@ private:
 	Node<BotJoinGroupEvent>* BHead = new Node<BotJoinGroupEvent>();
 	Node<GroupTempMessageEvent>* GTMHead = new Node<GroupTempMessageEvent>();
 
+	/// 取链表首节点
 	template <class T>
     Node<T> *head(){
         if constexpr(std::is_same_v<T, GroupMessageEvent>){
@@ -1823,6 +1813,18 @@ private:
         return nullptr;
     }
 
+    Node<GroupMessageEvent>* GMTail = GMHead;
+    Node<PrivateMessageEvent>* PMTail = PMHead;
+    Node<GroupInviteEvent>* GTail = GHead;
+    Node<NewFriendRequestEvent>* NFTail = NFHead;
+    Node<MemberJoinEvent>* MJTail = MJHead;
+    Node<MemberLeaveEvent>* MLTail = MLHead;
+    Node<RecallEvent>* RTail = RHead;
+    Node<SchedulingEvent>* STail = SHead;
+    Node<BotJoinGroupEvent>* BTail = BHead;
+    Node<GroupTempMessageEvent>* GTMTail = GTMHead;
+
+    /// 取链表尾节点
     template <class T>
     bool* tail(std::function<void(T)> f){
         Node<T>* temp = new Node<T>();
@@ -1874,18 +1876,8 @@ private:
         return &temp->enable;
     }
 
-	Node<GroupMessageEvent>* GMTail = GMHead;
-	Node<PrivateMessageEvent>* PMTail = PMHead;
-	Node<GroupInviteEvent>* GTail = GHead;
-	Node<NewFriendRequestEvent>* NFTail = NFHead;
-	Node<MemberJoinEvent>* MJTail = MJHead;
-	Node<MemberLeaveEvent>* MLTail = MLHead;
-	Node<RecallEvent>* RTail = RHead;
-	Node<SchedulingEvent>* STail = SHead;
-	Node<BotJoinGroupEvent>* BTail = BHead;
-	Node<GroupTempMessageEvent>* GTMTail = GTMHead;
-
 public:
+    /// 事件监听操控, 可用于stop停止监听和consume继续监听
 	class NodeHandle {
 	private:
 		bool* enable;
@@ -1898,7 +1890,7 @@ public:
 			*enable = false;
 		}
 
-		void consume() const {
+		void resume() const {
 			*enable = true;
 		}
 	};
