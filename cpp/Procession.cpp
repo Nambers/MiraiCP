@@ -50,6 +50,7 @@ void onEnable() {
 		//         Image tmp = e.sender.uploadImg("C:\\Users\\19308\\Desktop\\a.jpg");
 		//         e.sender.SendMsg(tmp.toMiraiCode());
 		//         e.sender.SendMiraiCode(tmp.toMiraiCode());
+		//         e.messageSource.recall();
 		});
 
 	// 监听群信息
@@ -75,21 +76,22 @@ void onEnable() {
 		//        e.sender.SendMsg(e.bot.nick());
 		//        e.sender.SendMsg(e.bot.FriendListToString());
 		//        e.sender.SendMsg(e.bot.GroupListToString());
-		RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
-		e.group.SendMsg(e.group.getFile("/", tmp.id).name);
-		e.group.SendMsg(e.group.getFile("/test.txt").name);
-		e.group.SendMsg(e.group.getFileListString("/"));
-		std::vector<Group::short_info> a = e.group.getFileList("/");
-		std::stringstream ss;
-		for (size_t i = 0; i < a.size(); ++i)
-		{
-			if (i != 0)
-				ss << ",";
-			ss << "{" << a[i].path << "," << a[i].id << "}";
-		}
-		std::string s = ss.str();
-		e.group.SendMsg(s);
-		e.group.SendMsg(e.group.MemberListToString());
+//		RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
+//		e.group.SendMsg(e.group.getFile("/", tmp.id).name);
+//		e.group.SendMsg(e.group.getFile("/test.txt").name);
+//		e.group.SendMsg(e.group.getFileListString("/"));
+//		std::vector<Group::short_info> a = e.group.getFileList("/");
+//		std::stringstream ss;
+//		for (size_t i = 0; i < a.size(); ++i)
+//		{
+//			if (i != 0)
+//				ss << ",";
+//			ss << "{" << a[i].path << "," << a[i].id << "}";
+//		}
+//		std::string s = ss.str();
+//		e.group.SendMsg(s);
+//		e.group.SendMsg(e.group.MemberListToString());
+        e.messageSource.recall();
 		});
 	// 监听群临时会话
 	procession->registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {

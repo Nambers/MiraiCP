@@ -2,7 +2,7 @@
 #include "pch.h"
 
 /// MiraiCP当前版本
-const std::string MiraiCPVersion = "v2.6.3-RC";
+const std::string MiraiCPVersion = "v2.6.3";
 
 /*! @addtogroup 需要表态的值
  * @brief 如加好友事件
