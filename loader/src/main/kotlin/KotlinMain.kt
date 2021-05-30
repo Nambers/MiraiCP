@@ -31,11 +31,12 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 object KotlinMain {
-    private val json = Json{
+    private val json = Json {
         Mirai
         serializersModule = MessageSerializers.serializersModule
+        ignoreUnknownKeys = true
     }
-    const val now_tag = "v2.6.3-RC"
+    const val now_tag = "v2.6.3"
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var dll_name:String
     private lateinit var cpp: CPP_lib

@@ -1877,7 +1877,7 @@ private:
     }
 
 public:
-    /// 事件监听操控, 可用于stop停止监听和consume继续监听
+    /// 事件监听操控, 可用于stop停止监听和resume继续监听
 	class NodeHandle {
 	private:
 		bool* enable;
