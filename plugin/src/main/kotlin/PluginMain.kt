@@ -39,12 +39,13 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.6.3-RC"
+        version = "2.6.3"
     )
 ) {
     private val json = Json{
         Mirai
         serializersModule = MessageSerializers.serializersModule
+        ignoreUnknownKeys = true
     }
     private var friend_cache = ArrayList<NormalMember>(0)
     var dll_name = "mirai-demo.dll"
