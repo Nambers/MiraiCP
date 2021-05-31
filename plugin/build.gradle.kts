@@ -13,6 +13,6 @@ repositories {
     mavenLocal()
 }
 dependencies{
-    implementation("com.google.code.gson:gson:2.8.6")
+    implementation("com.google.code.gson:gson:2.8.7")
     implementation("org.json:json:20210307")
 }
