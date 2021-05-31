@@ -27,6 +27,7 @@ import tech.eritquearcus.miraicp.KotlinMain.rejectGroupInvite
 import tech.eritquearcus.miraicp.KotlinMain.remoteFileInfo
 import tech.eritquearcus.miraicp.KotlinMain.scheduling
 import tech.eritquearcus.miraicp.KotlinMain.sendFile
+import tech.eritquearcus.miraicp.KotlinMain.sendWithQuote
 import tech.eritquearcus.miraicp.KotlinMain.uploadImg
 
 class CPP_lib {
@@ -34,7 +35,8 @@ class CPP_lib {
     init {
         ver=Verify()
     }
-    //"C:\Program Files\Java\jdk1.8.0_261\bin\javap.exe" -s tech.eritquearcus.miraicp.CPP_lib
+
+    //cd build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.CPP_lib
     companion object{
         private val gson = Gson()
         init {
@@ -166,12 +168,20 @@ class CPP_lib {
                 else rejectFriendRequest(tmp)
             }
         }
+
         // Group invite operation
         @JvmStatic
-        fun KGioperation(text: String, sign:Boolean):String{
+        fun KGioperation(text: String, sign: Boolean): String {
             return runBlocking {
                 if (sign) accpetGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
                 else rejectGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
+            }
+        }
+
+        @JvmStatic
+        fun KSendWithQuote(messageSource: String, msg: String, sign: String): String {
+            return runBlocking {
+                sendWithQuote(messageSource, msg, sign)
             }
         }
     }

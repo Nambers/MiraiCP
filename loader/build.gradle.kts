@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 plugins {
     application
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
@@ -104,5 +104,4 @@ dependencies {
     api("net.mamoe:mirai-core:2.6.4")
     // https://mvnrepository.com/artifact/org.json/json
     implementation("org.json:json:20210307")
-    runtimeOnly("net.mamoe:mirai-login-solver-selenium:1.0-dev-17")
 }
