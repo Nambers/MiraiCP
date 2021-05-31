@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm") version "1.4.32"
-    id("net.mamoe.mirai-console") version "2.6.4"
+    id("net.mamoe.mirai-console") version "2.6.5"
 }
 
 group = "tech.eritquearcus"
@@ -13,6 +13,6 @@ repositories {
     mavenLocal()
 }
 dependencies{
-    implementation("com.google.code.gson:gson:2.8.6")
+    implementation("com.google.code.gson:gson:2.8.7")
     implementation("org.json:json:20210307")
 }
