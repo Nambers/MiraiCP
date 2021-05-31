@@ -1,5 +1,6 @@
+#include <utility>
+
 #include "pch.h"
-#include "tools.h"
 
 
 using json = nlohmann::json;
@@ -183,8 +184,8 @@ void MessageSource::recall() {
 	if (re == "E2") throw RecallException();
 }
 
-MessageSource::MessageSource(const std::string& ids, std::string  internalids, const std::string& source) : ids(
-	ids), internalids(std::move(internalids)), source(source) {}
+MessageSource::MessageSource(std::string ids, std::string  internalids, const std::string& source) : ids(std::move(
+	ids)), internalids(std::move(internalids)), source(source) {}
 
 std::string MessageSource::serializeToString() {
 	return source;
