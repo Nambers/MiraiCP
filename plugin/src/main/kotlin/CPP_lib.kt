@@ -27,6 +27,7 @@ import tech.eritquearcus.miraicp.PluginMain.rejectGroupInvite
 import tech.eritquearcus.miraicp.PluginMain.remoteFileInfo
 import tech.eritquearcus.miraicp.PluginMain.scheduling
 import tech.eritquearcus.miraicp.PluginMain.sendFile
+import tech.eritquearcus.miraicp.PluginMain.sendWithQuote
 import tech.eritquearcus.miraicp.PluginMain.uploadImg
 
 class CPP_lib {
@@ -172,6 +173,12 @@ class CPP_lib {
             return runBlocking {
                 if (sign) accpetGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
                 else rejectGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
+            }
+        }
+        @JvmStatic
+        fun KSendWithQuote(messageSource: String, msg:String, sign: String): String{
+            return runBlocking {
+                sendWithQuote(messageSource, msg, sign)
             }
         }
     }

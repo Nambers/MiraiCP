@@ -35,8 +35,9 @@ void onEnable() {
 	// 消息事件
 	// 监听私聊
 	Event::NodeHandle handle = procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
-		unsigned long long id = e.bot.id;
-		logger->Info(std::to_string(id));
+//		unsigned long long id = e.bot.id;
+//		logger->Info(std::to_string(id));
+		e.messageSource.quoteAndSendMsg("HI");
 		//        std::thread func1(func, e.sender.id(), e.bot.id());
 		//        e.sender.SendMsg(e.message);
 		//        func1.detach();
@@ -55,21 +56,23 @@ void onEnable() {
 
 	// 监听群信息
 	procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
+        e.messageSource.quoteAndSendMsg("HI");
+	    //        logger->Info(e.messageSource.toString());
 		//        // 发送文本信息
 		//        e.group.SendMsg("HI");
 		//        // 发送MiraiCode信息，At
 		//        e.group.SendMiraiCode(At(e.sender));
 		//        // 撤回测试
-		//        e.group.SendMsg("撤回测试").recall();
+		        e.group.SendMsg("撤回测试").recall();
 		//        // 发送xml卡片测试,可以用new传miraicodeable指针进去，也可以用.toMiraiCode()
 		//        e.group.SendMiraiCode(new LightApp(LightAppStyle1()));
 		//        e.group.SendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
 		//        e.group.SendMiraiCode(new LightApp(LightAppStyle3()));
-		//        ForwardMessage(&e.group,
-		//        {
-		//        	ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-		//        	ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
-		//        }).sendTo(&e.group);
+		        ForwardMessage(&e.group,
+		        {
+		        	ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
+		        	ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
+		        }).sendTo(&e.group);
 		//        // 关闭上面的私聊消息监听器
 		//        handle.stop();
 		//        // 当前bot属性
@@ -91,7 +94,7 @@ void onEnable() {
 //		std::string s = ss.str();
 //		e.group.SendMsg(s);
 //		e.group.SendMsg(e.group.MemberListToString());
-        e.messageSource.recall();
+//        e.messageSource.recall();
 		});
 	// 监听群临时会话
 	procession->registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
