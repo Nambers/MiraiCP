@@ -132,47 +132,49 @@ extern Logger* logger;
 class Config {
 public:
 	/// kt中JNI接口类
-	jclass CPP_lib = NULL;
+	jclass CPP_lib = nullptr;
 	/// 异常类
-	jclass initexception = NULL;
+	jclass initexception = nullptr;
 	/// 撤回信息
-	jmethodID KRecall = NULL;
+	jmethodID KRecall = nullptr;
 	/// 发送信息
-	jmethodID KSend = NULL;
+	jmethodID KSend = nullptr;
 	/// 查询信息接口
-	jmethodID KRefreshInfo = NULL;
+	jmethodID KRefreshInfo = nullptr;
 	/// 上传图片
-	jmethodID KUploadImg = NULL;
+	jmethodID KUploadImg = nullptr;
 	/// 取好友列表
-	jmethodID KQueryBFL = NULL;
+	jmethodID KQueryBFL = nullptr;
 	/// 取群组列表
-	jmethodID KQueryBGL = NULL;
+	jmethodID KQueryBGL = nullptr;
 	/// 上传文件
-	jmethodID KSendFile = NULL;
+	jmethodID KSendFile = nullptr;
 	/// 查询文件信息
-	jmethodID KRemoteFileInfo = NULL;
+	jmethodID KRemoteFileInfo = nullptr;
 	/// 查询图片下载地址
-	jmethodID KQueryImgUrl = NULL;
+	jmethodID KQueryImgUrl = nullptr;
 	/// 禁言
-	jmethodID KMuteM = NULL;
+	jmethodID KMuteM = nullptr;
 	/// 查询权限
-	jmethodID KQueryM = NULL;
+	jmethodID KQueryM = nullptr;
 	/// 踢出
-	jmethodID KKickM = NULL;
+	jmethodID KKickM = nullptr;
 	/// 取群主
-	jmethodID KQueryOwner = NULL;
+	jmethodID KQueryOwner = nullptr;
 	/// 全员禁言
-	jmethodID KMuteGroup = NULL;
+	jmethodID KMuteGroup = nullptr;
 	/// 查询群成员列表
-	jmethodID KQueryML = NULL;
+	jmethodID KQueryML = nullptr;
 	/// 定时任务
-	jmethodID KSchedule = NULL;
+	jmethodID KSchedule = nullptr;
 	/// 构建转发信息
-	jmethodID KBuildforward = NULL;
+	jmethodID KBuildforward = nullptr;
 	/// 好友申请事件
-	jmethodID KNfroperation = NULL;
+	jmethodID KNfroperation = nullptr;
 	/// 群聊邀请事件
-	jmethodID KGioperation = NULL;
+	jmethodID KGioperation = nullptr;
+    /// 回复(引用并发送)
+	jmethodID KSendWithQuote = nullptr;
 
 	Config() {};
 
@@ -250,7 +252,10 @@ public:
 	/// 异常信息
 	virtual std::string what() { return "MiraiCP异常"; };
 	/// raise 抛出方法
-	virtual void raise() {};
+	virtual void raise() {
+	    if(logger != nullptr)
+	        logger->Error(what());
+	};
 };
 
 /// 初始化异常
@@ -488,58 +493,18 @@ private:
 	std::string description = "";
 };
 
-/// 消息源声明
-class MessageSource {
-public:
-	/// 消息的ids
-	const std::string ids;
-	/// 消息的internalids
-	const std::string internalids;
-	/// 消息源序列化
-	const std::string source;
-
-	MessageSource() {};
-
-	std::string toString() {
-		return this->source;
-	}
-
-	/*!
-	 * @brief 构建消息源
-	 * @param ids
-	 * @param internalids
-	 * @param source
-	 */
-	MessageSource(const std::string& ids, const std::string& internalids, const std::string& source);
-
-	/*!
-	 * @brief 从json字符串反序列化到MessageSource对象
-	 * @note json应该为以下格式
-	 * @code
-	 * {"ids":"", "internalids":""}
-	 * @endcode
-	 */
-	static MessageSource deserializeFromString(const std::string& source);
-
-	std::string serializeToString();
-
-	/*!
-	 * @brief 撤回该信息
-	 * @example 撤回信息
-	 * @code
-	 * procession->registerEvent([](GroupMessageEvent e) {
-		try {
-			e.messageSource.recall();
-			e.group.SendMsg("hi").recall();
-		}
-		catch (MiraiCPException &e) {
-			logger->Error("错误");
-		}
-		});
-	 * @endcode
-	*/
-	void recall();
-};
+inline void ErrorHandle(const std::string& re){
+    if(re == "E1")
+        throw FriendException();
+    if(re == "E2")
+        throw GroupException();
+    if(re == "E3")
+        throw MemberException(1);
+    if(re == "E4")
+        throw MemberException(2);
+    if(re == "E5")
+        throw APIException("");
+}
 
 /// MiraiCode父类, 指可以被转换成miraicode的类型
 class MiraiCodeable {
@@ -765,6 +730,90 @@ public:
 	std::string toMiraiCode();
 };
 
+/// 消息源声明
+class MessageSource {
+public:
+    /// 消息的ids
+    const std::string ids;
+    /// 消息的internalids
+    const std::string internalids;
+    /// 消息源序列化
+    const std::string source;
+
+    MessageSource() {};
+
+    std::string toString() {
+        return this->source;
+    }
+
+    /**
+     * @brief 回复(引用并发送miraicode)
+     * @param msg - MiraiCodeable类型指针 - 内容
+     * @see MessageSource::quoteAndSendMiraiCode
+    */
+    MessageSource quoteAndSendMiraiCode(MiraiCodeable* msg, unsigned long long groupid = 0, JNIEnv* env = manager->getEnv()) {
+        return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
+    }
+
+    /// 回复(引用并发送miraicode)
+    /// @see MessageSource::quoteAndSendMiraiCode
+    MessageSource quoteAndSendMiraiCode(MiraiCode msg, unsigned long long groupid = 0, JNIEnv* env = manager->getEnv()) {
+        return quoteAndSendMiraiCode(msg.toString(), groupid, env);
+    }
+
+    /**
+     * @brief 回复(引用并发送)
+     * @param c 引用后发送的内容, 为纯文本
+     * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
+     * @return MessageSource
+     */
+    MessageSource quoteAndSendMsg(const std::string& c, unsigned long long groupid = 0, JNIEnv* = manager->getEnv());
+
+    /**
+     * @brief 回复(引用并发送)
+     * @param c 引用后发送的内容, 为MiraiCode形式
+     * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
+     * @return MessageSource
+     */
+    MessageSource quoteAndSendMiraiCode(const std::string& c, unsigned long long groupid = 0, JNIEnv* = manager->getEnv());
+
+    /*!
+     * @brief 构建消息源
+     * @param ids
+     * @param internalids
+     * @param source
+     */
+    MessageSource(const std::string& ids, std::string  internalids, const std::string& source);
+
+    /*!
+     * @brief 从json字符串反序列化到MessageSource对象
+     * @note json应该为以下格式
+     * @code
+     * {"ids":"", "internalids":""}
+     * @endcode
+     */
+    static MessageSource deserializeFromString(const std::string& source);
+
+    std::string serializeToString();
+
+    /*!
+     * @brief 撤回该信息
+     * @example 撤回信息
+     * @code
+     * procession->registerEvent([](GroupMessageEvent e) {
+        try {
+            e.messageSource.recall();
+            e.group.SendMsg("hi").recall();
+        }
+        catch (MiraiCPException &e) {
+            logger->Error("错误");
+        }
+        });
+     * @endcode
+    */
+    void recall();
+};
+
 /*!
  * @brief group, friend, member的父类
  */
@@ -865,6 +914,25 @@ public:
 	/// @param source 序列化后的文本
 	/// @throw APIException
 	static Contact deserializationFromString(const std::string& source);
+
+    /**
+     * @brief 发送miraicode
+     * @param msg - MiraiCodeable类型指针 - 内容
+    */
+    MessageSource SendMiraiCode(MiraiCodeable* msg) {
+        return SendMiraiCode(msg->toMiraiCode());
+    }
+
+    /// 发送miraicode
+    MessageSource SendMiraiCode(MiraiCode msg) {
+        return SendMiraiCode(msg.toString());
+    }
+
+    /// 发送miraicode
+    MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
+
+    /// 发送纯文本信息
+    MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
 };
 
 // 群文件
@@ -1053,7 +1121,7 @@ public:
 	ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes);
 
 	/// 发送给群或好友或群成员
-	void sendTo(Contact* c, JNIEnv* = manager->getEnv()) const;
+	MessageSource sendTo(Contact* c, JNIEnv* = manager->getEnv()) const;
 };
 
 /// 当前bot账号信息
@@ -1148,26 +1216,6 @@ public:
 	 * @return 图片实例
 	*/
 	Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
-
-	/*发送信息*/
-	/**
-	 * @brief 发送miraicode
-	 * @param msg - MiraiCodeable类型指针 - 内容
-	*/
-	MessageSource SendMiraiCode(MiraiCodeable* msg) {
-		return SendMiraiCode(msg->toMiraiCode());
-	}
-
-	/// 发送miraicode
-	MessageSource SendMiraiCode(MiraiCode msg) {
-		return SendMiraiCode(msg.toString());
-	}
-
-	/// 发送miraicode
-	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
-
-	/// 发送纯文本信息
-	MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
 };
 
 /// 群成员类声明
@@ -1208,22 +1256,6 @@ public:
 	/// 获取权限，会在构造时调用，请使用permission缓存变量
 	/// @see Member::permission
 	unsigned int getPermission(JNIEnv* = manager->getEnv());
-	/*发送信息*/
-	///发送miraicode
-	MessageSource SendMiraiCode(MiraiCodeable* msg) {
-		return SendMiraiCode(msg->toMiraiCode());
-	}
-
-	///发送miraicode
-	MessageSource SendMiraiCode(MiraiCode msg) {
-		return SendMiraiCode(msg.toString());
-	}
-
-	///发送miraicode
-	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
-
-	///发送文本信息，不进行miraicode解析
-	MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
 
 	/*!
 	 * 禁言当前对象，单位是秒，最少0秒最大30天
@@ -1361,22 +1393,6 @@ public:
 	* @param: sign = true时为开始，false为关闭
 	*/
 	void setMuteAll(bool sign, JNIEnv* = manager->getEnv());
-
-	/// 发送MiraiCode信息
-	MessageSource SendMiraiCode(MiraiCodeable* msg) {
-		return SendMiraiCode(msg->toMiraiCode());
-	}
-
-	/// 发送MiraiCode信息
-	MessageSource SendMiraiCode(MiraiCode msg) {
-		return SendMiraiCode(msg.toString());
-	}
-
-	/// 发送MiraiCode信息
-	MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
-
-	/// 发送信息
-	MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
 };
 
 /// At一个群成员

@@ -18,6 +18,7 @@ import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
+import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiExperimentalApi
@@ -25,6 +26,7 @@ import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import net.mamoe.mirai.utils.RemoteFile
 import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
+import org.json.JSONObject
 import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
@@ -107,7 +109,7 @@ object PluginMain : KotlinPlugin(
                 }
                 return json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
             }
-            else->return "E2"
+            else->return "E3"
         }
     }
 
@@ -490,8 +492,8 @@ object PluginMain : KotlinPlugin(
         t.content.value.forEach {
             a.add(ForwardMessage.Node(it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)))
         }
-        a.build().sendTo(c1)
-        return "Y"
+        return json.encodeToString(MessageSource.Serializer,
+            a.build().sendTo(c1).source)
     }
 
     @Suppress("INVISIBLE_MEMBER")
@@ -563,6 +565,46 @@ object PluginMain : KotlinPlugin(
         }
         return "Y"
     }
+    suspend fun sendWithQuote(messageSource: String, msg: String, sign: String):String{
+        val source = json.decodeFromString(MessageSource.Serializer,messageSource)
+        val obj = JSONObject(sign)
+        val message = if(obj.getBoolean("MiraiCode")) {
+            MiraiCode.deserializeMiraiCode(msg)
+        }else{
+            PlainText(msg)
+        }
+        val bot = Bot.getInstance(source.botId)
+        val c = when(source.kind){
+            MessageSourceKind.FRIEND->{
+                bot.getFriend(source.fromId)?:let{
+                    logger.error("找不到好友,位置:K-sendWithQuote,id:${source.fromId}")
+                    return "E1"
+                }
+            }
+            MessageSourceKind.GROUP->{
+                bot.getGroup(source.targetId)?:let{
+                    logger.error("找不到群,位置:K-sendWithQuote,gid:${source.targetId}")
+                    return "E2"
+                }
+            }
+            MessageSourceKind.TEMP->{
+                val tmp = bot.getGroup(obj.getLong("groupid"))?:let{
+                    logger.error("找不到群,位置:K-sendWithQuote,gid:${obj.getLong("groupid")}")
+                    return "E3"
+                }
+                tmp[source.fromId]?:let{
+                    logger.error("找不到群成员,位置:K-sendWithQuote,gid:${obj.getLong("groupid")}, id:${source.fromId}")
+                    return "E4"
+                }
+            }
+            else -> {
+                logger.error("类型出错, 位置:K-sendWithQuote, messageSource:${messageSource}")
+                return "E5"
+            }
+        }
+        return json.encodeToString(MessageSource.Serializer, c.sendMessage(source.quote() + message).source)
+    }
+
     override fun onDisable() {
         cpp.PluginDisable()
     }
