@@ -1,4 +1,6 @@
 #include "pch.h"
+#include "tools.h"
+
 
 using json = nlohmann::json;
 
@@ -141,6 +143,7 @@ void Config::Init(JNIEnv* env) {
 	this->KBuildforward = env->GetStaticMethodID(CPP_lib, "KBuildforward", "(Ljava/lang/String;J)Ljava/lang/String;");
 	this->KNfroperation = env->GetStaticMethodID(CPP_lib, "KNfroperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
 	this->KGioperation = env->GetStaticMethodID(CPP_lib, "KGioperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
+	this->KSendWithQuote = env->GetStaticMethodID(CPP_lib, "KSendWithQuote", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
 }
 
 Config::~Config() {
@@ -180,8 +183,8 @@ void MessageSource::recall() {
 	if (re == "E2") throw RecallException();
 }
 
-MessageSource::MessageSource(const std::string& ids, const std::string& internalids, const std::string& source) : ids(
-	ids), internalids(internalids), source(source) {}
+MessageSource::MessageSource(const std::string& ids, std::string  internalids, const std::string& source) : ids(
+	ids), internalids(std::move(internalids)), source(source) {}
 
 std::string MessageSource::serializeToString() {
 	return source;
@@ -253,7 +256,7 @@ std::string RemoteFile::serializeToString() {
 }
 
 //发送这个聊天记录
-void ForwardMessage::sendTo(Contact* c, JNIEnv* env) const {
+void ForwardMessage::sendTo(Contact* c, JNIEnv* env){
 	json temp;
 	temp["id"] = c->id();
 	temp["groupid"] = c->groupid();
@@ -263,7 +266,6 @@ void ForwardMessage::sendTo(Contact* c, JNIEnv* env) const {
 		CallStaticObjectMethod(config->CPP_lib, config->KBuildforward,
 			Tools::str2jstring(temp.dump().c_str(), env),
 			(jlong)c->botid()), env);
-	if (re == "Y") return;
 	if (re == "E1") {
 		switch (c->type()) {
 		case 1:
@@ -276,6 +278,8 @@ void ForwardMessage::sendTo(Contact* c, JNIEnv* env) const {
 	}
 	if (re == "E2") throw MemberException(2);
 	if (re == "E3") throw APIException("参数错误");
+	//TODO:由于https://github.com/mamoe/mirai/issues/1289 ,在mirai版本v2.7-M1前都不可用
+	//return MessageSource::deserializeFromString(re);
 }
 
 ForwardMessage::ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes) {
@@ -322,6 +326,70 @@ std::string Image::toMiraiCode() {
 	return "[mirai:image:" + this->id + "]";
 }
 
+MessageSource MessageSource::quoteAndSendMiraiCode(const std::string& content, unsigned long long groupid, JNIEnv* env){
+    json obj;
+    obj["MiraiCode"] = true;
+    obj["groupid"] = groupid;
+    std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KSendWithQuote,
+                                                                             Tools::str2jstring(this->serializeToString().c_str()),
+                                                                             Tools::str2jstring(content.c_str()),
+                                                                             Tools::str2jstring(obj.dump().c_str())
+    ));
+    ErrorHandle(re);
+    return MessageSource::deserializeFromString(re);
+}
+
+MessageSource MessageSource::quoteAndSendMsg(const std::string& content, unsigned long long groupid, JNIEnv* env){
+    json obj;
+    obj["MiraiCode"] = false;
+    obj["groupid"] = groupid;
+    std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KSendWithQuote,
+                                                                    Tools::str2jstring(this->serializeToString().c_str()),
+                                                                    Tools::str2jstring(content.c_str()),
+                                                                    Tools::str2jstring(obj.dump().c_str())
+                                                                    ));
+    ErrorHandle(re);
+    return MessageSource::deserializeFromString(re);
+}
+
+MessageSource Contact::SendMiraiCode(std::string msg, JNIEnv* env) {
+    std::string re = LowLevelAPI::send0(std::move(msg), this, true, env);
+    if (re == "E1") {
+        if(this->type() == 1)
+            throw FriendException();
+        else if(this->type() == 2)
+            throw GroupException();
+        else if(this->type() == 3)
+            throw MemberException(1);
+        else
+            throw APIException("reach a error area, Contact::SendMiraiCode, 1");
+    }else if(re == "E2"){
+        throw MemberException(2);
+    }else if(re == "E3"){
+        throw APIException("reach a error area, Contact::SendMiraiCode");
+    }
+    return MessageSource::deserializeFromString(re);
+}
+
+MessageSource Contact::SendMsg(std::string msg, JNIEnv* env) {
+    std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
+    if (re == "E1") {
+        if(this->type() == 1)
+            throw FriendException();
+        else if(this->type() == 2)
+            throw GroupException();
+        else if(this->type() == 3)
+            throw MemberException(1);
+        else
+            throw APIException("reach a error area, Contact::SendMiraiCode, 1");
+    }else if(re == "E2"){
+        throw MemberException(2);
+    }else if(re == "E3"){
+        throw APIException("reach a error area, Contact::SendMiraiCode");
+    }
+    return MessageSource::deserializeFromString(re);
+}
+
 /*好友类实现*/
 Friend::Friend(unsigned long long id, unsigned long long botid, JNIEnv* env) : Contact() {
 	this->_type = 1;
@@ -348,22 +416,6 @@ Image Friend::uploadImg(const std::string& filename, JNIEnv* env) {
 	if (re == "E2")
 		throw UploadException("上传图片大小超过30MB, 路径:" + filename);
 	return Image(re);
-}
-
-MessageSource Friend::SendMiraiCode(std::string msg, JNIEnv* env) {
-	std::string re = LowLevelAPI::send0(std::move(msg), this, true, env);
-	if (re == "E1") {
-		throw FriendException();
-	}
-	return MessageSource::deserializeFromString(re);
-}
-
-MessageSource Friend::SendMsg(std::string msg, JNIEnv* env) {
-	std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
-	if (re == "E1") {
-		throw FriendException();
-	}
-	return MessageSource::deserializeFromString(re);
 }
 
 /*成员类实现*/
@@ -459,28 +511,6 @@ Image Member::uploadImg(const std::string& filename, JNIEnv* env) {
 	return Image(re);
 }
 
-MessageSource Member::SendMiraiCode(std::string msg, JNIEnv* env) {
-	std::string re = LowLevelAPI::send0(std::move(msg), this, true, env);
-	if (re == "E1") {
-		throw MemberException(1);
-	}
-	if (re == "E2") {
-		throw MemberException(2);
-	}
-	return MessageSource::deserializeFromString(re);
-}
-
-MessageSource Member::SendMsg(std::string msg, JNIEnv* env) {
-	std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
-	if (re == "E1") {
-		throw MemberException(1);
-	}
-	if (re == "E2") {
-		throw MemberException(2);
-	}
-	return MessageSource::deserializeFromString(re);
-}
-
 /*群聊类实现*/
 Group::Group(unsigned long long i, unsigned long long bi, JNIEnv* env) : Contact() {
 	this->_type = 2;
@@ -561,22 +591,6 @@ Member Group::getOwner(JNIEnv* env) {
 			env)), env);
 	if (re == "E1")throw GroupException();
 	return Member(stoi(re), this->id(), this->botid());
-}
-
-MessageSource Group::SendMiraiCode(std::string msg, JNIEnv* env) {
-	std::string re = LowLevelAPI::send0(std::move(msg), this, true, env);
-	if (re == "E1") {
-		throw GroupException();
-	}
-	return MessageSource::deserializeFromString(re);
-}
-
-MessageSource Group::SendMsg(std::string msg, JNIEnv* env) {
-	std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
-	if (re == "E1") {
-		throw GroupException();
-	}
-	return MessageSource::deserializeFromString(re);
 }
 
 std::string Group::getFileListString(const std::string& path, JNIEnv* env) {

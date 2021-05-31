@@ -1121,7 +1121,7 @@ public:
 	ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes);
 
 	/// 发送给群或好友或群成员
-	MessageSource sendTo(Contact* c, JNIEnv* = manager->getEnv()) const;
+	void sendTo(Contact* c, JNIEnv* = manager->getEnv());
 };
 
 /// 当前bot账号信息
