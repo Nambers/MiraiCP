@@ -766,6 +766,10 @@ public:
      * @param c 引用后发送的内容, 为纯文本
      * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
      * @return MessageSource
+     * @example 回复(引用并发送)
+     * @code
+     *  e.messageSource.quoteAndSendMsg("HI");
+     * @endcode
      */
     MessageSource quoteAndSendMsg(const std::string& c, unsigned long long groupid = 0, JNIEnv* = manager->getEnv());
 
@@ -783,7 +787,7 @@ public:
      * @param internalids
      * @param source
      */
-    MessageSource(const std::string& ids, std::string  internalids, const std::string& source);
+    MessageSource(std::string  ids, std::string  internalids, const std::string& source);
 
     /*!
      * @brief 从json字符串反序列化到MessageSource对象
@@ -1103,6 +1107,7 @@ public:
 /// @see class ForwardNode
 class ForwardMessage {
 public:
+    /// json节点
 	nlohmann::json sendmsg;
 
 	/*!
@@ -1293,7 +1298,8 @@ public:
 /// 群聊类声明
 class Group : public Contact {
 public:
-	/// 取群成员列表-vector<long>
+	/// 取群成员列表
+	/// @return vector<long>
 	std::vector<unsigned long long> getMemberList() {
 		std::string re = Tools::jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib,
 			config->KQueryML,

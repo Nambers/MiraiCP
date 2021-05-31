@@ -53,7 +53,7 @@ object PluginMain : KotlinPlugin(
     var dll_name = "mirai-demo.dll"
     private lateinit var cpp: CPP_lib
     private lateinit var gson: Gson
-    private const val now_tag = "v2.6.3-RC"
+    private const val now_tag = "v2.6.3"
 
     //日志部分实现
     fun BasicSendLog(log: String) {
