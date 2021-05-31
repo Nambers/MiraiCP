@@ -488,16 +488,10 @@ object KotlinMain {
         t.content.value.forEach {
             a.add(ForwardMessage.Node(it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)))
         }
-        val re = a.build().sendTo(c1).source
-        logger.info("re: $re")
-        try {
-            val ree = json.encodeToString(MessageSource.Serializer, re)
-            logger.info("ree: $ree")
-        } catch (e: Exception) {
-            logger.error(e.message)
-            e.printStackTrace()
-        }
-        return json.encodeToString(MessageSource.Serializer, re)
+        val re = a.build().sendTo(c1)
+        //TODO:由于https://github.com/mamoe/mirai/issues/1289 ,在mirai版本v2.7-M1前都不可用
+        //return json.encodeToString(MessageSource.Serializer, re.source)
+        return "Y"
     }
 
     @Suppress("INVISIBLE_MEMBER")
