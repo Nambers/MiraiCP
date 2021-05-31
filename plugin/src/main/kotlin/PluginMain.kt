@@ -492,8 +492,10 @@ object PluginMain : KotlinPlugin(
         t.content.value.forEach {
             a.add(ForwardMessage.Node(it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)))
         }
-        return json.encodeToString(MessageSource.Serializer,
-            a.build().sendTo(c1).source)
+        val re = a.build().sendTo(c1)
+        //TODO:由于https://github.com/mamoe/mirai/issues/1289 ,在mirai版本v2.7-M1前都不可用
+        //return json.encodeToString(MessageSource.Serializer, re.source)
+        return "Y"
     }
 
     @Suppress("INVISIBLE_MEMBER")
@@ -565,6 +567,7 @@ object PluginMain : KotlinPlugin(
         }
         return "Y"
     }
+
     suspend fun sendWithQuote(messageSource: String, msg: String, sign: String):String{
         val source = json.decodeFromString(MessageSource.Serializer,messageSource)
         val obj = JSONObject(sign)
