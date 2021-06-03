@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.10"
     id("net.mamoe.mirai-console") version "2.6.5"
 }
 
