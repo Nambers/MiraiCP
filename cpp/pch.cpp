@@ -150,11 +150,6 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 				j["groupid"]
 			));
 			break;
-		case 8:
-			procession->broadcast<SchedulingEvent>(SchedulingEvent(
-				j["message"]
-			));
-			break;
 		case 9:
 			procession->broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
 				j["group"]["botid"],

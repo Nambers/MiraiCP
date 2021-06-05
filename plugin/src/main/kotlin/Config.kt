@@ -95,10 +95,6 @@ class Config {
         val botid: Long,
         val type: Int = 7
     )
-    data class TimeOutEvent(
-        val message: String,
-        val type: Int = 8
-    )
     data class BotJoinGroup(
         val etype: Int,
         val group: Contact,
