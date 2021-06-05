@@ -126,65 +126,6 @@ public:
 /// 声明全局日志对象
 extern Logger* logger;
 
-/// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
-/// @internal 一般为MiraiCP内部调用jni接口使用
-/// @class Config
-class Config {
-public:
-	/// kt中JNI接口类
-	jclass CPP_lib = nullptr;
-	/// 异常类
-	jclass initexception = nullptr;
-	/// 撤回信息
-	jmethodID KRecall = nullptr;
-	/// 发送信息
-	jmethodID KSend = nullptr;
-	/// 查询信息接口
-	jmethodID KRefreshInfo = nullptr;
-	/// 上传图片
-	jmethodID KUploadImg = nullptr;
-	/// 取好友列表
-	jmethodID KQueryBFL = nullptr;
-	/// 取群组列表
-	jmethodID KQueryBGL = nullptr;
-	/// 上传文件
-	jmethodID KSendFile = nullptr;
-	/// 查询文件信息
-	jmethodID KRemoteFileInfo = nullptr;
-	/// 查询图片下载地址
-	jmethodID KQueryImgUrl = nullptr;
-	/// 禁言
-	jmethodID KMuteM = nullptr;
-	/// 查询权限
-	jmethodID KQueryM = nullptr;
-	/// 踢出
-	jmethodID KKickM = nullptr;
-	/// 取群主
-	jmethodID KQueryOwner = nullptr;
-	/// 全员禁言
-	jmethodID KMuteGroup = nullptr;
-	/// 查询群成员列表
-	jmethodID KQueryML = nullptr;
-	/// 定时任务
-	jmethodID KSchedule = nullptr;
-	/// 构建转发信息
-	jmethodID KBuildforward = nullptr;
-	/// 好友申请事件
-	jmethodID KNfroperation = nullptr;
-	/// 群聊邀请事件
-	jmethodID KGioperation = nullptr;
-    /// 回复(引用并发送)
-	jmethodID KSendWithQuote = nullptr;
-
-	Config() {};
-
-	void Init(JNIEnv* = manager->getEnv());
-
-	~Config();
-};
-
-extern Config* config;
-
 /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
 /// @class Tools
 class Tools {
@@ -244,6 +185,71 @@ public:
 	/// @return vector
 	static std::vector<unsigned long long> StringToVector(std::string s);
 };
+
+/// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
+/// @internal 一般为MiraiCP内部调用jni接口使用
+/// @class Config
+class Config {
+public:
+    /// kt中JNI接口类
+    jclass CPP_lib = nullptr;
+    /// 异常类
+    jclass initexception = nullptr;
+    /// 调用mirai方法
+    jmethodID KOperation = nullptr;
+
+    enum operation_set{
+        /// 撤回信息
+        Recall,
+        /// 发送信息
+        Send,
+        /// 查询信息接口
+        RefreshInfo,
+        /// 上传图片
+        UploadImg,
+        /// 取好友列表
+        QueryBFL,
+        /// 取群组列表
+        QueryBGL,
+        /// 上传文件
+        SendFile,
+        /// 查询文件信息
+        RemoteFileInfo,
+        /// 查询图片下载地址
+        QueryImgUrl,
+        /// 禁言
+        MuteM,
+        /// 查询权限
+        QueryM,
+        /// 踢出
+        KickM,
+        /// 取群主
+        QueryOwner,
+        /// 全员禁言
+        MuteGroup,
+        /// 查询群成员列表
+        QueryML,
+        _,
+        /// 构建转发信息
+        Buildforward,
+        /// 好友申请事件
+        Nfroperation,
+        /// 群聊邀请事件
+        Gioperation,
+        /// 回复(引用并发送)
+        SendWithQuote
+    };
+
+    std::string koperation(int, const nlohmann::json&, JNIEnv* = manager->getEnv());
+
+    Config() {};
+
+    void Init(JNIEnv* = manager->getEnv());
+
+    ~Config();
+};
+
+extern Config* config;
 
 /// @brief 总异常抽象类
 /// @interface MiraiCPException
@@ -477,11 +483,11 @@ private:
 	std::string description = "";
 };
 
-/// 上传异常
+/// 远程资源出现问题
 /// @see MiraiCPException
-class RemoteFileException : public MiraiCPException {
+class RemoteAssetException : public MiraiCPException {
 public:
-	RemoteFileException(std::string e) {
+	RemoteAssetException(std::string e) {
 		this->description = e;
 	}
 
@@ -493,17 +499,17 @@ private:
 	std::string description = "";
 };
 
-inline void ErrorHandle(const std::string& re){
-    if(re == "E1")
+inline void ErrorHandle(const std::string& re, const std::string &ErrorMsg = ""){
+    if(re == "EF")
         throw FriendException();
-    if(re == "E2")
+    if(re == "EG")
         throw GroupException();
-    if(re == "E3")
+    if(re == "EM")
         throw MemberException(1);
-    if(re == "E4")
+    if(re == "EMM")
         throw MemberException(2);
-    if(re == "E5")
-        throw APIException("");
+    if(re == "EA")
+        throw APIException(ErrorMsg);
 }
 
 /// MiraiCode父类, 指可以被转换成miraicode的类型
@@ -693,7 +699,6 @@ public:
 /// 图像类声明
 class Image : public MiraiCodeable {
 public:
-	const jmethodID Query = NULL;
 	//图片id，样式:` {xxx}.xx `
 	std::string id = "";
 
@@ -741,10 +746,6 @@ public:
     const std::string source;
 
     MessageSource() {};
-
-    std::string toString() {
-        return this->source;
-    }
 
     /**
      * @brief 回复(引用并发送miraicode)
@@ -815,7 +816,7 @@ public:
         });
      * @endcode
     */
-    void recall();
+    void recall(JNIEnv* = manager->getEnv());
 };
 
 /*!
@@ -1011,7 +1012,7 @@ public:
 	std::string toMiraiCode() {
 		if (internalid == 0) {
 			// 重新上传
-			throw RemoteFileException("toMiraiCode error: internalid错误，重新上传");
+			throw RemoteAssetException("toMiraiCode error: internalid错误，重新上传");
 		}
 		return "[mirai:file:" + id + "," + std::to_string(internalid) + "," + name + "," + std::to_string(size) + "]";
 	}
@@ -1028,20 +1029,27 @@ public:
 	/// @return
 	static std::string send0(std::string content, Contact* c, bool miraicode, JNIEnv* env) {
 		nlohmann::json j;
-		j["content"] = content;
-		j["contact"] = c->serialization();
-		return Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KSend,
-			Tools::str2jstring(j.dump().c_str(), env),
-			(jboolean)miraicode), env);
+        nlohmann::json tmp;
+		tmp["content"] = content;
+		tmp["contact"] = c->serialization();
+		j["source"] = tmp.dump();
+		j["miraiCode"] = miraicode;
+		return config->koperation(config->Send, j, env);
+//		Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KSend,
+//			Tools::str2jstring(j.dump().c_str(), env),
+//			(jboolean)miraicode), env);
 	}
 
 	/// @brief 取该联系人的一些信息
 	/// @param c 该联系人Contact指针
 	/// @return json格式字符串，待解析
 	static inline std::string getInfoSource(Contact* c, JNIEnv* env = manager->getEnv()) {
-		return Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo,
-			Tools::str2jstring(c->serializationToString().c_str(),
-				env)));
+	    nlohmann::json j;
+	    j["source"] = c->serializationToString();
+		return config->koperation(config->RefreshInfo, j, env);
+//		Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo,
+//			Tools::str2jstring(c->serializationToString().c_str(),
+//				env)));
 	}
 
 	/*!
@@ -1052,10 +1060,14 @@ public:
 	 * @return string 待解析json
 	 */
 	static inline std::string uploadImg0(std::string path, Contact* c, JNIEnv* env = manager->getEnv()) {
-		return Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KUploadImg,
-			Tools::str2jstring(path.c_str(), env),
-			Tools::str2jstring(c->serializationToString().c_str(),
-				env)));
+	    nlohmann::json j;
+	    j["fileName"] = path;
+	    j["source"] = c->serializationToString();
+		return config->koperation(config->UploadImg, j, env);
+//		Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KUploadImg,
+//			Tools::str2jstring(path.c_str(), env),
+//			Tools::str2jstring(c->serializationToString().c_str(),
+//				env)));
 	}
 
 	/// 每个对象的必有信息
@@ -1151,9 +1163,12 @@ public:
 	 * @param env
 	 */
 	void refreshInfo(JNIEnv* env = manager->getEnv()) {
-		LowLevelAPI::info tmp = LowLevelAPI::info0(Tools::jstring2str(
-			(jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo, Tools::str2jstring(
-				Contact(4, 0, 0, "", this->id).serializationToString().c_str(), env))));
+	    nlohmann::json j;
+	    j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
+		LowLevelAPI::info tmp = LowLevelAPI::info0(config->koperation(config->RefreshInfo, j, env));
+//        Tools::jstring2str(
+//                (jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo, Tools::str2jstring(
+//                        Contact(4, 0, 0, "", this->id).serializationToString().c_str(), env)))
 		this->_avatarUrl = tmp.avatarUrl;
 		this->_nick = tmp.nickornamecard;
 	}
@@ -1175,9 +1190,12 @@ public:
 
 	/// 取好友列表
 	std::vector<unsigned long long> getFriendList(JNIEnv* env = manager->getEnv()) {
-		std::string temp = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
-			config->KQueryBFL,
-			(jlong)this->id));
+	    nlohmann::json j;
+	    j["botid"] = this->id;
+		std::string temp = config->koperation(config->QueryBFL, j, env);
+//		        Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
+//			config->KQueryBFL,
+//			(jlong)this->id));
 		return Tools::StringToVector(temp);
 	}
 
@@ -1188,9 +1206,12 @@ public:
 
 	/// 取群列表
 	std::vector<unsigned long long> getGroupList(JNIEnv* env = manager->getEnv()) {
-		std::string temp = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
-			config->KQueryBGL,
-			(jlong)this->id));
+	    nlohmann::json j;
+	    j["botid"] = this->id;
+		std::string temp = config->koperation(config->QueryBGL, j, env);
+//		        Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
+//			config->KQueryBGL,
+//			(jlong)this->id));
 		return Tools::StringToVector(temp);
 	}
 
@@ -1225,9 +1246,6 @@ public:
 
 /// 群成员类声明
 class Member : public Contact {
-private:
-	jmethodID Mute_id = NULL;
-	jmethodID KickM = NULL;
 public:
 	/// @brief 权限等级
 	///     - OWNER群主 为 2
@@ -1300,11 +1318,14 @@ class Group : public Contact {
 public:
 	/// 取群成员列表
 	/// @return vector<long>
-	std::vector<unsigned long long> getMemberList() {
-		std::string re = Tools::jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib,
-			config->KQueryML,
-			Tools::str2jstring(
-				this->serializationToString().c_str())));
+	std::vector<unsigned long long> getMemberList(JNIEnv* env = manager->getEnv()) {
+	    nlohmann::json j;
+	    j["contactSource"] = this->serializationToString();
+		std::string re = config->koperation(config->QueryML, j, env);
+//		        Tools::jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib,
+//			config->KQueryML,
+//			Tools::str2jstring(
+//				this->serializationToString().c_str())));
 		if (re == "E1") {
 			throw GroupException();
 		}
@@ -1477,11 +1498,15 @@ public:
 	/// 群号
 	const unsigned long long groupid = 0;
 
-	static void reject(std::string source) {
-		std::string re = Tools::jstring2str(
-			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation,
-				Tools::str2jstring(source.c_str()),
-				(jboolean)false));
+	static void reject(std::string source, JNIEnv* env = manager->getEnv()) {
+        nlohmann::json j;
+        j["text"] = source;
+        j["sign"] = false;
+        std::string re = config->koperation(config->Gioperation, j, env);
+//		        Tools::jstring2str(
+//			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation,
+//				Tools::str2jstring(source.c_str()),
+//				(jboolean)true));
 		if (re == "Y") return;
 		if (re == "E")logger->Error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
 	}
@@ -1494,11 +1519,15 @@ public:
 		return this->source;
 	}
 
-	static void accept(std::string source) {
-		std::string re = Tools::jstring2str(
-			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation,
-				Tools::str2jstring(source.c_str()),
-				(jboolean)true));
+	static void accept(std::string source, JNIEnv* env = manager->getEnv()) {
+	    nlohmann::json j;
+	    j["text"] = source;
+	    j["sign"] = true;
+		std::string re = config->koperation(config->Gioperation, j, env);
+//		        Tools::jstring2str(
+//			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation,
+//				Tools::str2jstring(source.c_str()),
+//				(jboolean)true));
 		if (re == "Y") return;
 		if (re == "E")logger->Error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
 	}
@@ -1537,11 +1566,15 @@ public:
 
 	/// @brief 拒绝好友申请
 	/// @param source 事件序列化信息
-	static void reject(std::string source) {
-		std::string re = Tools::jstring2str(
-			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
-				Tools::str2jstring(source.c_str()),
-				(jboolean)false));
+	static void reject(std::string source, JNIEnv* env = manager->getEnv()) {
+        nlohmann::json j;
+        j["text"] = source;
+        j["sign"] = false;
+        std::string re = config->koperation(config->Nfroperation, j, env);
+//		        Tools::jstring2str(
+//			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
+//				Tools::str2jstring(source.c_str()),
+//				(jboolean)true));
 		if (re == "Y") return;
 		if (re == "E")logger->Error("好友申请事件拒绝失败(可能因为重复处理),id:" + source);
 	}
@@ -1553,11 +1586,15 @@ public:
 
 	/// @brief 接受好友申请
 	/// @param source 事件序列化信息
-	static void accept(std::string source) {
-		std::string re = Tools::jstring2str(
-			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
-				Tools::str2jstring(source.c_str()),
-				(jboolean)true));
+	static void accept(std::string source, JNIEnv* env = manager->getEnv()) {
+        nlohmann::json j;
+	    j["text"] = source;
+	    j["sign"] = true;
+		std::string re = config->koperation(config->Nfroperation, j, env);
+//		        Tools::jstring2str(
+//			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
+//				Tools::str2jstring(source.c_str()),
+//				(jboolean)true));
 		if (re == "Y") return;
 		if (re == "E")logger->Error("好友申请事件同意失败(可能因为重复处理),id:" + source);
 	}
@@ -1729,57 +1766,6 @@ public:
 			messageSource) {}
 };
 
-/*!
- * @brief 启动定时任务,time是多少毫秒后开始，id是自定义标识符
- * @param time
- * @param args
- * @param e
- * @example 使用定时任务
- * @code
- * //注，需为全局变量
-     unsigned long id = 0;
-    ...
-	procession->registerEvent([=](SchedulingEvent e) {
-		//此处的e.id为自定义id，需在调用定时任务时自定义传入
-		if (e.id == 1) {
-			//do something
-        Friend(id).SendMsg("这是定时任务");
-        }
-        });
-        //这里的[&]和[=]分别为以引用和值的方式捕获全部可以捕获的变量，前者可以改变量值，相当于指针，后者无法更改，相当于本地一个局部变量并进行值传递，详细见搜索引擎的c++ lambda
-        procession->registerEvent([&](PrivateMessageEvent param)->void {
-        //在这写你自己处理私聊消息的代码
-        logger->Info("hi");
-        //延迟100ms发送，后面的1为自定义id
-        SetScheduling(100, 1);
-        id = param.sender.id();
-        param.sender.SendMsg(param.message);
-        });
-        ...
- * @endcode
- */
-inline void SetScheduling(long time, std::initializer_list<std::string> args, BotEvent* e) {
-	nlohmann::json obj;
-	nlohmann::json root;
-	for (const std::string& it : args) {
-		obj.push_back(it);
-	}
-	root["value"] = obj;
-	manager->getEnv()->CallStaticVoidMethod(config->CPP_lib, config->KSchedule, (jlong)time,
-		Tools::str2jstring(root.dump().c_str()));
-}
-
-/// 定时任务执行
-class SchedulingEvent {
-public:
-	void init() {};
-	/*自定义id标识符*/
-	std::vector<std::string> ids;
-
-	SchedulingEvent(const std::string& str);
-};
-
-
 /**监听类声明*/
 class Event {
 private:
@@ -1803,7 +1789,6 @@ private:
 	Node<MemberJoinEvent>* MJHead = new Node<MemberJoinEvent>();
 	Node<MemberLeaveEvent>* MLHead = new Node<MemberLeaveEvent>();
 	Node<RecallEvent>* RHead = new Node<RecallEvent>();
-	Node<SchedulingEvent>* SHead = new Node<SchedulingEvent>();
 	Node<BotJoinGroupEvent>* BHead = new Node<BotJoinGroupEvent>();
 	Node<GroupTempMessageEvent>* GTMHead = new Node<GroupTempMessageEvent>();
 
@@ -1824,8 +1809,6 @@ private:
             return MLHead;
         }else if constexpr(std::is_same_v<T, RecallEvent>){
             return RHead;
-        }else if constexpr(std::is_same_v<T, SchedulingEvent>){
-            return SHead;
         }else if constexpr(std::is_same_v<T, BotJoinGroupEvent>){
             return BHead;
         }else if constexpr(std::is_same_v<T, GroupTempMessageEvent>){
@@ -1842,7 +1825,6 @@ private:
     Node<MemberJoinEvent>* MJTail = MJHead;
     Node<MemberLeaveEvent>* MLTail = MLHead;
     Node<RecallEvent>* RTail = RHead;
-    Node<SchedulingEvent>* STail = SHead;
     Node<BotJoinGroupEvent>* BTail = BHead;
     Node<GroupTempMessageEvent>* GTMTail = GTMHead;
 
@@ -1879,10 +1861,6 @@ private:
             RTail->next = temp;
             RTail->nextNode = temp;
             RTail = temp;
-        }else if constexpr(std::is_same_v<T, SchedulingEvent>){
-            STail->next = temp;
-            STail->nextNode = temp;
-            STail = temp;
         }else if constexpr(std::is_same_v<T, BotJoinGroupEvent>){
             BTail->next = temp;
             BTail->nextNode = temp;
