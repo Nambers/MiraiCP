@@ -19,13 +19,13 @@ import tech.eritquearcus.miraicp.KotlinMain.dll_name
 import tech.eritquearcus.miraicp.KotlinMain.getowner
 import tech.eritquearcus.miraicp.KotlinMain.kkick
 import tech.eritquearcus.miraicp.KotlinMain.kqueryM
+import tech.eritquearcus.miraicp.KotlinMain.logger
 import tech.eritquearcus.miraicp.KotlinMain.mute
 import tech.eritquearcus.miraicp.KotlinMain.muteall
 import tech.eritquearcus.miraicp.KotlinMain.recallMsg
 import tech.eritquearcus.miraicp.KotlinMain.rejectFriendRequest
 import tech.eritquearcus.miraicp.KotlinMain.rejectGroupInvite
 import tech.eritquearcus.miraicp.KotlinMain.remoteFileInfo
-import tech.eritquearcus.miraicp.KotlinMain.scheduling
 import tech.eritquearcus.miraicp.KotlinMain.sendFile
 import tech.eritquearcus.miraicp.KotlinMain.sendWithQuote
 import tech.eritquearcus.miraicp.KotlinMain.uploadImg
@@ -42,8 +42,8 @@ class CPP_lib {
         init {
             System.load(dll_name)
         }
+
         //send MiraiCode
-        @JvmStatic
         fun KSend(source: String, miraiCode:Boolean):String{
             return runBlocking {
                 val tmp = gson.fromJson(source, Config.SendRequest::class.java)
@@ -53,21 +53,21 @@ class CPP_lib {
                 }
             }
         }
+
         //recall messageSource
-        @JvmStatic
         fun KRecall(source: String):String {
             return runBlocking {
                 recallMsg(source)
             }
         }
+
         //查询图片下载链接
-        @JvmStatic
         fun KQueryImgUrl(id:String): String {
             return runBlocking {
                 QueryImg(id)
             }
         }
-        @JvmStatic
+
         fun KSendLog(log:String, level: Int):Unit{
             when(level){
                 0-> BasicSendLog(log)
@@ -75,24 +75,24 @@ class CPP_lib {
                 2-> SendError(log)
             }
         }
-        @JvmStatic
+
         fun KRefreshInfo(source: String): String {
             return RefreshInfo(gson.fromJson(source, Config.Contact::class.java))
         }
-        @JvmStatic
+
         fun KUploadImg(fileName:String,source:String):String{
             return runBlocking {
                 uploadImg(fileName, gson.fromJson(source, Config.Contact::class.java))
             }
         }
-        @JvmStatic
+
         fun KSendFile(source:String, contactSource:String):String{
             return runBlocking {
                 val t = JSONObject(source)
                 sendFile(t.getString("path"), t.getString("filename"), gson.fromJson(contactSource, Config.Contact::class.java))
             }
         }
-        @JvmStatic
+
         fun KRemoteFileInfo(source: String, contactSource: String):String {
             return runBlocking {
                 val t = JSONObject(source)
@@ -103,63 +103,58 @@ class CPP_lib {
                 )
             }
         }
-        //定时任务
-        @JvmStatic
-        fun KSchedule(time:Long, id:String){
-            scheduling(time, id)
-        }
+
         //mute member
-        @JvmStatic
         fun KMuteM(time: Int, contactSource: String): String{
             return runBlocking {
                 mute(time, gson.fromJson(contactSource, Config.Contact::class.java))
             }
         }
+
         //query the permission of a member in a group
-        @JvmStatic
         fun KQueryM(contactSource: String): String{
             return kqueryM(gson.fromJson(contactSource, Config.Contact::class.java))
         }
+
         //kick a member
-        @JvmStatic
         fun KKickM(message: String, contactSource: String):String{
             return runBlocking {
                 kkick(message, gson.fromJson(contactSource, Config.Contact::class.java))
             }
         }
+
         //Mute the whole group
-        @JvmStatic
         fun KMuteGroup(sign: Boolean, contactSource: String):String{
             return muteall(sign, gson.fromJson(contactSource, Config.Contact::class.java))
         }
+
         //query the member list of a group
-        @JvmStatic
         fun KQueryML(contactSource: String):String{
             return QueryML(gson.fromJson(contactSource, Config.Contact::class.java))
         }
+
         // query the friend lst of the bot
-        @JvmStatic
         fun KQueryBFL(botid: Long): String{
             return QueryBFL(botid)
         }
+
         // query the group list of the bot
-        @JvmStatic
         fun KQueryBGL(botid: Long): String{
             return QueryBGL(botid)
         }
+
         //query the owner of a group
-        @JvmStatic
         fun KQueryOwner(contactSource: String):String{
             return getowner(gson.fromJson(contactSource, Config.Contact::class.java))
         }
+
         //build forward message
-        @JvmStatic
         fun KBuildforward(text:String, botid: Long):String{
             return runBlocking {
                 buildforwardMsg(text, botid)
             }
         }
-        @JvmStatic
+
         // new friend request operation
         fun KNfroperation(text: String, sign: Boolean):String{
             return runBlocking {
@@ -170,7 +165,6 @@ class CPP_lib {
         }
 
         // Group invite operation
-        @JvmStatic
         fun KGioperation(text: String, sign: Boolean): String {
             return runBlocking {
                 if (sign) accpetGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
@@ -178,10 +172,144 @@ class CPP_lib {
             }
         }
 
-        @JvmStatic
         fun KSendWithQuote(messageSource: String, msg: String, sign: String): String {
             return runBlocking {
                 sendWithQuote(messageSource, msg, sign)
+            }
+        }
+
+        enum class operation_code{
+            /// 撤回信息
+            Recall,
+            /// 发送信息
+            Send,
+            /// 查询信息接口
+            RefreshInfo,
+            /// 上传图片
+            UploadImg,
+            /// 取好友列表
+            QueryBFL,
+            /// 取群组列表
+            QueryBGL,
+            /// 上传文件
+            SendFile,
+            /// 查询文件信息
+            RemoteFileInfo,
+            /// 查询图片下载地址
+            QueryImgUrl,
+            /// 禁言
+            MuteM,
+            /// 查询权限
+            QueryM,
+            /// 踢出
+            KickM,
+            /// 取群主
+            QueryOwner,
+            /// 全员禁言
+            MuteGroup,
+            /// 查询群成员列表
+            QueryML,
+            /// 定时任务
+            Schedule,
+            /// 构建转发信息
+            Buildforward,
+            /// 好友申请事件
+            Nfroperation,
+            /// 群聊邀请事件
+            Gioperation,
+            /// 回复(引用并发送)
+            SendWithQuote
+        };
+
+        @JvmStatic
+        fun KOperation(content: String):String {
+            val j = JSONObject(content)
+            val root = j.getJSONObject("data")
+            try {
+                return when (j["type"] as Int) {
+                    /// 撤回信息
+                    operation_code.Recall.ordinal -> {
+                        KRecall(root.getString("source"))
+                    }
+                    /// 发送信息
+                    operation_code.Send.ordinal -> {
+                        KSend(root.getString("source"), root.getBoolean("miraiCode"))
+                    }
+                    /// 查询信息接口
+                    operation_code.RefreshInfo.ordinal -> {
+                        KRefreshInfo(root.getString("source"))
+                    }
+                    /// 上传图片
+                    operation_code.UploadImg.ordinal -> {
+                        KUploadImg(root.getString("fileName"), root.getString("source"))
+                    }
+                    /// 取好友列表
+                    operation_code.QueryBFL.ordinal -> {
+                        KQueryBFL(root.getLong("botid"))
+                    }
+                    /// 取群组列表
+                    operation_code.QueryBGL.ordinal -> {
+                        KQueryBGL(root.getLong("botid"))
+                    }
+                    /// 上传文件
+                    operation_code.SendFile.ordinal -> {
+                        KSendFile(root.getString("source"), root.getString("contactSource"))
+                    }
+                    /// 查询文件信息
+                    operation_code.RemoteFileInfo.ordinal -> {
+                        KRemoteFileInfo(root.getString("source"), root.getString("contactSource"))
+                    }
+                    /// 查询图片下载地址
+                    operation_code.QueryImgUrl.ordinal -> {
+                        KQueryImgUrl(root.getString("id"))
+                    }
+                    /// 禁言
+                    operation_code.MuteM.ordinal -> {
+                        KMuteM(root.getInt("time"), root.getString("contactSource"))
+                    }
+                    /// 查询权限
+                    operation_code.QueryM.ordinal -> {
+                        KQueryM(root.getString("contactSource"))
+                    }
+                    /// 踢出
+                    operation_code.KickM.ordinal -> {
+                        KKickM(root.getString("message"), root.getString("contactSOurce"))
+                    }
+                    /// 取群主
+                    operation_code.QueryOwner.ordinal -> {
+                        KQueryOwner(root.getString("contactSource"))
+                    }
+                    /// 全员禁言
+                    operation_code.MuteGroup.ordinal -> {
+                        KMuteGroup(root.getBoolean("sign"), root.getString("contactSource"))
+                    }
+                    /// 查询群成员列表
+                    operation_code.QueryML.ordinal -> {
+                        KQueryML(root.getString("contactSource"))
+                    }
+                    /// 构建转发信息
+                    operation_code.Buildforward.ordinal -> {
+                        KBuildforward(root.getString("text"), root.getLong("botid"))
+                    }
+                    /// 好友申请事件
+                    operation_code.Nfroperation.ordinal -> {
+                        KNfroperation(root.getString("text"), root.getBoolean("sign"))
+                    }
+                    /// 群聊邀请事件
+                    operation_code.Gioperation.ordinal -> {
+                        KGioperation(root.getString("text"), root.getBoolean("sign"))
+                    }
+                    /// 回复(引用并发送)
+                    operation_code.SendWithQuote.ordinal -> {
+                        KSendWithQuote(root.getString("messageSource"), root.getString("msg"), root.getString("sign"))
+                    }
+                    else -> "EA"
+                }
+            }catch(e:Exception){
+                logger.error(e.message)
+                logger.error(content)
+                e.printStackTrace()
+                return "EA"
             }
         }
     }

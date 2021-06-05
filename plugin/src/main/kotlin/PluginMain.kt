@@ -77,7 +77,7 @@ object PluginMain : KotlinPlugin(
                 logger.info("Send message for(${c.id}) is $message")
                 val f = AIbot.getFriend(c.id) ?: let {
                     logger.error("发送消息找不到好友，位置:K-Send()，id:${c.id}")
-                    return "E1"
+                    return "EF"
                 }
                 return json.encodeToString(MessageSource.Serializer,
                     f.sendMessage(message).source)
@@ -86,7 +86,7 @@ object PluginMain : KotlinPlugin(
                 logger.info("Send message for Group(${c.id}) is $message")
                 val g = AIbot.getGroup(c.id) ?: let {
                     logger.error("发送群消息异常找不到群组，位置K-SendG，gid:${c.id}")
-                    return "E1"
+                    return "EG"
                 }
                 return json.encodeToString(MessageSource.Serializer,
                     g.sendMessage(message).source)
@@ -101,15 +101,15 @@ object PluginMain : KotlinPlugin(
                 }
                 val G = AIbot.getGroup(c.groupid) ?: let {
                     logger.error("发送消息找不到群聊，位置K-Send()，id:${c.groupid}")
-                    return "E1"
+                    return "EM"
                 }
                 val f = G[c.id] ?: let {
                     logger.error("发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupid}")
-                    return "E2"
+                    return "EMM"
                 }
                 return json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
             }
-            else->return "E3"
+            else -> return "EA"
         }
     }
 
@@ -258,7 +258,11 @@ object PluginMain : KotlinPlugin(
     }
 
     suspend fun QueryImg(id: String): String {
-        return Image(id).queryUrl()
+        return try {
+            Image(id).queryUrl()
+        } catch (e: IllegalArgumentException) {
+            "E1"
+        };
     }
 
     //recall
@@ -274,19 +278,6 @@ object PluginMain : KotlinPlugin(
             return "E2"
         }
         return "Y"
-    }
-
-    //定时任务
-    fun scheduling(time: Long, id: String) {
-        Timer("SettingUp", false).schedule(time) {
-            cpp.Event(
-                Gson().toJson(
-                    Config.TimeOutEvent(
-                        id
-                    )
-                )
-            )
-        }
     }
 
     //禁言
@@ -318,16 +309,23 @@ object PluginMain : KotlinPlugin(
         return gson.toJson(Config.FileInfo(
             id = finfo.id,
             name = finfo.name,
-            path= finfo.path,
+            path = finfo.path,
             dinfo = Config.DInfo(dinfo.url, dinfo.md5.toString(), dinfo.sha1.toString()),
-            finfo = Config.FInfo(finfo.length, finfo.uploaderId, finfo.downloadTimes, finfo.uploaderId, finfo.lastModifyTime))
+            finfo = Config.FInfo(
+                finfo.length,
+                finfo.uploaderId,
+                finfo.downloadTimes,
+                finfo.uploaderId,
+                finfo.lastModifyTime
+            )
+        )
         )
     }
     suspend fun sendFile(path: String, file: String, c: Config.Contact): String {
         val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-uploadfile()，gid:${c.id}")
-            return "E1"
+            return "EG"
         }
         val f = File(file)
         if (!f.exists() || !f.isFile) {
@@ -476,17 +474,17 @@ object PluginMain : KotlinPlugin(
         }
         val c:Contact = when(t.content.type) {
             1 -> AIbot.getFriend(t.content.id) ?: let {
-                return "E1"
+                return "EF"
             }
             2 -> AIbot.getGroup(t.content.id) ?: let {
-                return "E1"
+                return "EG"
             }
             3 -> (AIbot.getGroup(t.content.id) ?: let {
-                return "E1"
-            })[t.content.id2]?:let {
-                return "E2"
+                return "EM"
+            })[t.content.id2] ?: let {
+                return "EMM"
             }
-            else -> return "E3"
+            else -> return "EA"
         }
         val a = ForwardMessageBuilder(c)
         t.content.value.forEach {
@@ -568,41 +566,41 @@ object PluginMain : KotlinPlugin(
         return "Y"
     }
 
-    suspend fun sendWithQuote(messageSource: String, msg: String, sign: String):String{
-        val source = json.decodeFromString(MessageSource.Serializer,messageSource)
+    suspend fun sendWithQuote(messageSource: String, msg: String, sign: String): String {
+        val source = json.decodeFromString(MessageSource.Serializer, messageSource)
         val obj = JSONObject(sign)
-        val message = if(obj.getBoolean("MiraiCode")) {
+        val message = if (obj.getBoolean("MiraiCode")) {
             MiraiCode.deserializeMiraiCode(msg)
-        }else{
+        } else {
             PlainText(msg)
         }
         val bot = Bot.getInstance(source.botId)
-        val c = when(source.kind){
-            MessageSourceKind.FRIEND->{
-                bot.getFriend(source.fromId)?:let{
+        val c = when (source.kind) {
+            MessageSourceKind.FRIEND -> {
+                bot.getFriend(source.fromId) ?: let {
                     logger.error("找不到好友,位置:K-sendWithQuote,id:${source.fromId}")
-                    return "E1"
+                    return "EF"
                 }
             }
-            MessageSourceKind.GROUP->{
-                bot.getGroup(source.targetId)?:let{
+            MessageSourceKind.GROUP -> {
+                bot.getGroup(source.targetId) ?: let {
                     logger.error("找不到群,位置:K-sendWithQuote,gid:${source.targetId}")
-                    return "E2"
+                    return "EG"
                 }
             }
-            MessageSourceKind.TEMP->{
-                val tmp = bot.getGroup(obj.getLong("groupid"))?:let{
+            MessageSourceKind.TEMP -> {
+                val tmp = bot.getGroup(obj.getLong("groupid")) ?: let {
                     logger.error("找不到群,位置:K-sendWithQuote,gid:${obj.getLong("groupid")}")
-                    return "E3"
+                    return "EM"
                 }
-                tmp[source.fromId]?:let{
+                tmp[source.fromId] ?: let {
                     logger.error("找不到群成员,位置:K-sendWithQuote,gid:${obj.getLong("groupid")}, id:${source.fromId}")
-                    return "E4"
+                    return "EMM"
                 }
             }
             else -> {
                 logger.error("类型出错, 位置:K-sendWithQuote, messageSource:${messageSource}")
-                return "E5"
+                return "EA"
             }
         }
         return json.encodeToString(MessageSource.Serializer, c.sendMessage(source.quote() + message).source)

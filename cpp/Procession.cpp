@@ -1,12 +1,13 @@
 #include "pch.h"
+// 多线程示例
 void func(unsigned long long i, unsigned long long botid) {
-	//执行操作
+	// 执行操作
 	Friend(i, botid).SendMsg("hi");
 	manager->detach();
 }
 
 void onEnable() {
-	/*插件启动*/
+	/*插件启动, 请勿在此函数运行前执行操作mirai的代码*/
 	/*
 	注册事件监听-用户自定义
 	logger - 日志组件
@@ -44,7 +45,7 @@ void onEnable() {
 		// 多线程测试,线程应该在lambda中决定要detach还是join, 否则会报错
 		// 测试取图片
 		std::vector <std::string> temp = Image::GetImgIdsFromMiraiCode(e.message);
-		for (std::string a : temp) {
+		for (const std::string& a : temp) {
 		    e.sender.SendMsg(a);
 		}
 		// 发送图片
@@ -57,7 +58,7 @@ void onEnable() {
 	// 监听群信息
 	procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
                 e.messageSource.quoteAndSendMsg("HI");
-	            logger->Info(e.messageSource.toString());
+	            logger->Info(e.messageSource.serializeToString());
 		        // 发送文本信息
 		        e.group.SendMsg("HI");
 		        // 发送MiraiCode信息，At
