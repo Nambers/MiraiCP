@@ -1,5 +1,3 @@
-#include <utility>
-
 #include "pch.h"
 
 
@@ -121,38 +119,47 @@ void Config::Init(JNIEnv* env) {
 	if (this->CPP_lib == nullptr) {
 		throw InitException("初始化错误", 1);
 	}
-	this->KSend = env->GetStaticMethodID(CPP_lib, "KSend", "(Ljava/lang/String;Z)Ljava/lang/String;");
-	this->KRecall = env->GetStaticMethodID(CPP_lib, "KRecall", "(Ljava/lang/String;)Ljava/lang/String;");
-	this->KQueryImgUrl = env->GetStaticMethodID(CPP_lib, "KQueryImgUrl", "(Ljava/lang/String;)Ljava/lang/String;");
-	this->KRefreshInfo = env->GetStaticMethodID(CPP_lib, "KRefreshInfo", "(Ljava/lang/String;)Ljava/lang/String;");
-	this->KUploadImg = env->GetStaticMethodID(CPP_lib, "KUploadImg",
-		"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-	this->KSendFile = env->GetStaticMethodID(CPP_lib, "KSendFile",
-		"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-	this->KRemoteFileInfo = env->GetStaticMethodID(CPP_lib, "KRemoteFileInfo",
-		"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-	this->KSchedule = env->GetStaticMethodID(CPP_lib, "KSchedule", "(JLjava/lang/String;)V");
-	this->KMuteM = env->GetStaticMethodID(CPP_lib, "KMuteM", "(ILjava/lang/String;)Ljava/lang/String;");
-	this->KQueryM = env->GetStaticMethodID(CPP_lib, "KQueryM", "(Ljava/lang/String;)Ljava/lang/String;");
-	this->KKickM = env->GetStaticMethodID(CPP_lib, "KKickM",
-		"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-	this->KMuteGroup = env->GetStaticMethodID(CPP_lib, "KMuteGroup", "(ZLjava/lang/String;)Ljava/lang/String;");
-	this->KQueryML = env->GetStaticMethodID(CPP_lib, "KQueryML", "(Ljava/lang/String;)Ljava/lang/String;");
-	this->KQueryBFL = env->GetStaticMethodID(CPP_lib, "KQueryBFL", "(J)Ljava/lang/String;");
-	this->KQueryBGL = env->GetStaticMethodID(CPP_lib, "KQueryBGL", "(J)Ljava/lang/String;");
-	this->KQueryOwner = env->GetStaticMethodID(CPP_lib, "KQueryOwner", "(Ljava/lang/String;)Ljava/lang/String;");
-	this->KBuildforward = env->GetStaticMethodID(CPP_lib, "KBuildforward", "(Ljava/lang/String;J)Ljava/lang/String;");
-	this->KNfroperation = env->GetStaticMethodID(CPP_lib, "KNfroperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
-	this->KGioperation = env->GetStaticMethodID(CPP_lib, "KGioperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
-	this->KSendWithQuote = env->GetStaticMethodID(CPP_lib, "KSendWithQuote", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+//	this->KSend = env->GetStaticMethodID(CPP_lib, "KSend", "(Ljava/lang/String;Z)Ljava/lang/String;");
+//	this->KRecall = env->GetStaticMethodID(CPP_lib, "KRecall", "(Ljava/lang/String;)Ljava/lang/String;");
+//	this->KQueryImgUrl = env->GetStaticMethodID(CPP_lib, "KQueryImgUrl", "(Ljava/lang/String;)Ljava/lang/String;");
+//	this->KRefreshInfo = env->GetStaticMethodID(CPP_lib, "KRefreshInfo", "(Ljava/lang/String;)Ljava/lang/String;");
+//	this->KUploadImg = env->GetStaticMethodID(CPP_lib, "KUploadImg",
+//		"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+//	this->KSendFile = env->GetStaticMethodID(CPP_lib, "KSendFile",
+//		"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+//	this->KRemoteFileInfo = env->GetStaticMethodID(CPP_lib, "KRemoteFileInfo",
+//		"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+//	this->KSchedule = env->GetStaticMethodID(CPP_lib, "KSchedule", "(JLjava/lang/String;)V");
+//	this->KMuteM = env->GetStaticMethodID(CPP_lib, "KMuteM", "(ILjava/lang/String;)Ljava/lang/String;");
+//	this->KQueryM = env->GetStaticMethodID(CPP_lib, "KQueryM", "(Ljava/lang/String;)Ljava/lang/String;");
+//	this->KKickM = env->GetStaticMethodID(CPP_lib, "KKickM",
+//		"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+//	this->KMuteGroup = env->GetStaticMethodID(CPP_lib, "KMuteGroup", "(ZLjava/lang/String;)Ljava/lang/String;");
+//	this->KQueryML = env->GetStaticMethodID(CPP_lib, "KQueryML", "(Ljava/lang/String;)Ljava/lang/String;");
+//	this->KQueryBFL = env->GetStaticMethodID(CPP_lib, "KQueryBFL", "(J)Ljava/lang/String;");
+//	this->KQueryBGL = env->GetStaticMethodID(CPP_lib, "KQueryBGL", "(J)Ljava/lang/String;");
+//	this->KQueryOwner = env->GetStaticMethodID(CPP_lib, "KQueryOwner", "(Ljava/lang/String;)Ljava/lang/String;");
+//	this->KBuildforward = env->GetStaticMethodID(CPP_lib, "KBuildforward", "(Ljava/lang/String;J)Ljava/lang/String;");
+//	this->KNfroperation = env->GetStaticMethodID(CPP_lib, "KNfroperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
+//	this->KGioperation = env->GetStaticMethodID(CPP_lib, "KGioperation", "(Ljava/lang/String;Z)Ljava/lang/String;");
+//	this->KSendWithQuote = env->GetStaticMethodID(CPP_lib, "KSendWithQuote", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+    this->KOperation = env->GetStaticMethodID(CPP_lib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
 }
 
 Config::~Config() {
 	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
 }
 
+std::string Config::koperation(int type, const json& data, JNIEnv* env) {
+    json j;
+    j["type"] = type;
+    j["data"] = data;
+    jstring re = (jstring)env->CallStaticObjectMethod(this->CPP_lib, this->KOperation, Tools::str2jstring(j.dump().c_str(), env));
+    return Tools::jstring2str(re, env);
+}
+
 Event::~Event() {
-	Node0* temp[] = { GMHead, PMHead, GHead, NFHead, MJHead, MLHead, RHead, SHead, BHead };
+	Node0* temp[] = { GMHead, PMHead, GHead, NFHead, MJHead, MLHead, RHead, BHead };
 	for (Node0* ptr : temp) {
 		Node0* now = ptr;
 		Node0* t = nullptr;
@@ -168,17 +175,13 @@ Event::~Event() {
 	}
 }
 
-SchedulingEvent::SchedulingEvent(const std::string& str) {
-	const json arrayNum = json::parse(str)["value"];
-	for (const auto& i : arrayNum) {
-		ids.emplace_back(i);
-	}
-}
-
-void MessageSource::recall() {
-	std::string re = Tools::jstring2str(
-		(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KRecall,
-			Tools::str2jstring(this->toString().c_str())));
+void MessageSource::recall(JNIEnv* env) {
+    json j;
+    j["source"] = this->serializeToString();
+	std::string re = config->koperation(config->Recall, j, env);
+//	        Tools::jstring2str(
+//		(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KRecall,
+//			Tools::str2jstring(this->toString().c_str())));
 	if (re == "Y") return;
 	if (re == "E1") throw BotException(1);
 	if (re == "E2") throw RecallException();
@@ -259,26 +262,19 @@ std::string RemoteFile::serializeToString() {
 //发送这个聊天记录
 void ForwardMessage::sendTo(Contact* c, JNIEnv* env){
 	json temp;
-	temp["id"] = c->id();
-	temp["groupid"] = c->groupid();
-	temp["type"] = c->type();
-	temp["content"] = sendmsg;
-	std::string re = Tools::jstring2str((jstring)env->
-		CallStaticObjectMethod(config->CPP_lib, config->KBuildforward,
-			Tools::str2jstring(temp.dump().c_str(), env),
-			(jlong)c->botid()), env);
-	if (re == "E1") {
-		switch (c->type()) {
-		case 1:
-			throw FriendException();
-		case 2:
-			throw GroupException();
-		case 3:
-			throw MemberException(1);
-		}
-	}
-	if (re == "E2") throw MemberException(2);
-	if (re == "E3") throw APIException("参数错误");
+	json text;
+	text["id"] = c->id();
+	text["groupid"] = c->groupid();
+	text["type"] = c->type();
+	text["content"] = sendmsg;
+	temp["text"] = text.dump();
+	temp["botid"] = c->botid();
+	std::string re = config->koperation(config->Buildforward, temp, env);
+//	        Tools::jstring2str((jstring)env->
+//		CallStaticObjectMethod(config->CPP_lib, config->KBuildforward,
+//			Tools::str2jstring(temp.dump().c_str(), env),
+//			(jlong)c->botid()), env);
+    ErrorHandle(re);
 	//TODO:由于https://github.com/mamoe/mirai/issues/1289 ,在mirai版本v2.7-M1前都不可用
 	//return MessageSource::deserializeFromString(re);
 }
@@ -302,13 +298,19 @@ ForwardMessage::ForwardMessage(Contact* c, std::initializer_list<ForwardNode> no
 }
 
 /*图片类实现*/
-Image::Image(std::string imageId) : Query(config->KQueryImgUrl) {
+Image::Image(std::string imageId) {
 	this->id = std::move(imageId);
 }
 
 std::string Image::queryURL(JNIEnv* env) const {
-	return Tools::jstring2str(
-		(jstring)env->CallStaticObjectMethod(config->CPP_lib, this->Query, Tools::str2jstring(this->id.c_str())));
+    json j;
+    j["id"] = this->id;
+	std::string re = config->koperation(config->QueryImgUrl, j, env);
+	if(re == "E1")
+	    throw RemoteAssetException("图片id格式错误");
+	return re;
+//	Tools::jstring2str(
+//		(jstring)env->CallStaticObjectMethod(config->CPP_lib, this->Query, Tools::str2jstring(this->id.c_str())));
 }
 
 std::vector<std::string> Image::GetImgIdsFromMiraiCode(std::string MiraiCode) {
@@ -329,26 +331,36 @@ std::string Image::toMiraiCode() {
 
 MessageSource MessageSource::quoteAndSendMiraiCode(const std::string& content, unsigned long long groupid, JNIEnv* env){
     json obj;
-    obj["MiraiCode"] = true;
-    obj["groupid"] = groupid;
-    std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KSendWithQuote,
-                                                                             Tools::str2jstring(this->serializeToString().c_str()),
-                                                                             Tools::str2jstring(content.c_str()),
-                                                                             Tools::str2jstring(obj.dump().c_str())
-    ));
+    json sign;
+    obj["messageSource"] = this->serializeToString();
+    obj["msg"] = content;
+    sign["MiraiCode"] = true;
+    sign["groupid"] = groupid;
+    obj["sign"] = sign.dump();
+    std::string re = config->koperation(config->SendWithQuote, obj, env);
+//            Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KSendWithQuote,
+//                                                                             Tools::str2jstring(this->serializeToString().c_str()),
+//                                                                             Tools::str2jstring(content.c_str()),
+//                                                                             Tools::str2jstring(obj.dump().c_str())
+//    ));
     ErrorHandle(re);
     return MessageSource::deserializeFromString(re);
 }
 
 MessageSource MessageSource::quoteAndSendMsg(const std::string& content, unsigned long long groupid, JNIEnv* env){
     json obj;
-    obj["MiraiCode"] = false;
-    obj["groupid"] = groupid;
-    std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KSendWithQuote,
-                                                                    Tools::str2jstring(this->serializeToString().c_str()),
-                                                                    Tools::str2jstring(content.c_str()),
-                                                                    Tools::str2jstring(obj.dump().c_str())
-                                                                    ));
+    json sign;
+    obj["messageSource"] = this->serializeToString();
+    obj["msg"] = content;
+    sign["MiraiCode"] = false;
+    sign["groupid"] = groupid;
+    obj["sign"] = sign.dump();
+    std::string re = config->koperation(config->SendWithQuote, obj, env);
+//            Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KSendWithQuote,
+//                                                                             Tools::str2jstring(this->serializeToString().c_str()),
+//                                                                             Tools::str2jstring(content.c_str()),
+//                                                                             Tools::str2jstring(obj.dump().c_str())
+//    ));
     ErrorHandle(re);
     return MessageSource::deserializeFromString(re);
 }
@@ -374,20 +386,7 @@ MessageSource Contact::SendMiraiCode(std::string msg, JNIEnv* env) {
 
 MessageSource Contact::SendMsg(std::string msg, JNIEnv* env) {
     std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
-    if (re == "E1") {
-        if(this->type() == 1)
-            throw FriendException();
-        else if(this->type() == 2)
-            throw GroupException();
-        else if(this->type() == 3)
-            throw MemberException(1);
-        else
-            throw APIException("reach a error area, Contact::SendMiraiCode, 1");
-    }else if(re == "E2"){
-        throw MemberException(2);
-    }else if(re == "E3"){
-        throw APIException("reach a error area, Contact::SendMiraiCode");
-    }
+    ErrorHandle(re, "reach a error area, Contact::SendMiraiCode");
     return MessageSource::deserializeFromString(re);
 }
 
@@ -423,9 +422,7 @@ Image Friend::uploadImg(const std::string& filename, JNIEnv* env) {
 Member::Member(unsigned long long id, unsigned long long groupid, unsigned long long botid, JNIEnv* env) : Contact() {
 	this->_type = 3;
 	this->_id = id;
-	this->Mute_id = config->KMuteM;
 	this->_groupid = groupid;
-	this->KickM = config->KKickM;
 	this->_botid = botid;
 	std::string temp = LowLevelAPI::getInfoSource(this, env);
 	if (temp == "E1")
@@ -445,10 +442,13 @@ Member::Member(unsigned long long id, unsigned long long groupid, unsigned long 
 }
 
 unsigned int Member::getPermission(JNIEnv* env) {
-	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KQueryM,
-		Tools::str2jstring(
-			this->serializationToString().c_str(),
-			env)), env);
+    json j;
+    j["contactSource"] = this->serializationToString();
+	std::string re = config->koperation(config->QueryM, j, env);
+//	        Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KQueryM,
+//		Tools::str2jstring(
+//			this->serializationToString().c_str(),
+//			env)), env);
 	if (re == "E1") {
 		throw MemberException(1);
 	}
@@ -459,9 +459,13 @@ unsigned int Member::getPermission(JNIEnv* env) {
 }
 
 void Member::Mute(int time, JNIEnv* env) {
-	std::string re = Tools::jstring2str(
-		(jstring)env->CallStaticObjectMethod(config->CPP_lib, this->Mute_id, (jint)time,
-			Tools::str2jstring(this->serializationToString().c_str(), env)), env);
+    json j;
+    j["time"] = time;
+    j["contactSource"] = this->serializationToString();
+	std::string re = config->koperation(config->MuteM, j, env);
+//	        Tools::jstring2str(
+//		(jstring)env->CallStaticObjectMethod(config->CPP_lib, this->Mute_id, (jint)time,
+//			Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (re == "Y") {
 		return;
 	}
@@ -480,9 +484,13 @@ void Member::Mute(int time, JNIEnv* env) {
 }
 
 void Member::Kick(const std::string& reason, JNIEnv* env) {
-	std::string re = Tools::jstring2str(
-		(jstring)env->CallStaticObjectMethod(config->CPP_lib, this->KickM, Tools::str2jstring(reason.c_str(), env),
-			Tools::str2jstring(this->serializationToString().c_str(), env)), env);
+    json j;
+    j["message"] = reason;
+    j["contactSource"] = this->serializationToString();
+	std::string re = config->koperation(config->KickM, j, env);
+//	        Tools::jstring2str(
+//		(jstring)env->CallStaticObjectMethod(config->CPP_lib, this->KickM, Tools::str2jstring(reason.c_str(), env),
+//			Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (re == "Y") {
 		return;
 	}
@@ -546,64 +554,84 @@ RemoteFile Group::sendFile(const std::string& path, const std::string& filename,
 		throw UploadException("上传远程(群)文件找不到文件, 位置:" + filename);
 	}
 	json tmp;
-	tmp["path"] = path;
-	tmp["filename"] = (const char* const)absolute(temp).u8string().c_str();
-	std::string callback = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KSendFile,
-		Tools::str2jstring(
-			tmp.dump().c_str(), env),
-		Tools::str2jstring(
-			this->serializationToString().c_str(),
-			env)), env);
-	if (callback == "E1") throw GroupException();
+	json source;
+	source["path"] = path;
+	source["filename"] = (const char* const)absolute(temp).u8string().c_str();
+	tmp["source"] = source.dump();
+	tmp["contactSource"] = this->serializationToString();
+	std::string callback = config->koperation(config->SendFile, tmp, env);
+//	        Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KSendFile,
+//		Tools::str2jstring(
+//			tmp.dump().c_str(), env),
+//		Tools::str2jstring(
+//			this->serializationToString().c_str(),
+//			env)), env);
+    ErrorHandle(callback);
 	if (callback == "E2") throw UploadException("找不到" + filename + "位置:C-uploadfile");
 	if (callback == "E3")
-		throw RemoteFileException("Upload Error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
+		throw UploadException("Upload Error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
 	return RemoteFile::deserializeFromString(callback);
 }
 
 RemoteFile Group::getFile(const std::string& path, const std::string& id, JNIEnv* env) {
+    // source 参数
 	json tmp;
+	json j;
 	tmp["id"] = id;
 	tmp["path"] = path;
-	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KRemoteFileInfo,
-		Tools::str2jstring(tmp.dump().c_str(),
-			env),
-		Tools::str2jstring(
-			this->serializationToString().c_str(),
-			env)), env);
+	j["source"] = tmp.dump();
+	j["contactSource"] = this->serializationToString();
+    std::string re = config->koperation(config->RemoteFileInfo, j, env);
+//	Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KRemoteFileInfo,
+//		Tools::str2jstring(tmp.dump().c_str(),
+//			env),
+//		Tools::str2jstring(
+//			this->serializationToString().c_str(),
+//			env)), env);
 	if (re == "E1") throw GroupException();
-	if (re == "E2") throw RemoteFileException("Get Error: 文件路径不存在, path:" + path);
+	if (re == "E2") throw RemoteAssetException("Get Error: 文件路径不存在, path:" + path);
 	return RemoteFile::deserializeFromString(re);
 }
 
 void Group::setMuteAll(bool sign, JNIEnv* env) {
-	std::string re = Tools::jstring2str(
-		(jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KMuteGroup, (jboolean)sign,
-			Tools::str2jstring(this->serializationToString().c_str(), env)), env);
+    json j;
+    j["sign"] = sign;
+    j["contactSource"] = this->serializationToString();
+	std::string re = config->koperation(config->MuteGroup, j, env);
+//	        Tools::jstring2str(
+//		(jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KMuteGroup, (jboolean)sign,
+//			Tools::str2jstring(this->serializationToString().c_str(), env)), env);
 	if (re == "Y") return;
 	if (re == "E1") throw GroupException();
 	if (re == "E2") throw BotException(1);
 }
 
 Member Group::getOwner(JNIEnv* env) {
-	std::string re = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KQueryOwner,
-		Tools::str2jstring(
-			this->serializationToString().c_str(),
-			env)), env);
+    json j;
+    j["contactSource"] = this->serializationToString();
+	std::string re = config->koperation(config->QueryOwner, j, env);
+//	        Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KQueryOwner,
+//		Tools::str2jstring(
+//			this->serializationToString().c_str(),
+//			env)), env);
 	if (re == "E1")throw GroupException();
 	return Member(stoi(re), this->id(), this->botid());
 }
 
 std::string Group::getFileListString(const std::string& path, JNIEnv* env) {
 	json temp;
+	json j;
 	temp["id"] = "-1";
 	temp["path"] = path;
-	std::string tmp = Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KRemoteFileInfo,
-		Tools::str2jstring(temp.dump().c_str(),
-			env),
-		Tools::str2jstring(
-			this->serializationToString().c_str(),
-			env)), env);
+	j["source"] = temp.dump();
+	j["contactSource"] = this->serializationToString();
+	std::string tmp = config->koperation(config->RemoteFileInfo, j, env);
+//	        Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib, config->KRemoteFileInfo,
+//		Tools::str2jstring(temp.dump().c_str(),
+//			env),
+//		Tools::str2jstring(
+//			this->serializationToString().c_str(),
+//			env)), env);
 	if (tmp == "E1") throw GroupException();
 	return tmp;
 }
