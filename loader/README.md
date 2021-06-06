@@ -1,5 +1,3 @@
-# mirai-hello-world
+# miraicp-loader
 
-Mirai Hello World example.
-
-Run `src/main/kotlin/KotlinMain.kt` or `src/kotlin/java/org/example/mirai/JavaMain.java`
+使用mirai-core,无需依赖mcl等mirai-console启动器,可直接运行jar文件
