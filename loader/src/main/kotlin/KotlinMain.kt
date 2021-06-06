@@ -29,7 +29,6 @@ import java.io.File
 import java.lang.Long.valueOf
 import java.net.URL
 import java.util.*
-import kotlin.concurrent.schedule
 
 object KotlinMain {
     private val json = Json {
@@ -112,22 +111,25 @@ object KotlinMain {
         return Send0(MiraiCode.deserializeMiraiCode(message), c)
     }
 
+    @OptIn(MiraiExperimentalApi::class)
     fun RefreshInfo(c: Config.Contact): String{
         val AIbot = Bot.getInstance(c.botid)
         when(c.type){
             1->{
                 val f = AIbot.getFriend(c.id) ?: let {
                     logger.error("找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}")
-                    return "E1"
+                    return "EF"
                 }
                 return gson.toJson(Config.ContactInfo(f.nick, f.avatarUrl))
             }
             2->{
                 val g = AIbot.getGroup(c.id)?:let{
                     logger.error("取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}")
-                    return "E1"
+                    return "EG"
                 }
-                return gson.toJson(Config.ContactInfo(g.name, g.avatarUrl))
+                return gson.toJson(Config.ContactInfo(g.name, g.avatarUrl,
+                    Config.GroupSetting(g.name, g.settings.entranceAnnouncement, g.settings.isMuteAll, g.settings.isAllowMemberInvite, g.settings.isAutoApproveEnabled, g.settings.isAnonymousChatEnabled)
+                ))
             }
             3->{
                 for (a in friend_cache) {
@@ -138,11 +140,11 @@ object KotlinMain {
 
                 val group = AIbot.getGroup(c.groupid) ?: let {
                     logger.error("取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}")
-                    return "E1"
+                    return "EM"
                 }
                 val m = group[c.id] ?: let {
                     logger.error("取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}")
-                    return "E2"
+                    return "EMM"
                 }
                 return gson.toJson(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
             }
@@ -150,7 +152,7 @@ object KotlinMain {
                 return gson.toJson(Config.ContactInfo(AIbot.nick, AIbot.avatarUrl))
             }
             else->{
-                return "EE"
+                return "EA"
             }
         }
     }
@@ -159,8 +161,8 @@ object KotlinMain {
     fun QueryML(c: Config.Contact): String {
         val AIbot = Bot.getInstance(c.botid)
         val g = AIbot.getGroup(c.id) ?: let {
-            logger.error("取群成员找不到群,位置K-QueryML")
-            return "E1"
+            logger.error("取群成员列表找不到群,位置K-QueryML")
+            return "EG"
         }
         val m = java.util.ArrayList<Long>()
         g.members.forEach{
@@ -194,7 +196,7 @@ object KotlinMain {
             1->{
                 val temp = AIbot.getFriend(c.id) ?: let {
                     logger.error("发送图片找不到对应好友,位置:K-uploadImgFriend(),id:${c.id}")
-                    return "E1"
+                    return "EF"
                 }
                 return try {
                     File(file).uploadAsImage(temp).imageId
@@ -209,7 +211,7 @@ object KotlinMain {
             2->{
                 val temp = AIbot.getGroup(c.id) ?: let {
                     logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.id}")
-                    return "E1"
+                    return "EG"
                 }
                 return try {
                     File(file).uploadAsImage(temp).imageId
@@ -224,11 +226,11 @@ object KotlinMain {
             3->{
                 val temp = AIbot.getGroup(c.groupid) ?: let {
                     logger.error("发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.groupid}")
-                    return "E1"
+                    return "EM"
                 }
                 val temp1 = temp[c.id] ?: let {
                     logger.error("发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:${c.id},群聊id:${c.groupid}")
-                    return "E2"
+                    return "EMM"
                 }
                 return try {
                     File(file).uploadAsImage(temp1).imageId
@@ -241,7 +243,7 @@ object KotlinMain {
                 }
             }
             else->{
-                return ""
+                return "EA"
             }
         }
     }
@@ -274,11 +276,11 @@ object KotlinMain {
         val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.groupid) ?: let{
             logger.error("禁言找不到对应群组，位置K-mute()，gid:${c.groupid}")
-            return "E1"
+            return "EM"
         }
         val member = group[c.id] ?: let {
             logger.error("禁言找不到对应群成员，位置K-mute()，id:${c.id}, gid:${c.id}")
-            return "E2"
+            return "EMM"
         }
         try {
             member.mute(time)
@@ -310,6 +312,7 @@ object KotlinMain {
         )
         )
     }
+
     suspend fun sendFile(path: String, file: String, c: Config.Contact): String {
         val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.id) ?: let {
@@ -325,25 +328,24 @@ object KotlinMain {
                 group.uploadFile(path, f)
             } catch (e: IllegalStateException) {
                 return "E3"
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 logger.error(e.message)
                 e.printStackTrace()
                 return "E3"
             }
         tmp.sendTo(group)
-        val temp = group.filesRoot.resolveById(tmp.id)?:let{
+        val temp = group.filesRoot.resolveById(tmp.id) ?: let {
             logger.error("cannot find the file, 位置:K-uploadFile, id:${tmp.id}")
             return "E3"
         }
-        val t = fileInfo0(temp)
-        return t
+        return fileInfo0(temp)
     }
 
     private suspend fun remoteFileList(path: String, c: Config.Contact):String{
         val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-remoteFileInfo，gid:${c.id}")
-            return "E1"
+            return "EG"
         }
         var tmp = "["
         group.filesRoot.resolve(path).listFilesCollection().forEach {
@@ -358,7 +360,7 @@ object KotlinMain {
         val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}")
-            return "E1"
+            return "EG"
         }
         val tmp = group.filesRoot.resolve(path)
         if (!tmp.isFile() || !tmp.exists()) {
@@ -376,7 +378,7 @@ object KotlinMain {
             return remoteFileList(path, c)
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-remoteFileInfo，gid:${c.id}")
-            return "E1"
+            return "EG"
         }
         val tmp = group.filesRoot.resolve(path).resolveById(id)?:let{
             logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id")
@@ -390,11 +392,11 @@ object KotlinMain {
         val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.groupid) ?: let {
             logger.error("查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}")
-            return "E1"
+            return "EM"
         }
         val member = group[c.id] ?: let {
             logger.error("查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.groupid}")
-            return "E2"
+            return "EMM"
         }
         return member.permission.level.toString()
 
@@ -404,11 +406,11 @@ object KotlinMain {
         val AIbot = Bot.getInstance(c.botid)
         val group = AIbot.getGroup(c.groupid) ?: let {
             logger.error("查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}")
-            return "E1"
+            return "EM"
         }
         val member = group[c.id] ?: let {
             logger.error("查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.id}")
-            return "E2"
+            return "EMM"
         }
         try {
             member.kick(message)
@@ -418,27 +420,12 @@ object KotlinMain {
         return "Y"
     }
 
-    //全员禁言
-    fun muteall(sign: Boolean, c: Config.Contact):String{
-        val AIbot = Bot.getInstance(c.botid)
-        val g =AIbot.getGroup(c.id)?:let{
-            logger.error("找不到群,位置:K-muteall, gid:${c.id}")
-            return "E1"
-        }
-        try {
-            g.settings.isMuteAll = sign
-        }catch(e:PermissionDeniedException){
-            return "E2"
-        }
-        return "Y"
-    }
-
     //取群主
     fun getowner(c: Config.Contact):String{
         val AIbot = Bot.getInstance(c.botid)
         val g = AIbot.getGroup(c.id)?:let {
             logger.error("找不到群,位置:K-getowner,gid:${c.id}")
-            return "E1"
+            return "EG"
         }
         return g.owner.id.toString()
     }
@@ -449,17 +436,17 @@ object KotlinMain {
         val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
         val c1:Contact = when(t.type) {
             1 -> AIbot.getFriend(t.id) ?: let {
-                return "E1"
+                return "EF"
             }
             2 -> AIbot.getGroup(t.id) ?: let {
-                return "E1"
+                return "EG"
             }
             3 -> (AIbot.getGroup(t.id) ?: let {
-                return "E1"
+                return "EM"
             })[t.id2]?:let {
-                return "E2"
+                return "EMM"
             }
-            else -> return "E3"
+            else -> return "EA"
         }
         val c:Contact = when(t.content.type) {
             1 -> AIbot.getFriend(t.content.id) ?: let {
@@ -595,6 +582,23 @@ object KotlinMain {
         return json.encodeToString(MessageSource.Serializer, c.sendMessage(source.quote() + message).source)
     }
 
+    fun groupSetting(contact: Config.Contact, source: String): String{
+        val aibot = Bot.getInstance(contact.botid)
+        val group = aibot.getGroup(contact.id)?:let{
+            return "EG"
+        }
+        val root = gson.fromJson(source, Config.GroupSetting::class.java)
+        try {
+            group.name = root.name
+            group.settings.entranceAnnouncement = root.entranceAnnouncement
+            group.settings.isMuteAll = root.isMuteAll
+            group.settings.isAllowMemberInvite = root.isAllowMemberInvite
+        }catch(e:PermissionDeniedException){
+            return "E1"
+        }
+        return "Y"
+    }
+
     @MiraiExperimentalApi
     @MiraiInternalApi
     suspend fun main(id: Long, pass: String, path: String) {
@@ -609,15 +613,15 @@ object KotlinMain {
         if (!File(dll_name).exists()) {
             println("文件$dll_name 不存在")
             return
-        }else{
+        } else {
             dll_name = File(dll_name).absolutePath
         }
         val bot = BotFactory.newBot(id, pass) {
             fileBasedDeviceInfo()
         }.alsoLogin()
-        logger=bot.logger
+        logger = bot.logger
         cpp = CPP_lib()
-        if(cpp.ver != now_tag){
+        if (cpp.ver != now_tag) {
             logger.error("警告:当前MiraiCP框架版本($now_tag)和加载的C++ SDK(${cpp.ver})不一致")
         }
         val globalEventChannel = bot.eventChannel
@@ -640,21 +644,17 @@ object KotlinMain {
         }
         globalEventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
-            try {
-                cpp.Event(
-                    gson.toJson(
-                        Config.GroupMessage(
-                            Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
-                            Config.Contact(3, this.sender.id, this.group.id, this.senderName, this.bot.id),
-                            this.message.serializeToMiraiCode(),
-                            json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
-                        )
+            this.group.settings
+            cpp.Event(
+                gson.toJson(
+                    Config.GroupMessage(
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        Config.Contact(3, this.sender.id, this.group.id, this.senderName, this.bot.id),
+                        this.message.serializeToMiraiCode(),
+                        json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
                     )
                 )
-            } catch (e: Exception) {
-                logger.error(e.message)
-                e.printStackTrace()
-            }
+            )
         }
         globalEventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
@@ -772,7 +772,7 @@ object KotlinMain {
             )
 
         }
-        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Invite>{
+        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Invite> {
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
@@ -783,7 +783,7 @@ object KotlinMain {
                 )
             )
         }
-        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Active>{
+        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Active> {
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
@@ -794,7 +794,7 @@ object KotlinMain {
                 )
             )
         }
-        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve>{
+        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve> {
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
@@ -838,7 +838,6 @@ object KotlinMain {
                 )
             )
         }
-
     }
 }
 fun CheckUpdate(){
