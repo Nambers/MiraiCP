@@ -25,7 +25,7 @@ threadManager* manager = new threadManager();
 JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Verify(JNIEnv* env, jobject) {
 	manager->setEnv(env);
 	env->GetJavaVM(&gvm);
-	JNIVersion = (int)manager->getEnv()->GetVersion();
+	JNIVersion = (int)env->GetVersion();
 	try {
 		//初始化日志模块
 		logger->init();
@@ -71,103 +71,105 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event
 	}
 	try {
 		switch ((int)j["type"]) {
-		case 1: {
-			//GroupMessage
-			procession->broadcast<GroupMessageEvent>(
-				GroupMessageEvent(j["group"]["botid"],
-					Group::deserializationFromJson(j["group"]),
-					Member::deserializationFromJson(j["member"]),
-					j["message"],
-					MessageSource::deserializeFromString(j["source"])
-				)
-			);
-			break;
-		}
-		case 2: {
-			//私聊消息
-			procession->broadcast<PrivateMessageEvent>(
-				PrivateMessageEvent(j["friend"]["botid"],
-					Friend::deserializationFromJson(j["friend"]),
-					j["message"],
-					MessageSource::deserializeFromString(j["source"])
-				));
-			break;
-		}
-		case 3:
-			//群聊邀请
-			procession->broadcast<GroupInviteEvent>(
-				GroupInviteEvent(
-					j["botid"],
-					j["source"],
-					j["source"]["inviternick"],
-					j["source"]["inviterid"],
-					j["source"]["groupname"],
-					j["source"]["groupid"]
-				));
-			break;
-		case 4:
-			//好友
-			procession->broadcast<NewFriendRequestEvent>(
-			        NewFriendRequestEvent(
-				j["source"]["botid"],
-				j["source"].dump(),
-				j["source"]["fromid"],
-				j["source"]["fromgroupid"],
-				j["source"]["fromnick"],
-				j["source"]["message"]
-			));
-			break;
-		case 5:
-			//新成员加入
-			procession->broadcast<MemberJoinEvent>(
-			        MemberJoinEvent(
-				j["group"]["botid"],
-				j["jointype"],
-				Member::deserializationFromJson(j["member"]),
-				Group::deserializationFromJson(j["group"]),
-				j["inviterid"]
-			));
-			break;
-		case 6:
-			//群成员退出
-			procession->broadcast<MemberLeaveEvent>(MemberLeaveEvent(
-				j["group"]["botid"],
-				j["leavetype"],
-				j["memberid"],
-				Group::deserializationFromJson(j["group"]),
-				j["operatorid"]
-			));
-			break;
-		case 7:
-			procession->broadcast<RecallEvent>(RecallEvent(
-				j["botid"],
-				j["etype"],
-				j["time"],
-				j["authorid"],
-				j["operatorid"],
-				j["ids"],
-				j["internalids"],
-				j["groupid"]
-			));
-			break;
-		case 9:
-			procession->broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
-				j["group"]["botid"],
-				j["etype"],
-				Group::deserializationFromJson(j["group"]),
-				j["inviterid"]
-			));
-			break;
-		case 10:
-			procession->broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
-				j["group"]["botid"],
-				Group::deserializationFromJson(j["group"]),
-				Member::deserializationFromJson(j["member"]),
-				j["message"],
-				MessageSource::deserializeFromString(j["source"])
-			));
-			break;
-		}
+            case 1: {
+                //GroupMessage
+                procession->broadcast<GroupMessageEvent>(
+                        GroupMessageEvent(j["group"]["botid"],
+                                          Group::deserializationFromJson(j["group"]),
+                                          Member::deserializationFromJson(j["member"]),
+                                          j["message"],
+                                          MessageSource::deserializeFromString(j["source"])
+                        )
+                );
+                break;
+            }
+            case 2: {
+                //私聊消息
+                procession->broadcast<PrivateMessageEvent>(
+                        PrivateMessageEvent(j["friend"]["botid"],
+                                            Friend::deserializationFromJson(j["friend"]),
+                                            j["message"],
+                                            MessageSource::deserializeFromString(j["source"])
+                        ));
+                break;
+            }
+            case 3:
+                //群聊邀请
+                procession->broadcast<GroupInviteEvent>(
+                        GroupInviteEvent(
+                                j["botid"],
+                                j["source"],
+                                j["source"]["inviternick"],
+                                j["source"]["inviterid"],
+                                j["source"]["groupname"],
+                                j["source"]["groupid"]
+                        ));
+                break;
+            case 4:
+                //好友
+                procession->broadcast<NewFriendRequestEvent>(
+                        NewFriendRequestEvent(
+                                j["source"]["botid"],
+                                j["source"].dump(),
+                                j["source"]["fromid"],
+                                j["source"]["fromgroupid"],
+                                j["source"]["fromnick"],
+                                j["source"]["message"]
+                        ));
+                break;
+            case 5:
+                //新成员加入
+                procession->broadcast<MemberJoinEvent>(
+                        MemberJoinEvent(
+                                j["group"]["botid"],
+                                j["jointype"],
+                                Member::deserializationFromJson(j["member"]),
+                                Group::deserializationFromJson(j["group"]),
+                                j["inviterid"]
+                        ));
+                break;
+            case 6:
+                //群成员退出
+                procession->broadcast<MemberLeaveEvent>(MemberLeaveEvent(
+                        j["group"]["botid"],
+                        j["leavetype"],
+                        j["memberid"],
+                        Group::deserializationFromJson(j["group"]),
+                        j["operatorid"]
+                ));
+                break;
+            case 7:
+                procession->broadcast<RecallEvent>(RecallEvent(
+                        j["botid"],
+                        j["etype"],
+                        j["time"],
+                        j["authorid"],
+                        j["operatorid"],
+                        j["ids"],
+                        j["internalids"],
+                        j["groupid"]
+                ));
+                break;
+            case 9:
+                procession->broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
+                        j["group"]["botid"],
+                        j["etype"],
+                        Group::deserializationFromJson(j["group"]),
+                        j["inviterid"]
+                ));
+                break;
+            case 10:
+                procession->broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
+                        j["group"]["botid"],
+                        Group::deserializationFromJson(j["group"]),
+                        Member::deserializationFromJson(j["member"]),
+                        j["message"],
+                        MessageSource::deserializeFromString(j["source"])
+                ));
+                break;
+            default:
+                throw APIException("Unreachable code");
+        }
 	}
 	catch (json::type_error& e) {
 		logger->Error("json格式化异常,位置C-Handle");
