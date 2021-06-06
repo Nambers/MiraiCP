@@ -198,6 +198,7 @@ public:
     /// 调用mirai方法
     jmethodID KOperation = nullptr;
 
+    /// 操作id
     enum operation_set{
         /// 撤回信息
         Recall,
@@ -225,11 +226,11 @@ public:
         KickM,
         /// 取群主
         QueryOwner,
-        /// 全员禁言
-        MuteGroup,
+        x,
         /// 查询群成员列表
         QueryML,
-        _,
+        /// 群设置
+        GroupSetting,
         /// 构建转发信息
         Buildforward,
         /// 好友申请事件
@@ -240,7 +241,13 @@ public:
         SendWithQuote
     };
 
-    std::string koperation(int, const nlohmann::json&, JNIEnv* = manager->getEnv());
+    /**
+     * @brief 调用mirai操作
+     * @param code 操作id
+     * @param json 传入数据
+     * @return 返回数据
+     */
+    std::string koperation(int code, const nlohmann::json& json, JNIEnv* = manager->getEnv());
 
     Config() {};
 
@@ -336,18 +343,8 @@ private:
 /// @see MiraiCPException
 class BotException : public MiraiCPException {
 public:
-	/*
-	*	1 - 机器人无权限执行
-	*/
-	int type = 0;
-
-	BotException(int type) {
-		this->type = type;
-		switch (type) {
-		case 1:
-			this->description = "没有权限执行该操作";
-			break;
-		}
+	BotException(std::string d = "没有权限执行该操作") {
+		this->description = d;
 	}
 
 	//返回错误信息
@@ -497,6 +494,19 @@ public:
 
 private:
 	std::string description = "";
+};
+
+/// 参数错误
+class IllegalArgumentException : public MiraiCPException{
+private:
+    std::string description = "";
+public:
+    IllegalArgumentException(std::string e){
+        this->description = e;
+    }
+    std::string what(){
+        return this->description;
+    }
 };
 
 inline void ErrorHandle(const std::string& re, const std::string &ErrorMsg = ""){
@@ -891,6 +901,7 @@ public:
 	/// 所属bot
 	unsigned long long botid() { return this->_botid; };
 
+	/// 序列化到json对象
 	nlohmann::json serialization() {
 		nlohmann::json j;
 		j["type"] = type();
@@ -938,6 +949,9 @@ public:
 
     /// 发送纯文本信息
     MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
+
+     /// 刷新当前对象信息
+     virtual void refreshInfo(JNIEnv* = manager->getEnv()){};
 };
 
 // 群文件
@@ -1230,8 +1244,17 @@ public:
 	 * @param botid 对应机器人id
 	 */
 	Friend(unsigned long long friendid, unsigned long long botid, JNIEnv* = manager->getEnv());
+	Friend(Contact c) : Contact(c) { refreshInfo(); };
 
-	Friend(Contact c) : Contact(c) {};
+	void refreshInfo(JNIEnv* env = manager->getEnv()){
+        std::string temp = LowLevelAPI::getInfoSource(this, env);
+        if (temp == "E1") {
+            throw FriendException();
+        }
+        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
+        this->_nickOrNameCard = tmp.nickornamecard;
+        this->_avatarUrl = tmp.avatarUrl;
+	}
 
 	/**
 	 * @brief 上传本地图片，务必要用绝对路径.
@@ -1264,17 +1287,35 @@ public:
 	/// @endcode
 	Member(unsigned long long qqid, unsigned long long groupid, unsigned long long botid, JNIEnv* = manager->getEnv());
 
-	/*!
-	* @brief上传本地图片，务必要用绝对路径
-	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
-	* @attention 最大支持图片大小为30MB
-	* @throws
-	 * -可能抛出UploadException异常代表路径无效或大小大于30MB
-	 * -可能抛出MemberException找不到群或群成员
-	*/
-	Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
+	Member(Contact c) : Contact(c) { refreshInfo(); };
 
-	Member(Contact c) : Contact(c) {};
+	void refreshInfo(JNIEnv* env = manager->getEnv()){
+        std::string temp = LowLevelAPI::getInfoSource(this, env);
+        if (temp == "E1")
+            throw MemberException(1);
+        if (temp == "E2")
+            throw MemberException(2);
+        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
+        this->_nickOrNameCard = tmp.nickornamecard;
+        this->_avatarUrl = tmp.avatarUrl;
+        this->permission = getPermission();
+        if (temp == "E1") {
+            throw MemberException(1);
+        }
+        if (temp == "E2") {
+            throw MemberException(2);
+        }
+	}
+
+    /*!
+* @brief上传本地图片，务必要用绝对路径
+* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
+* @attention 最大支持图片大小为30MB
+* @throws
+ * -可能抛出UploadException异常代表路径无效或大小大于30MB
+ * -可能抛出MemberException找不到群或群成员
+*/
+    Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
 
 	/// 获取权限，会在构造时调用，请使用permission缓存变量
 	/// @see Member::permission
@@ -1316,6 +1357,34 @@ public:
 /// 群聊类声明
 class Group : public Contact {
 public:
+    /**
+     * @brief 群设置
+     * @details 使用uploadSetting上传设置，使用refreshInfo同步服务器设定，后面两项由于https://github.com/mamoe/mirai/issues/1307 还不能改
+     */
+    struct GroupSetting{
+        /// 群名称
+        std::string name;
+        /// 入群显示公告
+        std::string entranceAnnouncement;
+        /// 禁言全部
+        bool isMuteAll;
+        /// 允许群成员邀请
+        bool isAllowMemberInvite;
+        /// 自动同意进群
+        bool isAutoApproveEnabled;
+        /// 允许匿名聊天
+        bool isAnonymousChatEnabled;
+    };
+
+    GroupSetting setting;
+
+    /**
+     * @brief 更新群设置, 即覆盖服务器上的群设置
+     * @details 从服务器拉去群设置用refreshInfo
+     * @see Group::refreshInfo()
+     */
+    void updateSetting(JNIEnv* = manager->getEnv());
+
 	/// 取群成员列表
 	/// @return vector<long>
 	std::vector<unsigned long long> getMemberList(JNIEnv* env = manager->getEnv()) {
@@ -1351,7 +1420,22 @@ public:
 	/// @code Group(this.group.id, this.bot.id) @endcode
 	Group(unsigned long long groupid, unsigned long long botid, JNIEnv* = manager->getEnv());
 
-	Group(Contact c) : Contact(c) {};
+	Group(Contact c) : Contact(c) { refreshInfo(); };
+
+	void refreshInfo(JNIEnv* env = manager->getEnv()){
+        std::string re = LowLevelAPI::getInfoSource(this, env);
+        ErrorHandle(re);
+        LowLevelAPI::info tmp = LowLevelAPI::info0(re);
+        this->_nickOrNameCard = tmp.nickornamecard;
+        this->_avatarUrl = tmp.avatarUrl;
+        nlohmann::json j = nlohmann::json::parse(re)["setting"];
+        this->setting.name = j["name"];
+        this->setting.entranceAnnouncement = j["entranceAnnouncement"];
+        this->setting.isMuteAll = j["isMuteAll"];
+        this->setting.isAllowMemberInvite = j["isAllowMemberInvite"];
+        this->setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
+        this->setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
+	}
 
 	/*!
 	* @brief 上传本地图片，务必要用绝对路径
@@ -1414,12 +1498,6 @@ public:
     /// e.group.SendMsg(e.group.getFileListString("/"));
 	/// @endcode
 	std::string getFileListString(const std::string& path, JNIEnv* = manager->getEnv());
-
-	/*!
-	* 设置全员禁言
-	* @param: sign = true时为开始，false为关闭
-	*/
-	void setMuteAll(bool sign, JNIEnv* = manager->getEnv());
 };
 
 /// At一个群成员

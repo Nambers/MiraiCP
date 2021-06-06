@@ -17,11 +17,10 @@ import tech.eritquearcus.miraicp.KotlinMain.accpetGroupInvite
 import tech.eritquearcus.miraicp.KotlinMain.buildforwardMsg
 import tech.eritquearcus.miraicp.KotlinMain.dll_name
 import tech.eritquearcus.miraicp.KotlinMain.getowner
+import tech.eritquearcus.miraicp.KotlinMain.groupSetting
 import tech.eritquearcus.miraicp.KotlinMain.kkick
 import tech.eritquearcus.miraicp.KotlinMain.kqueryM
-import tech.eritquearcus.miraicp.KotlinMain.logger
 import tech.eritquearcus.miraicp.KotlinMain.mute
-import tech.eritquearcus.miraicp.KotlinMain.muteall
 import tech.eritquearcus.miraicp.KotlinMain.recallMsg
 import tech.eritquearcus.miraicp.KotlinMain.rejectFriendRequest
 import tech.eritquearcus.miraicp.KotlinMain.rejectGroupInvite
@@ -31,7 +30,7 @@ import tech.eritquearcus.miraicp.KotlinMain.sendWithQuote
 import tech.eritquearcus.miraicp.KotlinMain.uploadImg
 
 class CPP_lib {
-    var ver:String=""
+    var ver:String = ""
     init {
         ver=Verify()
     }
@@ -68,6 +67,7 @@ class CPP_lib {
             }
         }
 
+        @JvmStatic
         fun KSendLog(log:String, level: Int):Unit{
             when(level){
                 0-> BasicSendLog(log)
@@ -123,11 +123,6 @@ class CPP_lib {
             }
         }
 
-        //Mute the whole group
-        fun KMuteGroup(sign: Boolean, contactSource: String):String{
-            return muteall(sign, gson.fromJson(contactSource, Config.Contact::class.java))
-        }
-
         //query the member list of a group
         fun KQueryML(contactSource: String):String{
             return QueryML(gson.fromJson(contactSource, Config.Contact::class.java))
@@ -178,6 +173,10 @@ class CPP_lib {
             }
         }
 
+        fun KUpdateSetting(contactSource: String, source: String): String{
+            return groupSetting(gson.fromJson(contactSource, Config.Contact::class.java), source)
+        }
+
         enum class operation_code{
             /// 撤回信息
             Recall,
@@ -205,12 +204,10 @@ class CPP_lib {
             KickM,
             /// 取群主
             QueryOwner,
-            /// 全员禁言
-            MuteGroup,
+            x,
             /// 查询群成员列表
             QueryML,
-            /// 定时任务
-            Schedule,
+            GroupSetting,
             /// 构建转发信息
             Buildforward,
             /// 好友申请事件
@@ -219,95 +216,57 @@ class CPP_lib {
             Gioperation,
             /// 回复(引用并发送)
             SendWithQuote
-        };
+        }
 
         @JvmStatic
         fun KOperation(content: String):String {
-            val j = JSONObject(content)
-            val root = j.getJSONObject("data")
             try {
-                return when (j["type"] as Int) {
+                val j = JSONObject(content)
+                val root = j.getJSONObject("data")
+                return when (j.getInt("type")) {
                     /// 撤回信息
-                    operation_code.Recall.ordinal -> {
-                        KRecall(root.getString("source"))
-                    }
+                    operation_code.Recall.ordinal -> KRecall(root.getString("source"))
                     /// 发送信息
-                    operation_code.Send.ordinal -> {
-                        KSend(root.getString("source"), root.getBoolean("miraiCode"))
-                    }
+                    operation_code.Send.ordinal -> KSend(root.getString("source"), root.getBoolean("miraiCode"))
                     /// 查询信息接口
-                    operation_code.RefreshInfo.ordinal -> {
-                        KRefreshInfo(root.getString("source"))
-                    }
+                    operation_code.RefreshInfo.ordinal -> KRefreshInfo(root.getString("source"))
                     /// 上传图片
-                    operation_code.UploadImg.ordinal -> {
-                        KUploadImg(root.getString("fileName"), root.getString("source"))
-                    }
+                    operation_code.UploadImg.ordinal -> KUploadImg(root.getString("fileName"), root.getString("source"))
                     /// 取好友列表
-                    operation_code.QueryBFL.ordinal -> {
-                        KQueryBFL(root.getLong("botid"))
-                    }
+                    operation_code.QueryBFL.ordinal -> KQueryBFL(root.getLong("botid"))
                     /// 取群组列表
-                    operation_code.QueryBGL.ordinal -> {
-                        KQueryBGL(root.getLong("botid"))
-                    }
+                    operation_code.QueryBGL.ordinal -> KQueryBGL(root.getLong("botid"))
                     /// 上传文件
-                    operation_code.SendFile.ordinal -> {
-                        KSendFile(root.getString("source"), root.getString("contactSource"))
-                    }
+                    operation_code.SendFile.ordinal -> KSendFile(root.getString("source"), root.getString("contactSource"))
                     /// 查询文件信息
-                    operation_code.RemoteFileInfo.ordinal -> {
-                        KRemoteFileInfo(root.getString("source"), root.getString("contactSource"))
-                    }
+                    operation_code.RemoteFileInfo.ordinal -> KRemoteFileInfo(root.getString("source"), root.getString("contactSource"))
                     /// 查询图片下载地址
-                    operation_code.QueryImgUrl.ordinal -> {
-                        KQueryImgUrl(root.getString("id"))
-                    }
+                    operation_code.QueryImgUrl.ordinal -> KQueryImgUrl(root.getString("id"))
                     /// 禁言
-                    operation_code.MuteM.ordinal -> {
-                        KMuteM(root.getInt("time"), root.getString("contactSource"))
-                    }
+                    operation_code.MuteM.ordinal -> KMuteM(root.getInt("time"), root.getString("contactSource"))
                     /// 查询权限
-                    operation_code.QueryM.ordinal -> {
-                        KQueryM(root.getString("contactSource"))
-                    }
+                    operation_code.QueryM.ordinal -> KQueryM(root.getString("contactSource"))
                     /// 踢出
-                    operation_code.KickM.ordinal -> {
-                        KKickM(root.getString("message"), root.getString("contactSOurce"))
-                    }
+                    operation_code.KickM.ordinal -> KKickM(root.getString("message"), root.getString("contactSOurce"))
                     /// 取群主
-                    operation_code.QueryOwner.ordinal -> {
-                        KQueryOwner(root.getString("contactSource"))
-                    }
-                    /// 全员禁言
-                    operation_code.MuteGroup.ordinal -> {
-                        KMuteGroup(root.getBoolean("sign"), root.getString("contactSource"))
-                    }
+                    operation_code.QueryOwner.ordinal -> KQueryOwner(root.getString("contactSource"))
                     /// 查询群成员列表
-                    operation_code.QueryML.ordinal -> {
-                        KQueryML(root.getString("contactSource"))
-                    }
+                    operation_code.QueryML.ordinal -> KQueryML(root.getString("contactSource"))
+                    /// 群设置
+                    operation_code.GroupSetting.ordinal -> KUpdateSetting(root.getString("contactSource"), root.getString("source"))
                     /// 构建转发信息
-                    operation_code.Buildforward.ordinal -> {
-                        KBuildforward(root.getString("text"), root.getLong("botid"))
-                    }
+                    operation_code.Buildforward.ordinal -> KBuildforward(root.getString("text"), root.getLong("botid"))
                     /// 好友申请事件
-                    operation_code.Nfroperation.ordinal -> {
-                        KNfroperation(root.getString("text"), root.getBoolean("sign"))
-                    }
+                    operation_code.Nfroperation.ordinal -> KNfroperation(root.getString("text"), root.getBoolean("sign"))
                     /// 群聊邀请事件
-                    operation_code.Gioperation.ordinal -> {
-                        KGioperation(root.getString("text"), root.getBoolean("sign"))
-                    }
+                    operation_code.Gioperation.ordinal -> KGioperation(root.getString("text"), root.getBoolean("sign"))
                     /// 回复(引用并发送)
-                    operation_code.SendWithQuote.ordinal -> {
-                        KSendWithQuote(root.getString("messageSource"), root.getString("msg"), root.getString("sign"))
-                    }
+                    operation_code.SendWithQuote.ordinal -> KSendWithQuote(root.getString("messageSource"), root.getString("msg"), root.getString("sign"))
                     else -> "EA"
                 }
             }catch(e:Exception){
-                logger.error(e.message)
-                logger.error(content)
+                println(e.message)
+                println(content)
                 e.printStackTrace()
                 return "EA"
             }
