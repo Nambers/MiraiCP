@@ -1,5 +1,9 @@
 package tech.eritquearcus.miraicp
 import com.google.gson.annotations.SerializedName
+import net.mamoe.mirai.contact.PermissionDeniedException
+import net.mamoe.mirai.event.events.GroupAllowMemberInviteEvent
+import net.mamoe.mirai.event.events.GroupEntranceAnnouncementChangeEvent
+import net.mamoe.mirai.event.events.GroupMuteAllEvent
 
 class Config {
     data class Contact(
@@ -126,9 +130,18 @@ class Config {
         @SerializedName("time") val time : Int,
         @SerializedName("message") val message : String
     )
+    data class GroupSetting(
+         val name:String,
+         val entranceAnnouncement:String,
+         val isMuteAll:Boolean,
+         val isAllowMemberInvite:Boolean,
+         val isAutoApproveEnabled:Boolean,
+         val isAnonymousChatEnabled:Boolean
+    )
     data class ContactInfo(
         val nickornamecard: String,
-        val avatarUrl: String
+        val avatarUrl: String,
+        val setting: GroupSetting = GroupSetting("", "", false, false, false, false)
     )
     data class DInfo(
         val url: String,
