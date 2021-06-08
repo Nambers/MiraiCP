@@ -1,11 +1,11 @@
+rootProject.name = "MiraiCP-kotlin"
+include("plugin")
+include("loader")
 pluginManagement {
     repositories {
+        mavenCentral()
         mavenLocal()
         gradlePluginPortal()
-        mavenCentral()
-        jcenter()
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
 }
-
-rootProject.name = "miraiCP"

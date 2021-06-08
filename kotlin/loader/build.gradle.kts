@@ -2,8 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 plugins {
     application
-    kotlin("jvm") version "1.5.10"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow")
 }
 
 tasks {
@@ -84,8 +83,6 @@ val generateJniHeaders: Task by tasks.creating {
 application {
     mainClass.set("tech.eritquearcus.miraicp.KotlinMainKt")
 }
-group = "tech.eritquearcus"
-version = "2.6.3"
 
 repositories {
     mavenCentral()
@@ -101,7 +98,6 @@ tasks.withType(KotlinJvmCompile::class.java) {
 dependencies {
     implementation("org.fusesource.jansi:jansi:2.3.2")
     implementation("com.google.code.gson:gson:2.8.7")
-    api("net.mamoe:mirai-core:2.6.5")
     // https://mvnrepository.com/artifact/org.json/json
     implementation("org.json:json:20210307")
 }
