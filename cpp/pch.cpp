@@ -28,8 +28,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Verify(
 	JNIVersion = (int)env->GetVersion();
 	try {
 		//初始化日志模块
+        config->Init();
 		logger->init();
-		config->Init();
 		onEnable();
 	}
 	catch (MiraiCPException& e) {
