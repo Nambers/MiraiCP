@@ -1,8 +1,7 @@
 build
 .gradle
 device.json
-plugin/src/test/kotlin/testConfig.kt
-loader/src/test/kotlin/testConfig.kt
+testConfig.kt
 /bots
 /config
 /cache

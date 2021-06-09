@@ -58,74 +58,6 @@ public:
 /// 线程管理实例
 extern threadManager* manager;
 
-/*!
- * @class Logger
- * @brief 日志
- * @example 发送日志
-	 *  发送消息级日志
-	 *  @code logger->Info(string) @endcode
-	 *  发送警告级日志
-	 *  @code logger->Warning(string) @endcode
-	 *  发送错误级日志
-	 *  @code logger->Error(string) @endcode
- */
-class Logger {
-private:
-	jclass CPP_lib = NULL;
-	jmethodID log = nullptr;
-
-	/// 日志底层实现封装
-	void log0(const std::string&, JNIEnv*, int);
-
-public:
-	/// @brief 封装lambda类型
-	/// @param string 日志内容
-	/// @param 日志级别
-	///     - 0 info
-	///     - 1 warning
-	///     - 2 error
-	typedef std::function<void(std::string, int)> action;
-	/// @brief loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等
-	struct handler {
-		/// @brief 是否启用
-		bool enable = true;
-		/// @brief 执行的操作，格式为lambda
-		Logger::action action = [](std::string content, int level) {};
-	} loggerhandler;
-
-	// 初始化 获取methodid
-	void init(JNIEnv* = manager->getEnv());
-
-	///发送普通(info级日志)
-	void Info(const std::string&, JNIEnv* = manager->getEnv());
-
-	///发送警告(warning级日志)
-	void Warning(const std::string&, JNIEnv* = manager->getEnv());
-
-	///发送错误(error级日志)
-	void Error(const std::string&, JNIEnv* = manager->getEnv());
-
-	/// @brief 设置loggerhandler的action
-	/// @param action 执行的操作
-	/// @see Logger::handler
-	/// @example 设置loggerhandler的action
-	/// @code logger->registerHandle([](std::string content, int level){
-	///     \\do some things
-	/// });@endcode
-	inline void registerHandle(action action);
-
-	/// @brief 设置handler的启用状态
-	/// @param state 状态，启用或者关闭
-	/// @example 设置handler的启用状态
-	/// @code logger->setHandleState(ture); @endcode
-	inline void setHandleState(bool state);
-
-	~Logger();
-};
-
-/// 声明全局日志对象
-extern Logger* logger;
-
 /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
 /// @class Tools
 class Tools {
@@ -193,8 +125,6 @@ class Config {
 public:
     /// kt中JNI接口类
     jclass CPP_lib = nullptr;
-    /// 异常类
-    jclass initexception = nullptr;
     /// 调用mirai方法
     jmethodID KOperation = nullptr;
 
@@ -256,7 +186,73 @@ public:
     ~Config();
 };
 
+/// 全局Config对象
 extern Config* config;
+
+/*!
+ * @class Logger
+ * @brief 日志
+ * @example 发送日志
+	 *  发送消息级日志
+	 *  @code logger->Info(string) @endcode
+	 *  发送警告级日志
+	 *  @code logger->Warning(string) @endcode
+	 *  发送错误级日志
+	 *  @code logger->Error(string) @endcode
+ */
+class Logger {
+private:
+    jmethodID log = nullptr;
+
+    /// 日志底层实现封装
+    void log0(const std::string&, JNIEnv*, int);
+
+public:
+    /// @brief 封装lambda类型
+    /// @param string 日志内容
+    /// @param 日志级别
+    ///     - 0 info
+    ///     - 1 warning
+    ///     - 2 error
+    typedef std::function<void(std::string, int)> action;
+    /// @brief loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等
+    struct handler {
+        /// @brief 是否启用
+        bool enable = true;
+        /// @brief 执行的操作，格式为lambda
+        Logger::action action = [](std::string content, int level) {};
+    } loggerhandler;
+
+    // 初始化 获取methodid
+    void init(JNIEnv* = manager->getEnv());
+
+    ///发送普通(info级日志)
+    void Info(const std::string&, JNIEnv* = manager->getEnv());
+
+    ///发送警告(warning级日志)
+    void Warning(const std::string&, JNIEnv* = manager->getEnv());
+
+    ///发送错误(error级日志)
+    void Error(const std::string&, JNIEnv* = manager->getEnv());
+
+    /// @brief 设置loggerhandler的action
+    /// @param action 执行的操作
+    /// @see Logger::handler
+    /// @example 设置loggerhandler的action
+    /// @code logger->registerHandle([](std::string content, int level){
+    ///     \\do some things
+    /// });@endcode
+    inline void registerHandle(action action);
+
+    /// @brief 设置handler的启用状态
+    /// @param state 状态，启用或者关闭
+    /// @example 设置handler的启用状态
+    /// @code logger->setHandleState(ture); @endcode
+    inline void setHandleState(bool state);
+};
+
+/// 声明全局日志对象
+extern Logger* logger;
 
 /// @brief 总异常抽象类
 /// @interface MiraiCPException
@@ -269,30 +265,6 @@ public:
 	    if(logger != nullptr)
 	        logger->Error(what());
 	};
-};
-
-/// 初始化异常
-/// @see MiraiCPException
-class InitException : public MiraiCPException {
-private:
-	std::string description;
-public:
-	int step = 0;
-
-	InitException(std::string text, int step) {
-		this->description = text;
-		this->step = step;
-	}
-
-	/// 返回错误信息
-	std::string what() {
-		return this->description;
-	}
-
-	void raise() {
-		manager->getEnv()->ThrowNew(config->initexception,
-			(this->description + " step:" + std::to_string(this->step)).c_str());
-	}
 };
 
 /// 文件读取异常.
