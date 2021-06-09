@@ -23,6 +23,7 @@ import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
+import kotlin.time.Duration
 
 object publicShared{
     private val json = Json{
@@ -32,10 +33,10 @@ object publicShared{
     }
     private var friend_cache = ArrayList<NormalMember>(0)
     private lateinit var cpp: CPP_lib
-    private lateinit var gson: Gson
+    private var gson: Gson = Gson()
     private lateinit var logger: MiraiLogger
     private lateinit var now_tag: String
-    var dll_name: String = "mirai-demo.dll"
+    lateinit var dll_name: String
 
     fun init(l: MiraiLogger, tag:String, path: String){
         logger = l
@@ -610,6 +611,7 @@ object publicShared{
     fun onDisable() {
         cpp.PluginDisable()
     }
+
     @MiraiExperimentalApi
     @MiraiInternalApi
     fun onEnable(globalEventChannel: EventChannel<Event>){
@@ -617,7 +619,6 @@ object publicShared{
         if(cpp.ver != now_tag){
             logger.error("警告:当前MiraiCP框架版本($now_tag)和加载的C++ SDK(${cpp.ver})不一致")
         }
-        gson = Gson()
         //配置文件目录 "${dataFolder.absolutePath}/"
         globalEventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息

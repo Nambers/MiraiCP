@@ -70,10 +70,7 @@ throw: InitException 即找不到签名
 */
 
 void Logger::init(JNIEnv* env) {
-	this->CPP_lib = (jclass)(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/CPP_lib")));
-	this->log = env->GetStaticMethodID(this->CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
-	if (this->CPP_lib == nullptr) throw InitException("logger初始化错误", 1);
-	if (this->log == nullptr) throw InitException("logger初始化错误", 2);
+	this->log = env->GetStaticMethodID(config->CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
 }
 
 void Logger::registerHandle(Logger::action action) {
@@ -102,22 +99,12 @@ void Logger::Info(const std::string& content, JNIEnv* env) {
 	this->log0(content, env, 0);
 }
 
-Logger::~Logger() {
-	manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
-}
-
 /*
 配置类实现
 throw: InitxException 即找不到对应签名
 */
 
 void Config::Init(JNIEnv* env) {
-	// int x = (int)env->EnsureLocalCapacity((jint)22);
-	this->initexception = reinterpret_cast<jclass>(env->NewGlobalRef(
-		env->FindClass("java/lang/NoSuchMethodException")));
-    if (this->initexception == nullptr) {
-        throw APIException("初始化错误，找不到CPP_lib类");
-    }
 	this->CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/shared/CPP_lib")));
 	if (this->CPP_lib == nullptr) {
 		throw APIException("初始化错误，找不到CPP_lib类");
