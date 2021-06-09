@@ -1,33 +1,33 @@
-package tech.eritquearcus.miraicp
+package tech.eritquearcus.miraicp.shared
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
-import tech.eritquearcus.miraicp.PluginMain.BasicSendLog
-import tech.eritquearcus.miraicp.PluginMain.QueryBFL
-import tech.eritquearcus.miraicp.PluginMain.QueryBGL
-import tech.eritquearcus.miraicp.PluginMain.QueryImg
-import tech.eritquearcus.miraicp.PluginMain.QueryML
-import tech.eritquearcus.miraicp.PluginMain.RefreshInfo
-import tech.eritquearcus.miraicp.PluginMain.SendError
-import tech.eritquearcus.miraicp.PluginMain.SendMiraiCode
-import tech.eritquearcus.miraicp.PluginMain.SendMsg
-import tech.eritquearcus.miraicp.PluginMain.SendWarning
-import tech.eritquearcus.miraicp.PluginMain.accpetFriendRequest
-import tech.eritquearcus.miraicp.PluginMain.accpetGroupInvite
-import tech.eritquearcus.miraicp.PluginMain.buildforwardMsg
-import tech.eritquearcus.miraicp.PluginMain.dll_name
-import tech.eritquearcus.miraicp.PluginMain.getowner
-import tech.eritquearcus.miraicp.PluginMain.groupSetting
-import tech.eritquearcus.miraicp.PluginMain.kkick
-import tech.eritquearcus.miraicp.PluginMain.kqueryM
-import tech.eritquearcus.miraicp.PluginMain.mute
-import tech.eritquearcus.miraicp.PluginMain.recallMsg
-import tech.eritquearcus.miraicp.PluginMain.rejectFriendRequest
-import tech.eritquearcus.miraicp.PluginMain.rejectGroupInvite
-import tech.eritquearcus.miraicp.PluginMain.remoteFileInfo
-import tech.eritquearcus.miraicp.PluginMain.sendFile
-import tech.eritquearcus.miraicp.PluginMain.sendWithQuote
-import tech.eritquearcus.miraicp.PluginMain.uploadImg
+import tech.eritquearcus.miraicp.shared.publicShared.BasicSendLog
+import tech.eritquearcus.miraicp.shared.publicShared.QueryBFL
+import tech.eritquearcus.miraicp.shared.publicShared.QueryBGL
+import tech.eritquearcus.miraicp.shared.publicShared.QueryImg
+import tech.eritquearcus.miraicp.shared.publicShared.QueryML
+import tech.eritquearcus.miraicp.shared.publicShared.RefreshInfo
+import tech.eritquearcus.miraicp.shared.publicShared.SendError
+import tech.eritquearcus.miraicp.shared.publicShared.SendMiraiCode
+import tech.eritquearcus.miraicp.shared.publicShared.SendMsg
+import tech.eritquearcus.miraicp.shared.publicShared.SendWarning
+import tech.eritquearcus.miraicp.shared.publicShared.accpetFriendRequest
+import tech.eritquearcus.miraicp.shared.publicShared.accpetGroupInvite
+import tech.eritquearcus.miraicp.shared.publicShared.buildforwardMsg
+import tech.eritquearcus.miraicp.shared.publicShared.dll_name
+import tech.eritquearcus.miraicp.shared.publicShared.getowner
+import tech.eritquearcus.miraicp.shared.publicShared.groupSetting
+import tech.eritquearcus.miraicp.shared.publicShared.kkick
+import tech.eritquearcus.miraicp.shared.publicShared.kqueryM
+import tech.eritquearcus.miraicp.shared.publicShared.mute
+import tech.eritquearcus.miraicp.shared.publicShared.recallMsg
+import tech.eritquearcus.miraicp.shared.publicShared.rejectFriendRequest
+import tech.eritquearcus.miraicp.shared.publicShared.rejectGroupInvite
+import tech.eritquearcus.miraicp.shared.publicShared.remoteFileInfo
+import tech.eritquearcus.miraicp.shared.publicShared.sendFile
+import tech.eritquearcus.miraicp.shared.publicShared.sendWithQuote
+import tech.eritquearcus.miraicp.shared.publicShared.uploadImg
 
 class CPP_lib {
     var ver:String = ""
@@ -35,7 +35,7 @@ class CPP_lib {
         ver=Verify()
     }
 
-    //cd build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.CPP_lib
+    //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
     companion object{
         private val gson = Gson()
         init {

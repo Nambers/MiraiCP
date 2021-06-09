@@ -118,7 +118,7 @@ void Config::Init(JNIEnv* env) {
     if (this->initexception == nullptr) {
         throw APIException("初始化错误，找不到CPP_lib类");
     }
-	this->CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/CPP_lib")));
+	this->CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/shared/CPP_lib")));
 	if (this->CPP_lib == nullptr) {
 		throw APIException("初始化错误，找不到CPP_lib类");
 	}

@@ -1,9 +1,5 @@
-package tech.eritquearcus.miraicp
+package tech.eritquearcus.miraicp.shared
 import com.google.gson.annotations.SerializedName
-import net.mamoe.mirai.contact.PermissionDeniedException
-import net.mamoe.mirai.event.events.GroupAllowMemberInviteEvent
-import net.mamoe.mirai.event.events.GroupEntranceAnnouncementChangeEvent
-import net.mamoe.mirai.event.events.GroupMuteAllEvent
 
 class Config {
     data class Contact(
