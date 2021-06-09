@@ -1,12 +1,8 @@
 version: 2
 updates:
 - package-ecosystem: gradle
-  directory: "/loader"
+  directory: "/kotlin"
   schedule:
     interval: weekly
   open-pull-requests-limit: 10
-- package-ecosystem: gradle
-  directory: "/plugin"
-  schedule:
-    interval: weekly
-  open-pull-requests-limit: 10
+  target-branch: master
