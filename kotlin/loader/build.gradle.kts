@@ -8,6 +8,9 @@ plugins {
 tasks {
     named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
         this.isZip64 = true
+        archiveBaseName.set("MiraiCP-loader")
+        archiveClassifier.set("")
+        archiveVersion.set(V.miraiCP)
     }
 }
 
@@ -22,6 +25,6 @@ tasks.withType(KotlinJvmCompile::class.java) {
 
 dependencies {
     implementation(project(":shared"))
-    implementation("net.mamoe:mirai-core:2.6.5")
+    implementation("net.mamoe:mirai-core:${V.miraiVersion}")
     implementation("org.fusesource.jansi:jansi:2.3.2")
 }
