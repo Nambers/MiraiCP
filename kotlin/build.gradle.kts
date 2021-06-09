@@ -1,8 +1,8 @@
 plugins {
-    kotlin("jvm") version "1.5.10" apply false
-    kotlin("plugin.serialization") version "1.5.10" apply false
+    kotlin("jvm") version V.kotlinVersion apply false
+    kotlin("plugin.serialization") version V.kotlinVersion apply false
     id("com.github.johnrengelman.shadow") version "6.1.0" apply false
-    id("net.mamoe.mirai-console") version "2.6.5" apply false
+    id("net.mamoe.mirai-console") version V.miraiVersion apply false
 
 }
 allprojects{
@@ -26,5 +26,5 @@ subprojects{
 }
 allprojects{
     group = "tech.eritquearcus"
-    version = "2.6.3"
+    version = V.miraiCP
 }
