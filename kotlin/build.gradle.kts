@@ -1,9 +1,11 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.0.0" apply false
     kotlin("jvm") version "1.5.10" apply false
-}
+    kotlin("plugin.serialization") version "1.5.10" apply false
+    id("com.github.johnrengelman.shadow") version "6.1.0" apply false
+    id("net.mamoe.mirai-console") version "2.6.5" apply false
 
-subprojects{
+}
+allprojects{
     apply{
         plugin("org.jetbrains.kotlin.jvm")
     }
@@ -14,9 +16,12 @@ subprojects{
         gradlePluginPortal()
         google()
     }
+}
+subprojects{
     val implementation by configurations
     dependencies{
-        implementation("net.mamoe:mirai-core:2.6.5") // mirai-core 的 API
+        implementation("com.google.code.gson:gson:2.8.7")
+        implementation("org.json:json:20210307")
     }
 }
 allprojects{

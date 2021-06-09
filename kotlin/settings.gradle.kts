@@ -1,4 +1,5 @@
 rootProject.name = "MiraiCP-kotlin"
+include("shared")
 include("plugin")
 include("loader")
 pluginManagement {
@@ -6,6 +7,5 @@ pluginManagement {
         mavenCentral()
         mavenLocal()
         gradlePluginPortal()
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
 }
