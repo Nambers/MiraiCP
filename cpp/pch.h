@@ -15,7 +15,7 @@
 /// 转码和判断文件
 #include <filesystem>
 /// JNI接口
-#include "tech_eritquearcus_miraicp_CPP_lib.h"
+#include "tech_eritquearcus_miraicp_shared_CPP_lib.h"
 /// JNI库
 #include "include/jni.h"
 /// 字符串流
