@@ -59,7 +59,6 @@ hs_err_pid*
 .vs/
 x64/
 cache/
-test.kt
 selenium/
 cmake-build-debug/
 cpp/out/
