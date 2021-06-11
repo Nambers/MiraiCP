@@ -3,5 +3,5 @@
 :如 java -jar MiraiCP-loader-2.6.1-all.jar 11111 abcabc mirai-demo.dll 1
 : ':'开头的为注释，请在下方更改
 
-java -jar MiraiCP-loader-2.6.2-all.jar 111 ab mirai-demo.dll
+java -jar MiraiCP-loader-2.6.4-all.jar 111 ab mirai-demo.dll
 pause
