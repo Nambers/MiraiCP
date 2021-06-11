@@ -1,4 +1,5 @@
 #pragma once
+#pragma execution_character_set("utf-8")
 /*MiraiCP依赖*/
 /// C++ 标准库
 #include <iostream>
