@@ -321,8 +321,10 @@ MessageSource Contact::SendMiraiCode(std::string msg, JNIEnv* env) {
 }
 
 MessageSource Contact::SendMsg(std::string msg, JNIEnv* env) {
-    if(msg.empty())
+    if(msg.empty()) {
+        logger->Error("警告:发送空信息, 位置: Contact::SendMsg");
         throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg");
+    }
     std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
     ErrorHandle(re, "reach a error area, Contact::SendMiraiCode");
     return MessageSource::deserializeFromString(re);

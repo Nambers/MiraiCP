@@ -77,7 +77,9 @@ class CPP_lib {
         }
 
         fun KRefreshInfo(source: String): String {
-            return RefreshInfo(gson.fromJson(source, Config.Contact::class.java))
+            return runBlocking {
+                RefreshInfo(gson.fromJson(source, Config.Contact::class.java))
+            }
         }
 
         fun KUploadImg(fileName:String,source:String):String{
