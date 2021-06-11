@@ -512,13 +512,24 @@ std::vector<Group::short_info> Group::getFileList(const std::string& path, JNIEn
 
 /*工具类实现*/
 std::string Tools::jstring2str(jstring jStr, JNIEnv* env) {
+    if(!jStr) {
+        logger->Error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
+        return "";
+    }
     std::u16string s = reinterpret_cast<const char16_t*>(env->GetStringChars(jStr, nullptr));
+    if(s.length() == 0) {
+        logger->Error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
+        return "";
+    }
     std::string x;
     utf8::utf16to8(s.begin(), s.end(), std::back_inserter(x));
     return x;
 }
 
 jstring Tools::str2jstring(const char* stra, JNIEnv* env) {
+    if(!stra){
+        logger->Error("警告:C++部分传入空字符串，位置:Tools::str2jstring");
+    }
     std::string str(stra);
     std::vector<unsigned short> utf16line;
     utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
