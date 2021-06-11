@@ -146,4 +146,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # 依赖
 [JSON for modern C++](https://github.com/nlohmann/json) - MIT licence
+
 [UTF8-CPP: UTF-8 with C++ in a Portable Way](https://github.com/nemtrif/utfcpp) - Boost Software License 1.0
