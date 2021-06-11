@@ -59,7 +59,7 @@ void onEnable() {
 	// 监听群信息
 	procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
 	    logger->Info(e.message);
-	    e.group.SendMsg(e.message);
+	    e.group.SendMiraiCode(e.message);
         e.group.SendMsg("☺");
 //	    e.group.SendMsg(e.group.setting.name);
 //	    e.group.setting.name = "x";

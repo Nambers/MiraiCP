@@ -13,11 +13,11 @@
 #include <functional>
 /// json解析
 #include "json.hpp"
-/// 转码和判断文件
+/// 判断文件是否存在
 #include <filesystem>
 /// JNI接口
 #include "tech_eritquearcus_miraicp_shared_CPP_lib.h"
-/// JNI库
+/// JNI依赖库
 #include "include/jni.h"
 /// 字符串流
 #include <sstream>
