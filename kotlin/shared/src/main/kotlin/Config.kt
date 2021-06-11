@@ -159,4 +159,9 @@ class Config {
         val dinfo: DInfo,
         val finfo: FInfo
     )
+    data class GroupAnnouncementMsg(
+        val text: String,
+        val text_face: String? = null,
+        val title: String? = null
+    )
 }

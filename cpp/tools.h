@@ -570,6 +570,9 @@ public:
     std::string what(){
         return this->description;
     }
+    void raise(){
+        logger->Error(this->what());
+    }
 };
 
 inline void ErrorHandle(const std::string& re, const std::string &ErrorMsg = ""){
@@ -739,6 +742,10 @@ public:
 	 *		@endcode
 	 */
 	static std::vector<std::string> GetImgIdsFromMiraiCode(std::string);
+
+	static std::vector<std::string> GetImgIdsFromMiraiCode(MiraiCode msg){
+	    return GetImgIdsFromMiraiCode(msg.toMiraiCode());
+	}
 
 	/// 取图片Mirai码
 	std::string toMiraiCode();
@@ -1368,7 +1375,8 @@ public:
     struct GroupSetting{
         /// 群名称
         std::string name;
-        /// 入群显示公告
+        /// 入群显示公告 **目前暂时不能用**
+        /// @see https://github.com/Nambers/MiraiCP/issues/61
         std::string entranceAnnouncement;
         /// 禁言全部
         bool isMuteAll;
@@ -1379,7 +1387,7 @@ public:
         /// 允许匿名聊天
         bool isAnonymousChatEnabled;
     };
-
+    /// 群设置
     GroupSetting setting;
 
     /**

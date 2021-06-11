@@ -176,7 +176,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
 		logger->Error(j.dump());
 		logger->Error(e.what());
 		return Tools::str2jstring("ERROR");
-	}catch(std::exception &e){
+	}catch(MiraiCPException &e){
+	    logger->Error("MiraiCP Error:");
 	    logger->Error(e.what());
         return Tools::str2jstring("ERROR");
 	}

@@ -3,6 +3,8 @@ package tech.eritquearcus.miraicp.shared
 import com.google.gson.Gson
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
+import net.mamoe.mirai.IMirai
+import net.mamoe.mirai.LowLevelApi
 import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.NormalMember
@@ -120,8 +122,8 @@ object publicShared{
         return Send0(MiraiCode.deserializeMiraiCode(message), c)
     }
 
-    @OptIn(MiraiExperimentalApi::class)
-    fun RefreshInfo(c: Config.Contact): String{
+    @OptIn(MiraiExperimentalApi::class, net.mamoe.mirai.LowLevelApi::class)
+    suspend fun RefreshInfo(c: Config.Contact): String{
         val AIbot = Bot.getInstance(c.botid)
         when(c.type){
             1->{
@@ -137,7 +139,7 @@ object publicShared{
                     return "EG"
                 }
                 return gson.toJson(Config.ContactInfo(g.name, g.avatarUrl,
-                    Config.GroupSetting(g.name, g.settings.entranceAnnouncement, g.settings.isMuteAll, g.settings.isAllowMemberInvite, g.settings.isAutoApproveEnabled, g.settings.isAnonymousChatEnabled)
+                    Config.GroupSetting(g.name, "", g.settings.isMuteAll, g.settings.isAllowMemberInvite, g.settings.isAutoApproveEnabled, g.settings.isAnonymousChatEnabled)
                 ))
             }
             3->{
