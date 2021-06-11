@@ -1,5 +1,5 @@
 # Welcome to MiraiCP
-
+[This document OUTDATE, plz refer to [Chinese version](https://github.com/Nambers/MiraiCP/blob/master/README.md)]
 >[中文](https://github.com/Nambers/MiraiCP/blob/master/README.md)
 >
 >[English](https://github.com/Nambers/MiraiCP/blob/master/README_en.md)
