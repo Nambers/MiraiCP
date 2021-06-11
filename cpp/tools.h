@@ -190,6 +190,81 @@ public:
 /// 全局Config对象
 extern Config* config;
 
+/// MiraiCode父类, 指可以被转换成miraicode的类型
+class MiraiCodeable {
+public:
+    virtual std::string toMiraiCode() = 0;
+};
+
+/// @brief miraicode字符串
+/// @attention MiraiCode会把非miraicode组成部分(非[mirai:])转码, 输出转码前的文本用toString, 参考: https://github.com/mamoe/mirai/blob/dev/docs/Messages.md#%E8%BD%AC%E4%B9%89%E8%A7%84%E5%88%99
+class MiraiCode {
+private:
+    std::string content = "";
+public:
+    /// 输出当前内容, 会自动转码
+    std::string toString() {
+        //[	\[
+        //]	\]
+        //:	\:
+        //,	\,
+        //\	\\ /
+        return Tools::replace(Tools::replace(Tools::replace(Tools::replace(Tools::replace(content,
+                                                                                          "\\\\", "\\"),
+                                                                           "\\,", ","),
+                                                            "\\:", ":"),
+                                             "\\]", "]")
+                , "\\[", "[");
+    }
+
+    /// 和toString作用一样, 不过不会自动转码
+    std::string toMiraiCode() {
+        return content;
+    }
+
+    /// 从MiraiCodeable类型初始化一个miraicode字符串
+    MiraiCode(MiraiCodeable* a) {
+        content = a->toMiraiCode();
+    }
+
+    /// 从文本初始化一个miraicode字符串
+    MiraiCode(std::string a) {
+        content = a;
+    }
+
+    MiraiCode operator+(MiraiCodeable* a) {
+        return MiraiCode(content + a->toMiraiCode());
+    }
+
+    MiraiCode operator+(std::string a) {
+        return MiraiCode(content + a);
+    }
+
+    MiraiCode operator+=(MiraiCodeable* a) {
+        return MiraiCode(this->content + a->toMiraiCode());
+    }
+
+    MiraiCode operator+=(std::string a) {
+        return MiraiCode(this->content + a);
+    }
+
+    MiraiCode operator=(MiraiCodeable* a) {
+        return MiraiCode(a->toMiraiCode());
+    }
+
+    MiraiCode operator=(std::string a) {
+        return MiraiCode(a);
+    }
+
+    MiraiCode plus(MiraiCodeable* a) {
+        return MiraiCode(content + a->toMiraiCode());
+    }
+
+    MiraiCode plus(std::string a) {
+        return MiraiCode(content + a);
+    }
+};
+
 /*!
  * @class Logger
  * @brief 日志
@@ -230,11 +305,26 @@ public:
     ///发送普通(info级日志)
     void Info(const std::string&, JNIEnv* = manager->getEnv());
 
+    ///发送普通(info级日志)
+    void Info(MiraiCode msg, JNIEnv* env = manager->getEnv()){
+        Info(msg.toString(), env);
+    }
+
     ///发送警告(warning级日志)
     void Warning(const std::string&, JNIEnv* = manager->getEnv());
 
+    ///发送警告(warning级日志)
+    void Warning(MiraiCode msg, JNIEnv* env = manager->getEnv()){
+        Warning(msg.toString(), env);
+    }
+
     ///发送错误(error级日志)
     void Error(const std::string&, JNIEnv* = manager->getEnv());
+
+    ///发送错误(error级日志)
+    void Error(MiraiCode msg, JNIEnv* env = manager->getEnv()){
+        Error(msg.toString(), env);
+    }
 
     /// @brief 设置loggerhandler的action
     /// @param action 执行的操作
@@ -495,70 +585,6 @@ inline void ErrorHandle(const std::string& re, const std::string &ErrorMsg = "")
         throw APIException(ErrorMsg);
 }
 
-/// MiraiCode父类, 指可以被转换成miraicode的类型
-class MiraiCodeable {
-public:
-	virtual std::string toMiraiCode() = 0;
-};
-
-/// @brief miraicode字符串
-class MiraiCode {
-private:
-	std::string content = "";
-public:
-	/// 输出当前内容
-	std::string toString() {
-		return content;
-	}
-
-	/// 和toString作用一样
-	std::string toMiraiCode() {
-		return toString();
-	}
-
-	/// 从MiraiCodeable类型初始化一个miraicode字符串
-	MiraiCode(MiraiCodeable* a) {
-		content = a->toMiraiCode();
-	}
-
-	/// 从文本初始化一个miraicode字符串
-	MiraiCode(std::string a) {
-		content = a;
-	}
-
-	MiraiCode operator+(MiraiCodeable* a) {
-		return MiraiCode(content + a->toMiraiCode());
-	}
-
-	MiraiCode operator+(std::string a) {
-		return MiraiCode(content + a);
-	}
-
-	MiraiCode operator+=(MiraiCodeable* a) {
-		return MiraiCode(this->content + a->toMiraiCode());
-	}
-
-	MiraiCode operator+=(std::string a) {
-		return MiraiCode(this->content + a);
-	}
-
-	MiraiCode operator=(MiraiCodeable* a) {
-		return MiraiCode(a->toMiraiCode());
-	}
-
-	MiraiCode operator=(std::string a) {
-		return MiraiCode(a);
-	}
-
-	MiraiCode plus(MiraiCodeable* a) {
-		return MiraiCode(content + a->toMiraiCode());
-	}
-
-	MiraiCode plus(std::string a) {
-		return MiraiCode(content + a);
-	}
-};
-
 /*!
  * @brief 小程序卡片
  * @see LightAppStyle1, LightAppStyle2, LightAppStyle3
@@ -742,7 +768,7 @@ public:
     /// 回复(引用并发送miraicode)
     /// @see MessageSource::quoteAndSendMiraiCode
     MessageSource quoteAndSendMiraiCode(MiraiCode msg, unsigned long long groupid = 0, JNIEnv* env = manager->getEnv()) {
-        return quoteAndSendMiraiCode(msg.toString(), groupid, env);
+        return quoteAndSendMiraiCode(msg.toMiraiCode(), groupid, env);
     }
 
     /**
@@ -914,7 +940,7 @@ public:
 
     /// 发送miraicode
     MessageSource SendMiraiCode(MiraiCode msg) {
-        return SendMiraiCode(msg.toString());
+        return SendMiraiCode(msg.toMiraiCode());
     }
 
     /// 发送miraicode
@@ -922,6 +948,11 @@ public:
 
     /// 发送纯文本信息
     MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
+
+    /// 发送纯文本信息
+    MessageSource SendMsg(MiraiCode msg){
+        return SendMsg(msg.toString());
+    }
 
      /// 刷新当前对象信息
      virtual void refreshInfo(JNIEnv* = manager->getEnv()){};
@@ -1502,7 +1533,7 @@ public:
 	///发送人
 	Member sender;
 	///信息本体
-	const std::string message;
+	const MiraiCode message;
 	///消息源
 	MessageSource messageSource;
 
@@ -1519,7 +1550,7 @@ public:
 	/// 发起人
 	Friend sender;
 	/// 附带消息
-	const std::string message;
+    const MiraiCode message;
 	/// 信息源
 	MessageSource messageSource;
 
@@ -1796,7 +1827,7 @@ public:
 	/// 发送人
 	Member sender;
 	/// 信息本体
-	const std::string message;
+    const MiraiCode message;
 	/// 消息源
 	MessageSource messageSource;
 
