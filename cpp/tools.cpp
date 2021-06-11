@@ -1,5 +1,5 @@
 #include "pch.h"
-
+#include "utf8.h"
 
 using json = nlohmann::json;
 
@@ -511,46 +511,22 @@ std::vector<Group::short_info> Group::getFileList(const std::string& path, JNIEn
 }
 
 /*工具类实现*/
-std::string Tools::jstring2str(jstring jstr, JNIEnv* env) {
-	if (jstr == nullptr) {
-		logger->Warning("异常:kotlin返回空字符串");
-		return "";
-	}
-	jsize len = env->GetStringLength(jstr);
-	const jchar* jcstr = env->GetStringChars(jstr, nullptr);
-	int size = 0;
-	char* str = (char*)malloc(static_cast<size_t>(len) * 2 + 1);
-	if ((size = WideCharToMultiByte(CP_ACP, 0, LPCWSTR(jcstr), len, str, len * 2 + 1, nullptr, nullptr)) == 0) {
-		logger->Warning("异常:kotlin返回空字符串");
-		return "";
-	}
-	env->ReleaseStringChars(jstr, jcstr);
-	str[size] = 0;
-	// to utf8
-	return (const char* const)(std::filesystem::path(str).u8string().c_str());
+std::string Tools::jstring2str(jstring jStr, JNIEnv* env) {
+    std::u16string s = reinterpret_cast<const char16_t*>(env->GetStringChars(jStr, nullptr));
+    std::string x;
+    utf8::utf16to8(s.begin(), s.end(), std::back_inserter(x));
+    return x;
 }
 
 jstring Tools::str2jstring(const char* stra, JNIEnv* env) {
-	std::string a = std::filesystem::u8path(stra).string();
-	const char* str = a.c_str();
-	if (str == nullptr || *str == '\0') {
-		logger->Warning("异常:传入空字符串到kotlin");
-		return nullptr;
-	}
-	jstring rtn = nullptr;
-	int slen = strlen(str);
-	unsigned short* buffer = nullptr;
-	if (slen == 0)
-		rtn = (env)->NewStringUTF(str);
-	else {
-		int length = MultiByteToWideChar(CP_ACP, 0, (LPCSTR)str, slen, nullptr, 0);
-		buffer = (unsigned short*)malloc(static_cast<size_t>(length) * 2 + 1);
-		if (MultiByteToWideChar(CP_ACP, 0, (LPCSTR)str, slen, (LPWSTR)buffer, length) > 0)
-			rtn = (env)->NewString((jchar*)buffer, length);
-	}
-	if (buffer)
-		free(buffer);
-	return rtn;
+    std::string str(stra);
+    std::vector<unsigned short> utf16line;
+    utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
+    auto* c = new jchar[utf16line.size()];
+    for(int i = 0; i<utf16line.size(); i++){
+        c[i] = utf16line[i];
+    }
+    return env->NewString((const jchar*)c, (jsize)utf16line.size());
 }
 
 std::string Tools::JLongToString(jlong qqid) {
@@ -602,9 +578,9 @@ Contact Contact::deserializationFromString(const std::string& source) {
 }
 
 Contact Contact::deserializationFromJson(nlohmann::json j) {
-	return Contact(j["type"],
-		j["id"],
-		j["groupid"],
-		j["nickornamecard"],
-		j["botid"]);
+    return Contact(j["type"],
+                   j["id"],
+                   j["groupid"],
+                   j["nickornamecard"],
+                   j["botid"]);
 }

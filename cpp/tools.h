@@ -26,9 +26,10 @@ private:
 public:
 	/// @brief 获取线程id.
 	static std::string getThreadId() {
-		std::ostringstream oss;
-		oss << std::this_thread::get_id();
-		return oss.str();
+        auto myid = std::this_thread::get_id();
+        std::stringstream ss;
+        ss << myid;
+        return ss.str();
 	}
 
 	threadManager();

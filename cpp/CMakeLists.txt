@@ -10,6 +10,7 @@ include_directories(.)
 include_directories(include)
 include_directories(include/win32)
 include_directories(include/win32/bridge)
+include_directories("include/utf8")
 
 set(
         SOURCE_TEMPLATES
@@ -22,9 +23,14 @@ set(
         Procession.cpp
         tools.cpp
 )
-
 set(
         SOURCE_HEADERS
+        include/utf8.h
+        include/utf8/checked.h
+        include/utf8/core.h
+        include/utf8/cpp11.h
+        include/utf8/cpp17.h
+        include/utf8/unchecked.h
         include/win32/bridge/AccessBridgeCallbacks.h
         include/win32/bridge/AccessBridgeCalls.h
         include/win32/bridge/AccessBridgePackages.h
@@ -39,10 +45,9 @@ set(
         constants.h
         framework.h
         pch.h
-        tech_eritquearcus_miraicp_CPP_lib.h
+        tech_eritquearcus_miraicp_shared_CPP_lib.h
         tools.h
 )
-
 add_library(
         cpp
         SHARED
