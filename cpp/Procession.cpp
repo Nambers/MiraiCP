@@ -1,4 +1,5 @@
 #include "pch.h"
+using namespace std;
 // 多线程示例
 void func(unsigned long long i, unsigned long long botid) {
 	// 执行操作
@@ -57,10 +58,13 @@ void onEnable() {
 
 	// 监听群信息
 	procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-	    e.group.SendMsg(e.group.setting.name);
-	    e.group.setting.name = "x";
-	    e.group.updateSetting();
-	    e.group.SendMsg(e.group.setting.entranceAnnouncement);
+	    logger->Info(e.message);
+	    e.group.SendMsg(e.message);
+        e.group.SendMsg("☺");
+//	    e.group.SendMsg(e.group.setting.name);
+//	    e.group.setting.name = "x";
+//	    e.group.updateSetting();
+//	    e.group.SendMsg(e.group.setting.entranceAnnouncement);
 //                e.messageSource.quoteAndSendMsg("HI");
 //	            logger->Info(e.messageSource.serializeToString());
 //		        // 发送文本信息
@@ -114,5 +118,5 @@ void onEnable() {
 		});
 }
 void onDisable() {
-	/*插件结束,正常退出才会调用*/
+	/*插件结束*/
 }
