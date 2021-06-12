@@ -1134,7 +1134,7 @@ public:
 
 	/// @brief 构造聊天记录里每条信息
 	/// @param c - 发送者的contact指针
-	/// @prama m - 发送的信息
+	/// @param m - 发送的信息
 	/// @param t - 发送时间，时间戳格式
 	ForwardNode(Contact* c, std::string& message, int t) : id(c->id()), name(c->nickOrNameCard()), message(message),
 		time(t) {}
