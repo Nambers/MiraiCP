@@ -42,12 +42,12 @@ MiraiCode表情格式:`[mirai:face:表情id]`
 ![250~300](https://raw.githubusercontent.com/Nambers/MiraiCP/master/doc/face_pic/250-300.jpg?raw=true)
 
 ## 关于emoji
-如需发送emoji，请查看[这里](https://www.jianshu.com/p/bab9b6cdfffe) 获取emoji的utf8码然后发送
+如需发送emoji，请查看[这里](https://apps.timwhitlock.info/emoji/tables/unicode)，然后把emoji黏贴到字符串里或直接用utf8编码
 
-如:
-```kotlin
-	globalEventChannel().subscribeAlways<GroupMessageEvent>{
-            //群消息
-            group.sendMessage("\uD83D\uDE03")
-        }
+在miraicp的C++部分中:
+```C++
+	procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
+        e.group.SendMsg("☺");
+	e.group.SendMsg("\xF0\x9F\x98\x81");
+	});
 ```
