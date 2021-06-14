@@ -26,5 +26,5 @@ tasks.withType(KotlinJvmCompile::class.java) {
 dependencies {
     implementation(project(":shared"))
     implementation("net.mamoe:mirai-core:${V.miraiVersion}")
-    implementation("org.fusesource.jansi:jansi:2.3.2")
+    implementation("org.fusesource.jansi:jansi:2.3.3")
 }
