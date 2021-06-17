@@ -117,6 +117,14 @@ public:
 	/// @param s string
 	/// @return vector
 	static std::vector<unsigned long long> StringToVector(std::string s);
+	/// @brief 从miraicode转义到正常
+	/// @param s 经过miraicode转义的字符串
+	/// @return 原字符串
+	static std::string escapeFromMiraiCode(const std::string& s);
+	/// @brief 转义miraicode格式
+	/// @param s
+	/// @return
+    static std::string escapeToMiraiCode(const std::string& s);
 };
 
 /// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
@@ -157,7 +165,8 @@ public:
         KickM,
         /// 取群主
         QueryOwner,
-        x,
+        /// 语音
+        Voice,
         /// 查询群成员列表
         QueryML,
         /// 群设置
@@ -204,17 +213,7 @@ private:
 public:
     /// 输出当前内容, 会自动转码
     std::string toString() {
-        //[	\[
-        //]	\]
-        //:	\:
-        //,	\,
-        //\	\\ /
-        return Tools::replace(Tools::replace(Tools::replace(Tools::replace(Tools::replace(content,
-                                                                                          "\\\\", "\\"),
-                                                                           "\\,", ","),
-                                                            "\\:", ":"),
-                                             "\\]", "]")
-                , "\\[", "[");
+        return Tools::escapeFromMiraiCode(this->content);
     }
 
     /// 和toString作用一样, 不过不会自动转码
@@ -588,6 +587,223 @@ inline void ErrorHandle(const std::string& re, const std::string &ErrorMsg = "")
         throw APIException(ErrorMsg);
 }
 
+/// 消息源声明
+class MessageSource {
+public:
+    /// 消息的ids
+    const std::string ids;
+    /// 消息的internalids
+    const std::string internalids;
+    /// 消息源序列化
+    const std::string source;
+
+    MessageSource() {};
+
+    /**
+     * @brief 回复(引用并发送miraicode)
+     * @param msg - MiraiCodeable类型指针 - 内容
+     * @see MessageSource::quoteAndSendMiraiCode
+    */
+    MessageSource quoteAndSendMiraiCode(MiraiCodeable* msg, unsigned long long groupid = 0, JNIEnv* env = manager->getEnv()) {
+        return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
+    }
+
+    /// 回复(引用并发送miraicode)
+    /// @see MessageSource::quoteAndSendMiraiCode
+    MessageSource quoteAndSendMiraiCode(MiraiCode msg, unsigned long long groupid = 0, JNIEnv* env = manager->getEnv()) {
+        return quoteAndSendMiraiCode(msg.toMiraiCode(), groupid, env);
+    }
+
+    /**
+     * @brief 回复(引用并发送)
+     * @param c 引用后发送的内容, 为纯文本
+     * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
+     * @return MessageSource
+     * @example 回复(引用并发送)
+     * @code
+     *  e.messageSource.quoteAndSendMsg("HI");
+     * @endcode
+     */
+    MessageSource quoteAndSendMsg(const std::string& c, unsigned long long groupid = 0, JNIEnv* = manager->getEnv());
+
+    /**
+     * @brief 回复(引用并发送)
+     * @param c 引用后发送的内容, 为MiraiCode形式
+     * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
+     * @return MessageSource
+     */
+    MessageSource quoteAndSendMiraiCode(const std::string& c, unsigned long long groupid = 0, JNIEnv* = manager->getEnv());
+
+    /*!
+     * @brief 构建消息源
+     * @param ids
+     * @param internalids
+     * @param source
+     */
+    MessageSource(std::string  ids, std::string  internalids, const std::string& source);
+
+    /*!
+     * @brief 从json字符串反序列化到MessageSource对象
+     * @note json应该为以下格式
+     * @code
+     * {"ids":"", "internalids":""}
+     * @endcode
+     */
+    static MessageSource deserializeFromString(const std::string& source);
+
+    std::string serializeToString();
+
+    /*!
+     * @brief 撤回该信息
+     * @example 撤回信息
+     * @code
+     * procession->registerEvent([](GroupMessageEvent e) {
+        try {
+            e.messageSource.recall();
+            e.group.SendMsg("hi").recall();
+        }
+        catch (MiraiCPException &e) {
+            logger->Error("错误");
+        }
+        });
+     * @endcode
+    */
+    void recall(JNIEnv* = manager->getEnv());
+};
+
+/*!
+ * @brief group, friend, member的父类
+ */
+class Contact {
+protected:
+    int _type = 0;
+    unsigned long long _id;
+    unsigned long long _groupid;
+    std::string _nickOrNameCard;
+    std::string _avatarUrl;
+    unsigned long long _botid;
+public:
+    /*!
+     * @brief 无参初始化Contact类型
+     * @internal 一般在MiraiCp内部构造
+     */
+    Contact() {
+        this->_type = 0;
+        this->_id = 0;
+        this->_groupid = 0;
+        this->_nickOrNameCard = "";
+        this->_botid = 0;
+    }
+
+    /*!
+     * @brief 构造contact类型
+     * @param type 类型
+     *  @see Contact::type()
+     * @param id ID
+     *  @see Contact::id()
+     * @param gid 是member的时候是群id，否则为0
+     *  @see Contact::groupid
+     * @param name 群名片或昵称或群名
+     *  @see Contact::name()
+     * @param botid 对应的botid
+     */
+    Contact(int type, unsigned long long id, unsigned long long gid, std::string name, unsigned long long botid) {
+        this->_type = type;
+        this->_id = id;
+        this->_groupid = gid;
+        this->_nickOrNameCard = name;
+        this->_botid = botid;
+    };
+
+    /// @brief 当前对象类型
+    ///     - 1 Friend 好友
+    ///     - 2 Group 群聊
+    ///     - 3 Member 群成员
+    int type() { return this->_type; }
+
+    /// @brief id在全部情况存在
+    ///     - 当当前type为1(Friend)时，为好友id
+    ///     - 当当前type为2(Group)时，为群id
+    ///     - 当当前type为3(Member)时，为群成员id
+    unsigned long long id() { return this->_id; }
+
+    /// @brief 当type为3的时候存在，否则为0，可以看作补充id
+    ///     - 当当前type为1(Friend)时，为0
+    ///     - 当当前type为2(Group)时，为0
+    ///     - 当当前type为3(Member)时，为群号
+    /// @attention 当当前type为2(Group)时，为0，不为群号，id才是群号
+    unsigned long long groupid() { return this->_groupid; }
+
+    /// 群名称，群成员群名片，或好友昵称
+    std::string nickOrNameCard() { return this->_nickOrNameCard; };
+
+    /// 头像url地址
+    std::string avatarUrl() { return this->_avatarUrl; };
+
+    /// 所属bot
+    unsigned long long botid() { return this->_botid; };
+
+    /// 序列化到json对象
+    nlohmann::json serialization() {
+        nlohmann::json j;
+        j["type"] = type();
+        j["id"] = id();
+        j["groupid"] = groupid();
+        j["nickornamecard"] = nickOrNameCard();
+        j["botid"] = botid();
+        return j;
+    }
+
+    /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
+    /// @see Contact::fromString()
+    std::string serializationToString() {
+        return this->serialization().dump();
+    }
+
+    /*!
+     * @brief 从json节点反序列化
+     * @param root json节点
+     * @return Contact
+     */
+    static Contact deserializationFromJson(nlohmann::json root);
+
+    /// 反序列化成bot，可以通过serializationToString序列化，利于保存
+    /// @see Contact::serializationToString()
+    /// @param source 序列化后的文本
+    /// @throw APIException
+    static Contact deserializationFromString(const std::string& source);
+
+    /**
+     * @brief 发送miraicode
+     * @param msg - MiraiCodeable类型指针 - 内容
+    */
+    MessageSource sendMiraiCode(MiraiCodeable* msg) {
+        return sendMiraiCode(msg->toMiraiCode());
+    }
+
+    /// 发送miraicode
+    MessageSource sendMiraiCode(MiraiCode msg) {
+        return sendMiraiCode(msg.toMiraiCode());
+    }
+
+    /// 发送miraicode
+    MessageSource sendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
+
+    /// 发送纯文本信息
+    MessageSource sendMsg(std::string msg, JNIEnv* = manager->getEnv());
+
+    /// 发送纯文本信息
+    MessageSource sendMsg(MiraiCode msg){
+        return sendMsg(msg.toString());
+    }
+
+    /// 发送语音
+    MessageSource sendVoice(const std::string& path, JNIEnv* = manager->getEnv());
+
+    /// 刷新当前对象信息
+    virtual void refreshInfo(JNIEnv* = manager->getEnv()){};
+};
+
 /*!
  * @brief 小程序卡片
  * @see LightAppStyle1, LightAppStyle2, LightAppStyle3
@@ -704,7 +920,7 @@ public:
 	}
 
 	std::string toMiraiCode() {
-		return "[mirai:app:" + Tools::replace(Tools::replace(content, "[", "\\["), "]", "\\]") + "]";
+		return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
 	}
 };
 
@@ -749,220 +965,6 @@ public:
 
 	/// 取图片Mirai码
 	std::string toMiraiCode();
-};
-
-/// 消息源声明
-class MessageSource {
-public:
-    /// 消息的ids
-    const std::string ids;
-    /// 消息的internalids
-    const std::string internalids;
-    /// 消息源序列化
-    const std::string source;
-
-    MessageSource() {};
-
-    /**
-     * @brief 回复(引用并发送miraicode)
-     * @param msg - MiraiCodeable类型指针 - 内容
-     * @see MessageSource::quoteAndSendMiraiCode
-    */
-    MessageSource quoteAndSendMiraiCode(MiraiCodeable* msg, unsigned long long groupid = 0, JNIEnv* env = manager->getEnv()) {
-        return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
-    }
-
-    /// 回复(引用并发送miraicode)
-    /// @see MessageSource::quoteAndSendMiraiCode
-    MessageSource quoteAndSendMiraiCode(MiraiCode msg, unsigned long long groupid = 0, JNIEnv* env = manager->getEnv()) {
-        return quoteAndSendMiraiCode(msg.toMiraiCode(), groupid, env);
-    }
-
-    /**
-     * @brief 回复(引用并发送)
-     * @param c 引用后发送的内容, 为纯文本
-     * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
-     * @return MessageSource
-     * @example 回复(引用并发送)
-     * @code
-     *  e.messageSource.quoteAndSendMsg("HI");
-     * @endcode
-     */
-    MessageSource quoteAndSendMsg(const std::string& c, unsigned long long groupid = 0, JNIEnv* = manager->getEnv());
-
-    /**
-     * @brief 回复(引用并发送)
-     * @param c 引用后发送的内容, 为MiraiCode形式
-     * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
-     * @return MessageSource
-     */
-    MessageSource quoteAndSendMiraiCode(const std::string& c, unsigned long long groupid = 0, JNIEnv* = manager->getEnv());
-
-    /*!
-     * @brief 构建消息源
-     * @param ids
-     * @param internalids
-     * @param source
-     */
-    MessageSource(std::string  ids, std::string  internalids, const std::string& source);
-
-    /*!
-     * @brief 从json字符串反序列化到MessageSource对象
-     * @note json应该为以下格式
-     * @code
-     * {"ids":"", "internalids":""}
-     * @endcode
-     */
-    static MessageSource deserializeFromString(const std::string& source);
-
-    std::string serializeToString();
-
-    /*!
-     * @brief 撤回该信息
-     * @example 撤回信息
-     * @code
-     * procession->registerEvent([](GroupMessageEvent e) {
-        try {
-            e.messageSource.recall();
-            e.group.SendMsg("hi").recall();
-        }
-        catch (MiraiCPException &e) {
-            logger->Error("错误");
-        }
-        });
-     * @endcode
-    */
-    void recall(JNIEnv* = manager->getEnv());
-};
-
-/*!
- * @brief group, friend, member的父类
- */
-class Contact {
-protected:
-	int _type = 0;
-	unsigned long long _id;
-	unsigned long long _groupid;
-	std::string _nickOrNameCard;
-	std::string _avatarUrl;
-	unsigned long long _botid;
-public:
-    /*!
-     * @brief 无参初始化Contact类型
-     * @internal 一般在MiraiCp内部构造
-     */
-	Contact() {
-		this->_type = 0;
-		this->_id = 0;
-		this->_groupid = 0;
-		this->_nickOrNameCard = "";
-		this->_botid = 0;
-	}
-
-	/*!
-	 * @brief 构造contact类型
-	 * @param type 类型
-	 *  @see Contact::type()
-	 * @param id ID
-	 *  @see Contact::id()
-	 * @param gid 是member的时候是群id，否则为0
-	 *  @see Contact::groupid
-	 * @param name 群名片或昵称或群名
-	 *  @see Contact::name()
-	 * @param botid 对应的botid
-	 */
-	Contact(int type, unsigned long long id, unsigned long long gid, std::string name, unsigned long long botid) {
-		this->_type = type;
-		this->_id = id;
-		this->_groupid = gid;
-		this->_nickOrNameCard = name;
-		this->_botid = botid;
-	};
-
-	/// @brief 当前对象类型
-	///     - 1 Friend 好友
-	///     - 2 Group 群聊
-	///     - 3 Member 群成员
-	int type() { return this->_type; }
-
-	/// @brief id在全部情况存在
-	///     - 当当前type为1(Friend)时，为好友id
-	///     - 当当前type为2(Group)时，为群id
-	///     - 当当前type为3(Member)时，为群成员id
-	unsigned long long id() { return this->_id; }
-
-	/// @brief 当type为3的时候存在，否则为0，可以看作补充id
-	///     - 当当前type为1(Friend)时，为0
-	///     - 当当前type为2(Group)时，为0
-	///     - 当当前type为3(Member)时，为群号
-	/// @attention 当当前type为2(Group)时，为0，不为群号，id才是群号
-	unsigned long long groupid() { return this->_groupid; }
-
-	/// 群名称，群成员群名片，或好友昵称
-	std::string nickOrNameCard() { return this->_nickOrNameCard; };
-
-	/// 头像url地址
-	std::string avatarUrl() { return this->_avatarUrl; };
-
-	/// 所属bot
-	unsigned long long botid() { return this->_botid; };
-
-	/// 序列化到json对象
-	nlohmann::json serialization() {
-		nlohmann::json j;
-		j["type"] = type();
-		j["id"] = id();
-		j["groupid"] = groupid();
-		j["nickornamecard"] = nickOrNameCard();
-		j["botid"] = botid();
-		return j;
-	}
-
-	/// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
-	/// @see Contact::fromString()
-	std::string serializationToString() {
-		return this->serialization().dump();
-	}
-
-	/*!
-	 * @brief 从json节点反序列化
-	 * @param root json节点
-	 * @return Contact
-	 */
-	static Contact deserializationFromJson(nlohmann::json root);
-
-	/// 反序列化成bot，可以通过serializationToString序列化，利于保存
-	/// @see Contact::serializationToString()
-	/// @param source 序列化后的文本
-	/// @throw APIException
-	static Contact deserializationFromString(const std::string& source);
-
-    /**
-     * @brief 发送miraicode
-     * @param msg - MiraiCodeable类型指针 - 内容
-    */
-    MessageSource SendMiraiCode(MiraiCodeable* msg) {
-        return SendMiraiCode(msg->toMiraiCode());
-    }
-
-    /// 发送miraicode
-    MessageSource SendMiraiCode(MiraiCode msg) {
-        return SendMiraiCode(msg.toMiraiCode());
-    }
-
-    /// 发送miraicode
-    MessageSource SendMiraiCode(std::string msg, JNIEnv* = manager->getEnv());
-
-    /// 发送纯文本信息
-    MessageSource SendMsg(std::string msg, JNIEnv* = manager->getEnv());
-
-    /// 发送纯文本信息
-    MessageSource SendMsg(MiraiCode msg){
-        return SendMsg(msg.toString());
-    }
-
-     /// 刷新当前对象信息
-     virtual void refreshInfo(JNIEnv* = manager->getEnv()){};
 };
 
 // 群文件
@@ -1039,7 +1041,7 @@ public:
 			// 重新上传
 			throw RemoteAssetException("toMiraiCode error: internalid错误，重新上传");
 		}
-		return "[mirai:file:" + id + "," + std::to_string(internalid) + "," + name + "," + std::to_string(size) + "]";
+		return "[mirai:file:" + id + "," + std::to_string(internalid) + "," + Tools::escapeToMiraiCode(name) + "," + std::to_string(size) + "]";
 	}
 };
 
@@ -1513,15 +1515,15 @@ public:
 };
 
 /// At一个群成员
-inline std::string At(Member a) {
+inline MiraiCode At(Member a) {
 	/*返回at这个人的miraicode*/
-	return "[mirai:at:" + std::to_string(a.id()) + "]";
+	return MiraiCode("[mirai:at:" + std::to_string(a.id()) + "]");
 }
 
 /// At一个群成员
-inline std::string At(unsigned long long a) {
+inline MiraiCode At(unsigned long long a) {
 	/*返回at这个人的miraicode*/
-	return "[mirai:at:" + std::to_string(a) + "]";
+	return MiraiCode("[mirai:at:" + std::to_string(a) + "]");
 }
 
 /// 所以事件处理timeoutevent都是机器人事件，指都有机器人实例

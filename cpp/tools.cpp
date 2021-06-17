@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "utf8.h"
+#include "tools.h"
+
 
 using json = nlohmann::json;
 
@@ -283,7 +285,7 @@ std::vector<std::string> Image::GetImgIdsFromMiraiCode(std::string MiraiCode) {
 }
 
 std::string Image::toMiraiCode() {
-	return "[mirai:image:" + this->id + "]";
+	return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
 }
 
 MessageSource MessageSource::quoteAndSendMiraiCode(const std::string& content, unsigned long long groupid, JNIEnv* env){
@@ -312,7 +314,7 @@ MessageSource MessageSource::quoteAndSendMsg(const std::string& content, unsigne
     return MessageSource::deserializeFromString(re);
 }
 
-MessageSource Contact::SendMiraiCode(std::string msg, JNIEnv* env) {
+MessageSource Contact::sendMiraiCode(std::string msg, JNIEnv* env) {
     if(msg.empty())
         throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMiraiCode");
     std::string re = LowLevelAPI::send0(std::move(msg), this, true, env);
@@ -320,7 +322,7 @@ MessageSource Contact::SendMiraiCode(std::string msg, JNIEnv* env) {
     return MessageSource::deserializeFromString(re);
 }
 
-MessageSource Contact::SendMsg(std::string msg, JNIEnv* env) {
+MessageSource Contact::sendMsg(std::string msg, JNIEnv* env) {
     if(msg.empty()) {
         logger->Error("警告:发送空信息, 位置: Contact::SendMsg");
         throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg");
@@ -577,6 +579,37 @@ std::vector<unsigned long long> Tools::StringToVector(std::string temp) {
 	return result;
 }
 
+std::string Tools::escapeFromMiraiCode(const std::string &s) {
+    //[	\[
+    //]	\]
+    //:	\:
+    //,	\,
+    //\	\\ /
+    return Tools::replace(
+            Tools::replace(
+                    Tools::replace(
+                            Tools::replace(
+                                    Tools::replace(s,
+                                                   "\\\\", "\\"),
+                                    "\\,", ","),
+                            "\\:", ":"),
+                    "\\]", "]"), "\\[", "[");
+}
+
+std::string Tools::escapeToMiraiCode(const std::string &s) {
+    //[	\[
+    //]	\]
+    //:	\:
+    //,	\,
+    //\	\\ /
+    return Tools::replace(Tools::replace(Tools::replace(Tools::replace(Tools::replace(s,
+                                                                                      "\\", "\\\\"),
+                                                                       ",", "\\,"),
+                                                        ":", "\\:"),
+                                         "]", "\\]"), "[", "\\[");
+    return std::string();
+}
+
 Contact Contact::deserializationFromString(const std::string& source) {
 	json j;
 	try {
@@ -596,4 +629,17 @@ Contact Contact::deserializationFromJson(nlohmann::json j) {
                    j["groupid"],
                    j["nickornamecard"],
                    j["botid"]);
+}
+
+MessageSource Contact::sendVoice(const std::string& path, JNIEnv* env) {
+    json j;
+    json source;
+    source["path"] = path;
+    j["source"] = source.dump();
+    j["contactSource"] = this->serializationToString();
+    std::string re = config->koperation(config->Voice, j, env);
+    ErrorHandle(re);
+    if(re == "E1")
+        throw UploadException("文件格式不对(必须为.amr/.silk)或文件不存在");
+    return MessageSource::deserializeFromString(re);
 }
