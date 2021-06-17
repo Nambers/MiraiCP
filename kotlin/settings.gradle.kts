@@ -4,8 +4,8 @@ include("plugin")
 include("loader")
 pluginManagement {
     repositories {
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
         gradlePluginPortal()
     }
 }

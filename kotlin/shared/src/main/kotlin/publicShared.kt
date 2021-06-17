@@ -20,7 +20,9 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.*
+import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
+import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsVoice
 import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
@@ -122,7 +124,7 @@ object publicShared{
         return Send0(MiraiCode.deserializeMiraiCode(message), c)
     }
 
-    @OptIn(MiraiExperimentalApi::class, net.mamoe.mirai.LowLevelApi::class)
+    @OptIn(MiraiExperimentalApi::class, LowLevelApi::class)
     suspend fun RefreshInfo(c: Config.Contact): String{
         val AIbot = Bot.getInstance(c.botid)
         when(c.type){
@@ -148,7 +150,6 @@ object publicShared{
                         return a.nameCardOrNick
                     }
                 }
-
                 val group = AIbot.getGroup(c.groupid) ?: let {
                     logger.error("取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}")
                     return "EM"
@@ -303,6 +304,29 @@ object publicShared{
             return "E4"
         }
         return "Y"
+    }
+
+    suspend fun uploadVoice(path: String, oc: Config.Contact): String {
+        val AIbot = Bot.getInstance(oc.botid)
+        val file = File(path)
+        if (!file.exists() || !file.isFile || !(file.extension == "amr" || file.extension == "silk")) {
+            logger.error("上传的语言文件需为.amr / .silk文件, 位置: KUploadVoice")
+            return "E1"
+        }
+        val c = when (oc.type) {
+            1 -> AIbot.getFriend(oc.id) ?: let { logger.error("上传语音找不到好友, id:${oc.id}"); return "EF" }
+            2 -> AIbot.getGroup(oc.id) ?: let {logger.error("上传语音找不到群聊, gid:${oc.id}"); return "EG" }
+            3 -> (AIbot.getGroup(oc.groupid) ?: let {logger.error("上传语音找不到群聊, gid:${oc.groupid}"); return "EM" })[oc.id] ?: let {logger.error("上传语音找不到群成员, gid:${oc.id}"); return "EMM" }
+            else -> return "EA"
+        }
+        return file.toExternalResource().use {
+            try {
+                json.encodeToString(MessageSource.Serializer,  it.uploadAsVoice(c).sendTo(c).source)
+            }catch(e:OverFileSizeMaxException){
+                logger.error("上传语音失败, 文件应在1MB以内, 实际大小:${it.size}, 文件路径:${file.absolutePath}")
+                ""
+            }
+        }
     }
 
     private suspend fun fileInfo0(temp: RemoteFile):String{
