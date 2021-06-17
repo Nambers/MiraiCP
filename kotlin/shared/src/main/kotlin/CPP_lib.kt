@@ -28,6 +28,7 @@ import tech.eritquearcus.miraicp.shared.publicShared.remoteFileInfo
 import tech.eritquearcus.miraicp.shared.publicShared.sendFile
 import tech.eritquearcus.miraicp.shared.publicShared.sendWithQuote
 import tech.eritquearcus.miraicp.shared.publicShared.uploadImg
+import tech.eritquearcus.miraicp.shared.publicShared.uploadVoice
 
 class CPP_lib {
     var ver:String = ""
@@ -179,6 +180,13 @@ class CPP_lib {
             return groupSetting(gson.fromJson(contactSource, Config.Contact::class.java), source)
         }
 
+        fun KUploadVoice(contactSource: String, source: String):String{
+            val tmp = JSONObject(source)
+            return runBlocking {
+                uploadVoice(tmp.getString("path"), gson.fromJson(contactSource, Config.Contact::class.java))
+            }
+        }
+
         enum class operation_code{
             /// 撤回信息
             Recall,
@@ -206,9 +214,11 @@ class CPP_lib {
             KickM,
             /// 取群主
             QueryOwner,
-            x,
+            /// 上传语音
+            UploadVoice,
             /// 查询群成员列表
             QueryML,
+            /// 群设置
             GroupSetting,
             /// 构建转发信息
             Buildforward,
@@ -252,6 +262,8 @@ class CPP_lib {
                     operation_code.KickM.ordinal -> KKickM(root.getString("message"), root.getString("contactSOurce"))
                     /// 取群主
                     operation_code.QueryOwner.ordinal -> KQueryOwner(root.getString("contactSource"))
+                    /// 上传语音
+                    operation_code.UploadVoice.ordinal-> KUploadVoice(root.getString("contactSource"), root.getString("source"))
                     /// 查询群成员列表
                     operation_code.QueryML.ordinal -> KQueryML(root.getString("contactSource"))
                     /// 群设置
