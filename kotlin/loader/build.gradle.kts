@@ -1,17 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
-
 plugins {
     application
     id("com.github.johnrengelman.shadow")
-}
-
-tasks {
-    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
-        this.isZip64 = true
-        archiveBaseName.set("MiraiCP-loader")
-        archiveClassifier.set("")
-        archiveVersion.set(V.miraiCP)
-    }
 }
 
 application {
@@ -19,8 +8,17 @@ application {
     mainClassName = "tech.eritquearcus.miraicp.loader.KotlinMainKt"
 }
 
-tasks.withType(KotlinJvmCompile::class.java) {
-    kotlinOptions.jvmTarget = "1.8"
+tasks {
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+        kotlinOptions.jvmTarget = "1.8"
+    }
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        isZip64 = true
+        archiveBaseName.set("MiraiCP-loader")
+        archiveClassifier.set("")
+        archiveVersion.set(V.miraiCP)
+    }
 }
 
 dependencies {
