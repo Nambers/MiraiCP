@@ -77,9 +77,9 @@ class CPP_lib {
             }
         }
 
-        fun KRefreshInfo(source: String): String {
+        fun KRefreshInfo(source: String, quit: Boolean): String {
             return runBlocking {
-                RefreshInfo(gson.fromJson(source, Config.Contact::class.java))
+                RefreshInfo(gson.fromJson(source, Config.Contact::class.java), quit)
             }
         }
 
@@ -241,7 +241,7 @@ class CPP_lib {
                     /// 发送信息
                     operation_code.Send.ordinal -> KSend(root.getString("source"), root.getBoolean("miraiCode"))
                     /// 查询信息接口
-                    operation_code.RefreshInfo.ordinal -> KRefreshInfo(root.getString("source"))
+                    operation_code.RefreshInfo.ordinal -> KRefreshInfo(root.getString("source"), root.has("quit"))
                     /// 上传图片
                     operation_code.UploadImg.ordinal -> KUploadImg(root.getString("fileName"), root.getString("source"))
                     /// 取好友列表

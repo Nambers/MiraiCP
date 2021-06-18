@@ -972,14 +972,20 @@ public:
 			c.icon + "\",\"qqdocurl\":\"" + c.url + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
 	}
 
+	/// 返回miraicode
 	std::string toMiraiCode() {
 		return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
+	}
+
+	MessageSource sendTo(Contact c){
+	    return c.sendMiraiCode(toMiraiCode());
 	}
 };
 
 // 群文件
 
 /// @brief 下载信息
+/// @see RemoteFile
 struct dinfo {
 	/// 下载地址
 	std::string url;
@@ -989,6 +995,7 @@ struct dinfo {
 	std::string sha1;
 };
 /// @brief 文件信息
+/// @see RemoteFile
 struct finfo {
 	/// 文件大小
 	unsigned long long size;
@@ -1137,16 +1144,16 @@ public:
 	const int time = 0;
 
 	/// @brief 聊天记录里的每条信息
-	/// @param i - 发送者id
-	/// @param n - 发送者昵称
-	/// @param m - 发送的信息
-	/// @param t - 发送时间，以时间戳记
+	/// @param id - 发送者id
+	/// @param name - 发送者昵称
+	/// @param message - 发送的信息
+	/// @param time - 发送时间，以时间戳记
 	ForwardNode(const unsigned long long int id, const std::string& name, const std::string& message, const int time)
 		: id(id), name(name), message(message), time(time) {}
 
 	/// @brief 构造聊天记录里每条信息
 	/// @param c - 发送者的contact指针
-	/// @param m - 发送的信息
+	/// @param message - 发送的信息
 	/// @param t - 发送时间，时间戳格式
 	ForwardNode(Contact* c, std::string& message, int t) : id(c->id()), name(c->nickOrNameCard()), message(message),
 		time(t) {}
@@ -1268,6 +1275,14 @@ public:
 	 */
 	Friend(unsigned long long friendid, unsigned long long botid, JNIEnv* = manager->getEnv());
 	Friend(Contact c) : Contact(c) { refreshInfo(); };
+
+	/// 删除好友(delete是C++关键字
+	void deleteFriend(JNIEnv* env = manager->getEnv()){
+	    nlohmann::json j;
+	    j["contactSource"] = this->serializationToString();
+	    j["quit"] = true;
+        ErrorHandle(config->koperation(config->RefreshInfo, j, env));
+	}
 
 	void refreshInfo(JNIEnv* env = manager->getEnv()){
         std::string temp = LowLevelAPI::getInfoSource(this, env);
@@ -1426,6 +1441,7 @@ public:
 
 	Group(Contact c) : Contact(c) { refreshInfo(); };
 
+	/// 刷新群聊信息
 	void refreshInfo(JNIEnv* env = manager->getEnv()){
         std::string re = LowLevelAPI::getInfoSource(this, env);
         ErrorHandle(re);
@@ -1439,6 +1455,13 @@ public:
         this->setting.isAllowMemberInvite = j["isAllowMemberInvite"];
         this->setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
         this->setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
+	}
+
+	void quit(JNIEnv* env = manager->getEnv()){
+	    nlohmann::json j;
+	    j["contactSource"] = this->serializationToString();
+	    j["quit"] = true;
+        ErrorHandle(config->koperation(config->RefreshInfo, j, env));
 	}
 
 	/*!
@@ -1474,7 +1497,8 @@ public:
 	*/
 	RemoteFile getFile(const std::string& path, const std::string& id = "", JNIEnv* = manager->getEnv());
 
-	struct short_info {
+    /// 群文件的简短描述
+	struct file_short_info {
 		// 路径带文件名
 		std::string path = "";
 		// 唯一id
@@ -1486,7 +1510,7 @@ public:
 	 * @param path - 远程路径
 	 * @return 返回值为一个vector容器, 每一项为short_info
 	*/
-	std::vector<short_info> getFileList(const std::string& path, JNIEnv* = manager->getEnv());
+	std::vector<file_short_info> getFileList(const std::string& path, JNIEnv* = manager->getEnv());
 
 	/// 取文件列表以字符串形式返回
 	///@example 取string格式群文件列表
