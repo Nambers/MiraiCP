@@ -2,7 +2,7 @@ plugins{
     kotlin("plugin.serialization")
 }
 dependencies{
-    implementation("net.mamoe:mirai-core-api:2.6.5") // mirai-core 的 API
+    implementation("net.mamoe:mirai-core-api:2.6.6") // mirai-core 的 API
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
 }
