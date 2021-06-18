@@ -1,4 +1,4 @@
-// dllmain.cpp:���� DLL Ӧ�ó������ڵ㡣
+// dllmain.cpp:定义 DLL 应用程序的入口点。
 #include "pch.h"
 BOOL APIENTRY DllMain(HMODULE hModule,
                       DWORD  ul_reason_for_call,
@@ -15,4 +15,4 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     }
     return TRUE;
 }
-//��ʹ��Ԥ�����ͷʱ,��Ҫʹ�ô�Դ�ļ�,������ܳɹ���
+//当使用预编译的头时,需要使用此源文件,编译才能成功。
