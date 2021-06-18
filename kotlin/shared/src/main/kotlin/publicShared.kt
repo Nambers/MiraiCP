@@ -125,7 +125,7 @@ object publicShared{
     }
 
     @OptIn(MiraiExperimentalApi::class, LowLevelApi::class)
-    suspend fun RefreshInfo(c: Config.Contact): String{
+    suspend fun RefreshInfo(c: Config.Contact, quit: Boolean): String{
         val AIbot = Bot.getInstance(c.botid)
         when(c.type){
             1->{
@@ -133,12 +133,20 @@ object publicShared{
                     logger.error("找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}")
                     return "EF"
                 }
+                if(quit) {
+                    f.delete()
+                    return "done"
+                }
                 return gson.toJson(Config.ContactInfo(f.nick, f.avatarUrl))
             }
             2->{
                 val g = AIbot.getGroup(c.id)?:let{
                     logger.error("取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}")
                     return "EG"
+                }
+                if(quit){
+                    g.quit()
+                    return "done"
                 }
                 return gson.toJson(Config.ContactInfo(g.name, g.avatarUrl,
                     Config.GroupSetting(g.name, "", g.settings.isMuteAll, g.settings.isAllowMemberInvite, g.settings.isAutoApproveEnabled, g.settings.isAnonymousChatEnabled)

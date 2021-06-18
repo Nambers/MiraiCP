@@ -416,14 +416,10 @@ void Group::updateSetting(JNIEnv* env){
 }
 
 RemoteFile Group::sendFile(const std::string& path, const std::string& filename, JNIEnv* env) {
-	std::filesystem::path temp = std::filesystem::path(filename);
-	if (!exists(temp)) {
-		throw UploadException("上传远程(群)文件找不到文件, 位置:" + filename);
-	}
 	json tmp;
 	json source;
 	source["path"] = path;
-	source["filename"] = (const char* const)absolute(temp).u8string().c_str();
+	source["filename"] = filename;
 	tmp["source"] = source.dump();
 	tmp["contactSource"] = this->serializationToString();
 	std::string callback = config->koperation(config->SendFile, tmp, env);
@@ -468,12 +464,12 @@ std::string Group::getFileListString(const std::string& path, JNIEnv* env) {
 	return re;
 }
 
-std::vector<Group::short_info> Group::getFileList(const std::string& path, JNIEnv* env) {
-	std::vector<short_info> re = std::vector<short_info>();
+std::vector<Group::file_short_info> Group::getFileList(const std::string& path, JNIEnv* env) {
+	std::vector<file_short_info> re = std::vector<file_short_info>();
 	std::string tmp = getFileListString(path, env);
 	json root = json::parse(tmp);
 	for (auto& i : root) {
-		short_info t;
+		file_short_info t;
 		t.path = i[0];
 		t.id = i[1];
 		re.push_back(t);
