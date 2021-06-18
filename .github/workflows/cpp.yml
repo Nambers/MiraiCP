@@ -1,0 +1,22 @@
+name: C/C++ CI
+
+on: 
+  push:
+    branches: [ master ]
+    paths:
+      - "cpp/**"
+  pull_request:
+    branches: [ master ]
+    paths:
+      - "cpp/**"
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - name: checkout  
+      uses: actions/checkout@v2
+    - name: configure
+      run: mkdir cpp/build && cd cpp/build && cmake ..
+    - name: build
+      run: cd ./cpp && cmake --build build --config Debug
