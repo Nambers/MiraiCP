@@ -671,6 +671,49 @@ public:
     void recall(JNIEnv* = manager->getEnv());
 };
 
+/// 图像类声明
+class Image : public MiraiCodeable {
+public:
+    //图片id，样式:` {xxx}.xx `
+    std::string id = "";
+
+    /*!
+    * @brief 从图片id构造，适用于服务器上已经有的图片，即接收到的
+    * @example 图片miraiCode格式例子
+     * @code [mirai:image:{图片id}.jpg] @endcode
+    * @note 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
+    */
+    Image(std::string);
+
+    /*
+    * 获取图片下载url
+    */
+    std::string queryURL(JNIEnv* = manager->getEnv()) const;
+
+    /*!
+     * @brief 取一个miraicode字符串中全部的图片id，详情见Image
+     * @see Image
+     *  @param  miraicode的字符串
+     *  @return vector容器，每一项为一个图片id
+     *  @example 取一个miraicode字符串中全部的图片id
+     *		@code
+     *          vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
+     *	        for (int i = 0; i < temp.size(); i++) {
+     *	    	    logger->Info(temp[i]);
+     *	    	    logger->Info("图片下载地址:" + Image(param.env, temp[i]).queryURL());
+     *	         }
+     *		@endcode
+     */
+    static std::vector<std::string> GetImgIdsFromMiraiCode(std::string);
+
+    static std::vector<std::string> GetImgIdsFromMiraiCode(MiraiCode msg){
+        return GetImgIdsFromMiraiCode(msg.toMiraiCode());
+    }
+
+    /// 取图片Mirai码
+    std::string toMiraiCode();
+};
+
 /*!
  * @brief group, friend, member的父类
  */
@@ -800,6 +843,16 @@ public:
     /// 发送语音
     MessageSource sendVoice(const std::string& path, JNIEnv* = manager->getEnv());
 
+    /*!
+    * @brief上传本地图片，务必要用绝对路径
+    * 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
+    * @attention 最大支持图片大小为30MB
+    * @throws
+    * -可能抛出UploadException异常代表路径无效或大小大于30MB
+    * -可能抛出MemberException找不到群或群成员
+    */
+    Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
+
     /// 刷新当前对象信息
     virtual void refreshInfo(JNIEnv* = manager->getEnv()){};
 };
@@ -922,49 +975,6 @@ public:
 	std::string toMiraiCode() {
 		return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
 	}
-};
-
-/// 图像类声明
-class Image : public MiraiCodeable {
-public:
-	//图片id，样式:` {xxx}.xx `
-	std::string id = "";
-
-	/*!
-	* @brief 从图片id构造，适用于服务器上已经有的图片，即接收到的
-	* @example 图片miraiCode格式例子
-	 * @code [mirai:image:{图片id}.jpg] @endcode
-	* @note 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
-	*/
-	Image(std::string);
-
-	/*
-	* 获取图片下载url
-	*/
-	std::string queryURL(JNIEnv* = manager->getEnv()) const;
-
-	/*!
-	 * @brief 取一个miraicode字符串中全部的图片id，详情见Image
-	 * @see Image
-	 *  @param  miraicode的字符串
-	 *  @return vector容器，每一项为一个图片id
-	 *  @example 取一个miraicode字符串中全部的图片id
-	 *		@code
-	 *          vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
-	 *	        for (int i = 0; i < temp.size(); i++) {
-	 *	    	    logger->Info(temp[i]);
-	 *	    	    logger->Info("图片下载地址:" + Image(param.env, temp[i]).queryURL());
-	 *	         }
-	 *		@endcode
-	 */
-	static std::vector<std::string> GetImgIdsFromMiraiCode(std::string);
-
-	static std::vector<std::string> GetImgIdsFromMiraiCode(MiraiCode msg){
-	    return GetImgIdsFromMiraiCode(msg.toMiraiCode());
-	}
-
-	/// 取图片Mirai码
-	std::string toMiraiCode();
 };
 
 // 群文件
@@ -1268,16 +1278,6 @@ public:
         this->_nickOrNameCard = tmp.nickornamecard;
         this->_avatarUrl = tmp.avatarUrl;
 	}
-
-	/**
-	 * @brief 上传本地图片，务必要用绝对路径.
-	 * 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到好友.
-	 * 最大支持图片大小为30MB.
-	 * @exception invalid_argument代表路径无效
-	 * @param filename 文件路径
-	 * @return 图片实例
-	*/
-	Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
 };
 
 /// 群成员类声明
@@ -1319,16 +1319,6 @@ public:
             throw MemberException(2);
         }
 	}
-
-    /*!
-* @brief上传本地图片，务必要用绝对路径
-* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
-* @attention 最大支持图片大小为30MB
-* @throws
- * -可能抛出UploadException异常代表路径无效或大小大于30MB
- * -可能抛出MemberException找不到群或群成员
-*/
-    Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
 
 	/// 获取权限，会在构造时调用，请使用permission缓存变量
 	/// @see Member::permission
@@ -1450,14 +1440,6 @@ public:
         this->setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
         this->setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
 	}
-
-	/*!
-	* @brief 上传本地图片，务必要用绝对路径
-	* 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
-	* @note 最大支持图片大小为30MB
-	* @throw 可能抛出invalid_argument异常代表路径无效
-	*/
-	Image uploadImg(const std::string& filename, JNIEnv* = manager->getEnv());
 
 	/*!
 	@brief 上传并发送远程(群)文件

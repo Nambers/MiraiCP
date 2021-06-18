@@ -638,8 +638,6 @@ object publicShared{
         cpp.PluginDisable()
     }
 
-    @MiraiExperimentalApi
-    @MiraiInternalApi
     fun onEnable(globalEventChannel: EventChannel<Event>){
         cpp = CPP_lib()
         if(cpp.ver != now_tag){
@@ -663,21 +661,16 @@ object publicShared{
         }
         globalEventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
-            try {
-                cpp.Event(
-                    gson.toJson(
-                        Config.GroupMessage(
-                            Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
-                            Config.Contact(3, this.sender.id, this.group.id, this.senderName, this.bot.id),
-                            this.message.serializeToMiraiCode(),
-                            json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
-                        )
+            cpp.Event(
+                gson.toJson(
+                    Config.GroupMessage(
+                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        Config.Contact(3, this.sender.id, this.group.id, this.senderName, this.bot.id),
+                        this.message.serializeToMiraiCode(),
+                        json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
                     )
                 )
-            } catch (e: Exception) {
-                logger.error(e.message)
-                e.printStackTrace()
-            }
+            )
         }
         globalEventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
