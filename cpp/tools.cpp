@@ -332,25 +332,20 @@ MessageSource Contact::sendMsg(std::string msg, JNIEnv* env) {
     return MessageSource::deserializeFromString(re);
 }
 
+Image Contact::uploadImg(const std::string& path, JNIEnv* env) {
+    std::string re = LowLevelAPI::uploadImg0(path, this, env);
+    ErrorHandle(re);
+    if (re == "E2")
+        throw UploadException("上传图片大小超过30MB,路径:" + path);
+    return Image(re);
+}
+
 /*好友类实现*/
 Friend::Friend(unsigned long long id, unsigned long long botid, JNIEnv* env) : Contact() {
 	this->_type = 1;
 	this->_id = id;
 	this->_botid = botid;
     refreshInfo(env);
-}
-
-Image Friend::uploadImg(const std::string& filename, JNIEnv* env) {
-	std::filesystem::path tmp = std::filesystem::path(filename);
-	if (!exists(tmp)) {
-		logger->Error("文件不存在,位置:C-Friend::uploadImg(),文件名:" + filename);
-		throw UploadException("上传图片不存在,路径:" + filename);
-	}
-	std::string re = LowLevelAPI::uploadImg0((const char* const)absolute(tmp).u8string().c_str(), this, env);
-	ErrorHandle(re);
-	if (re == "E2")
-		throw UploadException("上传图片大小超过30MB, 路径:" + filename);
-	return Image(re);
 }
 
 /*成员类实现*/
@@ -395,21 +390,6 @@ void Member::Kick(const std::string& reason, JNIEnv* env) {
 	}
 }
 
-Image Member::uploadImg(const std::string& filename, JNIEnv* env) {
-	std::filesystem::path tmp = std::filesystem::path(filename);
-	if (!exists(tmp)) {
-		throw UploadException("上传图片不存在,路径:" + filename);
-	}
-	std::string re = LowLevelAPI::uploadImg0((const char* const)absolute(tmp).u8string().c_str(), this, env);
-	if (re == "E1")
-		throw MemberException(1);
-	if (re == "E2")
-		throw MemberException(2);
-	if (re == "E3")
-		throw UploadException("上传图片大小超过30MB,路径:" + filename);
-	return Image(re);
-}
-
 /*群聊类实现*/
 Group::Group(unsigned long long i, unsigned long long bi, JNIEnv* env) : Contact() {
 	this->_type = 2;
@@ -433,19 +413,6 @@ void Group::updateSetting(JNIEnv* env){
     if(re == "E1")
         throw BotException();
     refreshInfo(env);
-}
-
-Image Group::uploadImg(const std::string& filename, JNIEnv* env) {
-	std::filesystem::path tmp = std::filesystem::path(filename);
-	if (!exists(tmp)) {
-		logger->Error("文件不存在,位置:C++部分 Group::uploadImg2(),文件名:" + filename);
-		throw UploadException("上传图片不存在,路径:" + filename);
-	}
-	std::string re = LowLevelAPI::uploadImg0((const char* const)absolute(tmp).u8string().c_str(), this, env);
-	ErrorHandle(re);
-	if (re == "E2")
-		throw UploadException("上传图片大小超过30MB,路径:" + filename);
-	return Image(re);
 }
 
 RemoteFile Group::sendFile(const std::string& path, const std::string& filename, JNIEnv* env) {
