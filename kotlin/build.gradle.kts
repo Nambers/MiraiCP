@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version V.kotlinVersion apply false
     kotlin("plugin.serialization") version V.kotlinVersion apply false
-    id("com.github.johnrengelman.shadow") version "6.1.0" apply false
+    id("com.github.johnrengelman.shadow") version "7.0.0" apply false
     id("net.mamoe.mirai-console") version V.miraiVersion apply false
 
 }
