@@ -9,10 +9,13 @@ import org.fusesource.jansi.AnsiConsole
 import org.json.JSONObject
 import tech.eritquearcus.miraicp.shared.publicShared
 import java.io.File
+import java.util.*
 
 object KotlinMain {
     @OptIn(MiraiInternalApi::class)
-    suspend fun main(id: Long, pass: String, path: String,protocol:String, check:Boolean) {
+    suspend fun main(j:JSONObject) {
+        val id = j.getLong("id")
+        val path = j.getString("cppPath")
         setDefaultLoggerCreator { identity ->
             AnsiConsole.systemInstall()
             PlatformLogger(identity, AnsiConsole.out()::println, true)
@@ -26,26 +29,37 @@ object KotlinMain {
         } else {
             dll_name = File(dll_name).absolutePath
         }
-        val p = when(protocol){
-            "pad" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
-            "watch" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
-            "phone" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
+        val p = when(if (j.has("protocol")) j.getString("protocol").uppercase() else "PHONE"){
+            "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
+            "WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
+            "PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
             else -> {
-                println("登录协议无效, 应为pad/watch/phone其中一个,默认使用phone进行登录")
+                println("登录协议无效, 应为PAD/WATCH/PHONE其中一个,使用默认的PHONE进行登录")
                 BotConfiguration.MiraiProtocol.ANDROID_PHONE
             }
         }
-        println("以${p.name}协议登录bot:$id")
+        val h = when(if (j.has("heartBeat")) j.getString("heartBeat").uppercase() else "STAT_HB"){
+            "STAT_HB"-> BotConfiguration.HeartbeatStrategy.STAT_HB
+            "REGISTER" -> BotConfiguration.HeartbeatStrategy.REGISTER
+            "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
+            else->{
+                println("心跳策略无效")
+                BotConfiguration.HeartbeatStrategy.STAT_HB
+            }
+        }
+        println("登录bot:$id")
+        println("协议:${p.name}")
+        println("心跳策略:${h.name}")
         println("c++ dll地址:${path}")
-        val bot = BotFactory.newBot(id, pass) {
+        val bot = BotFactory.newBot(id, j.getString("passwords")) {
             fileBasedDeviceInfo()
             this.protocol = p
-
+            this.heartbeatStrategy = h
         }.alsoLogin()
         val logger = bot.logger
         val globalEventChannel = bot.eventChannel
         publicShared.init(logger, dll_name)
-        if(check)
+        if(j.has("checkUpdate")) j.getBoolean("checkUpdate")
             publicShared.CheckUpdate()
         publicShared.onEnable(globalEventChannel)
     }
@@ -94,17 +108,6 @@ fun main(args: Array<String>){
         }
     }
     runBlocking {
-        try {
-            KotlinMain.main(
-                j.getLong("id"),
-                j.getString("passwords"),
-                j.getString("cppPath"),
-                if (j.has("protocol")) j.getString("protocol") else "phone",
-                if (j.has("checkUpdate")) j.getBoolean("checkUpdate") else false
-            )
-        } catch (e: NumberFormatException) {
-            println("${args[0]}不是一个有效的qq号数字")
-            return@runBlocking
-        }
+        KotlinMain.main(j)
     }
 }
