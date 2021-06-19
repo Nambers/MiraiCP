@@ -2,6 +2,7 @@ package tech.eritquearcus.miraicp
 
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
@@ -18,8 +19,6 @@ object PluginMain : KotlinPlugin(
     @MiraiExperimentalApi
     @MiraiInternalApi
     override fun onEnable() {
-        val now_tag = "v2.6.3"
-        logger.info("当前MiraiCP框架版本:$now_tag")
         logger.info("启动成功")
         logger.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
         var dll_name = "cpp.dll"
@@ -38,8 +37,8 @@ object PluginMain : KotlinPlugin(
         if (!File(dll_name).exists()) {
             logger.error("c++文件$dll_name 不存在")
         }
-        publicShared.init(logger, now_tag, dll_name)
-        publicShared.onEnable(globalEventChannel())
+        publicShared.init(logger, dll_name)
+        publicShared.onEnable(GlobalEventChannel.parentScope(this))
     }
 
     override fun onDisable() {
