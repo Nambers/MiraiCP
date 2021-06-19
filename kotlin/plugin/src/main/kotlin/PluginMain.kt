@@ -13,8 +13,10 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.6.3"
-    )
+        version = "2.6.5"
+    ){
+        author("Eritque arcus")
+    }
 ) {
     @MiraiExperimentalApi
     @MiraiInternalApi
