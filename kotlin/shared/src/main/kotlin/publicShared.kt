@@ -38,7 +38,7 @@ object publicShared{
     private lateinit var cpp: CPP_lib
     private var gson: Gson = Gson()
     private lateinit var logger: MiraiLogger
-    private const val now_tag = "v2.6.4"
+    private const val now_tag = "v2.6.5"
     lateinit var dll_name: String
 
     fun init(l: MiraiLogger, path: String){
