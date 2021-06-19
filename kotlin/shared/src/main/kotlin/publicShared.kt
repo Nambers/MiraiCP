@@ -27,7 +27,6 @@ import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
-import kotlin.time.Duration
 
 object publicShared{
     private val json = Json{
@@ -39,12 +38,11 @@ object publicShared{
     private lateinit var cpp: CPP_lib
     private var gson: Gson = Gson()
     private lateinit var logger: MiraiLogger
-    private lateinit var now_tag: String
+    private const val now_tag = "v2.6.4"
     lateinit var dll_name: String
 
-    fun init(l: MiraiLogger, tag:String, path: String){
+    fun init(l: MiraiLogger, path: String){
         logger = l
-        now_tag = tag
         dll_name = path
     }
 
@@ -646,13 +644,14 @@ object publicShared{
         cpp.PluginDisable()
     }
 
-    fun onEnable(globalEventChannel: EventChannel<Event>){
+    fun onEnable(eventChannel: EventChannel<Event>){
+        logger.info("当前MiraiCP版本: $now_tag")
         cpp = CPP_lib()
         if(cpp.ver != now_tag){
             logger.error("警告:当前MiraiCP框架版本($now_tag)和加载的C++ SDK(${cpp.ver})不一致")
         }
         //配置文件目录 "${dataFolder.absolutePath}/"
-        globalEventChannel.subscribeAlways<FriendMessageEvent> {
+        eventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
             cpp.Event(
                 gson.toJson(
@@ -667,7 +666,7 @@ object publicShared{
                 )
             )
         }
-        globalEventChannel.subscribeAlways<GroupMessageEvent> {
+        eventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
             cpp.Event(
                 gson.toJson(
@@ -680,7 +679,7 @@ object publicShared{
                 )
             )
         }
-        globalEventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
+        eventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
             cpp.Event(
                 gson.toJson(
@@ -694,7 +693,7 @@ object publicShared{
             )
             friend_cache.remove(this.member)
         }
-        globalEventChannel.subscribeAlways<MemberLeaveEvent.Quit> {
+        eventChannel.subscribeAlways<MemberLeaveEvent.Quit> {
             friend_cache.add(this.member)
             cpp.Event(
                 gson.toJson(
@@ -708,7 +707,7 @@ object publicShared{
             )
             friend_cache.remove(this.member)
         }
-        globalEventChannel.subscribeAlways<MemberJoinEvent.Retrieve> {
+        eventChannel.subscribeAlways<MemberJoinEvent.Retrieve> {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
@@ -720,7 +719,7 @@ object publicShared{
                 )
             )
         }
-        globalEventChannel.subscribeAlways<MemberJoinEvent.Active> {
+        eventChannel.subscribeAlways<MemberJoinEvent.Active> {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
@@ -732,7 +731,7 @@ object publicShared{
                 )
             )
         }
-        globalEventChannel.subscribeAlways<MemberJoinEvent.Invite> {
+        eventChannel.subscribeAlways<MemberJoinEvent.Invite> {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
@@ -744,7 +743,7 @@ object publicShared{
                 )
             )
         }
-        globalEventChannel.subscribeAlways<NewFriendRequestEvent> {
+        eventChannel.subscribeAlways<NewFriendRequestEvent> {
             //自动同意好友申请
             cpp.Event(
                 gson.toJson(
@@ -762,7 +761,7 @@ object publicShared{
             )
 
         }
-        globalEventChannel.subscribeAlways<MessageRecallEvent.FriendRecall> {
+        eventChannel.subscribeAlways<MessageRecallEvent.FriendRecall> {
             cpp.Event(
                 gson.toJson(
                     Config.RecallEvent(
@@ -779,7 +778,7 @@ object publicShared{
             )
 
         }
-        globalEventChannel.subscribeAlways<MessageRecallEvent.GroupRecall> {
+        eventChannel.subscribeAlways<MessageRecallEvent.GroupRecall> {
             cpp.Event(
                 gson.toJson(
                     Config.RecallEvent(
@@ -796,7 +795,7 @@ object publicShared{
             )
 
         }
-        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Invite>{
+        eventChannel.subscribeAlways<BotJoinGroupEvent.Invite>{
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
@@ -807,7 +806,7 @@ object publicShared{
                 )
             )
         }
-        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Active>{
+        eventChannel.subscribeAlways<BotJoinGroupEvent.Active>{
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
@@ -818,7 +817,7 @@ object publicShared{
                 )
             )
         }
-        globalEventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve>{
+        eventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve>{
             cpp.Event(
                 gson.toJson(
                     Config.BotJoinGroup(
@@ -829,7 +828,7 @@ object publicShared{
                 )
             )
         }
-        globalEventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
+        eventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
             cpp.Event(
                 gson.toJson(
@@ -846,7 +845,7 @@ object publicShared{
                 )
             )
         }
-        globalEventChannel.subscribeAlways<GroupTempMessageEvent> {
+        eventChannel.subscribeAlways<GroupTempMessageEvent> {
             //群临时会话
             cpp.Event(
                 gson.toJson(
