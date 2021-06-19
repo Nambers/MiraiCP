@@ -1,9 +1,9 @@
 build
 .gradle
 device.json
-testConfig.kt
 /bots
 /config
 /cache
 /data
 /plugins
+config.json
