@@ -3,13 +3,15 @@ package tech.eritquearcus.miraicp.loader
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.alsoLogin
-import net.mamoe.mirai.utils.*
+import net.mamoe.mirai.utils.BotConfiguration
+import net.mamoe.mirai.utils.MiraiExperimentalApi
+import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
+import net.mamoe.mirai.utils.PlatformLogger
 import org.fusesource.jansi.AnsiConsole
 import org.json.JSONObject
 import tech.eritquearcus.miraicp.shared.publicShared
 import java.io.File
-import java.util.*
 
 object KotlinMain {
     @OptIn(MiraiInternalApi::class)
@@ -59,8 +61,6 @@ object KotlinMain {
         val logger = bot.logger
         val globalEventChannel = bot.eventChannel
         publicShared.init(logger, dll_name)
-        if(j.has("checkUpdate")) j.getBoolean("checkUpdate")
-            publicShared.CheckUpdate()
         publicShared.onEnable(globalEventChannel)
     }
 }

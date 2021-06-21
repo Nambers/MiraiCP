@@ -3,7 +3,6 @@ package tech.eritquearcus.miraicp.shared
 import com.google.gson.Gson
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
-import net.mamoe.mirai.IMirai
 import net.mamoe.mirai.LowLevelApi
 import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.contact.Contact
@@ -26,7 +25,6 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsVoice
 import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
-import java.net.URL
 
 object publicShared{
     private val json = Json{
@@ -44,11 +42,6 @@ object publicShared{
     fun init(l: MiraiLogger, path: String){
         logger = l
         dll_name = path
-    }
-
-    fun CheckUpdate(){
-        val tag = JSONObject(URL("https://api.github.com/repos/Nambers/MiraiCP/releases/latest").readText()).getString("tag_name")
-        if(tag != now_tag)println("有最新可用版:$tag，前往:https://github.com/Nambers/MiraiCP/releases/latest下载")
     }
 
     //日志部分实现
@@ -271,7 +264,7 @@ object publicShared{
             Image(id).queryUrl()
         } catch (e: IllegalArgumentException) {
             "E1"
-        };
+        }
     }
 
     //recall
