@@ -7,7 +7,7 @@ tasks{
         named<net.mamoe.mirai.console.gradle.BuildMiraiPluginTask>("buildPlugin") {
             archiveBaseName.set("MiraiCP-plugin")
             archiveClassifier.set("")
-            archiveVersion.set(V.miraiCP)
+            archiveVersion.set(V.miraiCPVersion)
         }
     }
 }
