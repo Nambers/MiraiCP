@@ -3,7 +3,7 @@ plugins{
 }
 dependencies{
     implementation("net.mamoe:mirai-core-api:2.6.7") // mirai-core 的 API
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0-native-mt")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
 }
 //val generateJniHeaders: Task by tasks.creating {
