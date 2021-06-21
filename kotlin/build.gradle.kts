@@ -26,5 +26,5 @@ subprojects{
 }
 allprojects{
     group = "tech.eritquearcus"
-    version = V.miraiCP
+    version = V.miraiCPVersion
 }
