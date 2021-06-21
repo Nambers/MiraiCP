@@ -112,7 +112,16 @@ mirai需要java环境 **>=11**
 3. 在`procession.cpp`里自定义你自己的代码
 4. 生成.dll文件
 5. 留意`cpp/x64/Release/`(如果是vs x64 release生成)，`cpp/x64/Debug`(vs x64 debug生成)，`cpp/out`(vs cmake 生成)，`cpp/camke-debug-build`(clion cmake debug生成)这个路径下的`.dll`文件，留着下面有用
-6. 更改run.bat文件里的启动参数，以\[qq号，密码和mirai-demo.dll路径(也就是上一步的.dll，可以复制出来，run.bat里可填相对路径或绝对路径),是否检测更新(可选，如果检查输入1否则不填)\]格式填写
+6. 更改config.json里的参数，格式如下:
+	```
+	{
+	"id": qqid账号,
+	"passwords": "passwords密码",
+	"cppPath": "dll路径",
+	"protocol":  "pad 协议选择: pad/phone/watch (可选，默认为phone)",
+	"heatBeat": "STAT_HB 心跳策略: STAT_HB/REGISTER/NONE (可选，默认为state_hb)"
+	}
+	```
 7. 运行run.bat
 
 </details>
