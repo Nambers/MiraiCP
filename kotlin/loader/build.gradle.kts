@@ -17,7 +17,7 @@ tasks {
         isZip64 = true
         archiveBaseName.set("MiraiCP-loader")
         archiveClassifier.set("")
-        archiveVersion.set(V.miraiCP)
+        archiveVersion.set(V.miraiCPVersion)
     }
 }
 
