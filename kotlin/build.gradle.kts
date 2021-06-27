@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version V.kotlinVersion apply false
     kotlin("plugin.serialization") version V.kotlinVersion apply false
-    id("com.github.johnrengelman.shadow") version "6.1.0" apply false
+    id("com.github.johnrengelman.shadow") version "7.0.0" apply false
     id("net.mamoe.mirai-console") version V.miraiVersion apply false
 
 }
@@ -17,14 +17,12 @@ allprojects{
         google()
     }
 }
-subprojects{
+subprojects {
     val implementation by configurations
-    dependencies{
+    dependencies {
         implementation("com.google.code.gson:gson:2.8.7")
         implementation("org.json:json:20210307")
     }
 }
-allprojects{
-    group = "tech.eritquearcus"
-    version = V.miraiCPVersion
-}
+group = "tech.eritquearcus"
+version = libs.versions.miraiCPVersion.get()

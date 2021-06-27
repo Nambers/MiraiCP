@@ -637,6 +637,7 @@ object publicShared{
         cpp.PluginDisable()
     }
 
+    @OptIn(MiraiExperimentalApi::class)
     fun onEnable(eventChannel: EventChannel<Event>){
         logger.info("当前MiraiCP版本: $now_tag")
         cpp = CPP_lib()
