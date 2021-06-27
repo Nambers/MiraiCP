@@ -5,7 +5,7 @@ plugins {
 
 application {
     mainClass.set("tech.eritquearcus.miraicp.loader.KotlinMainKt")
-    mainClassName = "tech.eritquearcus.miraicp.loader.KotlinMainKt"
+    // mainClassName = "tech.eritquearcus.miraicp.loader.KotlinMainKt"
 }
 
 tasks {
@@ -17,12 +17,12 @@ tasks {
         isZip64 = true
         archiveBaseName.set("MiraiCP-loader")
         archiveClassifier.set("")
-        archiveVersion.set(V.miraiCPVersion)
+        archiveVersion.set(libs.versions.miraiCPVersion)
     }
 }
 
 dependencies {
     implementation(project(":shared"))
-    implementation("net.mamoe:mirai-core:${V.miraiVersion}")
-    implementation("org.fusesource.jansi:jansi:2.3.3")
+    implementation(libs.mirai.core.self)
+    implementation(libs.jansi)
 }
