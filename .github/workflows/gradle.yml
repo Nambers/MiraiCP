@@ -4,14 +4,16 @@
 name: Java CI with Gradle
 
 on:
-  push:
+ push:
     branches: [ master ]
     paths:
       - "kotlin/**"
-  pull_request:
+ pull_request:
     branches: [ master ]
     paths:
       - "kotlin/**"
+ workflow_dispatch:
+  
 
 jobs:
   build:
@@ -21,12 +23,21 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
-    - name: Set up JDK 11
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+       path: |
+         ./kotlin/.gradle/caches
+         ./kotlin/.gradle/wrapper
+       key: ${{ runner.os }}-build-${{ env.cache-name }}
+    - name: Set up JDK 15
       uses: actions/setup-java@v2
       with:
-        java-version: '11'
+        java-version: '15'
         distribution: 'adopt'
-    - name: Grant execute permission for gradlew
-      run: chmod +x kotlin/gradlew
-    - name: Build with Gradle
-      run: ./kotlin/gradlew build --warning-mode all
+    - name: chmod -R 777 *
+      run: chmod -R 777 *
+    - name: Build loader
+      run:  cd ./kotlin/ && ./gradlew loader:shadowJar --warning-mode all --info --stacktrace
+    - name: Build plugin
+      run:  cd ./kotlin/ && ./gradlew plugin:buildPlugin --warning-mode all --info --stacktrace

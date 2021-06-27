@@ -236,7 +236,7 @@ void ForwardMessage::sendTo(Contact* c, JNIEnv* env){
 	temp["botid"] = c->botid();
 	std::string re = config->koperation(config->Buildforward, temp, env);
     ErrorHandle(re);
-	//TODO:由于https://github.com/mamoe/mirai/issues/1289 ,在mirai版本v2.7-M1前都不可用
+	//TODO:https://github.com/mamoe/mirai/issues/1371
 	//return MessageSource::deserializeFromString(re);
 }
 
