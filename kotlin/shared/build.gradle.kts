@@ -2,9 +2,9 @@ plugins{
     kotlin("plugin.serialization")
 }
 dependencies{
-    implementation("net.mamoe:mirai-core-api:${V.miraiVersion}") // mirai-core 的 API
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${V.kotlincoroutinesVersion}")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
+    implementation(libs.mirai.core.api) // mirai-core 的 API
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
 }
 //val generateJniHeaders: Task by tasks.creating {
 //    group = "build"

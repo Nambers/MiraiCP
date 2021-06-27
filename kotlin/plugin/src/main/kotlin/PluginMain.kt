@@ -3,8 +3,6 @@ package tech.eritquearcus.miraicp
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
-import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiInternalApi
 import tech.eritquearcus.miraicp.shared.publicShared
 import java.io.File
 
@@ -17,8 +15,6 @@ object PluginMain : KotlinPlugin(
         author("Eritque arcus")
     }
 ) {
-    @MiraiExperimentalApi
-    @MiraiInternalApi
     override fun onEnable() {
         logger.info("启动成功")
         logger.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
