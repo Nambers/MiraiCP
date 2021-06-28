@@ -266,7 +266,7 @@ public:
 
 /*!
  * @class Logger
- * @brief 日志
+ * @brief 以MiraiCP的名义发送日志, 日志表现格式是: 2021-06-28 09:37:22 [log level]/MiraiCP: [log content]
  * @example 发送日志
 	 *  发送消息级日志
 	 *  @code logger->Info(string) @endcode
@@ -276,13 +276,18 @@ public:
 	 *  @code logger->Error(string) @endcode
  */
 class Logger {
-private:
+protected:
+    /// @brief 日志底层实现封装
+    /// @param log 日志内容
+    /// @param botid botid
+    /// @param level 日志等级
+    /// @param env jnienv
+    void log0(const std::string& log, unsigned long long botid, int level, JNIEnv* env);
     jmethodID log = nullptr;
-
-    /// 日志底层实现封装
-    void log0(const std::string&, JNIEnv*, int);
-
 public:
+    jmethodID getjmethod(){
+        return this->log;
+    }
     /// @brief 封装lambda类型
     /// @param string 日志内容
     /// @param 日志级别
@@ -302,27 +307,27 @@ public:
     void init(JNIEnv* = manager->getEnv());
 
     ///发送普通(info级日志)
-    void Info(const std::string&, JNIEnv* = manager->getEnv());
+    void Info(const std::string&, unsigned long long botid = -1, JNIEnv* = manager->getEnv());
 
     ///发送普通(info级日志)
-    void Info(MiraiCode msg, JNIEnv* env = manager->getEnv()){
-        Info(msg.toString(), env);
+    void Info(MiraiCode msg, unsigned long long botid = -1, JNIEnv* env = manager->getEnv()){
+        Info(msg.toString(), botid, env);
     }
 
     ///发送警告(warning级日志)
-    void Warning(const std::string&, JNIEnv* = manager->getEnv());
+    void Warning(const std::string&, unsigned long long botid = -1, JNIEnv* = manager->getEnv());
 
     ///发送警告(warning级日志)
-    void Warning(MiraiCode msg, JNIEnv* env = manager->getEnv()){
-        Warning(msg.toString(), env);
+    void Warning(MiraiCode msg, unsigned long long botid= -1, JNIEnv* env = manager->getEnv()){
+        Warning(msg.toString(), botid, env);
     }
 
     ///发送错误(error级日志)
-    void Error(const std::string&, JNIEnv* = manager->getEnv());
+    void Error(const std::string&, unsigned long long = -1, JNIEnv* = manager->getEnv());
 
     ///发送错误(error级日志)
-    void Error(MiraiCode msg, JNIEnv* env = manager->getEnv()){
-        Error(msg.toString(), env);
+    void Error(MiraiCode msg, unsigned long long botid= -1, JNIEnv* env = manager->getEnv()){
+        Error(msg.toString(),botid, env);
     }
 
     /// @brief 设置loggerhandler的action
@@ -339,6 +344,45 @@ public:
     /// @example 设置handler的启用状态
     /// @code logger->setHandleState(ture); @endcode
     inline void setHandleState(bool state);
+};
+
+/// 以bot的名义发送日志, 表现格式为: 2021-06-28 09:37:22 [log level]/Bot [botid]: [log content]
+class BotLogger:public Logger{
+public:
+    const unsigned long long botid;
+    ///发送普通(info级日志)
+    void Info(const std::string& log, JNIEnv* env= manager->getEnv()){
+        Logger::Info(log, botid, env);
+    }
+    ///发送普通(info级日志)
+    void Info(MiraiCode msg, JNIEnv* env = manager->getEnv()){
+        Info(msg.toString(), env);
+    }
+
+    ///发送警告(warning级日志)
+    void Warning(const std::string& log, JNIEnv* env = manager->getEnv()){
+        Logger::Warning(log, botid, env);
+    }
+
+    ///发送警告(warning级日志)
+    void Warning(MiraiCode msg, JNIEnv* env = manager->getEnv()){
+        Warning(msg.toString(), env);
+    }
+
+    ///发送错误(error级日志)
+    void Error(const std::string& msg, JNIEnv* env = manager->getEnv()){
+        Logger::Error(msg, botid, env);
+    }
+
+    ///发送错误(error级日志)
+    void Error(MiraiCode msg, JNIEnv* env = manager->getEnv()){
+        Error(msg.toString(), env);
+    }
+
+    BotLogger(unsigned long long id, Logger* l):botid(id){
+        this->loggerhandler = l->loggerhandler;
+        this->log = l->getjmethod();
+    }
 };
 
 /// 声明全局日志对象
@@ -1535,9 +1579,12 @@ inline MiraiCode At(unsigned long long a) {
 /// 所以事件处理timeoutevent都是机器人事件，指都有机器人实例
 class BotEvent {
 public:
+    /// 该事件接受的机器人
 	Bot bot;
-
-	BotEvent(unsigned long long botid) : bot(Bot(botid)) {
+    /// 以该机器人的名义发送日志
+    /// @see BotLogger
+    BotLogger botlogger;
+	BotEvent(unsigned long long botid) : bot(botid), botlogger(botid, logger) {
 	}
 };
 
