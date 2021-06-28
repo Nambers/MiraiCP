@@ -45,16 +45,19 @@ object publicShared{
     }
 
     //日志部分实现
-    fun BasicSendLog(log: String) {
-        logger.info(log)
+    fun BasicSendLog(log: String, botid: Long) {
+        if(botid == -1L) logger.info(log)
+        else Bot.getInstance(botid).logger.info(log)
     }
 
-    fun SendWarning(log: String) {
-        logger.warning(log)
+    fun SendWarning(log: String, botid: Long) {
+        if(botid == -1L) logger.warning(log)
+        else Bot.getInstance(botid).logger.warning(log)
     }
 
-    fun SendError(log: String) {
-        logger.error(log)
+    fun SendError(log: String, botid: Long) {
+        if(botid == -1L) logger.error(log)
+        else Bot.getInstance(botid).logger.error(log)
     }
 
     //发送消息部分实现 MiraiCode

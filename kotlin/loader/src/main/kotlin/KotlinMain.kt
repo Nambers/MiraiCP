@@ -1,28 +1,28 @@
 package tech.eritquearcus.miraicp.loader
 
+import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.alsoLogin
-import net.mamoe.mirai.utils.BotConfiguration
-import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiInternalApi
+import net.mamoe.mirai.event.EventChannel
+import net.mamoe.mirai.event.GlobalEventChannel
+import net.mamoe.mirai.utils.*
 import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
-import net.mamoe.mirai.utils.PlatformLogger
 import org.fusesource.jansi.AnsiConsole
 import org.json.JSONObject
+import tech.eritquearcus.miraicp.shared.Config
 import tech.eritquearcus.miraicp.shared.publicShared
 import java.io.File
 
 object KotlinMain {
     @OptIn(MiraiInternalApi::class)
-    suspend fun main(j:JSONObject) {
-        val id = j.getLong("id")
-        val path = j.getString("cppPath")
+    suspend fun main(j:String) {
         setDefaultLoggerCreator { identity ->
             AnsiConsole.systemInstall()
             PlatformLogger(identity, AnsiConsole.out()::println, true)
         }
-        var dll_name = path
+        val c = Gson().fromJson(j, Config.accounts::class.java)
+        var dll_name = c.cppPath
         println("启动成功!")
         println("github存储库:https://github.com/Nambers/MiraiCP")
         if (!File(dll_name).exists()) {
@@ -31,35 +31,37 @@ object KotlinMain {
         } else {
             dll_name = File(dll_name).absolutePath
         }
-        val p = when(if (j.has("protocol")) j.getString("protocol").uppercase() else "PHONE"){
-            "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
-            "WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
-            "PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
-            else -> {
-                println("登录协议无效, 应为PAD/WATCH/PHONE其中一个,使用默认的PHONE进行登录")
-                BotConfiguration.MiraiProtocol.ANDROID_PHONE
+        c.accounts.forEach {
+            val p = when(it.protocol.uppercase()){
+                "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
+                "WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
+                "PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
+                else -> {
+                    println("登录协议无效, 应为PAD/WATCH/PHONE其中一个,使用默认的PHONE进行登录")
+                    BotConfiguration.MiraiProtocol.ANDROID_PHONE
+                }
             }
-        }
-        val h = when(if (j.has("heartBeat")) j.getString("heartBeat").uppercase() else "STAT_HB"){
-            "STAT_HB"-> BotConfiguration.HeartbeatStrategy.STAT_HB
-            "REGISTER" -> BotConfiguration.HeartbeatStrategy.REGISTER
-            "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
-            else->{
-                println("心跳策略无效")
-                BotConfiguration.HeartbeatStrategy.STAT_HB
+            val h = when(it.heatBeat.uppercase()){
+                "STAT_HB"-> BotConfiguration.HeartbeatStrategy.STAT_HB
+                "REGISTER" -> BotConfiguration.HeartbeatStrategy.REGISTER
+                "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
+                else->{
+                    println("心跳策略无效")
+                    BotConfiguration.HeartbeatStrategy.STAT_HB
+                }
             }
+            println("登录bot:${it.id}")
+            println("协议:${p.name}")
+            println("心跳策略:${h.name}")
+            BotFactory.newBot(it.id, it.passwords) {
+                fileBasedDeviceInfo()
+                this.protocol = p
+                this.heartbeatStrategy = h
+            }.alsoLogin()
         }
-        println("登录bot:$id")
-        println("协议:${p.name}")
-        println("心跳策略:${h.name}")
-        println("c++ dll地址:${path}")
-        val bot = BotFactory.newBot(id, j.getString("passwords")) {
-            fileBasedDeviceInfo()
-            this.protocol = p
-            this.heartbeatStrategy = h
-        }.alsoLogin()
-        val logger = bot.logger
-        val globalEventChannel = bot.eventChannel
+        println("c++ dll地址:${dll_name}")
+        val logger = MiraiLogger.create("MiraiCP")
+        val globalEventChannel = GlobalEventChannel
         publicShared.init(logger, dll_name)
         publicShared.onEnable(globalEventChannel)
     }
@@ -100,14 +102,7 @@ fun main(args: Array<String>){
         }
     }
     println("正在启动\n配置文件地址:${f.absolutePath}")
-    val j = JSONObject(f.readText())
-    listOf("id", "passwords", "cppPath").forEach {
-        if (!j.has(it)) {
-            println("配置出错，配置文件不包含($it)项")
-            return
-        }
-    }
     runBlocking {
-        KotlinMain.main(j)
+        KotlinMain.main(f.readText())
     }
 }
