@@ -69,11 +69,12 @@ class CPP_lib {
         }
 
         @JvmStatic
-        fun KSendLog(log:String, level: Int):Unit{
+        fun KSendLog(log:String, level: Int) {
+            val j = JSONObject(log)
             when(level){
-                0-> BasicSendLog(log)
-                1-> SendWarning(log)
-                2-> SendError(log)
+                0-> BasicSendLog(j.getString("log"), j.getLong("botid"))
+                1-> SendWarning(j.getString("log"), j.getLong("botid"))
+                2-> SendError(j.getString("log"), j.getLong("botid"))
             }
         }
 

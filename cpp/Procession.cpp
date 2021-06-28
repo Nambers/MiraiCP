@@ -38,7 +38,7 @@ void onEnable() {
 	// 监听私聊
 	Event::NodeHandle handle = procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
 	    unsigned long long id = e.bot.id;
-	    logger->Info(std::to_string(id));
+	    e.botlogger.Info(std::to_string(id));
 		e.messageSource.quoteAndSendMsg("HI");
 		std::thread func1(func, e.sender.id(), e.bot.id);
 		e.sender.sendMsg(e.message);
@@ -59,14 +59,14 @@ void onEnable() {
 	// 监听群信息
 	procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
 	    e.group.sendVoice(R"(D:\下载缓存\test.amr)");
-        logger->Info(e.message);
+        e.botlogger.Info(e.message);
         e.group.sendMiraiCode(e.message);
         e.group.sendMsg("☺");
         e.group.sendMsg(e.group.setting.name);
         e.group.setting.name = "x";
         e.group.updateSetting();
         e.messageSource.quoteAndSendMsg("HI");
-        logger->Info(e.messageSource.serializeToString());
+        e.botlogger.Info(e.messageSource.serializeToString());
         // 发送文本信息
         e.group.sendMsg("HI");
         // 发送MiraiCode信息，At

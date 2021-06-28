@@ -83,22 +83,25 @@ void Logger::setHandleState(bool state) {
 	this->loggerhandler.enable = state;
 }
 
-void Logger::log0(const std::string& content, JNIEnv* env, int level) {
+void Logger::log0(const std::string& content, unsigned long long botid, int level, JNIEnv* env) {
 	if (this->loggerhandler.enable)
 		this->loggerhandler.action(content, level);
-	env->CallStaticVoidMethod(config->CPP_lib, this->log, Tools::str2jstring(content.c_str()), (jint)level);
+	json j;
+	j["botid"] = botid;
+	j["log"] = content;
+	env->CallStaticVoidMethod(config->CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint)level);
 }
 
-void Logger::Warning(const std::string& content, JNIEnv* env) {
-	this->log0(content, env, 1);
+void Logger::Warning(const std::string& content, unsigned long long botid, JNIEnv* env) {
+	this->log0(content, botid, 1, env);
 }
 
-void Logger::Error(const std::string& content, JNIEnv* env) {
-	this->log0(content, env, 2);
+void Logger::Error(const std::string& content, unsigned long long botid, JNIEnv* env) {
+	this->log0(content,botid, 2, env);
 }
 
-void Logger::Info(const std::string& content, JNIEnv* env) {
-	this->log0(content, env, 0);
+void Logger::Info(const std::string& content, unsigned long long botid, JNIEnv* env) {
+	this->log0(content, botid, 0, env);
 }
 
 /*
