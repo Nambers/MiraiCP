@@ -164,4 +164,15 @@ class Config {
         val text_face: String? = null,
         val title: String? = null
     )
+    data class accounts(
+    val accounts: List<Account>,
+    val cppPath: String
+) {
+    data class Account(
+        val heatBeat: String = "STAT_HB",
+        val id: Long,
+        val passwords: String,
+        val protocol: String = "PHONE"
+    )
+}
 }
