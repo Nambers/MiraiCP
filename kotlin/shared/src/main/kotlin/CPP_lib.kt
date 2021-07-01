@@ -18,6 +18,7 @@ import tech.eritquearcus.miraicp.shared.publicShared.buildforwardMsg
 import tech.eritquearcus.miraicp.shared.publicShared.dll_name
 import tech.eritquearcus.miraicp.shared.publicShared.getowner
 import tech.eritquearcus.miraicp.shared.publicShared.groupSetting
+import tech.eritquearcus.miraicp.shared.publicShared.gson
 import tech.eritquearcus.miraicp.shared.publicShared.kkick
 import tech.eritquearcus.miraicp.shared.publicShared.kqueryM
 import tech.eritquearcus.miraicp.shared.publicShared.mute
@@ -38,7 +39,6 @@ class CPP_lib {
 
     //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
     companion object{
-        private val gson = Gson()
         init {
             System.load(dll_name)
         }

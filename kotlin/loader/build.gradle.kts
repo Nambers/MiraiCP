@@ -13,11 +13,17 @@ tasks {
         kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
         kotlinOptions.jvmTarget = "1.8"
     }
-    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
-        isZip64 = true
+    shadowJar{
         archiveBaseName.set("MiraiCP-loader")
         archiveClassifier.set("")
         archiveVersion.set(libs.versions.miraiCPVersion)
+        manifest{
+            attributes["Description"]= "MiraiCP-Loader"
+            attributes["Built-By"]= "Eritque arcus"
+            attributes["Implementation-Version"] = libs.versions.miraiCPVersion.get()
+            attributes["Created-By"] = "Gradle " + gradle.gradleVersion
+            attributes["Build-Kotlin"] = libs.versions.kotlinVersion.get()
+        }
     }
 }
 
