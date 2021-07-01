@@ -1,14 +1,14 @@
 package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.Gson
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.LowLevelApi
 import net.mamoe.mirai.Mirai
-import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.NormalMember
-import net.mamoe.mirai.contact.PermissionDeniedException
-import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.contact.*
+import net.mamoe.mirai.data.GroupAnnouncementList
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.events.*
@@ -34,9 +34,9 @@ object publicShared{
     }
     private var friend_cache = ArrayList<NormalMember>(0)
     private lateinit var cpp: CPP_lib
-    private var gson: Gson = Gson()
+    val gson: Gson = Gson()
     private lateinit var logger: MiraiLogger
-    private const val now_tag = "v2.6.5"
+    const val now_tag = "v2.6.5"
     lateinit var dll_name: String
 
     fun init(l: MiraiLogger, path: String){
@@ -142,8 +142,10 @@ object publicShared{
                     g.quit()
                     return "done"
                 }
+
+
                 return gson.toJson(Config.ContactInfo(g.name, g.avatarUrl,
-                    Config.GroupSetting(g.name, "", g.settings.isMuteAll, g.settings.isAllowMemberInvite, g.settings.isAutoApproveEnabled, g.settings.isAnonymousChatEnabled)
+                    Config.GroupSetting(g.name, g.settings.entranceAnnouncement, g.settings.isMuteAll, g.settings.isAllowMemberInvite, g.settings.isAutoApproveEnabled, g.settings.isAnonymousChatEnabled)
                 ))
             }
             3->{
@@ -641,12 +643,8 @@ object publicShared{
     }
 
     @OptIn(MiraiExperimentalApi::class)
-    fun onEnable(eventChannel: EventChannel<Event>){
-        logger.info("当前MiraiCP版本: $now_tag")
-        cpp = CPP_lib()
-        if(cpp.ver != now_tag){
-            logger.error("警告:当前MiraiCP框架版本($now_tag)和加载的C++ SDK(${cpp.ver})不一致")
-        }
+    fun onEnable(eventChannel: EventChannel<Event>, c: CPP_lib){
+        cpp = c
         //配置文件目录 "${dataFolder.absolutePath}/"
         eventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息

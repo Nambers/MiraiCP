@@ -22,6 +22,9 @@ void onEnable() {
 		...
 	参数都在param变量里，在lambda块中使用param.xxx来调用
 	*/
+	procession->registerEvent<BotOnlineEvent>([](BotOnlineEvent e){
+        e.botlogger.Info("Bot is Online");
+	});
 	// 邀请事件
 	// 好友申请
 	procession->registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent e) {
@@ -58,51 +61,52 @@ void onEnable() {
 
 	// 监听群信息
 	procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-	    e.group.sendVoice(R"(D:\下载缓存\test.amr)");
-        e.botlogger.Info(e.message);
-        e.group.sendMiraiCode(e.message);
-        e.group.sendMsg("☺");
-        e.group.sendMsg(e.group.setting.name);
-        e.group.setting.name = "x";
-        e.group.updateSetting();
-        e.messageSource.quoteAndSendMsg("HI");
-        e.botlogger.Info(e.messageSource.serializeToString());
-        // 发送文本信息
-        e.group.sendMsg("HI");
-        // 发送MiraiCode信息，At
-        e.group.sendMiraiCode(At(e.sender));
-        // 撤回测试
-        e.group.sendMsg("撤回测试").recall();
-        // 发送xml卡片测试,可以用new传miraicodeable指针进去，也可以用.toMiraiCode()
-        e.group.sendMiraiCode(new LightApp(LightAppStyle1()));
-        e.group.sendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
-        e.group.sendMiraiCode(new LightApp(LightAppStyle3()));
-        ForwardMessage(&e.group,
-                       {
-                               ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-                               ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
-                       }).sendTo(&e.group);
-        // 关闭上面的私聊消息监听器
-        handle.stop();
-        // 当前bot属性
-        e.sender.sendMsg(e.bot.nick());
-        e.sender.sendMsg(e.bot.FriendListToString());
-        e.sender.sendMsg(e.bot.GroupListToString());
-        RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
-        e.group.sendMsg(e.group.getFile("/", tmp.id).name);
-        e.group.sendMsg(e.group.getFile("/test.txt").name);
-        e.group.sendMsg(e.group.getFileListString("/"));
-        std::vector<Group::file_short_info> a = e.group.getFileList("/");
-        std::stringstream ss;
-        for (size_t i = 0; i < a.size(); ++i) {
-            if (i != 0)
-                ss << ",";
-            ss << "{" << a[i].path << "," << a[i].id << "}";
-        }
-        std::string s = ss.str();
-        e.group.sendMsg(s);
-        e.group.sendMsg(e.group.MemberListToString());
-        e.messageSource.recall();
+//	    logger->Info(e.group.setting.entranceAnnouncement);
+//	    e.group.sendVoice(R"(D:\下载缓存\test.amr)");
+//        e.botlogger.Info(e.message);
+//        e.group.sendMiraiCode(e.message);
+//        e.group.sendMsg("☺");
+//        e.group.sendMsg(e.group.setting.name);
+//        e.group.setting.name = "x";
+//        e.group.updateSetting();
+//        e.messageSource.quoteAndSendMsg("HI");
+//        e.botlogger.Info(e.messageSource.serializeToString());
+//        // 发送文本信息
+//        e.group.sendMsg("HI");
+//        // 发送MiraiCode信息，At
+//        e.group.sendMiraiCode(At(e.sender));
+//        // 撤回测试
+//        e.group.sendMsg("撤回测试").recall();
+//        // 发送xml卡片测试,可以用new传miraicodeable指针进去，也可以用.toMiraiCode()
+//        e.group.sendMiraiCode(new LightApp(LightAppStyle1()));
+//        e.group.sendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
+//        e.group.sendMiraiCode(new LightApp(LightAppStyle3()));
+//        ForwardMessage(&e.group,
+//                       {
+//                               ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
+//                               ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
+//                       }).sendTo(&e.group);
+//        // 关闭上面的私聊消息监听器
+//        handle.stop();
+//        // 当前bot属性
+//        e.sender.sendMsg(e.bot.nick());
+//        e.sender.sendMsg(e.bot.FriendListToString());
+//        e.sender.sendMsg(e.bot.GroupListToString());
+//        RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
+//        e.group.sendMsg(e.group.getFile("/", tmp.id).name);
+//        e.group.sendMsg(e.group.getFile("/test.txt").name);
+//        e.group.sendMsg(e.group.getFileListString("/"));
+//        std::vector<Group::file_short_info> a = e.group.getFileList("/");
+//        std::stringstream ss;
+//        for (size_t i = 0; i < a.size(); ++i) {
+//            if (i != 0)
+//                ss << ",";
+//            ss << "{" << a[i].path << "," << a[i].id << "}";
+//        }
+//        std::string s = ss.str();
+//        e.group.sendMsg(s);
+//        e.group.sendMsg(e.group.MemberListToString());
+//        e.messageSource.recall();
     });
 	// 监听群临时会话
 	procession->registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {

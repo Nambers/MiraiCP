@@ -167,6 +167,9 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
                         MessageSource::deserializeFromString(j["source"])
                 ));
                 break;
+		    case 11:
+                procession->broadcast<BotOnlineEvent>(BotOnlineEvent(j["botid"]));
+                break;
             default:
                 throw APIException("Unreachable code");
         }

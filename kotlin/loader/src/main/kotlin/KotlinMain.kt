@@ -3,15 +3,16 @@ package tech.eritquearcus.miraicp.loader
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.BotFactory
-import net.mamoe.mirai.alsoLogin
-import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.GlobalEventChannel
+import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.*
 import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
 import org.fusesource.jansi.AnsiConsole
-import org.json.JSONObject
+import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
 import tech.eritquearcus.miraicp.shared.publicShared
+import tech.eritquearcus.miraicp.shared.publicShared.gson
+import tech.eritquearcus.miraicp.shared.publicShared.now_tag
 import java.io.File
 
 object KotlinMain {
@@ -22,48 +23,66 @@ object KotlinMain {
             PlatformLogger(identity, AnsiConsole.out()::println, true)
         }
         val c = Gson().fromJson(j, Config.accounts::class.java)
+        val logger = MiraiLogger.create("MiraiCP")
         var dll_name = c.cppPath
-        println("启动成功!")
-        println("github存储库:https://github.com/Nambers/MiraiCP")
+        logger.info("启动成功!")
+        logger.info("github存储库:https://github.com/Nambers/MiraiCP")
         if (!File(dll_name).exists()) {
-            println("文件$dll_name 不存在")
+            logger.error("Error: dll文件$dll_name 不存在, 请检查config.json配置")
             return
         } else {
             dll_name = File(dll_name).absolutePath
         }
-        c.accounts.forEach {
-            val p = when(it.protocol.uppercase()){
+        logger.info("当前MiraiCP版本: $now_tag")
+        publicShared.init(logger, dll_name)
+        logger.info("c++ dll地址:${dll_name}")
+        val cpp = CPP_lib()
+        logger.info("加载插件完成")
+        if(cpp.ver != now_tag){
+            logger.warning("Warning: 当前MiraiCP框架版本($now_tag)和加载的插件的C++ SDK(${cpp.ver})不一致")
+        }
+        if(c.accounts == null || c.accounts!!.isEmpty()){
+            logger.error("Error: 无可登录账号，请检查config.json内容")
+            return
+        }
+        c.accounts!!.forEach {
+            val p = when(it.protocol?.uppercase()){
                 "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
                 "WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
                 "PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
+                null -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
                 else -> {
-                    println("登录协议无效, 应为PAD/WATCH/PHONE其中一个,使用默认的PHONE进行登录")
+                    logger.warning("Warning: 登录协议无效, 应为PAD/WATCH/PHONE其中一个,使用默认的PHONE进行登录")
                     BotConfiguration.MiraiProtocol.ANDROID_PHONE
                 }
             }
-            val h = when(it.heatBeat.uppercase()){
+            val h = when(it.heatBeat?.uppercase()){
                 "STAT_HB"-> BotConfiguration.HeartbeatStrategy.STAT_HB
                 "REGISTER" -> BotConfiguration.HeartbeatStrategy.REGISTER
                 "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
+                null -> BotConfiguration.HeartbeatStrategy.STAT_HB
                 else->{
-                    println("心跳策略无效")
+                    logger.warning("Warning: 心跳策略无效, 应为\"STAT_HB\"\\\"REGISTEr\"\\\"None\"其中一个，使用默认的STAT_HB登录")
                     BotConfiguration.HeartbeatStrategy.STAT_HB
                 }
             }
-            println("登录bot:${it.id}")
-            println("协议:${p.name}")
-            println("心跳策略:${h.name}")
-            BotFactory.newBot(it.id, it.passwords) {
+            logger.info("登录bot:${it.id}")
+            logger.info("协议:${p.name}")
+            logger.info("心跳策略:${h.name}")
+            val b = BotFactory.newBot(it.id, it.passwords) {
                 fileBasedDeviceInfo()
                 this.protocol = p
                 this.heartbeatStrategy = h
-            }.alsoLogin()
+            }
+            b.eventChannel.subscribeAlways<BotOnlineEvent> {
+                cpp.Event(
+                    gson.toJson(Config.BotOnline(this.bot.id))
+                )
+            }
+            b.login()
         }
-        println("c++ dll地址:${dll_name}")
-        val logger = MiraiLogger.create("MiraiCP")
         val globalEventChannel = GlobalEventChannel
-        publicShared.init(logger, dll_name)
-        publicShared.onEnable(globalEventChannel)
+        publicShared.onEnable(globalEventChannel, cpp)
     }
 }
 
