@@ -10,7 +10,7 @@ include_directories(.)
 include_directories(include)
 include_directories(include/win32)
 include_directories(include/win32/bridge)
-include_directories("include/utf8")
+include_directories(include/utf8)
 
 set(
         SOURCE_TEMPLATES

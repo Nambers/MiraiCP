@@ -108,6 +108,10 @@ class Config {
         val source: String,
         val type: Int = 10
     )
+    data class BotOnline(
+        val botid: Long,
+        val type: Int = 11
+    )
     data class ForwardMessageJson (
         @SerializedName("type") val type : Int,
         @SerializedName("id") val id : Long,
@@ -165,14 +169,14 @@ class Config {
         val title: String? = null
     )
     data class accounts(
-    val accounts: List<Account>,
+    val accounts: List<Account>?,
     val cppPath: String
 ) {
     data class Account(
-        val heatBeat: String = "STAT_HB",
+        val heatBeat: String?,
         val id: Long,
         val passwords: String,
-        val protocol: String = "PHONE"
+        val protocol: String?
     )
 }
 }
