@@ -1911,6 +1911,11 @@ public:
 			messageSource) {}
 };
 
+class BotOnlineEvent : public BotEvent{
+public:
+    BotOnlineEvent(unsigned long long botid):BotEvent(botid){}
+};
+
 /**监听类声明*/
 class Event {
 private:
@@ -1936,8 +1941,9 @@ private:
 	Node<RecallEvent>* RHead = new Node<RecallEvent>();
 	Node<BotJoinGroupEvent>* BHead = new Node<BotJoinGroupEvent>();
 	Node<GroupTempMessageEvent>* GTMHead = new Node<GroupTempMessageEvent>();
+    Node<BotOnlineEvent>* BOHead = new Node<BotOnlineEvent>();
 
-	/// 取链表首节点
+    /// 取链表首节点
 	template <class T>
     Node<T> *head(){
         if constexpr(std::is_same_v<T, GroupMessageEvent>){
@@ -1958,6 +1964,8 @@ private:
             return BHead;
         }else if constexpr(std::is_same_v<T, GroupTempMessageEvent>){
             return GTMHead;
+        }else if constexpr(std::is_same_v<T, BotOnlineEvent>){
+            return BOHead;
         }
         logger->Error("内部错误, 位置:C-Head");
         return nullptr;
@@ -1972,6 +1980,7 @@ private:
     Node<RecallEvent>* RTail = RHead;
     Node<BotJoinGroupEvent>* BTail = BHead;
     Node<GroupTempMessageEvent>* GTMTail = GTMHead;
+    Node<BotOnlineEvent>* BOTail = BOHead;
 
     /// 取链表尾节点
     template <class T>
@@ -2010,10 +2019,14 @@ private:
             BTail->next = temp;
             BTail->nextNode = temp;
             BTail = temp;
-        }else if constexpr(std::is_same_v<T, GroupTempMessageEvent>){
+        }else if constexpr(std::is_same_v<T, GroupTempMessageEvent>) {
             GTMTail->next = temp;
             GTMTail->nextNode = temp;
             GTMTail = temp;
+        }else if constexpr(std::is_same_v<T, BotOnlineEvent>){
+            BOTail->next = temp;
+            BOTail->nextNode = temp;
+            BOTail = temp;
         }else {
             logger->Error("内部错误, 位置:C-Tail");
             return nullptr;

@@ -8,6 +8,13 @@ tasks{
             archiveBaseName.set("MiraiCP-plugin")
             archiveClassifier.set("")
             archiveVersion.set(libs.versions.miraiCPVersion.get())
+            manifest{
+                attributes["Description"]= "MiraiCP-Plugin"
+                attributes["Built-By"]= "Eritque arcus"
+                attributes["Implementation-Version"] = libs.versions.miraiCPVersion.get()
+                attributes["Created-By"] = "Gradle " + gradle.gradleVersion
+                attributes["Build-Kotlin"] = libs.versions.kotlinVersion.get()
+            }
         }
     }
 }
