@@ -1596,7 +1596,7 @@ public:
 	///发送人
 	Member sender;
 	///信息本体
-	const MiraiCode message;
+	MiraiCode message;
 	///消息源
 	MessageSource messageSource;
 
@@ -1613,7 +1613,7 @@ public:
 	/// 发起人
 	Friend sender;
 	/// 附带消息
-    const MiraiCode message;
+    MiraiCode message;
 	/// 信息源
 	MessageSource messageSource;
 
