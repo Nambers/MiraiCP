@@ -1,32 +1,31 @@
 <map id="onEnable" name="onEnable">
-<area shape="rect" id="node1" title=" " alt="" coords="5,540,81,567"/>
-<area shape="rect" id="node2" href="$a00026.html#ab6f4da57c1ccc2dffe4f5ee6bda06f6e" title="At一个群成员" alt="" coords="457,69,496,96"/>
-<area shape="rect" id="node4" href="$a00017.html#a2f5a0b296fa851091b92244aa5da103a" title=" " alt="" coords="212,489,259,516"/>
-<area shape="rect" id="node8" href="$a00134.html#ac8e7ac7c9330803c5e1862bff68096cd" title="发送纯文本信息" alt="" coords="413,397,541,424"/>
-<area shape="rect" id="node23" href="$a00130.html#a209162f6355c501f5fde9db40de39188" title=" " alt="" coords="129,680,341,707"/>
-<area shape="rect" id="node24" href="$a00074.html#a13e1837413a7cdecd8ea11909f1842be" title="发送普通(info级日志)" alt="" coords="1340,545,1429,572"/>
-<area shape="rect" id="node25" href="$a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0" title="监听函数" alt="" coords="167,565,304,592"/>
-<area shape="rect" id="node27" href="$a00166.html#a8bb5db9b77ded55f8c3aded9f692a9a3" title="发送给群或好友或群成员" alt="" coords="620,208,791,235"/>
-<area shape="rect" id="node28" href="$a00130.html#a1f23cd8327ee4b8814ad8574b6a35e82" title="取图片Mirai码" alt="" coords="168,731,303,757"/>
-<area shape="rect" id="node3" href="$a00134.html#a220e55b907d54958cd2afb95e65da5a1" title="id在全部情况存在" alt="" coords="1158,5,1243,32"/>
-<area shape="rect" id="node5" href="$a00050.html#a807b673ce4d4199cf0bfdfff5521d2c0" title=" " alt="" coords="399,489,554,516"/>
-<area shape="rect" id="node6" href="$a00050.html#a3401a8976c99d293ef1b8b8c7a1db9d1" title="获取线程id." alt="" coords="614,528,797,555"/>
-<area shape="rect" id="node7" href="$a00050.html#a648b29dc90c990d1915ca1a92eb210e6" title="判断该线程id是否包含在线程池里" alt="" coords="623,477,787,504"/>
-<area shape="rect" id="node9" href="$a00126.html#a593939fc75a52d99f210da0482a85443" title="从json字符串反序列化到MessageSource对象" alt="" coords="612,361,799,402"/>
-<area shape="rect" id="node10" href="$a00074.html#abb690146dbd2c6fb7e603caf123096dd" title="发送错误(error级日志)" alt="" coords="1336,436,1433,463"/>
-<area shape="rect" id="node14" href="$a00026.html#ab59fa3f78cc8acbe38a75e2445f8d087" title=" " alt="" coords="911,309,1001,336"/>
-<area shape="rect" id="node15" href="$a00154.html#ac6e830ba53c3477de726793a26357256" title="抽象封装底层发送信息接口" alt="" coords="636,259,775,285"/>
-<area shape="rect" id="node13" href="$a00126.html#a19d28a14e61cc59cf8c4ff874d9cf6de" title=" " alt="" coords="847,360,1065,387"/>
-<area shape="rect" id="node11" href="$a00074.html#a623dbe79c347ea0d063f5d6b900c5bc2" title="日志底层实现封装" alt="" coords="1481,461,1575,488"/>
-<area shape="rect" id="node12" href="$a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="1623,411,1741,437"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,563,81,589"/>
+<area shape="rect" id="node2" href="$a00026.html#ab6f4da57c1ccc2dffe4f5ee6bda06f6e" title="At一个群成员" alt="" coords="937,31,975,57"/>
+<area shape="rect" id="node4" href="$a00017.html#a2f5a0b296fa851091b92244aa5da103a" title=" " alt="" coords="212,487,259,513"/>
+<area shape="rect" id="node8" href="$a00138.html#ac8e7ac7c9330803c5e1862bff68096cd" title="发送纯文本信息" alt="" coords="413,381,541,408"/>
+<area shape="rect" id="node23" href="$a00134.html#a209162f6355c501f5fde9db40de39188" title=" " alt="" coords="129,664,341,691"/>
+<area shape="rect" id="node24" href="$a00074.html#a0c06be585935f38b4351f8c207b97b41" title="发送普通(info级日志)" alt="" coords="1340,512,1429,539"/>
+<area shape="rect" id="node25" href="$a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0" title="监听函数" alt="" coords="167,563,304,589"/>
+<area shape="rect" id="node27" href="$a00134.html#a1f23cd8327ee4b8814ad8574b6a35e82" title="取图片Mirai码" alt="" coords="168,715,303,741"/>
+<area shape="rect" id="node3" href="$a00138.html#a220e55b907d54958cd2afb95e65da5a1" title="id在全部情况存在" alt="" coords="1158,5,1243,32"/>
+<area shape="rect" id="node5" href="$a00050.html#a807b673ce4d4199cf0bfdfff5521d2c0" title=" " alt="" coords="399,487,554,513"/>
+<area shape="rect" id="node6" href="$a00050.html#a3401a8976c99d293ef1b8b8c7a1db9d1" title="获取线程id." alt="" coords="614,461,797,488"/>
+<area shape="rect" id="node7" href="$a00050.html#a648b29dc90c990d1915ca1a92eb210e6" title="判断该线程id是否包含在线程池里" alt="" coords="623,512,787,539"/>
+<area shape="rect" id="node9" href="$a00130.html#a593939fc75a52d99f210da0482a85443" title="从json字符串反序列化到MessageSource对象" alt="" coords="612,345,799,386"/>
+<area shape="rect" id="node10" href="$a00074.html#a74fb2d4bc7e34e4897063a567c6611c3" title="发送错误(error级日志)" alt="" coords="1336,385,1433,412"/>
+<area shape="rect" id="node14" href="$a00026.html#ab59fa3f78cc8acbe38a75e2445f8d087" title=" " alt="" coords="660,293,751,320"/>
+<area shape="rect" id="node15" href="$a00158.html#ac6e830ba53c3477de726793a26357256" title="抽象封装底层发送信息接口" alt="" coords="636,243,775,269"/>
+<area shape="rect" id="node13" href="$a00130.html#a19d28a14e61cc59cf8c4ff874d9cf6de" title=" " alt="" coords="847,309,1065,336"/>
+<area shape="rect" id="node11" href="$a00074.html#a39d20a1a355877f9a4ca01780a909e14" title="日志底层实现封装" alt="" coords="1481,411,1575,437"/>
+<area shape="rect" id="node12" href="$a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="1623,360,1741,387"/>
 <area shape="rect" id="node16" href="$a00062.html#afb8424eb037cadc329d3c47df377748a" title="调用mirai操作" alt="" coords="893,259,1019,285"/>
-<area shape="rect" id="node18" href="$a00134.html#a6739337b623df49bc51e2fc997bfd6e8" title="序列化到json对象" alt="" coords="884,157,1028,184"/>
-<area shape="rect" id="node17" href="$a00058.html#aabf8a80dcd00513cb7516e8251109313" title=" " alt="" coords="1141,335,1260,361"/>
-<area shape="rect" id="node19" href="$a00134.html#a869c10fc8e1abeedc10d805576b1450a" title="所属bot" alt="" coords="1149,56,1252,83"/>
-<area shape="rect" id="node20" href="$a00134.html#a07e7ddca539bf8e5ac2d2ad00d8b7ba4" title="当type为3的时候存在，否则为0，可以看作补充id" alt="" coords="1142,208,1259,235"/>
-<area shape="rect" id="node21" href="$a00134.html#a3f78c5f66d0b71ad06267c6a3b492066" title="群名称，群成员群名片，或好友昵称" alt="" coords="1113,157,1288,184"/>
-<area shape="rect" id="node22" href="$a00134.html#a182b686fa824fe5c9a3a5181f873e2a1" title="当前对象类型" alt="" coords="1151,107,1251,133"/>
-<area shape="rect" id="node26" href="$a00234.html#a2093f1cdc85835026fefae130fc7b7e6" title="取链表尾节点" alt="" coords="917,561,995,588"/>
-<area shape="rect" id="node29" href="$a00058.html#abea12070fc52348e5c9a426c116f5629" title="转义miraicode格式" alt="" coords="389,731,564,757"/>
-<area shape="rect" id="node30" href="$a00058.html#a73a5bbcbdd583d014bf3f8e5db3a89eb" title="替换全部在一个字符串中." alt="" coords="654,731,757,757"/>
+<area shape="rect" id="node18" href="$a00138.html#a6739337b623df49bc51e2fc997bfd6e8" title="序列化到json对象" alt="" coords="884,132,1028,159"/>
+<area shape="rect" id="node17" href="$a00058.html#aabf8a80dcd00513cb7516e8251109313" title=" " alt="" coords="1141,309,1260,336"/>
+<area shape="rect" id="node19" href="$a00138.html#a869c10fc8e1abeedc10d805576b1450a" title="所属bot" alt="" coords="1149,157,1252,184"/>
+<area shape="rect" id="node20" href="$a00138.html#a07e7ddca539bf8e5ac2d2ad00d8b7ba4" title="当type为3的时候存在，否则为0，可以看作补充id" alt="" coords="1142,208,1259,235"/>
+<area shape="rect" id="node21" href="$a00138.html#a3f78c5f66d0b71ad06267c6a3b492066" title="群名称，群成员群名片，或好友昵称" alt="" coords="1113,56,1288,83"/>
+<area shape="rect" id="node22" href="$a00138.html#a182b686fa824fe5c9a3a5181f873e2a1" title="当前对象类型" alt="" coords="1151,107,1251,133"/>
+<area shape="rect" id="node26" href="$a00242.html#a2093f1cdc85835026fefae130fc7b7e6" title="取链表尾节点" alt="" coords="437,563,516,589"/>
+<area shape="rect" id="node28" href="$a00058.html#abea12070fc52348e5c9a426c116f5629" title="转义miraicode格式" alt="" coords="389,715,564,741"/>
+<area shape="rect" id="node29" href="$a00058.html#a73a5bbcbdd583d014bf3f8e5db3a89eb" title="替换全部在一个字符串中." alt="" coords="654,715,757,741"/>
 </map>

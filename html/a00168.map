@@ -1,6 +1,4 @@
-<map id="Bot" name="Bot">
-<area shape="rect" id="node1" title="当前bot账号信息" alt="" coords="116,160,331,457"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,172,83"/>
-<area shape="rect" id="node3" title=" " alt="" coords="196,5,251,83"/>
-<area shape="rect" id="node4" title=" " alt="" coords="296,5,343,83"/>
+<map id="ForwardMessage" name="ForwardMessage">
+<area shape="rect" id="node1" title=" " alt="" coords="5,145,195,296"/>
+<area shape="rect" id="node2" title=" " alt="" coords="77,5,123,83"/>
 </map>

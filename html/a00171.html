@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -85,48 +89,40 @@ $(document).ready(function(){initNavTree('a00174.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Friend 成员列表</div>  </div>
+<div class="title">Bot 成员列表</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>成员的完整列表，这些成员属于 <a class="el" href="a00174.html">Friend</a>,包括所有继承而来的类成员</p>
+<p>成员的完整列表，这些成员属于 <a class="el" href="a00174.html">Bot</a>,包括所有继承而来的类成员</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#a92b8feb1a780637b71e06f3f9e954043">_avatarUrl</a></td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a88b041d798fb05e1347c51d149c12a21">_botid</a></td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#ad10855c0071226743dffc553dc913b88">_groupid</a></td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a12ab960a72b55b8e7562d04d0b4bd6e0">_id</a></td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#ae8c0a3a8718a84d9766d528df278ad4b">_nickOrNameCard</a></td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a7841db9af58406a50d53d0ad6f7fa374">_type</a></td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#a10cf00a3c2dfef0bdc29c3f89e508293">avatarUrl</a>()</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a869c10fc8e1abeedc10d805576b1450a">botid</a>()</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#ae39444f378e6de7fd6c3e60981949af5">Contact</a>()</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#acff216bf0459571db3304576f563f6cc">Contact</a>(int type, unsigned long long id, unsigned long long gid, std::string name, unsigned long long botid)</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00174.html#aa51792d32e55433d321d0635e1506610">deleteFriend</a>(JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00174.html">Friend</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#aafc428cdb4c1920864bf747ad7dce9f2">deserializationFromJson</a>(nlohmann::json root)</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#a1ae828255543de1ff394bc79e9262cc7">deserializationFromString</a>(const std::string &amp;source)</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00174.html#a24d5d1e22b735f5f78ac30da904bbc73">Friend</a>(unsigned long long friendid, unsigned long long botid, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00174.html">Friend</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00174.html#a4f453179ab383da2d6a15aff7618fc11">Friend</a>(Contact c)</td><td class="entry"><a class="el" href="a00174.html">Friend</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a07e7ddca539bf8e5ac2d2ad00d8b7ba4">groupid</a>()</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#a220e55b907d54958cd2afb95e65da5a1">id</a>()</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a3f78c5f66d0b71ad06267c6a3b492066">nickOrNameCard</a>()</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00174.html#a9f8fce3fce96e79537c2860871ce8652">refreshInfo</a>(JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00174.html">Friend</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a7f3578533d424fcaada52bc32225d5d9">sendMiraiCode</a>(MiraiCodeable *msg)</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#abd2cdd5e1aa11add1f75ef4dd6454293">sendMiraiCode</a>(MiraiCode msg)</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a46348753dfc0d1ecaf658d93511bd721">sendMiraiCode</a>(std::string msg, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#ac8e7ac7c9330803c5e1862bff68096cd">sendMsg</a>(std::string msg, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a93a378bd7b596f11bc709b0268aa4627">sendMsg</a>(MiraiCode msg)</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#afeb2b3da5b221e8120cc532371f946cc">sendVoice</a>(const std::string &amp;path, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a6739337b623df49bc51e2fc997bfd6e8">serialization</a>()</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#a190dd1c2ecfccf67edc3d2b1cff87835">serializationToString</a>()</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00134.html#a182b686fa824fe5c9a3a5181f873e2a1">type</a>()</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00134.html#a3c3699a0d797da44bd30e12153a140f3">uploadImg</a>(const std::string &amp;filename, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00134.html">Contact</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00174.html#a97e1d4b00be61ae2afe9d4640b1b47e9">_avatarUrl</a></td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00174.html#aa980911dbb3047b33967a113fbd46884">_nick</a></td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00174.html#a94279cd991ebd5665e67246ff7563af0">avatarUrl</a>()</td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00174.html#a98733a6bf8724f78a402b97480955d67">Bot</a>(unsigned long long i)</td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00174.html#a0d6809b54d75c621eb3cc7022943fd3e">check</a>()</td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00174.html#a2734db2add77775b1b8ec5b66b749d74">FriendListToString</a>()</td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00174.html#a6584044628bd3754e52d1dac2cebe789">getFriendList</a>(JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00174.html#acda3c7f35156966087c8f55340f9b48f">getGroupList</a>(JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00174.html#add67cc5d276fd34f57406dbe1043394b">GroupListToString</a>()</td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00174.html#a0858777e9117c59d26532e68c74fc561">id</a></td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00174.html#aea6ef468ac5f253e89f79818e0723bd2">inited</a></td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00174.html#af1538b49ce58759e210c41c402ff6680">nick</a>()</td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00174.html#a3354dc4fbf569d19e11ac04ac8bf0b01">refreshInfo</a>(JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00174.html">Bot</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:51 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

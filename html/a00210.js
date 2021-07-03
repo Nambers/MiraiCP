@@ -1,13 +1,14 @@
 var a00210 =
 [
-    [ "NewFriendRequestEvent", "a00210.html#a476e7a5b53d9fe96435354cc8f59c361", null ],
-    [ "accept", "a00210.html#ac1c8d0828f1b98d9eeb6d95c20406eb7", null ],
-    [ "accept", "a00210.html#aff40c91d67ff76a52e0949f68fc988fd", null ],
-    [ "reject", "a00210.html#a30ef44b5b9eccb9fc93bd1c40a16ca4b", null ],
-    [ "reject", "a00210.html#a52284340d9d6aeb02bd1faf9c2b91a51", null ],
-    [ "fromgroupid", "a00210.html#a2bd7b65f87cdb5f132db8e16d0b34ebc", null ],
-    [ "fromid", "a00210.html#a8c83cea29dbc653489d83dbd7ac15121", null ],
-    [ "message", "a00210.html#a7e2c2b251034d8986e18eae5d6c100b9", null ],
-    [ "nick", "a00210.html#a41d9f54c00030a6467697865ae5bfeaf", null ],
-    [ "source", "a00210.html#afa0c9b11cedce50f30e5cdec6b527168", null ]
+    [ "GroupInviteEvent", "a00210.html#a459cf6aaf1060070a5a7b9670f76a51e", null ],
+    [ "accept", "a00210.html#a7eca11d2982d510111a733665013e1d7", null ],
+    [ "accept", "a00210.html#af06a8c1fc6a4d0b7777b82fd2ce42842", null ],
+    [ "getSource", "a00210.html#a59ffd10fc428295561098137d123a129", null ],
+    [ "reject", "a00210.html#a37bc0ddb350abb31cbebc6126ea9b5d9", null ],
+    [ "reject", "a00210.html#a39cea04927a266122157fcd72716df18", null ],
+    [ "groupid", "a00210.html#a5c218ea77c17ce8aa7cd1bfa56765ee4", null ],
+    [ "groupName", "a00210.html#af5a94c1169cd372073c1f7a1bf731828", null ],
+    [ "inviterid", "a00210.html#a1fd38f381c6fff45ab83467618291fe0", null ],
+    [ "inviterNick", "a00210.html#a52981f0279e776c480bba2a3412b08ce", null ],
+    [ "source", "a00210.html#a6f69065d6970e5984dfa29c37bda9870", null ]
 ];

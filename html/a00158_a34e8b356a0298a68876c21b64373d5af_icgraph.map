@@ -1,0 +1,4 @@
+<map id="LowLevelAPI::uploadImg0" name="LowLevelAPI::uploadImg0">
+<area shape="rect" id="node1" title="上传图片" alt="" coords="188,5,357,32"/>
+<area shape="rect" id="node2" href="$a00138.html#a3c3699a0d797da44bd30e12153a140f3" title="上传本地图片，务必要用绝对路径 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群" alt="" coords="5,5,140,32"/>
+</map>

@@ -1,14 +1,14 @@
-<map id="BotJoinGroupEvent" name="BotJoinGroupEvent">
-<area shape="rect" id="node1" title="机器人进入某群" alt="" coords="248,1540,427,1691"/>
-<area shape="rect" id="node2" href="$a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="167,1158,310,1250"/>
-<area shape="rect" id="node3" href="$a00170.html" title="当前bot账号信息" alt="" coords="131,380,346,677"/>
-<area shape="rect" id="node4" title=" " alt="" coords="19,5,186,83"/>
-<area shape="rect" id="node5" title=" " alt="" coords="522,5,577,83"/>
-<area shape="rect" id="node9" href="$a00134.html" title="group, friend, member的父类" alt="" coords="701,189,920,868"/>
-<area shape="rect" id="node12" href="$a00186.html" title="群设置" alt="" coords="473,490,615,567"/>
-<area shape="rect" id="node6" title=" " alt="" coords="219,5,266,83"/>
-<area shape="rect" id="node7" title=" " alt="" coords="335,1165,407,1243"/>
-<area shape="rect" id="node8" href="$a00182.html" title="群聊类声明" alt="" coords="435,931,653,1477"/>
-<area shape="rect" id="node10" title=" " alt="" coords="808,5,939,83"/>
-<area shape="rect" id="node11" title=" " alt="" coords="963,5,1002,83"/>
+<map id="RecallEvent" name="RecallEvent">
+<area shape="rect" id="node1" title="撤回信息" alt="" coords="441,1571,659,1780"/>
+<area shape="rect" id="node2" href="$a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="371,1401,513,1493"/>
+<area shape="rect" id="node3" href="$a00174.html" title="当前bot账号信息" alt="" coords="335,983,549,1280"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,549,172,627"/>
+<area shape="rect" id="node7" href="$a00082.html" title="以bot的名义发送日志, 表现格式为: 2021&#45;06&#45;28 09:37:22 [log level]/Bot [botid]: [log content]" alt="" coords="126,953,310,1309"/>
+<area shape="rect" id="node5" title=" " alt="" coords="520,549,575,627"/>
+<area shape="rect" id="node6" title=" " alt="" coords="399,13,445,90"/>
+<area shape="rect" id="node9" href="$a00078.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="269,160,380,237"/>
+<area shape="rect" id="node8" href="$a00074.html" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content]" alt="" coords="196,300,403,876"/>
+<area shape="rect" id="node10" title=" " alt="" coords="231,5,354,97"/>
+<area shape="rect" id="node11" title=" " alt="" coords="165,160,245,237"/>
+<area shape="rect" id="node12" title=" " alt="" coords="625,1409,664,1486"/>
 </map>

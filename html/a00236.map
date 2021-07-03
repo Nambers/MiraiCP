@@ -1,4 +1,13 @@
-<map id="Event::Node0" name="Event::Node0">
-<area shape="rect" id="node1" title=" " alt="" coords="5,145,104,223"/>
-<area shape="rect" id="node2" title=" " alt="" coords="31,5,78,83"/>
+<map id="BotOnlineEvent" name="BotOnlineEvent">
+<area shape="rect" id="node1" title=" " alt="" coords="242,1513,421,1605"/>
+<area shape="rect" id="node2" href="$a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="260,1372,403,1464"/>
+<area shape="rect" id="node3" href="$a00174.html" title="当前bot账号信息" alt="" coords="336,983,551,1280"/>
+<area shape="rect" id="node4" title=" " alt="" coords="236,549,403,627"/>
+<area shape="rect" id="node7" href="$a00082.html" title="以bot的名义发送日志, 表现格式为: 2021&#45;06&#45;28 09:37:22 [log level]/Bot [botid]: [log content]" alt="" coords="127,953,311,1309"/>
+<area shape="rect" id="node5" title=" " alt="" coords="427,549,481,627"/>
+<area shape="rect" id="node6" title=" " alt="" coords="339,13,385,90"/>
+<area shape="rect" id="node9" href="$a00078.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="53,160,164,237"/>
+<area shape="rect" id="node8" href="$a00074.html" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content]" alt="" coords="5,300,212,876"/>
+<area shape="rect" id="node10" title=" " alt="" coords="47,5,170,97"/>
+<area shape="rect" id="node11" title=" " alt="" coords="189,160,269,237"/>
 </map>

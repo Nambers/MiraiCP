@@ -1,6 +1,6 @@
-<map id="RemoteAssetException" name="RemoteAssetException">
-<area shape="rect" id="node1" title=" " alt="" coords="45,301,216,408"/>
-<area shape="rect" id="node2" href="$a00082.html" title="总异常抽象类" alt="" coords="5,132,139,239"/>
+<map id="RecallException" name="RecallException">
+<area shape="rect" id="node1" title=" " alt="" coords="63,301,199,393"/>
+<area shape="rect" id="node2" href="$a00086.html" title="总异常抽象类" alt="" coords="5,132,139,239"/>
 <area shape="rect" id="node3" title=" " alt="" coords="20,5,124,83"/>
 <area shape="rect" id="node4" title=" " alt="" coords="163,147,218,224"/>
 </map>

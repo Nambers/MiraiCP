@@ -1,0 +1,11 @@
+<map id="Bot::GroupListToString" name="Bot::GroupListToString">
+<area shape="rect" id="node1" title="群列表string形式返回，利于保存" alt="" coords="5,132,160,159"/>
+<area shape="rect" id="node2" href="$a00174.html#acda3c7f35156966087c8f55340f9b48f" title="取群列表" alt="" coords="219,107,343,133"/>
+<area shape="rect" id="node9" href="$a00058.html#a937cd10ba7720be62817d6cf078c2a22" title="long long 类型的vector格式化输出" alt="" coords="208,157,355,184"/>
+<area shape="rect" id="node3" href="$a00062.html#afb8424eb037cadc329d3c47df377748a" title="调用mirai操作" alt="" coords="413,81,539,108"/>
+<area shape="rect" id="node8" href="$a00058.html#a7c61d205bdc3f53c96417b26f262da94" title="从string格式化到vector" alt="" coords="403,132,549,159"/>
+<area shape="rect" id="node4" href="$a00058.html#aabf8a80dcd00513cb7516e8251109313" title=" " alt="" coords="597,56,716,83"/>
+<area shape="rect" id="node7" href="$a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="1051,56,1169,83"/>
+<area shape="rect" id="node5" href="$a00074.html#a74fb2d4bc7e34e4897063a567c6611c3" title="发送错误(error级日志)" alt="" coords="764,56,861,83"/>
+<area shape="rect" id="node6" href="$a00074.html#a39d20a1a355877f9a4ca01780a909e14" title="日志底层实现封装" alt="" coords="909,5,1003,32"/>
+</map>

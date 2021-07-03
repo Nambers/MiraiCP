@@ -1,4 +1,4 @@
-<map id="Member" name="Member">
-<area shape="rect" id="node1" title="群成员类声明" alt="" coords="17,835,212,1117"/>
-<area shape="rect" id="node2" href="$a00134.html" title="group, friend, member的父类" alt="" coords="5,5,224,787"/>
+<map id="Friend" name="Friend">
+<area shape="rect" id="node1" title="好友类声明" alt="" coords="27,835,202,1029"/>
+<area shape="rect" id="node2" href="$a00138.html" title="group, friend, member的父类" alt="" coords="5,5,224,787"/>
 </map>

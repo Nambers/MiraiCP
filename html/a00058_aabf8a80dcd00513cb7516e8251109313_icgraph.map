@@ -1,52 +1,52 @@
 <map id="Tools::jstring2str" name="Tools::jstring2str">
-<area shape="rect" id="node1" title=" " alt="" coords="1352,651,1471,677"/>
-<area shape="rect" id="node2" href="$a00011.html#a1884ee856325a610b44241a7c10b446f" title=" " alt="" coords="1087,614,1304,655"/>
-<area shape="rect" id="node3" href="$a00062.html#afb8424eb037cadc329d3c47df377748a" title="调用mirai操作" alt="" coords="1132,680,1259,707"/>
-<area shape="rect" id="node4" href="$a00206.html#af06a8c1fc6a4d0b7777b82fd2ce42842" title=" " alt="" coords="839,5,1004,32"/>
-<area shape="rect" id="node5" href="$a00210.html#aff40c91d67ff76a52e0949f68fc988fd" title="接受好友申请" alt="" coords="840,57,1003,98"/>
-<area shape="rect" id="node6" href="$a00174.html#aa51792d32e55433d321d0635e1506610" title="删除好友(delete是C++关键字" alt="" coords="853,123,990,149"/>
-<area shape="rect" id="node7" href="$a00182.html#a4eadbc1ff13345e65c326bc31ab51a30" title=" " alt="" coords="869,173,973,200"/>
-<area shape="rect" id="node8" href="$a00182.html#a46cd7c2b83738574ceb528de83817b54" title=" " alt="" coords="842,224,1001,251"/>
-<area shape="rect" id="node10" href="$a00170.html#a6584044628bd3754e52d1dac2cebe789" title="取好友列表" alt="" coords="859,275,984,301"/>
-<area shape="rect" id="node12" href="$a00170.html#acda3c7f35156966087c8f55340f9b48f" title="取群列表" alt="" coords="859,325,983,352"/>
-<area shape="rect" id="node14" href="$a00154.html#ad285de08b2fb584b482db3e0144c1196" title="取该联系人的一些信息" alt="" coords="830,427,1013,453"/>
-<area shape="rect" id="node21" href="$a00182.html#a5201b9f4030729d9384b0e01603c0513" title="更新群设置, 即覆盖服务器上的群设置" alt="" coords="369,376,514,403"/>
-<area shape="rect" id="node22" href="$a00182.html#a6972381c59872d120d149bbffa8caaf3" title=" " alt="" coords="846,579,997,605"/>
-<area shape="rect" id="node24" href="$a00182.html#add1e65680741fd67e842bd55d619f871" title="取群主" alt="" coords="861,528,981,555"/>
-<area shape="rect" id="node25" href="$a00178.html#a37b4986d11cd5c950d92dbc5d9296684" title=" " alt="" coords="841,477,1001,504"/>
-<area shape="rect" id="node26" href="$a00178.html#ae23c4a4ff625eb0c29f27a0c66a76aee" title=" " alt="" coords="870,629,973,656"/>
-<area shape="rect" id="node27" href="$a00178.html#a58a543e956ab5c1d77f29a2c15e675cb" title=" " alt="" coords="868,680,975,707"/>
-<area shape="rect" id="node28" href="$a00130.html#a33f8850fcab39bb5ca332a04400c8d50" title=" " alt="" coords="860,731,983,757"/>
-<area shape="rect" id="node29" href="$a00182.html#ab46c414e9840977df20500fccc5e5352" title=" " alt="" coords="878,781,965,808"/>
-<area shape="rect" id="node30" href="$a00126.html#a7bfc2a0e364807256a86990bfa37c645" title="回复(引用并发送)" alt="" coords="817,833,1026,874"/>
-<area shape="rect" id="node31" href="$a00126.html#a71860160942a031d1326188d6bb2a84f" title=" " alt="" coords="804,899,1039,925"/>
-<area shape="rect" id="node32" href="$a00126.html#af13eac13eab97b11985f25f6534c3fef" title=" " alt="" coords="844,949,999,976"/>
-<area shape="rect" id="node33" href="$a00170.html#a3354dc4fbf569d19e11ac04ac8bf0b01" title="刷新bot信息" alt="" coords="867,1000,976,1027"/>
-<area shape="rect" id="node37" href="$a00206.html#a39cea04927a266122157fcd72716df18" title=" " alt="" coords="842,1051,1001,1077"/>
-<area shape="rect" id="node38" href="$a00210.html#a52284340d9d6aeb02bd1faf9c2b91a51" title="拒绝好友申请" alt="" coords="840,1102,1003,1143"/>
-<area shape="rect" id="node39" href="$a00154.html#ac6e830ba53c3477de726793a26357256" title="抽象封装底层发送信息接口" alt="" coords="852,1269,991,1296"/>
-<area shape="rect" id="node46" href="$a00182.html#a5c6be84a0330257d8c30f69aa91ef41f" title=" " alt="" coords="864,1219,979,1245"/>
-<area shape="rect" id="node47" href="$a00166.html#a8bb5db9b77ded55f8c3aded9f692a9a3" title="发送给群或好友或群成员" alt="" coords="356,1168,527,1195"/>
-<area shape="rect" id="node48" href="$a00134.html#afeb2b3da5b221e8120cc532371f946cc" title="发送语音" alt="" coords="853,1320,989,1347"/>
-<area shape="rect" id="node49" href="$a00154.html#a34e8b356a0298a68876c21b64373d5af" title="上传图片" alt="" coords="837,1371,1006,1397"/>
-<area shape="rect" id="node9" href="$a00182.html#aed855786800370a40cc6eb1c6ebf45a5" title=" " alt="" coords="603,224,728,251"/>
-<area shape="rect" id="node11" href="$a00170.html#a2734db2add77775b1b8ec5b66b749d74" title="好友列表string形式返回，利于保存" alt="" coords="588,275,743,301"/>
-<area shape="rect" id="node13" href="$a00170.html#add67cc5d276fd34f57406dbe1043394b" title="群列表string形式返回，利于保存" alt="" coords="588,325,743,352"/>
-<area shape="rect" id="node15" href="$a00174.html#a9f8fce3fce96e79537c2860871ce8652" title="刷新当前对象信息" alt="" coords="603,477,728,504"/>
-<area shape="rect" id="node17" href="$a00178.html#a8934688d50f82adfeb931f573b1889c8" title="刷新当前对象信息" alt="" coords="597,528,733,555"/>
-<area shape="rect" id="node19" href="$a00182.html#a96745dba8b6f78c2f8dd04fbd241cef2" title="刷新群聊信息" alt="" coords="603,427,727,453"/>
-<area shape="rect" id="node16" href="$a00174.html#a24d5d1e22b735f5f78ac30da904bbc73" title="构建好友对象" alt="" coords="390,477,493,504"/>
-<area shape="rect" id="node18" href="$a00178.html#a1313aa1274273237f2dbfaa053a9d23e" title=" " alt="" coords="379,528,503,555"/>
-<area shape="rect" id="node20" href="$a00182.html#add4d15440d039be09abf8f8fc316dc8c" title=" " alt="" coords="391,427,491,453"/>
-<area shape="rect" id="node23" href="$a00182.html#ac89491904da04e7ac2958d8a1ff05e5d" title=" " alt="" coords="575,579,756,605"/>
-<area shape="rect" id="node34" href="$a00170.html#a0d6809b54d75c621eb3cc7022943fd3e" title=" " alt="" coords="623,1000,708,1027"/>
-<area shape="rect" id="node35" href="$a00170.html#a94279cd991ebd5665e67246ff7563af0" title="头像下载链接" alt="" coords="391,975,491,1001"/>
-<area shape="rect" id="node36" href="$a00170.html#af1538b49ce58759e210c41c402ff6680" title="昵称" alt="" coords="404,1025,479,1052"/>
-<area shape="rect" id="node40" href="$a00134.html#a46348753dfc0d1ecaf658d93511bd721" title="发送miraicode" alt="" coords="585,1219,746,1245"/>
-<area shape="rect" id="node41" href="$a00134.html#ac8e7ac7c9330803c5e1862bff68096cd" title="发送纯文本信息" alt="" coords="601,1269,729,1296"/>
-<area shape="rect" id="node42" href="$a00017.html#a2f5a0b296fa851091b92244aa5da103a" title=" " alt="" coords="418,1269,465,1296"/>
-<area shape="rect" id="node43" href="$a00017.html#af6b40412027c7beb9eb51bbfed51aff6" title=" " alt="" coords="232,1269,308,1296"/>
-<area shape="rect" id="node45" href="$a00134.html#a93a378bd7b596f11bc709b0268aa4627" title="发送纯文本信息" alt="" coords="377,1219,505,1245"/>
-<area shape="rect" id="node44" href="$a00011.html#aef48c35044131053dbb51ec07a0070af" title=" " alt="" coords="5,1255,184,1311"/>
-<area shape="rect" id="node50" href="$a00134.html#a3c3699a0d797da44bd30e12153a140f3" title="上传本地图片，务必要用绝对路径 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群" alt="" coords="598,1371,733,1397"/>
+<area shape="rect" id="node1" title=" " alt="" coords="1327,651,1445,677"/>
+<area shape="rect" id="node2" href="$a00011.html#a1884ee856325a610b44241a7c10b446f" title=" " alt="" coords="1061,614,1279,655"/>
+<area shape="rect" id="node3" href="$a00062.html#afb8424eb037cadc329d3c47df377748a" title="调用mirai操作" alt="" coords="1107,680,1233,707"/>
+<area shape="rect" id="node4" href="$a00210.html#af06a8c1fc6a4d0b7777b82fd2ce42842" title=" " alt="" coords="813,5,979,32"/>
+<area shape="rect" id="node5" href="$a00214.html#aff40c91d67ff76a52e0949f68fc988fd" title="接受好友申请" alt="" coords="815,57,977,98"/>
+<area shape="rect" id="node6" href="$a00178.html#aa51792d32e55433d321d0635e1506610" title="删除好友(delete是C++关键字" alt="" coords="827,123,965,149"/>
+<area shape="rect" id="node7" href="$a00186.html#a4eadbc1ff13345e65c326bc31ab51a30" title=" " alt="" coords="844,173,948,200"/>
+<area shape="rect" id="node8" href="$a00186.html#a46cd7c2b83738574ceb528de83817b54" title=" " alt="" coords="817,224,975,251"/>
+<area shape="rect" id="node10" href="$a00174.html#a6584044628bd3754e52d1dac2cebe789" title="取好友列表" alt="" coords="833,275,959,301"/>
+<area shape="rect" id="node12" href="$a00174.html#acda3c7f35156966087c8f55340f9b48f" title="取群列表" alt="" coords="834,325,958,352"/>
+<area shape="rect" id="node14" href="$a00158.html#ad285de08b2fb584b482db3e0144c1196" title="取该联系人的一些信息" alt="" coords="805,376,987,403"/>
+<area shape="rect" id="node21" href="$a00186.html#a5201b9f4030729d9384b0e01603c0513" title="更新群设置, 即覆盖服务器上的群设置" alt="" coords="356,427,501,453"/>
+<area shape="rect" id="node22" href="$a00186.html#a6972381c59872d120d149bbffa8caaf3" title=" " alt="" coords="821,528,971,555"/>
+<area shape="rect" id="node24" href="$a00186.html#add1e65680741fd67e842bd55d619f871" title="取群主" alt="" coords="836,579,956,605"/>
+<area shape="rect" id="node25" href="$a00182.html#a37b4986d11cd5c950d92dbc5d9296684" title=" " alt="" coords="816,477,976,504"/>
+<area shape="rect" id="node26" href="$a00182.html#ae23c4a4ff625eb0c29f27a0c66a76aee" title=" " alt="" coords="845,629,947,656"/>
+<area shape="rect" id="node27" href="$a00182.html#a58a543e956ab5c1d77f29a2c15e675cb" title=" " alt="" coords="843,680,949,707"/>
+<area shape="rect" id="node28" href="$a00134.html#a33f8850fcab39bb5ca332a04400c8d50" title=" " alt="" coords="835,731,957,757"/>
+<area shape="rect" id="node29" href="$a00186.html#ab46c414e9840977df20500fccc5e5352" title=" " alt="" coords="853,781,939,808"/>
+<area shape="rect" id="node30" href="$a00130.html#a7bfc2a0e364807256a86990bfa37c645" title="回复(引用并发送)" alt="" coords="791,833,1001,874"/>
+<area shape="rect" id="node31" href="$a00130.html#a71860160942a031d1326188d6bb2a84f" title=" " alt="" coords="779,899,1013,925"/>
+<area shape="rect" id="node32" href="$a00130.html#af13eac13eab97b11985f25f6534c3fef" title=" " alt="" coords="819,949,973,976"/>
+<area shape="rect" id="node33" href="$a00174.html#a3354dc4fbf569d19e11ac04ac8bf0b01" title="刷新bot信息" alt="" coords="841,1000,951,1027"/>
+<area shape="rect" id="node37" href="$a00210.html#a39cea04927a266122157fcd72716df18" title=" " alt="" coords="817,1051,975,1077"/>
+<area shape="rect" id="node38" href="$a00214.html#a52284340d9d6aeb02bd1faf9c2b91a51" title="拒绝好友申请" alt="" coords="815,1102,977,1143"/>
+<area shape="rect" id="node39" href="$a00158.html#ac6e830ba53c3477de726793a26357256" title="抽象封装底层发送信息接口" alt="" coords="827,1168,965,1195"/>
+<area shape="rect" id="node46" href="$a00186.html#a5c6be84a0330257d8c30f69aa91ef41f" title=" " alt="" coords="839,1219,953,1245"/>
+<area shape="rect" id="node47" href="$a00170.html#a8bb5db9b77ded55f8c3aded9f692a9a3" title="发送给群或好友或群成员" alt="" coords="811,1269,981,1296"/>
+<area shape="rect" id="node48" href="$a00138.html#afeb2b3da5b221e8120cc532371f946cc" title="发送语音" alt="" coords="828,1320,964,1347"/>
+<area shape="rect" id="node49" href="$a00158.html#a34e8b356a0298a68876c21b64373d5af" title="上传图片" alt="" coords="811,1371,981,1397"/>
+<area shape="rect" id="node9" href="$a00186.html#aed855786800370a40cc6eb1c6ebf45a5" title=" " alt="" coords="577,173,703,200"/>
+<area shape="rect" id="node11" href="$a00174.html#a2734db2add77775b1b8ec5b66b749d74" title="好友列表string形式返回，利于保存" alt="" coords="563,224,717,251"/>
+<area shape="rect" id="node13" href="$a00174.html#add67cc5d276fd34f57406dbe1043394b" title="群列表string形式返回，利于保存" alt="" coords="563,275,717,301"/>
+<area shape="rect" id="node15" href="$a00178.html#a9f8fce3fce96e79537c2860871ce8652" title="刷新当前对象信息" alt="" coords="577,325,703,352"/>
+<area shape="rect" id="node17" href="$a00182.html#a8934688d50f82adfeb931f573b1889c8" title="刷新当前对象信息" alt="" coords="572,477,708,504"/>
+<area shape="rect" id="node19" href="$a00186.html#a96745dba8b6f78c2f8dd04fbd241cef2" title="刷新群聊信息" alt="" coords="578,376,702,403"/>
+<area shape="rect" id="node16" href="$a00178.html#a24d5d1e22b735f5f78ac30da904bbc73" title="构建好友对象" alt="" coords="377,325,480,352"/>
+<area shape="rect" id="node18" href="$a00182.html#a1313aa1274273237f2dbfaa053a9d23e" title=" " alt="" coords="367,477,491,504"/>
+<area shape="rect" id="node20" href="$a00186.html#add4d15440d039be09abf8f8fc316dc8c" title=" " alt="" coords="379,376,479,403"/>
+<area shape="rect" id="node23" href="$a00186.html#ac89491904da04e7ac2958d8a1ff05e5d" title=" " alt="" coords="549,528,731,555"/>
+<area shape="rect" id="node34" href="$a00174.html#a0d6809b54d75c621eb3cc7022943fd3e" title=" " alt="" coords="597,1000,683,1027"/>
+<area shape="rect" id="node35" href="$a00174.html#a94279cd991ebd5665e67246ff7563af0" title="头像下载链接" alt="" coords="379,1025,479,1052"/>
+<area shape="rect" id="node36" href="$a00174.html#af1538b49ce58759e210c41c402ff6680" title="昵称" alt="" coords="391,975,466,1001"/>
+<area shape="rect" id="node40" href="$a00138.html#a46348753dfc0d1ecaf658d93511bd721" title="发送miraicode" alt="" coords="559,1143,721,1169"/>
+<area shape="rect" id="node41" href="$a00138.html#ac8e7ac7c9330803c5e1862bff68096cd" title="发送纯文本信息" alt="" coords="576,1193,704,1220"/>
+<area shape="rect" id="node42" href="$a00017.html#a2f5a0b296fa851091b92244aa5da103a" title=" " alt="" coords="405,1143,452,1169"/>
+<area shape="rect" id="node43" href="$a00017.html#af6b40412027c7beb9eb51bbfed51aff6" title=" " alt="" coords="232,1168,308,1195"/>
+<area shape="rect" id="node45" href="$a00138.html#a93a378bd7b596f11bc709b0268aa4627" title="发送纯文本信息" alt="" coords="365,1244,493,1271"/>
+<area shape="rect" id="node44" href="$a00011.html#aef48c35044131053dbb51ec07a0070af" title=" " alt="" coords="5,1153,184,1209"/>
+<area shape="rect" id="node50" href="$a00138.html#a3c3699a0d797da44bd30e12153a140f3" title="上传本地图片，务必要用绝对路径 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群" alt="" coords="573,1371,707,1397"/>
 </map>

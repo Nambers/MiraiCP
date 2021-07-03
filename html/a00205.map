@@ -1,4 +1,4 @@
-<map id="GroupInviteEvent" name="GroupInviteEvent">
-<area shape="rect" id="node1" title="群聊邀请事件类声明" alt="" coords="5,145,235,560"/>
-<area shape="rect" id="node2" href="$a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="49,5,191,97"/>
+<map id="PrivateMessageEvent" name="PrivateMessageEvent">
+<area shape="rect" id="node1" title="私聊消息事件类声明" alt="" coords="5,160,272,325"/>
+<area shape="rect" id="node2" href="$a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="63,5,214,112"/>
 </map>

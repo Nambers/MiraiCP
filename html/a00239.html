@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -85,23 +89,52 @@ $(document).ready(function(){initNavTree('a00242.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Event::Node&lt; T &gt; 成员列表</div>  </div>
+<div class="title">Event 成员列表</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>成员的完整列表，这些成员属于 <a class="el" href="a00242.html">Event::Node&lt; T &gt;</a>,包括所有继承而来的类成员</p>
+<p>成员的完整列表，这些成员属于 <a class="el" href="a00242.html">Event</a>,包括所有继承而来的类成员</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="a00238.html#a302333a14ca498fdb49969172a1ad2ad">enable</a></td><td class="entry"><a class="el" href="a00238.html">Event::Node0</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00242.html#ac20cac42d567d682c7a09ad923e6313e">f</a></td><td class="entry"><a class="el" href="a00242.html">Event::Node&lt; T &gt;</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00242.html#a1f3b94e59db2ab23334c1a621378cb2c">next</a></td><td class="entry"><a class="el" href="a00242.html">Event::Node&lt; T &gt;</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00238.html#a8aba6f789c7da40ca1af2a488ec1c13e">nextNode</a></td><td class="entry"><a class="el" href="a00238.html">Event::Node0</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#a9a7fc8a0338caedc5e0fe2c17f803e36">BHead</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#aa566ac083f382612c278ebb3ad920423">BOHead</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#aebce81de6139f12c5f525b23b653c090">BOTail</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#a29fb8c1219447ae57de8f4637ba25e11">broadcast</a>(T e)</td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#a13c06fcb48fe8ae44a903c03e8b671f3">BTail</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#a831b37c87d2f22372191cce1ae3d3f33">GHead</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#a115dbe46418b31fc3d5e77031e87ac26">GMHead</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#ab156b43f095b9b22a00d80d17ae6da74">GMTail</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#a77d0d226b41504218b9ab26134ceffa8">GTail</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#acd3329e8ac2b7c2fbd55f8f6e1b76e0d">GTMHead</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#aa8d44ba9ab121874e0ec7309c523976a">GTMTail</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#a5109056bb230c3bfaed03b23d6a6dd88">head</a>()</td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#a46eb47be3b554398ca4ee4543ca9d0a8">MJHead</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#a941ca70c6dba2d66b6cdcfcfede64a34">MJTail</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#a052cfbf77fc2e19208fce1f54105b1e4">MLHead</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#a44e6a12ddb1f9e5d895909b5647728ec">MLTail</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#a2b734821b1581f618a35b7cf6125b2d4">NFHead</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#a23e4615a0965835c910b698c6866cfe8">NFTail</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#abd9caecf40147b9f45365eedd46061f0">PMHead</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#aa5cd5165996661c12c6f9f31a29bebda">PMTail</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>(std::function&lt; void(T)&gt; f)</td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#a50fa05015b58856cc28677f9c629be89">RHead</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#a7700149cb994cb7a73ccbee28b7c8a81">RTail</a></td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00242.html#a2093f1cdc85835026fefae130fc7b7e6">tail</a>(std::function&lt; void(T)&gt; f)</td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00242.html#a7704ec01ce91e673885792054214b3d2">~Event</a>()</td><td class="entry"><a class="el" href="a00242.html">Event</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:00 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

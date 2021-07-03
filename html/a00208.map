@@ -1,8 +1,13 @@
-<map id="NewFriendRequestEvent" name="NewFriendRequestEvent">
-<area shape="rect" id="node1" title="好友申请事件声明" alt="" coords="85,691,378,1003"/>
-<area shape="rect" id="node2" href="$a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="160,549,303,641"/>
-<area shape="rect" id="node3" href="$a00170.html" title="当前bot账号信息" alt="" coords="124,160,339,457"/>
-<area shape="rect" id="node4" title=" " alt="" coords="5,5,172,83"/>
-<area shape="rect" id="node5" title=" " alt="" coords="308,5,363,83"/>
-<area shape="rect" id="node6" title=" " alt="" coords="197,5,244,83"/>
+<map id="GroupInviteEvent" name="GroupInviteEvent">
+<area shape="rect" id="node1" title="群聊邀请事件类声明" alt="" coords="297,1543,526,1869"/>
+<area shape="rect" id="node2" href="$a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="340,1401,483,1493"/>
+<area shape="rect" id="node3" href="$a00174.html" title="当前bot账号信息" alt="" coords="388,983,603,1280"/>
+<area shape="rect" id="node4" title=" " alt="" coords="236,549,403,627"/>
+<area shape="rect" id="node7" href="$a00082.html" title="以bot的名义发送日志, 表现格式为: 2021&#45;06&#45;28 09:37:22 [log level]/Bot [botid]: [log content]" alt="" coords="179,953,363,1309"/>
+<area shape="rect" id="node5" title=" " alt="" coords="567,549,621,627"/>
+<area shape="rect" id="node6" title=" " alt="" coords="381,13,428,90"/>
+<area shape="rect" id="node9" href="$a00078.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="220,160,331,237"/>
+<area shape="rect" id="node8" href="$a00074.html" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content]" alt="" coords="5,300,212,876"/>
+<area shape="rect" id="node10" title=" " alt="" coords="214,5,337,97"/>
+<area shape="rect" id="node11" title=" " alt="" coords="69,160,149,237"/>
 </map>

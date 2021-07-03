@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['apiexception_302',['APIException',['../a00090.html',1,'']]]
+  ['apiexception_311',['APIException',['../a00094.html',1,'']]]
 ];

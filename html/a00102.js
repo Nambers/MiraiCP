@@ -1,8 +1,7 @@
 var a00102 =
 [
-    [ "MemberException", "a00102.html#ae3cc6e7ffd32c9e608862a65b52baa32", null ],
-    [ "raise", "a00102.html#a904e9a32da679e8b54afb8503133542e", null ],
-    [ "what", "a00102.html#ac286a2e97a098397d97a616945e07b1d", null ],
-    [ "description", "a00102.html#afdf1c92354325ca4f7a83037c15dab26", null ],
-    [ "type", "a00102.html#a4b0be94532473b24b93c5ca16f93853d", null ]
+    [ "MuteException", "a00102.html#a03929d5b76e5a8f7055df6587844f66d", null ],
+    [ "raise", "a00102.html#af109372d76aede1d7db4a87001a75c68", null ],
+    [ "what", "a00102.html#a02778dbb96d07fb5eecd972968cbe0a5", null ],
+    [ "description", "a00102.html#a326e7d9747d6dac3bc1e6514c1aed3c5", null ]
 ];

@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -5,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 上传并发送远程</title>
+<title>MiraiCP: 构建聊天记录</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -85,33 +89,32 @@ $(document).ready(function(){initNavTree('a00276.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">上传并发送远程</div>  </div>
+<div class="title">构建聊天记录</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>上传并发送远程(群)文件 </p><dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">path-群文件路径(带文件名),根目录为/</td><td></td></tr>
-    <tr><td class="paramname">filepath-本地文件路径</td><td>(群)文件 <div class="fragment"><div class="line"><a name="a0"></a><a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a name="a1"></a><a class="code" href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>([](<a name="_a2"></a><a class="code" href="a00198.html">GroupMessageEvent</a> e) {</div>
-<div class="line">   <span class="comment">// 发送D:\\ValveUnhandledExceptionFilter.txt本地文件到qq群的 /test.txt 路径</span></div>
-<div class="line">   <a name="_a3"></a><a class="code" href="a00150.html">RemoteFile</a> tmp = e.<a name="a4"></a><a class="code" href="a00198.html#acbc031790011ba7b520a21aec2299f08">group</a>.<a name="a5"></a><a class="code" href="a00182.html#a5c6be84a0330257d8c30f69aa91ef41f">sendFile</a>(<span class="stringliteral">&quot;/test.txt&quot;</span>, <span class="stringliteral">&quot;D:\\ValveUnhandledExceptionFilter.txt&quot;</span>);</div>
-<div class="line">   });</div>
-<div class="ttc" id="aa00011_html_a478af16c6688220a7434630eb9101d74"><div class="ttname"><a href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a></div><div class="ttdeci">Event * procession</div><div class="ttdoc">全局事件指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00012">pch.cpp:12</a></div></div>
-<div class="ttc" id="aa00150_html"><div class="ttname"><a href="a00150.html">RemoteFile</a></div><div class="ttdoc">远程(群)文件类型</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01013">tools.h:1013</a></div></div>
-<div class="ttc" id="aa00182_html_a5c6be84a0330257d8c30f69aa91ef41f"><div class="ttname"><a href="a00182.html#a5c6be84a0330257d8c30f69aa91ef41f">Group::sendFile</a></div><div class="ttdeci">RemoteFile sendFile(const std::string &amp;path, const std::string &amp;filepath, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00418">tools.cpp:418</a></div></div>
-<div class="ttc" id="aa00198_html"><div class="ttname"><a href="a00198.html">GroupMessageEvent</a></div><div class="ttdoc">群消息事件声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01545">tools.h:1545</a></div></div>
-<div class="ttc" id="aa00198_html_acbc031790011ba7b520a21aec2299f08"><div class="ttname"><a href="a00198.html#acbc031790011ba7b520a21aec2299f08">GroupMessageEvent::group</a></div><div class="ttdeci">Group group</div><div class="ttdoc">来源群</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01548">tools.h:1548</a></div></div>
-<div class="ttc" id="aa00234_html_ad3d76f3c8bd243c17a82a24c5bd135c0"><div class="ttname"><a href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l02013">tools.h:2013</a></div></div>
-</div><!-- fragment --></td></tr>
-  </table>
-  </dd>
-</dl>
-</div><!-- contents -->
+<p>构建一条聊天记录 第一个参数是聊天记录发生的地方 然后是每条信息</p>
+<div class="fragment"><div class="line">*<a name="_a0"></a><a class="code" href="a00170.html">ForwardMessage</a>(&amp;e.group,</div>
+<div class="line">{</div>
+<div class="line">    ForwardNode(1930893235, <span class="stringliteral">&quot;Eritque arcus&quot;</span>, <span class="stringliteral">&quot;hahaha&quot;</span>, 1),</div>
+<div class="line">    ForwardNode(1930893235, <span class="stringliteral">&quot;Eritque arcus&quot;</span>, <span class="stringliteral">&quot;hahaha&quot;</span>, -1)</div>
+<div class="line">}).<a name="a1"></a><a class="code" href="a00170.html#a8bb5db9b77ded55f8c3aded9f692a9a3">sendTo</a>(&amp;e.group);</div>
+<div class="ttc" id="aa00170_html"><div class="ttname"><a href="a00170.html">ForwardMessage</a></div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01208">tools.h:1208</a></div></div>
+<div class="ttc" id="aa00170_html_a8bb5db9b77ded55f8c3aded9f692a9a3"><div class="ttname"><a href="a00170.html#a8bb5db9b77ded55f8c3aded9f692a9a3">ForwardMessage::sendTo</a></div><div class="ttdeci">void sendTo(Contact *c, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送给群或好友或群成员</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00231">tools.cpp:231</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

@@ -1,0 +1,4 @@
+<map id="Bot::getGroupList" name="Bot::getGroupList">
+<area shape="rect" id="node1" title="取群列表" alt="" coords="208,5,332,32"/>
+<area shape="rect" id="node2" href="$a00174.html#add67cc5d276fd34f57406dbe1043394b" title="群列表string形式返回，利于保存" alt="" coords="5,5,160,32"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="MessageSource::quoteAndSendMsg" name="MessageSource::quoteAndSendMsg">
+<area shape="rect" id="node1" title=" " alt="" coords="5,97,240,123"/>
+<area shape="rect" id="node2" href="$a00130.html#a593939fc75a52d99f210da0482a85443" title="从json字符串反序列化到MessageSource对象" alt="" coords="288,5,475,47"/>
+<area shape="rect" id="node7" href="$a00026.html#ab59fa3f78cc8acbe38a75e2445f8d087" title=" " alt="" coords="336,71,427,98"/>
+<area shape="rect" id="node8" href="$a00062.html#afb8424eb037cadc329d3c47df377748a" title="调用mirai操作" alt="" coords="318,122,445,149"/>
+<area shape="rect" id="node10" href="$a00130.html#a4989eaf784cda998f2a3f46bcf9426d9" title=" " alt="" coords="295,173,467,215"/>
+<area shape="rect" id="node3" href="$a00074.html#a74fb2d4bc7e34e4897063a567c6611c3" title="发送错误(error级日志)" alt="" coords="789,67,887,94"/>
+<area shape="rect" id="node6" href="$a00130.html#a19d28a14e61cc59cf8c4ff874d9cf6de" title=" " alt="" coords="523,42,741,69"/>
+<area shape="rect" id="node4" href="$a00074.html#a39d20a1a355877f9a4ca01780a909e14" title="日志底层实现封装" alt="" coords="935,42,1028,69"/>
+<area shape="rect" id="node5" href="$a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="1076,93,1195,119"/>
+<area shape="rect" id="node9" href="$a00058.html#aabf8a80dcd00513cb7516e8251109313" title=" " alt="" coords="573,93,691,119"/>
+</map>

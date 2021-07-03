@@ -1,4 +1,13 @@
-<map id="GroupMessageEvent" name="GroupMessageEvent">
-<area shape="rect" id="node1" title="群消息事件声明" alt="" coords="5,145,272,340"/>
-<area shape="rect" id="node2" href="$a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="67,5,210,97"/>
+<map id="BotEvent" name="BotEvent">
+<area shape="rect" id="node1" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="1125,5,1275,112"/>
+<area shape="rect" id="node2" href="$a00230.html" title="机器人进入某群" alt="" coords="5,270,184,465"/>
+<area shape="rect" id="node3" href="$a00238.html" title=" " alt="" coords="208,321,387,413"/>
+<area shape="rect" id="node4" href="$a00210.html" title="群聊邀请事件类声明" alt="" coords="411,160,640,575"/>
+<area shape="rect" id="node5" href="$a00202.html" title="群消息事件声明" alt="" coords="664,270,931,465"/>
+<area shape="rect" id="node6" href="$a00234.html" title="群临时会话" alt="" coords="955,270,1186,465"/>
+<area shape="rect" id="node7" href="$a00218.html" title="新群成员加入" alt="" coords="1210,270,1449,465"/>
+<area shape="rect" id="node8" href="$a00222.html" title="群成员离开" alt="" coords="1473,263,1717,472"/>
+<area shape="rect" id="node9" href="$a00214.html" title="好友申请事件声明" alt="" coords="1741,167,2035,567"/>
+<area shape="rect" id="node10" href="$a00206.html" title="私聊消息事件类声明" alt="" coords="2059,285,2325,450"/>
+<area shape="rect" id="node11" href="$a00226.html" title="撤回信息" alt="" coords="2349,197,2568,538"/>
 </map>

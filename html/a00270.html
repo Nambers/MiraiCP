@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -5,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 在事件中构建Member对象</title>
+<title>MiraiCP: 取一个miraicode字符串中全部的图片id</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -85,27 +89,42 @@ $(document).ready(function(){initNavTree('a00270.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">在事件中构建Member对象</div>  </div>
+<div class="title">取一个miraicode字符串中全部的图片id</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>构建群成员对象 </p><dl class="params"><dt>参数</dt><dd>
+<p>取一个miraicode字符串中全部的图片id，详情见Image </p><dl class="section see"><dt>参见</dt><dd><a class="el" href="a00134.html" title="图像类声明">Image</a> </dd></dl>
+<dl class="params"><dt>参数</dt><dd>
   <table class="params">
-    <tr><td class="paramname">qqid</td><td>该成员q号 </td></tr>
-    <tr><td class="paramname">groupid</td><td>所在群号 </td></tr>
-    <tr><td class="paramname">botid</td><td>机器人id</td></tr>
+    <tr><td class="paramname">miraicode的字符串</td><td></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="_a0"></a><a class="code" href="a00178.html">Member</a>(this.sender.id, <span class="keyword">this</span>.group.id, <span class="keyword">this</span>.bot.id)</div>
-<div class="ttc" id="aa00178_html"><div class="ttname"><a href="a00178.html">Member</a></div><div class="ttdoc">群成员类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01299">tools.h:1299</a></div></div>
-</div><!-- fragment --><div class="fragment"></div><!-- fragment --><p>对象 </p>
+<dl class="section return"><dt>返回</dt><dd>vector容器，每一项为一个图片id</dd></dl>
+<div class="fragment"><div class="line">vector&lt;string&gt; temp = Image::GetImgIdFromMiraiCode(param.message);</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; temp.size(); i++) {</div>
+<div class="line">   <a name="a0"></a><a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a name="a1"></a><a class="code" href="a00074.html#a0c06be585935f38b4351f8c207b97b41">Info</a>(temp[i]);</div>
+<div class="line">   <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#a0c06be585935f38b4351f8c207b97b41">Info</a>(<span class="stringliteral">&quot;图片下载地址:&quot;</span> + <a name="_a2"></a><a class="code" href="a00134.html">Image</a>(param.env, temp[i]).<a name="a3"></a><a class="code" href="a00134.html#a33f8850fcab39bb5ca332a04400c8d50">queryURL</a>());</div>
+<div class="line"> }</div>
+<div class="ttc" id="aa00011_html_a0009c186c3629201f6c24eded36605f4"><div class="ttname"><a href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">全局日志指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00010">pch.cpp:10</a></div></div>
+<div class="ttc" id="aa00074_html_a0c06be585935f38b4351f8c207b97b41"><div class="ttname"><a href="a00074.html#a0c06be585935f38b4351f8c207b97b41">Logger::Info</a></div><div class="ttdeci">void Info(const std::string &amp;, unsigned long long botid=-1, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送普通(info级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00103">tools.cpp:103</a></div></div>
+<div class="ttc" id="aa00134_html"><div class="ttname"><a href="a00134.html">Image</a></div><div class="ttdoc">图像类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00719">tools.h:719</a></div></div>
+<div class="ttc" id="aa00134_html_a33f8850fcab39bb5ca332a04400c8d50"><div class="ttname"><a href="a00134.html#a33f8850fcab39bb5ca332a04400c8d50">Image::queryURL</a></div><div class="ttdeci">std::string queryURL(JNIEnv *=manager-&gt;getEnv()) const</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00269">tools.cpp:269</a></div></div>
+</div><!-- fragment --><div class="fragment"></div><!-- fragment --><p>字符串中全部的图片id </p>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

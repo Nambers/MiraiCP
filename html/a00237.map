@@ -1,13 +1,4 @@
-<map id="Event::Node0" name="Event::Node0">
-<area shape="rect" id="node1" title=" " alt="" coords="751,5,889,97"/>
-<area shape="rect" id="node2" href="$a00242.html" title=" " alt="" coords="627,316,811,437"/>
-<area shape="rect" id="node3" href="$a00242.html" title=" " alt="" coords="198,316,394,437"/>
-<area shape="rect" id="node4" href="$a00242.html" title=" " alt="" coords="419,323,603,430"/>
-<area shape="rect" id="node5" href="$a00242.html" title=" " alt="" coords="5,316,173,437"/>
-<area shape="rect" id="node6" href="$a00242.html" title=" " alt="" coords="1596,316,1809,437"/>
-<area shape="rect" id="node7" href="$a00242.html" title=" " alt="" coords="1840,323,2059,430"/>
-<area shape="rect" id="node8" href="$a00242.html" title=" " alt="" coords="1335,316,1559,437"/>
-<area shape="rect" id="node9" href="$a00242.html" title=" " alt="" coords="835,316,1027,437"/>
-<area shape="rect" id="node10" href="$a00242.html" title=" " alt="" coords="1102,316,1285,437"/>
-<area shape="rect" id="node11" href="$a00242.html" title=" " alt="" coords="832,147,971,253"/>
+<map id="BotOnlineEvent" name="BotOnlineEvent">
+<area shape="rect" id="node1" title=" " alt="" coords="5,160,184,252"/>
+<area shape="rect" id="node2" href="$a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="19,5,170,112"/>
 </map>

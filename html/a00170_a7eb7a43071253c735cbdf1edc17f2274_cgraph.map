@@ -1,0 +1,6 @@
+<map id="ForwardMessage::ForwardMessage" name="ForwardMessage::ForwardMessage">
+<area shape="rect" id="node1" title=" " alt="" coords="5,56,233,83"/>
+<area shape="rect" id="node2" href="$a00138.html#a07e7ddca539bf8e5ac2d2ad00d8b7ba4" title="当type为3的时候存在，否则为0，可以看作补充id" alt="" coords="281,5,399,32"/>
+<area shape="rect" id="node3" href="$a00138.html#a220e55b907d54958cd2afb95e65da5a1" title="id在全部情况存在" alt="" coords="297,56,383,83"/>
+<area shape="rect" id="node4" href="$a00138.html#a182b686fa824fe5c9a3a5181f873e2a1" title="当前对象类型" alt="" coords="290,107,390,133"/>
+</map>

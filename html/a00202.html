@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -5,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: PrivateMessageEvent类 参考</title>
+<title>MiraiCP: GroupMessageEvent类 参考</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -89,78 +93,92 @@ $(document).ready(function(){initNavTree('a00202.html',''); initResizable(); });
 <a href="#pub-attribs">Public 属性</a> &#124;
 <a href="a00199.html">所有成员列表</a>  </div>
   <div class="headertitle">
-<div class="title">PrivateMessageEvent类 参考</div>  </div>
+<div class="title">GroupMessageEvent类 参考</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>私聊消息事件类声明  
+<p>群消息事件声明  
  <a href="a00202.html#details">更多...</a></p>
 
 <p><code>#include &lt;<a class="el" href="a00026_source.html">tools.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 PrivateMessageEvent 继承关系图:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 GroupMessageEvent 继承关系图:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00201.png" border="0" usemap="#a_private_message_event_inherit__map" alt="Inheritance graph"/></div>
-<map name="a_private_message_event_inherit__map" id="a_private_message_event_inherit__map">
-<area shape="rect" title="私聊消息事件类声明" alt="" coords="5,145,272,311"/>
-<area shape="rect" href="a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="67,5,210,97"/>
+<div class="center"><img src="a00201.png" border="0" usemap="#a_group_message_event_inherit__map" alt="Inheritance graph"/></div>
+<map name="a_group_message_event_inherit__map" id="a_group_message_event_inherit__map">
+<area shape="rect" title="群消息事件声明" alt="" coords="5,160,272,355"/>
+<area shape="rect" href="a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="63,5,214,112"/>
 </map>
 </div>
 <div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> PrivateMessageEvent 的协作图:</div>
+  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> GroupMessageEvent 的协作图:</div>
 <div id="dynsection-1-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00200.png" border="0" usemap="#a_private_message_event_coll__map" alt="Collaboration graph"/></div>
-<map name="a_private_message_event_coll__map" id="a_private_message_event_coll__map">
-<area shape="rect" title="私聊消息事件类声明" alt="" coords="307,1632,574,1768"/>
-<area shape="rect" href="a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="155,1426,297,1518"/>
-<area shape="rect" href="a00170.html" title="当前bot账号信息" alt="" coords="112,365,327,663"/>
-<area shape="rect" title=" " alt="" coords="5,5,172,83"/>
-<area shape="rect" title=" " alt="" coords="421,5,476,83"/>
-<area shape="rect" href="a00126.html" title="消息源声明" alt="" coords="241,877,475,1351"/>
-<area shape="rect" href="a00134.html" title="group, friend, member的父类" alt="" coords="618,175,837,853"/>
-<area shape="rect" href="a00070.html" title="miraicode字符串" alt="" coords="482,943,709,1285"/>
-<area shape="rect" title=" " alt="" coords="196,5,243,83"/>
-<area shape="rect" href="a00174.html" title="好友类声明" alt="" coords="636,1375,811,1569"/>
-<area shape="rect" title=" " alt="" coords="771,5,902,83"/>
-<area shape="rect" title=" " alt="" coords="708,5,747,83"/>
+<div class="center"><img src="a00200.png" border="0" usemap="#a_group_message_event_coll__map" alt="Collaboration graph"/></div>
+<map name="a_group_message_event_coll__map" id="a_group_message_event_coll__map">
+<area shape="rect" title="群消息事件声明" alt="" coords="645,2821,911,2972"/>
+<area shape="rect" href="a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="359,2439,501,2531"/>
+<area shape="rect" href="a00174.html" title="当前bot账号信息" alt="" coords="328,1203,543,1500"/>
+<area shape="rect" title=" " alt="" coords="236,593,403,671"/>
+<area shape="rect" href="a00082.html" title="以bot的名义发送日志, 表现格式为: 2021&#45;06&#45;28 09:37:22 [log level]/Bot [botid]: [log content]" alt="" coords="119,1173,303,1529"/>
+<area shape="rect" title=" " alt="" coords="636,593,691,671"/>
+<area shape="rect" href="a00138.html" title="group, friend, member的父类" alt="" coords="1041,1012,1259,1691"/>
+<area shape="rect" href="a00130.html" title="消息源声明" alt="" coords="819,1715,1052,2188"/>
+<area shape="rect" href="a00190.html" title="群设置" alt="" coords="655,1313,797,1390"/>
+<area shape="rect" href="a00070.html" title="miraicode字符串" alt="" coords="467,1781,694,2122"/>
+<area shape="rect" title=" " alt="" coords="417,13,464,90"/>
+<area shape="rect" href="a00078.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="53,160,164,237"/>
+<area shape="rect" href="a00074.html" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content]" alt="" coords="5,344,212,920"/>
+<area shape="rect" title=" " alt="" coords="47,5,170,97"/>
+<area shape="rect" title=" " alt="" coords="189,160,269,237"/>
+<area shape="rect" href="a00182.html" title="群成员类声明" alt="" coords="1066,2344,1261,2627"/>
+<area shape="rect" href="a00186.html" title="群聊类声明" alt="" coords="669,2212,887,2759"/>
+<area shape="rect" title=" " alt="" coords="1113,593,1243,671"/>
+<area shape="rect" title=" " alt="" coords="1284,593,1323,671"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
-<tr class="memitem:a935deafbe1f8ecb73e08c6386b2b8410"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00202.html#a935deafbe1f8ecb73e08c6386b2b8410">PrivateMessageEvent</a> (unsigned long long int botid, const <a class="el" href="a00174.html">Friend</a> <a class="el" href="a00202.html#a62b26ff1072eb68c418b12a87a26cd31">sender</a>, const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;<a class="el" href="a00202.html#a15942d9ce307936e02c7e3ff1cbaab08">message</a>, const <a class="el" href="a00126.html">MessageSource</a> &amp;<a class="el" href="a00202.html#a73df3e24b11ec35b21edab614a5d89c2">messageSource</a>)</td></tr>
-<tr class="memdesc:a935deafbe1f8ecb73e08c6386b2b8410"><td class="mdescLeft">&#160;</td><td class="mdescRight">构建私聊信息  <a href="a00202.html#a935deafbe1f8ecb73e08c6386b2b8410">更多...</a><br /></td></tr>
-<tr class="separator:a935deafbe1f8ecb73e08c6386b2b8410"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_a00194"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_a00194')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="a00194.html">BotEvent</a></td></tr>
-<tr class="memitem:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00194"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00194.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a> (unsigned long long botid)</td></tr>
-<tr class="separator:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a935282b560906a8f722b41b26a9bb0ae"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00202.html#a935282b560906a8f722b41b26a9bb0ae">GroupMessageEvent</a> (unsigned long long int botid, const <a class="el" href="a00186.html">Group</a> &amp;<a class="el" href="a00202.html#acbc031790011ba7b520a21aec2299f08">group</a>, const <a class="el" href="a00182.html">Member</a> &amp;<a class="el" href="a00202.html#af42c8d253640cbe965406843367bb0f3">sender</a>, const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;<a class="el" href="a00202.html#a23a3c54e9b3b587db24783ecefb993f2">message</a>, const <a class="el" href="a00130.html">MessageSource</a> &amp;<a class="el" href="a00202.html#ac0fbbe7ebc93f69ab521d745ebe04f5d">messageSource</a>)</td></tr>
+<tr class="separator:a935282b560906a8f722b41b26a9bb0ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_a00198"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_a00198')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="a00198.html">BotEvent</a></td></tr>
+<tr class="memitem:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00198"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a> (unsigned long long botid)</td></tr>
+<tr class="separator:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00198"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public 属性</h2></td></tr>
-<tr class="memitem:a62b26ff1072eb68c418b12a87a26cd31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00174.html">Friend</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00202.html#a62b26ff1072eb68c418b12a87a26cd31">sender</a></td></tr>
-<tr class="memdesc:a62b26ff1072eb68c418b12a87a26cd31"><td class="mdescLeft">&#160;</td><td class="mdescRight">发起人  <a href="a00202.html#a62b26ff1072eb68c418b12a87a26cd31">更多...</a><br /></td></tr>
-<tr class="separator:a62b26ff1072eb68c418b12a87a26cd31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15942d9ce307936e02c7e3ff1cbaab08"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="a00070.html">MiraiCode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00202.html#a15942d9ce307936e02c7e3ff1cbaab08">message</a></td></tr>
-<tr class="memdesc:a15942d9ce307936e02c7e3ff1cbaab08"><td class="mdescLeft">&#160;</td><td class="mdescRight">附带消息  <a href="a00202.html#a15942d9ce307936e02c7e3ff1cbaab08">更多...</a><br /></td></tr>
-<tr class="separator:a15942d9ce307936e02c7e3ff1cbaab08"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73df3e24b11ec35b21edab614a5d89c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00126.html">MessageSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00202.html#a73df3e24b11ec35b21edab614a5d89c2">messageSource</a></td></tr>
-<tr class="memdesc:a73df3e24b11ec35b21edab614a5d89c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">信息源  <a href="a00202.html#a73df3e24b11ec35b21edab614a5d89c2">更多...</a><br /></td></tr>
-<tr class="separator:a73df3e24b11ec35b21edab614a5d89c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_attribs_a00194"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_a00194')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="a00194.html">BotEvent</a></td></tr>
-<tr class="memitem:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00194"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00170.html">Bot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00194.html#a2a77f086d712d0fc8d2e430e4e2d4b83">bot</a></td></tr>
-<tr class="separator:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbc031790011ba7b520a21aec2299f08"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00186.html">Group</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00202.html#acbc031790011ba7b520a21aec2299f08">group</a></td></tr>
+<tr class="memdesc:acbc031790011ba7b520a21aec2299f08"><td class="mdescLeft">&#160;</td><td class="mdescRight">来源群  <a href="a00202.html#acbc031790011ba7b520a21aec2299f08">更多...</a><br /></td></tr>
+<tr class="separator:acbc031790011ba7b520a21aec2299f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af42c8d253640cbe965406843367bb0f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00182.html">Member</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00202.html#af42c8d253640cbe965406843367bb0f3">sender</a></td></tr>
+<tr class="memdesc:af42c8d253640cbe965406843367bb0f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送人  <a href="a00202.html#af42c8d253640cbe965406843367bb0f3">更多...</a><br /></td></tr>
+<tr class="separator:af42c8d253640cbe965406843367bb0f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23a3c54e9b3b587db24783ecefb993f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00070.html">MiraiCode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00202.html#a23a3c54e9b3b587db24783ecefb993f2">message</a></td></tr>
+<tr class="memdesc:a23a3c54e9b3b587db24783ecefb993f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">信息本体  <a href="a00202.html#a23a3c54e9b3b587db24783ecefb993f2">更多...</a><br /></td></tr>
+<tr class="separator:a23a3c54e9b3b587db24783ecefb993f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0fbbe7ebc93f69ab521d745ebe04f5d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00130.html">MessageSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00202.html#ac0fbbe7ebc93f69ab521d745ebe04f5d">messageSource</a></td></tr>
+<tr class="memdesc:ac0fbbe7ebc93f69ab521d745ebe04f5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">消息源  <a href="a00202.html#ac0fbbe7ebc93f69ab521d745ebe04f5d">更多...</a><br /></td></tr>
+<tr class="separator:ac0fbbe7ebc93f69ab521d745ebe04f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_a00198"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_a00198')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="a00198.html">BotEvent</a></td></tr>
+<tr class="memitem:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00198"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00174.html">Bot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83">bot</a></td></tr>
+<tr class="memdesc:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00198"><td class="mdescLeft">&#160;</td><td class="mdescRight">该事件接受的机器人  <a href="a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83">更多...</a><br /></td></tr>
+<tr class="separator:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00198"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1571ef8d345a7a94bedecd48df4923c7 inherit pub_attribs_a00198"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00082.html">BotLogger</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00198.html#a1571ef8d345a7a94bedecd48df4923c7">botlogger</a></td></tr>
+<tr class="separator:a1571ef8d345a7a94bedecd48df4923c7 inherit pub_attribs_a00198"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock"><p>私聊消息事件类声明 </p>
+<div class="textblock"><p>群消息事件声明 </p>
+<dl class="section examples"><dt>示例</dt><dd><a class="el" href="a00284.html#_a2">上传并发送远程</a>, <a class="el" href="a00286.html#_a2">取群文件信息</a>, <a class="el" href="a00266.html#_a2">撤回信息</a>, <a class="el" href="a00280.html#_a2">踢出群成员</a>, <a class="el" href="a00272.html#_a2">通过常量构建并发送小程序卡片</a> , 以及 <a class="el" href="a00274.html#_a2">通过文本构建并发送小程序卡片</a>.</dd>
+</dl>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01564">1564</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01592">1592</a> 行定义.</p>
 </div><h2 class="groupheader">构造及析构函数说明</h2>
-<a id="a935deafbe1f8ecb73e08c6386b2b8410"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a935deafbe1f8ecb73e08c6386b2b8410">&#9670;&nbsp;</a></span>PrivateMessageEvent()</h2>
+<a id="a935282b560906a8f722b41b26a9bb0ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a935282b560906a8f722b41b26a9bb0ae">&#9670;&nbsp;</a></span>GroupMessageEvent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -169,7 +187,7 @@ Public 属性</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">PrivateMessageEvent::PrivateMessageEvent </td>
+          <td class="memname">GroupMessageEvent::GroupMessageEvent </td>
           <td>(</td>
           <td class="paramtype">unsigned long long int&#160;</td>
           <td class="paramname"><em>botid</em>, </td>
@@ -177,7 +195,13 @@ Public 属性</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="a00174.html">Friend</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="a00186.html">Group</a> &amp;&#160;</td>
+          <td class="paramname"><em>group</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="a00182.html">Member</a> &amp;&#160;</td>
           <td class="paramname"><em>sender</em>, </td>
         </tr>
         <tr>
@@ -189,7 +213,7 @@ Public 属性</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="a00126.html">MessageSource</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="a00130.html">MessageSource</a> &amp;&#160;</td>
           <td class="paramname"><em>messageSource</em>&#160;</td>
         </tr>
         <tr>
@@ -205,79 +229,93 @@ Public 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>构建私聊信息 </p>
-<dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">botid</td><td>对应botid </td></tr>
-    <tr><td class="paramname">sender</td><td>发送者 </td></tr>
-    <tr><td class="paramname">message</td><td>消息 </td></tr>
-    <tr><td class="paramname">messageSource</td><td>消息源 </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01580">1580</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l01581"></a><span class="lineno"> 1581</span>&#160;                                            : <a class="code" href="a00194.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a>(botid), <a class="code" href="a00202.html#a62b26ff1072eb68c418b12a87a26cd31">sender</a>(<a class="code" href="a00202.html#a62b26ff1072eb68c418b12a87a26cd31">sender</a>), <a class="code" href="a00202.html#a15942d9ce307936e02c7e3ff1cbaab08">message</a>(<a class="code" href="a00202.html#a15942d9ce307936e02c7e3ff1cbaab08">message</a>),</div>
-<div class="line"><a name="l01582"></a><span class="lineno"> 1582</span>&#160;        <a class="code" href="a00202.html#a73df3e24b11ec35b21edab614a5d89c2">messageSource</a>(<a class="code" href="a00202.html#a73df3e24b11ec35b21edab614a5d89c2">messageSource</a>) {}</div>
-<div class="ttc" id="aa00194_html_ac26c3d59fa5a3546f269549ccbe994a4"><div class="ttname"><a href="a00194.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent::BotEvent</a></div><div class="ttdeci">BotEvent(unsigned long long botid)</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01540">tools.h:1540</a></div></div>
-<div class="ttc" id="aa00202_html_a15942d9ce307936e02c7e3ff1cbaab08"><div class="ttname"><a href="a00202.html#a15942d9ce307936e02c7e3ff1cbaab08">PrivateMessageEvent::message</a></div><div class="ttdeci">const MiraiCode message</div><div class="ttdoc">附带消息</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01569">tools.h:1569</a></div></div>
-<div class="ttc" id="aa00202_html_a62b26ff1072eb68c418b12a87a26cd31"><div class="ttname"><a href="a00202.html#a62b26ff1072eb68c418b12a87a26cd31">PrivateMessageEvent::sender</a></div><div class="ttdeci">Friend sender</div><div class="ttdoc">发起人</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01567">tools.h:1567</a></div></div>
-<div class="ttc" id="aa00202_html_a73df3e24b11ec35b21edab614a5d89c2"><div class="ttname"><a href="a00202.html#a73df3e24b11ec35b21edab614a5d89c2">PrivateMessageEvent::messageSource</a></div><div class="ttdeci">MessageSource messageSource</div><div class="ttdoc">信息源</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01571">tools.h:1571</a></div></div>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01603">1603</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l01604"></a><span class="lineno"> 1604</span>&#160;                                                                      : <a class="code" href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a>(botid), <a class="code" href="a00202.html#acbc031790011ba7b520a21aec2299f08">group</a>(<a class="code" href="a00202.html#acbc031790011ba7b520a21aec2299f08">group</a>),</div>
+<div class="line"><a name="l01605"></a><span class="lineno"> 1605</span>&#160;        <a class="code" href="a00202.html#af42c8d253640cbe965406843367bb0f3">sender</a>(<a class="code" href="a00202.html#af42c8d253640cbe965406843367bb0f3">sender</a>),</div>
+<div class="line"><a name="l01606"></a><span class="lineno"> 1606</span>&#160;        <a class="code" href="a00202.html#a23a3c54e9b3b587db24783ecefb993f2">message</a>(<a class="code" href="a00202.html#a23a3c54e9b3b587db24783ecefb993f2">message</a>),</div>
+<div class="line"><a name="l01607"></a><span class="lineno"> 1607</span>&#160;        <a class="code" href="a00202.html#ac0fbbe7ebc93f69ab521d745ebe04f5d">messageSource</a>(<a class="code" href="a00202.html#ac0fbbe7ebc93f69ab521d745ebe04f5d">messageSource</a>) {}</div>
+<div class="ttc" id="aa00198_html_ac26c3d59fa5a3546f269549ccbe994a4"><div class="ttname"><a href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent::BotEvent</a></div><div class="ttdeci">BotEvent(unsigned long long botid)</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01587">tools.h:1587</a></div></div>
+<div class="ttc" id="aa00202_html_a23a3c54e9b3b587db24783ecefb993f2"><div class="ttname"><a href="a00202.html#a23a3c54e9b3b587db24783ecefb993f2">GroupMessageEvent::message</a></div><div class="ttdeci">MiraiCode message</div><div class="ttdoc">信息本体</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01599">tools.h:1599</a></div></div>
+<div class="ttc" id="aa00202_html_ac0fbbe7ebc93f69ab521d745ebe04f5d"><div class="ttname"><a href="a00202.html#ac0fbbe7ebc93f69ab521d745ebe04f5d">GroupMessageEvent::messageSource</a></div><div class="ttdeci">MessageSource messageSource</div><div class="ttdoc">消息源</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01601">tools.h:1601</a></div></div>
+<div class="ttc" id="aa00202_html_acbc031790011ba7b520a21aec2299f08"><div class="ttname"><a href="a00202.html#acbc031790011ba7b520a21aec2299f08">GroupMessageEvent::group</a></div><div class="ttdeci">Group group</div><div class="ttdoc">来源群</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01595">tools.h:1595</a></div></div>
+<div class="ttc" id="aa00202_html_af42c8d253640cbe965406843367bb0f3"><div class="ttname"><a href="a00202.html#af42c8d253640cbe965406843367bb0f3">GroupMessageEvent::sender</a></div><div class="ttdeci">Member sender</div><div class="ttdoc">发送人</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01597">tools.h:1597</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">类成员变量说明</h2>
-<a id="a15942d9ce307936e02c7e3ff1cbaab08"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15942d9ce307936e02c7e3ff1cbaab08">&#9670;&nbsp;</a></span>message</h2>
+<a id="acbc031790011ba7b520a21aec2299f08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbc031790011ba7b520a21aec2299f08">&#9670;&nbsp;</a></span>group</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="a00070.html">MiraiCode</a> PrivateMessageEvent::message</td>
+          <td class="memname"><a class="el" href="a00186.html">Group</a> GroupMessageEvent::group</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>附带消息 </p>
+<p>来源群 </p>
+<dl class="section examples"><dt>示例</dt><dd><a class="el" href="a00284.html#a4">上传并发送远程</a>, <a class="el" href="a00286.html#a3">取群文件信息</a>, <a class="el" href="a00266.html#a5">撤回信息</a>, <a class="el" href="a00280.html#a4">踢出群成员</a>, <a class="el" href="a00272.html#a6">通过常量构建并发送小程序卡片</a> , 以及 <a class="el" href="a00274.html#a3">通过文本构建并发送小程序卡片</a>.</dd>
+</dl>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01569">1569</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01595">1595</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a73df3e24b11ec35b21edab614a5d89c2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73df3e24b11ec35b21edab614a5d89c2">&#9670;&nbsp;</a></span>messageSource</h2>
+<a id="a23a3c54e9b3b587db24783ecefb993f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23a3c54e9b3b587db24783ecefb993f2">&#9670;&nbsp;</a></span>message</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="a00126.html">MessageSource</a> PrivateMessageEvent::messageSource</td>
+          <td class="memname"><a class="el" href="a00070.html">MiraiCode</a> GroupMessageEvent::message</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>信息源 </p>
+<p>信息本体 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01571">1571</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01599">1599</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a62b26ff1072eb68c418b12a87a26cd31"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a62b26ff1072eb68c418b12a87a26cd31">&#9670;&nbsp;</a></span>sender</h2>
+<a id="ac0fbbe7ebc93f69ab521d745ebe04f5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0fbbe7ebc93f69ab521d745ebe04f5d">&#9670;&nbsp;</a></span>messageSource</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="a00174.html">Friend</a> PrivateMessageEvent::sender</td>
+          <td class="memname"><a class="el" href="a00130.html">MessageSource</a> GroupMessageEvent::messageSource</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>发起人 </p>
+<p>消息源 </p>
+<dl class="section examples"><dt>示例</dt><dd><a class="el" href="a00266.html#a3">撤回信息</a>.</dd>
+</dl>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01567">1567</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01601">1601</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af42c8d253640cbe965406843367bb0f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af42c8d253640cbe965406843367bb0f3">&#9670;&nbsp;</a></span>sender</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="a00182.html">Member</a> GroupMessageEvent::sender</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>发送人 </p>
+
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01597">1597</a> 行定义.</p>
 
 </div>
 </div>
@@ -286,12 +324,20 @@ Public 属性</h2></td></tr>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="a00202.html">PrivateMessageEvent</a></li>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="navelem"><a class="el" href="a00202.html">GroupMessageEvent</a></li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:09 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

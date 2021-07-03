@@ -1,9 +1,9 @@
 <map id="Tools::escapeToMiraiCode" name="Tools::escapeToMiraiCode">
 <area shape="rect" id="node1" title="转义miraicode格式" alt="" coords="616,71,791,97"/>
-<area shape="rect" id="node2" href="$a00130.html#a1f23cd8327ee4b8814ad8574b6a35e82" title="取图片Mirai码" alt="" coords="418,20,553,47"/>
-<area shape="rect" id="node5" href="$a00138.html#a2f294b6092bdac3a0602ca19fb937fcc" title="返回miraicode" alt="" coords="410,71,561,97"/>
-<area shape="rect" id="node7" href="$a00150.html#a1ca55a2e4cead686e9ea5f0e9260dfa0" title="仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换" alt="" coords="403,121,568,148"/>
+<area shape="rect" id="node2" href="$a00134.html#a1f23cd8327ee4b8814ad8574b6a35e82" title="取图片Mirai码" alt="" coords="418,20,553,47"/>
+<area shape="rect" id="node5" href="$a00142.html#a2f294b6092bdac3a0602ca19fb937fcc" title="返回miraicode" alt="" coords="410,71,561,97"/>
+<area shape="rect" id="node7" href="$a00154.html#a1ca55a2e4cead686e9ea5f0e9260dfa0" title="仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换" alt="" coords="403,121,568,148"/>
 <area shape="rect" id="node3" href="$a00017.html#af6b40412027c7beb9eb51bbfed51aff6" title=" " alt="" coords="255,20,331,47"/>
 <area shape="rect" id="node4" href="$a00011.html#aef48c35044131053dbb51ec07a0070af" title=" " alt="" coords="5,5,184,61"/>
-<area shape="rect" id="node6" href="$a00138.html#aafe621350dfc1350853959b5a1b9ff13" title=" " alt="" coords="232,71,355,97"/>
+<area shape="rect" id="node6" href="$a00142.html#aafe621350dfc1350853959b5a1b9ff13" title=" " alt="" coords="232,71,355,97"/>
 </map>

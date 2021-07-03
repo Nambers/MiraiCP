@@ -3,8 +3,8 @@
 <area shape="rect" id="node2" href="$a00050.html#a3401a8976c99d293ef1b8b8c7a1db9d1" title="获取线程id." alt="" coords="420,5,603,32"/>
 <area shape="rect" id="node3" href="$a00050.html#a648b29dc90c990d1915ca1a92eb210e6" title="判断该线程id是否包含在线程池里" alt="" coords="208,31,372,57"/>
 <area shape="rect" id="node4" href="$a00050.html#a8210ba94ee5c9bfe1318319500576c85" title=" " alt="" coords="210,81,370,108"/>
-<area shape="rect" id="node5" href="$a00074.html#a13e1837413a7cdecd8ea11909f1842be" title="发送普通(info级日志)" alt="" coords="467,81,556,108"/>
-<area shape="rect" id="node6" href="$a00074.html#a623dbe79c347ea0d063f5d6b900c5bc2" title="日志底层实现封装" alt="" coords="651,81,744,108"/>
+<area shape="rect" id="node5" href="$a00074.html#a0c06be585935f38b4351f8c207b97b41" title="发送普通(info级日志)" alt="" coords="467,81,556,108"/>
+<area shape="rect" id="node6" href="$a00074.html#a39d20a1a355877f9a4ca01780a909e14" title="日志底层实现封装" alt="" coords="651,81,744,108"/>
 <area shape="rect" id="node7" href="$a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="792,56,911,83"/>
-<area shape="rect" id="node8" href="$a00074.html#abb690146dbd2c6fb7e603caf123096dd" title="发送错误(error级日志)" alt="" coords="959,81,1056,108"/>
+<area shape="rect" id="node8" href="$a00074.html#a74fb2d4bc7e34e4897063a567c6611c3" title="发送错误(error级日志)" alt="" coords="959,81,1056,108"/>
 </map>

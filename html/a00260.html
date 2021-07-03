@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -5,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 图片miraiCode格式例子</title>
+<title>MiraiCP: 设置loggerhandler的action</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -85,20 +89,38 @@ $(document).ready(function(){initNavTree('a00260.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">图片miraiCode格式例子</div>  </div>
+<div class="title">设置loggerhandler的action</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>从图片id构造，适用于服务器上已经有的图片，即接收到的</p>
-<div class="fragment"><div class="line">[mirai:image:{图片id}.jpg] </div>
-</div><!-- fragment --> <dl class="section note"><dt>注解</dt><dd>可以用这个正则表达式找出id <code>\\[mirai:image:(.*?)\\]</code></dd></dl>
-<div class="fragment"></div><!-- fragment --><p>格式例子 </p>
+<p>设置loggerhandler的action </p><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>执行的操作 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>参见</dt><dd><a class="el" href="a00078.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等">Logger::handler</a></dd></dl>
+<div class="fragment"><div class="line"> <a name="a0"></a><a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a name="a1"></a><a class="code" href="a00074.html#aae91535858f620e4f5f1938683d601d5">registerHandle</a>([](<a name="a2"></a><a class="code" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> content, <span class="keywordtype">int</span> level){</div>
+<div class="line">    \\do some things</div>
+<div class="line">});</div>
+<div class="ttc" id="aa00011_html_a0009c186c3629201f6c24eded36605f4"><div class="ttname"><a href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">全局日志指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00010">pch.cpp:10</a></div></div>
+<div class="ttc" id="aa00011_html_aca454f84dd198a937af6499dd758aa3d"><div class="ttname"><a href="a00011.html#aca454f84dd198a937af6499dd758aa3d">string</a></div><div class="ttdeci">std::string string</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00003">pch.cpp:3</a></div></div>
+<div class="ttc" id="aa00074_html_aae91535858f620e4f5f1938683d601d5"><div class="ttname"><a href="a00074.html#aae91535858f620e4f5f1938683d601d5">Logger::registerHandle</a></div><div class="ttdeci">void registerHandle(action action)</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00078">tools.cpp:78</a></div></div>
+</div><!-- fragment --><div class="fragment"></div><!-- fragment --><p>的action </p>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

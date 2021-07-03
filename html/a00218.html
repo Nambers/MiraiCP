@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -5,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: MemberLeaveEvent类 参考</title>
+<title>MiraiCP: MemberJoinEvent类 参考</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -89,80 +93,89 @@ $(document).ready(function(){initNavTree('a00218.html',''); initResizable(); });
 <a href="#pub-attribs">Public 属性</a> &#124;
 <a href="a00215.html">所有成员列表</a>  </div>
   <div class="headertitle">
-<div class="title">MemberLeaveEvent类 参考</div>  </div>
+<div class="title">MemberJoinEvent类 参考</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>群成员离开  
+<p>新群成员加入  
  <a href="a00218.html#details">更多...</a></p>
 
 <p><code>#include &lt;<a class="el" href="a00026_source.html">tools.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 MemberLeaveEvent 继承关系图:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 MemberJoinEvent 继承关系图:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00217.png" border="0" usemap="#a_member_leave_event_inherit__map" alt="Inheritance graph"/></div>
-<map name="a_member_leave_event_inherit__map" id="a_member_leave_event_inherit__map">
-<area shape="rect" title="群成员离开" alt="" coords="5,145,249,355"/>
-<area shape="rect" href="a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="56,5,199,97"/>
+<div class="center"><img src="a00217.png" border="0" usemap="#a_member_join_event_inherit__map" alt="Inheritance graph"/></div>
+<map name="a_member_join_event_inherit__map" id="a_member_join_event_inherit__map">
+<area shape="rect" title="新群成员加入" alt="" coords="5,160,244,355"/>
+<area shape="rect" href="a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="49,5,200,112"/>
 </map>
 </div>
 <div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> MemberLeaveEvent 的协作图:</div>
+  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> MemberJoinEvent 的协作图:</div>
 <div id="dynsection-1-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00216.png" border="0" usemap="#a_member_leave_event_coll__map" alt="Collaboration graph"/></div>
-<map name="a_member_leave_event_coll__map" id="a_member_leave_event_coll__map">
-<area shape="rect" title="群成员离开" alt="" coords="320,1555,564,1691"/>
-<area shape="rect" href="a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="211,1173,353,1265"/>
-<area shape="rect" href="a00170.html" title="当前bot账号信息" alt="" coords="159,380,373,677"/>
-<area shape="rect" title=" " alt="" coords="5,5,172,83"/>
-<area shape="rect" title=" " alt="" coords="508,5,563,83"/>
-<area shape="rect" href="a00134.html" title="group, friend, member的父类" alt="" coords="627,189,846,868"/>
-<area shape="rect" href="a00186.html" title="群设置" alt="" coords="442,490,583,567"/>
-<area shape="rect" title=" " alt="" coords="205,5,252,83"/>
-<area shape="rect" title=" " alt="" coords="971,5,1009,83"/>
-<area shape="rect" href="a00182.html" title="群聊类声明" alt="" coords="404,945,621,1492"/>
-<area shape="rect" title=" " alt="" coords="794,5,925,83"/>
+<div class="center"><img src="a00216.png" border="0" usemap="#a_member_join_event_coll__map" alt="Collaboration graph"/></div>
+<map name="a_member_join_event_coll__map" id="a_member_join_event_coll__map">
+<area shape="rect" title="新群成员加入" alt="" coords="618,2363,857,2499"/>
+<area shape="rect" href="a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="462,1981,605,2073"/>
+<area shape="rect" href="a00174.html" title="当前bot账号信息" alt="" coords="206,1203,421,1500"/>
+<area shape="rect" title=" " alt="" coords="173,593,339,671"/>
+<area shape="rect" href="a00082.html" title="以bot的名义发送日志, 表现格式为: 2021&#45;06&#45;28 09:37:22 [log level]/Bot [botid]: [log content]" alt="" coords="445,1173,629,1529"/>
+<area shape="rect" title=" " alt="" coords="594,593,649,671"/>
+<area shape="rect" href="a00138.html" title="group, friend, member的父类" alt="" coords="823,1012,1041,1691"/>
+<area shape="rect" href="a00190.html" title="群设置" alt="" coords="657,1313,799,1390"/>
+<area shape="rect" title=" " alt="" coords="263,13,310,90"/>
+<area shape="rect" href="a00078.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="231,160,342,237"/>
+<area shape="rect" href="a00074.html" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content]" alt="" coords="363,344,570,920"/>
+<area shape="rect" title=" " alt="" coords="5,5,128,97"/>
+<area shape="rect" title=" " alt="" coords="427,160,507,237"/>
+<area shape="rect" href="a00182.html" title="群成员类声明" alt="" coords="871,1885,1065,2168"/>
+<area shape="rect" href="a00186.html" title="群聊类声明" alt="" coords="629,1753,846,2300"/>
+<area shape="rect" title=" " alt="" coords="893,593,1024,671"/>
+<area shape="rect" title=" " alt="" coords="1070,593,1109,671"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
-<tr class="memitem:ac714a3add4ac210728a26acd8bdf6f00"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00218.html#ac714a3add4ac210728a26acd8bdf6f00">MemberLeaveEvent</a> (unsigned long long int botid, const int <a class="el" href="a00218.html#a222486c46fa7a56db8a06906b145f42b">type</a>, const unsigned long long <a class="el" href="a00218.html#a8dbb981f7e9b4ecaf618a443999385ce">memberid</a>, const <a class="el" href="a00182.html">Group</a> &amp;<a class="el" href="a00218.html#a9be3eefd061ba47025d683779f6ed008">group</a>, const unsigned long long &amp;<a class="el" href="a00218.html#afe223b1e1d8a2591c013995eb4466184">operaterid</a>)</td></tr>
-<tr class="memdesc:ac714a3add4ac210728a26acd8bdf6f00"><td class="mdescLeft">&#160;</td><td class="mdescRight">群成员离开  <a href="a00218.html#ac714a3add4ac210728a26acd8bdf6f00">更多...</a><br /></td></tr>
-<tr class="separator:ac714a3add4ac210728a26acd8bdf6f00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_a00194"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_a00194')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="a00194.html">BotEvent</a></td></tr>
-<tr class="memitem:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00194"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00194.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a> (unsigned long long botid)</td></tr>
-<tr class="separator:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad536c8db11e375d702476aa113a19cc1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00218.html#ad536c8db11e375d702476aa113a19cc1">MemberJoinEvent</a> (unsigned long long int botid, const int <a class="el" href="a00218.html#af131d9d5dcc818c492ba7955cc23c275">type</a>, const <a class="el" href="a00182.html">Member</a> &amp;<a class="el" href="a00218.html#ada3229d4de20a619e6c641f9c97c505b">member</a>, const <a class="el" href="a00186.html">Group</a> &amp;<a class="el" href="a00218.html#aae5866945dfb9d1b39504f111bccaa52">group</a>, const unsigned long long &amp;<a class="el" href="a00218.html#ade2bd23f4b5cb0e6bac3cf36d7c794a2">inviterid</a>)</td></tr>
+<tr class="memdesc:ad536c8db11e375d702476aa113a19cc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">新群成员入群事件  <a href="a00218.html#ad536c8db11e375d702476aa113a19cc1">更多...</a><br /></td></tr>
+<tr class="separator:ad536c8db11e375d702476aa113a19cc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_a00198"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_a00198')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="a00198.html">BotEvent</a></td></tr>
+<tr class="memitem:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00198"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a> (unsigned long long botid)</td></tr>
+<tr class="separator:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00198"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public 属性</h2></td></tr>
-<tr class="memitem:a222486c46fa7a56db8a06906b145f42b"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00218.html#a222486c46fa7a56db8a06906b145f42b">type</a> = 0</td></tr>
-<tr class="memdesc:a222486c46fa7a56db8a06906b145f42b"><td class="mdescLeft">&#160;</td><td class="mdescRight">事件类型 1 - 被踢出 2 - 主动退出  <a href="a00218.html#a222486c46fa7a56db8a06906b145f42b">更多...</a><br /></td></tr>
-<tr class="separator:a222486c46fa7a56db8a06906b145f42b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8dbb981f7e9b4ecaf618a443999385ce"><td class="memItemLeft" align="right" valign="top">const unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00218.html#a8dbb981f7e9b4ecaf618a443999385ce">memberid</a></td></tr>
-<tr class="memdesc:a8dbb981f7e9b4ecaf618a443999385ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">退出的成员q号  <a href="a00218.html#a8dbb981f7e9b4ecaf618a443999385ce">更多...</a><br /></td></tr>
-<tr class="separator:a8dbb981f7e9b4ecaf618a443999385ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9be3eefd061ba47025d683779f6ed008"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00182.html">Group</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00218.html#a9be3eefd061ba47025d683779f6ed008">group</a></td></tr>
-<tr class="memdesc:a9be3eefd061ba47025d683779f6ed008"><td class="mdescLeft">&#160;</td><td class="mdescRight">目标群  <a href="a00218.html#a9be3eefd061ba47025d683779f6ed008">更多...</a><br /></td></tr>
-<tr class="separator:a9be3eefd061ba47025d683779f6ed008"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe223b1e1d8a2591c013995eb4466184"><td class="memItemLeft" align="right" valign="top">const unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00218.html#afe223b1e1d8a2591c013995eb4466184">operaterid</a></td></tr>
-<tr class="memdesc:afe223b1e1d8a2591c013995eb4466184"><td class="mdescLeft">&#160;</td><td class="mdescRight">操作人, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分  <a href="a00218.html#afe223b1e1d8a2591c013995eb4466184">更多...</a><br /></td></tr>
-<tr class="separator:afe223b1e1d8a2591c013995eb4466184"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_attribs_a00194"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_a00194')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="a00194.html">BotEvent</a></td></tr>
-<tr class="memitem:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00194"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00170.html">Bot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00194.html#a2a77f086d712d0fc8d2e430e4e2d4b83">bot</a></td></tr>
-<tr class="separator:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af131d9d5dcc818c492ba7955cc23c275"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00218.html#af131d9d5dcc818c492ba7955cc23c275">type</a> = 0</td></tr>
+<tr class="memdesc:af131d9d5dcc818c492ba7955cc23c275"><td class="mdescLeft">&#160;</td><td class="mdescRight">事件类型 1 - 被邀请进来 2 - 主动加入 3 - 原群主通过 <a href="https://huifu.qq.com/">https://huifu.qq.com/</a> 恢复原来群主身份并入群  <a href="a00218.html#af131d9d5dcc818c492ba7955cc23c275">更多...</a><br /></td></tr>
+<tr class="separator:af131d9d5dcc818c492ba7955cc23c275"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada3229d4de20a619e6c641f9c97c505b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00182.html">Member</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00218.html#ada3229d4de20a619e6c641f9c97c505b">member</a></td></tr>
+<tr class="memdesc:ada3229d4de20a619e6c641f9c97c505b"><td class="mdescLeft">&#160;</td><td class="mdescRight">新进入的成员  <a href="a00218.html#ada3229d4de20a619e6c641f9c97c505b">更多...</a><br /></td></tr>
+<tr class="separator:ada3229d4de20a619e6c641f9c97c505b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae5866945dfb9d1b39504f111bccaa52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00186.html">Group</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00218.html#aae5866945dfb9d1b39504f111bccaa52">group</a></td></tr>
+<tr class="memdesc:aae5866945dfb9d1b39504f111bccaa52"><td class="mdescLeft">&#160;</td><td class="mdescRight">目标群  <a href="a00218.html#aae5866945dfb9d1b39504f111bccaa52">更多...</a><br /></td></tr>
+<tr class="separator:aae5866945dfb9d1b39504f111bccaa52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade2bd23f4b5cb0e6bac3cf36d7c794a2"><td class="memItemLeft" align="right" valign="top">const unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00218.html#ade2bd23f4b5cb0e6bac3cf36d7c794a2">inviterid</a></td></tr>
+<tr class="memdesc:ade2bd23f4b5cb0e6bac3cf36d7c794a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">邀请人, 当type = 1时存在，否则则和member变量相同  <a href="a00218.html#ade2bd23f4b5cb0e6bac3cf36d7c794a2">更多...</a><br /></td></tr>
+<tr class="separator:ade2bd23f4b5cb0e6bac3cf36d7c794a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_a00198"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_a00198')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="a00198.html">BotEvent</a></td></tr>
+<tr class="memitem:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00198"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00174.html">Bot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83">bot</a></td></tr>
+<tr class="memdesc:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00198"><td class="mdescLeft">&#160;</td><td class="mdescRight">该事件接受的机器人  <a href="a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83">更多...</a><br /></td></tr>
+<tr class="separator:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00198"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1571ef8d345a7a94bedecd48df4923c7 inherit pub_attribs_a00198"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00082.html">BotLogger</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00198.html#a1571ef8d345a7a94bedecd48df4923c7">botlogger</a></td></tr>
+<tr class="separator:a1571ef8d345a7a94bedecd48df4923c7 inherit pub_attribs_a00198"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock"><p>群成员离开 </p>
+<div class="textblock"><p>新群成员加入 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01750">1750</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01767">1767</a> 行定义.</p>
 </div><h2 class="groupheader">构造及析构函数说明</h2>
-<a id="ac714a3add4ac210728a26acd8bdf6f00"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac714a3add4ac210728a26acd8bdf6f00">&#9670;&nbsp;</a></span>MemberLeaveEvent()</h2>
+<a id="ad536c8db11e375d702476aa113a19cc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad536c8db11e375d702476aa113a19cc1">&#9670;&nbsp;</a></span>MemberJoinEvent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -171,7 +184,7 @@ Public 属性</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">MemberLeaveEvent::MemberLeaveEvent </td>
+          <td class="memname">MemberJoinEvent::MemberJoinEvent </td>
           <td>(</td>
           <td class="paramtype">unsigned long long int&#160;</td>
           <td class="paramname"><em>botid</em>, </td>
@@ -185,20 +198,20 @@ Public 属性</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned long long&#160;</td>
-          <td class="paramname"><em>memberid</em>, </td>
+          <td class="paramtype">const <a class="el" href="a00182.html">Member</a> &amp;&#160;</td>
+          <td class="paramname"><em>member</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="a00182.html">Group</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="a00186.html">Group</a> &amp;&#160;</td>
           <td class="paramname"><em>group</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const unsigned long long &amp;&#160;</td>
-          <td class="paramname"><em>operaterid</em>&#160;</td>
+          <td class="paramname"><em>inviterid</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -213,100 +226,105 @@ Public 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>群成员离开 </p>
+<p>新群成员入群事件 </p>
 <dl class="params"><dt>参数</dt><dd>
   <table class="params">
-    <tr><td class="paramname">botid</td><td></td></tr>
-    <tr><td class="paramname">type</td><td></td></tr>
-    <tr><td class="paramname">memberid</td><td>退出的群成员 </td></tr>
-    <tr><td class="paramname">group</td><td>群 </td></tr>
-    <tr><td class="paramname">operaterid</td><td>操作人id, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分 </td></tr>
+    <tr><td class="paramname">botid</td><td>botid </td></tr>
+    <tr><td class="paramname">type</td><td>类别 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>参见</dt><dd><a class="el" href="a00218.html#af131d9d5dcc818c492ba7955cc23c275" title="事件类型 1 - 被邀请进来 2 - 主动加入 3 - 原群主通过 https://huifu.qq.com/ 恢复原来群主身份并入群">MemberJoinEvent::type</a> </dd></dl>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">member</td><td>入群群成员 </td></tr>
+    <tr><td class="paramname">group</td><td>群组 </td></tr>
+    <tr><td class="paramname">inviterid</td><td>邀请群成员id，如果不存在和member id参数一致 </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01773">1773</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l01775"></a><span class="lineno"> 1775</span>&#160;                                              : <a class="code" href="a00194.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a>(botid), <a class="code" href="a00218.html#a222486c46fa7a56db8a06906b145f42b">type</a>(<a class="code" href="a00218.html#a222486c46fa7a56db8a06906b145f42b">type</a>), <a class="code" href="a00218.html#a8dbb981f7e9b4ecaf618a443999385ce">memberid</a>(<a class="code" href="a00218.html#a8dbb981f7e9b4ecaf618a443999385ce">memberid</a>),</div>
-<div class="line"><a name="l01776"></a><span class="lineno"> 1776</span>&#160;        <a class="code" href="a00218.html#a9be3eefd061ba47025d683779f6ed008">group</a>(<a class="code" href="a00218.html#a9be3eefd061ba47025d683779f6ed008">group</a>),</div>
-<div class="line"><a name="l01777"></a><span class="lineno"> 1777</span>&#160;        <a class="code" href="a00218.html#afe223b1e1d8a2591c013995eb4466184">operaterid</a>(<a class="code" href="a00218.html#afe223b1e1d8a2591c013995eb4466184">operaterid</a>) {}</div>
-<div class="ttc" id="aa00194_html_ac26c3d59fa5a3546f269549ccbe994a4"><div class="ttname"><a href="a00194.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent::BotEvent</a></div><div class="ttdeci">BotEvent(unsigned long long botid)</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01540">tools.h:1540</a></div></div>
-<div class="ttc" id="aa00218_html_a222486c46fa7a56db8a06906b145f42b"><div class="ttname"><a href="a00218.html#a222486c46fa7a56db8a06906b145f42b">MemberLeaveEvent::type</a></div><div class="ttdeci">const int type</div><div class="ttdoc">事件类型 1 - 被踢出 2 - 主动退出</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01757">tools.h:1757</a></div></div>
-<div class="ttc" id="aa00218_html_a8dbb981f7e9b4ecaf618a443999385ce"><div class="ttname"><a href="a00218.html#a8dbb981f7e9b4ecaf618a443999385ce">MemberLeaveEvent::memberid</a></div><div class="ttdeci">const unsigned long long memberid</div><div class="ttdoc">退出的成员q号</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01759">tools.h:1759</a></div></div>
-<div class="ttc" id="aa00218_html_a9be3eefd061ba47025d683779f6ed008"><div class="ttname"><a href="a00218.html#a9be3eefd061ba47025d683779f6ed008">MemberLeaveEvent::group</a></div><div class="ttdeci">Group group</div><div class="ttdoc">目标群</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01761">tools.h:1761</a></div></div>
-<div class="ttc" id="aa00218_html_afe223b1e1d8a2591c013995eb4466184"><div class="ttname"><a href="a00218.html#afe223b1e1d8a2591c013995eb4466184">MemberLeaveEvent::operaterid</a></div><div class="ttdeci">const unsigned long long operaterid</div><div class="ttdoc">操作人, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01763">tools.h:1763</a></div></div>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01791">1791</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l01792"></a><span class="lineno"> 1792</span>&#160;                                             : <a class="code" href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a>(botid), <a class="code" href="a00218.html#af131d9d5dcc818c492ba7955cc23c275">type</a>(<a class="code" href="a00218.html#af131d9d5dcc818c492ba7955cc23c275">type</a>), <a class="code" href="a00218.html#ada3229d4de20a619e6c641f9c97c505b">member</a>(<a class="code" href="a00218.html#ada3229d4de20a619e6c641f9c97c505b">member</a>), <a class="code" href="a00218.html#aae5866945dfb9d1b39504f111bccaa52">group</a>(<a class="code" href="a00218.html#aae5866945dfb9d1b39504f111bccaa52">group</a>),</div>
+<div class="line"><a name="l01793"></a><span class="lineno"> 1793</span>&#160;        <a class="code" href="a00218.html#ade2bd23f4b5cb0e6bac3cf36d7c794a2">inviterid</a>(<a class="code" href="a00218.html#ade2bd23f4b5cb0e6bac3cf36d7c794a2">inviterid</a>) {}</div>
+<div class="ttc" id="aa00198_html_ac26c3d59fa5a3546f269549ccbe994a4"><div class="ttname"><a href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent::BotEvent</a></div><div class="ttdeci">BotEvent(unsigned long long botid)</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01587">tools.h:1587</a></div></div>
+<div class="ttc" id="aa00218_html_aae5866945dfb9d1b39504f111bccaa52"><div class="ttname"><a href="a00218.html#aae5866945dfb9d1b39504f111bccaa52">MemberJoinEvent::group</a></div><div class="ttdeci">Group group</div><div class="ttdoc">目标群</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01779">tools.h:1779</a></div></div>
+<div class="ttc" id="aa00218_html_ada3229d4de20a619e6c641f9c97c505b"><div class="ttname"><a href="a00218.html#ada3229d4de20a619e6c641f9c97c505b">MemberJoinEvent::member</a></div><div class="ttdeci">Member member</div><div class="ttdoc">新进入的成员</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01777">tools.h:1777</a></div></div>
+<div class="ttc" id="aa00218_html_ade2bd23f4b5cb0e6bac3cf36d7c794a2"><div class="ttname"><a href="a00218.html#ade2bd23f4b5cb0e6bac3cf36d7c794a2">MemberJoinEvent::inviterid</a></div><div class="ttdeci">const unsigned long long inviterid</div><div class="ttdoc">邀请人, 当type = 1时存在，否则则和member变量相同</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01781">tools.h:1781</a></div></div>
+<div class="ttc" id="aa00218_html_af131d9d5dcc818c492ba7955cc23c275"><div class="ttname"><a href="a00218.html#af131d9d5dcc818c492ba7955cc23c275">MemberJoinEvent::type</a></div><div class="ttdeci">const int type</div><div class="ttdoc">事件类型 1 - 被邀请进来 2 - 主动加入 3 - 原群主通过 https://huifu.qq.com/ 恢复原来群主身份并入群</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01775">tools.h:1775</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">类成员变量说明</h2>
-<a id="a9be3eefd061ba47025d683779f6ed008"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9be3eefd061ba47025d683779f6ed008">&#9670;&nbsp;</a></span>group</h2>
+<a id="aae5866945dfb9d1b39504f111bccaa52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae5866945dfb9d1b39504f111bccaa52">&#9670;&nbsp;</a></span>group</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="a00182.html">Group</a> MemberLeaveEvent::group</td>
+          <td class="memname"><a class="el" href="a00186.html">Group</a> MemberJoinEvent::group</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>目标群 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01761">1761</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01779">1779</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a8dbb981f7e9b4ecaf618a443999385ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8dbb981f7e9b4ecaf618a443999385ce">&#9670;&nbsp;</a></span>memberid</h2>
+<a id="ade2bd23f4b5cb0e6bac3cf36d7c794a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade2bd23f4b5cb0e6bac3cf36d7c794a2">&#9670;&nbsp;</a></span>inviterid</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const unsigned long long MemberLeaveEvent::memberid</td>
+          <td class="memname">const unsigned long long MemberJoinEvent::inviterid</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>退出的成员q号 </p>
+<p>邀请人, 当type = 1时存在，否则则和member变量相同 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01759">1759</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01781">1781</a> 行定义.</p>
 
 </div>
 </div>
-<a id="afe223b1e1d8a2591c013995eb4466184"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe223b1e1d8a2591c013995eb4466184">&#9670;&nbsp;</a></span>operaterid</h2>
+<a id="ada3229d4de20a619e6c641f9c97c505b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada3229d4de20a619e6c641f9c97c505b">&#9670;&nbsp;</a></span>member</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const unsigned long long MemberLeaveEvent::operaterid</td>
+          <td class="memname"><a class="el" href="a00182.html">Member</a> MemberJoinEvent::member</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>操作人, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分 </p>
+<p>新进入的成员 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01763">1763</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01777">1777</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a222486c46fa7a56db8a06906b145f42b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a222486c46fa7a56db8a06906b145f42b">&#9670;&nbsp;</a></span>type</h2>
+<a id="af131d9d5dcc818c492ba7955cc23c275"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af131d9d5dcc818c492ba7955cc23c275">&#9670;&nbsp;</a></span>type</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const int MemberLeaveEvent::type = 0</td>
+          <td class="memname">const int MemberJoinEvent::type = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>事件类型 1 - 被踢出 2 - 主动退出 </p>
+<p>事件类型 1 - 被邀请进来 2 - 主动加入 3 - 原群主通过 <a href="https://huifu.qq.com/">https://huifu.qq.com/</a> 恢复原来群主身份并入群 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01757">1757</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01775">1775</a> 行定义.</p>
 
 </div>
 </div>
@@ -315,12 +333,20 @@ Public 属性</h2></td></tr>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="a00218.html">MemberLeaveEvent</a></li>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="navelem"><a class="el" href="a00218.html">MemberJoinEvent</a></li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:16 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

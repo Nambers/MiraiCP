@@ -1,0 +1,6 @@
+<map id="APIException::raise" name="APIException::raise">
+<area shape="rect" id="node1" title="raise 抛出方法" alt="" coords="5,31,143,57"/>
+<area shape="rect" id="node2" href="$a00074.html#a74fb2d4bc7e34e4897063a567c6611c3" title="发送错误(error级日志)" alt="" coords="191,31,288,57"/>
+<area shape="rect" id="node3" href="$a00074.html#a39d20a1a355877f9a4ca01780a909e14" title="日志底层实现封装" alt="" coords="336,5,429,32"/>
+<area shape="rect" id="node4" href="$a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="477,31,596,57"/>
+</map>

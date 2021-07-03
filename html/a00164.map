@@ -1,4 +1,6 @@
-<map id="ForwardMessage" name="ForwardMessage">
-<area shape="rect" id="node1" title=" " alt="" coords="5,145,195,296"/>
-<area shape="rect" id="node2" title=" " alt="" coords="77,5,123,83"/>
+<map id="ForwardNode" name="ForwardNode">
+<area shape="rect" id="node1" title="聊天记录里每个消息" alt="" coords="126,160,305,340"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,172,83"/>
+<area shape="rect" id="node3" title=" " alt="" coords="196,5,235,83"/>
+<area shape="rect" id="node4" title=" " alt="" coords="259,5,313,83"/>
 </map>

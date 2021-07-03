@@ -1,7 +1,7 @@
 var a00094 =
 [
-    [ "BotException", "a00094.html#ad0be78aca4de5d8fc45be02e4d3e1a3c", null ],
-    [ "raise", "a00094.html#aaabca37352497f92063a899480a116dc", null ],
-    [ "what", "a00094.html#aa258b23e0ee5b2ad20abca6c080d77f8", null ],
-    [ "description", "a00094.html#a850e03d0969897fa302f0dd966ef8280", null ]
+    [ "APIException", "a00094.html#a43d29e5a434ac9f857f28ef25348bc4b", null ],
+    [ "raise", "a00094.html#a4daa184b72e7fc0630868f7bd257a75c", null ],
+    [ "what", "a00094.html#a9e052d0e2c72c75215b462fdfb8d4dfc", null ],
+    [ "description", "a00094.html#a5cc593fba62b906b9bc8fe18b66ef7d9", null ]
 ];

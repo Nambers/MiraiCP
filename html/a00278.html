@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -5,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 取群文件信息</title>
+<title>MiraiCP: 在事件中构建Member对象</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -85,39 +89,35 @@ $(document).ready(function(){initNavTree('a00278.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">取群文件信息</div>  </div>
+<div class="title">在事件中构建Member对象</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>取群文件信息,会自动搜索子目录 </p><dl class="params"><dt>参数</dt><dd>
+<p>构建群成员对象 </p><dl class="params"><dt>参数</dt><dd>
   <table class="params">
-    <tr><td class="paramname">path-群文件路径(不带文件名)</td><td></td></tr>
-    <tr><td class="paramname">id-文件id,可空，空则为用路径查找(此时路径要带文件名)</td><td></td></tr>
+    <tr><td class="paramname">qqid</td><td>该成员q号 </td></tr>
+    <tr><td class="paramname">groupid</td><td>所在群号 </td></tr>
+    <tr><td class="paramname">botid</td><td>机器人id</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section attention"><dt>注意</dt><dd>因为群文件允许重名文件存在的特性，该查找并不可靠，只能返回重名文件中的其中一个文件 </dd></dl>
-<dl class="section see"><dt>参见</dt><dd><a class="el" href="a00150.html" title="远程(群)文件类型">RemoteFile</a></dd></dl>
-<div class="fragment"><div class="line"><span class="comment">//根据qq群远程路径(不带文件名)和文件id, 文件id可以在上传返回的RemoteFile类型中获得, 会在子目录中查找如果当前目录未找到</span></div>
-<div class="line"><span class="comment">//根据qq群远程路径(带文件名)找, 不过由于qq群文件允许同名文件这一特性, 返回的文件为群文件中同名文件中随机一个</span></div>
-<div class="line"><a name="a0"></a><a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a name="a1"></a><a class="code" href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>([](<a name="_a2"></a><a class="code" href="a00198.html">GroupMessageEvent</a> e) {</div>
-<div class="line">   e.<a name="a3"></a><a class="code" href="a00198.html#acbc031790011ba7b520a21aec2299f08">group</a>.SendMsg(e.<a class="code" href="a00198.html#acbc031790011ba7b520a21aec2299f08">group</a>.<a name="a4"></a><a class="code" href="a00182.html#a4eadbc1ff13345e65c326bc31ab51a30">getFile</a>(<span class="stringliteral">&quot;/&quot;</span>, <span class="keywordtype">id</span>).<a name="a5"></a><a class="code" href="a00150.html#aaeef98e2d5caaa1521950a5a4446efe7">name</a>());</div>
-<div class="line">   e.<a class="code" href="a00198.html#acbc031790011ba7b520a21aec2299f08">group</a>.SendMsg(e.<a class="code" href="a00198.html#acbc031790011ba7b520a21aec2299f08">group</a>.<a class="code" href="a00182.html#a4eadbc1ff13345e65c326bc31ab51a30">getFile</a>(<span class="stringliteral">&quot;/test.txt&quot;</span>).<a class="code" href="a00150.html#aaeef98e2d5caaa1521950a5a4446efe7">name</a>());</div>
-<div class="line">   e.<a class="code" href="a00198.html#acbc031790011ba7b520a21aec2299f08">group</a>.SendMsg(e.<a class="code" href="a00198.html#acbc031790011ba7b520a21aec2299f08">group</a>.<a name="a6"></a><a class="code" href="a00182.html#a46cd7c2b83738574ceb528de83817b54">getFileListString</a>(<span class="stringliteral">&quot;/&quot;</span>));</div>
-<div class="line">   });</div>
-<div class="ttc" id="aa00011_html_a478af16c6688220a7434630eb9101d74"><div class="ttname"><a href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a></div><div class="ttdeci">Event * procession</div><div class="ttdoc">全局事件指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00012">pch.cpp:12</a></div></div>
-<div class="ttc" id="aa00150_html_aaeef98e2d5caaa1521950a5a4446efe7"><div class="ttname"><a href="a00150.html#aaeef98e2d5caaa1521950a5a4446efe7">RemoteFile::name</a></div><div class="ttdeci">const std::string name</div><div class="ttdoc">文件名</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01020">tools.h:1020</a></div></div>
-<div class="ttc" id="aa00182_html_a46cd7c2b83738574ceb528de83817b54"><div class="ttname"><a href="a00182.html#a46cd7c2b83738574ceb528de83817b54">Group::getFileListString</a></div><div class="ttdeci">std::string getFileListString(const std::string &amp;path, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00455">tools.cpp:455</a></div></div>
-<div class="ttc" id="aa00182_html_a4eadbc1ff13345e65c326bc31ab51a30"><div class="ttname"><a href="a00182.html#a4eadbc1ff13345e65c326bc31ab51a30">Group::getFile</a></div><div class="ttdeci">RemoteFile getFile(const std::string &amp;path, const std::string &amp;id=&quot;&quot;, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00433">tools.cpp:433</a></div></div>
-<div class="ttc" id="aa00198_html"><div class="ttname"><a href="a00198.html">GroupMessageEvent</a></div><div class="ttdoc">群消息事件声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01545">tools.h:1545</a></div></div>
-<div class="ttc" id="aa00198_html_acbc031790011ba7b520a21aec2299f08"><div class="ttname"><a href="a00198.html#acbc031790011ba7b520a21aec2299f08">GroupMessageEvent::group</a></div><div class="ttdeci">Group group</div><div class="ttdoc">来源群</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01548">tools.h:1548</a></div></div>
-<div class="ttc" id="aa00234_html_ad3d76f3c8bd243c17a82a24c5bd135c0"><div class="ttname"><a href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l02013">tools.h:2013</a></div></div>
-</div><!-- fragment --></div><!-- contents -->
+<div class="fragment"><div class="line"><a name="_a0"></a><a class="code" href="a00182.html">Member</a>(this.sender.id, <span class="keyword">this</span>.group.id, <span class="keyword">this</span>.bot.id)</div>
+<div class="ttc" id="aa00182_html"><div class="ttname"><a href="a00182.html">Member</a></div><div class="ttdoc">群成员类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01343">tools.h:1343</a></div></div>
+</div><!-- fragment --><div class="fragment"></div><!-- fragment --><p>对象 </p>
+</div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

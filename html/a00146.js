@@ -1,8 +1,6 @@
 var a00146 =
 [
-    [ "downloadtime", "a00146.html#a6257f5202f67d71af216e8328d6ee28f", null ],
-    [ "lastmodifytime", "a00146.html#ab073417dd65e95533b012011aa74a8b0", null ],
-    [ "size", "a00146.html#a94de667500b2c0dba038f7e654ba90f2", null ],
-    [ "uploaderid", "a00146.html#a2bd8a352da0950f3b549dbd754585dd6", null ],
-    [ "uploadtime", "a00146.html#a7b36d35ddbf52b18572e2dce56faf362", null ]
+    [ "md5", "a00146.html#af7b7245d4b94bb72cae65c5cf0b40a9f", null ],
+    [ "sha1", "a00146.html#aa13ebef9ac586704f4913eeb7dae1a7c", null ],
+    [ "url", "a00146.html#a27f1fe72da17504a88993b1895bff874", null ]
 ];

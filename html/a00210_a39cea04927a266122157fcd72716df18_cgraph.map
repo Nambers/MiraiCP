@@ -1,0 +1,8 @@
+<map id="GroupInviteEvent::reject" name="GroupInviteEvent::reject">
+<area shape="rect" id="node1" title=" " alt="" coords="5,31,164,57"/>
+<area shape="rect" id="node2" href="$a00074.html#a74fb2d4bc7e34e4897063a567c6611c3" title="发送错误(error级日志)" alt="" coords="553,31,651,57"/>
+<area shape="rect" id="node5" href="$a00062.html#afb8424eb037cadc329d3c47df377748a" title="调用mirai操作" alt="" coords="212,56,339,83"/>
+<area shape="rect" id="node3" href="$a00074.html#a39d20a1a355877f9a4ca01780a909e14" title="日志底层实现封装" alt="" coords="699,5,792,32"/>
+<area shape="rect" id="node4" href="$a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="840,56,959,83"/>
+<area shape="rect" id="node6" href="$a00058.html#aabf8a80dcd00513cb7516e8251109313" title=" " alt="" coords="387,56,505,83"/>
+</map>

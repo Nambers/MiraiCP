@@ -1,0 +1,4 @@
+<map id="Logger" name="Logger">
+<area shape="rect" id="node1" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content]" alt="" coords="5,5,212,611"/>
+<area shape="rect" id="node2" href="$a00082.html" title="以bot的名义发送日志, 表现格式为: 2021&#45;06&#45;28 09:37:22 [log level]/Bot [botid]: [log content]" alt="" coords="17,659,201,1029"/>
+</map>

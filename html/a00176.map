@@ -1,7 +1,7 @@
-<map id="Member" name="Member">
-<area shape="rect" id="node1" title="群成员类声明" alt="" coords="220,903,415,1185"/>
-<area shape="rect" id="node2" href="$a00134.html" title="group, friend, member的父类" alt="" coords="104,175,323,853"/>
+<map id="Friend" name="Friend">
+<area shape="rect" id="node1" title="好友类声明" alt="" coords="93,903,267,1097"/>
+<area shape="rect" id="node2" href="$a00138.html" title="group, friend, member的父类" alt="" coords="71,175,289,853"/>
 <area shape="rect" id="node3" title=" " alt="" coords="5,5,136,83"/>
-<area shape="rect" id="node4" title=" " alt="" coords="345,5,383,83"/>
-<area shape="rect" id="node5" title=" " alt="" coords="161,5,215,83"/>
+<area shape="rect" id="node4" title=" " alt="" coords="161,5,199,83"/>
+<area shape="rect" id="node5" title=" " alt="" coords="227,5,282,83"/>
 </map>

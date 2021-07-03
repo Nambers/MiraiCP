@@ -1,0 +1,4 @@
+<map id="Bot::getFriendList" name="Bot::getFriendList">
+<area shape="rect" id="node1" title="取好友列表" alt="" coords="208,5,333,32"/>
+<area shape="rect" id="node2" href="$a00174.html#a2734db2add77775b1b8ec5b66b749d74" title="好友列表string形式返回，利于保存" alt="" coords="5,5,160,32"/>
+</map>

@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -5,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: UploadException类 参考</title>
+<title>MiraiCP: MiraiCPException接口 参考</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -86,96 +90,67 @@ $(document).ready(function(){initNavTree('a00086.html',''); initResizable(); });
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public 成员函数</a> &#124;
-<a href="#pri-attribs">Private 属性</a> &#124;
 <a href="a00083.html">所有成员列表</a>  </div>
   <div class="headertitle">
-<div class="title">UploadException类 参考</div>  </div>
+<div class="title">MiraiCPException接口 参考</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>总异常抽象类  
+ <a href="a00086.html#details">更多...</a></p>
+
 <p><code>#include &lt;<a class="el" href="a00026_source.html">tools.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 UploadException 继承关系图:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 MiraiCPException 继承关系图:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00085.png" border="0" usemap="#a_upload_exception_inherit__map" alt="Inheritance graph"/></div>
-<map name="a_upload_exception_inherit__map" id="a_upload_exception_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,285,160,407"/>
-<area shape="rect" href="a00082.html" title="总异常抽象类" alt="" coords="16,131,149,237"/>
-<area shape="rect" title=" " alt="" coords="31,5,135,83"/>
+<div class="center"><img src="a00085.png" border="0" usemap="#a_mirai_c_p_exception_inherit__map" alt="Inheritance graph"/></div>
+<map name="a_mirai_c_p_exception_inherit__map" id="a_mirai_c_p_exception_inherit__map">
+<area shape="rect" title="总异常抽象类" alt="" coords="963,131,1096,237"/>
+<area shape="rect" href="a00094.html" title=" " alt="" coords="5,293,160,414"/>
+<area shape="rect" href="a00098.html" title=" " alt="" coords="185,293,461,414"/>
+<area shape="rect" href="a00110.html" title=" " alt="" coords="485,300,640,407"/>
+<area shape="rect" href="a00114.html" title=" " alt="" coords="664,300,819,407"/>
+<area shape="rect" href="a00126.html" title="参数错误" alt="" coords="843,293,1024,414"/>
+<area shape="rect" href="a00106.html" title=" " alt="" coords="1048,285,1205,421"/>
+<area shape="rect" href="a00102.html" title=" " alt="" coords="1229,300,1384,407"/>
+<area shape="rect" href="a00118.html" title=" " alt="" coords="1408,307,1563,399"/>
+<area shape="rect" href="a00122.html" title=" " alt="" coords="1587,300,1757,407"/>
+<area shape="rect" href="a00090.html" title=" " alt="" coords="1781,293,1936,414"/>
+<area shape="rect" title=" " alt="" coords="977,5,1081,83"/>
 </map>
 </div>
 <div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> UploadException 的协作图:</div>
+  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> MiraiCPException 的协作图:</div>
 <div id="dynsection-1-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00084.png" border="0" usemap="#a_upload_exception_coll__map" alt="Collaboration graph"/></div>
-<map name="a_upload_exception_coll__map" id="a_upload_exception_coll__map">
-<area shape="rect" title=" " alt="" coords="53,301,208,423"/>
-<area shape="rect" href="a00082.html" title="总异常抽象类" alt="" coords="5,132,139,239"/>
+<div class="center"><img src="a00084.png" border="0" usemap="#a_mirai_c_p_exception_coll__map" alt="Collaboration graph"/></div>
+<map name="a_mirai_c_p_exception_coll__map" id="a_mirai_c_p_exception_coll__map">
+<area shape="rect" title="总异常抽象类" alt="" coords="5,131,139,237"/>
 <area shape="rect" title=" " alt="" coords="20,5,124,83"/>
-<area shape="rect" title=" " alt="" coords="163,147,218,224"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
-<tr class="memitem:a30511802b558b865bac3a7a118a44193"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00086.html#a30511802b558b865bac3a7a118a44193">UploadException</a> (<a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> text)</td></tr>
-<tr class="separator:a30511802b558b865bac3a7a118a44193"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac860caa219fb769a64225f4c2d088b9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00086.html#ac860caa219fb769a64225f4c2d088b9d">what</a> ()</td></tr>
-<tr class="memdesc:ac860caa219fb769a64225f4c2d088b9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">异常信息  <a href="a00086.html#ac860caa219fb769a64225f4c2d088b9d">更多...</a><br /></td></tr>
-<tr class="separator:ac860caa219fb769a64225f4c2d088b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2717697bd3a12fc76040131fe0780bdb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00086.html#a2717697bd3a12fc76040131fe0780bdb">raise</a> ()</td></tr>
-<tr class="memdesc:a2717697bd3a12fc76040131fe0780bdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">raise 抛出方法  <a href="a00086.html#a2717697bd3a12fc76040131fe0780bdb">更多...</a><br /></td></tr>
-<tr class="separator:a2717697bd3a12fc76040131fe0780bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
-Private 属性</h2></td></tr>
-<tr class="memitem:a7b4a5c0a2e2984c37e1c9e788f55063f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00086.html#a7b4a5c0a2e2984c37e1c9e788f55063f">description</a></td></tr>
-<tr class="separator:a7b4a5c0a2e2984c37e1c9e788f55063f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b0e3cd0989dd814bba45db073c2f513"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00086.html#a5b0e3cd0989dd814bba45db073c2f513">what</a> ()</td></tr>
+<tr class="memdesc:a5b0e3cd0989dd814bba45db073c2f513"><td class="mdescLeft">&#160;</td><td class="mdescRight">异常信息  <a href="a00086.html#a5b0e3cd0989dd814bba45db073c2f513">更多...</a><br /></td></tr>
+<tr class="separator:a5b0e3cd0989dd814bba45db073c2f513"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bf4207dc82e7410e136e352176a5ec9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00086.html#a6bf4207dc82e7410e136e352176a5ec9">raise</a> ()</td></tr>
+<tr class="memdesc:a6bf4207dc82e7410e136e352176a5ec9"><td class="mdescLeft">&#160;</td><td class="mdescRight">raise 抛出方法  <a href="a00086.html#a6bf4207dc82e7410e136e352176a5ec9">更多...</a><br /></td></tr>
+<tr class="separator:a6bf4207dc82e7410e136e352176a5ec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock"><p>文件读取异常. </p><dl class="section see"><dt>参见</dt><dd><a class="el" href="a00082.html" title="总异常抽象类">MiraiCPException</a> </dd></dl>
+<div class="textblock"><p>总异常抽象类 </p>
+<dl class="section examples"><dt>示例</dt><dd><a class="el" href="a00266.html#_a6">撤回信息</a>.</dd>
+</dl>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l00362">362</a> 行定义.</p>
-</div><h2 class="groupheader">构造及析构函数说明</h2>
-<a id="a30511802b558b865bac3a7a118a44193"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a30511802b558b865bac3a7a118a44193">&#9670;&nbsp;</a></span>UploadException()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">UploadException::UploadException </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td>
-          <td class="paramname"><em>text</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l00364">364</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;                                    {</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;        this-&gt;<a class="code" href="a00086.html#a7b4a5c0a2e2984c37e1c9e788f55063f">description</a> = <span class="stringliteral">&quot;上传(图片/文件)异常&quot;</span> + text;</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    }</div>
-<div class="ttc" id="aa00086_html_a7b4a5c0a2e2984c37e1c9e788f55063f"><div class="ttname"><a href="a00086.html#a7b4a5c0a2e2984c37e1c9e788f55063f">UploadException::description</a></div><div class="ttdeci">std::string description</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00379">tools.h:379</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<h2 class="groupheader">成员函数说明</h2>
-<a id="a2717697bd3a12fc76040131fe0780bdb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2717697bd3a12fc76040131fe0780bdb">&#9670;&nbsp;</a></span>raise()</h2>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l00393">393</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a6bf4207dc82e7410e136e352176a5ec9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bf4207dc82e7410e136e352176a5ec9">&#9670;&nbsp;</a></span>raise()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -184,7 +159,7 @@ Private 属性</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void UploadException::raise </td>
+          <td class="memname">virtual void MiraiCPException::raise </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -199,33 +174,46 @@ Private 属性</h2></td></tr>
 
 <p>raise 抛出方法 </p>
 
-<p>实现了 <a class="el" href="a00082.html#a6bf4207dc82e7410e136e352176a5ec9">MiraiCPException</a>.</p>
+<p>在 <a class="el" href="a00126.html#a9c7d08d9ae51d1d8ff594d122c77fda2">IllegalArgumentException</a>, <a class="el" href="a00114.html#a1075132ff00a9f7226822a079832adfa">GroupException</a>, <a class="el" href="a00110.html#a1d7505c9809a40b45875351727e05d35">FriendException</a>, <a class="el" href="a00106.html#a904e9a32da679e8b54afb8503133542e">MemberException</a>, <a class="el" href="a00102.html#af109372d76aede1d7db4a87001a75c68">MuteException</a>, <a class="el" href="a00098.html#aaabca37352497f92063a899480a116dc">BotException</a>, <a class="el" href="a00094.html#a4daa184b72e7fc0630868f7bd257a75c">APIException</a> , 以及 <a class="el" href="a00090.html#a2717697bd3a12fc76040131fe0780bdb">UploadException</a> 内被实现.</p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l00373">373</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;                 {</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        <a class="code" href="a00026.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#abb690146dbd2c6fb7e603caf123096dd">Error</a>(this-&gt;<a class="code" href="a00086.html#a7b4a5c0a2e2984c37e1c9e788f55063f">description</a>);</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        <span class="comment">//manager-&gt;getEnv()-&gt;ThrowNew(config-&gt;initexception, (this-&gt;description).c_str());</span></div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    }</div>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l00398">398</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;                         {</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        <span class="keywordflow">if</span>(<a class="code" href="a00026.html#a0009c186c3629201f6c24eded36605f4">logger</a> != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;            <a class="code" href="a00026.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#a74fb2d4bc7e34e4897063a567c6611c3">Error</a>(<a class="code" href="a00086.html#a5b0e3cd0989dd814bba45db073c2f513">what</a>());</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    };</div>
 <div class="ttc" id="aa00026_html_a0009c186c3629201f6c24eded36605f4"><div class="ttname"><a href="a00026.html#a0009c186c3629201f6c24eded36605f4">logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">声明全局日志对象</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00010">pch.cpp:10</a></div></div>
-<div class="ttc" id="aa00074_html_abb690146dbd2c6fb7e603caf123096dd"><div class="ttname"><a href="a00074.html#abb690146dbd2c6fb7e603caf123096dd">Logger::Error</a></div><div class="ttdeci">void Error(const std::string &amp;, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送错误(error级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00096">tools.cpp:96</a></div></div>
+<div class="ttc" id="aa00074_html_a74fb2d4bc7e34e4897063a567c6611c3"><div class="ttname"><a href="a00074.html#a74fb2d4bc7e34e4897063a567c6611c3">Logger::Error</a></div><div class="ttdeci">void Error(const std::string &amp;, unsigned long long=-1, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送错误(error级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00099">tools.cpp:99</a></div></div>
+<div class="ttc" id="aa00086_html_a5b0e3cd0989dd814bba45db073c2f513"><div class="ttname"><a href="a00086.html#a5b0e3cd0989dd814bba45db073c2f513">MiraiCPException::what</a></div><div class="ttdeci">virtual std::string what()</div><div class="ttdoc">异常信息</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00396">tools.h:396</a></div></div>
 </div><!-- fragment --><div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-2-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
 <div id="dynsection-2-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-2-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00086_a2717697bd3a12fc76040131fe0780bdb_cgraph.png" border="0" usemap="#aa00086_a2717697bd3a12fc76040131fe0780bdb_cgraph" alt=""/></div>
-<map name="aa00086_a2717697bd3a12fc76040131fe0780bdb_cgraph" id="aa00086_a2717697bd3a12fc76040131fe0780bdb_cgraph">
-<area shape="rect" title="raise 抛出方法" alt="" coords="5,31,161,57"/>
-<area shape="rect" href="a00074.html#abb690146dbd2c6fb7e603caf123096dd" title="发送错误(error级日志)" alt="" coords="209,31,307,57"/>
-<area shape="rect" href="a00074.html#a623dbe79c347ea0d063f5d6b900c5bc2" title="日志底层实现封装" alt="" coords="355,5,448,32"/>
-<area shape="rect" href="a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="496,31,615,57"/>
+<div class="center"><img src="a00086_a6bf4207dc82e7410e136e352176a5ec9_cgraph.png" border="0" usemap="#aa00086_a6bf4207dc82e7410e136e352176a5ec9_cgraph" alt=""/></div>
+<map name="aa00086_a6bf4207dc82e7410e136e352176a5ec9_cgraph" id="aa00086_a6bf4207dc82e7410e136e352176a5ec9_cgraph">
+<area shape="rect" title="raise 抛出方法" alt="" coords="5,56,168,83"/>
+<area shape="rect" href="a00074.html#a74fb2d4bc7e34e4897063a567c6611c3" title="发送错误(error级日志)" alt="" coords="248,31,345,57"/>
+<area shape="rect" href="a00086.html#a5b0e3cd0989dd814bba45db073c2f513" title="异常信息" alt="" coords="216,81,377,108"/>
+<area shape="rect" href="a00074.html#a39d20a1a355877f9a4ca01780a909e14" title="日志底层实现封装" alt="" coords="425,5,519,32"/>
+<area shape="rect" href="a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="567,31,685,57"/>
+</map>
+</div>
+<div id="dynsection-3" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-3-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
+<div id="dynsection-3-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-3-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00086_a6bf4207dc82e7410e136e352176a5ec9_icgraph.png" border="0" usemap="#aa00086_a6bf4207dc82e7410e136e352176a5ec9_icgraph" alt=""/></div>
+<map name="aa00086_a6bf4207dc82e7410e136e352176a5ec9_icgraph" id="aa00086_a6bf4207dc82e7410e136e352176a5ec9_icgraph">
+<area shape="rect" title="raise 抛出方法" alt="" coords="232,20,395,47"/>
+<area shape="rect" href="a00011.html#aef48c35044131053dbb51ec07a0070af" title=" " alt="" coords="5,5,184,61"/>
 </map>
 </div>
 
 </div>
 </div>
-<a id="ac860caa219fb769a64225f4c2d088b9d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac860caa219fb769a64225f4c2d088b9d">&#9670;&nbsp;</a></span>what()</h2>
+<a id="a5b0e3cd0989dd814bba45db073c2f513"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b0e3cd0989dd814bba45db073c2f513">&#9670;&nbsp;</a></span>what()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,7 +222,7 @@ Private 属性</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> UploadException::what </td>
+          <td class="memname">virtual <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> MiraiCPException::what </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -249,51 +237,44 @@ Private 属性</h2></td></tr>
 
 <p>异常信息 </p>
 
-<p>实现了 <a class="el" href="a00082.html#a5b0e3cd0989dd814bba45db073c2f513">MiraiCPException</a>.</p>
+<p>在 <a class="el" href="a00126.html#af8b5307a187648127cb0cff3ebbf2bee">IllegalArgumentException</a>, <a class="el" href="a00122.html#aaeeab2bef11a4727ee3c7d9c7a860dea">RemoteAssetException</a>, <a class="el" href="a00118.html#aa8fe3dc3b16af078242f145685082087">RecallException</a>, <a class="el" href="a00114.html#a3e9cfa08fee6cf489ec37908f33f620c">GroupException</a>, <a class="el" href="a00110.html#a9a971ca3748c4436f3e1b1574578c946">FriendException</a>, <a class="el" href="a00106.html#ac286a2e97a098397d97a616945e07b1d">MemberException</a>, <a class="el" href="a00102.html#a02778dbb96d07fb5eecd972968cbe0a5">MuteException</a>, <a class="el" href="a00098.html#aa258b23e0ee5b2ad20abca6c080d77f8">BotException</a>, <a class="el" href="a00094.html#a9e052d0e2c72c75215b462fdfb8d4dfc">APIException</a> , 以及 <a class="el" href="a00090.html#ac860caa219fb769a64225f4c2d088b9d">UploadException</a> 内被实现.</p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l00369">369</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                     {</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;        <span class="keywordflow">return</span> this-&gt;<a class="code" href="a00086.html#a7b4a5c0a2e2984c37e1c9e788f55063f">description</a>;</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    }</div>
-</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l00396">396</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;MiraiCP异常&quot;</span>; };</div>
+</div><!-- fragment --><div id="dynsection-4" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-4-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
+<div id="dynsection-4-summary" class="dynsummary" style="display:block;">
 </div>
+<div id="dynsection-4-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00086_a5b0e3cd0989dd814bba45db073c2f513_icgraph.png" border="0" usemap="#aa00086_a5b0e3cd0989dd814bba45db073c2f513_icgraph" alt=""/></div>
+<map name="aa00086_a5b0e3cd0989dd814bba45db073c2f513_icgraph" id="aa00086_a5b0e3cd0989dd814bba45db073c2f513_icgraph">
+<area shape="rect" title="异常信息" alt="" coords="443,20,604,47"/>
+<area shape="rect" href="a00086.html#a6bf4207dc82e7410e136e352176a5ec9" title="raise 抛出方法" alt="" coords="232,20,395,47"/>
+<area shape="rect" href="a00011.html#aef48c35044131053dbb51ec07a0070af" title=" " alt="" coords="5,5,184,61"/>
+</map>
 </div>
-<h2 class="groupheader">类成员变量说明</h2>
-<a id="a7b4a5c0a2e2984c37e1c9e788f55063f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b4a5c0a2e2984c37e1c9e788f55063f">&#9670;&nbsp;</a></span>description</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> UploadException::description</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l00379">379</a> 行定义.</p>
 
 </div>
 </div>
-<hr/>该类的文档由以下文件生成:<ul>
+<hr/>该接口的文档由以下文件生成:<ul>
 <li><a class="el" href="a00026_source.html">tools.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="a00086.html">UploadException</a></li>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="navelem"><a class="el" href="a00086.html">MiraiCPException</a></li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:22 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

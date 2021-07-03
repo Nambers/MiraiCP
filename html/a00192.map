@@ -1,7 +1,4 @@
-<map id="BotEvent" name="BotEvent">
-<area shape="rect" id="node1" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="152,520,295,612"/>
-<area shape="rect" id="node2" href="$a00170.html" title="当前bot账号信息" alt="" coords="116,160,331,457"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,5,172,83"/>
-<area shape="rect" id="node4" title=" " alt="" coords="196,5,251,83"/>
-<area shape="rect" id="node5" title=" " alt="" coords="296,5,343,83"/>
+<map id="Group::file_short_info" name="Group::file_short_info">
+<area shape="rect" id="node1" title="群文件的简短描述" alt="" coords="5,160,149,237"/>
+<area shape="rect" id="node2" title=" " alt="" coords="50,5,105,83"/>
 </map>

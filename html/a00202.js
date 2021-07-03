@@ -1,7 +1,8 @@
 var a00202 =
 [
-    [ "PrivateMessageEvent", "a00202.html#a935deafbe1f8ecb73e08c6386b2b8410", null ],
-    [ "message", "a00202.html#a15942d9ce307936e02c7e3ff1cbaab08", null ],
-    [ "messageSource", "a00202.html#a73df3e24b11ec35b21edab614a5d89c2", null ],
-    [ "sender", "a00202.html#a62b26ff1072eb68c418b12a87a26cd31", null ]
+    [ "GroupMessageEvent", "a00202.html#a935282b560906a8f722b41b26a9bb0ae", null ],
+    [ "group", "a00202.html#acbc031790011ba7b520a21aec2299f08", null ],
+    [ "message", "a00202.html#a23a3c54e9b3b587db24783ecefb993f2", null ],
+    [ "messageSource", "a00202.html#ac0fbbe7ebc93f69ab521d745ebe04f5d", null ],
+    [ "sender", "a00202.html#af42c8d253640cbe965406843367bb0f3", null ]
 ];

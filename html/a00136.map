@@ -1,5 +1,6 @@
-<map id="LightApp" name="LightApp">
-<area shape="rect" id="node1" title=" " alt="" coords="31,160,223,340"/>
-<area shape="rect" id="node2" href="$a00066.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,5,135,97"/>
-<area shape="rect" id="node3" title=" " alt="" coords="159,13,213,90"/>
+<map id="Contact" name="Contact">
+<area shape="rect" id="node1" title="group, friend, member的父类" alt="" coords="71,175,289,853"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,136,83"/>
+<area shape="rect" id="node3" title=" " alt="" coords="161,5,199,83"/>
+<area shape="rect" id="node4" title=" " alt="" coords="227,5,282,83"/>
 </map>

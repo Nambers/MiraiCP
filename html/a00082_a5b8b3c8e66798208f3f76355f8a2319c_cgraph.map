@@ -1,0 +1,11 @@
+<map id="BotLogger::Info" name="BotLogger::Info">
+<area shape="rect" id="node1" title="发送普通(info级日志)" alt="" coords="5,56,115,83"/>
+<area shape="rect" id="node2" href="$a00082.html#a8f3cec0f2fe369a778429d07c68c8b0f" title="发送普通(info级日志)" alt="" coords="175,31,284,57"/>
+<area shape="rect" id="node7" href="$a00070.html#a05f947c86d38440157efc9ce849cca20" title="输出当前内容, 会自动转码" alt="" coords="163,81,296,108"/>
+<area shape="rect" id="node3" href="$a00074.html#a0c06be585935f38b4351f8c207b97b41" title="发送普通(info级日志)" alt="" coords="395,31,484,57"/>
+<area shape="rect" id="node4" href="$a00074.html#a39d20a1a355877f9a4ca01780a909e14" title="日志底层实现封装" alt="" coords="587,31,681,57"/>
+<area shape="rect" id="node5" href="$a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="733,5,852,32"/>
+<area shape="rect" id="node6" href="$a00074.html#a74fb2d4bc7e34e4897063a567c6611c3" title="发送错误(error级日志)" alt="" coords="900,31,997,57"/>
+<area shape="rect" id="node8" href="$a00058.html#a5aae19c9953c69797c49a2540c99d540" title="从miraicode转义到正常" alt="" coords="344,81,535,108"/>
+<area shape="rect" id="node9" href="$a00058.html#a73a5bbcbdd583d014bf3f8e5db3a89eb" title="替换全部在一个字符串中." alt="" coords="583,81,685,108"/>
+</map>

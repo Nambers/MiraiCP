@@ -1,0 +1,19 @@
+<map id="Group::updateSetting" name="Group::updateSetting">
+<area shape="rect" id="node1" title="更新群设置, 即覆盖服务器上的群设置" alt="" coords="5,195,151,221"/>
+<area shape="rect" id="node2" href="$a00062.html#afb8424eb037cadc329d3c47df377748a" title="调用mirai操作" alt="" coords="617,100,744,127"/>
+<area shape="rect" id="node7" href="$a00186.html#a96745dba8b6f78c2f8dd04fbd241cef2" title="刷新群聊信息" alt="" coords="199,195,323,221"/>
+<area shape="rect" id="node10" href="$a00138.html#a190dd1c2ecfccf67edc3d2b1cff87835" title=" " alt="" coords="601,263,760,305"/>
+<area shape="rect" id="node3" href="$a00058.html#aabf8a80dcd00513cb7516e8251109313" title=" " alt="" coords="821,56,939,83"/>
+<area shape="rect" id="node6" href="$a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="1364,56,1483,83"/>
+<area shape="rect" id="node4" href="$a00074.html#a74fb2d4bc7e34e4897063a567c6611c3" title="发送错误(error级日志)" alt="" coords="1039,56,1136,83"/>
+<area shape="rect" id="node5" href="$a00074.html#a39d20a1a355877f9a4ca01780a909e14" title="日志底层实现封装" alt="" coords="1223,5,1316,32"/>
+<area shape="rect" id="node8" href="$a00026.html#ab59fa3f78cc8acbe38a75e2445f8d087" title=" " alt="" coords="417,144,507,171"/>
+<area shape="rect" id="node9" href="$a00158.html#ad285de08b2fb584b482db3e0144c1196" title="取该联系人的一些信息" alt="" coords="371,195,553,221"/>
+<area shape="rect" id="node17" href="$a00158.html#a9bb2f0a4e7c0cb7eee2e100b791d38d7" title=" " alt="" coords="397,245,527,272"/>
+<area shape="rect" id="node11" href="$a00138.html#a6739337b623df49bc51e2fc997bfd6e8" title="序列化到json对象" alt="" coords="808,271,952,297"/>
+<area shape="rect" id="node12" href="$a00138.html#a869c10fc8e1abeedc10d805576b1450a" title="所属bot" alt="" coords="1036,169,1139,196"/>
+<area shape="rect" id="node13" href="$a00138.html#a07e7ddca539bf8e5ac2d2ad00d8b7ba4" title="当type为3的时候存在，否则为0，可以看作补充id" alt="" coords="1029,220,1146,247"/>
+<area shape="rect" id="node14" href="$a00138.html#a220e55b907d54958cd2afb95e65da5a1" title="id在全部情况存在" alt="" coords="1045,271,1130,297"/>
+<area shape="rect" id="node15" href="$a00138.html#a3f78c5f66d0b71ad06267c6a3b492066" title="群名称，群成员群名片，或好友昵称" alt="" coords="1000,321,1175,348"/>
+<area shape="rect" id="node16" href="$a00138.html#a182b686fa824fe5c9a3a5181f873e2a1" title="当前对象类型" alt="" coords="1037,372,1137,399"/>
+</map>

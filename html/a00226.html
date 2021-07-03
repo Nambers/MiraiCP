@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -5,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: BotJoinGroupEvent类 参考</title>
+<title>MiraiCP: RecallEvent类 参考</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -89,78 +93,91 @@ $(document).ready(function(){initNavTree('a00226.html',''); initResizable(); });
 <a href="#pub-attribs">Public 属性</a> &#124;
 <a href="a00223.html">所有成员列表</a>  </div>
   <div class="headertitle">
-<div class="title">BotJoinGroupEvent类 参考</div>  </div>
+<div class="title">RecallEvent类 参考</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>机器人进入某群  
+<p>撤回信息  
  <a href="a00226.html#details">更多...</a></p>
 
 <p><code>#include &lt;<a class="el" href="a00026_source.html">tools.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 BotJoinGroupEvent 继承关系图:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 RecallEvent 继承关系图:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00225.png" border="0" usemap="#a_bot_join_group_event_inherit__map" alt="Inheritance graph"/></div>
-<map name="a_bot_join_group_event_inherit__map" id="a_bot_join_group_event_inherit__map">
-<area shape="rect" title="机器人进入某群" alt="" coords="5,145,184,340"/>
-<area shape="rect" href="a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="23,5,166,97"/>
+<div class="center"><img src="a00225.png" border="0" usemap="#a_recall_event_inherit__map" alt="Inheritance graph"/></div>
+<map name="a_recall_event_inherit__map" id="a_recall_event_inherit__map">
+<area shape="rect" title="撤回信息" alt="" coords="5,160,224,501"/>
+<area shape="rect" href="a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="39,5,190,112"/>
 </map>
 </div>
 <div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> BotJoinGroupEvent 的协作图:</div>
+  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> RecallEvent 的协作图:</div>
 <div id="dynsection-1-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00224.png" border="0" usemap="#a_bot_join_group_event_coll__map" alt="Collaboration graph"/></div>
-<map name="a_bot_join_group_event_coll__map" id="a_bot_join_group_event_coll__map">
-<area shape="rect" title="机器人进入某群" alt="" coords="248,1540,427,1691"/>
-<area shape="rect" href="a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="167,1158,310,1250"/>
-<area shape="rect" href="a00170.html" title="当前bot账号信息" alt="" coords="131,380,346,677"/>
-<area shape="rect" title=" " alt="" coords="19,5,186,83"/>
-<area shape="rect" title=" " alt="" coords="522,5,577,83"/>
-<area shape="rect" href="a00134.html" title="group, friend, member的父类" alt="" coords="701,189,920,868"/>
-<area shape="rect" href="a00186.html" title="群设置" alt="" coords="473,490,615,567"/>
-<area shape="rect" title=" " alt="" coords="219,5,266,83"/>
-<area shape="rect" title=" " alt="" coords="335,1165,407,1243"/>
-<area shape="rect" href="a00182.html" title="群聊类声明" alt="" coords="435,931,653,1477"/>
-<area shape="rect" title=" " alt="" coords="808,5,939,83"/>
-<area shape="rect" title=" " alt="" coords="963,5,1002,83"/>
+<div class="center"><img src="a00224.png" border="0" usemap="#a_recall_event_coll__map" alt="Collaboration graph"/></div>
+<map name="a_recall_event_coll__map" id="a_recall_event_coll__map">
+<area shape="rect" title="撤回信息" alt="" coords="441,1571,659,1780"/>
+<area shape="rect" href="a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="371,1401,513,1493"/>
+<area shape="rect" href="a00174.html" title="当前bot账号信息" alt="" coords="335,983,549,1280"/>
+<area shape="rect" title=" " alt="" coords="5,549,172,627"/>
+<area shape="rect" href="a00082.html" title="以bot的名义发送日志, 表现格式为: 2021&#45;06&#45;28 09:37:22 [log level]/Bot [botid]: [log content]" alt="" coords="126,953,310,1309"/>
+<area shape="rect" title=" " alt="" coords="520,549,575,627"/>
+<area shape="rect" title=" " alt="" coords="399,13,445,90"/>
+<area shape="rect" href="a00078.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="269,160,380,237"/>
+<area shape="rect" href="a00074.html" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content]" alt="" coords="196,300,403,876"/>
+<area shape="rect" title=" " alt="" coords="231,5,354,97"/>
+<area shape="rect" title=" " alt="" coords="165,160,245,237"/>
+<area shape="rect" title=" " alt="" coords="625,1409,664,1486"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
-<tr class="memitem:a152067b678802d1c2124ffc31d8a523d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#a152067b678802d1c2124ffc31d8a523d">BotJoinGroupEvent</a> (unsigned long long int botid, const int <a class="el" href="a00226.html#a93fb1138fcd5634ee8ac84ce49a25c68">type</a>, const <a class="el" href="a00182.html">Group</a> &amp;<a class="el" href="a00226.html#aebfd8af45c5114db549d2782b982396b">group</a>, const unsigned long long inviter)</td></tr>
-<tr class="memdesc:a152067b678802d1c2124ffc31d8a523d"><td class="mdescLeft">&#160;</td><td class="mdescRight">bot加入群  <a href="a00226.html#a152067b678802d1c2124ffc31d8a523d">更多...</a><br /></td></tr>
-<tr class="separator:a152067b678802d1c2124ffc31d8a523d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_a00194"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_a00194')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="a00194.html">BotEvent</a></td></tr>
-<tr class="memitem:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00194"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00194.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a> (unsigned long long botid)</td></tr>
-<tr class="separator:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b5b2940bdfd72fcb3042d42354f83d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#a6b5b2940bdfd72fcb3042d42354f83d6">RecallEvent</a> (unsigned long long int botid, const int <a class="el" href="a00226.html#a5b6ba1dd154963933e1c3dc2880f0d14">type</a>, const int <a class="el" href="a00226.html#a78201065317c32c62ea39d597ca036c3">time</a>, const unsigned long long int <a class="el" href="a00226.html#a6ca09703cf5ca62b54c2f4f08465fd15">authorid</a>, const unsigned long long int <a class="el" href="a00226.html#a79c894271697ce5798850b259417dcaf">operatorid</a>, const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;<a class="el" href="a00226.html#a6977185f71894989b7a01fa1ef755046">ids</a>, const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;<a class="el" href="a00226.html#aaf7aea17696b093024696551eb4acd0a">internalids</a>, const unsigned long long int <a class="el" href="a00226.html#abeefe96135f69b9bfb095b18b33e8aaf">groupid</a>)</td></tr>
+<tr class="memdesc:a6b5b2940bdfd72fcb3042d42354f83d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">撤回事件  <a href="a00226.html#a6b5b2940bdfd72fcb3042d42354f83d6">更多...</a><br /></td></tr>
+<tr class="separator:a6b5b2940bdfd72fcb3042d42354f83d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_a00198"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_a00198')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="a00198.html">BotEvent</a></td></tr>
+<tr class="memitem:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00198"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a> (unsigned long long botid)</td></tr>
+<tr class="separator:ac26c3d59fa5a3546f269549ccbe994a4 inherit pub_methods_a00198"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public 属性</h2></td></tr>
-<tr class="memitem:a93fb1138fcd5634ee8ac84ce49a25c68"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#a93fb1138fcd5634ee8ac84ce49a25c68">type</a></td></tr>
-<tr class="memdesc:a93fb1138fcd5634ee8ac84ce49a25c68"><td class="mdescLeft">&#160;</td><td class="mdescRight">1-主动加入,2-被邀请加入,3-提供恢复群主身份加入  <a href="a00226.html#a93fb1138fcd5634ee8ac84ce49a25c68">更多...</a><br /></td></tr>
-<tr class="separator:a93fb1138fcd5634ee8ac84ce49a25c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebfd8af45c5114db549d2782b982396b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00182.html">Group</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#aebfd8af45c5114db549d2782b982396b">group</a></td></tr>
-<tr class="memdesc:aebfd8af45c5114db549d2782b982396b"><td class="mdescLeft">&#160;</td><td class="mdescRight">进入的群  <a href="a00226.html#aebfd8af45c5114db549d2782b982396b">更多...</a><br /></td></tr>
-<tr class="separator:aebfd8af45c5114db549d2782b982396b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a1e07c65f1e4f0cc7055ad82e252f3b"><td class="memItemLeft" align="right" valign="top">const unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#a9a1e07c65f1e4f0cc7055ad82e252f3b">inviterid</a></td></tr>
-<tr class="memdesc:a9a1e07c65f1e4f0cc7055ad82e252f3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">当type=2时存在，为邀请人，否则为空，调用可能会报错  <a href="a00226.html#a9a1e07c65f1e4f0cc7055ad82e252f3b">更多...</a><br /></td></tr>
-<tr class="separator:a9a1e07c65f1e4f0cc7055ad82e252f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_attribs_a00194"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_a00194')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="a00194.html">BotEvent</a></td></tr>
-<tr class="memitem:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00194"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00170.html">Bot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00194.html#a2a77f086d712d0fc8d2e430e4e2d4b83">bot</a></td></tr>
-<tr class="separator:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b6ba1dd154963933e1c3dc2880f0d14"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#a5b6ba1dd154963933e1c3dc2880f0d14">type</a> = 0</td></tr>
+<tr class="memdesc:a5b6ba1dd154963933e1c3dc2880f0d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">为1时是好友私聊中撤回，为2时为群聊内撤回  <a href="a00226.html#a5b6ba1dd154963933e1c3dc2880f0d14">更多...</a><br /></td></tr>
+<tr class="separator:a5b6ba1dd154963933e1c3dc2880f0d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78201065317c32c62ea39d597ca036c3"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#a78201065317c32c62ea39d597ca036c3">time</a> = 0</td></tr>
+<tr class="memdesc:a78201065317c32c62ea39d597ca036c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">时间戳  <a href="a00226.html#a78201065317c32c62ea39d597ca036c3">更多...</a><br /></td></tr>
+<tr class="separator:a78201065317c32c62ea39d597ca036c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ca09703cf5ca62b54c2f4f08465fd15"><td class="memItemLeft" align="right" valign="top">const unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#a6ca09703cf5ca62b54c2f4f08465fd15">authorid</a> = 0</td></tr>
+<tr class="memdesc:a6ca09703cf5ca62b54c2f4f08465fd15"><td class="mdescLeft">&#160;</td><td class="mdescRight">原发送者  <a href="a00226.html#a6ca09703cf5ca62b54c2f4f08465fd15">更多...</a><br /></td></tr>
+<tr class="separator:a6ca09703cf5ca62b54c2f4f08465fd15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79c894271697ce5798850b259417dcaf"><td class="memItemLeft" align="right" valign="top">const unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#a79c894271697ce5798850b259417dcaf">operatorid</a> = 0</td></tr>
+<tr class="memdesc:a79c894271697ce5798850b259417dcaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">撤回者  <a href="a00226.html#a79c894271697ce5798850b259417dcaf">更多...</a><br /></td></tr>
+<tr class="separator:a79c894271697ce5798850b259417dcaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6977185f71894989b7a01fa1ef755046"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#a6977185f71894989b7a01fa1ef755046">ids</a> = &quot;&quot;</td></tr>
+<tr class="memdesc:a6977185f71894989b7a01fa1ef755046"><td class="mdescLeft">&#160;</td><td class="mdescRight">信息id  <a href="a00226.html#a6977185f71894989b7a01fa1ef755046">更多...</a><br /></td></tr>
+<tr class="separator:a6977185f71894989b7a01fa1ef755046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf7aea17696b093024696551eb4acd0a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#aaf7aea17696b093024696551eb4acd0a">internalids</a> = &quot;&quot;</td></tr>
+<tr class="separator:aaf7aea17696b093024696551eb4acd0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abeefe96135f69b9bfb095b18b33e8aaf"><td class="memItemLeft" align="right" valign="top">const unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00226.html#abeefe96135f69b9bfb095b18b33e8aaf">groupid</a> = 0</td></tr>
+<tr class="separator:abeefe96135f69b9bfb095b18b33e8aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_a00198"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_a00198')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="a00198.html">BotEvent</a></td></tr>
+<tr class="memitem:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00198"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00174.html">Bot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83">bot</a></td></tr>
+<tr class="memdesc:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00198"><td class="mdescLeft">&#160;</td><td class="mdescRight">该事件接受的机器人  <a href="a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83">更多...</a><br /></td></tr>
+<tr class="separator:a2a77f086d712d0fc8d2e430e4e2d4b83 inherit pub_attribs_a00198"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1571ef8d345a7a94bedecd48df4923c7 inherit pub_attribs_a00198"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00082.html">BotLogger</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00198.html#a1571ef8d345a7a94bedecd48df4923c7">botlogger</a></td></tr>
+<tr class="separator:a1571ef8d345a7a94bedecd48df4923c7 inherit pub_attribs_a00198"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock"><p>机器人进入某群 </p>
+<div class="textblock"><p>撤回信息 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01817">1817</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01828">1828</a> 行定义.</p>
 </div><h2 class="groupheader">构造及析构函数说明</h2>
-<a id="a152067b678802d1c2124ffc31d8a523d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a152067b678802d1c2124ffc31d8a523d">&#9670;&nbsp;</a></span>BotJoinGroupEvent()</h2>
+<a id="a6b5b2940bdfd72fcb3042d42354f83d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b5b2940bdfd72fcb3042d42354f83d6">&#9670;&nbsp;</a></span>RecallEvent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -169,7 +186,7 @@ Public 属性</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">BotJoinGroupEvent::BotJoinGroupEvent </td>
+          <td class="memname">RecallEvent::RecallEvent </td>
           <td>(</td>
           <td class="paramtype">unsigned long long int&#160;</td>
           <td class="paramname"><em>botid</em>, </td>
@@ -183,14 +200,38 @@ Public 属性</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="a00182.html">Group</a> &amp;&#160;</td>
-          <td class="paramname"><em>group</em>, </td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned long long&#160;</td>
-          <td class="paramname"><em>inviter</em>&#160;</td>
+          <td class="paramtype">const unsigned long long int&#160;</td>
+          <td class="paramname"><em>authorid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned long long int&#160;</td>
+          <td class="paramname"><em>operatorid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;&#160;</td>
+          <td class="paramname"><em>ids</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;&#160;</td>
+          <td class="paramname"><em>internalids</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned long long int&#160;</td>
+          <td class="paramname"><em>groupid</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -205,78 +246,156 @@ Public 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>bot加入群 </p>
+<p>撤回事件 </p>
 <dl class="params"><dt>参数</dt><dd>
   <table class="params">
     <tr><td class="paramname">botid</td><td>对应bot </td></tr>
-    <tr><td class="paramname">type</td><td>类别 </td></tr>
-    <tr><td class="paramname">group</td><td>加入的群 </td></tr>
-    <tr><td class="paramname">inviter</td><td>邀请人 </td></tr>
+    <tr><td class="paramname">type</td><td>类型 </td></tr>
+    <tr><td class="paramname">time</td><td>时间 </td></tr>
+    <tr><td class="paramname">authorid</td><td>发送者id </td></tr>
+    <tr><td class="paramname">operatorid</td><td>撤回者id </td></tr>
+    <tr><td class="paramname">ids</td><td>消息源ids </td></tr>
+    <tr><td class="paramname">internalids</td><td>消息源internalids </td></tr>
+    <tr><td class="paramname">groupid</td><td></td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01833">1833</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l01835"></a><span class="lineno"> 1835</span>&#160;        : <a class="code" href="a00194.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a>(botid), <a class="code" href="a00226.html#a93fb1138fcd5634ee8ac84ce49a25c68">type</a>(<a class="code" href="a00226.html#a93fb1138fcd5634ee8ac84ce49a25c68">type</a>), <a class="code" href="a00226.html#aebfd8af45c5114db549d2782b982396b">group</a>(<a class="code" href="a00226.html#aebfd8af45c5114db549d2782b982396b">group</a>), <a class="code" href="a00226.html#a9a1e07c65f1e4f0cc7055ad82e252f3b">inviterid</a>(<a class="code" href="a00226.html#a9a1e07c65f1e4f0cc7055ad82e252f3b">inviterid</a>) {}</div>
-<div class="ttc" id="aa00194_html_ac26c3d59fa5a3546f269549ccbe994a4"><div class="ttname"><a href="a00194.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent::BotEvent</a></div><div class="ttdeci">BotEvent(unsigned long long botid)</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01540">tools.h:1540</a></div></div>
-<div class="ttc" id="aa00226_html_a93fb1138fcd5634ee8ac84ce49a25c68"><div class="ttname"><a href="a00226.html#a93fb1138fcd5634ee8ac84ce49a25c68">BotJoinGroupEvent::type</a></div><div class="ttdeci">const int type</div><div class="ttdoc">1-主动加入,2-被邀请加入,3-提供恢复群主身份加入</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01820">tools.h:1820</a></div></div>
-<div class="ttc" id="aa00226_html_a9a1e07c65f1e4f0cc7055ad82e252f3b"><div class="ttname"><a href="a00226.html#a9a1e07c65f1e4f0cc7055ad82e252f3b">BotJoinGroupEvent::inviterid</a></div><div class="ttdeci">const unsigned long long inviterid</div><div class="ttdoc">当type=2时存在，为邀请人，否则为空，调用可能会报错</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01824">tools.h:1824</a></div></div>
-<div class="ttc" id="aa00226_html_aebfd8af45c5114db549d2782b982396b"><div class="ttname"><a href="a00226.html#aebfd8af45c5114db549d2782b982396b">BotJoinGroupEvent::group</a></div><div class="ttdeci">Group group</div><div class="ttdoc">进入的群</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01822">tools.h:1822</a></div></div>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01856">1856</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l01858"></a><span class="lineno"> 1858</span>&#160;                                              : <a class="code" href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a>(botid), <a class="code" href="a00226.html#a5b6ba1dd154963933e1c3dc2880f0d14">type</a>(<a class="code" href="a00226.html#a5b6ba1dd154963933e1c3dc2880f0d14">type</a>), <a class="code" href="a00226.html#a78201065317c32c62ea39d597ca036c3">time</a>(<a class="code" href="a00226.html#a78201065317c32c62ea39d597ca036c3">time</a>), <a class="code" href="a00226.html#a6ca09703cf5ca62b54c2f4f08465fd15">authorid</a>(<a class="code" href="a00226.html#a6ca09703cf5ca62b54c2f4f08465fd15">authorid</a>),</div>
+<div class="line"><a name="l01859"></a><span class="lineno"> 1859</span>&#160;        <a class="code" href="a00226.html#a79c894271697ce5798850b259417dcaf">operatorid</a>(<a class="code" href="a00226.html#a79c894271697ce5798850b259417dcaf">operatorid</a>), <a class="code" href="a00226.html#a6977185f71894989b7a01fa1ef755046">ids</a>(<a class="code" href="a00226.html#a6977185f71894989b7a01fa1ef755046">ids</a>), <a class="code" href="a00226.html#aaf7aea17696b093024696551eb4acd0a">internalids</a>(<a class="code" href="a00226.html#aaf7aea17696b093024696551eb4acd0a">internalids</a>),</div>
+<div class="line"><a name="l01860"></a><span class="lineno"> 1860</span>&#160;        <a class="code" href="a00226.html#abeefe96135f69b9bfb095b18b33e8aaf">groupid</a>(<a class="code" href="a00226.html#abeefe96135f69b9bfb095b18b33e8aaf">groupid</a>) {}</div>
+<div class="ttc" id="aa00198_html_ac26c3d59fa5a3546f269549ccbe994a4"><div class="ttname"><a href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent::BotEvent</a></div><div class="ttdeci">BotEvent(unsigned long long botid)</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01587">tools.h:1587</a></div></div>
+<div class="ttc" id="aa00226_html_a5b6ba1dd154963933e1c3dc2880f0d14"><div class="ttname"><a href="a00226.html#a5b6ba1dd154963933e1c3dc2880f0d14">RecallEvent::type</a></div><div class="ttdeci">const int type</div><div class="ttdoc">为1时是好友私聊中撤回，为2时为群聊内撤回</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01831">tools.h:1831</a></div></div>
+<div class="ttc" id="aa00226_html_a6977185f71894989b7a01fa1ef755046"><div class="ttname"><a href="a00226.html#a6977185f71894989b7a01fa1ef755046">RecallEvent::ids</a></div><div class="ttdeci">const std::string ids</div><div class="ttdoc">信息id</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01839">tools.h:1839</a></div></div>
+<div class="ttc" id="aa00226_html_a6ca09703cf5ca62b54c2f4f08465fd15"><div class="ttname"><a href="a00226.html#a6ca09703cf5ca62b54c2f4f08465fd15">RecallEvent::authorid</a></div><div class="ttdeci">const unsigned long long authorid</div><div class="ttdoc">原发送者</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01835">tools.h:1835</a></div></div>
+<div class="ttc" id="aa00226_html_a78201065317c32c62ea39d597ca036c3"><div class="ttname"><a href="a00226.html#a78201065317c32c62ea39d597ca036c3">RecallEvent::time</a></div><div class="ttdeci">const int time</div><div class="ttdoc">时间戳</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01833">tools.h:1833</a></div></div>
+<div class="ttc" id="aa00226_html_a79c894271697ce5798850b259417dcaf"><div class="ttname"><a href="a00226.html#a79c894271697ce5798850b259417dcaf">RecallEvent::operatorid</a></div><div class="ttdeci">const unsigned long long operatorid</div><div class="ttdoc">撤回者</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01837">tools.h:1837</a></div></div>
+<div class="ttc" id="aa00226_html_aaf7aea17696b093024696551eb4acd0a"><div class="ttname"><a href="a00226.html#aaf7aea17696b093024696551eb4acd0a">RecallEvent::internalids</a></div><div class="ttdeci">const std::string internalids</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01841">tools.h:1841</a></div></div>
+<div class="ttc" id="aa00226_html_abeefe96135f69b9bfb095b18b33e8aaf"><div class="ttname"><a href="a00226.html#abeefe96135f69b9bfb095b18b33e8aaf">RecallEvent::groupid</a></div><div class="ttdeci">const unsigned long long groupid</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01843">tools.h:1843</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">类成员变量说明</h2>
-<a id="aebfd8af45c5114db549d2782b982396b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aebfd8af45c5114db549d2782b982396b">&#9670;&nbsp;</a></span>group</h2>
+<a id="a6ca09703cf5ca62b54c2f4f08465fd15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ca09703cf5ca62b54c2f4f08465fd15">&#9670;&nbsp;</a></span>authorid</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="a00182.html">Group</a> BotJoinGroupEvent::group</td>
+          <td class="memname">const unsigned long long RecallEvent::authorid = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>进入的群 </p>
+<p>原发送者 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01822">1822</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01835">1835</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a9a1e07c65f1e4f0cc7055ad82e252f3b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a1e07c65f1e4f0cc7055ad82e252f3b">&#9670;&nbsp;</a></span>inviterid</h2>
+<a id="abeefe96135f69b9bfb095b18b33e8aaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abeefe96135f69b9bfb095b18b33e8aaf">&#9670;&nbsp;</a></span>groupid</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const unsigned long long BotJoinGroupEvent::inviterid</td>
+          <td class="memname">const unsigned long long RecallEvent::groupid = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>当type=2时存在，为邀请人，否则为空，调用可能会报错 </p>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01824">1824</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01843">1843</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a93fb1138fcd5634ee8ac84ce49a25c68"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a93fb1138fcd5634ee8ac84ce49a25c68">&#9670;&nbsp;</a></span>type</h2>
+<a id="a6977185f71894989b7a01fa1ef755046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6977185f71894989b7a01fa1ef755046">&#9670;&nbsp;</a></span>ids</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const int BotJoinGroupEvent::type</td>
+          <td class="memname">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> RecallEvent::ids = &quot;&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>1-主动加入,2-被邀请加入,3-提供恢复群主身份加入 </p>
+<p>信息id </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01820">1820</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01839">1839</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf7aea17696b093024696551eb4acd0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf7aea17696b093024696551eb4acd0a">&#9670;&nbsp;</a></span>internalids</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> RecallEvent::internalids = &quot;&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01841">1841</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79c894271697ce5798850b259417dcaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79c894271697ce5798850b259417dcaf">&#9670;&nbsp;</a></span>operatorid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned long long RecallEvent::operatorid = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>撤回者 </p>
+
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01837">1837</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a78201065317c32c62ea39d597ca036c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78201065317c32c62ea39d597ca036c3">&#9670;&nbsp;</a></span>time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int RecallEvent::time = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>时间戳 </p>
+
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01833">1833</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b6ba1dd154963933e1c3dc2880f0d14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b6ba1dd154963933e1c3dc2880f0d14">&#9670;&nbsp;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int RecallEvent::type = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>为1时是好友私聊中撤回，为2时为群聊内撤回 </p>
+
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01831">1831</a> 行定义.</p>
 
 </div>
 </div>
@@ -285,12 +404,20 @@ Public 属性</h2></td></tr>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="a00226.html">BotJoinGroupEvent</a></li>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="navelem"><a class="el" href="a00226.html">RecallEvent</a></li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:23 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

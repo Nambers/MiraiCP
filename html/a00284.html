@@ -1,0 +1,129 @@
+<!-- HTML header for doxygen 1.9.1-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MiraiCP: 上传并发送远程</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">MiraiCP
+   &#160;<span id="projectnumber">v2.6.5</span>
+   </div>
+   <div id="projectbrief">MiraiCP api document</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.9.1 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('a00284.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="headertitle">
+<div class="title">上传并发送远程</div>  </div>
+</div><!--header-->
+<div class="contents">
+<p>上传并发送远程(群)文件 </p><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path-群文件路径(带文件名),根目录为/</td><td></td></tr>
+    <tr><td class="paramname">filepath-本地文件路径</td><td>(群)文件 <div class="fragment"><div class="line"><a name="a0"></a><a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a name="a1"></a><a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>([](<a name="_a2"></a><a class="code" href="a00202.html">GroupMessageEvent</a> e) {</div>
+<div class="line">   <span class="comment">// 发送D:\\ValveUnhandledExceptionFilter.txt本地文件到qq群的 /test.txt 路径</span></div>
+<div class="line">   <a name="_a3"></a><a class="code" href="a00154.html">RemoteFile</a> tmp = e.<a name="a4"></a><a class="code" href="a00202.html#acbc031790011ba7b520a21aec2299f08">group</a>.<a name="a5"></a><a class="code" href="a00186.html#a5c6be84a0330257d8c30f69aa91ef41f">sendFile</a>(<span class="stringliteral">&quot;/test.txt&quot;</span>, <span class="stringliteral">&quot;D:\\ValveUnhandledExceptionFilter.txt&quot;</span>);</div>
+<div class="line">   });</div>
+<div class="ttc" id="aa00011_html_a478af16c6688220a7434630eb9101d74"><div class="ttname"><a href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a></div><div class="ttdeci">Event * procession</div><div class="ttdoc">全局事件指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00012">pch.cpp:12</a></div></div>
+<div class="ttc" id="aa00154_html"><div class="ttname"><a href="a00154.html">RemoteFile</a></div><div class="ttdoc">远程(群)文件类型</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01057">tools.h:1057</a></div></div>
+<div class="ttc" id="aa00186_html_a5c6be84a0330257d8c30f69aa91ef41f"><div class="ttname"><a href="a00186.html#a5c6be84a0330257d8c30f69aa91ef41f">Group::sendFile</a></div><div class="ttdeci">RemoteFile sendFile(const std::string &amp;path, const std::string &amp;filepath, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00421">tools.cpp:421</a></div></div>
+<div class="ttc" id="aa00202_html"><div class="ttname"><a href="a00202.html">GroupMessageEvent</a></div><div class="ttdoc">群消息事件声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01592">tools.h:1592</a></div></div>
+<div class="ttc" id="aa00202_html_acbc031790011ba7b520a21aec2299f08"><div class="ttname"><a href="a00202.html#acbc031790011ba7b520a21aec2299f08">GroupMessageEvent::group</a></div><div class="ttdeci">Group group</div><div class="ttdoc">来源群</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01595">tools.h:1595</a></div></div>
+<div class="ttc" id="aa00242_html_ad3d76f3c8bd243c17a82a24c5bd135c0"><div class="ttname"><a href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l02073">tools.h:2073</a></div></div>
+</div><!-- fragment --></td></tr>
+  </table>
+  </dd>
+</dl>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+  </ul>
+</div>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
+</html>

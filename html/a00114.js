@@ -1,6 +1,7 @@
 var a00114 =
 [
-    [ "RecallException", "a00114.html#a81c89de96b24d756808cd45dc46d2b3c", null ],
-    [ "what", "a00114.html#aa8fe3dc3b16af078242f145685082087", null ],
-    [ "description", "a00114.html#a1b9a1593d1cbf43c75e2c9d6a1602be0", null ]
+    [ "GroupException", "a00114.html#ac1732c9f68f907b6a16b503fcf33c450", null ],
+    [ "raise", "a00114.html#a1075132ff00a9f7226822a079832adfa", null ],
+    [ "what", "a00114.html#a3e9cfa08fee6cf489ec37908f33f620c", null ],
+    [ "description", "a00114.html#afd4c698d4ca89f1bae739aa8ff5728e6", null ]
 ];

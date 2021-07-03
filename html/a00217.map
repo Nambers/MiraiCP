@@ -1,4 +1,4 @@
-<map id="MemberLeaveEvent" name="MemberLeaveEvent">
-<area shape="rect" id="node1" title="群成员离开" alt="" coords="5,145,249,355"/>
-<area shape="rect" id="node2" href="$a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="56,5,199,97"/>
+<map id="MemberJoinEvent" name="MemberJoinEvent">
+<area shape="rect" id="node1" title="新群成员加入" alt="" coords="5,160,244,355"/>
+<area shape="rect" id="node2" href="$a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="49,5,200,112"/>
 </map>

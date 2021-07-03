@@ -1,0 +1,14 @@
+<map id="LowLevelAPI::info0" name="LowLevelAPI::info0">
+<area shape="rect" id="node1" title=" " alt="" coords="531,107,661,133"/>
+<area shape="rect" id="node2" href="$a00174.html#a3354dc4fbf569d19e11ac04ac8bf0b01" title="刷新bot信息" alt="" coords="360,31,469,57"/>
+<area shape="rect" id="node6" href="$a00178.html#a9f8fce3fce96e79537c2860871ce8652" title="刷新当前对象信息" alt="" coords="352,81,477,108"/>
+<area shape="rect" id="node8" href="$a00182.html#a8934688d50f82adfeb931f573b1889c8" title="刷新当前对象信息" alt="" coords="347,132,483,159"/>
+<area shape="rect" id="node10" href="$a00186.html#a96745dba8b6f78c2f8dd04fbd241cef2" title="刷新群聊信息" alt="" coords="353,183,477,209"/>
+<area shape="rect" id="node3" href="$a00174.html#a0d6809b54d75c621eb3cc7022943fd3e" title=" " alt="" coords="183,31,269,57"/>
+<area shape="rect" id="node4" href="$a00174.html#a94279cd991ebd5665e67246ff7563af0" title="头像下载链接" alt="" coords="5,5,105,32"/>
+<area shape="rect" id="node5" href="$a00174.html#af1538b49ce58759e210c41c402ff6680" title="昵称" alt="" coords="18,56,93,83"/>
+<area shape="rect" id="node7" href="$a00178.html#a24d5d1e22b735f5f78ac30da904bbc73" title="构建好友对象" alt="" coords="175,81,277,108"/>
+<area shape="rect" id="node9" href="$a00182.html#a1313aa1274273237f2dbfaa053a9d23e" title=" " alt="" coords="164,132,288,159"/>
+<area shape="rect" id="node11" href="$a00186.html#add4d15440d039be09abf8f8fc316dc8c" title=" " alt="" coords="176,183,276,209"/>
+<area shape="rect" id="node12" href="$a00186.html#a5201b9f4030729d9384b0e01603c0513" title="更新群设置, 即覆盖服务器上的群设置" alt="" coords="153,233,299,260"/>
+</map>

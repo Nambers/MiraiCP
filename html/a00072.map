@@ -1,5 +1,5 @@
 <map id="Logger" name="Logger">
-<area shape="rect" id="node1" title="日志" alt="" coords="51,300,235,744"/>
+<area shape="rect" id="node1" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content]" alt="" coords="40,300,247,876"/>
 <area shape="rect" id="node2" href="$a00078.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="28,160,139,237"/>
 <area shape="rect" id="node3" title=" " alt="" coords="5,13,52,90"/>
 <area shape="rect" id="node4" title=" " alt="" coords="77,5,199,97"/>

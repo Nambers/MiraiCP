@@ -1,5 +1,5 @@
-<map id="GroupException" name="GroupException">
+<map id="FriendException" name="FriendException">
 <area shape="rect" id="node1" title=" " alt="" coords="5,285,160,392"/>
-<area shape="rect" id="node2" href="$a00082.html" title="总异常抽象类" alt="" coords="16,131,149,237"/>
+<area shape="rect" id="node2" href="$a00086.html" title="总异常抽象类" alt="" coords="16,131,149,237"/>
 <area shape="rect" id="node3" title=" " alt="" coords="31,5,135,83"/>
 </map>

@@ -1,8 +1,7 @@
 var a00230 =
 [
-    [ "GroupTempMessageEvent", "a00230.html#a059fbdbd7154e0cad307533335daa72c", null ],
-    [ "group", "a00230.html#a6d14c27401f0a2fe06b6ae251ba9c910", null ],
-    [ "message", "a00230.html#a2f1a32fc66f7f1914180fbf171f45402", null ],
-    [ "messageSource", "a00230.html#a956411be5e59ea35d42269098dd2fd47", null ],
-    [ "sender", "a00230.html#a0bedfdfd01cd0f70b3ab0ada73e9d8a8", null ]
+    [ "BotJoinGroupEvent", "a00230.html#a152067b678802d1c2124ffc31d8a523d", null ],
+    [ "group", "a00230.html#aebfd8af45c5114db549d2782b982396b", null ],
+    [ "inviterid", "a00230.html#a9a1e07c65f1e4f0cc7055ad82e252f3b", null ],
+    [ "type", "a00230.html#a93fb1138fcd5634ee8ac84ce49a25c68", null ]
 ];

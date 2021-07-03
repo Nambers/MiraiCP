@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -5,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: RemoteFile类 参考</title>
+<title>MiraiCP: finfo结构体 参考</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -85,531 +89,163 @@ $(document).ready(function(){initNavTree('a00150.html',''); initResizable(); });
 
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public 成员函数</a> &#124;
-<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
 <a href="#pub-attribs">Public 属性</a> &#124;
 <a href="a00147.html">所有成员列表</a>  </div>
   <div class="headertitle">
-<div class="title">RemoteFile类 参考</div>  </div>
+<div class="title">finfo结构体 参考</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>远程(群)文件类型  
+<p>文件信息  
  <a href="a00150.html#details">更多...</a></p>
 
 <p><code>#include &lt;<a class="el" href="a00026_source.html">tools.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 RemoteFile 继承关系图:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> finfo 的协作图:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00149.png" border="0" usemap="#a_remote_file_inherit__map" alt="Inheritance graph"/></div>
-<map name="a_remote_file_inherit__map" id="a_remote_file_inherit__map">
-<area shape="rect" title="远程(群)文件类型" alt="" coords="5,145,208,472"/>
-<area shape="rect" href="a00066.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="42,5,171,97"/>
-</map>
-</div>
-<div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> RemoteFile 的协作图:</div>
-<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00148.png" border="0" usemap="#a_remote_file_coll__map" alt="Collaboration graph"/></div>
-<map name="a_remote_file_coll__map" id="a_remote_file_coll__map">
-<area shape="rect" title="远程(群)文件类型" alt="" coords="337,344,539,568"/>
-<area shape="rect" href="a00066.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,189,135,281"/>
-<area shape="rect" title=" " alt="" coords="187,5,225,83"/>
-<area shape="rect" href="a00146.html" title="文件信息" alt="" coords="327,197,373,274"/>
-<area shape="rect" href="a00142.html" title="下载信息" alt="" coords="521,197,571,274"/>
-<area shape="rect" title=" " alt="" coords="473,5,528,83"/>
-<area shape="rect" title=" " alt="" coords="285,5,415,83"/>
-<area shape="rect" title=" " alt="" coords="595,197,705,274"/>
+<div class="center"><img src="a00148.png" border="0" usemap="#afinfo_coll__map" alt="Collaboration graph"/></div>
+<map name="afinfo_coll__map" id="afinfo_coll__map">
+<area shape="rect" title="文件信息" alt="" coords="112,189,157,267"/>
+<area shape="rect" title=" " alt="" coords="5,5,136,83"/>
+<area shape="rect" title=" " alt="" coords="179,5,218,83"/>
 </map>
 </div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public 成员函数</h2></td></tr>
-<tr class="memitem:a971914cc9e832e785ec9667761bb49a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a971914cc9e832e785ec9667761bb49a2">serializeToString</a> ()</td></tr>
-<tr class="separator:a971914cc9e832e785ec9667761bb49a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a606d3e0fddf6251ded708a089dfdb5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a2a606d3e0fddf6251ded708a089dfdb5">RemoteFile</a> (const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;i, unsigned int ii, const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;n, long long s, const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;p, struct <a class="el" href="a00142.html">dinfo</a> d, struct <a class="el" href="a00146.html">finfo</a> f)</td></tr>
-<tr class="memdesc:a2a606d3e0fddf6251ded708a089dfdb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造远程(群)文件  <a href="a00150.html#a2a606d3e0fddf6251ded708a089dfdb5">更多...</a><br /></td></tr>
-<tr class="separator:a2a606d3e0fddf6251ded708a089dfdb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ca55a2e4cead686e9ea5f0e9260dfa0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a1ca55a2e4cead686e9ea5f0e9260dfa0">toMiraiCode</a> ()</td></tr>
-<tr class="memdesc:a1ca55a2e4cead686e9ea5f0e9260dfa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换  <a href="a00150.html#a1ca55a2e4cead686e9ea5f0e9260dfa0">更多...</a><br /></td></tr>
-<tr class="separator:a1ca55a2e4cead686e9ea5f0e9260dfa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-静态 Public 成员函数</h2></td></tr>
-<tr class="memitem:a4f9a12c1a71dfea6ba98624fb29d3f2f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="a00150.html">RemoteFile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a4f9a12c1a71dfea6ba98624fb29d3f2f">deserializeFromString</a> (const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;source)</td></tr>
-<tr class="separator:a4f9a12c1a71dfea6ba98624fb29d3f2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public 属性</h2></td></tr>
-<tr class="memitem:a28376539b0566ae41036143dad94fad0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a28376539b0566ae41036143dad94fad0">id</a></td></tr>
-<tr class="memdesc:a28376539b0566ae41036143dad94fad0"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件唯一id, 用于识别  <a href="a00150.html#a28376539b0566ae41036143dad94fad0">更多...</a><br /></td></tr>
-<tr class="separator:a28376539b0566ae41036143dad94fad0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95f6a801ddb786ce006542e028d6d337"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a95f6a801ddb786ce006542e028d6d337">internalid</a></td></tr>
-<tr class="memdesc:a95f6a801ddb786ce006542e028d6d337"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件内部id, 用于构造miraiCode发送  <a href="a00150.html#a95f6a801ddb786ce006542e028d6d337">更多...</a><br /></td></tr>
-<tr class="separator:a95f6a801ddb786ce006542e028d6d337"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaeef98e2d5caaa1521950a5a4446efe7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#aaeef98e2d5caaa1521950a5a4446efe7">name</a></td></tr>
-<tr class="memdesc:aaeef98e2d5caaa1521950a5a4446efe7"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件名  <a href="a00150.html#aaeef98e2d5caaa1521950a5a4446efe7">更多...</a><br /></td></tr>
-<tr class="separator:aaeef98e2d5caaa1521950a5a4446efe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4669b902794a33fbc60fa99c809a22e5"><td class="memItemLeft" align="right" valign="top">const long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a4669b902794a33fbc60fa99c809a22e5">size</a></td></tr>
-<tr class="memdesc:a4669b902794a33fbc60fa99c809a22e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件大小  <a href="a00150.html#a4669b902794a33fbc60fa99c809a22e5">更多...</a><br /></td></tr>
-<tr class="separator:a4669b902794a33fbc60fa99c809a22e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed6d46f89c5cb0d83236b4b7e1b5c873"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#aed6d46f89c5cb0d83236b4b7e1b5c873">path</a></td></tr>
-<tr class="memdesc:aed6d46f89c5cb0d83236b4b7e1b5c873"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件在群文件的路径  <a href="a00150.html#aed6d46f89c5cb0d83236b4b7e1b5c873">更多...</a><br /></td></tr>
-<tr class="separator:aed6d46f89c5cb0d83236b4b7e1b5c873"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a819afb5208ce0d816a073b6d2dbb98"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="a00142.html">dinfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a2a819afb5208ce0d816a073b6d2dbb98">dinfo</a></td></tr>
-<tr class="separator:a2a819afb5208ce0d816a073b6d2dbb98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c04bb6347e3783a9b6c083e7ee5586d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="a00146.html">finfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a5c04bb6347e3783a9b6c083e7ee5586d">finfo</a></td></tr>
-<tr class="separator:a5c04bb6347e3783a9b6c083e7ee5586d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94de667500b2c0dba038f7e654ba90f2"><td class="memItemLeft" align="right" valign="top">unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a94de667500b2c0dba038f7e654ba90f2">size</a></td></tr>
+<tr class="memdesc:a94de667500b2c0dba038f7e654ba90f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件大小  <a href="a00150.html#a94de667500b2c0dba038f7e654ba90f2">更多...</a><br /></td></tr>
+<tr class="separator:a94de667500b2c0dba038f7e654ba90f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bd8a352da0950f3b549dbd754585dd6"><td class="memItemLeft" align="right" valign="top">unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a2bd8a352da0950f3b549dbd754585dd6">uploaderid</a></td></tr>
+<tr class="memdesc:a2bd8a352da0950f3b549dbd754585dd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">上传者id  <a href="a00150.html#a2bd8a352da0950f3b549dbd754585dd6">更多...</a><br /></td></tr>
+<tr class="separator:a2bd8a352da0950f3b549dbd754585dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6257f5202f67d71af216e8328d6ee28f"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a6257f5202f67d71af216e8328d6ee28f">downloadtime</a></td></tr>
+<tr class="memdesc:a6257f5202f67d71af216e8328d6ee28f"><td class="mdescLeft">&#160;</td><td class="mdescRight">下载次数  <a href="a00150.html#a6257f5202f67d71af216e8328d6ee28f">更多...</a><br /></td></tr>
+<tr class="separator:a6257f5202f67d71af216e8328d6ee28f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b36d35ddbf52b18572e2dce56faf362"><td class="memItemLeft" align="right" valign="top">unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#a7b36d35ddbf52b18572e2dce56faf362">uploadtime</a></td></tr>
+<tr class="memdesc:a7b36d35ddbf52b18572e2dce56faf362"><td class="mdescLeft">&#160;</td><td class="mdescRight">上传时间, 时间戳格式  <a href="a00150.html#a7b36d35ddbf52b18572e2dce56faf362">更多...</a><br /></td></tr>
+<tr class="separator:a7b36d35ddbf52b18572e2dce56faf362"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab073417dd65e95533b012011aa74a8b0"><td class="memItemLeft" align="right" valign="top">unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00150.html#ab073417dd65e95533b012011aa74a8b0">lastmodifytime</a></td></tr>
+<tr class="memdesc:ab073417dd65e95533b012011aa74a8b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">上次更改时间, 时间戳格式  <a href="a00150.html#ab073417dd65e95533b012011aa74a8b0">更多...</a><br /></td></tr>
+<tr class="separator:ab073417dd65e95533b012011aa74a8b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock"><p>远程(群)文件类型 </p>
-<dl class="section examples"><dt>示例</dt><dd><a class="el" href="a00276.html#_a3">上传并发送远程</a>.</dd>
-</dl>
+<div class="textblock"><p>文件信息 </p>
+<dl class="section see"><dt>参见</dt><dd><a class="el" href="a00154.html" title="远程(群)文件类型">RemoteFile</a> </dd></dl>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01013">1013</a> 行定义.</p>
-</div><h2 class="groupheader">构造及析构函数说明</h2>
-<a id="a2a606d3e0fddf6251ded708a089dfdb5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a606d3e0fddf6251ded708a089dfdb5">&#9670;&nbsp;</a></span>RemoteFile()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">RemoteFile::RemoteFile </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;&#160;</td>
-          <td class="paramname"><em>i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>ii</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">long long&#160;</td>
-          <td class="paramname"><em>s</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;&#160;</td>
-          <td class="paramname"><em>p</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">struct <a class="el" href="a00142.html">dinfo</a>&#160;</td>
-          <td class="paramname"><em>d</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">struct <a class="el" href="a00146.html">finfo</a>&#160;</td>
-          <td class="paramname"><em>f</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>构造远程(群)文件 </p>
-<dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">i</td><td>ids </td></tr>
-    <tr><td class="paramname">ii</td><td>internalids </td></tr>
-    <tr><td class="paramname">n</td><td>name </td></tr>
-    <tr><td class="paramname">s</td><td>size </td></tr>
-    <tr><td class="paramname">p</td><td>path </td></tr>
-    <tr><td class="paramname">d</td><td>dinfo </td></tr>
-    <tr><td class="paramname">f</td><td>finfo </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01046">1046</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l01046"></a><span class="lineno"> 1046</span>&#160;                                                                                                                                         : <a class="code" href="a00150.html#a28376539b0566ae41036143dad94fad0">id</a>(i),</div>
-<div class="line"><a name="l01047"></a><span class="lineno"> 1047</span>&#160;        <a class="code" href="a00150.html#a95f6a801ddb786ce006542e028d6d337">internalid</a>(</div>
-<div class="line"><a name="l01048"></a><span class="lineno"> 1048</span>&#160;            ii),</div>
-<div class="line"><a name="l01049"></a><span class="lineno"> 1049</span>&#160;        <a class="code" href="a00150.html#aaeef98e2d5caaa1521950a5a4446efe7">name</a>(n),</div>
-<div class="line"><a name="l01050"></a><span class="lineno"> 1050</span>&#160;        <a class="code" href="a00150.html#a4669b902794a33fbc60fa99c809a22e5">size</a>(s),</div>
-<div class="line"><a name="l01051"></a><span class="lineno"> 1051</span>&#160;        <a class="code" href="a00150.html#aed6d46f89c5cb0d83236b4b7e1b5c873">path</a>(p),</div>
-<div class="line"><a name="l01052"></a><span class="lineno"> 1052</span>&#160;        <a class="code" href="a00150.html#a2a819afb5208ce0d816a073b6d2dbb98">dinfo</a>(d),</div>
-<div class="line"><a name="l01053"></a><span class="lineno"> 1053</span>&#160;        <a class="code" href="a00150.html#a5c04bb6347e3783a9b6c083e7ee5586d">finfo</a>(f) {};</div>
-<div class="ttc" id="aa00150_html_a28376539b0566ae41036143dad94fad0"><div class="ttname"><a href="a00150.html#a28376539b0566ae41036143dad94fad0">RemoteFile::id</a></div><div class="ttdeci">const std::string id</div><div class="ttdoc">文件唯一id, 用于识别</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01016">tools.h:1016</a></div></div>
-<div class="ttc" id="aa00150_html_a2a819afb5208ce0d816a073b6d2dbb98"><div class="ttname"><a href="a00150.html#a2a819afb5208ce0d816a073b6d2dbb98">RemoteFile::dinfo</a></div><div class="ttdeci">const dinfo dinfo</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01027">tools.h:1027</a></div></div>
-<div class="ttc" id="aa00150_html_a4669b902794a33fbc60fa99c809a22e5"><div class="ttname"><a href="a00150.html#a4669b902794a33fbc60fa99c809a22e5">RemoteFile::size</a></div><div class="ttdeci">const long long size</div><div class="ttdoc">文件大小</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01022">tools.h:1022</a></div></div>
-<div class="ttc" id="aa00150_html_a5c04bb6347e3783a9b6c083e7ee5586d"><div class="ttname"><a href="a00150.html#a5c04bb6347e3783a9b6c083e7ee5586d">RemoteFile::finfo</a></div><div class="ttdeci">const finfo finfo</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01030">tools.h:1030</a></div></div>
-<div class="ttc" id="aa00150_html_a95f6a801ddb786ce006542e028d6d337"><div class="ttname"><a href="a00150.html#a95f6a801ddb786ce006542e028d6d337">RemoteFile::internalid</a></div><div class="ttdeci">const unsigned int internalid</div><div class="ttdoc">文件内部id, 用于构造miraiCode发送</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01018">tools.h:1018</a></div></div>
-<div class="ttc" id="aa00150_html_aaeef98e2d5caaa1521950a5a4446efe7"><div class="ttname"><a href="a00150.html#aaeef98e2d5caaa1521950a5a4446efe7">RemoteFile::name</a></div><div class="ttdeci">const std::string name</div><div class="ttdoc">文件名</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01020">tools.h:1020</a></div></div>
-<div class="ttc" id="aa00150_html_aed6d46f89c5cb0d83236b4b7e1b5c873"><div class="ttname"><a href="a00150.html#aed6d46f89c5cb0d83236b4b7e1b5c873">RemoteFile::path</a></div><div class="ttdeci">const std::string path</div><div class="ttdoc">文件在群文件的路径</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01024">tools.h:1024</a></div></div>
-</div><!-- fragment --><div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
-<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-2-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00150_a2a606d3e0fddf6251ded708a089dfdb5_icgraph.png" border="0" usemap="#aa00150_a2a606d3e0fddf6251ded708a089dfdb5_icgraph" alt=""/></div>
-<map name="aa00150_a2a606d3e0fddf6251ded708a089dfdb5_icgraph" id="aa00150_a2a606d3e0fddf6251ded708a089dfdb5_icgraph">
-<area shape="rect" title="构造远程(群)文件" alt="" coords="404,31,567,57"/>
-<area shape="rect" href="a00150.html#a4f9a12c1a71dfea6ba98624fb29d3f2f" title=" " alt="" coords="168,23,356,65"/>
-<area shape="rect" href="a00182.html#a4eadbc1ff13345e65c326bc31ab51a30" title=" " alt="" coords="11,5,115,32"/>
-<area shape="rect" href="a00182.html#a5c6be84a0330257d8c30f69aa91ef41f" title=" " alt="" coords="5,56,120,83"/>
-</map>
-</div>
-
-</div>
-</div>
-<h2 class="groupheader">成员函数说明</h2>
-<a id="a4f9a12c1a71dfea6ba98624fb29d3f2f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4f9a12c1a71dfea6ba98624fb29d3f2f">&#9670;&nbsp;</a></span>deserializeFromString()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="a00150.html">RemoteFile</a> RemoteFile::deserializeFromString </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> &amp;&#160;</td>
-          <td class="paramname"><em>source</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">在文件 <a class="el" href="a00023_source.html">tools.cpp</a> 第 <a class="el" href="a00023_source.html#l00176">176</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;                                                                    {</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <a class="code" href="a00011.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> j;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    <span class="keywordflow">try</span> {</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;        j = json::parse(source);</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    }</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keywordflow">catch</span> (json::parse_error&amp; e) {</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#abb690146dbd2c6fb7e603caf123096dd">Error</a>(<span class="stringliteral">&quot;格式化json失败，RemoteFile::deserializeFromString&quot;</span>);</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#abb690146dbd2c6fb7e603caf123096dd">Error</a>(source);</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#abb690146dbd2c6fb7e603caf123096dd">Error</a>(e.what());</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;        <span class="keywordflow">throw</span> e;</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    }</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    <span class="keywordflow">try</span> {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;        <span class="keyword">struct </span><a class="code" href="a00142.html">dinfo</a> d {</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;            j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;url&quot;</span>],</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;                j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;md5&quot;</span>],</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;                j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;sha1&quot;</span>]</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        };</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        <span class="keyword">struct </span><a class="code" href="a00146.html">finfo</a> f {</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;            j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;size&quot;</span>],</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;                j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;uploaderid&quot;</span>],</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;                j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;downloadtime&quot;</span>],</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;                j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;uploadtime&quot;</span>],</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;                j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;lastmodifytime&quot;</span>]</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        };</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="a00150.html#a2a606d3e0fddf6251ded708a089dfdb5">RemoteFile</a>(j[<span class="stringliteral">&quot;id&quot;</span>], j[<span class="stringliteral">&quot;internalid&quot;</span>], j[<span class="stringliteral">&quot;name&quot;</span>], j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;size&quot;</span>], j[<span class="stringliteral">&quot;path&quot;</span>], d, f);</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    }</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    <span class="keywordflow">catch</span> (json::type_error&amp; e) {</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#abb690146dbd2c6fb7e603caf123096dd">Error</a>(<span class="stringliteral">&quot;json格式化失败，位置:RemoteFile&quot;</span>);</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#abb690146dbd2c6fb7e603caf123096dd">Error</a>(source);</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#abb690146dbd2c6fb7e603caf123096dd">Error</a>(e.what());</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        <span class="keywordflow">throw</span> e;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    }</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;}</div>
-<div class="ttc" id="aa00011_html_a0009c186c3629201f6c24eded36605f4"><div class="ttname"><a href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">全局日志指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00010">pch.cpp:10</a></div></div>
-<div class="ttc" id="aa00011_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="a00011.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00002">pch.cpp:2</a></div></div>
-<div class="ttc" id="aa00074_html_abb690146dbd2c6fb7e603caf123096dd"><div class="ttname"><a href="a00074.html#abb690146dbd2c6fb7e603caf123096dd">Logger::Error</a></div><div class="ttdeci">void Error(const std::string &amp;, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送错误(error级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00096">tools.cpp:96</a></div></div>
-<div class="ttc" id="aa00142_html"><div class="ttname"><a href="a00142.html">dinfo</a></div><div class="ttdoc">下载信息</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00989">tools.h:989</a></div></div>
-<div class="ttc" id="aa00146_html"><div class="ttname"><a href="a00146.html">finfo</a></div><div class="ttdoc">文件信息</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00999">tools.h:999</a></div></div>
-<div class="ttc" id="aa00150_html_a2a606d3e0fddf6251ded708a089dfdb5"><div class="ttname"><a href="a00150.html#a2a606d3e0fddf6251ded708a089dfdb5">RemoteFile::RemoteFile</a></div><div class="ttdeci">RemoteFile(const std::string &amp;i, unsigned int ii, const std::string &amp;n, long long s, const std::string &amp;p, struct dinfo d, struct finfo f)</div><div class="ttdoc">构造远程(群)文件</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01046">tools.h:1046</a></div></div>
-</div><!-- fragment --><div id="dynsection-3" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-3-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
-<div id="dynsection-3-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-3-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00150_a4f9a12c1a71dfea6ba98624fb29d3f2f_cgraph.png" border="0" usemap="#aa00150_a4f9a12c1a71dfea6ba98624fb29d3f2f_cgraph" alt=""/></div>
-<map name="aa00150_a4f9a12c1a71dfea6ba98624fb29d3f2f_cgraph" id="aa00150_a4f9a12c1a71dfea6ba98624fb29d3f2f_cgraph">
-<area shape="rect" title=" " alt="" coords="5,49,193,90"/>
-<area shape="rect" href="a00074.html#abb690146dbd2c6fb7e603caf123096dd" title="发送错误(error级日志)" alt="" coords="274,31,371,57"/>
-<area shape="rect" href="a00150.html#a2a606d3e0fddf6251ded708a089dfdb5" title="构造远程(群)文件" alt="" coords="241,81,404,108"/>
-<area shape="rect" href="a00074.html#a623dbe79c347ea0d063f5d6b900c5bc2" title="日志底层实现封装" alt="" coords="452,5,545,32"/>
-<area shape="rect" href="a00058.html#ae0606aeddaa91c91435ec3a4e3a0d0dc" title=" " alt="" coords="593,31,712,57"/>
-</map>
-</div>
-<div id="dynsection-4" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-4-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
-<div id="dynsection-4-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-4-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00150_a4f9a12c1a71dfea6ba98624fb29d3f2f_icgraph.png" border="0" usemap="#aa00150_a4f9a12c1a71dfea6ba98624fb29d3f2f_icgraph" alt=""/></div>
-<map name="aa00150_a4f9a12c1a71dfea6ba98624fb29d3f2f_icgraph" id="aa00150_a4f9a12c1a71dfea6ba98624fb29d3f2f_icgraph">
-<area shape="rect" title=" " alt="" coords="168,23,356,65"/>
-<area shape="rect" href="a00182.html#a4eadbc1ff13345e65c326bc31ab51a30" title=" " alt="" coords="11,5,115,32"/>
-<area shape="rect" href="a00182.html#a5c6be84a0330257d8c30f69aa91ef41f" title=" " alt="" coords="5,56,120,83"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a971914cc9e832e785ec9667761bb49a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a971914cc9e832e785ec9667761bb49a2">&#9670;&nbsp;</a></span>serializeToString()</h2>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01043">1043</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a6257f5202f67d71af216e8328d6ee28f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6257f5202f67d71af216e8328d6ee28f">&#9670;&nbsp;</a></span>downloadtime</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> RemoteFile::serializeToString </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td class="memname">unsigned int finfo::downloadtime</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="a00023_source.html">tools.cpp</a> 第 <a class="el" href="a00023_source.html#l00210">210</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;                                        {</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <a class="code" href="a00011.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> j;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;url&quot;</span>] = this-&gt;<a class="code" href="a00142.html">dinfo</a>.<a class="code" href="a00142.html#a27f1fe72da17504a88993b1895bff874">url</a>;</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;md5&quot;</span>] = this-&gt;<a class="code" href="a00142.html">dinfo</a>.<a class="code" href="a00142.html#af7b7245d4b94bb72cae65c5cf0b40a9f">md5</a>;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;shar1&quot;</span>] = this-&gt;<a class="code" href="a00142.html">dinfo</a>.<a class="code" href="a00142.html#aa13ebef9ac586704f4913eeb7dae1a7c">sha1</a>;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;size&quot;</span>] = this-&gt;<a class="code" href="a00146.html">finfo</a>.<a class="code" href="a00146.html#a94de667500b2c0dba038f7e654ba90f2">size</a>;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;uploaderid&quot;</span>] = this-&gt;<a class="code" href="a00146.html">finfo</a>.<a class="code" href="a00146.html#a2bd8a352da0950f3b549dbd754585dd6">uploaderid</a>;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;downloadtime&quot;</span>] = this-&gt;<a class="code" href="a00146.html">finfo</a>.<a class="code" href="a00146.html#a6257f5202f67d71af216e8328d6ee28f">downloadtime</a>;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;uploadtime&quot;</span>] = this-&gt;<a class="code" href="a00146.html">finfo</a>.<a class="code" href="a00146.html#a7b36d35ddbf52b18572e2dce56faf362">uploadtime</a>;</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;lastmodifytime&quot;</span>] = this-&gt;<a class="code" href="a00146.html">finfo</a>.<a class="code" href="a00146.html#ab073417dd65e95533b012011aa74a8b0">lastmodifytime</a>;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    j[<span class="stringliteral">&quot;id&quot;</span>] = this-&gt;<a class="code" href="a00150.html#a28376539b0566ae41036143dad94fad0">id</a>;</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    j[<span class="stringliteral">&quot;internalid&quot;</span>] = this-&gt;<a class="code" href="a00150.html#a95f6a801ddb786ce006542e028d6d337">internalid</a>;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    j[<span class="stringliteral">&quot;name&quot;</span>] = this-&gt;<a class="code" href="a00150.html#aaeef98e2d5caaa1521950a5a4446efe7">name</a>;</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    j[<span class="stringliteral">&quot;size&quot;</span>] = this-&gt;<a class="code" href="a00150.html#a4669b902794a33fbc60fa99c809a22e5">size</a>;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;}</div>
-<div class="ttc" id="aa00142_html_a27f1fe72da17504a88993b1895bff874"><div class="ttname"><a href="a00142.html#a27f1fe72da17504a88993b1895bff874">dinfo::url</a></div><div class="ttdeci">std::string url</div><div class="ttdoc">下载地址</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00991">tools.h:991</a></div></div>
-<div class="ttc" id="aa00142_html_aa13ebef9ac586704f4913eeb7dae1a7c"><div class="ttname"><a href="a00142.html#aa13ebef9ac586704f4913eeb7dae1a7c">dinfo::sha1</a></div><div class="ttdeci">std::string sha1</div><div class="ttdoc">sha1 可用于校验</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00995">tools.h:995</a></div></div>
-<div class="ttc" id="aa00142_html_af7b7245d4b94bb72cae65c5cf0b40a9f"><div class="ttname"><a href="a00142.html#af7b7245d4b94bb72cae65c5cf0b40a9f">dinfo::md5</a></div><div class="ttdeci">std::string md5</div><div class="ttdoc">md5 可用于校验</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00993">tools.h:993</a></div></div>
-<div class="ttc" id="aa00146_html_a2bd8a352da0950f3b549dbd754585dd6"><div class="ttname"><a href="a00146.html#a2bd8a352da0950f3b549dbd754585dd6">finfo::uploaderid</a></div><div class="ttdeci">unsigned long long uploaderid</div><div class="ttdoc">上传者id</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01003">tools.h:1003</a></div></div>
-<div class="ttc" id="aa00146_html_a6257f5202f67d71af216e8328d6ee28f"><div class="ttname"><a href="a00146.html#a6257f5202f67d71af216e8328d6ee28f">finfo::downloadtime</a></div><div class="ttdeci">unsigned int downloadtime</div><div class="ttdoc">下载次数</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01005">tools.h:1005</a></div></div>
-<div class="ttc" id="aa00146_html_a7b36d35ddbf52b18572e2dce56faf362"><div class="ttname"><a href="a00146.html#a7b36d35ddbf52b18572e2dce56faf362">finfo::uploadtime</a></div><div class="ttdeci">unsigned long long uploadtime</div><div class="ttdoc">上传时间, 时间戳格式</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01007">tools.h:1007</a></div></div>
-<div class="ttc" id="aa00146_html_a94de667500b2c0dba038f7e654ba90f2"><div class="ttname"><a href="a00146.html#a94de667500b2c0dba038f7e654ba90f2">finfo::size</a></div><div class="ttdeci">unsigned long long size</div><div class="ttdoc">文件大小</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01001">tools.h:1001</a></div></div>
-<div class="ttc" id="aa00146_html_ab073417dd65e95533b012011aa74a8b0"><div class="ttname"><a href="a00146.html#ab073417dd65e95533b012011aa74a8b0">finfo::lastmodifytime</a></div><div class="ttdeci">unsigned long long lastmodifytime</div><div class="ttdoc">上次更改时间, 时间戳格式</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01009">tools.h:1009</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="a1ca55a2e4cead686e9ea5f0e9260dfa0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1ca55a2e4cead686e9ea5f0e9260dfa0">&#9670;&nbsp;</a></span>toMiraiCode()</h2>
+<p>下载次数 </p>
 
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> RemoteFile::toMiraiCode </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换 </p>
-
-<p>实现了 <a class="el" href="a00066.html#a5067f9067fd47eb8413c28881084d044">MiraiCodeable</a>.</p>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01056">1056</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l01056"></a><span class="lineno"> 1056</span>&#160;                            {</div>
-<div class="line"><a name="l01057"></a><span class="lineno"> 1057</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="a00150.html#a95f6a801ddb786ce006542e028d6d337">internalid</a> == 0) {</div>
-<div class="line"><a name="l01058"></a><span class="lineno"> 1058</span>&#160;            <span class="comment">// 重新上传</span></div>
-<div class="line"><a name="l01059"></a><span class="lineno"> 1059</span>&#160;            <span class="keywordflow">throw</span> <a class="code" href="a00118.html">RemoteAssetException</a>(<span class="stringliteral">&quot;toMiraiCode error: internalid错误，重新上传&quot;</span>);</div>
-<div class="line"><a name="l01060"></a><span class="lineno"> 1060</span>&#160;        }</div>
-<div class="line"><a name="l01061"></a><span class="lineno"> 1061</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;[mirai:file:&quot;</span> + <span class="keywordtype">id</span> + <span class="stringliteral">&quot;,&quot;</span> + std::to_string(<a class="code" href="a00150.html#a95f6a801ddb786ce006542e028d6d337">internalid</a>) + <span class="stringliteral">&quot;,&quot;</span> + <a class="code" href="a00058.html#abea12070fc52348e5c9a426c116f5629">Tools::escapeToMiraiCode</a>(<a class="code" href="a00150.html#aaeef98e2d5caaa1521950a5a4446efe7">name</a>) + <span class="stringliteral">&quot;,&quot;</span> + std::to_string(<a class="code" href="a00150.html#a4669b902794a33fbc60fa99c809a22e5">size</a>) + <span class="stringliteral">&quot;]&quot;</span>;</div>
-<div class="line"><a name="l01062"></a><span class="lineno"> 1062</span>&#160;    }</div>
-<div class="ttc" id="aa00058_html_abea12070fc52348e5c9a426c116f5629"><div class="ttname"><a href="a00058.html#abea12070fc52348e5c9a426c116f5629">Tools::escapeToMiraiCode</a></div><div class="ttdeci">static std::string escapeToMiraiCode(const std::string &amp;s)</div><div class="ttdoc">转义miraicode格式</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00562">tools.cpp:562</a></div></div>
-<div class="ttc" id="aa00118_html"><div class="ttname"><a href="a00118.html">RemoteAssetException</a></div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00547">tools.h:547</a></div></div>
-</div><!-- fragment --><div id="dynsection-5" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-5-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
-<div id="dynsection-5-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-5-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00150_a1ca55a2e4cead686e9ea5f0e9260dfa0_cgraph.png" border="0" usemap="#aa00150_a1ca55a2e4cead686e9ea5f0e9260dfa0_cgraph" alt=""/></div>
-<map name="aa00150_a1ca55a2e4cead686e9ea5f0e9260dfa0_cgraph" id="aa00150_a1ca55a2e4cead686e9ea5f0e9260dfa0_cgraph">
-<area shape="rect" title="仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换" alt="" coords="5,5,171,32"/>
-<area shape="rect" href="a00058.html#abea12070fc52348e5c9a426c116f5629" title="转义miraicode格式" alt="" coords="219,5,393,32"/>
-<area shape="rect" href="a00058.html#a73a5bbcbdd583d014bf3f8e5db3a89eb" title="替换全部在一个字符串中." alt="" coords="441,5,544,32"/>
-</map>
-</div>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01049">1049</a> 行定义.</p>
 
 </div>
 </div>
-<h2 class="groupheader">类成员变量说明</h2>
-<a id="a2a819afb5208ce0d816a073b6d2dbb98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a819afb5208ce0d816a073b6d2dbb98">&#9670;&nbsp;</a></span>dinfo</h2>
+<a id="ab073417dd65e95533b012011aa74a8b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab073417dd65e95533b012011aa74a8b0">&#9670;&nbsp;</a></span>lastmodifytime</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="a00142.html">dinfo</a> RemoteFile::dinfo</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>文件下载信息 </p><dl class="section see"><dt>参见</dt><dd><a class="el" href="a00142.html" title="下载信息">dinfo</a> </dd></dl>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01027">1027</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a5c04bb6347e3783a9b6c083e7ee5586d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5c04bb6347e3783a9b6c083e7ee5586d">&#9670;&nbsp;</a></span>finfo</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="a00146.html">finfo</a> RemoteFile::finfo</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>文件信息 </p><dl class="section see"><dt>参见</dt><dd><a class="el" href="a00146.html" title="文件信息">finfo</a> </dd></dl>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01030">1030</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a28376539b0566ae41036143dad94fad0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28376539b0566ae41036143dad94fad0">&#9670;&nbsp;</a></span>id</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> RemoteFile::id</td>
+          <td class="memname">unsigned long long finfo::lastmodifytime</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>文件唯一id, 用于识别 </p>
+<p>上次更改时间, 时间戳格式 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01016">1016</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01053">1053</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a95f6a801ddb786ce006542e028d6d337"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a95f6a801ddb786ce006542e028d6d337">&#9670;&nbsp;</a></span>internalid</h2>
+<a id="a94de667500b2c0dba038f7e654ba90f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94de667500b2c0dba038f7e654ba90f2">&#9670;&nbsp;</a></span>size</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const unsigned int RemoteFile::internalid</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>文件内部id, 用于构造miraiCode发送 </p>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01018">1018</a> 行定义.</p>
-
-</div>
-</div>
-<a id="aaeef98e2d5caaa1521950a5a4446efe7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaeef98e2d5caaa1521950a5a4446efe7">&#9670;&nbsp;</a></span>name</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> RemoteFile::name</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>文件名 </p>
-<dl class="section examples"><dt>示例</dt><dd><a class="el" href="a00278.html#a5">取群文件信息</a>.</dd>
-</dl>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01020">1020</a> 行定义.</p>
-
-</div>
-</div>
-<a id="aed6d46f89c5cb0d83236b4b7e1b5c873"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aed6d46f89c5cb0d83236b4b7e1b5c873">&#9670;&nbsp;</a></span>path</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> RemoteFile::path</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>文件在群文件的路径 </p>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01024">1024</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a4669b902794a33fbc60fa99c809a22e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4669b902794a33fbc60fa99c809a22e5">&#9670;&nbsp;</a></span>size</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const long long RemoteFile::size</td>
+          <td class="memname">unsigned long long finfo::size</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>文件大小 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01022">1022</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01045">1045</a> 行定义.</p>
 
 </div>
 </div>
-<hr/>该类的文档由以下文件生成:<ul>
+<a id="a2bd8a352da0950f3b549dbd754585dd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bd8a352da0950f3b549dbd754585dd6">&#9670;&nbsp;</a></span>uploaderid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned long long finfo::uploaderid</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>上传者id </p>
+
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01047">1047</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b36d35ddbf52b18572e2dce56faf362"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b36d35ddbf52b18572e2dce56faf362">&#9670;&nbsp;</a></span>uploadtime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned long long finfo::uploadtime</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>上传时间, 时间戳格式 </p>
+
+<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01051">1051</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
 <li><a class="el" href="a00026_source.html">tools.h</a></li>
-<li><a class="el" href="a00023_source.html">tools.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="a00150.html">RemoteFile</a></li>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="navelem"><a class="el" href="a00150.html">finfo</a></li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:01 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>

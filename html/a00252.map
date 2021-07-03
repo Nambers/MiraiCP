@@ -1,0 +1,4 @@
+<map id="Event::NodeHandle" name="Event::NodeHandle">
+<area shape="rect" id="node1" title="事件监听操控, 可用于stop停止监听和resume继续监听" alt="" coords="5,145,157,252"/>
+<area shape="rect" id="node2" title=" " alt="" coords="58,5,105,83"/>
+</map>

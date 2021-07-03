@@ -1,14 +1,8 @@
 var a00150 =
 [
-    [ "RemoteFile", "a00150.html#a2a606d3e0fddf6251ded708a089dfdb5", null ],
-    [ "deserializeFromString", "a00150.html#a4f9a12c1a71dfea6ba98624fb29d3f2f", null ],
-    [ "serializeToString", "a00150.html#a971914cc9e832e785ec9667761bb49a2", null ],
-    [ "toMiraiCode", "a00150.html#a1ca55a2e4cead686e9ea5f0e9260dfa0", null ],
-    [ "dinfo", "a00150.html#a2a819afb5208ce0d816a073b6d2dbb98", null ],
-    [ "finfo", "a00150.html#a5c04bb6347e3783a9b6c083e7ee5586d", null ],
-    [ "id", "a00150.html#a28376539b0566ae41036143dad94fad0", null ],
-    [ "internalid", "a00150.html#a95f6a801ddb786ce006542e028d6d337", null ],
-    [ "name", "a00150.html#aaeef98e2d5caaa1521950a5a4446efe7", null ],
-    [ "path", "a00150.html#aed6d46f89c5cb0d83236b4b7e1b5c873", null ],
-    [ "size", "a00150.html#a4669b902794a33fbc60fa99c809a22e5", null ]
+    [ "downloadtime", "a00150.html#a6257f5202f67d71af216e8328d6ee28f", null ],
+    [ "lastmodifytime", "a00150.html#ab073417dd65e95533b012011aa74a8b0", null ],
+    [ "size", "a00150.html#a94de667500b2c0dba038f7e654ba90f2", null ],
+    [ "uploaderid", "a00150.html#a2bd8a352da0950f3b549dbd754585dd6", null ],
+    [ "uploadtime", "a00150.html#a7b36d35ddbf52b18572e2dce56faf362", null ]
 ];

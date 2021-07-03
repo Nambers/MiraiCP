@@ -1,4 +1,5 @@
-<map id="dinfo" name="dinfo">
-<area shape="rect" id="node1" title="下载信息" alt="" coords="8,175,57,252"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,60,83"/>
+<map id="LightApp" name="LightApp">
+<area shape="rect" id="node1" title=" " alt="" coords="31,160,223,340"/>
+<area shape="rect" id="node2" href="$a00066.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,5,135,97"/>
+<area shape="rect" id="node3" title=" " alt="" coords="159,13,213,90"/>
 </map>

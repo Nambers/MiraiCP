@@ -1,4 +1,4 @@
-<map id="RecallEvent" name="RecallEvent">
-<area shape="rect" id="node1" title="撤回信息" alt="" coords="5,145,224,487"/>
-<area shape="rect" id="node2" href="$a00194.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="43,5,186,97"/>
+<map id="MemberLeaveEvent" name="MemberLeaveEvent">
+<area shape="rect" id="node1" title="群成员离开" alt="" coords="5,160,249,369"/>
+<area shape="rect" id="node2" href="$a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="52,5,203,112"/>
 </map>

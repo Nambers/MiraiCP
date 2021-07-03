@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -18,6 +19,9 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -93,7 +97,7 @@ $(document).ready(function(){initNavTree('a00017_source.html',''); initResizable
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// 多线程示例</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno"><a class="line" href="a00017.html#a2f5a0b296fa851091b92244aa5da103a">    4</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="a00017.html#a2f5a0b296fa851091b92244aa5da103a">func</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> i, <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> botid) {</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    <span class="comment">// 执行操作</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    <a class="code" href="a00174.html">Friend</a>(i, botid).<a class="code" href="a00134.html#ac8e7ac7c9330803c5e1862bff68096cd">sendMsg</a>(<span class="stringliteral">&quot;hi&quot;</span>);</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    <a class="code" href="a00178.html">Friend</a>(i, botid).<a class="code" href="a00138.html#ac8e7ac7c9330803c5e1862bff68096cd">sendMsg</a>(<span class="stringliteral">&quot;hi&quot;</span>);</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    <a class="code" href="a00011.html#a4b4a306a9aed3f0d9ac6f2009f941c9f">manager</a>-&gt;<a class="code" href="a00050.html#a807b673ce4d4199cf0bfdfff5521d2c0">detach</a>();</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;}</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
@@ -112,146 +116,150 @@ $(document).ready(function(){initNavTree('a00017_source.html',''); initResizable
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">        ...</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">    参数都在param变量里，在lambda块中使用param.xxx来调用</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">    */</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="comment">// 邀请事件</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="comment">// 好友申请</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00210.html">NewFriendRequestEvent</a>&gt;([](<a class="code" href="a00210.html">NewFriendRequestEvent</a> e) {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        e.accept();</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <a class="code" href="a00174.html">Friend</a>(e.fromid, e.bot.id).<a class="code" href="a00134.html#ac8e7ac7c9330803c5e1862bff68096cd">sendMsg</a>(<span class="stringliteral">&quot;HI&quot;</span>);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        });</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="comment">// 邀请加群</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00206.html">GroupInviteEvent</a>&gt;([](<a class="code" href="a00206.html">GroupInviteEvent</a> e) {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        e.accept();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#a13e1837413a7cdecd8ea11909f1842be">Info</a>(<span class="stringliteral">&quot;x&quot;</span>);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <a class="code" href="a00182.html">Group</a>(e.groupid, e.bot.id).<a class="code" href="a00134.html#ac8e7ac7c9330803c5e1862bff68096cd">sendMsg</a>(<span class="stringliteral">&quot;被&quot;</span> + e.inviterNick + <span class="stringliteral">&quot;邀请进入&quot;</span> + e.groupName);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        });</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="comment">// 消息事件</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="comment">// 监听私聊</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="a00246.html">Event::NodeHandle</a> handle = <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00202.html">PrivateMessageEvent</a>&gt;([](<a class="code" href="a00202.html">PrivateMessageEvent</a> e) {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> <span class="keywordtype">id</span> = e.bot.id;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#a13e1837413a7cdecd8ea11909f1842be">Info</a>(std::to_string(<span class="keywordtype">id</span>));</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        e.messageSource.quoteAndSendMsg(<span class="stringliteral">&quot;HI&quot;</span>);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        std::thread func1(<a class="code" href="a00017.html#a2f5a0b296fa851091b92244aa5da103a">func</a>, e.sender.id(), e.bot.id);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        e.sender.sendMsg(e.message);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        func1.detach();</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <span class="comment">// 多线程测试,线程应该在lambda中决定要detach还是join, 否则会报错</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="comment">// 测试取图片</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        std::vector &lt;std::string&gt; temp = <a class="code" href="a00130.html#a209162f6355c501f5fde9db40de39188">Image::GetImgIdsFromMiraiCode</a>(e.message);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&amp; a : temp) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            e.sender.sendMsg(a);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="comment">// 发送图片</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <a class="code" href="a00130.html">Image</a> tmp = e.sender.uploadImg(R<span class="stringliteral">&quot;(C:\Users\19308\Desktop\a.jpg)&quot;);</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="stringliteral">        e.sender.sendMsg(tmp.<a class="code" href="a00130.html#a1f23cd8327ee4b8814ad8574b6a35e82">toMiraiCode</a>());</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="stringliteral">        e.sender.sendMiraiCode(tmp.<a class="code" href="a00130.html#a1f23cd8327ee4b8814ad8574b6a35e82">toMiraiCode</a>());</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="stringliteral">        e.messageSource.recall();</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="stringliteral">        });</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="stringliteral"></span> </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="stringliteral">    </span><span class="comment">// 监听群信息</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00198.html">GroupMessageEvent</a>&gt;([=](<a class="code" href="a00198.html">GroupMessageEvent</a> e) {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        e.group.sendVoice(R<span class="stringliteral">&quot;(D:\下载缓存\test.amr)&quot;);</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="stringliteral">        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#a13e1837413a7cdecd8ea11909f1842be">Info</a>(e.message);</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="stringliteral">        e.group.sendMiraiCode(e.message);</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="stringliteral">        e.group.sendMsg(</span><span class="stringliteral">&quot;☺&quot;</span>);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        e.group.sendMsg(e.group.setting.name);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        e.group.setting.name = <span class="stringliteral">&quot;x&quot;</span>;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        e.group.updateSetting();</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        e.messageSource.quoteAndSendMsg(<span class="stringliteral">&quot;HI&quot;</span>);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#a13e1837413a7cdecd8ea11909f1842be">Info</a>(e.messageSource.serializeToString());</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="comment">// 发送文本信息</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        e.group.sendMsg(<span class="stringliteral">&quot;HI&quot;</span>);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="comment">// 发送MiraiCode信息，At</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        e.group.sendMiraiCode(<a class="code" href="a00026.html#ab6f4da57c1ccc2dffe4f5ee6bda06f6e">At</a>(e.sender));</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="comment">// 撤回测试</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        e.group.sendMsg(<span class="stringliteral">&quot;撤回测试&quot;</span>).recall();</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="comment">// 发送xml卡片测试,可以用new传miraicodeable指针进去，也可以用.toMiraiCode()</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        e.group.sendMiraiCode(<span class="keyword">new</span> <a class="code" href="a00138.html">LightApp</a>(<a class="code" href="a00038.html">LightAppStyle1</a>()));</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        e.group.sendMiraiCode(<a class="code" href="a00138.html">LightApp</a>(<a class="code" href="a00042.html">LightAppStyle2</a>()).toMiraiCode());</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        e.group.sendMiraiCode(<span class="keyword">new</span> <a class="code" href="a00138.html">LightApp</a>(<a class="code" href="a00046.html">LightAppStyle3</a>()));</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <a class="code" href="a00166.html">ForwardMessage</a>(&amp;e.group,</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                       {</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                               ForwardNode(1930893235, <span class="stringliteral">&quot;Eritque arcus&quot;</span>, <span class="stringliteral">&quot;hahaha&quot;</span>, 1),</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                               ForwardNode(1930893235, <span class="stringliteral">&quot;Eritque arcus&quot;</span>, <span class="stringliteral">&quot;hahaha&quot;</span>, -100)</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                       }).<a class="code" href="a00166.html#a8bb5db9b77ded55f8c3aded9f692a9a3">sendTo</a>(&amp;e.group);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <span class="comment">// 关闭上面的私聊消息监听器</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        handle.stop();</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <span class="comment">// 当前bot属性</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        e.sender.sendMsg(e.bot.nick());</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        e.sender.sendMsg(e.bot.FriendListToString());</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        e.sender.sendMsg(e.bot.GroupListToString());</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        <a class="code" href="a00150.html">RemoteFile</a> tmp = e.group.sendFile(<span class="stringliteral">&quot;/test.txt&quot;</span>, <span class="stringliteral">&quot;D:\\ValveUnhandledExceptionFilter.txt&quot;</span>);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        e.group.sendMsg(e.group.getFile(<span class="stringliteral">&quot;/&quot;</span>, tmp.<a class="code" href="a00150.html#a28376539b0566ae41036143dad94fad0">id</a>).name);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        e.group.sendMsg(e.group.getFile(<span class="stringliteral">&quot;/test.txt&quot;</span>).name);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        e.group.sendMsg(e.group.getFileListString(<span class="stringliteral">&quot;/&quot;</span>));</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        std::vector&lt;Group::file_short_info&gt; a = e.group.getFileList(<span class="stringliteral">&quot;/&quot;</span>);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        std::stringstream ss;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; a.size(); ++i) {</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            <span class="keywordflow">if</span> (i != 0)</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                ss &lt;&lt; <span class="stringliteral">&quot;,&quot;</span>;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            ss &lt;&lt; <span class="stringliteral">&quot;{&quot;</span> &lt;&lt; a[i].<a class="code" href="a00150.html#aed6d46f89c5cb0d83236b4b7e1b5c873">path</a> &lt;&lt; <span class="stringliteral">&quot;,&quot;</span> &lt;&lt; a[i].id &lt;&lt; <span class="stringliteral">&quot;}&quot;</span>;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        }</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        <a class="code" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> s = ss.str();</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        e.group.sendMsg(s);</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        e.group.sendMsg(e.group.MemberListToString());</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        e.messageSource.recall();</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    });</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="comment">// 监听群临时会话</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00230.html">GroupTempMessageEvent</a>&gt;([](<a class="code" href="a00230.html">GroupTempMessageEvent</a> e) {</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        e.sender.sendMsg(<span class="stringliteral">&quot;hi&quot;</span>);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        });</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="comment">// 群事件</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00214.html">MemberJoinEvent</a>&gt;([](<a class="code" href="a00214.html">MemberJoinEvent</a> e) {</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        e.group.sendMiraiCode(<a class="code" href="a00026.html#ab6f4da57c1ccc2dffe4f5ee6bda06f6e">At</a>(e.group.getOwner()) + std::to_string(e.member.id()) + <span class="stringliteral">&quot;加入了群聊&quot;</span>);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00238.html">BotOnlineEvent</a>&gt;([](<a class="code" href="a00238.html">BotOnlineEvent</a> e){</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        e.botlogger.Info(<span class="stringliteral">&quot;Bot is Online&quot;</span>);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    });</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="comment">// 邀请事件</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="comment">// 好友申请</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00214.html">NewFriendRequestEvent</a>&gt;([](<a class="code" href="a00214.html">NewFriendRequestEvent</a> e) {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        e.accept();</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <a class="code" href="a00178.html">Friend</a>(e.fromid, e.bot.id).<a class="code" href="a00138.html#ac8e7ac7c9330803c5e1862bff68096cd">sendMsg</a>(<span class="stringliteral">&quot;HI&quot;</span>);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        });</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="comment">// 邀请加群</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00210.html">GroupInviteEvent</a>&gt;([](<a class="code" href="a00210.html">GroupInviteEvent</a> e) {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        e.accept();</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#a0c06be585935f38b4351f8c207b97b41">Info</a>(<span class="stringliteral">&quot;x&quot;</span>);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <a class="code" href="a00186.html">Group</a>(e.groupid, e.bot.id).<a class="code" href="a00138.html#ac8e7ac7c9330803c5e1862bff68096cd">sendMsg</a>(<span class="stringliteral">&quot;被&quot;</span> + e.inviterNick + <span class="stringliteral">&quot;邀请进入&quot;</span> + e.groupName);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        });</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="comment">// 消息事件</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="comment">// 监听私聊</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <a class="code" href="a00254.html">Event::NodeHandle</a> handle = <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00206.html">PrivateMessageEvent</a>&gt;([](<a class="code" href="a00206.html">PrivateMessageEvent</a> e) {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> <span class="keywordtype">id</span> = e.bot.id;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        e.botlogger.Info(std::to_string(<span class="keywordtype">id</span>));</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        e.messageSource.quoteAndSendMsg(<span class="stringliteral">&quot;HI&quot;</span>);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        std::thread func1(<a class="code" href="a00017.html#a2f5a0b296fa851091b92244aa5da103a">func</a>, e.sender.id(), e.bot.id);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        e.sender.sendMsg(e.message);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        func1.detach();</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="comment">// 多线程测试,线程应该在lambda中决定要detach还是join, 否则会报错</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="comment">// 测试取图片</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        std::vector &lt;std::string&gt; temp = <a class="code" href="a00134.html#a209162f6355c501f5fde9db40de39188">Image::GetImgIdsFromMiraiCode</a>(e.message);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&amp; a : temp) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            e.sender.sendMsg(a);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="comment">// 发送图片</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <a class="code" href="a00134.html">Image</a> tmp = e.sender.uploadImg(R<span class="stringliteral">&quot;(C:\Users\19308\Desktop\a.jpg)&quot;);</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="stringliteral">        e.sender.sendMsg(tmp.<a class="code" href="a00134.html#a1f23cd8327ee4b8814ad8574b6a35e82">toMiraiCode</a>());</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="stringliteral">        e.sender.sendMiraiCode(tmp.<a class="code" href="a00134.html#a1f23cd8327ee4b8814ad8574b6a35e82">toMiraiCode</a>());</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="stringliteral">        e.messageSource.recall();</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="stringliteral">        });</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="stringliteral"></span> </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="stringliteral">    </span><span class="comment">// 监听群信息</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00202.html">GroupMessageEvent</a>&gt;([=](<a class="code" href="a00202.html">GroupMessageEvent</a> e) {</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">//      logger-&gt;Info(e.group.setting.entranceAnnouncement);</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">//      e.group.sendVoice(R&quot;(D:\下载缓存\test.amr)&quot;);</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">//        e.botlogger.Info(e.message);</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">//        e.group.sendMiraiCode(e.message);</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">//        e.group.sendMsg(&quot;☺&quot;);</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">//        e.group.sendMsg(e.group.setting.name);</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">//        e.group.setting.name = &quot;x&quot;;</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">//        e.group.updateSetting();</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">//        e.messageSource.quoteAndSendMsg(&quot;HI&quot;);</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment">//        e.botlogger.Info(e.messageSource.serializeToString());</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment">//        // 发送文本信息</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">//        e.group.sendMsg(&quot;HI&quot;);</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">//        // 发送MiraiCode信息，At</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">//        e.group.sendMiraiCode(At(e.sender));</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">//        // 撤回测试</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">//        e.group.sendMsg(&quot;撤回测试&quot;).recall();</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">//        // 发送xml卡片测试,可以用new传miraicodeable指针进去，也可以用.toMiraiCode()</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">//        e.group.sendMiraiCode(new LightApp(LightAppStyle1()));</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">//        e.group.sendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">//        e.group.sendMiraiCode(new LightApp(LightAppStyle3()));</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">//        ForwardMessage(&amp;e.group,</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">//                       {</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">//                               ForwardNode(1930893235, &quot;Eritque arcus&quot;, &quot;hahaha&quot;, 1),</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">//                               ForwardNode(1930893235, &quot;Eritque arcus&quot;, &quot;hahaha&quot;, -100)</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment">//                       }).sendTo(&amp;e.group);</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment">//        // 关闭上面的私聊消息监听器</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment">//        handle.stop();</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">//        // 当前bot属性</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">//        e.sender.sendMsg(e.bot.nick());</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment">//        e.sender.sendMsg(e.bot.FriendListToString());</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">//        e.sender.sendMsg(e.bot.GroupListToString());</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment">//        RemoteFile tmp = e.group.sendFile(&quot;/test.txt&quot;, &quot;D:\\ValveUnhandledExceptionFilter.txt&quot;);</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment">//        e.group.sendMsg(e.group.getFile(&quot;/&quot;, tmp.id).name);</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">//        e.group.sendMsg(e.group.getFile(&quot;/test.txt&quot;).name);</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">//        e.group.sendMsg(e.group.getFileListString(&quot;/&quot;));</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">//        std::vector&lt;Group::file_short_info&gt; a = e.group.getFileList(&quot;/&quot;);</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment">//        std::stringstream ss;</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">//        for (size_t i = 0; i &lt; a.size(); ++i) {</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment">//            if (i != 0)</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">//                ss &lt;&lt; &quot;,&quot;;</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment">//            ss &lt;&lt; &quot;{&quot; &lt;&lt; a[i].path &lt;&lt; &quot;,&quot; &lt;&lt; a[i].id &lt;&lt; &quot;}&quot;;</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment">//        }</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment">//        std::string s = ss.str();</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="comment">//        e.group.sendMsg(s);</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="comment">//        e.group.sendMsg(e.group.MemberListToString());</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="comment">//        e.messageSource.recall();</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    });</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="comment">// 监听群临时会话</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00234.html">GroupTempMessageEvent</a>&gt;([](<a class="code" href="a00234.html">GroupTempMessageEvent</a> e) {</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        e.sender.sendMsg(<span class="stringliteral">&quot;hi&quot;</span>);</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        });</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00218.html">MemberLeaveEvent</a>&gt;([](<a class="code" href="a00218.html">MemberLeaveEvent</a> e) {</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        e.group.sendMiraiCode(<a class="code" href="a00026.html#ab6f4da57c1ccc2dffe4f5ee6bda06f6e">At</a>(e.group.getOwner()) + std::to_string(e.memberid) + <span class="stringliteral">&quot;退出了群聊&quot;</span>);</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        });</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;}</div>
-<div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="a00017.html#a6a8d17ca0478ca5e5e061c280faa8791">  119</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="a00017.html#a6a8d17ca0478ca5e5e061c280faa8791">onDisable</a>() {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="comment">/*插件结束*/</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;}</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="comment">// 群事件</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00218.html">MemberJoinEvent</a>&gt;([](<a class="code" href="a00218.html">MemberJoinEvent</a> e) {</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        e.group.sendMiraiCode(<a class="code" href="a00026.html#ab6f4da57c1ccc2dffe4f5ee6bda06f6e">At</a>(e.group.getOwner()) + std::to_string(e.member.id()) + <span class="stringliteral">&quot;加入了群聊&quot;</span>);</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        });</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>&lt;<a class="code" href="a00222.html">MemberLeaveEvent</a>&gt;([](<a class="code" href="a00222.html">MemberLeaveEvent</a> e) {</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        e.group.sendMiraiCode(<a class="code" href="a00026.html#ab6f4da57c1ccc2dffe4f5ee6bda06f6e">At</a>(e.group.getOwner()) + std::to_string(e.memberid) + <span class="stringliteral">&quot;退出了群聊&quot;</span>);</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        });</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}</div>
+<div class="line"><a name="l00123"></a><span class="lineno"><a class="line" href="a00017.html#a6a8d17ca0478ca5e5e061c280faa8791">  123</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="a00017.html#a6a8d17ca0478ca5e5e061c280faa8791">onDisable</a>() {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="comment">/*插件结束*/</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;}</div>
 <div class="ttc" id="aa00011_html_a0009c186c3629201f6c24eded36605f4"><div class="ttname"><a href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">全局日志指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00010">pch.cpp:10</a></div></div>
 <div class="ttc" id="aa00011_html_a478af16c6688220a7434630eb9101d74"><div class="ttname"><a href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a></div><div class="ttdeci">Event * procession</div><div class="ttdoc">全局事件指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00012">pch.cpp:12</a></div></div>
 <div class="ttc" id="aa00011_html_a4b4a306a9aed3f0d9ac6f2009f941c9f"><div class="ttname"><a href="a00011.html#a4b4a306a9aed3f0d9ac6f2009f941c9f">manager</a></div><div class="ttdeci">threadManager * manager</div><div class="ttdoc">线程管理实例</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00015">pch.cpp:15</a></div></div>
 <div class="ttc" id="aa00011_html_aca454f84dd198a937af6499dd758aa3d"><div class="ttname"><a href="a00011.html#aca454f84dd198a937af6499dd758aa3d">string</a></div><div class="ttdeci">std::string string</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00003">pch.cpp:3</a></div></div>
 <div class="ttc" id="aa00014_html"><div class="ttname"><a href="a00014.html">pch.h</a></div></div>
 <div class="ttc" id="aa00017_html_a2f5a0b296fa851091b92244aa5da103a"><div class="ttname"><a href="a00017.html#a2f5a0b296fa851091b92244aa5da103a">func</a></div><div class="ttdeci">void func(unsigned long long i, unsigned long long botid)</div><div class="ttdef"><b>Definition:</b> <a href="a00017_source.html#l00004">Procession.cpp:4</a></div></div>
-<div class="ttc" id="aa00017_html_a6a8d17ca0478ca5e5e061c280faa8791"><div class="ttname"><a href="a00017.html#a6a8d17ca0478ca5e5e061c280faa8791">onDisable</a></div><div class="ttdeci">void onDisable()</div><div class="ttdef"><b>Definition:</b> <a href="a00017_source.html#l00119">Procession.cpp:119</a></div></div>
+<div class="ttc" id="aa00017_html_a6a8d17ca0478ca5e5e061c280faa8791"><div class="ttname"><a href="a00017.html#a6a8d17ca0478ca5e5e061c280faa8791">onDisable</a></div><div class="ttdeci">void onDisable()</div><div class="ttdef"><b>Definition:</b> <a href="a00017_source.html#l00123">Procession.cpp:123</a></div></div>
 <div class="ttc" id="aa00017_html_af6b40412027c7beb9eb51bbfed51aff6"><div class="ttname"><a href="a00017.html#af6b40412027c7beb9eb51bbfed51aff6">onEnable</a></div><div class="ttdeci">void onEnable()</div><div class="ttdef"><b>Definition:</b> <a href="a00017_source.html#l00010">Procession.cpp:10</a></div></div>
-<div class="ttc" id="aa00026_html_ab6f4da57c1ccc2dffe4f5ee6bda06f6e"><div class="ttname"><a href="a00026.html#ab6f4da57c1ccc2dffe4f5ee6bda06f6e">At</a></div><div class="ttdeci">MiraiCode At(Member a)</div><div class="ttdoc">At一个群成员</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01524">tools.h:1524</a></div></div>
-<div class="ttc" id="aa00038_html"><div class="ttname"><a href="a00038.html">LightAppStyle1</a></div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00054">constants.h:54</a></div></div>
-<div class="ttc" id="aa00042_html"><div class="ttname"><a href="a00042.html">LightAppStyle2</a></div><div class="ttdoc">风格2</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00070">constants.h:70</a></div></div>
-<div class="ttc" id="aa00046_html"><div class="ttname"><a href="a00046.html">LightAppStyle3</a></div><div class="ttdoc">风格3</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00082">constants.h:82</a></div></div>
+<div class="ttc" id="aa00026_html_ab6f4da57c1ccc2dffe4f5ee6bda06f6e"><div class="ttname"><a href="a00026.html#ab6f4da57c1ccc2dffe4f5ee6bda06f6e">At</a></div><div class="ttdeci">MiraiCode At(Member a)</div><div class="ttdoc">At一个群成员</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01568">tools.h:1568</a></div></div>
 <div class="ttc" id="aa00050_html_a807b673ce4d4199cf0bfdfff5521d2c0"><div class="ttname"><a href="a00050.html#a807b673ce4d4199cf0bfdfff5521d2c0">threadManager::detach</a></div><div class="ttdeci">void detach()</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00042">tools.cpp:42</a></div></div>
-<div class="ttc" id="aa00074_html_a13e1837413a7cdecd8ea11909f1842be"><div class="ttname"><a href="a00074.html#a13e1837413a7cdecd8ea11909f1842be">Logger::Info</a></div><div class="ttdeci">void Info(const std::string &amp;, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送普通(info级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00100">tools.cpp:100</a></div></div>
-<div class="ttc" id="aa00130_html"><div class="ttname"><a href="a00130.html">Image</a></div><div class="ttdoc">图像类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00675">tools.h:675</a></div></div>
-<div class="ttc" id="aa00130_html_a1f23cd8327ee4b8814ad8574b6a35e82"><div class="ttname"><a href="a00130.html#a1f23cd8327ee4b8814ad8574b6a35e82">Image::toMiraiCode</a></div><div class="ttdeci">std::string toMiraiCode()</div><div class="ttdoc">取图片Mirai码</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00287">tools.cpp:287</a></div></div>
-<div class="ttc" id="aa00130_html_a209162f6355c501f5fde9db40de39188"><div class="ttname"><a href="a00130.html#a209162f6355c501f5fde9db40de39188">Image::GetImgIdsFromMiraiCode</a></div><div class="ttdeci">static std::vector&lt; std::string &gt; GetImgIdsFromMiraiCode(std::string)</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00275">tools.cpp:275</a></div></div>
-<div class="ttc" id="aa00134_html_ac8e7ac7c9330803c5e1862bff68096cd"><div class="ttname"><a href="a00134.html#ac8e7ac7c9330803c5e1862bff68096cd">Contact::sendMsg</a></div><div class="ttdeci">MessageSource sendMsg(std::string msg, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送纯文本信息</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00325">tools.cpp:325</a></div></div>
-<div class="ttc" id="aa00138_html"><div class="ttname"><a href="a00138.html">LightApp</a></div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00920">tools.h:920</a></div></div>
-<div class="ttc" id="aa00150_html"><div class="ttname"><a href="a00150.html">RemoteFile</a></div><div class="ttdoc">远程(群)文件类型</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01013">tools.h:1013</a></div></div>
-<div class="ttc" id="aa00150_html_a28376539b0566ae41036143dad94fad0"><div class="ttname"><a href="a00150.html#a28376539b0566ae41036143dad94fad0">RemoteFile::id</a></div><div class="ttdeci">const std::string id</div><div class="ttdoc">文件唯一id, 用于识别</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01016">tools.h:1016</a></div></div>
-<div class="ttc" id="aa00150_html_aed6d46f89c5cb0d83236b4b7e1b5c873"><div class="ttname"><a href="a00150.html#aed6d46f89c5cb0d83236b4b7e1b5c873">RemoteFile::path</a></div><div class="ttdeci">const std::string path</div><div class="ttdoc">文件在群文件的路径</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01024">tools.h:1024</a></div></div>
-<div class="ttc" id="aa00166_html"><div class="ttname"><a href="a00166.html">ForwardMessage</a></div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01164">tools.h:1164</a></div></div>
-<div class="ttc" id="aa00166_html_a8bb5db9b77ded55f8c3aded9f692a9a3"><div class="ttname"><a href="a00166.html#a8bb5db9b77ded55f8c3aded9f692a9a3">ForwardMessage::sendTo</a></div><div class="ttdeci">void sendTo(Contact *c, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送给群或好友或群成员</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00228">tools.cpp:228</a></div></div>
-<div class="ttc" id="aa00174_html"><div class="ttname"><a href="a00174.html">Friend</a></div><div class="ttdoc">好友类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01269">tools.h:1269</a></div></div>
-<div class="ttc" id="aa00182_html"><div class="ttname"><a href="a00182.html">Group</a></div><div class="ttdoc">群聊类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01376">tools.h:1376</a></div></div>
-<div class="ttc" id="aa00198_html"><div class="ttname"><a href="a00198.html">GroupMessageEvent</a></div><div class="ttdoc">群消息事件声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01545">tools.h:1545</a></div></div>
-<div class="ttc" id="aa00202_html"><div class="ttname"><a href="a00202.html">PrivateMessageEvent</a></div><div class="ttdoc">私聊消息事件类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01564">tools.h:1564</a></div></div>
-<div class="ttc" id="aa00206_html"><div class="ttname"><a href="a00206.html">GroupInviteEvent</a></div><div class="ttdoc">群聊邀请事件类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01586">tools.h:1586</a></div></div>
-<div class="ttc" id="aa00210_html"><div class="ttname"><a href="a00210.html">NewFriendRequestEvent</a></div><div class="ttdoc">好友申请事件声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01653">tools.h:1653</a></div></div>
-<div class="ttc" id="aa00214_html"><div class="ttname"><a href="a00214.html">MemberJoinEvent</a></div><div class="ttdoc">新群成员加入</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01720">tools.h:1720</a></div></div>
-<div class="ttc" id="aa00218_html"><div class="ttname"><a href="a00218.html">MemberLeaveEvent</a></div><div class="ttdoc">群成员离开</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01750">tools.h:1750</a></div></div>
-<div class="ttc" id="aa00230_html"><div class="ttname"><a href="a00230.html">GroupTempMessageEvent</a></div><div class="ttdoc">群临时会话</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01839">tools.h:1839</a></div></div>
-<div class="ttc" id="aa00234_html_ad3d76f3c8bd243c17a82a24c5bd135c0"><div class="ttname"><a href="a00234.html#ad3d76f3c8bd243c17a82a24c5bd135c0">Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l02013">tools.h:2013</a></div></div>
-<div class="ttc" id="aa00246_html"><div class="ttname"><a href="a00246.html">Event::NodeHandle</a></div><div class="ttdoc">事件监听操控, 可用于stop停止监听和resume继续监听</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01979">tools.h:1979</a></div></div>
+<div class="ttc" id="aa00074_html_a0c06be585935f38b4351f8c207b97b41"><div class="ttname"><a href="a00074.html#a0c06be585935f38b4351f8c207b97b41">Logger::Info</a></div><div class="ttdeci">void Info(const std::string &amp;, unsigned long long botid=-1, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送普通(info级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00103">tools.cpp:103</a></div></div>
+<div class="ttc" id="aa00134_html"><div class="ttname"><a href="a00134.html">Image</a></div><div class="ttdoc">图像类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00719">tools.h:719</a></div></div>
+<div class="ttc" id="aa00134_html_a1f23cd8327ee4b8814ad8574b6a35e82"><div class="ttname"><a href="a00134.html#a1f23cd8327ee4b8814ad8574b6a35e82">Image::toMiraiCode</a></div><div class="ttdeci">std::string toMiraiCode()</div><div class="ttdoc">取图片Mirai码</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00290">tools.cpp:290</a></div></div>
+<div class="ttc" id="aa00134_html_a209162f6355c501f5fde9db40de39188"><div class="ttname"><a href="a00134.html#a209162f6355c501f5fde9db40de39188">Image::GetImgIdsFromMiraiCode</a></div><div class="ttdeci">static std::vector&lt; std::string &gt; GetImgIdsFromMiraiCode(std::string)</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00278">tools.cpp:278</a></div></div>
+<div class="ttc" id="aa00138_html_ac8e7ac7c9330803c5e1862bff68096cd"><div class="ttname"><a href="a00138.html#ac8e7ac7c9330803c5e1862bff68096cd">Contact::sendMsg</a></div><div class="ttdeci">MessageSource sendMsg(std::string msg, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送纯文本信息</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00328">tools.cpp:328</a></div></div>
+<div class="ttc" id="aa00178_html"><div class="ttname"><a href="a00178.html">Friend</a></div><div class="ttdoc">好友类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01313">tools.h:1313</a></div></div>
+<div class="ttc" id="aa00186_html"><div class="ttname"><a href="a00186.html">Group</a></div><div class="ttdoc">群聊类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01420">tools.h:1420</a></div></div>
+<div class="ttc" id="aa00202_html"><div class="ttname"><a href="a00202.html">GroupMessageEvent</a></div><div class="ttdoc">群消息事件声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01592">tools.h:1592</a></div></div>
+<div class="ttc" id="aa00206_html"><div class="ttname"><a href="a00206.html">PrivateMessageEvent</a></div><div class="ttdoc">私聊消息事件类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01611">tools.h:1611</a></div></div>
+<div class="ttc" id="aa00210_html"><div class="ttname"><a href="a00210.html">GroupInviteEvent</a></div><div class="ttdoc">群聊邀请事件类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01633">tools.h:1633</a></div></div>
+<div class="ttc" id="aa00214_html"><div class="ttname"><a href="a00214.html">NewFriendRequestEvent</a></div><div class="ttdoc">好友申请事件声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01700">tools.h:1700</a></div></div>
+<div class="ttc" id="aa00218_html"><div class="ttname"><a href="a00218.html">MemberJoinEvent</a></div><div class="ttdoc">新群成员加入</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01767">tools.h:1767</a></div></div>
+<div class="ttc" id="aa00222_html"><div class="ttname"><a href="a00222.html">MemberLeaveEvent</a></div><div class="ttdoc">群成员离开</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01797">tools.h:1797</a></div></div>
+<div class="ttc" id="aa00234_html"><div class="ttname"><a href="a00234.html">GroupTempMessageEvent</a></div><div class="ttdoc">群临时会话</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01886">tools.h:1886</a></div></div>
+<div class="ttc" id="aa00238_html"><div class="ttname"><a href="a00238.html">BotOnlineEvent</a></div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01914">tools.h:1914</a></div></div>
+<div class="ttc" id="aa00242_html_ad3d76f3c8bd243c17a82a24c5bd135c0"><div class="ttname"><a href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l02073">tools.h:2073</a></div></div>
+<div class="ttc" id="aa00254_html"><div class="ttname"><a href="a00254.html">Event::NodeHandle</a></div><div class="ttdoc">事件监听操控, 可用于stop停止监听和resume继续监听</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l02039">tools.h:2039</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="a00017.html">Procession.cpp</a></li>
-    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:47 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
-</body>
+<script type="text/javascript">
+            $(document).ready(function(){
+                toggleButton = document.createElement('doxygen-awesome-dark-mode-toggle')
+                toggleButton.title = "Toggle Light/Dark Mode"
+                document.getElementById("MSearchBox").parentNode.appendChild(toggleButton)
+            })
+        </script>
+    </body>
 </html>
