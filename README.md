@@ -9,6 +9,7 @@
 * [欢迎来到MiraiCP](#欢迎来到miraicp)
 * [使用声明](#使用声明)
 * [关于MiraiCP](#关于MiraiCP)
+  * [特性](#特性) 
   * [使用流程:](#使用流程)
     * [1 配置环境](#1-配置环境)
     * [2 注意事项](#2-注意事项)
@@ -46,7 +47,8 @@
 这些内容可以在[Config.kt](https://github.com/Nambers/MiraiCP/blob/master/loader/src/main/kotlin/Config.kt)看到
   
 | 事件名称     | 函数名称              |
-|----------|-----------------------|
+|-------------|-----------------------|
+| 机器人上线   | BotOnlineEvent        |
 | 群聊消息     | GroupMessageEvent     |
 | 私聊消息     | PrivateMessageEvent   |
 | 好友申请     | NewFriendRequestEvent |
@@ -67,6 +69,14 @@
 
 Mirai支持的qq表情(对应miraicode的face)对应序号 [faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/faces.md)
 
+## 特性
+- C++ 20
+- 使用cmake
+- 使用jni与kt交互
+- c++ utf8编码
+- 与mirai-core同步发布(无需mah)
+- 支持2种使用方法
+
 # 使用流程:
 
 ## 1 配置环境
@@ -83,6 +93,7 @@ mirai需要java环境 **>=11**
 ## 3 使用方法:
 以下2种选择任意一种
 ### 3.1 MiraiCP-Plugin插件配合mcl使用
+本种方法适用于还需要加载别的mirai-console插件
 <details>
 <summary>展开</summary>
 	
@@ -103,7 +114,7 @@ mirai需要java环境 **>=11**
 </details>
 
 ### 3.2 使用MiraiCP-Loader整合包
-
+本种方法适用于只加载MiraiCP插件
 <details>
 <summary>展开</summary>
 	
