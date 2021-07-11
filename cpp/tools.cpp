@@ -224,11 +224,11 @@ std::string RemoteFile::serializeToString() {
 	j["internalid"] = this->internalid;
 	j["name"] = this->name;
 	j["size"] = this->size;
-	return "";
+	return j.dump();
 }
 
 //发送这个聊天记录
-void ForwardMessage::sendTo(Contact* c, JNIEnv* env){
+MessageSource ForwardMessage::sendTo(Contact* c, JNIEnv* env){
 	json temp;
 	json text;
 	text["id"] = c->id();
@@ -240,7 +240,7 @@ void ForwardMessage::sendTo(Contact* c, JNIEnv* env){
 	std::string re = config->koperation(config->Buildforward, temp, env);
     ErrorHandle(re);
 	//TODO:https://github.com/mamoe/mirai/issues/1371
-	//return MessageSource::deserializeFromString(re);
+	return MessageSource::deserializeFromString(re);
 }
 
 ForwardMessage::ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes) {

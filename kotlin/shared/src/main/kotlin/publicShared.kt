@@ -8,7 +8,6 @@ import net.mamoe.mirai.Bot
 import net.mamoe.mirai.LowLevelApi
 import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.contact.*
-import net.mamoe.mirai.data.GroupAnnouncementList
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.events.*
@@ -142,8 +141,6 @@ object publicShared{
                     g.quit()
                     return "done"
                 }
-
-
                 return gson.toJson(Config.ContactInfo(g.name, g.avatarUrl,
                     Config.GroupSetting(g.name, g.settings.entranceAnnouncement, g.settings.isMuteAll, g.settings.isAllowMemberInvite, g.settings.isAutoApproveEnabled, g.settings.isAnonymousChatEnabled)
                 ))
@@ -507,8 +504,7 @@ object publicShared{
         }
         val re = a.build().sendTo(c1)
         //TODO:https://github.com/mamoe/mirai/issues/1371
-        //return json.encodeToString(MessageSource.Serializer, re.source)
-        return "Y"
+        return json.encodeToString(MessageSource.Serializer, re.source)
     }
 
     @Suppress("INVISIBLE_MEMBER")
