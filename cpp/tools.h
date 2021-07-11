@@ -266,7 +266,7 @@ public:
 
 /*!
  * @class Logger
- * @brief 以MiraiCP的名义发送日志, 日志表现格式是: 2021-06-28 09:37:22 [log level]/MiraiCP: [log content]
+ * @brief 以MiraiCP的名义发送日志, 日志表现格式是: 2021-06-28 09:37:22 [log level]/MiraiCP: [log content], 为最底层的logger
  * @example 发送日志
 	 *  发送消息级日志
 	 *  @code logger->Info(string) @endcode
@@ -307,27 +307,27 @@ public:
     void init(JNIEnv* = manager->getEnv());
 
     ///发送普通(info级日志)
-    void Info(const std::string&, unsigned long long botid = -1, JNIEnv* = manager->getEnv());
+    void Info(const std::string&, unsigned long long id = -2, JNIEnv* = manager->getEnv());
 
     ///发送普通(info级日志)
-    void Info(MiraiCode msg, unsigned long long botid = -1, JNIEnv* env = manager->getEnv()){
-        Info(msg.toString(), botid, env);
+    void Info(MiraiCode msg, unsigned long long id = -2, JNIEnv* env = manager->getEnv()){
+        Info(msg.toString(), id, env);
     }
 
     ///发送警告(warning级日志)
-    void Warning(const std::string&, unsigned long long botid = -1, JNIEnv* = manager->getEnv());
+    void Warning(const std::string&, unsigned long long id = -2, JNIEnv* = manager->getEnv());
 
     ///发送警告(warning级日志)
-    void Warning(MiraiCode msg, unsigned long long botid= -1, JNIEnv* env = manager->getEnv()){
-        Warning(msg.toString(), botid, env);
+    void Warning(MiraiCode msg, unsigned long long id= -2, JNIEnv* env = manager->getEnv()){
+        Warning(msg.toString(), id, env);
     }
 
     ///发送错误(error级日志)
-    void Error(const std::string&, unsigned long long = -1, JNIEnv* = manager->getEnv());
+    void Error(const std::string&, unsigned long long id = -2, JNIEnv* = manager->getEnv());
 
     ///发送错误(error级日志)
-    void Error(MiraiCode msg, unsigned long long botid= -1, JNIEnv* env = manager->getEnv()){
-        Error(msg.toString(),botid, env);
+    void Error(MiraiCode msg, unsigned long long id= -2, JNIEnv* env = manager->getEnv()){
+        Error(msg.toString(), id, env);
     }
 
     /// @brief 设置loggerhandler的action
@@ -346,13 +346,13 @@ public:
     inline void setHandleState(bool state);
 };
 
-/// 以bot的名义发送日志, 表现格式为: 2021-06-28 09:37:22 [log level]/Bot [botid]: [log content]
-class BotLogger:public Logger{
+/// 带id(一般为bot账号)的logger
+class IdLogger:public Logger{
 public:
-    const unsigned long long botid;
+    const unsigned long long id;
     ///发送普通(info级日志)
     void Info(const std::string& log, JNIEnv* env= manager->getEnv()){
-        Logger::Info(log, botid, env);
+        Logger::Info(log, id, env);
     }
     ///发送普通(info级日志)
     void Info(MiraiCode msg, JNIEnv* env = manager->getEnv()){
@@ -361,7 +361,7 @@ public:
 
     ///发送警告(warning级日志)
     void Warning(const std::string& log, JNIEnv* env = manager->getEnv()){
-        Logger::Warning(log, botid, env);
+        Logger::Warning(log, id, env);
     }
 
     ///发送警告(warning级日志)
@@ -371,7 +371,7 @@ public:
 
     ///发送错误(error级日志)
     void Error(const std::string& msg, JNIEnv* env = manager->getEnv()){
-        Logger::Error(msg, botid, env);
+        Logger::Error(msg, id, env);
     }
 
     ///发送错误(error级日志)
@@ -379,7 +379,7 @@ public:
         Error(msg.toString(), env);
     }
 
-    BotLogger(unsigned long long id, Logger* l):botid(id){
+    IdLogger(unsigned long long id, Logger* l):id(id){
         this->loggerhandler = l->loggerhandler;
         this->log = l->getjmethod();
     }
@@ -387,6 +387,18 @@ public:
 
 /// 声明全局日志对象
 extern Logger* logger;
+
+/// 插件父类
+class CPPPlugin{
+public:
+    /// @brief 插件信息
+    const PluginConfig config;
+    /// @brief 插件级logger
+    static IdLogger* pluginLogger;
+    static void onEnable(){}
+    static void onDisable(){}
+    CPPPlugin(PluginConfig c):config(c){}
+};
 
 /// @brief 总异常抽象类
 /// @interface MiraiCPException
@@ -1226,7 +1238,7 @@ public:
 	ForwardMessage(Contact* c, std::initializer_list<ForwardNode> nodes);
 
 	/// 发送给群或好友或群成员
-	void sendTo(Contact* c, JNIEnv* = manager->getEnv());
+	MessageSource sendTo(Contact* c, JNIEnv* = manager->getEnv());
 };
 
 /// 当前bot账号信息
@@ -1583,7 +1595,7 @@ public:
 	Bot bot;
     /// 以该机器人的名义发送日志
     /// @see BotLogger
-    BotLogger botlogger;
+    IdLogger botlogger;
 	BotEvent(unsigned long long botid) : bot(botid), botlogger(botid, logger) {
 	}
 };
@@ -1648,10 +1660,6 @@ public:
         j["text"] = source;
         j["sign"] = false;
         std::string re = config->koperation(config->Gioperation, j, env);
-//		        Tools::jstring2str(
-//			(jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib, config->KGioperation,
-//				Tools::str2jstring(source.c_str()),
-//				(jboolean)true));
 		if (re == "Y") return;
 		if (re == "E")logger->Error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
 	}

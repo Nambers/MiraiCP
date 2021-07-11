@@ -13,6 +13,7 @@ Event* procession = new Event();
 ///全局配置指针
 Config* config = new Config();
 threadManager* manager = new threadManager();
+IdLogger* CPPPlugin::pluginLogger = nullptr;
 /*
 *正文开始
 */
@@ -30,7 +31,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Verify(
 		//初始化日志模块
         config->Init();
 		logger->init();
-		onEnable();
+        CPPPlugin::pluginLogger = new IdLogger(-2, logger);
+		CPPPlugin::onEnable();
 	}
 	catch (MiraiCPException& e) {
 		e.raise();
@@ -41,7 +43,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Verify(
 JNIEXPORT jobject JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_PluginDisable
 (JNIEnv* env, jobject job) {
 	manager->setEnv(env);
-	onDisable();
+	CPPPlugin::onDisable();
 	delete (logger);
 	delete (procession);
 	delete (config);

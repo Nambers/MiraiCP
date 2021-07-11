@@ -4,6 +4,34 @@
 /// MiraiCP当前版本
 const std::string MiraiCPVersion = "v2.6.5";
 
+/// @brief 插件信息
+class PluginConfig{
+public:
+    /// @brief 插件名称
+    const std::string name;
+    /// @brief 插件版本
+    const std::string version;
+    /// @brief 插件作者(及联系方式)
+    const std::string author;
+    /// @brief [optional]插件描述
+    const std::string description;
+    /// @brief [optional]构建时间
+    const std::string time;
+    PluginConfig(const std::string &name, const std::string &version, const std::string &author,
+                 const std::string &description = "", const std::string &time = "") : name(name), version(version),
+                                                                            author(author), description(description),
+                                                                            time(time) {}
+    std::string serialize2string(){
+        nlohmann::json j;
+        j["name"] = name;
+        j["version"] = version;
+        j["author"] = author;
+        j["description"] = description;
+        j["time"] = time;
+        return j.dump();
+    }
+};
+
 /*! @addtogroup 需要表态的值
  * @brief 如加好友事件
  * @{*/
