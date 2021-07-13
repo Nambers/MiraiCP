@@ -32,9 +32,9 @@ import tech.eritquearcus.miraicp.shared.publicShared.uploadImg
 import tech.eritquearcus.miraicp.shared.publicShared.uploadVoice
 
 class CPP_lib {
-    var ver:String = ""
+    var config:PluginConfig
     init {
-        ver=Verify()
+        config = Gson().fromJson(Verify(), PluginConfig::class.java)
     }
 
     //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
@@ -71,11 +71,18 @@ class CPP_lib {
         @JvmStatic
         fun KSendLog(log:String, level: Int) {
             val j = JSONObject(log)
-            when(level){
-                0-> BasicSendLog(j.getString("log"), j.getLong("botid"))
-                1-> SendWarning(j.getString("log"), j.getLong("botid"))
-                2-> SendError(j.getString("log"), j.getLong("botid"))
-            }
+            if(j.getLong("id") == -1L)
+                when(level){
+                    0-> BasicSendLog(j.getString("log"), j.getLong("id"), j.getString("name"))
+                    1-> SendWarning(j.getString("log"), j.getLong("id"), j.getString("name"))
+                    2-> SendError(j.getString("log"), j.getLong("id"), j.getString("name"))
+                }
+            else
+                when(level){
+                    0-> BasicSendLog(j.getString("log"), j.getLong("id"))
+                    1-> SendWarning(j.getString("log"), j.getLong("id"))
+                    2-> SendError(j.getString("log"), j.getLong("id"))
+                }
         }
 
         fun KRefreshInfo(source: String, quit: Boolean): String {
