@@ -1,14 +1,17 @@
-#include "pch.h"
+#include "miraiCP.hpp"
 using namespace std;
+using namespace MiraiCP;
 // 多线程示例
 void func(unsigned long long i, unsigned long long botid) {
 	// 执行操作
 	Friend(i, botid).sendMsg("hi");
 	manager->detach();
 }
-class Main:CPPPlugin {
-    Main(): CPPPlugin(PluginConfig("", "", "")){}
-    static void onEnable() {
+
+class Main:public CPPPlugin {
+public:
+    Main(): CPPPlugin(PluginConfig("name", "1.0", "Eritque arcus", "hello world")){}
+    void onEnable() override {
         /*插件启动, 请勿在此函数运行前执行操作mirai的代码*/
         /*
         注册事件监听-用户自定义
@@ -67,6 +70,9 @@ class Main:CPPPlugin {
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
             logger->Info(e.group.setting.entranceAnnouncement);
+            logger->Info("Global");
+            this->pluginLogger->Info("Plugin");
+            e.botlogger.Info("bot");
 //	    e.group.sendVoice(R"(D:\下载缓存\test.amr)");
 //        e.botlogger.Info(e.message);
 //        e.group.sendMiraiCode(e.message);
@@ -126,7 +132,11 @@ class Main:CPPPlugin {
         });
     }
 
-    static void onDisable() {
+    void onDisable() override {
         /*插件结束*/
     }
 };
+
+void MiraiCP::enrollPlugin(){
+    MiraiCP::enrollPlugin0(new Main());
+}
