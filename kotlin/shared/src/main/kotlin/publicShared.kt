@@ -37,6 +37,7 @@ object publicShared{
     private lateinit var logger: MiraiLogger
     const val now_tag = "v2.6.5"
     lateinit var dll_name: String
+    val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
 
     fun init(l: MiraiLogger, path: String){
         logger = l
@@ -44,19 +45,28 @@ object publicShared{
     }
 
     //日志部分实现
-    fun BasicSendLog(log: String, botid: Long) {
-        if(botid == -1L) logger.info(log)
-        else Bot.getInstance(botid).logger.info(log)
+    fun BasicSendLog(log: String, botid: Long, name: String = "") {
+        when (botid) {
+            -1L -> logger4plugins[name]!!.info(log)
+            -2L -> logger.info(log)
+            else -> Bot.getInstance(botid).logger.info(log)
+        }
     }
 
-    fun SendWarning(log: String, botid: Long) {
-        if(botid == -1L) logger.warning(log)
-        else Bot.getInstance(botid).logger.warning(log)
+    fun SendWarning(log: String, botid: Long, name: String = "") {
+        when (botid) {
+            -1L -> logger4plugins[name]!!.warning(log)
+            -2L -> logger.warning(log)
+            else -> Bot.getInstance(botid).logger.warning(log)
+        }
     }
 
-    fun SendError(log: String, botid: Long) {
-        if(botid == -1L) logger.error(log)
-        else Bot.getInstance(botid).logger.error(log)
+    fun SendError(log: String, botid: Long, name: String = "") {
+        when (botid) {
+            -1L -> logger4plugins[name]!!.error(log)
+            -2L -> logger.error(log)
+            else -> Bot.getInstance(botid).logger.error(log)
+        }
     }
 
     //发送消息部分实现 MiraiCode

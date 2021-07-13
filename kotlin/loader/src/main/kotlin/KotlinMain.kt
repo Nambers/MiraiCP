@@ -37,13 +37,21 @@ object KotlinMain {
         publicShared.init(logger, dll_name)
         logger.info("c++ dll地址:${dll_name}")
         val cpp = CPP_lib()
-        logger.info("加载插件完成")
-        if(cpp.ver != now_tag){
-            logger.warning("Warning: 当前MiraiCP框架版本($now_tag)和加载的插件的C++ SDK(${cpp.ver})不一致")
-        }
+        logger.info("⭐已加载插件: ${cpp.config.name}")
+        logger.info("⭐作者: ${cpp.config.author}")
+        logger.info("⭐版本: ${cpp.config.version}")
+        if(cpp.config.description!= "")
+            logger.info("⭐描述: ${cpp.config.description}")
+        if(cpp.config.time!="")
+            logger.info("⭐发行时间: ${cpp.config.time}")
         if(c.accounts == null || c.accounts!!.isEmpty()){
             logger.error("Error: 无可登录账号，请检查config.json内容")
             return
+        }
+        logger.info("⭐已成功加载MiraiCP⭐")
+        publicShared.logger4plugins.put(cpp.config.name, MiraiLogger.create(cpp.config.name))
+        if(cpp.config.MiraiCPversion != now_tag){
+            logger.warning("Warning: 当前MiraiCP框架版本($now_tag)和加载的插件的C++ SDK(${cpp.config.MiraiCPversion})不一致")
         }
         c.accounts!!.forEach {
             val p = when(it.protocol?.uppercase()){
