@@ -180,3 +180,11 @@ class Config {
     )
 }
 }
+data class PluginConfig(
+    val author: String,
+    val description: String,
+    val name: String,
+    val time: String,
+    val version: String,
+    val MiraiCPversion: String
+)
