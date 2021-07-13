@@ -1,7 +1,5 @@
 package tech.eritquearcus.miraicp
 
-import net.mamoe.mirai.BotFactory
-import net.mamoe.mirai.alsoLogin
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -23,7 +21,7 @@ object PluginMain : KotlinPlugin(
 ) {
     override fun onEnable() {
         val l = MiraiLogger.create("MiraiCP")
-        l.info("启动成功")
+        l.info("⭐MiraiCP启动中⭐")
         l.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
         var dll_name = "cpp.dll"
         dll_name = "${dataFolder.absoluteFile}\\$dll_name"
@@ -43,6 +41,15 @@ object PluginMain : KotlinPlugin(
         }
         publicShared.init(l, dll_name)
         val cpp = CPP_lib()
+        logger.info("⭐已加载插件: ${cpp.config.name}")
+        logger.info("⭐作者: ${cpp.config.author}")
+        logger.info("⭐版本: ${cpp.config.version}")
+        if(cpp.config.description!= "")
+            logger.info("⭐描述: ${cpp.config.description}")
+        if(cpp.config.time!="")
+            logger.info("⭐发行时间: ${cpp.config.time}")
+        logger.info("⭐已成功启动MiraiCP⭐")
+        publicShared.logger4plugins.put(cpp.config.name, MiraiLogger.create(cpp.config.name))
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
             cpp.Event(
                 publicShared.gson.toJson(Config.BotOnline(this.bot.id))
