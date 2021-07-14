@@ -1,0 +1,44 @@
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+cmake_minimum_required(VERSION 3.5)
+project(MiraiCP LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(BUILD_USE_64BITS on)
+
+set_property(GLOBAL PROPERTY MIRAICP_SOURCE_PATH
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/miraicp
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/bridge
+        ${CMAKE_CURRENT_SOURCE_DIR}/utf8
+        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8)
+
+set_property(GLOBAL PROPERTY
+        MIRAICP_SOURCE_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/miraicp/dllmain.cpp
+)
+set_property(GLOBAL PROPERTY
+        MIRAICP_SOURCE_HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/checked.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/core.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/cpp11.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/cpp17.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/unchecked.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/bridge/AccessBridgeCallbacks.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/bridge/AccessBridgeCalls.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/bridge/AccessBridgePackages.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/jawt_md.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/jni_md.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/classfile_constants.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/jawt.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/jdwpTransport.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/jni.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/jvmti.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/jni/jvmticmlr.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/json.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/miraicp/tech_eritquearcus_miraicp_shared_CPP_lib.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/miraiCP.hpp
+)

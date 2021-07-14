@@ -1,0 +1,43 @@
+name: "tagged-release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  tagged-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+       path: |
+         ./kotlin/.gradle/caches
+         ./kotlin/.gradle/wrapper
+       key: ${{ runner.os }}-build-${{ env.cache-name }}
+    - name: Set up JDK 15
+      uses: actions/setup-java@v2
+      with:
+        java-version: '15'
+        distribution: 'adopt'
+    - name: chmod -R 777 *
+      run: chmod -R 777 *
+    - name: Build loader
+      run:  cd ./kotlin/ && ./gradlew loader:shadowJar --warning-mode all --info --stacktrace
+    - name: Build plugin
+      run:  cd ./kotlin/ && ./gradlew plugin:buildPlugin --warning-mode all --info --stacktrace
+    - name: pack
+      run: zip -r include.zip ./cpp/include && zip -r MiraiCP_CPP.zip ./cpp
+
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: true
+        files: |
+          ./kotlin/loader/build/libs/MiraiCP-loader-2.6.5.jar
+          ./kotlin/plugin/build/mirai/MiraiCP-plugin-2.6.5.mirai.jar
+          ./cpp/include.zip
+          ./cpp/MiraiCP_CPP.zip
