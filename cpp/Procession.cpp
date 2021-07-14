@@ -1,3 +1,4 @@
+// MiraiCP依赖文件(只需要引入这一个)
 #include "miraiCP.hpp"
 using namespace std;
 using namespace MiraiCP;
@@ -8,9 +9,11 @@ void func(unsigned long long i, unsigned long long botid) {
 	manager->detach();
 }
 
+// 插件实例
 class Main:public CPPPlugin {
 public:
-    Main(): CPPPlugin(PluginConfig("name", "1.0", "Eritque arcus", "hello world")){}
+    // 配置插件信息
+    Main(): CPPPlugin(PluginConfig("name", "1.0", "Eritque arcus", "hello world", "2021")){}
     void onEnable() override {
         /*插件启动, 请勿在此函数运行前执行操作mirai的代码*/
         /*
@@ -21,7 +24,7 @@ public:
             logger->Error(string)发送错误级日志
         一共有3种logger
          1. 是最外层的logger指针，为MiraiCP插件级logger, 标识符为MiraiCP: [content], 不建议用这个logger输出，该logger通常在MiraiCP内部使用
-         2. 是CPPPlugin下的pluginLogger，为插件级logger，即当前MiraiCP加载的插件，标识符为MiraiCP-[name]: [content], 建议用于调试信息
+         2. 是CPPPlugin下的pluginLogger，为插件级logger，即当前MiraiCP加载的插件，标识符为[name]: [content], 建议用于调试信息
          3. 是每个事件的botLogger, 如:e.botLogger, 为每个机器人账号独有的logger，建议日常使用，标识符为[botid]: [content]
         procession 广播源
             procession->registerEvent(lambda) 注册监听
@@ -137,6 +140,7 @@ public:
     }
 };
 
+// 绑定当前插件实例
 void MiraiCP::enrollPlugin(){
     MiraiCP::enrollPlugin0(new Main());
 }

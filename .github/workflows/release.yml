@@ -1,0 +1,54 @@
+name: release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+       path: |
+         ./kotlin/.gradle/caches
+         ./kotlin/.gradle/wrapper
+       key: ${{ runner.os }}-build-${{ env.cache-name }}
+    - name: Set up JDK 15
+      uses: actions/setup-java@v2
+      with:
+        java-version: '15'
+        distribution: 'adopt'
+    - name: chmod -R 777 *
+      run: chmod -R 777 *
+    - name: Build loader
+      run:  cd ./kotlin/ && ./gradlew loader:shadowJar --warning-mode all --info --stacktrace
+    - name: Build plugin
+      run:  cd ./kotlin/ && ./gradlew plugin:buildPlugin --warning-mode all --info --stacktrace
+    - name: pack
+      run: zip -r include.zip ./cpp/include && zip -r MiraiCP_CPP.zip ./cpp
+    - name: GH Release
+      # You may pin to the exact commit or the version.
+      # uses: softprops/action-gh-release@b7e450da2a4b4cb4bfbae528f788167786cfcedf
+      uses: softprops/action-gh-release@v0.1.5
+      with:
+        # Note-worthy description of changes in release
+        body: test
+        tag_name: test
+        # Gives the release a custom name. Defaults to tag name
+        name: test
+        # Identify the release as a prerelease. Defaults to false
+        prerelease: true
+        # Newline-delimited list of path globs for asset files to upload
+        files: |
+          ./kotlin/loader/build/libs/MiraiCP-loader-2.6.5.jar
+          ./kotlin/plugin/build/mirai/MiraiCP-plugin-2.6.5.mirai.jar
+          ./cpp/include.zip
+          ./cpp/MiraiCP_CPP.zip
+    
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
