@@ -25,7 +25,6 @@ jobs:
         distribution: 'adopt'
     - name: chmod -R 777 *
       run: chmod -R 777 *
-    - name: shadowjar
     - name: Build loader
       run:  cd ./kotlin/ && ./gradlew loader:shadowJar --warning-mode all --info --stacktrace
     - name: Build plugin
