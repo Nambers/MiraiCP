@@ -24,7 +24,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.6.5";
+    const std::string MiraiCPVersion = "v2.7-Beta";
 
     /// @brief 插件信息
     class PluginConfig{
@@ -367,13 +367,13 @@ LightApp风格1
         }
 
         /// 从MiraiCodeable类型初始化一个miraicode字符串
-        MiraiCode(MiraiCodeable *a) {
+        explicit MiraiCode(MiraiCodeable *a) {
             content = a->toMiraiCode();
         }
 
         /// 从文本初始化一个miraicode字符串
-        MiraiCode(std::string a) {
-            content = a;
+        explicit MiraiCode(std::string a) {
+            content = std::move(a);
         }
 
         MiraiCode operator+(MiraiCodeable *a) {
@@ -397,7 +397,7 @@ LightApp风格1
         }
 
         MiraiCode operator=(std::string a) {
-            return MiraiCode(a);
+            return MiraiCode(std::move(a));
         }
 
         MiraiCode plus(MiraiCodeable *a) {
@@ -500,13 +500,13 @@ LightApp风格1
         /// @param botid botid
         /// @param level 日志等级
         /// @param env jnienv
-        void log0(const std::string &log, int level, JNIEnv *env);
+        void log0(const std::string &log, int level, JNIEnv *env) override;
     };
 
 /// 带id(一般为bot账号)的logger
     class IdLogger : public Logger_interface {
     protected:
-        void log0(const std::string &content, int level, JNIEnv *env) ;
+        void log0(const std::string &content, int level, JNIEnv *env) override ;
     public:
         const unsigned long long id;
 
@@ -519,9 +519,9 @@ LightApp风格1
     /// 插件logger
     class PluginLogger : public Logger_interface {
     protected:
-        void log0(const std::string &content, int level, JNIEnv *env);
+        void log0(const std::string &content, int level, JNIEnv *env) override;
     public:
-        PluginLogger(Logger *l) {
+        explicit PluginLogger(Logger *l) {
             this->loggerhandler = l->loggerhandler;
             this->log = l->getjmethod();
         }
@@ -639,11 +639,11 @@ LightApp风格1
         }
 
         //返回错误信息
-        std::string what() {
+        std::string what() override {
             return this->description;
         }
 
-        void raise() {
+        void raise() override {
             //manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
         }
 
@@ -661,7 +661,7 @@ LightApp风格1
         */
         int type = 0;
 
-        MemberException(int type) {
+        explicit MemberException(int type) {
             this->type = type;
             switch (type) {
                 case 1:
@@ -674,11 +674,11 @@ LightApp风格1
         }
 
         //返回错误信息
-        std::string what() {
+        std::string what() override {
             return this->description;
         }
 
-        void raise() {
+        void raise() override {
             //manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
         }
 
