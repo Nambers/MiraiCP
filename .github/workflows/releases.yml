@@ -42,7 +42,7 @@ jobs:
       uses: ncipollo/release-action@v1.8.6
       with:
           artifacts: "./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/include.zip,./cpp/MiraiCP_CPP.zip,./cpp/include/miraiCP.hpp"
-          body: ${{ github.event.inputs.cg }}
+          bodyfile: release.log
           tag: ${{ github.event.inputs.v }}
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: ${{ github.event.inputs.pre }}
