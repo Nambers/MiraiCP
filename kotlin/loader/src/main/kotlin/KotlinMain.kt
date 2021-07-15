@@ -25,17 +25,17 @@ object KotlinMain {
         val c = Gson().fromJson(j, Config.accounts::class.java)
         val logger = MiraiLogger.create("MiraiCP")
         var dll_name = c.cppPath
-        logger.info("启动成功!")
-        logger.info("github存储库:https://github.com/Nambers/MiraiCP")
+        logger.info("⭐MiraiCP启动中⭐")
+        logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
         if (!File(dll_name).exists()) {
             logger.error("Error: dll文件$dll_name 不存在, 请检查config.json配置")
             return
         } else {
             dll_name = File(dll_name).absolutePath
         }
-        logger.info("当前MiraiCP版本: $now_tag")
+        logger.info("⭐当前MiraiCP版本: $now_tag")
         publicShared.init(logger, dll_name)
-        logger.info("c++ dll地址:${dll_name}")
+        logger.info("⭐c++ dll地址:${dll_name}")
         val cpp = CPP_lib()
         logger.info("⭐已加载插件: ${cpp.config.name}")
         logger.info("⭐作者: ${cpp.config.author}")
