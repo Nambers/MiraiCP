@@ -38,6 +38,7 @@ jobs:
       with:
         # Note-worthy description of changes in release
         body: test
+        tag_name: test
         # Gives the release a custom name. Defaults to tag name
         name: test
         # Identify the release as a prerelease. Defaults to false
