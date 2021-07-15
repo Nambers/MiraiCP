@@ -37,6 +37,6 @@ jobs:
       uses: ncipollo/release-action@v1.8.6
       with:
           artifacts: "./kotlin/loader/build/libs/MiraiCP-loader-2.6.5.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-2.6.5.mirai.jar,./cpp/include.zip,./cpp/MiraiCP_CPP.zip"
-          bodyFile: "test"
+          body: "test"
           tag: ${{ github.event.inputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
