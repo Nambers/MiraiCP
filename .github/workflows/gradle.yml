@@ -27,8 +27,7 @@ jobs:
       uses: actions/cache@v2
       with:
        path: |
-         ./kotlin/.gradle/caches
-         ./kotlin/.gradle/wrapper
+         ./kotlin/.gradle
        key: ${{ runner.os }}-build-${{ env.cache-name }}
     - name: Set up JDK 15
       uses: actions/setup-java@v2

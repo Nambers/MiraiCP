@@ -20,7 +20,7 @@ include_directories(${SOURCE_PATH})
 # 追加Procession.cpp也就是自定义的处理代码进编译名单(名字可自己改)
 list(APPEND
         SOURCE_FILES
-        Procession.cpp
+        demo.cpp
         )
 # 构建动态链接库
 add_library(

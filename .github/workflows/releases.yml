@@ -1,0 +1,49 @@
+name: "create release"
+
+on:
+ workflow_dispatch:
+  inputs:
+   v:
+    required: true
+    description: version tag
+   pre:
+    required: true
+    description: pre-release
+   cg:
+    required: true
+    description: changing log
+
+jobs:
+  tagged-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+       path: |
+         ./kotlin/.gradle
+       key: ${{ runner.os }}-build-${{ env.cache-name }}
+    - name: Set up JDK 15
+      uses: actions/setup-java@v2
+      with:
+        java-version: '15'
+        distribution: 'adopt'
+    - name: chmod -R 777 *
+      run: chmod -R 777 *
+    - name: Build loader
+      run:  cd ./kotlin/ && ./gradlew loader:shadowJar --warning-mode all --info --stacktrace
+    - name: Build plugin
+      run:  cd ./kotlin/ && ./gradlew plugin:buildPlugin --warning-mode all --info --stacktrace
+    - name: pack
+      run: zip -r ./cpp/include.zip ./cpp/include && zip -r ./cpp/MiraiCP_CPP.zip ./cpp
+    - name: Create Release
+      uses: ncipollo/release-action@v1.8.6
+      with:
+          artifacts: "./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/include.zip,./cpp/MiraiCP_CPP.zip,./cpp/include/miraiCP.hpp"
+          body: ${{ github.event.inputs.cg }}
+          tag: ${{ github.event.inputs.v }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          if: ${{ github.event.inputs.pre == "true" }}
+          prerelease: true

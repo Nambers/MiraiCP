@@ -14,7 +14,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.6.5"
+        version = "2.7-Beta"
     ){
         author("Eritque arcus")
     }
@@ -49,7 +49,7 @@ object PluginMain : KotlinPlugin(
         if(cpp.config.time!="")
             logger.info("⭐发行时间: ${cpp.config.time}")
         logger.info("⭐已成功启动MiraiCP⭐")
-        publicShared.logger4plugins.put(cpp.config.name, MiraiLogger.create(cpp.config.name))
+        publicShared.logger4plugins[cpp.config.name] = MiraiLogger.create(cpp.config.name)
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
             cpp.Event(
                 publicShared.gson.toJson(Config.BotOnline(this.bot.id))
