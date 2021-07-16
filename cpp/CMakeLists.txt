@@ -17,12 +17,12 @@ get_property(SOURCE_HEADERS GLOBAL PROPERTY "MIRAICP_SOURCE_HEADERS")
 get_property(SOURCE_PATH GLOBAL PROPERTY "MIRAICP_SOURCE_PATH")
 # 引入目录依赖
 include_directories(${SOURCE_PATH})
-# 追加Procession.cpp也就是自定义的处理代码进编译名单(名字可自己改)
+# 追加demo.cpp也就是自定义的处理代码进编译名单(在第23行，可以改名字)
 list(APPEND
         SOURCE_FILES
         demo.cpp
         )
-# 构建动态链接库
+# 构建动态链接库, 第一行是生成的dll名字，其他不用改
 add_library(
         MiraiCP
         SHARED
