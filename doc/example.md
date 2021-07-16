@@ -28,32 +28,43 @@
 
 所有的自定义代码皆写在`Procession.cpp`下的`onEnable()`里，如:
 ```C++
-#include "pch.h"
-unsigned long groupid = 0;
-void onEnable() {
-	/*插件启动*/
-	/*
-	注册事件监听-用户自定义
-	logger - 日志组件
-		logger->Info(string)发送消息级日志
-		logger->Warning(string)发送警告级日志
-		logger->Error(string)发送错误级日志
-	procession 广播源
-		procession->registerEvent(lambda) 注册监听
-		procession->registerEvent([](GroupMessageEvent param){ \*处理*\});是监听群消息
-		procession->registerEvent([](PrivateMessageEvent param){ \*处理*\});是监听私聊消息
-		...
-	其中"param"是自定义的变量名，改成p,e什么的都可以
-	参数都在param变量里，在lambda块中使用param.xxx来调用
-	*/
-	procession->registerEvent([](GroupMessageEvent param)->void {
-		//在这写你自己处理群消息的代码
-		logger->Info("hi");
-		param.group.SendMsg(param.sender.at());
-		});
-}
-void onDisable() {
-	/*插件结束*/
+// MiraiCP依赖文件(只需要引入这一个)
+#include "miraiCP.hpp"
+using namespace std;
+using namespace MiraiCP;
+
+// 插件实例
+class Main:public CPPPlugin {
+public:
+    // 配置插件信息
+    Main(): CPPPlugin(PluginConfig("name", "1.0", "Eritque arcus", "hello world", "2021")){}
+    void onEnable() override {
+        /*插件启动, 请勿在此函数运行前执行操作mirai的代码*/
+        /*
+        logger - 日志组件
+            logger->Info(string)发送消息级日志
+            logger->Warning(string)发送警告级日志
+            logger->Error(string)发送错误级日志
+        一共有3种logger
+         1. 是最外层的logger指针，为MiraiCP插件级logger, 标识符为MiraiCP: [content], 不建议用这个logger输出，该logger通常在MiraiCP内部使用
+         2. 是CPPPlugin下的pluginLogger，为插件级logger，即当前MiraiCP加载的插件，标识符为[name]: [content], 建议用于调试信息
+         3. 是每个事件的botLogger, 如:e.botLogger, 为每个机器人账号独有的logger，建议日常使用，标识符为[botid]: [content]
+        procession 广播源
+            procession->registerEvent<EventType>(lambda) 注册监听
+            procession->registerEvent<GroupMessageEvent>([](GroupMessageEvent param){ \*处理*\});是监听群消息
+            procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent param){ \*处理*\});是监听私聊消息
+            ...
+        参数都在param变量里，在lambda块中使用param.xxx来调用
+        */
+        procession->registerEvent<BotOnlineEvent>([](BotOnlineEvent e) {
+            e.botlogger.Info("Bot is Online");
+        });
+	}
+	void onDisable() override{}
+};
+// 绑定当前插件实例
+void MiraiCP::enrollPlugin(){
+    MiraiCP::enrollPlugin0(new Main());
 }
 ```
 
@@ -61,18 +72,20 @@ void onDisable() {
 从`v2.4.2`开始，记得自行新建Member对象group对象friend对象和事件刚开始都要调用`init()`方法初始化(为了更好的捕获抛出的异常)
 
 从`v2.5.0`开始，不需要`init()`
+
+本示例中部分代码已经过时，可以参考[demo.cpp](https://github.com/Nambers/MiraiCP/blob/master/cpp/demo.cpp) 里的代码写，自己改一下, 或者参考[在线文档](https://eritque-arcus.tech/MiraiCP/html/)
 ## 多线程
 需在任务结束时调用manager->detach();
 ```C++
 void func() {
 	/*执行操作*/
-	Friend(1111).SendMsg("hi");
+	Friend(1111, 111).SendMsg("hi");
 	
 	// 结束线程
 	manager->detach();
 }
 void onEnable() {
-	procession->registerEvent([](GroupMessageEvent e) {
+	procession->registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
 		thread th1(func);
 		th1.join();
 		});
@@ -82,7 +95,7 @@ void onEnable() {
 ##  取当前消息里全部照片的下载链接
 ```C++
 ...
-	procession->registerEvent([](PrivateMessageEvent param)->void {
+	procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent param)->void {
 	/*示例: 取消息里全部图片的下载地址*/
 	vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
 	for (int i = 0; i < temp.size(); i++) {
@@ -101,7 +114,7 @@ void onEnable() {
 ## 发送群文件
 参数有2个，第一个是发送到了qq群文件路径(需要带文件名，文件名和本地文件名可以不是相同的)，第二个是本地文件路径
 ```C++
-	procession->registerEvent([](GroupMessageEvent e) {
+	procession->registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
 		// 发送D:\\ValveUnhandledExceptionFilter.txt本地文件到qq群的 /test.txt 路径
 		RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
 	});
@@ -112,7 +125,7 @@ void onEnable() {
 - 根据qq群远程路径(带文件名)找, 不过由于qq群文件允许同名文件这一特性, 返回的文件为群文件中同名文件中随机一个
 - 根据qq群远程路径(不带文件名)返回文件列表(包含文件夹), 然后再根据取到的列表里分析
 ```C++
-	procession->registerEvent([](GroupMessageEvent e) {
+	procession->registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
 		e.group.SendMsg(e.group.getFile("/", id).name());
 		e.group.SendMsg(e.group.getFile("/test.txt").name());
 		e.group.SendMsg(e.group.getFileListString("/"));
@@ -137,7 +150,7 @@ Group(groupid, botid);
 ```
 ## 构建并发送聊天记录
 ```C++
-procession->registerEvent([](GroupMessageEvent e) {
+procession->registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
 		ForwardMessage(&e.group,
 			{
 				ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),

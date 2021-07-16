@@ -5,20 +5,26 @@
 >
 >[English](https://github.com/Nambers/MiraiCP/blob/master/README_en.md)
 
-
 * [欢迎来到MiraiCP](#欢迎来到miraicp)
 * [使用声明](#使用声明)
-* [关于MiraiCP](#关于MiraiCP)
-  * [特性](#特性) 
-  * [使用流程:](#使用流程)
-    * [1 配置环境](#1-配置环境)
-    * [2 注意事项](#2-注意事项)
-    * [3 使用方法:](#3-使用方法)
-      * [3\.1 MiraiCP-Plugin插件配合mcl使用](#31-MiraiCP-Plugin插件配合mcl使用)
-      * [3\.2 使用MiraiCP-Loader整合包](#32-使用MiraiCP-Loader整合包)
+* [关于MiraiCP](#关于miraicp)
+  * [特性](#特性)
+* [使用流程:](#使用流程)
+  * [1 配置环境](#1-配置环境)
+  * [2 注意事项](#2-注意事项)
+  * [3 使用方法:](#3-使用方法)
+    * [3\.1 如何使用MiraiCP SDK?](#31-如何使用miraicp-sdk)
+      * [3\.1\.1 在demo里写](#311-在demo里写)
+      * [3\.1\.2 在代码中加入MiraiCP sdk依赖](#312-在代码中加入miraicp-sdk依赖)
+    * [3\.2 启动SDK](#32-启动sdk)
+      * [3\.2\.1 使用loader直接使用](#321-使用loader直接使用)
+      * [3\.2\.2 使用plugin作为mcl的插件使用](#322-使用plugin作为mcl的插件使用)
 * [更新方式](#更新方式)
 * [TODO](#todo)
 * [许可](#许可)
+* [依赖](#依赖)
+* [Stargazers](#stargazers)
+
 > **Tips~**
 > 如有意向一起开发本项目，请联系我邮箱(`1930893235@qq.com`) (￣▽￣)"
 # 使用声明
@@ -93,58 +99,87 @@ mirai需要java环境 **>=11**
 2. 如果vs报错找不到jni.h，把cpp/include文件夹加入到vs的库里面去(项目->属性->C++->常规)，include文件夹里包含了jni.h以及他的依赖文件
 
 ## 3 使用方法:
-以下2种选择任意一种
-### 3.1 MiraiCP-Plugin插件配合mcl使用
+
+### 3.1 如何使用MiraiCP SDK?
+#### 3.1.1 在demo里写
+从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP_CPP.zip文件夹并解压
+在demo.cpp中编写代码
+#### 3.1.2 在代码中加入MiraiCP sdk依赖
+从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP_CPP.zip文件夹并解压, 仅保留include文件夹
+在你的cmakelist中引入include作为子文件夹:
+```cmake
+# 增加MiraiCP依赖
+add_subdirectory(include)
+# 提取MiraiCP源代码文件
+get_property(SOURCE_FILES GLOBAL PROPERTY "MIRAICP_SOURCE_FILES")
+get_property(SOURCE_HEADERS GLOBAL PROPERTY "MIRAICP_SOURCE_HEADERS")
+get_property(SOURCE_PATH GLOBAL PROPERTY "MIRAICP_SOURCE_PATH")
+# 引入目录依赖
+include_directories(${SOURCE_PATH})
+```
+在构建动态链接库时加入依赖`${SOURCE_FILES}`和`${SOURCE_HEADERS}`，如:
+```cmake
+# 构建动态链接库
+add_library(
+        MiraiCP
+        SHARED
+        ${SOURCE_FILES}
+        ${SOURCE_HEADERS}
+)
+```
+### 3.2 启动SDK
+#### 3.2.1 使用loader直接使用
+适用于只在机器人上使用MiraiCP SDK插件
+0. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP-loader-*.jar(*号为版本)
+
+1. 在同目录下创建config.json作为配置文件
+
+2. 编写json:
+
+```json
+{
+  "accounts": [{
+    "id": qqid,
+    "passwords": "passwords密码",
+    "protocol":  "pad",
+    "heatBeat": "STAT_HB"
+  }],
+  "cppPath": "dll路径"
+}
+```
+其中
+
+- accounts可以有多个机器人账户，用逗号分隔
+- id为qq号
+- passwords为qq密码
+- protocol为可选配置项，配置内容为登录协议，可选值为:pad/phone/watch (默认为phone)
+- heatBeat也为可选配置项，配置内容为心跳策略，可选值为: STAT_HB/REGISTER/NONE (默认为state_hb)
+- cppPath为miraicp sdk生成的dll的路径，一般在sdk的cmake-build-debug文件夹下
+
+3. 使用java -jar MiraiCP-loader-*.jar 启动loader(*号为版本)
+
+#### 3.2.2 使用plugin作为mcl的插件使用
 本种方法适用于还需要加载别的mirai-console插件
-<details>
-<summary>展开</summary>
-	
 0. 首先下载启动器(mcl), 下载地址 -> [官方](https://github.com/iTXTech/mirai-console-loader/)
-1. 下载release中MiraiCP-Plugin.7z文件, 最新版([![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP?include_prereleases)](https://github.com/Nambers/MiraiCP/releases/))
-2. 复制压缩包根目录下的`.jar`文件留着下面有用(配套插件)
-3. 打开`cpp`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于cpp文件夹下的c++项目
-4. 在`procession.cpp`里自定义你自己的代码
-5. 生成.dll文件
-6. 留意`cpp/x64/Release/`(如果是vs x64 release生成)，`cpp/x64/Debug`(vs x64 debug生成)，`cpp/out`(vs cmake 生成)，`cpp/camke-debug-build`(clion cmake debug生成)这个路径下的`.dll`文件，留着下面有用
-7. 打开上面下载的mcl文件夹
-8. 把`.jar`文件(也就是配套插件)拷贝进mcl的plugin文件夹下
-9. 运行一次mcl，然后不管有无报错，不要登录，直接退出(目的是生成data路径)
-10. 打开mcl目录下的`data/miraiCP`路径(可能名字随着mirai版本的迭代会更改，包含MiraiCP即可)，把上面的.dll文件复制进来
-	**或**把.dll文件放到任意位置，然后在`data/miraiCP`(可能名字随着mirai版本的迭代会更改，包含MiraiCP即可)下创建一个`miraicp.txt`把.dll的绝对路径写进去并不要写其他东西
-11. 运行mcl
 
-</details>
+1. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP-plugin-*.mirai.jar(*号为版本)
 
-### 3.2 使用MiraiCP-Loader整合包
-本种方法适用于只加载MiraiCP插件
-<details>
-<summary>展开</summary>
-	
-1. 下载release中的MiraiCP-Loader.7z, 最新版([![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP?include_prereleases)](https://github.com/Nambers/MiraiCP/releases/))
-2. 打开`cpp`文件夹下的.sln文件从而打开vs的c++项目，或者用其他方式打开位于cpp文件夹下的c++项目
-3. 在`procession.cpp`里自定义你自己的代码
-4. 生成.dll文件
-5. 留意`cpp/x64/Release/`(如果是vs x64 release生成)，`cpp/x64/Debug`(vs x64 debug生成)，`cpp/out`(vs cmake 生成)，`cpp/camke-debug-build`(clion cmake debug生成)这个路径下的`.dll`文件，留着下面有用
-6. 更改config.json里的参数，格式如下:
-	```
-	{
-	"id": qqid账号,
-	"passwords": "passwords密码",
-	"cppPath": "dll路径",
-	"protocol":  "pad 协议选择: pad/phone/watch (可选，默认为phone)",
-	"heatBeat": "STAT_HB 心跳策略: STAT_HB/REGISTER/NONE (可选，默认为state_hb)"
-	}
-	```
-7. 运行run.bat
+2. 把该mirai.jar放到mcl的plugin路径下(如果没有plugin路径需要启动一次mcl)
 
-</details>
+3. 在mcl的路径下的data\miraiCP\路径中创建miraicp.txt里填写sdk生成的dll的路径，或者把sdk生成的dll复制进去(如果没有data\miraiCP路径需要启动一次mcl)
+
+4. 启动mcl
+
 
 **如果有其他问题，欢迎提交issue和提交PR贡献**
 
 # 更新方式
-1. 下载release包
-2. 覆盖旧的`.mirai.jar`插件或者`.jar`loader
-3. 把`cpp`文件夹下的全部单个文件覆盖(json和include文件夹不需要),主要为`pch.h`(预编译头文件),`pch.cpp`(dll入口点),`tools.h`(各种事件及对象类声明),`tools.cpp`(tools.h里的声明的实现),`constants.h`(常量表)
+0. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP.hpp和loader或plugin jar包
+
+1. 替换include/下的miraiCP.hpp
+
+2. 替换你的loader或plugin jar包
+
 # TODO
 查看[本项目的milestones里程碑](https://github.com/Nambers/MiraiCP/milestones)
 
