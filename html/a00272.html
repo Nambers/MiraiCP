@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 通过常量构建并发送小程序卡片</title>
+<title>MiraiCP: 构建聊天记录</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,34 +89,22 @@ $(document).ready(function(){initNavTree('a00272.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">通过常量构建并发送小程序卡片</div>  </div>
+<div class="title">构建聊天记录</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>小程序卡片 </p><dl class="section see"><dt>参见</dt><dd><a class="el" href="a00038.html">LightAppStyle1</a>, <a class="el" href="a00042.html" title="风格2">LightAppStyle2</a>, <a class="el" href="a00046.html" title="风格3">LightAppStyle3</a></dd></dl>
-<div class="fragment"><div class="line"><a name="a0"></a><a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a name="a1"></a><a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>([](<a name="_a2"></a><a class="code" href="a00202.html">GroupMessageEvent</a> e) {</div>
-<div class="line">    <span class="comment">//修改里面的属性从而自定义</span></div>
-<div class="line">    <a name="_a3"></a><a class="code" href="a00038.html">LightAppStyle1</a> a = <a class="code" href="a00038.html">LightAppStyle1</a>();</div>
-<div class="line">    <a name="_a4"></a><a class="code" href="a00042.html">LightAppStyle2</a> b = <a class="code" href="a00042.html">LightAppStyle2</a>();</div>
-<div class="line">    <a name="_a5"></a><a class="code" href="a00046.html">LightAppStyle3</a> c = <a class="code" href="a00046.html">LightAppStyle3</a>();</div>
-<div class="line">    e.<a name="a6"></a><a class="code" href="a00202.html#acbc031790011ba7b520a21aec2299f08">group</a>.SendMiraiCode(<a name="_a7"></a><a class="code" href="a00142.html">LightApp</a>(a).toMiraiCode());</div>
-<div class="line">    e.<a class="code" href="a00202.html#acbc031790011ba7b520a21aec2299f08">group</a>.SendMiraiCode(<a class="code" href="a00142.html">LightApp</a>(b).toMiraiCode());</div>
-<div class="line">    e.<a class="code" href="a00202.html#acbc031790011ba7b520a21aec2299f08">group</a>.SendMiraiCode(<a class="code" href="a00142.html">LightApp</a>(c).toMiraiCode());</div>
-<div class="line"> });</div>
-<div class="ttc" id="aa00011_html_a478af16c6688220a7434630eb9101d74"><div class="ttname"><a href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a></div><div class="ttdeci">Event * procession</div><div class="ttdoc">全局事件指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00012">pch.cpp:12</a></div></div>
-<div class="ttc" id="aa00038_html"><div class="ttname"><a href="a00038.html">LightAppStyle1</a></div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00054">constants.h:54</a></div></div>
-<div class="ttc" id="aa00042_html"><div class="ttname"><a href="a00042.html">LightAppStyle2</a></div><div class="ttdoc">风格2</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00070">constants.h:70</a></div></div>
-<div class="ttc" id="aa00046_html"><div class="ttname"><a href="a00046.html">LightAppStyle3</a></div><div class="ttdoc">风格3</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00082">constants.h:82</a></div></div>
-<div class="ttc" id="aa00142_html"><div class="ttname"><a href="a00142.html">LightApp</a></div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00964">tools.h:964</a></div></div>
-<div class="ttc" id="aa00202_html"><div class="ttname"><a href="a00202.html">GroupMessageEvent</a></div><div class="ttdoc">群消息事件声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01592">tools.h:1592</a></div></div>
-<div class="ttc" id="aa00202_html_acbc031790011ba7b520a21aec2299f08"><div class="ttname"><a href="a00202.html#acbc031790011ba7b520a21aec2299f08">GroupMessageEvent::group</a></div><div class="ttdeci">Group group</div><div class="ttdoc">来源群</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01595">tools.h:1595</a></div></div>
-<div class="ttc" id="aa00242_html_ad3d76f3c8bd243c17a82a24c5bd135c0"><div class="ttname"><a href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l02073">tools.h:2073</a></div></div>
+<p>构建一条聊天记录 第一个参数是聊天记录发生的地方 然后是每条信息</p>
+<div class="fragment"><div class="line">*ForwardMessage(&amp;e.group,</div>
+<div class="line"> {</div>
+<div class="line">    ForwardNode(1930893235, <span class="stringliteral">&quot;Eritque arcus&quot;</span>, <span class="stringliteral">&quot;hahaha&quot;</span>, 1),</div>
+<div class="line">    ForwardNode(1930893235, <span class="stringliteral">&quot;Eritque arcus&quot;</span>, <span class="stringliteral">&quot;hahaha&quot;</span>, -1)</div>
+<div class="line"> }).sendTo(&amp;e.group);</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

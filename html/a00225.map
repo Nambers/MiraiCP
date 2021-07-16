@@ -1,4 +1,4 @@
-<map id="RecallEvent" name="RecallEvent">
-<area shape="rect" id="node1" title="撤回信息" alt="" coords="5,160,224,501"/>
-<area shape="rect" id="node2" href="$a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="39,5,190,112"/>
+<map id="MiraiCP::GroupTempMessageEvent" name="MiraiCP::GroupTempMessageEvent">
+<area shape="rect" id="node1" title="群临时会话" alt="" coords="5,160,236,369"/>
+<area shape="rect" id="node2" href="$a00190.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="49,5,192,112"/>
 </map>

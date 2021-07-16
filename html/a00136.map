@@ -1,6 +1,4 @@
-<map id="Contact" name="Contact">
-<area shape="rect" id="node1" title="group, friend, member的父类" alt="" coords="71,175,289,853"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,136,83"/>
-<area shape="rect" id="node3" title=" " alt="" coords="161,5,199,83"/>
-<area shape="rect" id="node4" title=" " alt="" coords="227,5,282,83"/>
+<map id="MiraiCP::dinfo" name="MiraiCP::dinfo">
+<area shape="rect" id="node1" title="下载信息" alt="" coords="5,175,108,252"/>
+<area shape="rect" id="node2" title=" " alt="" coords="29,5,84,83"/>
 </map>

@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['ondisable_469',['onDisable',['../a00017.html#a6a8d17ca0478ca5e5e061c280faa8791',1,'onDisable():&#160;Procession.cpp'],['../a00026.html#a6a8d17ca0478ca5e5e061c280faa8791',1,'onDisable():&#160;Procession.cpp']]],
-  ['onenable_470',['onEnable',['../a00017.html#af6b40412027c7beb9eb51bbfed51aff6',1,'onEnable():&#160;Procession.cpp'],['../a00026.html#af6b40412027c7beb9eb51bbfed51aff6',1,'onEnable():&#160;Procession.cpp']]],
-  ['operator_2b_471',['operator+',['../a00070.html#af50c8e268885cb5a30639cdfd93ab69a',1,'MiraiCode::operator+(MiraiCodeable *a)'],['../a00070.html#ad46c00f666302f374a93226b5c45f95d',1,'MiraiCode::operator+(std::string a)']]],
-  ['operator_2b_3d_472',['operator+=',['../a00070.html#ad855466d9041e36a3e74c20050de286f',1,'MiraiCode::operator+=(MiraiCodeable *a)'],['../a00070.html#a88eae07053c7a244439ac2dc0bede763',1,'MiraiCode::operator+=(std::string a)']]],
-  ['operator_3d_473',['operator=',['../a00070.html#ae0f3c44dd9a20a6551e5b8eb5eff4cf3',1,'MiraiCode::operator=(MiraiCodeable *a)'],['../a00070.html#ae808b01b772ac73243fdff4fcb3e5846',1,'MiraiCode::operator=(std::string a)']]]
+  ['ondisable_476',['onDisable',['../a00074.html#a3ecc2c479d1ca6785e7cdcb0738c1597',1,'MiraiCP::CPPPlugin']]],
+  ['onenable_477',['onEnable',['../a00074.html#ad3d1188d089ab0fc945475f988c64fa7',1,'MiraiCP::CPPPlugin']]],
+  ['operator_2b_478',['operator+',['../a00050.html#aced348510d8532bf2a101cd50a9fae19',1,'MiraiCP::MiraiCode::operator+(MiraiCodeable *a)'],['../a00050.html#a0eaa447d03e47e561dbde4748ce12623',1,'MiraiCP::MiraiCode::operator+(std::string a)']]],
+  ['operator_2b_3d_479',['operator+=',['../a00050.html#ad641a5cab007205e87648892f2db354e',1,'MiraiCP::MiraiCode::operator+=(MiraiCodeable *a)'],['../a00050.html#af2064b5171af438008ae1c88c04d0352',1,'MiraiCP::MiraiCode::operator+=(std::string a)']]],
+  ['operator_3d_480',['operator=',['../a00050.html#a5595fb1cdc339c213531bd274dbc9d3c',1,'MiraiCP::MiraiCode::operator=(MiraiCodeable *a)'],['../a00050.html#a21bfa33a71f41ee2ef3728cbb8f7f1de',1,'MiraiCP::MiraiCode::operator=(std::string a)']]]
 ];

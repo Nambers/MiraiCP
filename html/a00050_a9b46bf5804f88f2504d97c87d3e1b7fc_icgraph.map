@@ -1,0 +1,7 @@
+<map id="MiraiCP::MiraiCode::toString" name="MiraiCP::MiraiCode::toString">
+<area shape="rect" id="node1" title="输出当前内容, 会自动转码" alt="" coords="236,100,371,141"/>
+<area shape="rect" id="node2" href="$a00054.html#a56c3100d8113c0d1782f09a8576dba0a" title="发送错误(error级日志)" alt="" coords="11,5,182,47"/>
+<area shape="rect" id="node3" href="$a00054.html#aea590d4519acaaaf6fea68e44bf9306e" title="发送普通(info级日志)" alt="" coords="11,71,182,112"/>
+<area shape="rect" id="node4" href="$a00130.html#a896ade30ad03045c2c32261560cc214c" title="发送纯文本信息" alt="" coords="5,137,188,163"/>
+<area shape="rect" id="node5" href="$a00054.html#a3600946c76b2b6f63a3865d186209770" title="发送警告(warning级日志)" alt="" coords="11,188,182,229"/>
+</map>

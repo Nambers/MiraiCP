@@ -1,0 +1,6 @@
+<map id="MiraiCP::RemoteFile::deserializeFromString" name="MiraiCP::RemoteFile::deserializeFromString">
+<area shape="rect" id="node1" title=" " alt="" coords="5,39,161,80"/>
+<area shape="rect" id="node2" href="$a00054.html#ace9bbedca050fc72d1592440d16bd8f7" title="发送错误(error级日志)" alt="" coords="209,5,380,47"/>
+<area shape="rect" id="node4" href="$a00146.html#a5348ce774c86f271380355e239383bfd" title="构造远程(群)文件" alt="" coords="223,71,366,112"/>
+<area shape="rect" id="node3" href="$a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="428,5,599,47"/>
+</map>

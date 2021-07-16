@@ -1,9 +1,5 @@
-<map id="tools.h" name="tools.h">
-<area shape="rect" id="node1" title=" " alt="" coords="236,5,297,32"/>
-<area shape="rect" id="node2" href="$a00014.html" title=" " alt="" coords="239,80,294,107"/>
-<area shape="rect" id="node7" href="$a00023.html" title=" " alt="" coords="461,155,536,181"/>
-<area shape="rect" id="node3" href="$a00002.html" title=" " alt="" coords="5,155,96,181"/>
-<area shape="rect" id="node4" href="$a00005.html" title=" " alt="" coords="120,155,208,181"/>
-<area shape="rect" id="node5" href="$a00011.html" title=" " alt="" coords="233,155,301,181"/>
-<area shape="rect" id="node6" href="$a00017.html" title=" " alt="" coords="325,155,437,181"/>
+<map id="MiraiCP::ThreadManager" name="MiraiCP::ThreadManager">
+<area shape="rect" id="node1" title=" " alt="" coords="65,160,230,369"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,13,121,90"/>
+<area shape="rect" id="node3" title=" " alt="" coords="146,5,317,97"/>
 </map>

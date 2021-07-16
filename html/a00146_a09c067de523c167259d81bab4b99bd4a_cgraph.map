@@ -1,0 +1,5 @@
+<map id="MiraiCP::RemoteFile::toMiraiCode" name="MiraiCP::RemoteFile::toMiraiCode">
+<area shape="rect" id="node1" title="仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换" alt="" coords="5,5,148,47"/>
+<area shape="rect" id="node2" href="$a00038.html#a01f4fe41f8bef55b95953750f5cfb0c2" title="转义miraicode格式" alt="" coords="196,5,367,47"/>
+<area shape="rect" id="node3" href="$a00038.html#aa8a5d5266e279711effa33d3cefecaa1" title="替换全部在一个字符串中." alt="" coords="415,13,572,39"/>
+</map>

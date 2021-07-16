@@ -1,5 +1,4 @@
-<map id="Logger::handler" name="Logger::handler">
-<area shape="rect" id="node1" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="28,160,139,237"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,13,52,90"/>
-<area shape="rect" id="node3" title=" " alt="" coords="77,5,199,97"/>
+<map id="MiraiCP::MiraiCPException" name="MiraiCP::MiraiCPException">
+<area shape="rect" id="node1" title="总异常抽象类" alt="" coords="5,131,185,237"/>
+<area shape="rect" id="node2" title=" " alt="" coords="43,5,147,83"/>
 </map>

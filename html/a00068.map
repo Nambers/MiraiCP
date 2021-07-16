@@ -1,4 +1,8 @@
-<map id="MiraiCode" name="MiraiCode">
-<area shape="rect" id="node1" title="miraicode字符串" alt="" coords="5,145,232,487"/>
-<area shape="rect" id="node2" title=" " alt="" coords="91,5,146,83"/>
+<map id="MiraiCP::PluginLogger" name="MiraiCP::PluginLogger">
+<area shape="rect" id="node1" title="插件logger" alt="" coords="76,837,255,959"/>
+<area shape="rect" id="node2" href="$a00054.html" title=" " alt="" coords="73,315,257,788"/>
+<area shape="rect" id="node3" href="$a00058.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="5,160,176,252"/>
+<area shape="rect" id="node4" title=" " alt="" coords="13,13,59,90"/>
+<area shape="rect" id="node5" title=" " alt="" coords="84,5,207,97"/>
+<area shape="rect" id="node6" title=" " alt="" coords="200,167,280,245"/>
 </map>

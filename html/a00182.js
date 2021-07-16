@@ -1,10 +1,9 @@
 var a00182 =
 [
-    [ "Member", "a00182.html#a1313aa1274273237f2dbfaa053a9d23e", null ],
-    [ "Member", "a00182.html#a51e0e2424f6662912d44fbdb6b18c83a", null ],
-    [ "getPermission", "a00182.html#a37b4986d11cd5c950d92dbc5d9296684", null ],
-    [ "Kick", "a00182.html#ae23c4a4ff625eb0c29f27a0c66a76aee", null ],
-    [ "Mute", "a00182.html#a58a543e956ab5c1d77f29a2c15e675cb", null ],
-    [ "refreshInfo", "a00182.html#a8934688d50f82adfeb931f573b1889c8", null ],
-    [ "permission", "a00182.html#a34070a5524ede3ecb35c6ea7dba21f9f", null ]
+    [ "entranceAnnouncement", "a00182.html#a574a2f3fe30fb9dfaed918418c7de6b7", null ],
+    [ "isAllowMemberInvite", "a00182.html#adccf862ef0e617a47afb0df587edf59f", null ],
+    [ "isAnonymousChatEnabled", "a00182.html#ab0bf5bfb9c998204ca668855c09a9b8a", null ],
+    [ "isAutoApproveEnabled", "a00182.html#a625ca6d44d9d06a2af48cab1962e73fa", null ],
+    [ "isMuteAll", "a00182.html#a6bfb635769917d4f2c84c4e9cfc813d0", null ],
+    [ "name", "a00182.html#ae29352ebb0325fd3b035b1c65be1092f", null ]
 ];

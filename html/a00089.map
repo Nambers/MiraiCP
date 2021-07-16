@@ -1,5 +1,5 @@
-<map id="UploadException" name="UploadException">
-<area shape="rect" id="node1" title=" " alt="" coords="5,285,160,407"/>
-<area shape="rect" id="node2" href="$a00086.html" title="总异常抽象类" alt="" coords="16,131,149,237"/>
-<area shape="rect" id="node3" title=" " alt="" coords="31,5,135,83"/>
+<map id="MiraiCP::BotException" name="MiraiCP::BotException">
+<area shape="rect" id="node1" title=" " alt="" coords="5,285,281,421"/>
+<area shape="rect" id="node2" href="$a00078.html" title="总异常抽象类" alt="" coords="53,131,233,237"/>
+<area shape="rect" id="node3" title=" " alt="" coords="91,5,195,83"/>
 </map>

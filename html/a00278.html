@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 在事件中构建Member对象</title>
+<title>MiraiCP: 在事件中构建Group对象</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,19 +89,17 @@ $(document).ready(function(){initNavTree('a00278.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">在事件中构建Member对象</div>  </div>
+<div class="title">在事件中构建Group对象</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>构建群成员对象 </p><dl class="params"><dt>参数</dt><dd>
+<p>构建以群号构建群对象 </p><dl class="params"><dt>参数</dt><dd>
   <table class="params">
-    <tr><td class="paramname">qqid</td><td>该成员q号 </td></tr>
-    <tr><td class="paramname">groupid</td><td>所在群号 </td></tr>
+    <tr><td class="paramname">groupid</td><td>群号 </td></tr>
     <tr><td class="paramname">botid</td><td>机器人id</td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="_a0"></a><a class="code" href="a00182.html">Member</a>(this.sender.id, <span class="keyword">this</span>.group.id, <span class="keyword">this</span>.bot.id)</div>
-<div class="ttc" id="aa00182_html"><div class="ttname"><a href="a00182.html">Member</a></div><div class="ttdoc">群成员类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01343">tools.h:1343</a></div></div>
+<div class="fragment"><div class="line">Group(this.group.id, <span class="keyword">this</span>.bot.id) </div>
 </div><!-- fragment --><div class="fragment"></div><!-- fragment --><p>对象 </p>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -109,7 +107,7 @@ $(document).ready(function(){initNavTree('a00278.html',''); initResizable(); });
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

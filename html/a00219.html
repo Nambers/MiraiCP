@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,27 +89,26 @@ $(document).ready(function(){initNavTree('a00222.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">MemberLeaveEvent 成员列表</div>  </div>
+<div class="title">MiraiCP::BotJoinGroupEvent 成员列表</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>成员的完整列表，这些成员属于 <a class="el" href="a00222.html">MemberLeaveEvent</a>,包括所有继承而来的类成员</p>
+<p>成员的完整列表，这些成员属于 <a class="el" href="a00222.html">MiraiCP::BotJoinGroupEvent</a>,包括所有继承而来的类成员</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83">bot</a></td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a>(unsigned long long botid)</td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00198.html#a1571ef8d345a7a94bedecd48df4923c7">botlogger</a></td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00222.html#a9be3eefd061ba47025d683779f6ed008">group</a></td><td class="entry"><a class="el" href="a00222.html">MemberLeaveEvent</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00222.html#a8dbb981f7e9b4ecaf618a443999385ce">memberid</a></td><td class="entry"><a class="el" href="a00222.html">MemberLeaveEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00222.html#ac714a3add4ac210728a26acd8bdf6f00">MemberLeaveEvent</a>(unsigned long long int botid, const int type, const unsigned long long memberid, const Group &amp;group, const unsigned long long &amp;operaterid)</td><td class="entry"><a class="el" href="a00222.html">MemberLeaveEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00222.html#afe223b1e1d8a2591c013995eb4466184">operaterid</a></td><td class="entry"><a class="el" href="a00222.html">MemberLeaveEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00222.html#a222486c46fa7a56db8a06906b145f42b">type</a></td><td class="entry"><a class="el" href="a00222.html">MemberLeaveEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00190.html#a48e9bf99cfedf6627c89de58f19fdb88">bot</a></td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00190.html#abfec0bacf14ff5a3a31ccf3c86feb53b">BotEvent</a>(unsigned long long botid)</td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00222.html#aa9c3c7b832046fa1182cf476fd1d0be6">BotJoinGroupEvent</a>(unsigned long long int botid, const int type, Group group, const unsigned long long inviter)</td><td class="entry"><a class="el" href="a00222.html">MiraiCP::BotJoinGroupEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00190.html#a0ac8dff80b65054aecebc9ca15c4c633">botlogger</a></td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00222.html#ad3643d9978133be026420f1d71594ec7">group</a></td><td class="entry"><a class="el" href="a00222.html">MiraiCP::BotJoinGroupEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00222.html#a2f855c3472297ffea5c0b72497dcb58d">inviterid</a></td><td class="entry"><a class="el" href="a00222.html">MiraiCP::BotJoinGroupEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00222.html#a311d4f8b15f51422e4dc71c773b72ed7">type</a></td><td class="entry"><a class="el" href="a00222.html">MiraiCP::BotJoinGroupEvent</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:17 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:06 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

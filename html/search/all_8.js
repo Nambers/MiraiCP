@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['handler_103',['handler',['../a00078.html',1,'Logger']]],
-  ['head_104',['head',['../a00242.html#a5109056bb230c3bfaed03b23d6a6dd88',1,'Event']]]
+  ['handler_106',['handler',['../a00058.html',1,'MiraiCP::Logger_interface']]],
+  ['head_107',['head',['../a00234.html#a7cf4fe7e9b855db6d1dc32d1ac102a65',1,'MiraiCP::Event']]]
 ];

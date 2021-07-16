@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['_5favatarurl_0',['_avatarUrl',['../a00138.html#a92b8feb1a780637b71e06f3f9e954043',1,'Contact::_avatarUrl()'],['../a00174.html#a97e1d4b00be61ae2afe9d4640b1b47e9',1,'Bot::_avatarUrl()']]],
-  ['_5fbotid_1',['_botid',['../a00138.html#a88b041d798fb05e1347c51d149c12a21',1,'Contact']]],
-  ['_5fgroupid_2',['_groupid',['../a00138.html#ad10855c0071226743dffc553dc913b88',1,'Contact']]],
-  ['_5fid_3',['_id',['../a00138.html#a12ab960a72b55b8e7562d04d0b4bd6e0',1,'Contact']]],
-  ['_5fnick_4',['_nick',['../a00174.html#aa980911dbb3047b33967a113fbd46884',1,'Bot']]],
-  ['_5fnickornamecard_5',['_nickOrNameCard',['../a00138.html#ae8c0a3a8718a84d9766d528df278ad4b',1,'Contact']]],
-  ['_5fthreads_6',['_threads',['../a00050.html#a6a4ad09cc87c5753e2a2154f3574efc4',1,'threadManager']]],
-  ['_5ftype_7',['_type',['../a00138.html#a7841db9af58406a50d53d0ad6f7fa374',1,'Contact']]]
+  ['_5favatarurl_0',['_avatarUrl',['../a00130.html#a748809d74d0dc9c4d79a168ca582cfb9',1,'MiraiCP::Contact::_avatarUrl()'],['../a00166.html#a2347f261667afe42cbe52d1c38d6618b',1,'MiraiCP::Bot::_avatarUrl()']]],
+  ['_5fbotid_1',['_botid',['../a00130.html#a5ffc048e182acbd6fe41fa9d7004a856',1,'MiraiCP::Contact']]],
+  ['_5fgroupid_2',['_groupid',['../a00130.html#a3f7d44cf84e4a01f13cd0c0b4f297801',1,'MiraiCP::Contact']]],
+  ['_5fid_3',['_id',['../a00130.html#a31a1408afd2fd375c920dda2bbc32382',1,'MiraiCP::Contact']]],
+  ['_5fnick_4',['_nick',['../a00166.html#ad38f34b4d2230de460573afd5a967e74',1,'MiraiCP::Bot']]],
+  ['_5fnickornamecard_5',['_nickOrNameCard',['../a00130.html#a41fcfa82adcc643cbb27b9103904586f',1,'MiraiCP::Contact']]],
+  ['_5fthreads_6',['_threads',['../a00030.html#a3f572549eeeaab41db0878d02c70e048',1,'MiraiCP::ThreadManager']]],
+  ['_5ftype_7',['_type',['../a00130.html#a13537762efd9858e3cb584ef555c9597',1,'MiraiCP::Contact']]]
 ];

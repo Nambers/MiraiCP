@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['gioperation_641',['Gioperation',['../a00062.html#a61d90b56109900c1008e143a5918c254afa2fd9803c7578138fdc95a77d7860b8',1,'Config']]],
-  ['groupsetting_642',['GroupSetting',['../a00062.html#a61d90b56109900c1008e143a5918c254a1a9151cb7f78003745d8680870199536',1,'Config']]]
+  ['gioperation_654',['Gioperation',['../a00042.html#a1bc3c425340774687507c1683967231bad85fdd72f6f702f6fcffb955e9c4a6f9',1,'MiraiCP::Config']]],
+  ['groupsetting_655',['GroupSetting',['../a00042.html#a1bc3c425340774687507c1683967231ba806acacb0a8a10dd660271ea89f18070',1,'MiraiCP::Config']]]
 ];

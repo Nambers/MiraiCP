@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['updatesetting_512',['updateSetting',['../a00186.html#a5201b9f4030729d9384b0e01603c0513',1,'Group']]],
-  ['uploadexception_513',['UploadException',['../a00090.html#a30511802b558b865bac3a7a118a44193',1,'UploadException']]],
-  ['uploadimg_514',['uploadImg',['../a00138.html#a3c3699a0d797da44bd30e12153a140f3',1,'Contact']]],
-  ['uploadimg0_515',['uploadImg0',['../a00158.html#a34e8b356a0298a68876c21b64373d5af',1,'LowLevelAPI']]]
+  ['updatesetting_523',['updateSetting',['../a00178.html#a60012c688aeb0c0c22ed9cb8e8981af9',1,'MiraiCP::Group']]],
+  ['uploadexception_524',['UploadException',['../a00082.html#abd32df43361dd3a05c6a49ffba3723b6',1,'MiraiCP::UploadException']]],
+  ['uploadimg_525',['uploadImg',['../a00130.html#aa9188b25f70ae5f8f76281423cb30f71',1,'MiraiCP::Contact']]],
+  ['uploadimg0_526',['uploadImg0',['../a00150.html#af4527c7fa63f63ba42cbfd44e3c72bdf',1,'MiraiCP::LowLevelAPI']]]
 ];

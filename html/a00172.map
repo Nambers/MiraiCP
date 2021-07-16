@@ -1,6 +1,7 @@
-<map id="Bot" name="Bot">
-<area shape="rect" id="node1" title="当前bot账号信息" alt="" coords="116,160,331,457"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,172,83"/>
-<area shape="rect" id="node3" title=" " alt="" coords="196,5,251,83"/>
-<area shape="rect" id="node4" title=" " alt="" coords="296,5,343,83"/>
+<map id="MiraiCP::Member" name="MiraiCP::Member">
+<area shape="rect" id="node1" title="群成员类声明" alt="" coords="220,903,415,1200"/>
+<area shape="rect" id="node2" href="$a00130.html" title="group, friend, member的父类" alt="" coords="104,175,323,853"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,5,136,83"/>
+<area shape="rect" id="node4" title=" " alt="" coords="345,5,383,83"/>
+<area shape="rect" id="node5" title=" " alt="" coords="161,5,215,83"/>
 </map>

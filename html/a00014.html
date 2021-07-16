@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: pch.h 文件参考</title>
+<title>MiraiCP: MiraiCP::PluginConfig类 参考</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -88,78 +88,313 @@ $(document).ready(function(){initNavTree('a00014.html',''); initResizable(); });
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="a00011.html">所有成员列表</a>  </div>
   <div class="headertitle">
-<div class="title">pch.h 文件参考</div>  </div>
+<div class="title">MiraiCP::PluginConfig类 参考</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;iostream&gt;</code><br />
-<code>#include &quot;<a class="el" href="a00008_source.html">framework.h</a>&quot;</code><br />
-<code>#include &lt;string&gt;</code><br />
-<code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;functional&gt;</code><br />
-<code>#include &quot;json.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="a00020_source.html">tech_eritquearcus_miraicp_shared_CPP_lib.h</a>&quot;</code><br />
-<code>#include &quot;include/jni.h&quot;</code><br />
-<code>#include &lt;sstream&gt;</code><br />
-<code>#include &lt;regex&gt;</code><br />
-<code>#include &lt;thread&gt;</code><br />
-<code>#include &lt;map&gt;</code><br />
-<code>#include &lt;mutex&gt;</code><br />
-<code>#include &quot;<a class="el" href="a00002_source.html">constants.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="a00026_source.html">tools.h</a>&quot;</code><br />
-</div><div class="textblock"><div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> pch.h 的引用(Include)关系图:</div>
+
+<p>插件信息  
+ <a href="a00014.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="a00002_source.html">miraiCP.hpp</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> MiraiCP::PluginConfig 的协作图:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00015.png" border="0" usemap="#apch_8h" alt=""/></div>
-<map name="apch_8h" id="apch_8h">
-<area shape="rect" title=" " alt="" coords="895,5,950,32"/>
-<area shape="rect" title=" " alt="" coords="5,87,77,114"/>
-<area shape="rect" href="a00008.html" title=" " alt="" coords="102,87,194,114"/>
-<area shape="rect" title=" " alt="" coords="218,87,273,114"/>
-<area shape="rect" title=" " alt="" coords="297,87,353,114"/>
-<area shape="rect" title=" " alt="" coords="377,87,455,114"/>
-<area shape="rect" title=" " alt="" coords="479,87,550,114"/>
-<area shape="rect" href="a00020.html" title=" " alt="" coords="574,80,749,121"/>
-<area shape="rect" title=" " alt="" coords="773,87,864,114"/>
-<area shape="rect" title=" " alt="" coords="888,87,957,114"/>
-<area shape="rect" title=" " alt="" coords="982,87,1037,114"/>
-<area shape="rect" title=" " alt="" coords="1061,87,1120,114"/>
-<area shape="rect" title=" " alt="" coords="1145,87,1191,114"/>
-<area shape="rect" title=" " alt="" coords="1216,87,1275,114"/>
-<area shape="rect" href="a00002.html" title=" " alt="" coords="1299,87,1389,114"/>
-<area shape="rect" href="a00026.html" title=" " alt="" coords="1413,87,1475,114"/>
-<area shape="rect" title=" " alt="" coords="107,169,189,196"/>
-<area shape="rect" title=" " alt="" coords="638,169,685,196"/>
+<div class="center"><img src="a00012.png" border="0" usemap="#a_mirai_c_p_1_1_plugin_config_coll__map" alt="Collaboration graph"/></div>
+<map name="a_mirai_c_p_1_1_plugin_config_coll__map" id="a_mirai_c_p_1_1_plugin_config_coll__map">
+<area shape="rect" title="插件信息" alt="" coords="5,204,188,384"/>
+<area shape="rect" title=" " alt="" coords="69,5,124,83"/>
 </map>
 </div>
-</div><div class="textblock"><div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> 此图展示该文件直接或间接的被哪些文件引用了:</div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aaf252a00223d3125f1f5e5a62dc6574c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00014.html#aaf252a00223d3125f1f5e5a62dc6574c">PluginConfig</a> (std::string <a class="el" href="a00014.html#ad54904ede1b73aa9a0a5f18c864e51a8">name</a>, std::string <a class="el" href="a00014.html#a475a12609b21a8845ab54a19a65dbe2c">version</a>, std::string <a class="el" href="a00014.html#adfde8de6894e01cde1338c1bc328c28c">author</a>, std::string <a class="el" href="a00014.html#a138a65290842e93458a325294dd950ba">description</a>=&quot;&quot;, std::string <a class="el" href="a00014.html#a85531186a0f3b22e22df5ee2e723f344">time</a>=&quot;&quot;)</td></tr>
+<tr class="separator:aaf252a00223d3125f1f5e5a62dc6574c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad48276fd9ea1eea0b083922334a49434"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00010.html#ad2394aaabcd94373cf32f4a14845a5ec">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00014.html#ad48276fd9ea1eea0b083922334a49434">serialize</a> () const</td></tr>
+<tr class="separator:ad48276fd9ea1eea0b083922334a49434"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35393153cde2031c1cefa829f335b369"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00014.html#a35393153cde2031c1cefa829f335b369">serialize2string</a> () const</td></tr>
+<tr class="separator:a35393153cde2031c1cefa829f335b369"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ad54904ede1b73aa9a0a5f18c864e51a8"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00014.html#ad54904ede1b73aa9a0a5f18c864e51a8">name</a></td></tr>
+<tr class="memdesc:ad54904ede1b73aa9a0a5f18c864e51a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">插件名称  <a href="a00014.html#ad54904ede1b73aa9a0a5f18c864e51a8">更多...</a><br /></td></tr>
+<tr class="separator:ad54904ede1b73aa9a0a5f18c864e51a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a475a12609b21a8845ab54a19a65dbe2c"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00014.html#a475a12609b21a8845ab54a19a65dbe2c">version</a></td></tr>
+<tr class="memdesc:a475a12609b21a8845ab54a19a65dbe2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">插件版本  <a href="a00014.html#a475a12609b21a8845ab54a19a65dbe2c">更多...</a><br /></td></tr>
+<tr class="separator:a475a12609b21a8845ab54a19a65dbe2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfde8de6894e01cde1338c1bc328c28c"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00014.html#adfde8de6894e01cde1338c1bc328c28c">author</a></td></tr>
+<tr class="memdesc:adfde8de6894e01cde1338c1bc328c28c"><td class="mdescLeft">&#160;</td><td class="mdescRight">插件作者(及联系方式)  <a href="a00014.html#adfde8de6894e01cde1338c1bc328c28c">更多...</a><br /></td></tr>
+<tr class="separator:adfde8de6894e01cde1338c1bc328c28c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a138a65290842e93458a325294dd950ba"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00014.html#a138a65290842e93458a325294dd950ba">description</a></td></tr>
+<tr class="memdesc:a138a65290842e93458a325294dd950ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">[optional]插件描述  <a href="a00014.html#a138a65290842e93458a325294dd950ba">更多...</a><br /></td></tr>
+<tr class="separator:a138a65290842e93458a325294dd950ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85531186a0f3b22e22df5ee2e723f344"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00014.html#a85531186a0f3b22e22df5ee2e723f344">time</a></td></tr>
+<tr class="memdesc:a85531186a0f3b22e22df5ee2e723f344"><td class="mdescLeft">&#160;</td><td class="mdescRight">[optional]构建时间  <a href="a00014.html#a85531186a0f3b22e22df5ee2e723f344">更多...</a><br /></td></tr>
+<tr class="separator:a85531186a0f3b22e22df5ee2e723f344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>插件信息 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00030">30</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aaf252a00223d3125f1f5e5a62dc6574c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf252a00223d3125f1f5e5a62dc6574c">&#9670;&nbsp;</a></span>PluginConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">MiraiCP::PluginConfig::PluginConfig </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>author</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>description</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>time</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00042">42</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                                                                      : <a class="code" href="a00014.html#ad54904ede1b73aa9a0a5f18c864e51a8">name</a>(std::move(<a class="code" href="a00014.html#ad54904ede1b73aa9a0a5f18c864e51a8">name</a>)), <a class="code" href="a00014.html#a475a12609b21a8845ab54a19a65dbe2c">version</a>(std::move(<a class="code" href="a00014.html#a475a12609b21a8845ab54a19a65dbe2c">version</a>)),</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                                                                                          <a class="code" href="a00014.html#adfde8de6894e01cde1338c1bc328c28c">author</a>(std::move(<a class="code" href="a00014.html#adfde8de6894e01cde1338c1bc328c28c">author</a>)), <a class="code" href="a00014.html#a138a65290842e93458a325294dd950ba">description</a>(std::move(<a class="code" href="a00014.html#a138a65290842e93458a325294dd950ba">description</a>)),</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                                                                                          <a class="code" href="a00014.html#a85531186a0f3b22e22df5ee2e723f344">time</a>(std::move(<a class="code" href="a00014.html#a85531186a0f3b22e22df5ee2e723f344">time</a>)) {}</div>
+<div class="ttc" id="aa00014_html_a138a65290842e93458a325294dd950ba"><div class="ttname"><a href="a00014.html#a138a65290842e93458a325294dd950ba">MiraiCP::PluginConfig::description</a></div><div class="ttdeci">const std::string description</div><div class="ttdoc">[optional]插件描述</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00039">miraiCP.hpp:39</a></div></div>
+<div class="ttc" id="aa00014_html_a475a12609b21a8845ab54a19a65dbe2c"><div class="ttname"><a href="a00014.html#a475a12609b21a8845ab54a19a65dbe2c">MiraiCP::PluginConfig::version</a></div><div class="ttdeci">const std::string version</div><div class="ttdoc">插件版本</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00035">miraiCP.hpp:35</a></div></div>
+<div class="ttc" id="aa00014_html_a85531186a0f3b22e22df5ee2e723f344"><div class="ttname"><a href="a00014.html#a85531186a0f3b22e22df5ee2e723f344">MiraiCP::PluginConfig::time</a></div><div class="ttdeci">const std::string time</div><div class="ttdoc">[optional]构建时间</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00041">miraiCP.hpp:41</a></div></div>
+<div class="ttc" id="aa00014_html_ad54904ede1b73aa9a0a5f18c864e51a8"><div class="ttname"><a href="a00014.html#ad54904ede1b73aa9a0a5f18c864e51a8">MiraiCP::PluginConfig::name</a></div><div class="ttdeci">const std::string name</div><div class="ttdoc">插件名称</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00033">miraiCP.hpp:33</a></div></div>
+<div class="ttc" id="aa00014_html_adfde8de6894e01cde1338c1bc328c28c"><div class="ttname"><a href="a00014.html#adfde8de6894e01cde1338c1bc328c28c">MiraiCP::PluginConfig::author</a></div><div class="ttdeci">const std::string author</div><div class="ttdoc">插件作者(及联系方式)</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00037">miraiCP.hpp:37</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad48276fd9ea1eea0b083922334a49434"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad48276fd9ea1eea0b083922334a49434">&#9670;&nbsp;</a></span>serialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="a00010.html#ad2394aaabcd94373cf32f4a14845a5ec">json</a> MiraiCP::PluginConfig::serialize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l02894">2894</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l02894"></a><span class="lineno"> 2894</span>&#160;                                       {</div>
+<div class="line"><a name="l02895"></a><span class="lineno"> 2895</span>&#160;        <a class="code" href="a00010.html#ad2394aaabcd94373cf32f4a14845a5ec">json</a> j;</div>
+<div class="line"><a name="l02896"></a><span class="lineno"> 2896</span>&#160;        j[<span class="stringliteral">&quot;name&quot;</span>] = <a class="code" href="a00014.html#ad54904ede1b73aa9a0a5f18c864e51a8">name</a>;</div>
+<div class="line"><a name="l02897"></a><span class="lineno"> 2897</span>&#160;        j[<span class="stringliteral">&quot;version&quot;</span>] = <a class="code" href="a00014.html#a475a12609b21a8845ab54a19a65dbe2c">version</a>;</div>
+<div class="line"><a name="l02898"></a><span class="lineno"> 2898</span>&#160;        j[<span class="stringliteral">&quot;author&quot;</span>] = <a class="code" href="a00014.html#adfde8de6894e01cde1338c1bc328c28c">author</a>;</div>
+<div class="line"><a name="l02899"></a><span class="lineno"> 2899</span>&#160;        j[<span class="stringliteral">&quot;description&quot;</span>] = <a class="code" href="a00014.html#a138a65290842e93458a325294dd950ba">description</a>;</div>
+<div class="line"><a name="l02900"></a><span class="lineno"> 2900</span>&#160;        j[<span class="stringliteral">&quot;time&quot;</span>] = <a class="code" href="a00014.html#a85531186a0f3b22e22df5ee2e723f344">time</a>;</div>
+<div class="line"><a name="l02901"></a><span class="lineno"> 2901</span>&#160;        <span class="keywordflow">return</span> j;</div>
+<div class="line"><a name="l02902"></a><span class="lineno"> 2902</span>&#160;    }</div>
+<div class="ttc" id="aa00010_html_ad2394aaabcd94373cf32f4a14845a5ec"><div class="ttname"><a href="a00010.html#ad2394aaabcd94373cf32f4a14845a5ec">MiraiCP::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00024">miraiCP.hpp:24</a></div></div>
+</div><!-- fragment --><div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
 <div id="dynsection-1-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00016.png" border="0" usemap="#apch_8hdep" alt=""/></div>
-<map name="apch_8hdep" id="apch_8hdep">
-<area shape="rect" title=" " alt="" coords="297,5,351,32"/>
-<area shape="rect" href="a00002.html" title=" " alt="" coords="5,80,96,107"/>
-<area shape="rect" href="a00005.html" title=" " alt="" coords="120,80,208,107"/>
-<area shape="rect" href="a00011.html" title=" " alt="" coords="233,80,301,107"/>
-<area shape="rect" href="a00017.html" title=" " alt="" coords="325,80,437,107"/>
-<area shape="rect" href="a00023.html" title=" " alt="" coords="471,155,545,181"/>
-<area shape="rect" href="a00026.html" title=" " alt="" coords="512,80,573,107"/>
+<div class="center"><img src="a00014_ad48276fd9ea1eea0b083922334a49434_icgraph.png" border="0" usemap="#aa00014_ad48276fd9ea1eea0b083922334a49434_icgraph" alt=""/></div>
+<map name="aa00014_ad48276fd9ea1eea0b083922334a49434_icgraph" id="aa00014_ad48276fd9ea1eea0b083922334a49434_icgraph">
+<area shape="rect" title=" " alt="" coords="232,50,380,91"/>
+<area shape="rect" href="a00002.html#aef48c35044131053dbb51ec07a0070af" title=" " alt="" coords="5,5,184,61"/>
+<area shape="rect" href="a00014.html#a35393153cde2031c1cefa829f335b369" title=" " alt="" coords="21,86,169,127"/>
 </map>
 </div>
+
 </div>
-<p><a href="a00014_source.html">浏览源代码.</a></p>
+</div>
+<a id="a35393153cde2031c1cefa829f335b369"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35393153cde2031c1cefa829f335b369">&#9670;&nbsp;</a></span>serialize2string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string MiraiCP::PluginConfig::serialize2string </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00047">47</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                                          {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="a00014.html#ad48276fd9ea1eea0b083922334a49434">serialize</a>().dump();</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        }</div>
+<div class="ttc" id="aa00014_html_ad48276fd9ea1eea0b083922334a49434"><div class="ttname"><a href="a00014.html#ad48276fd9ea1eea0b083922334a49434">MiraiCP::PluginConfig::serialize</a></div><div class="ttdeci">json serialize() const</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02894">miraiCP.hpp:2894</a></div></div>
+</div><!-- fragment --><div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
+<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-2-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00014_a35393153cde2031c1cefa829f335b369_cgraph.png" border="0" usemap="#aa00014_a35393153cde2031c1cefa829f335b369_cgraph" alt=""/></div>
+<map name="aa00014_a35393153cde2031c1cefa829f335b369_cgraph" id="aa00014_a35393153cde2031c1cefa829f335b369_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,153,47"/>
+<area shape="rect" href="a00014.html#ad48276fd9ea1eea0b083922334a49434" title=" " alt="" coords="201,5,349,47"/>
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="adfde8de6894e01cde1338c1bc328c28c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfde8de6894e01cde1338c1bc328c28c">&#9670;&nbsp;</a></span>author</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string MiraiCP::PluginConfig::author</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>插件作者(及联系方式) </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a138a65290842e93458a325294dd950ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a138a65290842e93458a325294dd950ba">&#9670;&nbsp;</a></span>description</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string MiraiCP::PluginConfig::description</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>[optional]插件描述 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad54904ede1b73aa9a0a5f18c864e51a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad54904ede1b73aa9a0a5f18c864e51a8">&#9670;&nbsp;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string MiraiCP::PluginConfig::name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>插件名称 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a85531186a0f3b22e22df5ee2e723f344"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85531186a0f3b22e22df5ee2e723f344">&#9670;&nbsp;</a></span>time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string MiraiCP::PluginConfig::time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>[optional]构建时间 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a475a12609b21a8845ab54a19a65dbe2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a475a12609b21a8845ab54a19a65dbe2c">&#9670;&nbsp;</a></span>version</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string MiraiCP::PluginConfig::version</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>插件版本 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li><a class="el" href="a00002_source.html">miraiCP.hpp</a></li>
+</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="a00014.html">pch.h</a></li>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:49 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="navelem"><a class="el" href="a00010.html">MiraiCP</a></li><li class="navelem"><a class="el" href="a00014.html">PluginConfig</a></li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

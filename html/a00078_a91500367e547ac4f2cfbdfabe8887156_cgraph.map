@@ -1,0 +1,6 @@
+<map id="MiraiCP::MiraiCPException::raise" name="MiraiCP::MiraiCPException::raise">
+<area shape="rect" id="node1" title="raise 抛出方法" alt="" coords="5,39,185,80"/>
+<area shape="rect" id="node2" href="$a00054.html#ace9bbedca050fc72d1592440d16bd8f7" title="发送错误(error级日志)" alt="" coords="238,5,409,47"/>
+<area shape="rect" id="node4" href="$a00078.html#a5cf9d0f31e0310e96ef5982c5d6f9d2b" title="异常信息" alt="" coords="233,71,413,112"/>
+<area shape="rect" id="node3" href="$a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="461,5,632,47"/>
+</map>

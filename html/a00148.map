@@ -1,5 +1,3 @@
-<map id="finfo" name="finfo">
-<area shape="rect" id="node1" title="文件信息" alt="" coords="112,189,157,267"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,136,83"/>
-<area shape="rect" id="node3" title=" " alt="" coords="179,5,218,83"/>
+<map id="MiraiCP::LowLevelAPI" name="MiraiCP::LowLevelAPI">
+<area shape="rect" id="node1" title="较底层api" alt="" coords="5,5,188,273"/>
 </map>

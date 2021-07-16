@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['config_318',['Config',['../a00062.html',1,'']]],
-  ['contact_319',['Contact',['../a00138.html',1,'']]]
+  ['config_325',['Config',['../a00042.html',1,'MiraiCP']]],
+  ['contact_326',['Contact',['../a00130.html',1,'MiraiCP']]],
+  ['cppplugin_327',['CPPPlugin',['../a00074.html',1,'MiraiCP']]]
 ];

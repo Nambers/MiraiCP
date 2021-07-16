@@ -26,6 +26,15 @@ var NAVTREE =
 [
   [ "MiraiCP", "index.html", [
     [ "模块", "modules.html", "modules" ],
+    [ "命名空间", "namespaces.html", [
+      [ "命名空间列表", "namespaces.html", "namespaces_dup" ],
+      [ "命名空间成员", "namespacemembers.html", [
+        [ "全部", "namespacemembers.html", null ],
+        [ "函数", "namespacemembers_func.html", null ],
+        [ "变量", "namespacemembers_vars.html", null ],
+        [ "类型定义", "namespacemembers_type.html", null ]
+      ] ]
+    ] ],
     [ "类", "annotated.html", [
       [ "类列表", "annotated.html", "annotated_dup" ],
       [ "类索引", "classes.html", null ],
@@ -44,8 +53,6 @@ var NAVTREE =
       [ "文件成员", "globals.html", [
         [ "全部", "globals.html", null ],
         [ "函数", "globals_func.html", null ],
-        [ "变量", "globals_vars.html", null ],
-        [ "类型定义", "globals_type.html", null ],
         [ "宏定义", "globals_defs.html", null ]
       ] ]
     ] ],
@@ -56,8 +63,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "a00002.html",
-"a00130.html#af13eac13eab97b11985f25f6534c3fef",
-"a00268.html"
+"a00122.html#a16ff130f6989a8b35ce7d24a9c387ba0",
+"a00246.html#a31a3cfc6513ea6551e906a07f87bc289"
 ];
 
 var SYNCONMSG = '点击 关闭 面板同步';

@@ -1,0 +1,13 @@
+<map id="MiraiCP::BotEvent" name="MiraiCP::BotEvent">
+<area shape="rect" id="node1" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="1137,5,1279,112"/>
+<area shape="rect" id="node2" href="$a00222.html" title="机器人进入某群" alt="" coords="5,277,192,457"/>
+<area shape="rect" id="node3" href="$a00230.html" title=" " alt="" coords="216,321,395,413"/>
+<area shape="rect" id="node4" href="$a00202.html" title="群聊邀请事件类声明" alt="" coords="419,160,648,575"/>
+<area shape="rect" id="node5" href="$a00194.html" title="群消息事件声明" alt="" coords="672,270,939,465"/>
+<area shape="rect" id="node6" href="$a00226.html" title="群临时会话" alt="" coords="963,263,1194,472"/>
+<area shape="rect" id="node7" href="$a00210.html" title="新群成员加入" alt="" coords="1218,270,1457,465"/>
+<area shape="rect" id="node8" href="$a00214.html" title="群成员离开" alt="" coords="1481,263,1725,472"/>
+<area shape="rect" id="node9" href="$a00206.html" title="好友申请事件声明" alt="" coords="1749,160,2043,575"/>
+<area shape="rect" id="node10" href="$a00198.html" title="私聊消息事件类声明" alt="" coords="2067,285,2333,450"/>
+<area shape="rect" id="node11" href="$a00218.html" title="撤回信息" alt="" coords="2358,204,2597,531"/>
+</map>

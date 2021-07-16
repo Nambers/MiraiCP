@@ -1,11 +1,13 @@
 var searchData=
 [
-  ['e_50',['e',['../a00054.html#a08fffca190ffe3fecf3acb894b130537',1,'threadManager::t']]],
-  ['enable_51',['enable',['../a00078.html#accd2c8dc9018e1f272eb9680e86ca52c',1,'Logger::handler::enable()'],['../a00246.html#a302333a14ca498fdb49969172a1ad2ad',1,'Event::Node0::enable()'],['../a00254.html#a23a685d6e4b2d7a57f91328ab163f338',1,'Event::NodeHandle::enable()']]],
-  ['entranceannouncement_52',['entranceAnnouncement',['../a00190.html#a2da8c8d1bc277d37a4de6ffda8731839',1,'Group::GroupSetting']]],
-  ['error_53',['Error',['../a00074.html#a74fb2d4bc7e34e4897063a567c6611c3',1,'Logger::Error(const std::string &amp;, unsigned long long=-1, JNIEnv *=manager-&gt;getEnv())'],['../a00074.html#a4162c73079af63cb7fef00b6d8d29d6a',1,'Logger::Error(MiraiCode msg, unsigned long long botid=-1, JNIEnv *env=manager-&gt;getEnv())'],['../a00082.html#ae5cfb2cd7c9e25cf3e5fca8c9019fce5',1,'BotLogger::Error(const std::string &amp;msg, JNIEnv *env=manager-&gt;getEnv())'],['../a00082.html#a867719da8581919385a7390b28efd1d4',1,'BotLogger::Error(MiraiCode msg, JNIEnv *env=manager-&gt;getEnv())']]],
-  ['errorhandle_54',['ErrorHandle',['../a00026.html#ab59fa3f78cc8acbe38a75e2445f8d087',1,'tools.h']]],
-  ['escapefrommiraicode_55',['escapeFromMiraiCode',['../a00058.html#a5aae19c9953c69797c49a2540c99d540',1,'Tools']]],
-  ['escapetomiraicode_56',['escapeToMiraiCode',['../a00058.html#abea12070fc52348e5c9a426c116f5629',1,'Tools']]],
-  ['event_57',['Event',['../a00242.html',1,'']]]
+  ['e_52',['e',['../a00034.html#ab22c9feca20d7986654ebece423be412',1,'MiraiCP::ThreadManager::t']]],
+  ['enable_53',['enable',['../a00058.html#a1901bfc7de095017996e3fa17da9ae72',1,'MiraiCP::Logger_interface::handler::enable()'],['../a00238.html#a8a8d4fd6883c3b75e64ef83e05aad1cb',1,'MiraiCP::Event::Node0::enable()'],['../a00246.html#aa4a8ee8ae8dbf3d3d436abd162657b6c',1,'MiraiCP::Event::NodeHandle::enable()']]],
+  ['enrollplugin_54',['enrollPlugin',['../a00010.html#a12d27be6730af4fc321ac1eb231db281',1,'MiraiCP']]],
+  ['enrollplugin0_55',['enrollPlugin0',['../a00010.html#ad5dfcfb8bbf110c31ac8a5288f395bba',1,'MiraiCP']]],
+  ['entranceannouncement_56',['entranceAnnouncement',['../a00182.html#a574a2f3fe30fb9dfaed918418c7de6b7',1,'MiraiCP::Group::GroupSetting']]],
+  ['error_57',['Error',['../a00054.html#ace9bbedca050fc72d1592440d16bd8f7',1,'MiraiCP::Logger_interface::Error(const std::string &amp;, JNIEnv *=manager-&gt;getEnv())'],['../a00054.html#a56c3100d8113c0d1782f09a8576dba0a',1,'MiraiCP::Logger_interface::Error(MiraiCode msg, JNIEnv *env=manager-&gt;getEnv())']]],
+  ['errorhandle_58',['ErrorHandle',['../a00010.html#ab223b69fe3dd7c9f825b0a63c9b1cd7b',1,'MiraiCP']]],
+  ['escapefrommiraicode_59',['escapeFromMiraiCode',['../a00038.html#ae7bf212fddf60af59042677c3a7753a5',1,'MiraiCP::Tools']]],
+  ['escapetomiraicode_60',['escapeToMiraiCode',['../a00038.html#a01f4fe41f8bef55b95953750f5cfb0c2',1,'MiraiCP::Tools']]],
+  ['event_61',['Event',['../a00234.html',1,'MiraiCP']]]
 ];

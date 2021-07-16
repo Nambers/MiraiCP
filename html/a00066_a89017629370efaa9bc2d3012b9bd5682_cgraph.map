@@ -1,0 +1,6 @@
+<map id="MiraiCP::IdLogger::log0" name="MiraiCP::IdLogger::log0">
+<area shape="rect" id="node1" title="日志底层实现封装" alt="" coords="5,13,163,39"/>
+<area shape="rect" id="node2" href="$a00038.html#a3a21451de8b65ec77a8097924f681ee1" title=" " alt="" coords="211,13,383,39"/>
+<area shape="rect" id="node3" href="$a00054.html#ace9bbedca050fc72d1592440d16bd8f7" title="发送错误(error级日志)" alt="" coords="431,5,601,47"/>
+<area shape="rect" id="node4" href="$a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="649,5,820,47"/>
+</map>

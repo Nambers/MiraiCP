@@ -1,0 +1,7 @@
+<map id="MiraiCP::Tools::escapeToMiraiCode" name="MiraiCP::Tools::escapeToMiraiCode">
+<area shape="rect" id="node1" title="转义miraicode格式" alt="" coords="424,57,595,98"/>
+<area shape="rect" id="node2" href="$a00126.html#a89555ab67c5a102c1306ab785fa7ea60" title="取图片Mirai码" alt="" coords="188,5,376,32"/>
+<area shape="rect" id="node3" href="$a00134.html#a89a333f7bb827b5ee6a70f2a049760a0" title="返回miraicode" alt="" coords="215,57,349,98"/>
+<area shape="rect" id="node5" href="$a00146.html#a09c067de523c167259d81bab4b99bd4a" title="仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换" alt="" coords="211,122,353,163"/>
+<area shape="rect" id="node4" href="$a00134.html#a94c457945cb59f2a47764506d39cce5d" title=" " alt="" coords="5,57,140,98"/>
+</map>

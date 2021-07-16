@@ -1,7 +1,6 @@
 var a00110 =
 [
-    [ "FriendException", "a00110.html#ab821b0a18696dc77c2ea4c235368030a", null ],
-    [ "raise", "a00110.html#a1d7505c9809a40b45875351727e05d35", null ],
-    [ "what", "a00110.html#a9a971ca3748c4436f3e1b1574578c946", null ],
-    [ "description", "a00110.html#a2106d8800b62175e6e44edd5cbc48bf6", null ]
+    [ "RecallException", "a00110.html#ab70029a99574b211c34b4f1ee042572e", null ],
+    [ "what", "a00110.html#af57c0ad4166a0ce81b86edecafe39cd4", null ],
+    [ "description", "a00110.html#a9a0251d9ef9f5dcfdd49191e8f4e74cc", null ]
 ];

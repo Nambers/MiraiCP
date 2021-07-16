@@ -1,10 +1,4 @@
-<map id="RemoteFile" name="RemoteFile">
-<area shape="rect" id="node1" title="远程(群)文件类型" alt="" coords="337,344,539,568"/>
-<area shape="rect" id="node2" href="$a00066.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,189,135,281"/>
-<area shape="rect" id="node3" title=" " alt="" coords="187,5,225,83"/>
-<area shape="rect" id="node6" href="$a00150.html" title="文件信息" alt="" coords="327,197,373,274"/>
-<area shape="rect" id="node4" href="$a00146.html" title="下载信息" alt="" coords="521,197,571,274"/>
-<area shape="rect" id="node5" title=" " alt="" coords="473,5,528,83"/>
-<area shape="rect" id="node7" title=" " alt="" coords="285,5,415,83"/>
-<area shape="rect" id="node8" title=" " alt="" coords="595,197,705,274"/>
+<map id="MiraiCP::LowLevelAPI::info" name="MiraiCP::LowLevelAPI::info">
+<area shape="rect" id="node1" title="每个对象的必有信息" alt="" coords="5,160,155,252"/>
+<area shape="rect" id="node2" title=" " alt="" coords="53,5,107,83"/>
 </map>

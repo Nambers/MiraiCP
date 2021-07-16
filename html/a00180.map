@@ -1,7 +1,5 @@
-<map id="Member" name="Member">
-<area shape="rect" id="node1" title="群成员类声明" alt="" coords="220,903,415,1185"/>
-<area shape="rect" id="node2" href="$a00138.html" title="group, friend, member的父类" alt="" coords="104,175,323,853"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,5,136,83"/>
-<area shape="rect" id="node4" title=" " alt="" coords="345,5,383,83"/>
-<area shape="rect" id="node5" title=" " alt="" coords="161,5,215,83"/>
+<map id="MiraiCP::Group::GroupSetting" name="MiraiCP::Group::GroupSetting">
+<area shape="rect" id="node1" title="群设置" alt="" coords="27,189,222,267"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,52,83"/>
+<area shape="rect" id="node3" title=" " alt="" coords="193,5,248,83"/>
 </map>

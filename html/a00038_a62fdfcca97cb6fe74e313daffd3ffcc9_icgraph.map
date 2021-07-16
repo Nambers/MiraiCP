@@ -1,0 +1,9 @@
+<map id="MiraiCP::Tools::StringToVector" name="MiraiCP::Tools::StringToVector">
+<area shape="rect" id="node1" title="从string格式化到vector" alt="" coords="493,71,656,112"/>
+<area shape="rect" id="node2" href="$a00166.html#a6846aa3a20bf5d142f11ac41d1014891" title="取好友列表" alt="" coords="253,21,432,47"/>
+<area shape="rect" id="node4" href="$a00166.html#a2fed2349f89a4f1d3b99d41f2c3f1963" title="取群列表" alt="" coords="253,78,432,105"/>
+<area shape="rect" id="node6" href="$a00178.html#a260a2c1b05ab430aa1eecadd836c170d" title=" " alt="" coords="240,135,445,162"/>
+<area shape="rect" id="node3" href="$a00166.html#aa4c59d6acabbfed3e0450cb3e2257c6b" title="好友列表string形式返回，利于保存" alt="" coords="18,5,179,47"/>
+<area shape="rect" id="node5" href="$a00166.html#a281b2ac226680cde671a28dd1e5d5e87" title="群列表string形式返回，利于保存" alt="" coords="11,71,186,112"/>
+<area shape="rect" id="node7" href="$a00178.html#a7e4a285e03aac96ef4152d852958329d" title=" " alt="" coords="5,136,192,177"/>
+</map>

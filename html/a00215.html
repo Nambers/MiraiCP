@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,27 +89,30 @@ $(document).ready(function(){initNavTree('a00218.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">MemberJoinEvent 成员列表</div>  </div>
+<div class="title">MiraiCP::RecallEvent 成员列表</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>成员的完整列表，这些成员属于 <a class="el" href="a00218.html">MemberJoinEvent</a>,包括所有继承而来的类成员</p>
+<p>成员的完整列表，这些成员属于 <a class="el" href="a00218.html">MiraiCP::RecallEvent</a>,包括所有继承而来的类成员</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83">bot</a></td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a>(unsigned long long botid)</td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00198.html#a1571ef8d345a7a94bedecd48df4923c7">botlogger</a></td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00218.html#aae5866945dfb9d1b39504f111bccaa52">group</a></td><td class="entry"><a class="el" href="a00218.html">MemberJoinEvent</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00218.html#ade2bd23f4b5cb0e6bac3cf36d7c794a2">inviterid</a></td><td class="entry"><a class="el" href="a00218.html">MemberJoinEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00218.html#ada3229d4de20a619e6c641f9c97c505b">member</a></td><td class="entry"><a class="el" href="a00218.html">MemberJoinEvent</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00218.html#ad536c8db11e375d702476aa113a19cc1">MemberJoinEvent</a>(unsigned long long int botid, const int type, const Member &amp;member, const Group &amp;group, const unsigned long long &amp;inviterid)</td><td class="entry"><a class="el" href="a00218.html">MemberJoinEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00218.html#af131d9d5dcc818c492ba7955cc23c275">type</a></td><td class="entry"><a class="el" href="a00218.html">MemberJoinEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00218.html#a81dc1d0d972d84c08085985d478d0f1a">authorid</a></td><td class="entry"><a class="el" href="a00218.html">MiraiCP::RecallEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00190.html#a48e9bf99cfedf6627c89de58f19fdb88">bot</a></td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00190.html#abfec0bacf14ff5a3a31ccf3c86feb53b">BotEvent</a>(unsigned long long botid)</td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00190.html#a0ac8dff80b65054aecebc9ca15c4c633">botlogger</a></td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00218.html#aa03c0fe0e6c843341cce0abfdd1d25f9">groupid</a></td><td class="entry"><a class="el" href="a00218.html">MiraiCP::RecallEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00218.html#a4c80eac22a39e587e58cbe8b42eb16e6">ids</a></td><td class="entry"><a class="el" href="a00218.html">MiraiCP::RecallEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00218.html#af39149cef7fabd672a72c63cbaefc77f">internalids</a></td><td class="entry"><a class="el" href="a00218.html">MiraiCP::RecallEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00218.html#aea8389db883e1ba898568faf9b70da1c">operatorid</a></td><td class="entry"><a class="el" href="a00218.html">MiraiCP::RecallEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00218.html#a0311dbe459e380886f0bff4c4767c21e">RecallEvent</a>(unsigned long long int botid, const int type, const int time, const unsigned long long int authorid, const unsigned long long int operatorid, std::string ids, const std::string &amp;internalids, const unsigned long long int groupid)</td><td class="entry"><a class="el" href="a00218.html">MiraiCP::RecallEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00218.html#a820274141fb0505d9892755f52fd8773">time</a></td><td class="entry"><a class="el" href="a00218.html">MiraiCP::RecallEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00218.html#a4f87c489d7ea8b4970d45c831b159e3b">type</a></td><td class="entry"><a class="el" href="a00218.html">MiraiCP::RecallEvent</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:16 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:06 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

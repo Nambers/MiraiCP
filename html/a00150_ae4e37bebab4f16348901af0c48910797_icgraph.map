@@ -1,0 +1,6 @@
+<map id="MiraiCP::LowLevelAPI::send0" name="MiraiCP::LowLevelAPI::send0">
+<area shape="rect" id="node1" title="抽象封装底层发送信息接口" alt="" coords="499,23,648,65"/>
+<area shape="rect" id="node2" href="$a00130.html#a451cd01b15930f0bc9618f0aa66bb34f" title="发送miraicode" alt="" coords="236,5,451,32"/>
+<area shape="rect" id="node3" href="$a00130.html#a751de2a9043e7850ef39a8d728cae33b" title="发送纯文本信息" alt="" coords="252,56,435,83"/>
+<area shape="rect" id="node4" href="$a00130.html#a896ade30ad03045c2c32261560cc214c" title="发送纯文本信息" alt="" coords="5,56,188,83"/>
+</map>

@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['newenv_464',['newEnv',['../a00050.html#a8210ba94ee5c9bfe1318319500576c85',1,'threadManager']]],
-  ['newfriendrequestevent_465',['NewFriendRequestEvent',['../a00214.html#a476e7a5b53d9fe96435354cc8f59c361',1,'NewFriendRequestEvent']]],
-  ['nick_466',['nick',['../a00174.html#af1538b49ce58759e210c41c402ff6680',1,'Bot']]],
-  ['nickornamecard_467',['nickOrNameCard',['../a00138.html#a3f78c5f66d0b71ad06267c6a3b492066',1,'Contact']]],
-  ['nodehandle_468',['NodeHandle',['../a00254.html#adb9d3b16afc698f81ef8e4b32491c9de',1,'Event::NodeHandle']]]
+  ['newenv_471',['newEnv',['../a00030.html#a29f1a55d4cb7b78045fd3f2566c59dcc',1,'MiraiCP::ThreadManager']]],
+  ['newfriendrequestevent_472',['NewFriendRequestEvent',['../a00206.html#a29a286d7dfc83c5920aae59e87fb48b4',1,'MiraiCP::NewFriendRequestEvent']]],
+  ['nick_473',['nick',['../a00166.html#a14f2c875a64bf63c487be2f45454f517',1,'MiraiCP::Bot']]],
+  ['nickornamecard_474',['nickOrNameCard',['../a00130.html#a7187f3ae0c1b2be31502498d6c97fa87',1,'MiraiCP::Contact']]],
+  ['nodehandle_475',['NodeHandle',['../a00246.html#a31a3cfc6513ea6551e906a07f87bc289',1,'MiraiCP::Event::NodeHandle']]]
 ];

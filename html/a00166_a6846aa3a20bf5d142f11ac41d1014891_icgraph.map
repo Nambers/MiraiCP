@@ -1,0 +1,4 @@
+<map id="MiraiCP::Bot::getFriendList" name="MiraiCP::Bot::getFriendList">
+<area shape="rect" id="node1" title="取好友列表" alt="" coords="215,13,393,39"/>
+<area shape="rect" id="node2" href="$a00166.html#aa4c59d6acabbfed3e0450cb3e2257c6b" title="好友列表string形式返回，利于保存" alt="" coords="5,5,167,47"/>
+</map>

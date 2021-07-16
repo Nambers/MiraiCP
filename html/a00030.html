@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 群成员退出事件</title>
+<title>MiraiCP: MiraiCP::ThreadManager类 参考</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,25 +89,78 @@ $(document).ready(function(){initNavTree('a00030.html',''); initResizable(); });
 
 <div class="header">
   <div class="summary">
-<a href="#var-members">变量</a>  </div>
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pri-methods">Private 成员函数</a> &#124;
+<a href="#pri-attribs">Private 属性</a> &#124;
+<a href="a00027.html">所有成员列表</a>  </div>
   <div class="headertitle">
-<div class="title">群成员退出事件</div>  </div>
+<div class="title">MiraiCP::ThreadManager类 参考</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="a00002_source.html">miraiCP.hpp</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> MiraiCP::ThreadManager 的协作图:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00028.png" border="0" usemap="#a_mirai_c_p_1_1_thread_manager_coll__map" alt="Collaboration graph"/></div>
+<map name="a_mirai_c_p_1_1_thread_manager_coll__map" id="a_mirai_c_p_1_1_thread_manager_coll__map">
+<area shape="rect" title=" " alt="" coords="65,160,230,369"/>
+<area shape="rect" title=" " alt="" coords="5,13,121,90"/>
+<area shape="rect" title=" " alt="" coords="146,5,317,97"/>
+</map>
+</div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-变量</h2></td></tr>
-<tr class="memitem:ga88a3e3fc7212224af69e2effdb9db3d0"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#ga88a3e3fc7212224af69e2effdb9db3d0">T_KICK</a> = 1</td></tr>
-<tr class="memdesc:ga88a3e3fc7212224af69e2effdb9db3d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">被踢出  <a href="a00030.html#ga88a3e3fc7212224af69e2effdb9db3d0">更多...</a><br /></td></tr>
-<tr class="separator:ga88a3e3fc7212224af69e2effdb9db3d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf3178dcaf435f3cc9fb07c831281d957"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#gaf3178dcaf435f3cc9fb07c831281d957">T_QUIT</a> = 2</td></tr>
-<tr class="memdesc:gaf3178dcaf435f3cc9fb07c831281d957"><td class="mdescLeft">&#160;</td><td class="mdescRight">主动退出  <a href="a00030.html#gaf3178dcaf435f3cc9fb07c831281d957">更多...</a><br /></td></tr>
-<tr class="separator:gaf3178dcaf435f3cc9fb07c831281d957"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00034.html">t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">每个线程实例.  <a href="a00034.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aec5d52e186c597c587e282ccd820e7be"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#aec5d52e186c597c587e282ccd820e7be">ThreadManager</a> ()</td></tr>
+<tr class="separator:aec5d52e186c597c587e282ccd820e7be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afacfbdbffc416bb53676f040720a42e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#afacfbdbffc416bb53676f040720a42e0">setEnv</a> (JNIEnv *e)</td></tr>
+<tr class="memdesc:afacfbdbffc416bb53676f040720a42e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置env给当前线程.  <a href="a00030.html#afacfbdbffc416bb53676f040720a42e0">更多...</a><br /></td></tr>
+<tr class="separator:afacfbdbffc416bb53676f040720a42e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72b77deebd7be1c800b73ebd4b2daa09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#a72b77deebd7be1c800b73ebd4b2daa09">detach</a> ()</td></tr>
+<tr class="separator:a72b77deebd7be1c800b73ebd4b2daa09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a365e1740117b0fb9d5990855a26dba4f"><td class="memItemLeft" align="right" valign="top">JNIEnv *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#a365e1740117b0fb9d5990855a26dba4f">getEnv</a> ()</td></tr>
+<tr class="memdesc:a365e1740117b0fb9d5990855a26dba4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">取env,如果不存在重新获取  <a href="a00030.html#a365e1740117b0fb9d5990855a26dba4f">更多...</a><br /></td></tr>
+<tr class="separator:a365e1740117b0fb9d5990855a26dba4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a11837c8fea64ee75bea0bcd1ea56de9c"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">getThreadId</a> ()</td></tr>
+<tr class="memdesc:a11837c8fea64ee75bea0bcd1ea56de9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取线程id.  <a href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">更多...</a><br /></td></tr>
+<tr class="separator:a11837c8fea64ee75bea0bcd1ea56de9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private 成员函数</h2></td></tr>
+<tr class="memitem:a29f1a55d4cb7b78045fd3f2566c59dcc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#a29f1a55d4cb7b78045fd3f2566c59dcc">newEnv</a> (const char *threadName=nullptr)</td></tr>
+<tr class="separator:a29f1a55d4cb7b78045fd3f2566c59dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd1025cb50143b1aa60b55d79ec2b370"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#abd1025cb50143b1aa60b55d79ec2b370">included</a> (const std::string &amp;id)</td></tr>
+<tr class="memdesc:abd1025cb50143b1aa60b55d79ec2b370"><td class="mdescLeft">&#160;</td><td class="mdescRight">判断该线程id是否包含在线程池里  <a href="a00030.html#abd1025cb50143b1aa60b55d79ec2b370">更多...</a><br /></td></tr>
+<tr class="separator:abd1025cb50143b1aa60b55d79ec2b370"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private 属性</h2></td></tr>
+<tr class="memitem:a3f572549eeeaab41db0878d02c70e048"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="a00034.html">t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#a3f572549eeeaab41db0878d02c70e048">_threads</a></td></tr>
+<tr class="separator:a3f572549eeeaab41db0878d02c70e048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af61aae7d053395c836bae677af861364"><td class="memItemLeft" align="right" valign="top">std::recursive_mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00030.html#af61aae7d053395c836bae677af861364">mtx</a></td></tr>
+<tr class="memdesc:af61aae7d053395c836bae677af861364"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; 线程池(线程id:env).  <a href="a00030.html#af61aae7d053395c836bae677af861364">更多...</a><br /></td></tr>
+<tr class="separator:af61aae7d053395c836bae677af861364"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<h2 class="groupheader">变量说明</h2>
-<a id="ga88a3e3fc7212224af69e2effdb9db3d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga88a3e3fc7212224af69e2effdb9db3d0">&#9670;&nbsp;</a></span>T_KICK</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00154">154</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aec5d52e186c597c587e282ccd820e7be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec5d52e186c597c587e282ccd820e7be">&#9670;&nbsp;</a></span>ThreadManager()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -116,24 +169,132 @@ $(document).ready(function(){initNavTree('a00030.html',''); initResizable(); });
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const int T_KICK = 1</td>
+          <td class="memname">MiraiCP::ThreadManager::ThreadManager </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>被踢出 </p>
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00176">176</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;                        {</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;            this-&gt;<a class="code" href="a00030.html#a3f572549eeeaab41db0878d02c70e048">_threads</a> = std::map&lt;std::string, t&gt;();</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;        };</div>
+<div class="ttc" id="aa00030_html_a3f572549eeeaab41db0878d02c70e048"><div class="ttname"><a href="a00030.html#a3f572549eeeaab41db0878d02c70e048">MiraiCP::ThreadManager::_threads</a></div><div class="ttdeci">std::map&lt; std::string, t &gt; _threads</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00161">miraiCP.hpp:161</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a72b77deebd7be1c800b73ebd4b2daa09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72b77deebd7be1c800b73ebd4b2daa09">&#9670;&nbsp;</a></span>detach()</h2>
 
-<p class="definition">在文件 <a class="el" href="a00002_source.html">constants.h</a> 第 <a class="el" href="a00002_source.html#l00020">20</a> 行定义.</p>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MiraiCP::ThreadManager::detach </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l02295">2295</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l02295"></a><span class="lineno"> 2295</span>&#160;                               {</div>
+<div class="line"><a name="l02296"></a><span class="lineno"> 2296</span>&#160;        <a class="code" href="a00030.html#af61aae7d053395c836bae677af861364">mtx</a>.lock();</div>
+<div class="line"><a name="l02297"></a><span class="lineno"> 2297</span>&#160;        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="a00030.html#abd1025cb50143b1aa60b55d79ec2b370">included</a>(<a class="code" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">ThreadManager::getThreadId</a>())) {</div>
+<div class="line"><a name="l02298"></a><span class="lineno"> 2298</span>&#160;            <span class="keywordtype">bool</span> att = this-&gt;<a class="code" href="a00030.html#a3f572549eeeaab41db0878d02c70e048">_threads</a>[<a class="code" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">ThreadManager::getThreadId</a>()].attach;</div>
+<div class="line"><a name="l02299"></a><span class="lineno"> 2299</span>&#160;            this-&gt;<a class="code" href="a00030.html#a3f572549eeeaab41db0878d02c70e048">_threads</a>.erase(<a class="code" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">ThreadManager::getThreadId</a>());</div>
+<div class="line"><a name="l02300"></a><span class="lineno"> 2300</span>&#160;            <span class="keywordflow">if</span> (att)</div>
+<div class="line"><a name="l02301"></a><span class="lineno"> 2301</span>&#160;                <a class="code" href="a00010.html#a5907c2dd8bc9e4e9a1be53664fa29491">gvm</a>-&gt;DetachCurrentThread();</div>
+<div class="line"><a name="l02302"></a><span class="lineno"> 2302</span>&#160;        }</div>
+<div class="line"><a name="l02303"></a><span class="lineno"> 2303</span>&#160;        <a class="code" href="a00030.html#af61aae7d053395c836bae677af861364">mtx</a>.unlock();</div>
+<div class="line"><a name="l02304"></a><span class="lineno"> 2304</span>&#160;    }</div>
+<div class="ttc" id="aa00010_html_a5907c2dd8bc9e4e9a1be53664fa29491"><div class="ttname"><a href="a00010.html#a5907c2dd8bc9e4e9a1be53664fa29491">MiraiCP::gvm</a></div><div class="ttdeci">JavaVM * gvm</div><div class="ttdoc">全局JavaVM对象，用于多线程管理中新建线程的JNIEnv.</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00145">miraiCP.hpp:145</a></div></div>
+<div class="ttc" id="aa00030_html_a11837c8fea64ee75bea0bcd1ea56de9c"><div class="ttname"><a href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">MiraiCP::ThreadManager::getThreadId</a></div><div class="ttdeci">static std::string getThreadId()</div><div class="ttdoc">获取线程id.</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00169">miraiCP.hpp:169</a></div></div>
+<div class="ttc" id="aa00030_html_abd1025cb50143b1aa60b55d79ec2b370"><div class="ttname"><a href="a00030.html#abd1025cb50143b1aa60b55d79ec2b370">MiraiCP::ThreadManager::included</a></div><div class="ttdeci">bool included(const std::string &amp;id)</div><div class="ttdoc">判断该线程id是否包含在线程池里</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02306">miraiCP.hpp:2306</a></div></div>
+<div class="ttc" id="aa00030_html_af61aae7d053395c836bae677af861364"><div class="ttname"><a href="a00030.html#af61aae7d053395c836bae677af861364">MiraiCP::ThreadManager::mtx</a></div><div class="ttdeci">std::recursive_mutex mtx</div><div class="ttdoc">&lt; 线程池(线程id:env).</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00162">miraiCP.hpp:162</a></div></div>
+</div><!-- fragment --><div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
+<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-1-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00030_a72b77deebd7be1c800b73ebd4b2daa09_cgraph.png" border="0" usemap="#aa00030_a72b77deebd7be1c800b73ebd4b2daa09_cgraph" alt=""/></div>
+<map name="aa00030_a72b77deebd7be1c800b73ebd4b2daa09_cgraph" id="aa00030_a72b77deebd7be1c800b73ebd4b2daa09_cgraph">
+<area shape="rect" title=" " alt="" coords="5,39,171,80"/>
+<area shape="rect" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c" title="获取线程id." alt="" coords="219,5,384,47"/>
+<area shape="rect" href="a00030.html#abd1025cb50143b1aa60b55d79ec2b370" title="判断该线程id是否包含在线程池里" alt="" coords="219,71,384,112"/>
+</map>
+</div>
 
 </div>
 </div>
-<a id="gaf3178dcaf435f3cc9fb07c831281d957"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaf3178dcaf435f3cc9fb07c831281d957">&#9670;&nbsp;</a></span>T_QUIT</h2>
+<a id="a365e1740117b0fb9d5990855a26dba4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a365e1740117b0fb9d5990855a26dba4f">&#9670;&nbsp;</a></span>getEnv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JNIEnv * MiraiCP::ThreadManager::getEnv </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>取env,如果不存在重新获取 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l02312">2312</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l02312"></a><span class="lineno"> 2312</span>&#160;                                  {</div>
+<div class="line"><a name="l02313"></a><span class="lineno"> 2313</span>&#160;        <a class="code" href="a00030.html#af61aae7d053395c836bae677af861364">mtx</a>.lock();</div>
+<div class="line"><a name="l02314"></a><span class="lineno"> 2314</span>&#160;        <span class="keywordflow">if</span> (!this-&gt;<a class="code" href="a00030.html#abd1025cb50143b1aa60b55d79ec2b370">included</a>(<a class="code" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">getThreadId</a>())) {</div>
+<div class="line"><a name="l02315"></a><span class="lineno"> 2315</span>&#160;            this-&gt;<a class="code" href="a00030.html#a29f1a55d4cb7b78045fd3f2566c59dcc">newEnv</a>();</div>
+<div class="line"><a name="l02316"></a><span class="lineno"> 2316</span>&#160;        }</div>
+<div class="line"><a name="l02317"></a><span class="lineno"> 2317</span>&#160;        JNIEnv *tmp = this-&gt;<a class="code" href="a00030.html#a3f572549eeeaab41db0878d02c70e048">_threads</a>[<a class="code" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">ThreadManager::getThreadId</a>()].e;</div>
+<div class="line"><a name="l02318"></a><span class="lineno"> 2318</span>&#160;        <a class="code" href="a00030.html#af61aae7d053395c836bae677af861364">mtx</a>.unlock();</div>
+<div class="line"><a name="l02319"></a><span class="lineno"> 2319</span>&#160;        <span class="keywordflow">return</span> tmp;</div>
+<div class="line"><a name="l02320"></a><span class="lineno"> 2320</span>&#160;    }</div>
+<div class="ttc" id="aa00030_html_a29f1a55d4cb7b78045fd3f2566c59dcc"><div class="ttname"><a href="a00030.html#a29f1a55d4cb7b78045fd3f2566c59dcc">MiraiCP::ThreadManager::newEnv</a></div><div class="ttdeci">void newEnv(const char *threadName=nullptr)</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02282">miraiCP.hpp:2282</a></div></div>
+</div><!-- fragment --><div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
+<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-2-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00030_a365e1740117b0fb9d5990855a26dba4f_cgraph.png" border="0" usemap="#aa00030_a365e1740117b0fb9d5990855a26dba4f_cgraph" alt=""/></div>
+<map name="aa00030_a365e1740117b0fb9d5990855a26dba4f_cgraph" id="aa00030_a365e1740117b0fb9d5990855a26dba4f_cgraph">
+<area shape="rect" title="取env,如果不存在重新获取" alt="" coords="5,35,171,76"/>
+<area shape="rect" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c" title="获取线程id." alt="" coords="435,5,600,47"/>
+<area shape="rect" href="a00030.html#abd1025cb50143b1aa60b55d79ec2b370" title="判断该线程id是否包含在线程池里" alt="" coords="219,35,384,76"/>
+<area shape="rect" href="a00030.html#a29f1a55d4cb7b78045fd3f2566c59dcc" title=" " alt="" coords="219,100,384,141"/>
+<area shape="rect" href="a00054.html#a0d6fe55d99b2fafba4605fba7e830168" title="发送普通(info级日志)" alt="" coords="432,100,603,141"/>
+<area shape="rect" href="a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="651,100,821,141"/>
+</map>
+</div>
+<div id="dynsection-3" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-3-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
+<div id="dynsection-3-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-3-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00030_a365e1740117b0fb9d5990855a26dba4f_icgraph.png" border="0" usemap="#aa00030_a365e1740117b0fb9d5990855a26dba4f_icgraph" alt=""/></div>
+<map name="aa00030_a365e1740117b0fb9d5990855a26dba4f_icgraph" id="aa00030_a365e1740117b0fb9d5990855a26dba4f_icgraph">
+<area shape="rect" title="取env,如果不存在重新获取" alt="" coords="217,5,383,47"/>
+<area shape="rect" href="a00042.html#a377601a70d90a3cadd9291ad9adc8b19" title=" " alt="" coords="5,13,169,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a11837c8fea64ee75bea0bcd1ea56de9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11837c8fea64ee75bea0bcd1ea56de9c">&#9670;&nbsp;</a></span>getThreadId()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -142,29 +303,293 @@ $(document).ready(function(){initNavTree('a00030.html',''); initResizable(); });
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const int T_QUIT = 2</td>
+          <td class="memname">static std::string MiraiCP::ThreadManager::getThreadId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>主动退出 </p>
+<p>获取线程id. </p>
 
-<p class="definition">在文件 <a class="el" href="a00002_source.html">constants.h</a> 第 <a class="el" href="a00002_source.html#l00022">22</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00169">169</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;                                       {</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;            <span class="keyword">auto</span> myid = std::this_thread::get_id();</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;            std::stringstream ss;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;            ss &lt;&lt; myid;</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;            <span class="keywordflow">return</span> ss.str();</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        }</div>
+</div><!-- fragment --><div id="dynsection-4" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-4-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
+<div id="dynsection-4-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-4-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00030_a11837c8fea64ee75bea0bcd1ea56de9c_icgraph.png" border="0" usemap="#aa00030_a11837c8fea64ee75bea0bcd1ea56de9c_icgraph" alt=""/></div>
+<map name="aa00030_a11837c8fea64ee75bea0bcd1ea56de9c_icgraph" id="aa00030_a11837c8fea64ee75bea0bcd1ea56de9c_icgraph">
+<area shape="rect" title="获取线程id." alt="" coords="696,93,861,135"/>
+<area shape="rect" href="a00030.html#a72b77deebd7be1c800b73ebd4b2daa09" title=" " alt="" coords="483,5,648,47"/>
+<area shape="rect" href="a00030.html#a365e1740117b0fb9d5990855a26dba4f" title="取env,如果不存在重新获取" alt="" coords="243,64,409,105"/>
+<area shape="rect" href="a00030.html#a29f1a55d4cb7b78045fd3f2566c59dcc" title=" " alt="" coords="483,123,648,164"/>
+<area shape="rect" href="a00030.html#afacfbdbffc416bb53676f040720a42e0" title="设置env给当前线程." alt="" coords="483,195,648,236"/>
+<area shape="rect" href="a00042.html#a377601a70d90a3cadd9291ad9adc8b19" title=" " alt="" coords="5,71,169,98"/>
+<area shape="rect" href="a00002.html#a1884ee856325a610b44241a7c10b446f" title=" " alt="" coords="217,129,435,171"/>
+<area shape="rect" href="a00002.html#a4d7d53c00c6128608f8a7dd84b3435b7" title=" " alt="" coords="237,195,415,251"/>
+<area shape="rect" href="a00002.html#aef48c35044131053dbb51ec07a0070af" title=" " alt="" coords="237,275,415,331"/>
+</map>
+</div>
 
 </div>
 </div>
+<a id="abd1025cb50143b1aa60b55d79ec2b370"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd1025cb50143b1aa60b55d79ec2b370">&#9670;&nbsp;</a></span>included()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MiraiCP::ThreadManager::included </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>判断该线程id是否包含在线程池里 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l02306">2306</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l02306"></a><span class="lineno"> 2306</span>&#160;                                                    {</div>
+<div class="line"><a name="l02307"></a><span class="lineno"> 2307</span>&#160;        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="a00030.html#a3f572549eeeaab41db0878d02c70e048">_threads</a>.empty() || this-&gt;_threads.count(<span class="keywordtype">id</span>) == 0)</div>
+<div class="line"><a name="l02308"></a><span class="lineno"> 2308</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l02309"></a><span class="lineno"> 2309</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l02310"></a><span class="lineno"> 2310</span>&#160;    }</div>
+</div><!-- fragment --><div id="dynsection-5" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-5-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
+<div id="dynsection-5-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-5-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00030_abd1025cb50143b1aa60b55d79ec2b370_icgraph.png" border="0" usemap="#aa00030_abd1025cb50143b1aa60b55d79ec2b370_icgraph" alt=""/></div>
+<map name="aa00030_abd1025cb50143b1aa60b55d79ec2b370_icgraph" id="aa00030_abd1025cb50143b1aa60b55d79ec2b370_icgraph">
+<area shape="rect" title="判断该线程id是否包含在线程池里" alt="" coords="484,71,649,112"/>
+<area shape="rect" href="a00030.html#a72b77deebd7be1c800b73ebd4b2daa09" title=" " alt="" coords="271,5,436,47"/>
+<area shape="rect" href="a00030.html#a365e1740117b0fb9d5990855a26dba4f" title="取env,如果不存在重新获取" alt="" coords="271,71,436,112"/>
+<area shape="rect" href="a00030.html#afacfbdbffc416bb53676f040720a42e0" title="设置env给当前线程." alt="" coords="271,152,436,193"/>
+<area shape="rect" href="a00042.html#a377601a70d90a3cadd9291ad9adc8b19" title=" " alt="" coords="32,61,196,87"/>
+<area shape="rect" href="a00002.html#a1884ee856325a610b44241a7c10b446f" title=" " alt="" coords="5,112,223,153"/>
+<area shape="rect" href="a00002.html#a4d7d53c00c6128608f8a7dd84b3435b7" title=" " alt="" coords="25,178,203,234"/>
+<area shape="rect" href="a00002.html#aef48c35044131053dbb51ec07a0070af" title=" " alt="" coords="25,258,203,314"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a29f1a55d4cb7b78045fd3f2566c59dcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29f1a55d4cb7b78045fd3f2566c59dcc">&#9670;&nbsp;</a></span>newEnv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MiraiCP::ThreadManager::newEnv </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>threadName</em> = <code>nullptr</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>新建一个env，于getEnv中没取到env时调用. </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l02282">2282</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l02282"></a><span class="lineno"> 2282</span>&#160;                                                     {</div>
+<div class="line"><a name="l02283"></a><span class="lineno"> 2283</span>&#160;        JNIEnv *env = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l02284"></a><span class="lineno"> 2284</span>&#160;        JavaVMAttachArgs args{</div>
+<div class="line"><a name="l02285"></a><span class="lineno"> 2285</span>&#160;                <a class="code" href="a00010.html#a5f91bc294ab19358ac78771ac966116c">JNIVersion</a>,</div>
+<div class="line"><a name="l02286"></a><span class="lineno"> 2286</span>&#160;                <span class="keyword">const_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(threadName),</div>
+<div class="line"><a name="l02287"></a><span class="lineno"> 2287</span>&#160;                <span class="keyword">nullptr</span></div>
+<div class="line"><a name="l02288"></a><span class="lineno"> 2288</span>&#160;        };</div>
+<div class="line"><a name="l02289"></a><span class="lineno"> 2289</span>&#160;        <a class="code" href="a00010.html#a5907c2dd8bc9e4e9a1be53664fa29491">gvm</a>-&gt;AttachCurrentThread((<span class="keywordtype">void</span> **) &amp;env, &amp;args);</div>
+<div class="line"><a name="l02290"></a><span class="lineno"> 2290</span>&#160;        t tmp{env, <span class="keyword">true</span>};</div>
+<div class="line"><a name="l02291"></a><span class="lineno"> 2291</span>&#160;        this-&gt;<a class="code" href="a00030.html#a3f572549eeeaab41db0878d02c70e048">_threads</a>.insert(std::pair&lt;std::string, t&gt;(<a class="code" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">ThreadManager::getThreadId</a>(), tmp));</div>
+<div class="line"><a name="l02292"></a><span class="lineno"> 2292</span>&#160;        <a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a class="code" href="a00054.html#a0d6fe55d99b2fafba4605fba7e830168">Info</a>(<span class="stringliteral">&quot;refresh env&quot;</span>);</div>
+<div class="line"><a name="l02293"></a><span class="lineno"> 2293</span>&#160;    };</div>
+<div class="ttc" id="aa00010_html_a5f91bc294ab19358ac78771ac966116c"><div class="ttname"><a href="a00010.html#a5f91bc294ab19358ac78771ac966116c">MiraiCP::JNIVersion</a></div><div class="ttdeci">int JNIVersion</div><div class="ttdoc">JNI 版本.</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00147">miraiCP.hpp:147</a></div></div>
+<div class="ttc" id="aa00010_html_a692fa757310841433964360f3f112004"><div class="ttname"><a href="a00010.html#a692fa757310841433964360f3f112004">MiraiCP::logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">声明全局日志对象</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00531">miraiCP.hpp:531</a></div></div>
+<div class="ttc" id="aa00054_html_a0d6fe55d99b2fafba4605fba7e830168"><div class="ttname"><a href="a00054.html#a0d6fe55d99b2fafba4605fba7e830168">MiraiCP::Logger_interface::Info</a></div><div class="ttdeci">void Info(const std::string &amp;, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送普通(info级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02347">miraiCP.hpp:2347</a></div></div>
+</div><!-- fragment --><div id="dynsection-6" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-6-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
+<div id="dynsection-6-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-6-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00030_a29f1a55d4cb7b78045fd3f2566c59dcc_cgraph.png" border="0" usemap="#aa00030_a29f1a55d4cb7b78045fd3f2566c59dcc_cgraph" alt=""/></div>
+<map name="aa00030_a29f1a55d4cb7b78045fd3f2566c59dcc_cgraph" id="aa00030_a29f1a55d4cb7b78045fd3f2566c59dcc_cgraph">
+<area shape="rect" title=" " alt="" coords="5,39,171,80"/>
+<area shape="rect" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c" title="获取线程id." alt="" coords="221,5,387,47"/>
+<area shape="rect" href="a00054.html#a0d6fe55d99b2fafba4605fba7e830168" title="发送普通(info级日志)" alt="" coords="219,71,389,112"/>
+<area shape="rect" href="a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="437,71,608,112"/>
+</map>
+</div>
+<div id="dynsection-7" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-7-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
+<div id="dynsection-7-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-7-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00030_a29f1a55d4cb7b78045fd3f2566c59dcc_icgraph.png" border="0" usemap="#aa00030_a29f1a55d4cb7b78045fd3f2566c59dcc_icgraph" alt=""/></div>
+<map name="aa00030_a29f1a55d4cb7b78045fd3f2566c59dcc_icgraph" id="aa00030_a29f1a55d4cb7b78045fd3f2566c59dcc_icgraph">
+<area shape="rect" title=" " alt="" coords="431,5,596,47"/>
+<area shape="rect" href="a00030.html#a365e1740117b0fb9d5990855a26dba4f" title="取env,如果不存在重新获取" alt="" coords="217,5,383,47"/>
+<area shape="rect" href="a00042.html#a377601a70d90a3cadd9291ad9adc8b19" title=" " alt="" coords="5,13,169,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="afacfbdbffc416bb53676f040720a42e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afacfbdbffc416bb53676f040720a42e0">&#9670;&nbsp;</a></span>setEnv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MiraiCP::ThreadManager::setEnv </td>
+          <td>(</td>
+          <td class="paramtype">JNIEnv *&#160;</td>
+          <td class="paramname"><em>e</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置env给当前线程. </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l02268">2268</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l02268"></a><span class="lineno"> 2268</span>&#160;                                        {</div>
+<div class="line"><a name="l02269"></a><span class="lineno"> 2269</span>&#160;        <a class="code" href="a00030.html#af61aae7d053395c836bae677af861364">mtx</a>.lock();</div>
+<div class="line"><a name="l02270"></a><span class="lineno"> 2270</span>&#160;        <span class="keywordflow">if</span> (!this-&gt;<a class="code" href="a00030.html#abd1025cb50143b1aa60b55d79ec2b370">included</a>(<a class="code" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">ThreadManager::getThreadId</a>())) {</div>
+<div class="line"><a name="l02271"></a><span class="lineno"> 2271</span>&#160;            t tmp{</div>
+<div class="line"><a name="l02272"></a><span class="lineno"> 2272</span>&#160;                    e,</div>
+<div class="line"><a name="l02273"></a><span class="lineno"> 2273</span>&#160;                    <span class="keyword">false</span></div>
+<div class="line"><a name="l02274"></a><span class="lineno"> 2274</span>&#160;            };</div>
+<div class="line"><a name="l02275"></a><span class="lineno"> 2275</span>&#160;            this-&gt;<a class="code" href="a00030.html#a3f572549eeeaab41db0878d02c70e048">_threads</a>.insert(std::pair&lt;std::string, t&gt;(<a class="code" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">ThreadManager::getThreadId</a>(), tmp));</div>
+<div class="line"><a name="l02276"></a><span class="lineno"> 2276</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l02277"></a><span class="lineno"> 2277</span>&#160;            this-&gt;<a class="code" href="a00030.html#a3f572549eeeaab41db0878d02c70e048">_threads</a>[<a class="code" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c">ThreadManager::getThreadId</a>()].e = e;</div>
+<div class="line"><a name="l02278"></a><span class="lineno"> 2278</span>&#160;        }</div>
+<div class="line"><a name="l02279"></a><span class="lineno"> 2279</span>&#160;        <a class="code" href="a00030.html#af61aae7d053395c836bae677af861364">mtx</a>.unlock();</div>
+<div class="line"><a name="l02280"></a><span class="lineno"> 2280</span>&#160;    }</div>
+</div><!-- fragment --><div id="dynsection-8" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-8-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
+<div id="dynsection-8-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-8-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00030_afacfbdbffc416bb53676f040720a42e0_cgraph.png" border="0" usemap="#aa00030_afacfbdbffc416bb53676f040720a42e0_cgraph" alt=""/></div>
+<map name="aa00030_afacfbdbffc416bb53676f040720a42e0_cgraph" id="aa00030_afacfbdbffc416bb53676f040720a42e0_cgraph">
+<area shape="rect" title="设置env给当前线程." alt="" coords="5,39,171,80"/>
+<area shape="rect" href="a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c" title="获取线程id." alt="" coords="219,5,384,47"/>
+<area shape="rect" href="a00030.html#abd1025cb50143b1aa60b55d79ec2b370" title="判断该线程id是否包含在线程池里" alt="" coords="219,71,384,112"/>
+</map>
+</div>
+<div id="dynsection-9" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-9-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
+<div id="dynsection-9-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-9-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00030_afacfbdbffc416bb53676f040720a42e0_icgraph.png" border="0" usemap="#aa00030_afacfbdbffc416bb53676f040720a42e0_icgraph" alt=""/></div>
+<map name="aa00030_afacfbdbffc416bb53676f040720a42e0_icgraph" id="aa00030_afacfbdbffc416bb53676f040720a42e0_icgraph">
+<area shape="rect" title="设置env给当前线程." alt="" coords="271,79,436,120"/>
+<area shape="rect" href="a00002.html#a1884ee856325a610b44241a7c10b446f" title=" " alt="" coords="5,5,223,47"/>
+<area shape="rect" href="a00002.html#a4d7d53c00c6128608f8a7dd84b3435b7" title=" " alt="" coords="25,71,203,127"/>
+<area shape="rect" href="a00002.html#aef48c35044131053dbb51ec07a0070af" title=" " alt="" coords="25,151,203,207"/>
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a3f572549eeeaab41db0878d02c70e048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f572549eeeaab41db0878d02c70e048">&#9670;&nbsp;</a></span>_threads</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, <a class="el" href="a00034.html">t</a>&gt; MiraiCP::ThreadManager::_threads</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00161">161</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af61aae7d053395c836bae677af861364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af61aae7d053395c836bae677af861364">&#9670;&nbsp;</a></span>mtx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::recursive_mutex MiraiCP::ThreadManager::mtx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>&lt; 线程池(线程id:env). </p>
+<p>线程池读写锁. </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li><a class="el" href="a00002_source.html">miraiCP.hpp</a></li>
+</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:50 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="navelem"><a class="el" href="a00010.html">MiraiCP</a></li><li class="navelem"><a class="el" href="a00030.html">ThreadManager</a></li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:03 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

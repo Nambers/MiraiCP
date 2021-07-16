@@ -1,11 +1,10 @@
 var searchData=
 [
-  ['bot_389',['Bot',['../a00174.html#a98733a6bf8724f78a402b97480955d67',1,'Bot']]],
-  ['botevent_390',['BotEvent',['../a00198.html#ac26c3d59fa5a3546f269549ccbe994a4',1,'BotEvent']]],
-  ['botexception_391',['BotException',['../a00098.html#ad0be78aca4de5d8fc45be02e4d3e1a3c',1,'BotException']]],
-  ['botid_392',['botid',['../a00138.html#a869c10fc8e1abeedc10d805576b1450a',1,'Contact']]],
-  ['botjoingroupevent_393',['BotJoinGroupEvent',['../a00230.html#a152067b678802d1c2124ffc31d8a523d',1,'BotJoinGroupEvent']]],
-  ['botlogger_394',['BotLogger',['../a00082.html#a1cbddd82a7b4ad29fe52945778ea8cee',1,'BotLogger']]],
-  ['botonlineevent_395',['BotOnlineEvent',['../a00238.html#a0ed513201b95f0e1ebd70cea3e8c2964',1,'BotOnlineEvent']]],
-  ['broadcast_396',['broadcast',['../a00242.html#a29fb8c1219447ae57de8f4637ba25e11',1,'Event']]]
+  ['bot_395',['Bot',['../a00166.html#a36c73295660fdf1cade1315602741a68',1,'MiraiCP::Bot']]],
+  ['botevent_396',['BotEvent',['../a00190.html#abfec0bacf14ff5a3a31ccf3c86feb53b',1,'MiraiCP::BotEvent']]],
+  ['botexception_397',['BotException',['../a00090.html#a3f3052dbd64d7960b8c5c448a724ab03',1,'MiraiCP::BotException']]],
+  ['botid_398',['botid',['../a00130.html#a6aacb450dbafc87378e5b37fc32597c9',1,'MiraiCP::Contact']]],
+  ['botjoingroupevent_399',['BotJoinGroupEvent',['../a00222.html#aa9c3c7b832046fa1182cf476fd1d0be6',1,'MiraiCP::BotJoinGroupEvent']]],
+  ['botonlineevent_400',['BotOnlineEvent',['../a00230.html#a597aa96a2335081a216fe9991ea55814',1,'MiraiCP::BotOnlineEvent']]],
+  ['broadcast_401',['broadcast',['../a00234.html#ad9b0117677fc982d7a010c9865ab2936',1,'MiraiCP::Event']]]
 ];

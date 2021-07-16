@@ -1,0 +1,5 @@
+<map id="MiraiCP::Event::tail" name="MiraiCP::Event::tail">
+<area shape="rect" id="node1" title="取链表尾节点" alt="" coords="5,13,139,39"/>
+<area shape="rect" id="node2" href="$a00054.html#ace9bbedca050fc72d1592440d16bd8f7" title="发送错误(error级日志)" alt="" coords="187,5,357,47"/>
+<area shape="rect" id="node3" href="$a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="405,5,576,47"/>
+</map>

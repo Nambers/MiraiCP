@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['ondisable_197',['onDisable',['../a00017.html#a6a8d17ca0478ca5e5e061c280faa8791',1,'onDisable():&#160;Procession.cpp'],['../a00026.html#a6a8d17ca0478ca5e5e061c280faa8791',1,'onDisable():&#160;Procession.cpp']]],
-  ['onenable_198',['onEnable',['../a00017.html#af6b40412027c7beb9eb51bbfed51aff6',1,'onEnable():&#160;Procession.cpp'],['../a00026.html#af6b40412027c7beb9eb51bbfed51aff6',1,'onEnable():&#160;Procession.cpp']]],
-  ['operaterid_199',['operaterid',['../a00222.html#afe223b1e1d8a2591c013995eb4466184',1,'MemberLeaveEvent']]],
-  ['operation_5fset_200',['operation_set',['../a00062.html#a61d90b56109900c1008e143a5918c254',1,'Config']]],
-  ['operator_2b_201',['operator+',['../a00070.html#af50c8e268885cb5a30639cdfd93ab69a',1,'MiraiCode::operator+(MiraiCodeable *a)'],['../a00070.html#ad46c00f666302f374a93226b5c45f95d',1,'MiraiCode::operator+(std::string a)']]],
-  ['operator_2b_3d_202',['operator+=',['../a00070.html#ad855466d9041e36a3e74c20050de286f',1,'MiraiCode::operator+=(MiraiCodeable *a)'],['../a00070.html#a88eae07053c7a244439ac2dc0bede763',1,'MiraiCode::operator+=(std::string a)']]],
-  ['operator_3d_203',['operator=',['../a00070.html#ae0f3c44dd9a20a6551e5b8eb5eff4cf3',1,'MiraiCode::operator=(MiraiCodeable *a)'],['../a00070.html#ae808b01b772ac73243fdff4fcb3e5846',1,'MiraiCode::operator=(std::string a)']]],
-  ['operatorid_204',['operatorid',['../a00226.html#a79c894271697ce5798850b259417dcaf',1,'RecallEvent']]]
+  ['ondisable_204',['onDisable',['../a00074.html#a3ecc2c479d1ca6785e7cdcb0738c1597',1,'MiraiCP::CPPPlugin']]],
+  ['onenable_205',['onEnable',['../a00074.html#ad3d1188d089ab0fc945475f988c64fa7',1,'MiraiCP::CPPPlugin']]],
+  ['operaterid_206',['operaterid',['../a00214.html#a5d8d8310909d55ea54f1344c8370ba3d',1,'MiraiCP::MemberLeaveEvent']]],
+  ['operation_5fset_207',['operation_set',['../a00042.html#a1bc3c425340774687507c1683967231b',1,'MiraiCP::Config']]],
+  ['operator_2b_208',['operator+',['../a00050.html#aced348510d8532bf2a101cd50a9fae19',1,'MiraiCP::MiraiCode::operator+(MiraiCodeable *a)'],['../a00050.html#a0eaa447d03e47e561dbde4748ce12623',1,'MiraiCP::MiraiCode::operator+(std::string a)']]],
+  ['operator_2b_3d_209',['operator+=',['../a00050.html#ad641a5cab007205e87648892f2db354e',1,'MiraiCP::MiraiCode::operator+=(MiraiCodeable *a)'],['../a00050.html#af2064b5171af438008ae1c88c04d0352',1,'MiraiCP::MiraiCode::operator+=(std::string a)']]],
+  ['operator_3d_210',['operator=',['../a00050.html#a5595fb1cdc339c213531bd274dbc9d3c',1,'MiraiCP::MiraiCode::operator=(MiraiCodeable *a)'],['../a00050.html#a21bfa33a71f41ee2ef3728cbb8f7f1de',1,'MiraiCP::MiraiCode::operator=(std::string a)']]],
+  ['operatorid_211',['operatorid',['../a00218.html#aea8389db883e1ba898568faf9b70da1c',1,'MiraiCP::RecallEvent']]]
 ];

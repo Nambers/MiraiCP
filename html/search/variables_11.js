@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['sender_617',['sender',['../a00202.html#af42c8d253640cbe965406843367bb0f3',1,'GroupMessageEvent::sender()'],['../a00206.html#a62b26ff1072eb68c418b12a87a26cd31',1,'PrivateMessageEvent::sender()'],['../a00234.html#a0bedfdfd01cd0f70b3ab0ada73e9d8a8',1,'GroupTempMessageEvent::sender()']]],
-  ['sendmsg_618',['sendmsg',['../a00170.html#a74e7747e30d8ec7ce87fd25c56c2bf5b',1,'ForwardMessage']]],
-  ['setting_619',['setting',['../a00186.html#a0bac0da7d8f7a8172b7397c86c026384',1,'Group']]],
-  ['sha1_620',['sha1',['../a00146.html#aa13ebef9ac586704f4913eeb7dae1a7c',1,'dinfo']]],
-  ['size_621',['size',['../a00150.html#a94de667500b2c0dba038f7e654ba90f2',1,'finfo::size()'],['../a00154.html#a4669b902794a33fbc60fa99c809a22e5',1,'RemoteFile::size()']]],
-  ['source_622',['source',['../a00130.html#ad20429a51dd52cb069e8b48cfd696486',1,'MessageSource::source()'],['../a00210.html#a6f69065d6970e5984dfa29c37bda9870',1,'GroupInviteEvent::source()'],['../a00214.html#afa0c9b11cedce50f30e5cdec6b527168',1,'NewFriendRequestEvent::source()']]]
+  ['sender_630',['sender',['../a00194.html#acd0e90e4fb7862986215aae7e47cb2d6',1,'MiraiCP::GroupMessageEvent::sender()'],['../a00198.html#aa2ba8dfb74a6324a1a6ef5774d6ee793',1,'MiraiCP::PrivateMessageEvent::sender()'],['../a00226.html#ac0252e17c1cb9a0d4f2ebf37720951db',1,'MiraiCP::GroupTempMessageEvent::sender()']]],
+  ['sendmsg_631',['sendmsg',['../a00162.html#abed7e8bbbdf0c74e9d129858f1d48ee3',1,'MiraiCP::ForwardMessage']]],
+  ['setting_632',['setting',['../a00178.html#a0076eeb69e08e5dee4399e424645a333',1,'MiraiCP::Group']]],
+  ['sha1_633',['sha1',['../a00138.html#a8bf2fa80fa89d67178f207c5162a0d4f',1,'MiraiCP::dinfo']]],
+  ['size_634',['size',['../a00142.html#a12ebe79248fee9653bffcf18b5de1a0e',1,'MiraiCP::finfo::size()'],['../a00146.html#a82fb695655e847861ef00c1de1151426',1,'MiraiCP::RemoteFile::size()']]],
+  ['source_635',['source',['../a00122.html#aae9a4d8cbf53e55b5157d4b55fdf8b95',1,'MiraiCP::MessageSource::source()'],['../a00202.html#ac7477b727b824bb6aa3d2c9eb9da34ac',1,'MiraiCP::GroupInviteEvent::source()'],['../a00206.html#abcab790fe172b5499e4640d58b886224',1,'MiraiCP::NewFriendRequestEvent::source()']]]
 ];

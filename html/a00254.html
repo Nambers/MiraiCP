@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: Event::NodeHandle类 参考</title>
+<title>MiraiCP: 发送日志</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -88,179 +88,24 @@ $(document).ready(function(){initNavTree('a00254.html',''); initResizable(); });
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#pub-methods">Public 成员函数</a> &#124;
-<a href="#pri-attribs">Private 属性</a> &#124;
-<a href="a00251.html">所有成员列表</a>  </div>
   <div class="headertitle">
-<div class="title">Event::NodeHandle类 参考</div>  </div>
+<div class="title">发送日志</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>事件监听操控, 可用于stop停止监听和resume继续监听  
- <a href="a00254.html#details">更多...</a></p>
-
-<p><code>#include &lt;<a class="el" href="a00026_source.html">tools.h</a>&gt;</code></p>
-<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Event::NodeHandle 的协作图:</div>
-<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00252.png" border="0" usemap="#a_event_1_1_node_handle_coll__map" alt="Collaboration graph"/></div>
-<map name="a_event_1_1_node_handle_coll__map" id="a_event_1_1_node_handle_coll__map">
-<area shape="rect" title="事件监听操控, 可用于stop停止监听和resume继续监听" alt="" coords="5,145,157,252"/>
-<area shape="rect" title=" " alt="" coords="58,5,105,83"/>
-</map>
-</div>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public 成员函数</h2></td></tr>
-<tr class="memitem:adb9d3b16afc698f81ef8e4b32491c9de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00254.html#adb9d3b16afc698f81ef8e4b32491c9de">NodeHandle</a> (bool *a)</td></tr>
-<tr class="separator:adb9d3b16afc698f81ef8e4b32491c9de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae038c558c5da4aaa60e4bf5abf8dd572"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00254.html#ae038c558c5da4aaa60e4bf5abf8dd572">stop</a> () const</td></tr>
-<tr class="separator:ae038c558c5da4aaa60e4bf5abf8dd572"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6c3c77f6846ecd62b17f27b0003d598"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00254.html#aa6c3c77f6846ecd62b17f27b0003d598">resume</a> () const</td></tr>
-<tr class="separator:aa6c3c77f6846ecd62b17f27b0003d598"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
-Private 属性</h2></td></tr>
-<tr class="memitem:a23a685d6e4b2d7a57f91328ab163f338"><td class="memItemLeft" align="right" valign="top">bool *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00254.html#a23a685d6e4b2d7a57f91328ab163f338">enable</a></td></tr>
-<tr class="separator:a23a685d6e4b2d7a57f91328ab163f338"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock"><p>事件监听操控, 可用于stop停止监听和resume继续监听 </p>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l02039">2039</a> 行定义.</p>
-</div><h2 class="groupheader">构造及析构函数说明</h2>
-<a id="adb9d3b16afc698f81ef8e4b32491c9de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb9d3b16afc698f81ef8e4b32491c9de">&#9670;&nbsp;</a></span>NodeHandle()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Event::NodeHandle::NodeHandle </td>
-          <td>(</td>
-          <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>a</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l02043">2043</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l02043"></a><span class="lineno"> 2043</span>&#160;                            {</div>
-<div class="line"><a name="l02044"></a><span class="lineno"> 2044</span>&#160;            this-&gt;<a class="code" href="a00254.html#a23a685d6e4b2d7a57f91328ab163f338">enable</a> = a;</div>
-<div class="line"><a name="l02045"></a><span class="lineno"> 2045</span>&#160;        }</div>
-<div class="ttc" id="aa00254_html_a23a685d6e4b2d7a57f91328ab163f338"><div class="ttname"><a href="a00254.html#a23a685d6e4b2d7a57f91328ab163f338">Event::NodeHandle::enable</a></div><div class="ttdeci">bool * enable</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l02041">tools.h:2041</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<h2 class="groupheader">成员函数说明</h2>
-<a id="aa6c3c77f6846ecd62b17f27b0003d598"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa6c3c77f6846ecd62b17f27b0003d598">&#9670;&nbsp;</a></span>resume()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Event::NodeHandle::resume </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l02051">2051</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l02051"></a><span class="lineno"> 2051</span>&#160;                            {</div>
-<div class="line"><a name="l02052"></a><span class="lineno"> 2052</span>&#160;            *<a class="code" href="a00254.html#a23a685d6e4b2d7a57f91328ab163f338">enable</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l02053"></a><span class="lineno"> 2053</span>&#160;        }</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="ae038c558c5da4aaa60e4bf5abf8dd572"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae038c558c5da4aaa60e4bf5abf8dd572">&#9670;&nbsp;</a></span>stop()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Event::NodeHandle::stop </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l02047">2047</a> 行定义.</p>
-<div class="fragment"><div class="line"><a name="l02047"></a><span class="lineno"> 2047</span>&#160;                          {</div>
-<div class="line"><a name="l02048"></a><span class="lineno"> 2048</span>&#160;            *<a class="code" href="a00254.html#a23a685d6e4b2d7a57f91328ab163f338">enable</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l02049"></a><span class="lineno"> 2049</span>&#160;        }</div>
-</div><!-- fragment -->
-</div>
-</div>
-<h2 class="groupheader">类成员变量说明</h2>
-<a id="a23a685d6e4b2d7a57f91328ab163f338"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a23a685d6e4b2d7a57f91328ab163f338">&#9670;&nbsp;</a></span>enable</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool* Event::NodeHandle::enable</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l02041">2041</a> 行定义.</p>
-
-</div>
-</div>
-<hr/>该类的文档由以下文件生成:<ul>
-<li><a class="el" href="a00026_source.html">tools.h</a></li>
-</ul>
-</div><!-- contents -->
+<p>发送消息级日志 </p><div class="fragment"><div class="line"><a name="a0"></a><a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a name="a1"></a><a class="code" href="a00054.html#a0d6fe55d99b2fafba4605fba7e830168">Info</a>(<span class="keywordtype">string</span>) </div>
+<div class="ttc" id="aa00010_html_a692fa757310841433964360f3f112004"><div class="ttname"><a href="a00010.html#a692fa757310841433964360f3f112004">MiraiCP::logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">声明全局日志对象</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00531">miraiCP.hpp:531</a></div></div>
+<div class="ttc" id="aa00054_html_a0d6fe55d99b2fafba4605fba7e830168"><div class="ttname"><a href="a00054.html#a0d6fe55d99b2fafba4605fba7e830168">MiraiCP::Logger_interface::Info</a></div><div class="ttdeci">void Info(const std::string &amp;, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送普通(info级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02347">miraiCP.hpp:2347</a></div></div>
+</div><!-- fragment --><p> 发送警告级日志 </p><div class="fragment"><div class="line"><a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a name="a2"></a><a class="code" href="a00054.html#ac5fdb7f72a1d9b8bb99a3ef1300c094c">Warning</a>(<span class="keywordtype">string</span>) </div>
+<div class="ttc" id="aa00054_html_ac5fdb7f72a1d9b8bb99a3ef1300c094c"><div class="ttname"><a href="a00054.html#ac5fdb7f72a1d9b8bb99a3ef1300c094c">MiraiCP::Logger_interface::Warning</a></div><div class="ttdeci">void Warning(const std::string &amp;, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送警告(warning级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02339">miraiCP.hpp:2339</a></div></div>
+</div><!-- fragment --><p> 发送错误级日志 </p><div class="fragment"><div class="line"><a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a name="a3"></a><a class="code" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">Error</a>(<span class="keywordtype">string</span>) </div>
+<div class="ttc" id="aa00054_html_ace9bbedca050fc72d1592440d16bd8f7"><div class="ttname"><a href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">MiraiCP::Logger_interface::Error</a></div><div class="ttdeci">void Error(const std::string &amp;, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送错误(error级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02343">miraiCP.hpp:2343</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="a00242.html">Event</a></li><li class="navelem"><a class="el" href="a00254.html">NodeHandle</a></li>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:01 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

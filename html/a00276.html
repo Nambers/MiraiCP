@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 构建聊天记录</title>
+<title>MiraiCP: 踢出群成员</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,24 +89,44 @@ $(document).ready(function(){initNavTree('a00276.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">构建聊天记录</div>  </div>
+<div class="title">踢出群成员</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>构建一条聊天记录 第一个参数是聊天记录发生的地方 然后是每条信息</p>
-<div class="fragment"><div class="line">*<a name="_a0"></a><a class="code" href="a00170.html">ForwardMessage</a>(&amp;e.group,</div>
-<div class="line">{</div>
-<div class="line">    ForwardNode(1930893235, <span class="stringliteral">&quot;Eritque arcus&quot;</span>, <span class="stringliteral">&quot;hahaha&quot;</span>, 1),</div>
-<div class="line">    ForwardNode(1930893235, <span class="stringliteral">&quot;Eritque arcus&quot;</span>, <span class="stringliteral">&quot;hahaha&quot;</span>, -1)</div>
-<div class="line">}).<a name="a1"></a><a class="code" href="a00170.html#a8bb5db9b77ded55f8c3aded9f692a9a3">sendTo</a>(&amp;e.group);</div>
-<div class="ttc" id="aa00170_html"><div class="ttname"><a href="a00170.html">ForwardMessage</a></div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01208">tools.h:1208</a></div></div>
-<div class="ttc" id="aa00170_html_a8bb5db9b77ded55f8c3aded9f692a9a3"><div class="ttname"><a href="a00170.html#a8bb5db9b77ded55f8c3aded9f692a9a3">ForwardMessage::sendTo</a></div><div class="ttdeci">void sendTo(Contact *c, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送给群或好友或群成员</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00231">tools.cpp:231</a></div></div>
+<p>踢出这个群成员 </p><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reason</td><td>- 原因</td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="fragment"><div class="line"><a name="a0"></a><a class="code" href="a00010.html#a5a9e6023efc1096a03af0c6f20da6dcb">procession</a>-&gt;<a name="a1"></a><a class="code" href="a00234.html#a10511e7e47c52047d9d3072128f1fc50">registerEvent</a>([](GroupMessageEvent e) {</div>
+<div class="line"> <span class="keywordflow">try</span> {</div>
+<div class="line">     Member m = Member(qqid, e.group.id(), e.bot.id());</div>
+<div class="line">     m.Kick(<span class="stringliteral">&quot;this_is_reason&quot;</span>);</div>
+<div class="line"> }</div>
+<div class="line"> <span class="keywordflow">catch</span> (BotException err) {</div>
+<div class="line">     <span class="comment">//权限不足</span></div>
+<div class="line">     <a name="a2"></a><a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a name="a3"></a><a class="code" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">Error</a>(err.what());</div>
+<div class="line"> }</div>
+<div class="line"> <span class="keywordflow">catch</span> (MemberException err) {</div>
+<div class="line">     <span class="keywordflow">if</span> (err.type == 1) {</div>
+<div class="line">         <span class="comment">//找不到群</span></div>
+<div class="line">     }</div>
+<div class="line">     <span class="keywordflow">if</span> (err.type == 2) {</div>
+<div class="line">         <span class="comment">//找不到群成员</span></div>
+<div class="line">     }</div>
+<div class="line"> }</div>
+<div class="line"> });</div>
+<div class="ttc" id="aa00010_html_a5a9e6023efc1096a03af0c6f20da6dcb"><div class="ttname"><a href="a00010.html#a5a9e6023efc1096a03af0c6f20da6dcb">MiraiCP::procession</a></div><div class="ttdeci">Event * procession</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02261">miraiCP.hpp:2261</a></div></div>
+<div class="ttc" id="aa00010_html_a692fa757310841433964360f3f112004"><div class="ttname"><a href="a00010.html#a692fa757310841433964360f3f112004">MiraiCP::logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">声明全局日志对象</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00531">miraiCP.hpp:531</a></div></div>
+<div class="ttc" id="aa00054_html_ace9bbedca050fc72d1592440d16bd8f7"><div class="ttname"><a href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">MiraiCP::Logger_interface::Error</a></div><div class="ttdeci">void Error(const std::string &amp;, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送错误(error级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02343">miraiCP.hpp:2343</a></div></div>
+<div class="ttc" id="aa00234_html_a10511e7e47c52047d9d3072128f1fc50"><div class="ttname"><a href="a00234.html#a10511e7e47c52047d9d3072128f1fc50">MiraiCP::Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02250">miraiCP.hpp:2250</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

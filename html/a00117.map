@@ -1,5 +1,5 @@
-<map id="RecallException" name="RecallException">
-<area shape="rect" id="node1" title=" " alt="" coords="5,285,160,377"/>
-<area shape="rect" id="node2" href="$a00086.html" title="总异常抽象类" alt="" coords="16,131,149,237"/>
-<area shape="rect" id="node3" title=" " alt="" coords="31,5,135,83"/>
+<map id="MiraiCP::IllegalArgumentException" name="MiraiCP::IllegalArgumentException">
+<area shape="rect" id="node1" title="参数错误" alt="" coords="5,285,187,421"/>
+<area shape="rect" id="node2" href="$a00078.html" title="总异常抽象类" alt="" coords="6,131,186,237"/>
+<area shape="rect" id="node3" title=" " alt="" coords="44,5,148,83"/>
 </map>

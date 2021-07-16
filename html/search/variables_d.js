@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['name_596',['name',['../a00154.html#aaeef98e2d5caaa1521950a5a4446efe7',1,'RemoteFile::name()'],['../a00166.html#ae41172edb72a9170e333df82c4e26057',1,'ForwardNode::name()'],['../a00190.html#a7c9e10587d34c3f596049248b1d319eb',1,'Group::GroupSetting::name()']]],
-  ['next_597',['next',['../a00250.html#a1f3b94e59db2ab23334c1a621378cb2c',1,'Event::Node']]],
-  ['nextnode_598',['nextNode',['../a00246.html#a8aba6f789c7da40ca1af2a488ec1c13e',1,'Event::Node0']]],
-  ['nfhead_599',['NFHead',['../a00242.html#a2b734821b1581f618a35b7cf6125b2d4',1,'Event']]],
-  ['nftail_600',['NFTail',['../a00242.html#a23e4615a0965835c910b698c6866cfe8',1,'Event']]],
-  ['nick_601',['nick',['../a00214.html#a41d9f54c00030a6467697865ae5bfeaf',1,'NewFriendRequestEvent']]],
-  ['nickornamecard_602',['nickornamecard',['../a00162.html#abd26762cdc8f111121ca88c347737a9f',1,'LowLevelAPI::info']]]
+  ['name_607',['name',['../a00014.html#ad54904ede1b73aa9a0a5f18c864e51a8',1,'MiraiCP::PluginConfig::name()'],['../a00146.html#a5c367cbfa0e70c35e358945c0d985617',1,'MiraiCP::RemoteFile::name()'],['../a00158.html#a49223e8004d6609c11f11154ef9540ae',1,'MiraiCP::ForwardNode::name()'],['../a00182.html#ae29352ebb0325fd3b035b1c65be1092f',1,'MiraiCP::Group::GroupSetting::name()']]],
+  ['next_608',['next',['../a00242.html#acd5f610d65fa78c821614a93059bdd24',1,'MiraiCP::Event::Node']]],
+  ['nextnode_609',['nextNode',['../a00238.html#a66863b273d391af4a09543020473fcf7',1,'MiraiCP::Event::Node0']]],
+  ['nfhead_610',['NFHead',['../a00234.html#abfa93dd90bc65f18bd28f00268a6ef94',1,'MiraiCP::Event']]],
+  ['nftail_611',['NFTail',['../a00234.html#a2bab8f0ea0648d9dbd9cce5d9db0877a',1,'MiraiCP::Event']]],
+  ['nick_612',['nick',['../a00206.html#a108de7859ce43f1c549f14b873e51f8a',1,'MiraiCP::NewFriendRequestEvent']]],
+  ['nickornamecard_613',['nickornamecard',['../a00154.html#abc3f2c3176f05d64751446e8760595df',1,'MiraiCP::LowLevelAPI::info']]]
 ];

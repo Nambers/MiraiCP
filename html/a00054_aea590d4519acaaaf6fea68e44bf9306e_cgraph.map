@@ -1,0 +1,8 @@
+<map id="MiraiCP::Logger_interface::Info" name="MiraiCP::Logger_interface::Info">
+<area shape="rect" id="node1" title="发送普通(info级日志)" alt="" coords="5,39,176,80"/>
+<area shape="rect" id="node2" href="$a00054.html#a0d6fe55d99b2fafba4605fba7e830168" title="发送普通(info级日志)" alt="" coords="224,5,395,47"/>
+<area shape="rect" id="node4" href="$a00050.html#a9b46bf5804f88f2504d97c87d3e1b7fc" title="输出当前内容, 会自动转码" alt="" coords="242,71,377,112"/>
+<area shape="rect" id="node3" href="$a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="451,5,621,47"/>
+<area shape="rect" id="node5" href="$a00038.html#ae7bf212fddf60af59042677c3a7753a5" title="从miraicode转义到正常" alt="" coords="443,71,629,112"/>
+<area shape="rect" id="node6" href="$a00038.html#aa8a5d5266e279711effa33d3cefecaa1" title="替换全部在一个字符串中." alt="" coords="677,78,835,105"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="MiraiCP::LowLevelAPI::getInfoSource" name="MiraiCP::LowLevelAPI::getInfoSource">
+<area shape="rect" id="node1" title="取该联系人的一些信息" alt="" coords="491,49,640,90"/>
+<area shape="rect" id="node2" href="$a00170.html#a2f8ac79d791cc8757a6608cc895ec158" title="刷新当前对象信息" alt="" coords="258,5,437,32"/>
+<area shape="rect" id="node4" href="$a00174.html#a60d4dba63d255398c3b95053a4e9de57" title="刷新当前对象信息" alt="" coords="252,56,443,83"/>
+<area shape="rect" id="node6" href="$a00178.html#ac5fad9ce35def74b66ba24bb7821cb34" title="刷新群聊信息" alt="" coords="258,107,437,133"/>
+<area shape="rect" id="node3" href="$a00170.html#afeb4038f8101deba30dfc834bc47c807" title=" " alt="" coords="27,5,183,32"/>
+<area shape="rect" id="node5" href="$a00174.html#a077555680a65e4ff7da00e45e7808a33" title=" " alt="" coords="15,56,194,83"/>
+<area shape="rect" id="node7" href="$a00178.html#a8e3040a60fd31298dd76d6826db96d77" title=" " alt="" coords="27,107,182,133"/>
+<area shape="rect" id="node8" href="$a00178.html#a60012c688aeb0c0c22ed9cb8e8981af9" title="更新群设置, 即覆盖服务器上的群设置" alt="" coords="5,157,204,184"/>
+</map>

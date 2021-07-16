@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['_7econfig_305',['~Config',['../a00062.html#a543dce59b66475c5108088ee4ce1cdfc',1,'Config']]],
-  ['_7eevent_306',['~Event',['../a00242.html#a7704ec01ce91e673885792054214b3d2',1,'Event']]]
+  ['_7econfig_313',['~Config',['../a00042.html#a377601a70d90a3cadd9291ad9adc8b19',1,'MiraiCP::Config']]],
+  ['_7eevent_314',['~Event',['../a00234.html#a1d144eb67c82e08e9634c1b2738960af',1,'MiraiCP::Event']]]
 ];

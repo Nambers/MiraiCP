@@ -1,9 +1,16 @@
 var a00166 =
 [
-    [ "ForwardNode", "a00166.html#a6c668b871edbc04ecf9a09ab51f2d2f0", null ],
-    [ "ForwardNode", "a00166.html#aa102ad9c03fb6dc4c7989592ddf4fb01", null ],
-    [ "id", "a00166.html#a62b34a92a68a6383171a38797491a084", null ],
-    [ "message", "a00166.html#a163afb3054e6bd7841ff622f4909b686", null ],
-    [ "name", "a00166.html#ae41172edb72a9170e333df82c4e26057", null ],
-    [ "time", "a00166.html#a0b0920001d3c5f8371d1321e804bda1e", null ]
+    [ "Bot", "a00166.html#a36c73295660fdf1cade1315602741a68", null ],
+    [ "avatarUrl", "a00166.html#a6b0ebecc9de3fdf10852b341c88561c0", null ],
+    [ "check", "a00166.html#a717a5ccc1e5be516c5caacf9ce937b61", null ],
+    [ "FriendListToString", "a00166.html#aa4c59d6acabbfed3e0450cb3e2257c6b", null ],
+    [ "getFriendList", "a00166.html#a6846aa3a20bf5d142f11ac41d1014891", null ],
+    [ "getGroupList", "a00166.html#a2fed2349f89a4f1d3b99d41f2c3f1963", null ],
+    [ "GroupListToString", "a00166.html#a281b2ac226680cde671a28dd1e5d5e87", null ],
+    [ "nick", "a00166.html#a14f2c875a64bf63c487be2f45454f517", null ],
+    [ "refreshInfo", "a00166.html#a378ee0cfc8a5ef5306ce01e98776e4fc", null ],
+    [ "_avatarUrl", "a00166.html#a2347f261667afe42cbe52d1c38d6618b", null ],
+    [ "_nick", "a00166.html#ad38f34b4d2230de460573afd5a967e74", null ],
+    [ "id", "a00166.html#a8aee80c77049860ef1f72d317324a726", null ],
+    [ "inited", "a00166.html#a0c7162dd94ffde65ac85e2fa31dd327e", null ]
 ];

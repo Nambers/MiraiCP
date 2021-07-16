@@ -1,0 +1,5 @@
+<map id="MiraiCP::Image::toMiraiCode" name="MiraiCP::Image::toMiraiCode">
+<area shape="rect" id="node1" title="取图片Mirai码" alt="" coords="5,13,193,39"/>
+<area shape="rect" id="node2" href="$a00038.html#a01f4fe41f8bef55b95953750f5cfb0c2" title="转义miraicode格式" alt="" coords="241,5,412,47"/>
+<area shape="rect" id="node3" href="$a00038.html#aa8a5d5266e279711effa33d3cefecaa1" title="替换全部在一个字符串中." alt="" coords="460,13,617,39"/>
+</map>

@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['deletefriend_400',['deleteFriend',['../a00178.html#aa51792d32e55433d321d0635e1506610',1,'Friend']]],
-  ['deserializationfromjson_401',['deserializationFromJson',['../a00138.html#aafc428cdb4c1920864bf747ad7dce9f2',1,'Contact']]],
-  ['deserializationfromstring_402',['deserializationFromString',['../a00138.html#a1ae828255543de1ff394bc79e9262cc7',1,'Contact']]],
-  ['deserializefromstring_403',['deserializeFromString',['../a00130.html#a593939fc75a52d99f210da0482a85443',1,'MessageSource::deserializeFromString()'],['../a00154.html#a4f9a12c1a71dfea6ba98624fb29d3f2f',1,'RemoteFile::deserializeFromString()']]],
-  ['detach_404',['detach',['../a00050.html#a807b673ce4d4199cf0bfdfff5521d2c0',1,'threadManager']]],
-  ['dllmain_405',['DllMain',['../a00005.html#a26e64fb39b69bcd9d1274d279f1561b9',1,'dllmain.cpp']]]
+  ['deletefriend_406',['deleteFriend',['../a00170.html#a36ecb7d2dd4f24f67fb30ea6dea42557',1,'MiraiCP::Friend']]],
+  ['deserializationfromjson_407',['deserializationFromJson',['../a00130.html#a00b5120fdefae37aee9bc812ea5368b7',1,'MiraiCP::Contact']]],
+  ['deserializationfromstring_408',['deserializationFromString',['../a00130.html#a735dc18a5470f8c2a1ac78434317a2a0',1,'MiraiCP::Contact']]],
+  ['deserializefromstring_409',['deserializeFromString',['../a00122.html#a1f98db6bbdf6b7d178bf92f55fd2e4dc',1,'MiraiCP::MessageSource::deserializeFromString()'],['../a00146.html#a86d0f3d9b2d7ef5aab70d377297528fc',1,'MiraiCP::RemoteFile::deserializeFromString()']]],
+  ['detach_410',['detach',['../a00030.html#a72b77deebd7be1c800b73ebd4b2daa09',1,'MiraiCP::ThreadManager']]]
 ];

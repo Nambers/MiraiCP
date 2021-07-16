@@ -1,0 +1,6 @@
+<map id="MiraiCP::ForwardMessage::ForwardMessage" name="MiraiCP::ForwardMessage::ForwardMessage">
+<area shape="rect" id="node1" title=" " alt="" coords="5,49,180,90"/>
+<area shape="rect" id="node2" href="$a00130.html#a494097908a91ab396d7cf3a9c2b612fc" title="当type为3的时候存在，否则为0，可以看作补充id" alt="" coords="228,5,399,32"/>
+<area shape="rect" id="node3" href="$a00130.html#ab0038fd9b0d4e929f5adb0a5d4834c1a" title="id在全部情况存在" alt="" coords="244,56,383,83"/>
+<area shape="rect" id="node4" href="$a00130.html#aac6c8dfc706a72e0a17035809871f5a6" title="当前对象类型" alt="" coords="236,107,391,133"/>
+</map>

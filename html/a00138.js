@@ -1,29 +1,6 @@
 var a00138 =
 [
-    [ "Contact", "a00138.html#ae39444f378e6de7fd6c3e60981949af5", null ],
-    [ "Contact", "a00138.html#acff216bf0459571db3304576f563f6cc", null ],
-    [ "avatarUrl", "a00138.html#a10cf00a3c2dfef0bdc29c3f89e508293", null ],
-    [ "botid", "a00138.html#a869c10fc8e1abeedc10d805576b1450a", null ],
-    [ "deserializationFromJson", "a00138.html#aafc428cdb4c1920864bf747ad7dce9f2", null ],
-    [ "deserializationFromString", "a00138.html#a1ae828255543de1ff394bc79e9262cc7", null ],
-    [ "groupid", "a00138.html#a07e7ddca539bf8e5ac2d2ad00d8b7ba4", null ],
-    [ "id", "a00138.html#a220e55b907d54958cd2afb95e65da5a1", null ],
-    [ "nickOrNameCard", "a00138.html#a3f78c5f66d0b71ad06267c6a3b492066", null ],
-    [ "refreshInfo", "a00138.html#a3d51e34fe41d6da3b47ed0ae311bcfc8", null ],
-    [ "sendMiraiCode", "a00138.html#abd2cdd5e1aa11add1f75ef4dd6454293", null ],
-    [ "sendMiraiCode", "a00138.html#a7f3578533d424fcaada52bc32225d5d9", null ],
-    [ "sendMiraiCode", "a00138.html#a46348753dfc0d1ecaf658d93511bd721", null ],
-    [ "sendMsg", "a00138.html#a93a378bd7b596f11bc709b0268aa4627", null ],
-    [ "sendMsg", "a00138.html#ac8e7ac7c9330803c5e1862bff68096cd", null ],
-    [ "sendVoice", "a00138.html#afeb2b3da5b221e8120cc532371f946cc", null ],
-    [ "serialization", "a00138.html#a6739337b623df49bc51e2fc997bfd6e8", null ],
-    [ "serializationToString", "a00138.html#a190dd1c2ecfccf67edc3d2b1cff87835", null ],
-    [ "type", "a00138.html#a182b686fa824fe5c9a3a5181f873e2a1", null ],
-    [ "uploadImg", "a00138.html#a3c3699a0d797da44bd30e12153a140f3", null ],
-    [ "_avatarUrl", "a00138.html#a92b8feb1a780637b71e06f3f9e954043", null ],
-    [ "_botid", "a00138.html#a88b041d798fb05e1347c51d149c12a21", null ],
-    [ "_groupid", "a00138.html#ad10855c0071226743dffc553dc913b88", null ],
-    [ "_id", "a00138.html#a12ab960a72b55b8e7562d04d0b4bd6e0", null ],
-    [ "_nickOrNameCard", "a00138.html#ae8c0a3a8718a84d9766d528df278ad4b", null ],
-    [ "_type", "a00138.html#a7841db9af58406a50d53d0ad6f7fa374", null ]
+    [ "md5", "a00138.html#a5686609592f395d76a6cfac8ee8c4c67", null ],
+    [ "sha1", "a00138.html#a8bf2fa80fa89d67178f207c5162a0d4f", null ],
+    [ "url", "a00138.html#ada3eea457cb42af4fba1de73937d7e3b", null ]
 ];

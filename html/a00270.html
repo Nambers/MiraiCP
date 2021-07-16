@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 取一个miraicode字符串中全部的图片id</title>
+<title>MiraiCP: 通过文本构建并发送小程序卡片</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,34 +89,59 @@ $(document).ready(function(){initNavTree('a00270.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">取一个miraicode字符串中全部的图片id</div>  </div>
+<div class="title">通过文本构建并发送小程序卡片</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>取一个miraicode字符串中全部的图片id，详情见Image </p><dl class="section see"><dt>参见</dt><dd><a class="el" href="a00134.html" title="图像类声明">Image</a> </dd></dl>
-<dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">miraicode的字符串</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>返回</dt><dd>vector容器，每一项为一个图片id</dd></dl>
-<div class="fragment"><div class="line">vector&lt;string&gt; temp = Image::GetImgIdFromMiraiCode(param.message);</div>
-<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; temp.size(); i++) {</div>
-<div class="line">   <a name="a0"></a><a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a name="a1"></a><a class="code" href="a00074.html#a0c06be585935f38b4351f8c207b97b41">Info</a>(temp[i]);</div>
-<div class="line">   <a class="code" href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a>-&gt;<a class="code" href="a00074.html#a0c06be585935f38b4351f8c207b97b41">Info</a>(<span class="stringliteral">&quot;图片下载地址:&quot;</span> + <a name="_a2"></a><a class="code" href="a00134.html">Image</a>(param.env, temp[i]).<a name="a3"></a><a class="code" href="a00134.html#a33f8850fcab39bb5ca332a04400c8d50">queryURL</a>());</div>
-<div class="line"> }</div>
-<div class="ttc" id="aa00011_html_a0009c186c3629201f6c24eded36605f4"><div class="ttname"><a href="a00011.html#a0009c186c3629201f6c24eded36605f4">logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">全局日志指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00010">pch.cpp:10</a></div></div>
-<div class="ttc" id="aa00074_html_a0c06be585935f38b4351f8c207b97b41"><div class="ttname"><a href="a00074.html#a0c06be585935f38b4351f8c207b97b41">Logger::Info</a></div><div class="ttdeci">void Info(const std::string &amp;, unsigned long long botid=-1, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送普通(info级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00103">tools.cpp:103</a></div></div>
-<div class="ttc" id="aa00134_html"><div class="ttname"><a href="a00134.html">Image</a></div><div class="ttdoc">图像类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l00719">tools.h:719</a></div></div>
-<div class="ttc" id="aa00134_html_a33f8850fcab39bb5ca332a04400c8d50"><div class="ttname"><a href="a00134.html#a33f8850fcab39bb5ca332a04400c8d50">Image::queryURL</a></div><div class="ttdeci">std::string queryURL(JNIEnv *=manager-&gt;getEnv()) const</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00269">tools.cpp:269</a></div></div>
-</div><!-- fragment --><div class="fragment"></div><!-- fragment --><p>字符串中全部的图片id </p>
-</div><!-- contents -->
+<div class="fragment"><div class="line"><a name="a0"></a><a class="code" href="a00010.html#a5a9e6023efc1096a03af0c6f20da6dcb">procession</a>-&gt;<a name="a1"></a><a class="code" href="a00234.html#a10511e7e47c52047d9d3072128f1fc50">registerEvent</a>([](GroupMessageEvent e) {</div>
+<div class="line">    <span class="comment">//风格1，适合文字展示，不能交互,无大图</span></div>
+<div class="line">    <span class="comment">//图标地址，应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接</span></div>
+<div class="line">    <span class="keywordtype">string</span> icon = <span class="stringliteral">&quot;http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0&quot;</span>;</div>
+<div class="line">    <span class="comment">//小标题</span></div>
+<div class="line">    <span class="keywordtype">string</span> titles = <span class="stringliteral">&quot;{\&quot;title\&quot;:\&quot;hi\&quot;, \&quot;value\&quot;:\&quot;test3\&quot;}&quot;</span>;</div>
+<div class="line">    <span class="comment">//下面的按钮，但是不能按</span></div>
+<div class="line">    <span class="keywordtype">string</span> buttons = <span class="stringliteral">&quot;{\&quot;name\&quot;:\&quot;Test4\&quot;,\&quot;action\&quot;:\&quot;plugin\&quot;,\&quot;actionData\&quot;:\&quot;https://baidu.com\&quot;}&quot;</span>;</div>
+<div class="line">    <span class="keywordtype">string</span> x = <span class="stringliteral">&quot;{\&quot;app\&quot;:\&quot;com.tencent.miniapp\&quot;,\&quot;desc\&quot;:\&quot;\&quot;,\&quot;view\&quot;:\&quot;notification\&quot;,\&quot;ver\&quot;:\&quot;0.0.0.1\&quot;,\&quot;prompt\&quot;:\&quot;[应用]\&quot;,\&quot;appID\&quot;:\&quot;\&quot;,\&quot;sourceName\&quot;:\&quot;\&quot;,\&quot;actionData\&quot;:\&quot;\&quot;,\&quot;actionData_A\&quot;:\&quot;\&quot;,\&quot;sourceUrl\&quot;:\&quot;\&quot;,\&quot;meta\&quot;:{\&quot;notification\&quot;:{\&quot;appInfo\&quot;:&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;{\&quot;appName\&quot;:\&quot;Test1\&quot;,\&quot;appType\&quot;:4,\&quot;appid\&quot;:1109659848,&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;iconUrl\&quot;:\&quot;&quot;</span>+icon+<span class="stringliteral">&quot;\&quot;},&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;data\&quot;:[&quot;</span>+titles+<span class="stringliteral">&quot;],&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;title\&quot;:\&quot;Test2\&quot;,\&quot;button\&quot;:&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;[&quot;</span>+buttons+<span class="stringliteral">&quot;],&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;emphasis_keyword\&quot;:\&quot;\&quot;}},\&quot;text\&quot;:\&quot;\&quot;,\&quot;sourceAd\&quot;:\&quot;\&quot;}&quot;</span>;</div>
+<div class="line">    e.group.SendMiraiCode(LightApp(x).toString());</div>
+<div class="line">    <span class="comment">//风格2，不能交互，有预览图</span></div>
+<div class="line">    <span class="comment">//icon图标,应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接</span></div>
+<div class="line">    <span class="keywordtype">string</span> icon1 = <span class="stringliteral">&quot;http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0&quot;</span>;</div>
+<div class="line">    <span class="comment">//预览图(大图),应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接</span></div>
+<div class="line">    <span class="keywordtype">string</span> preview1 = icon1;</div>
+<div class="line">    <span class="keywordtype">string</span> a = <span class="stringliteral">&quot;{\&quot;config\&quot;:&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;{\&quot;height\&quot;:0,\&quot;forward\&quot;:1,\&quot;ctime\&quot;:0,\&quot;width\&quot;:0,\&quot;type\&quot;:\&quot;normal\&quot;,\&quot;token\&quot;:\&quot;\&quot;,\&quot;autoSize\&quot;:0},&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;prompt\&quot;:\&quot;[QQ小程序]\&quot;,\&quot;app\&quot;:\&quot;com.tencent.miniapp_01\&quot;,\&quot;ver\&quot;:\&quot;1.0.0.103\&quot;,\&quot;view\&quot;:\&quot;view_8C8E89B49BE609866298ADDFF2DBABA4\&quot;,&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;meta\&quot;:{\&quot;detail_1\&quot;:{\&quot;appid\&quot;:\&quot;1110081493\&quot;,\&quot;preview\&quot;:\&quot;&quot;</span>+preview1+<span class="stringliteral">&quot;\&quot;,\&quot;shareTemplateData\&quot;:{},&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;gamePointsUrl\&quot;:\&quot;\&quot;,\&quot;gamePoints\&quot;:\&quot;\&quot;,\&quot;url\&quot;:\&quot;m.q.qq.com\&quot;,\&quot;scene\&quot;:0,\&quot;desc\&quot;:\&quot;Test5\&quot;,\&quot;title\&quot;:\&quot;Test6\&quot;,&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;host\&quot;:{\&quot;uin\&quot;:1000000,\&quot;nick\&quot;:\&quot;应用消息\&quot;},&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;shareTemplateId\&quot;:\&quot;8C8E89B49BE609866298ADDFF2DBABA4\&quot;,\&quot;icon\&quot;:\&quot;&quot;</span>+icon1+<span class="stringliteral">&quot;\&quot;,\&quot;showLittleTail\&quot;:\&quot;\&quot;}},\&quot;desc\&quot;:\&quot;\&quot;}&quot;</span>;</div>
+<div class="line">    e.group.SendMiraiCode(LightApp(a).toString());</div>
+<div class="line">    <span class="comment">//风格3，可以跳转到网址，有预览图</span></div>
+<div class="line">    <span class="comment">//跳转链接</span></div>
+<div class="line">    <span class="keywordtype">string</span> url = <span class="stringliteral">&quot;https://www.baidu.com&quot;</span>;</div>
+<div class="line">    <span class="comment">//icon图标,应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接</span></div>
+<div class="line">    <span class="keywordtype">string</span> icon2 = <span class="stringliteral">&quot;http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0&quot;</span>;</div>
+<div class="line">    <span class="comment">//预览图(大图),应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接</span></div>
+<div class="line">    <span class="keywordtype">string</span> preview = icon2;</div>
+<div class="line">    <span class="keywordtype">string</span> b = <span class="stringliteral">&quot;{\&quot;config\&quot;:{\&quot;height\&quot;:0,\&quot;forward\&quot;:1,\&quot;ctime\&quot;:0,\&quot;width\&quot;:0,\&quot;type\&quot;:\&quot;normal\&quot;,\&quot;token\&quot;:\&quot;\&quot;,\&quot;autoSize\&quot;:0},&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;prompt\&quot;:\&quot;[QQ小程序]\&quot;,\&quot;app\&quot;:\&quot;com.tencent.miniapp_01\&quot;,\&quot;ver\&quot;:\&quot;0.0.0.1\&quot;,\&quot;view\&quot;:\&quot;view_8C8E89B49BE609866298ADDFF2DBABA4\&quot;,&quot;</span></div>
+<div class="line">        <span class="stringliteral">&quot;\&quot;meta\&quot;:{\&quot;detail_1\&quot;:{\&quot;appid\&quot;:\&quot;1109937557\&quot;,\&quot;preview\&quot;:\&quot;&quot;</span>+preview+<span class="stringliteral">&quot;\&quot;,\&quot;shareTemplateData\&quot;:{},\&quot;gamePointsUrl\&quot;:\&quot;\&quot;,\&quot;gamePoints\&quot;:\&quot;\&quot;,\&quot;url\&quot;:\&quot;m.q.qq.com\&quot;,\&quot;scene\&quot;:0,\&quot;desc\&quot;:\&quot;Test1\&quot;,\&quot;title\&quot;:\&quot;Test3\&quot;,\&quot;host\&quot;:{\&quot;uin\&quot;:0,\&quot;nick\&quot;:\&quot;\&quot;},\&quot;shareTemplateId\&quot;:\&quot;8C8E89B49BE609866298ADDFF2DBABA4\&quot;,\&quot;icon\&quot;:\&quot;&quot;</span>+icon+<span class="stringliteral">&quot;\&quot;,\&quot;qqdocurl\&quot;:\&quot;&quot;</span>+url+<span class="stringliteral">&quot;\&quot;,\&quot;showLittleTail\&quot;:\&quot;\&quot;}},\&quot;desc\&quot;:\&quot;\&quot;}&quot;</span>;</div>
+<div class="line">    e.group.SendMiraiCode(LightApp(b).toString());</div>
+<div class="line">    });</div>
+<div class="ttc" id="aa00010_html_a5a9e6023efc1096a03af0c6f20da6dcb"><div class="ttname"><a href="a00010.html#a5a9e6023efc1096a03af0c6f20da6dcb">MiraiCP::procession</a></div><div class="ttdeci">Event * procession</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02261">miraiCP.hpp:2261</a></div></div>
+<div class="ttc" id="aa00234_html_a10511e7e47c52047d9d3072128f1fc50"><div class="ttname"><a href="a00234.html#a10511e7e47c52047d9d3072128f1fc50">MiraiCP::Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02250">miraiCP.hpp:2250</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

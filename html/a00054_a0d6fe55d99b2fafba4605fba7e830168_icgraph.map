@@ -1,0 +1,7 @@
+<map id="MiraiCP::Logger_interface::Info" name="MiraiCP::Logger_interface::Info">
+<area shape="rect" id="node1" title="发送普通(info级日志)" alt="" coords="649,39,820,80"/>
+<area shape="rect" id="node2" href="$a00054.html#aea590d4519acaaaf6fea68e44bf9306e" title="发送普通(info级日志)" alt="" coords="431,5,601,47"/>
+<area shape="rect" id="node3" href="$a00030.html#a29f1a55d4cb7b78045fd3f2566c59dcc" title=" " alt="" coords="433,71,599,112"/>
+<area shape="rect" id="node4" href="$a00030.html#a365e1740117b0fb9d5990855a26dba4f" title="取env,如果不存在重新获取" alt="" coords="217,71,383,112"/>
+<area shape="rect" id="node5" href="$a00042.html#a377601a70d90a3cadd9291ad9adc8b19" title=" " alt="" coords="5,78,169,105"/>
+</map>

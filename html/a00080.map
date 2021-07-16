@@ -1,9 +1,6 @@
-<map id="BotLogger" name="BotLogger">
-<area shape="rect" id="node1" title="以bot的名义发送日志, 表现格式为: 2021&#45;06&#45;28 09:37:22 [log level]/Bot [botid]: [log content]" alt="" coords="157,939,341,1295"/>
-<area shape="rect" id="node2" href="$a00074.html" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content]" alt="" coords="40,300,247,876"/>
-<area shape="rect" id="node3" href="$a00078.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="28,160,139,237"/>
-<area shape="rect" id="node4" title=" " alt="" coords="5,13,52,90"/>
-<area shape="rect" id="node5" title=" " alt="" coords="77,5,199,97"/>
-<area shape="rect" id="node6" title=" " alt="" coords="163,160,243,237"/>
-<area shape="rect" id="node7" title=" " alt="" coords="271,549,437,627"/>
+<map id="MiraiCP::UploadException" name="MiraiCP::UploadException">
+<area shape="rect" id="node1" title=" " alt="" coords="113,301,288,437"/>
+<area shape="rect" id="node2" href="$a00078.html" title="总异常抽象类" alt="" coords="5,132,185,239"/>
+<area shape="rect" id="node3" title=" " alt="" coords="43,5,147,83"/>
+<area shape="rect" id="node4" title=" " alt="" coords="209,147,264,224"/>
 </map>

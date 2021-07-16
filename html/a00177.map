@@ -1,4 +1,4 @@
-<map id="Friend" name="Friend">
-<area shape="rect" id="node1" title="好友类声明" alt="" coords="27,835,202,1029"/>
-<area shape="rect" id="node2" href="$a00138.html" title="group, friend, member的父类" alt="" coords="5,5,224,787"/>
+<map id="MiraiCP::Group" name="MiraiCP::Group">
+<area shape="rect" id="node1" title="群聊类声明" alt="" coords="6,835,223,1396"/>
+<area shape="rect" id="node2" href="$a00130.html" title="group, friend, member的父类" alt="" coords="5,5,224,787"/>
 </map>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 在事件中构建Group对象</title>
+<title>MiraiCP: 取群文件信息</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,26 +89,34 @@ $(document).ready(function(){initNavTree('a00282.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">在事件中构建Group对象</div>  </div>
+<div class="title">取群文件信息</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>构建以群号构建群对象 </p><dl class="params"><dt>参数</dt><dd>
+<p>取群文件信息,会自动搜索子目录 </p><dl class="params"><dt>参数</dt><dd>
   <table class="params">
-    <tr><td class="paramname">groupid</td><td>群号 </td></tr>
-    <tr><td class="paramname">botid</td><td>机器人id</td></tr>
+    <tr><td class="paramname">path-群文件路径(不带文件名)</td><td></td></tr>
+    <tr><td class="paramname">id-文件id,可空，空则为用路径查找(此时路径要带文件名)</td><td></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="_a0"></a><a class="code" href="a00186.html">Group</a>(this.group.id, <span class="keyword">this</span>.bot.id) </div>
-<div class="ttc" id="aa00186_html"><div class="ttname"><a href="a00186.html">Group</a></div><div class="ttdoc">群聊类声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01420">tools.h:1420</a></div></div>
-</div><!-- fragment --><div class="fragment"></div><!-- fragment --><p>对象 </p>
-</div><!-- contents -->
+<dl class="section attention"><dt>注意</dt><dd>因为群文件允许重名文件存在的特性，该查找并不可靠，只能返回重名文件中的其中一个文件 </dd></dl>
+<dl class="section see"><dt>参见</dt><dd>RemoteFile</dd></dl>
+<div class="fragment"><div class="line"><span class="comment">//根据qq群远程路径(不带文件名)和文件id, 文件id可以在上传返回的RemoteFile类型中获得, 会在子目录中查找如果当前目录未找到</span></div>
+<div class="line"><span class="comment">//根据qq群远程路径(带文件名)找, 不过由于qq群文件允许同名文件这一特性, 返回的文件为群文件中同名文件中随机一个</span></div>
+<div class="line"><a name="a0"></a><a class="code" href="a00010.html#a5a9e6023efc1096a03af0c6f20da6dcb">procession</a>-&gt;<a name="a1"></a><a class="code" href="a00234.html#a10511e7e47c52047d9d3072128f1fc50">registerEvent</a>([](GroupMessageEvent e) {</div>
+<div class="line">   e.group.SendMsg(e.group.getFile(<span class="stringliteral">&quot;/&quot;</span>, <span class="keywordtype">id</span>).name());</div>
+<div class="line">   e.group.SendMsg(e.group.getFile(<span class="stringliteral">&quot;/test.txt&quot;</span>).name());</div>
+<div class="line">   e.group.SendMsg(e.group.getFileListString(<span class="stringliteral">&quot;/&quot;</span>));</div>
+<div class="line">   });</div>
+<div class="ttc" id="aa00010_html_a5a9e6023efc1096a03af0c6f20da6dcb"><div class="ttname"><a href="a00010.html#a5a9e6023efc1096a03af0c6f20da6dcb">MiraiCP::procession</a></div><div class="ttdeci">Event * procession</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02261">miraiCP.hpp:2261</a></div></div>
+<div class="ttc" id="aa00234_html_a10511e7e47c52047d9d3072128f1fc50"><div class="ttname"><a href="a00234.html#a10511e7e47c52047d9d3072128f1fc50">MiraiCP::Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02250">miraiCP.hpp:2250</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

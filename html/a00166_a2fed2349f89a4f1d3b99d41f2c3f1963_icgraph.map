@@ -1,0 +1,4 @@
+<map id="MiraiCP::Bot::getGroupList" name="MiraiCP::Bot::getGroupList">
+<area shape="rect" id="node1" title="取群列表" alt="" coords="228,13,407,39"/>
+<area shape="rect" id="node2" href="$a00166.html#a281b2ac226680cde671a28dd1e5d5e87" title="群列表string形式返回，利于保存" alt="" coords="5,5,180,47"/>
+</map>

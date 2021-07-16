@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 多线程管理</title>
+<title>MiraiCP: 设置loggerhandler的action</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,25 +89,29 @@ $(document).ready(function(){initNavTree('a00256.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">多线程管理</div>  </div>
+<div class="title">设置loggerhandler的action</div>  </div>
 </div><!--header-->
 <div class="contents">
-<pre class="fragment">@brief 结束当前线程的env，也就是释放当前线程缓存的env.
-</pre> <dl class="section note"><dt>注解</dt><dd>不过继续调用getEnv()将再次获取，所以本方法调用后线程也可以通过getEnv重新获取一个env，本方法的作用就是在结束后释放空间</dd></dl>
-<div class="fragment"><div class="line"><span class="keywordtype">void</span> <a name="a0"></a><a class="code" href="a00017.html#a2f5a0b296fa851091b92244aa5da103a">func</a>(){</div>
-<div class="line">     <span class="comment">//do some things</span></div>
-<div class="line">     <span class="comment">// 一个完整的线程应该在结束时调用detach来释放env的空间</span></div>
-<div class="line">     <a name="a1"></a><a class="code" href="a00011.html#a4b4a306a9aed3f0d9ac6f2009f941c9f">manager</a>-&gt;detch();</div>
-<div class="line">}</div>
-<div class="ttc" id="aa00011_html_a4b4a306a9aed3f0d9ac6f2009f941c9f"><div class="ttname"><a href="a00011.html#a4b4a306a9aed3f0d9ac6f2009f941c9f">manager</a></div><div class="ttdeci">threadManager * manager</div><div class="ttdoc">线程管理实例</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00015">pch.cpp:15</a></div></div>
-<div class="ttc" id="aa00017_html_a2f5a0b296fa851091b92244aa5da103a"><div class="ttname"><a href="a00017.html#a2f5a0b296fa851091b92244aa5da103a">func</a></div><div class="ttdeci">void func(unsigned long long i, unsigned long long botid)</div><div class="ttdef"><b>Definition:</b> <a href="a00017_source.html#l00004">Procession.cpp:4</a></div></div>
-</div><!-- fragment --></div><!-- contents -->
+<p>设置loggerhandler的action </p><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>执行的操作 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>参见</dt><dd>Logger::handler</dd></dl>
+<div class="fragment"><div class="line"> <a name="a0"></a><a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a name="a1"></a><a class="code" href="a00054.html#a6cd6aa5f135e8a238df84876aa006a52">registerHandle</a>([](std::string content, <span class="keywordtype">int</span> level){</div>
+<div class="line">    \\do some things</div>
+<div class="line">});</div>
+<div class="ttc" id="aa00010_html_a692fa757310841433964360f3f112004"><div class="ttname"><a href="a00010.html#a692fa757310841433964360f3f112004">MiraiCP::logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">声明全局日志对象</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00531">miraiCP.hpp:531</a></div></div>
+<div class="ttc" id="aa00054_html_a6cd6aa5f135e8a238df84876aa006a52"><div class="ttname"><a href="a00054.html#a6cd6aa5f135e8a238df84876aa006a52">MiraiCP::Logger_interface::registerHandle</a></div><div class="ttdeci">void registerHandle(action action)</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02331">miraiCP.hpp:2331</a></div></div>
+</div><!-- fragment --><div class="fragment"></div><!-- fragment --><p>的action </p>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 上传并发送远程</title>
+<title>MiraiCP: 取string格式群文件列表</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,33 +89,19 @@ $(document).ready(function(){initNavTree('a00284.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">上传并发送远程</div>  </div>
+<div class="title">取string格式群文件列表</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>上传并发送远程(群)文件 </p><dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">path-群文件路径(带文件名),根目录为/</td><td></td></tr>
-    <tr><td class="paramname">filepath-本地文件路径</td><td>(群)文件 <div class="fragment"><div class="line"><a name="a0"></a><a class="code" href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a>-&gt;<a name="a1"></a><a class="code" href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">registerEvent</a>([](<a name="_a2"></a><a class="code" href="a00202.html">GroupMessageEvent</a> e) {</div>
-<div class="line">   <span class="comment">// 发送D:\\ValveUnhandledExceptionFilter.txt本地文件到qq群的 /test.txt 路径</span></div>
-<div class="line">   <a name="_a3"></a><a class="code" href="a00154.html">RemoteFile</a> tmp = e.<a name="a4"></a><a class="code" href="a00202.html#acbc031790011ba7b520a21aec2299f08">group</a>.<a name="a5"></a><a class="code" href="a00186.html#a5c6be84a0330257d8c30f69aa91ef41f">sendFile</a>(<span class="stringliteral">&quot;/test.txt&quot;</span>, <span class="stringliteral">&quot;D:\\ValveUnhandledExceptionFilter.txt&quot;</span>);</div>
-<div class="line">   });</div>
-<div class="ttc" id="aa00011_html_a478af16c6688220a7434630eb9101d74"><div class="ttname"><a href="a00011.html#a478af16c6688220a7434630eb9101d74">procession</a></div><div class="ttdeci">Event * procession</div><div class="ttdoc">全局事件指针</div><div class="ttdef"><b>Definition:</b> <a href="a00011_source.html#l00012">pch.cpp:12</a></div></div>
-<div class="ttc" id="aa00154_html"><div class="ttname"><a href="a00154.html">RemoteFile</a></div><div class="ttdoc">远程(群)文件类型</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01057">tools.h:1057</a></div></div>
-<div class="ttc" id="aa00186_html_a5c6be84a0330257d8c30f69aa91ef41f"><div class="ttname"><a href="a00186.html#a5c6be84a0330257d8c30f69aa91ef41f">Group::sendFile</a></div><div class="ttdeci">RemoteFile sendFile(const std::string &amp;path, const std::string &amp;filepath, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdef"><b>Definition:</b> <a href="a00023_source.html#l00421">tools.cpp:421</a></div></div>
-<div class="ttc" id="aa00202_html"><div class="ttname"><a href="a00202.html">GroupMessageEvent</a></div><div class="ttdoc">群消息事件声明</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01592">tools.h:1592</a></div></div>
-<div class="ttc" id="aa00202_html_acbc031790011ba7b520a21aec2299f08"><div class="ttname"><a href="a00202.html#acbc031790011ba7b520a21aec2299f08">GroupMessageEvent::group</a></div><div class="ttdeci">Group group</div><div class="ttdoc">来源群</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l01595">tools.h:1595</a></div></div>
-<div class="ttc" id="aa00242_html_ad3d76f3c8bd243c17a82a24c5bd135c0"><div class="ttname"><a href="a00242.html#ad3d76f3c8bd243c17a82a24c5bd135c0">Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00026_source.html#l02073">tools.h:2073</a></div></div>
-</div><!-- fragment --></td></tr>
-  </table>
-  </dd>
-</dl>
+<p>取文件列表以字符串形式返回</p>
+<div class="fragment"><div class="line">e.group.SendMsg(e.group.getFileListString(<span class="stringliteral">&quot;/&quot;</span>));</div>
+</div><!-- fragment --><div class="fragment"></div><!-- fragment --><p>格式群文件列表 </p>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

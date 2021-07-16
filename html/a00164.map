@@ -1,6 +1,6 @@
-<map id="ForwardNode" name="ForwardNode">
-<area shape="rect" id="node1" title="聊天记录里每个消息" alt="" coords="126,160,305,340"/>
+<map id="MiraiCP::Bot" name="MiraiCP::Bot">
+<area shape="rect" id="node1" title="当前bot账号信息" alt="" coords="116,160,331,457"/>
 <area shape="rect" id="node2" title=" " alt="" coords="5,5,172,83"/>
-<area shape="rect" id="node3" title=" " alt="" coords="196,5,235,83"/>
-<area shape="rect" id="node4" title=" " alt="" coords="259,5,313,83"/>
+<area shape="rect" id="node3" title=" " alt="" coords="196,5,251,83"/>
+<area shape="rect" id="node4" title=" " alt="" coords="296,5,343,83"/>
 </map>

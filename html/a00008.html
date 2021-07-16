@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: framework.h 文件参考</title>
+<title>MiraiCP: 群成员权限</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,62 +89,101 @@ $(document).ready(function(){initNavTree('a00008.html',''); initResizable(); });
 
 <div class="header">
   <div class="summary">
-<a href="#define-members">宏定义</a>  </div>
+<a href="#var-members">变量</a>  </div>
   <div class="headertitle">
-<div class="title">framework.h 文件参考</div>  </div>
+<div class="title">群成员权限</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;windows.h&gt;</code><br />
-</div><div class="textblock"><div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> framework.h 的引用(Include)关系图:</div>
-<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00009.png" border="0" usemap="#aframework_8h" alt=""/></div>
-<map name="aframework_8h" id="aframework_8h">
-<area shape="rect" title=" " alt="" coords="5,5,97,32"/>
-<area shape="rect" title=" " alt="" coords="10,80,93,107"/>
-</map>
-</div>
-</div><div class="textblock"><div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> 此图展示该文件直接或间接的被哪些文件引用了:</div>
-<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00010.png" border="0" usemap="#aframework_8hdep" alt=""/></div>
-<map name="aframework_8hdep" id="aframework_8hdep">
-<area shape="rect" title=" " alt="" coords="278,5,370,32"/>
-<area shape="rect" href="a00014.html" title=" " alt="" coords="297,80,351,107"/>
-<area shape="rect" href="a00002.html" title=" " alt="" coords="5,155,96,181"/>
-<area shape="rect" href="a00005.html" title=" " alt="" coords="120,155,208,181"/>
-<area shape="rect" href="a00011.html" title=" " alt="" coords="233,155,301,181"/>
-<area shape="rect" href="a00017.html" title=" " alt="" coords="325,155,437,181"/>
-<area shape="rect" href="a00023.html" title=" " alt="" coords="471,229,545,256"/>
-<area shape="rect" href="a00026.html" title=" " alt="" coords="512,155,573,181"/>
-</map>
-</div>
-</div>
-<p><a href="a00008_source.html">浏览源代码.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-宏定义</h2></td></tr>
-<tr class="memitem:ac7bef5d85e3dcd73eef56ad39ffc84a9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00008.html#ac7bef5d85e3dcd73eef56ad39ffc84a9">WIN32_LEAN_AND_MEAN</a></td></tr>
-<tr class="separator:ac7bef5d85e3dcd73eef56ad39ffc84a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:gaac9ceca8b9e2b9b0a0cd860b61e7b4f3"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00008.html#gaac9ceca8b9e2b9b0a0cd860b61e7b4f3">MiraiCP::P_Owner</a> = 2</td></tr>
+<tr class="memdesc:gaac9ceca8b9e2b9b0a0cd860b61e7b4f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">群主  <a href="a00008.html#gaac9ceca8b9e2b9b0a0cd860b61e7b4f3">更多...</a><br /></td></tr>
+<tr class="separator:gaac9ceca8b9e2b9b0a0cd860b61e7b4f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3c6b15c0b16c8663b0087de82766036e"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00008.html#ga3c6b15c0b16c8663b0087de82766036e">MiraiCP::P_Administer</a> = 1</td></tr>
+<tr class="memdesc:ga3c6b15c0b16c8663b0087de82766036e"><td class="mdescLeft">&#160;</td><td class="mdescRight">管理员  <a href="a00008.html#ga3c6b15c0b16c8663b0087de82766036e">更多...</a><br /></td></tr>
+<tr class="separator:ga3c6b15c0b16c8663b0087de82766036e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8adf3f6a3b8d1bb1be7bb28adf9f1584"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00008.html#ga8adf3f6a3b8d1bb1be7bb28adf9f1584">MiraiCP::P_Member</a> = 0</td></tr>
+<tr class="memdesc:ga8adf3f6a3b8d1bb1be7bb28adf9f1584"><td class="mdescLeft">&#160;</td><td class="mdescRight">群成员  <a href="a00008.html#ga8adf3f6a3b8d1bb1be7bb28adf9f1584">更多...</a><br /></td></tr>
+<tr class="separator:ga8adf3f6a3b8d1bb1be7bb28adf9f1584"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">宏定义说明</h2>
-<a id="ac7bef5d85e3dcd73eef56ad39ffc84a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac7bef5d85e3dcd73eef56ad39ffc84a9">&#9670;&nbsp;</a></span>WIN32_LEAN_AND_MEAN</h2>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<h2 class="groupheader">变量说明</h2>
+<a id="ga3c6b15c0b16c8663b0087de82766036e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3c6b15c0b16c8663b0087de82766036e">&#9670;&nbsp;</a></span>P_Administer</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">#define WIN32_LEAN_AND_MEAN</td>
+          <td class="memname">const int MiraiCP::P_Administer = 1</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="a00008_source.html">framework.h</a> 第 <a class="el" href="a00008_source.html#l00003">3</a> 行定义.</p>
+<p>管理员 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ga8adf3f6a3b8d1bb1be7bb28adf9f1584"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8adf3f6a3b8d1bb1be7bb28adf9f1584">&#9670;&nbsp;</a></span>P_Member</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int MiraiCP::P_Member = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>群成员 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="gaac9ceca8b9e2b9b0a0cd860b61e7b4f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaac9ceca8b9e2b9b0a0cd860b61e7b4f3">&#9670;&nbsp;</a></span>P_Owner</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int MiraiCP::P_Owner = 2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>群主 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00085">85</a> 行定义.</p>
 
 </div>
 </div>
@@ -154,8 +193,7 @@ $(document).ready(function(){initNavTree('a00008.html',''); initResizable(); });
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="a00008.html">framework.h</a></li>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:48 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

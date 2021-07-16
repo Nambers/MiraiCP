@@ -1,6 +1,7 @@
 var a00198 =
 [
-    [ "BotEvent", "a00198.html#ac26c3d59fa5a3546f269549ccbe994a4", null ],
-    [ "bot", "a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83", null ],
-    [ "botlogger", "a00198.html#a1571ef8d345a7a94bedecd48df4923c7", null ]
+    [ "PrivateMessageEvent", "a00198.html#ac2321046adbf8dde9739c6dedc82190f", null ],
+    [ "message", "a00198.html#a3e04bc6d9e1ba19e233a418d385c0952", null ],
+    [ "messageSource", "a00198.html#affba57c69f16367ebb33376b8ccd4f50", null ],
+    [ "sender", "a00198.html#aa2ba8dfb74a6324a1a6ef5774d6ee793", null ]
 ];

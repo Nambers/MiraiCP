@@ -1,4 +1,7 @@
-<map id="ForwardMessage" name="ForwardMessage">
-<area shape="rect" id="node1" title=" " alt="" coords="5,145,195,296"/>
-<area shape="rect" id="node2" title=" " alt="" coords="77,5,123,83"/>
+<map id="MiraiCP::Friend" name="MiraiCP::Friend">
+<area shape="rect" id="node1" title="好友类声明" alt="" coords="93,903,267,1097"/>
+<area shape="rect" id="node2" href="$a00130.html" title="group, friend, member的父类" alt="" coords="71,175,289,853"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,5,136,83"/>
+<area shape="rect" id="node4" title=" " alt="" coords="161,5,199,83"/>
+<area shape="rect" id="node5" title=" " alt="" coords="227,5,282,83"/>
 </map>

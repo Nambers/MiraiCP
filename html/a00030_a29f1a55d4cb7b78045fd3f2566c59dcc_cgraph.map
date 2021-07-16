@@ -1,0 +1,6 @@
+<map id="MiraiCP::ThreadManager::newEnv" name="MiraiCP::ThreadManager::newEnv">
+<area shape="rect" id="node1" title=" " alt="" coords="5,39,171,80"/>
+<area shape="rect" id="node2" href="$a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c" title="获取线程id." alt="" coords="221,5,387,47"/>
+<area shape="rect" id="node3" href="$a00054.html#a0d6fe55d99b2fafba4605fba7e830168" title="发送普通(info级日志)" alt="" coords="219,71,389,112"/>
+<area shape="rect" id="node4" href="$a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="437,71,608,112"/>
+</map>

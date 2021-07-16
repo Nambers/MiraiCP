@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,26 +89,32 @@ $(document).ready(function(){initNavTree('a00206.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">PrivateMessageEvent 成员列表</div>  </div>
+<div class="title">MiraiCP::NewFriendRequestEvent 成员列表</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>成员的完整列表，这些成员属于 <a class="el" href="a00206.html">PrivateMessageEvent</a>,包括所有继承而来的类成员</p>
+<p>成员的完整列表，这些成员属于 <a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a>,包括所有继承而来的类成员</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83">bot</a></td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a>(unsigned long long botid)</td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00198.html#a1571ef8d345a7a94bedecd48df4923c7">botlogger</a></td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00206.html#a38c6a05881b2cfd57f00b4529192104f">message</a></td><td class="entry"><a class="el" href="a00206.html">PrivateMessageEvent</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00206.html#a73df3e24b11ec35b21edab614a5d89c2">messageSource</a></td><td class="entry"><a class="el" href="a00206.html">PrivateMessageEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00206.html#a935deafbe1f8ecb73e08c6386b2b8410">PrivateMessageEvent</a>(unsigned long long int botid, const Friend sender, const std::string &amp;message, const MessageSource &amp;messageSource)</td><td class="entry"><a class="el" href="a00206.html">PrivateMessageEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00206.html#a62b26ff1072eb68c418b12a87a26cd31">sender</a></td><td class="entry"><a class="el" href="a00206.html">PrivateMessageEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00206.html#ab0aa906ac6e84f80e581ce6664e5e8f5">accept</a>(std::string source, JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00206.html#a460bb7fc7e69cf313e3902ae0101b459">accept</a>()</td><td class="entry"><a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00190.html#a48e9bf99cfedf6627c89de58f19fdb88">bot</a></td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00190.html#abfec0bacf14ff5a3a31ccf3c86feb53b">BotEvent</a>(unsigned long long botid)</td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00190.html#a0ac8dff80b65054aecebc9ca15c4c633">botlogger</a></td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00206.html#a9691b045243fd4596a9ace45bb0767bd">fromgroupid</a></td><td class="entry"><a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00206.html#a7fccd47836e4ee1122a8294f29fe3618">fromid</a></td><td class="entry"><a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00206.html#a25d49c43480c0604048b5ee81a44992e">message</a></td><td class="entry"><a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00206.html#a29a286d7dfc83c5920aae59e87fb48b4">NewFriendRequestEvent</a>(unsigned long long int botid, const std::string &amp;source, const unsigned long long int fromid, const unsigned long long int fromgroupid, const std::string &amp;nick, const std::string &amp;message)</td><td class="entry"><a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00206.html#a108de7859ce43f1c549f14b873e51f8a">nick</a></td><td class="entry"><a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00206.html#a616c2b406b1a24786462897dba1ef781">reject</a>(std::string source, JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00206.html#a84ccfdd4eca28ae904018ee55acfca95">reject</a>()</td><td class="entry"><a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00206.html#abcab790fe172b5499e4640d58b886224">source</a></td><td class="entry"><a class="el" href="a00206.html">MiraiCP::NewFriendRequestEvent</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:23 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:06 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

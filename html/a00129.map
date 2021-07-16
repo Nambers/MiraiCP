@@ -1,4 +1,6 @@
-<map id="Image" name="Image">
-<area shape="rect" id="node1" title="图像类声明" alt="" coords="5,145,203,369"/>
-<area shape="rect" id="node2" href="$a00066.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="39,5,169,97"/>
+<map id="MiraiCP::Contact" name="MiraiCP::Contact">
+<area shape="rect" id="node1" title="group, friend, member的父类" alt="" coords="203,5,422,787"/>
+<area shape="rect" id="node2" href="$a00170.html" title="好友类声明" alt="" coords="5,1018,180,1213"/>
+<area shape="rect" id="node3" href="$a00178.html" title="群聊类声明" alt="" coords="204,835,421,1396"/>
+<area shape="rect" id="node4" href="$a00174.html" title="群成员类声明" alt="" coords="446,967,641,1264"/>
 </map>

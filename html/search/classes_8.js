@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['illegalargumentexception_335',['IllegalArgumentException',['../a00126.html',1,'']]],
-  ['image_336',['Image',['../a00134.html',1,'']]],
-  ['info_337',['info',['../a00162.html',1,'LowLevelAPI']]]
+  ['idlogger_343',['IdLogger',['../a00066.html',1,'MiraiCP']]],
+  ['illegalargumentexception_344',['IllegalArgumentException',['../a00118.html',1,'MiraiCP']]],
+  ['image_345',['Image',['../a00126.html',1,'MiraiCP']]],
+  ['info_346',['info',['../a00154.html',1,'MiraiCP::LowLevelAPI']]]
 ];

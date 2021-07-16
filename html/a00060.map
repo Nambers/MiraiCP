@@ -1,5 +1,8 @@
-<map id="Config" name="Config">
-<area shape="rect" id="node1" title="配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作" alt="" coords="5,145,211,325"/>
-<area shape="rect" id="node2" title=" " alt="" coords="15,5,95,83"/>
-<area shape="rect" id="node3" title=" " alt="" coords="135,5,191,83"/>
+<map id="MiraiCP::Logger" name="MiraiCP::Logger">
+<area shape="rect" id="node1" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content], 为最底层的logger" alt="" coords="92,837,239,944"/>
+<area shape="rect" id="node2" href="$a00054.html" title=" " alt="" coords="73,315,257,788"/>
+<area shape="rect" id="node3" href="$a00058.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="5,160,176,252"/>
+<area shape="rect" id="node4" title=" " alt="" coords="13,13,59,90"/>
+<area shape="rect" id="node5" title=" " alt="" coords="84,5,207,97"/>
+<area shape="rect" id="node6" title=" " alt="" coords="200,167,280,245"/>
 </map>

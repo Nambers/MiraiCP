@@ -1,5 +1,5 @@
 var a00078 =
 [
-    [ "action", "a00078.html#aee0685129675fde6da3c13d032eb821b", null ],
-    [ "enable", "a00078.html#accd2c8dc9018e1f272eb9680e86ca52c", null ]
+    [ "raise", "a00078.html#a91500367e547ac4f2cfbdfabe8887156", null ],
+    [ "what", "a00078.html#a5cf9d0f31e0310e96ef5982c5d6f9d2b", null ]
 ];

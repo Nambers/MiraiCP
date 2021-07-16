@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: 图片miraiCode格式例子</title>
+<title>MiraiCP: 通过常量构建并发送小程序卡片</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,20 +89,28 @@ $(document).ready(function(){initNavTree('a00268.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">图片miraiCode格式例子</div>  </div>
+<div class="title">通过常量构建并发送小程序卡片</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>从图片id构造，适用于服务器上已经有的图片，即接收到的</p>
-<div class="fragment"><div class="line">[mirai:image:{图片id}.jpg] </div>
-</div><!-- fragment --> <dl class="section note"><dt>注解</dt><dd>可以用这个正则表达式找出id <code>\\[mirai:image:(.*?)\\]</code></dd></dl>
-<div class="fragment"></div><!-- fragment --><p>格式例子 </p>
-</div><!-- contents -->
+<p>小程序卡片 </p><dl class="section see"><dt>参见</dt><dd>LightAppStyle1, LightAppStyle2, LightAppStyle3</dd></dl>
+<div class="fragment"><div class="line"><a name="a0"></a><a class="code" href="a00010.html#a5a9e6023efc1096a03af0c6f20da6dcb">procession</a>-&gt;<a name="a1"></a><a class="code" href="a00234.html#a10511e7e47c52047d9d3072128f1fc50">registerEvent</a>([](GroupMessageEvent e) {</div>
+<div class="line">    <span class="comment">//修改里面的属性从而自定义</span></div>
+<div class="line">    LightAppStyle1 a = LightAppStyle1();</div>
+<div class="line">    LightAppStyle2 b = LightAppStyle2();</div>
+<div class="line">    LightAppStyle3 c = LightAppStyle3();</div>
+<div class="line">    e.group.SendMiraiCode(LightApp(a).toMiraiCode());</div>
+<div class="line">    e.group.SendMiraiCode(LightApp(b).toMiraiCode());</div>
+<div class="line">    e.group.SendMiraiCode(LightApp(c).toMiraiCode());</div>
+<div class="line"> });</div>
+<div class="ttc" id="aa00010_html_a5a9e6023efc1096a03af0c6f20da6dcb"><div class="ttname"><a href="a00010.html#a5a9e6023efc1096a03af0c6f20da6dcb">MiraiCP::procession</a></div><div class="ttdeci">Event * procession</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02261">miraiCP.hpp:2261</a></div></div>
+<div class="ttc" id="aa00234_html_a10511e7e47c52047d9d3072128f1fc50"><div class="ttname"><a href="a00234.html#a10511e7e47c52047d9d3072128f1fc50">MiraiCP::Event::registerEvent</a></div><div class="ttdeci">NodeHandle registerEvent(std::function&lt; void(T)&gt; f)</div><div class="ttdoc">监听函数</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02250">miraiCP.hpp:2250</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:46 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:02 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

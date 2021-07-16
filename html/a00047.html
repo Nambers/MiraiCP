@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,28 +89,32 @@ $(document).ready(function(){initNavTree('a00050.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">threadManager 成员列表</div>  </div>
+<div class="title">MiraiCP::MiraiCode 成员列表</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>成员的完整列表，这些成员属于 <a class="el" href="a00050.html">threadManager</a>,包括所有继承而来的类成员</p>
+<p>成员的完整列表，这些成员属于 <a class="el" href="a00050.html">MiraiCP::MiraiCode</a>,包括所有继承而来的类成员</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="a00050.html#a6a4ad09cc87c5753e2a2154f3574efc4">_threads</a></td><td class="entry"><a class="el" href="a00050.html">threadManager</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00050.html#a807b673ce4d4199cf0bfdfff5521d2c0">detach</a>()</td><td class="entry"><a class="el" href="a00050.html">threadManager</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00050.html#a75639792816fe3f8af8a5a3fde89e4af">getEnv</a>()</td><td class="entry"><a class="el" href="a00050.html">threadManager</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00050.html#a3401a8976c99d293ef1b8b8c7a1db9d1">getThreadId</a>()</td><td class="entry"><a class="el" href="a00050.html">threadManager</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00050.html#a648b29dc90c990d1915ca1a92eb210e6">included</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="a00050.html">threadManager</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00050.html#aabdf75fbc59433d091f74d2850800552">mtx</a></td><td class="entry"><a class="el" href="a00050.html">threadManager</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00050.html#a8210ba94ee5c9bfe1318319500576c85">newEnv</a>(const char *threadName=NULL)</td><td class="entry"><a class="el" href="a00050.html">threadManager</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00050.html#af9c06705302ca26890977cd3a2054d3e">setEnv</a>(JNIEnv *e)</td><td class="entry"><a class="el" href="a00050.html">threadManager</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00050.html#accd69746301a7216bcbe26bbb82ccb76">threadManager</a>()</td><td class="entry"><a class="el" href="a00050.html">threadManager</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00050.html#a10f382c47adbdf7874ee6aff2c1b1850">content</a></td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00050.html#a357aa786136dc94421877f5572ca150a">MiraiCode</a>(MiraiCodeable *a)</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00050.html#a17c87ce330b1b1b91bd953f0f1a41f08">MiraiCode</a>(std::string a)</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">explicit</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00050.html#aced348510d8532bf2a101cd50a9fae19">operator+</a>(MiraiCodeable *a)</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00050.html#a0eaa447d03e47e561dbde4748ce12623">operator+</a>(std::string a)</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00050.html#ad641a5cab007205e87648892f2db354e">operator+=</a>(MiraiCodeable *a)</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00050.html#af2064b5171af438008ae1c88c04d0352">operator+=</a>(std::string a)</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00050.html#a5595fb1cdc339c213531bd274dbc9d3c">operator=</a>(MiraiCodeable *a)</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00050.html#a21bfa33a71f41ee2ef3728cbb8f7f1de">operator=</a>(std::string a)</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00050.html#a016fbece8589f03516f5a92a8a3cb177">plus</a>(MiraiCodeable *a)</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00050.html#a9b579a011de49908176b0e3c8cfaf923">plus</a>(std::string a)</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00050.html#a8343f0ecc5e0dfae3badd97fe42a1bd1">toMiraiCode</a>()</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00050.html#a9b46bf5804f88f2504d97c87d3e1b7fc">toString</a>()</td><td class="entry"><a class="el" href="a00050.html">MiraiCP::MiraiCode</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:26 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:03 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

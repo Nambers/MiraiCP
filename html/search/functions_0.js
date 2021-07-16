@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['accept_385',['accept',['../a00210.html#af06a8c1fc6a4d0b7777b82fd2ce42842',1,'GroupInviteEvent::accept(std::string source, JNIEnv *env=manager-&gt;getEnv())'],['../a00210.html#a7eca11d2982d510111a733665013e1d7',1,'GroupInviteEvent::accept()'],['../a00214.html#aff40c91d67ff76a52e0949f68fc988fd',1,'NewFriendRequestEvent::accept(std::string source, JNIEnv *env=manager-&gt;getEnv())'],['../a00214.html#ac1c8d0828f1b98d9eeb6d95c20406eb7',1,'NewFriendRequestEvent::accept()']]],
-  ['apiexception_386',['APIException',['../a00094.html#a43d29e5a434ac9f857f28ef25348bc4b',1,'APIException']]],
-  ['at_387',['At',['../a00026.html#ab6f4da57c1ccc2dffe4f5ee6bda06f6e',1,'At(Member a):&#160;tools.h'],['../a00026.html#acee156aeeb019584b3b63638695fa1d7',1,'At(unsigned long long a):&#160;tools.h']]],
-  ['avatarurl_388',['avatarUrl',['../a00138.html#a10cf00a3c2dfef0bdc29c3f89e508293',1,'Contact::avatarUrl()'],['../a00174.html#a94279cd991ebd5665e67246ff7563af0',1,'Bot::avatarUrl()']]]
+  ['accept_391',['accept',['../a00202.html#aff343383725a616bdf00fe44e80b44a9',1,'MiraiCP::GroupInviteEvent::accept(std::string source, JNIEnv *env=manager-&gt;getEnv())'],['../a00202.html#a3847df3907111c8443c1e1b71ee35d1d',1,'MiraiCP::GroupInviteEvent::accept()'],['../a00206.html#ab0aa906ac6e84f80e581ce6664e5e8f5',1,'MiraiCP::NewFriendRequestEvent::accept(std::string source, JNIEnv *env=manager-&gt;getEnv())'],['../a00206.html#a460bb7fc7e69cf313e3902ae0101b459',1,'MiraiCP::NewFriendRequestEvent::accept()']]],
+  ['apiexception_392',['APIException',['../a00086.html#ae9565ce440792bc094fe54276d094f28',1,'MiraiCP::APIException']]],
+  ['at_393',['At',['../a00010.html#a13ba7ca99dcf808d5dbe7d2697f49372',1,'MiraiCP::At(Member a)'],['../a00010.html#a3b5ea2e2c0b8c9e628f0ff4faaa2a0ba',1,'MiraiCP::At(unsigned long long a)']]],
+  ['avatarurl_394',['avatarUrl',['../a00130.html#a34b1aaabd303eb2f0738804aa0759956',1,'MiraiCP::Contact::avatarUrl()'],['../a00166.html#a6b0ebecc9de3fdf10852b341c88561c0',1,'MiraiCP::Bot::avatarUrl()']]]
 ];

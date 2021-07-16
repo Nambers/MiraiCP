@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: dinfo结构体 参考</title>
+<title>MiraiCP: MiraiCP::RemoteFile类 参考</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,103 +89,517 @@ $(document).ready(function(){initNavTree('a00146.html',''); initResizable(); });
 
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
 <a href="#pub-attribs">Public 属性</a> &#124;
 <a href="a00143.html">所有成员列表</a>  </div>
   <div class="headertitle">
-<div class="title">dinfo结构体 参考</div>  </div>
+<div class="title">MiraiCP::RemoteFile类 参考</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>下载信息  
+<p>远程(群)文件类型  
  <a href="a00146.html#details">更多...</a></p>
 
-<p><code>#include &lt;<a class="el" href="a00026_source.html">tools.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="a00002_source.html">miraiCP.hpp</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> dinfo 的协作图:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 MiraiCP::RemoteFile 继承关系图:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00144.png" border="0" usemap="#adinfo_coll__map" alt="Collaboration graph"/></div>
-<map name="adinfo_coll__map" id="adinfo_coll__map">
-<area shape="rect" title="下载信息" alt="" coords="8,175,57,252"/>
-<area shape="rect" title=" " alt="" coords="5,5,60,83"/>
+<div class="center"><img src="a00145.png" border="0" usemap="#a_mirai_c_p_1_1_remote_file_inherit__map" alt="Inheritance graph"/></div>
+<map name="a_mirai_c_p_1_1_remote_file_inherit__map" id="a_mirai_c_p_1_1_remote_file_inherit__map">
+<area shape="rect" title="远程(群)文件类型" alt="" coords="5,145,208,472"/>
+<area shape="rect" href="a00046.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="27,5,186,97"/>
+</map>
+</div>
+<div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> MiraiCP::RemoteFile 的协作图:</div>
+<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-1-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00144.png" border="0" usemap="#a_mirai_c_p_1_1_remote_file_coll__map" alt="Collaboration graph"/></div>
+<map name="a_mirai_c_p_1_1_remote_file_coll__map" id="a_mirai_c_p_1_1_remote_file_coll__map">
+<area shape="rect" title="远程(群)文件类型" alt="" coords="366,344,569,568"/>
+<area shape="rect" href="a00046.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,189,164,281"/>
+<area shape="rect" title=" " alt="" coords="216,5,255,83"/>
+<area shape="rect" href="a00142.html" title="文件信息" alt="" coords="330,197,429,274"/>
+<area shape="rect" title=" " alt="" coords="314,5,445,83"/>
+<area shape="rect" href="a00138.html" title="下载信息" alt="" coords="553,197,656,274"/>
+<area shape="rect" title=" " alt="" coords="509,5,564,83"/>
+<area shape="rect" title=" " alt="" coords="680,197,791,274"/>
 </map>
 </div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a037f0b6bb7ad3900335080fc4f219618"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#a037f0b6bb7ad3900335080fc4f219618">serializeToString</a> ()</td></tr>
+<tr class="separator:a037f0b6bb7ad3900335080fc4f219618"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5348ce774c86f271380355e239383bfd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#a5348ce774c86f271380355e239383bfd">RemoteFile</a> (const std::string &amp;i, unsigned int ii, const std::string &amp;n, long long s, const std::string &amp;p, struct <a class="el" href="a00138.html">dinfo</a> d, struct <a class="el" href="a00142.html">finfo</a> f)</td></tr>
+<tr class="memdesc:a5348ce774c86f271380355e239383bfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造远程(群)文件  <a href="a00146.html#a5348ce774c86f271380355e239383bfd">更多...</a><br /></td></tr>
+<tr class="separator:a5348ce774c86f271380355e239383bfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09c067de523c167259d81bab4b99bd4a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#a09c067de523c167259d81bab4b99bd4a">toMiraiCode</a> ()</td></tr>
+<tr class="memdesc:a09c067de523c167259d81bab4b99bd4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换  <a href="a00146.html#a09c067de523c167259d81bab4b99bd4a">更多...</a><br /></td></tr>
+<tr class="separator:a09c067de523c167259d81bab4b99bd4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a86d0f3d9b2d7ef5aab70d377297528fc"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="a00146.html">RemoteFile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#a86d0f3d9b2d7ef5aab70d377297528fc">deserializeFromString</a> (const std::string &amp;source)</td></tr>
+<tr class="separator:a86d0f3d9b2d7ef5aab70d377297528fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public 属性</h2></td></tr>
-<tr class="memitem:a27f1fe72da17504a88993b1895bff874"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#a27f1fe72da17504a88993b1895bff874">url</a></td></tr>
-<tr class="memdesc:a27f1fe72da17504a88993b1895bff874"><td class="mdescLeft">&#160;</td><td class="mdescRight">下载地址  <a href="a00146.html#a27f1fe72da17504a88993b1895bff874">更多...</a><br /></td></tr>
-<tr class="separator:a27f1fe72da17504a88993b1895bff874"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7b7245d4b94bb72cae65c5cf0b40a9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#af7b7245d4b94bb72cae65c5cf0b40a9f">md5</a></td></tr>
-<tr class="memdesc:af7b7245d4b94bb72cae65c5cf0b40a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">md5 可用于校验  <a href="a00146.html#af7b7245d4b94bb72cae65c5cf0b40a9f">更多...</a><br /></td></tr>
-<tr class="separator:af7b7245d4b94bb72cae65c5cf0b40a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa13ebef9ac586704f4913eeb7dae1a7c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#aa13ebef9ac586704f4913eeb7dae1a7c">sha1</a></td></tr>
-<tr class="memdesc:aa13ebef9ac586704f4913eeb7dae1a7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">sha1 可用于校验  <a href="a00146.html#aa13ebef9ac586704f4913eeb7dae1a7c">更多...</a><br /></td></tr>
-<tr class="separator:aa13ebef9ac586704f4913eeb7dae1a7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8d23730ca1c51056732ed77d4366ece"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#aa8d23730ca1c51056732ed77d4366ece">id</a></td></tr>
+<tr class="memdesc:aa8d23730ca1c51056732ed77d4366ece"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件唯一id, 用于识别  <a href="a00146.html#aa8d23730ca1c51056732ed77d4366ece">更多...</a><br /></td></tr>
+<tr class="separator:aa8d23730ca1c51056732ed77d4366ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96fda28f8f42735d50de07cc07f815e7"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#a96fda28f8f42735d50de07cc07f815e7">internalid</a></td></tr>
+<tr class="memdesc:a96fda28f8f42735d50de07cc07f815e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件内部id, 用于构造miraiCode发送  <a href="a00146.html#a96fda28f8f42735d50de07cc07f815e7">更多...</a><br /></td></tr>
+<tr class="separator:a96fda28f8f42735d50de07cc07f815e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c367cbfa0e70c35e358945c0d985617"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#a5c367cbfa0e70c35e358945c0d985617">name</a></td></tr>
+<tr class="memdesc:a5c367cbfa0e70c35e358945c0d985617"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件名  <a href="a00146.html#a5c367cbfa0e70c35e358945c0d985617">更多...</a><br /></td></tr>
+<tr class="separator:a5c367cbfa0e70c35e358945c0d985617"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82fb695655e847861ef00c1de1151426"><td class="memItemLeft" align="right" valign="top">const long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#a82fb695655e847861ef00c1de1151426">size</a></td></tr>
+<tr class="memdesc:a82fb695655e847861ef00c1de1151426"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件大小  <a href="a00146.html#a82fb695655e847861ef00c1de1151426">更多...</a><br /></td></tr>
+<tr class="separator:a82fb695655e847861ef00c1de1151426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab199d0484d5eedbc28219171b0af5a4c"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#ab199d0484d5eedbc28219171b0af5a4c">path</a></td></tr>
+<tr class="memdesc:ab199d0484d5eedbc28219171b0af5a4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">文件在群文件的路径  <a href="a00146.html#ab199d0484d5eedbc28219171b0af5a4c">更多...</a><br /></td></tr>
+<tr class="separator:ab199d0484d5eedbc28219171b0af5a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15dc1285dd1a2c72a3605729f7dcccc8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="a00138.html">dinfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#a15dc1285dd1a2c72a3605729f7dcccc8">dinfo</a></td></tr>
+<tr class="separator:a15dc1285dd1a2c72a3605729f7dcccc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6ee8bd6ecbbca59d05eb030a61bc34b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="a00142.html">finfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00146.html#ac6ee8bd6ecbbca59d05eb030a61bc34b">finfo</a></td></tr>
+<tr class="separator:ac6ee8bd6ecbbca59d05eb030a61bc34b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock"><p>下载信息 </p>
-<dl class="section see"><dt>参见</dt><dd><a class="el" href="a00154.html" title="远程(群)文件类型">RemoteFile</a> </dd></dl>
+<div class="textblock"><p>远程(群)文件类型 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01033">1033</a> 行定义.</p>
-</div><h2 class="groupheader">类成员变量说明</h2>
-<a id="af7b7245d4b94bb72cae65c5cf0b40a9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7b7245d4b94bb72cae65c5cf0b40a9f">&#9670;&nbsp;</a></span>md5</h2>
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l01224">1224</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a5348ce774c86f271380355e239383bfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5348ce774c86f271380355e239383bfd">&#9670;&nbsp;</a></span>RemoteFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">MiraiCP::RemoteFile::RemoteFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>ii</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long long&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="a00138.html">dinfo</a>&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="a00142.html">finfo</a>&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>构造远程(群)文件 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">i</td><td>ids </td></tr>
+    <tr><td class="paramname">ii</td><td>internalids </td></tr>
+    <tr><td class="paramname">n</td><td>name </td></tr>
+    <tr><td class="paramname">s</td><td>size </td></tr>
+    <tr><td class="paramname">p</td><td>path </td></tr>
+    <tr><td class="paramname">d</td><td>dinfo </td></tr>
+    <tr><td class="paramname">f</td><td>finfo </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l01257">1257</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l01258"></a><span class="lineno"> 1258</span>&#160;                                                   : <a class="code" href="a00146.html#aa8d23730ca1c51056732ed77d4366ece">id</a>(i),</div>
+<div class="line"><a name="l01259"></a><span class="lineno"> 1259</span>&#160;                                                     <a class="code" href="a00146.html#a96fda28f8f42735d50de07cc07f815e7">internalid</a>(</div>
+<div class="line"><a name="l01260"></a><span class="lineno"> 1260</span>&#160;                                                             ii),</div>
+<div class="line"><a name="l01261"></a><span class="lineno"> 1261</span>&#160;                                                     <a class="code" href="a00146.html#a5c367cbfa0e70c35e358945c0d985617">name</a>(n),</div>
+<div class="line"><a name="l01262"></a><span class="lineno"> 1262</span>&#160;                                                     <a class="code" href="a00146.html#a82fb695655e847861ef00c1de1151426">size</a>(s),</div>
+<div class="line"><a name="l01263"></a><span class="lineno"> 1263</span>&#160;                                                     <a class="code" href="a00146.html#ab199d0484d5eedbc28219171b0af5a4c">path</a>(p),</div>
+<div class="line"><a name="l01264"></a><span class="lineno"> 1264</span>&#160;                                                     <a class="code" href="a00146.html#a15dc1285dd1a2c72a3605729f7dcccc8">dinfo</a>(d),</div>
+<div class="line"><a name="l01265"></a><span class="lineno"> 1265</span>&#160;                                                     <a class="code" href="a00146.html#ac6ee8bd6ecbbca59d05eb030a61bc34b">finfo</a>(f) {};</div>
+<div class="ttc" id="aa00146_html_a15dc1285dd1a2c72a3605729f7dcccc8"><div class="ttname"><a href="a00146.html#a15dc1285dd1a2c72a3605729f7dcccc8">MiraiCP::RemoteFile::dinfo</a></div><div class="ttdeci">const dinfo dinfo</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01238">miraiCP.hpp:1238</a></div></div>
+<div class="ttc" id="aa00146_html_a5c367cbfa0e70c35e358945c0d985617"><div class="ttname"><a href="a00146.html#a5c367cbfa0e70c35e358945c0d985617">MiraiCP::RemoteFile::name</a></div><div class="ttdeci">const std::string name</div><div class="ttdoc">文件名</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01231">miraiCP.hpp:1231</a></div></div>
+<div class="ttc" id="aa00146_html_a82fb695655e847861ef00c1de1151426"><div class="ttname"><a href="a00146.html#a82fb695655e847861ef00c1de1151426">MiraiCP::RemoteFile::size</a></div><div class="ttdeci">const long long size</div><div class="ttdoc">文件大小</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01233">miraiCP.hpp:1233</a></div></div>
+<div class="ttc" id="aa00146_html_a96fda28f8f42735d50de07cc07f815e7"><div class="ttname"><a href="a00146.html#a96fda28f8f42735d50de07cc07f815e7">MiraiCP::RemoteFile::internalid</a></div><div class="ttdeci">const unsigned int internalid</div><div class="ttdoc">文件内部id, 用于构造miraiCode发送</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01229">miraiCP.hpp:1229</a></div></div>
+<div class="ttc" id="aa00146_html_aa8d23730ca1c51056732ed77d4366ece"><div class="ttname"><a href="a00146.html#aa8d23730ca1c51056732ed77d4366ece">MiraiCP::RemoteFile::id</a></div><div class="ttdeci">const std::string id</div><div class="ttdoc">文件唯一id, 用于识别</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01227">miraiCP.hpp:1227</a></div></div>
+<div class="ttc" id="aa00146_html_ab199d0484d5eedbc28219171b0af5a4c"><div class="ttname"><a href="a00146.html#ab199d0484d5eedbc28219171b0af5a4c">MiraiCP::RemoteFile::path</a></div><div class="ttdeci">const std::string path</div><div class="ttdoc">文件在群文件的路径</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01235">miraiCP.hpp:1235</a></div></div>
+<div class="ttc" id="aa00146_html_ac6ee8bd6ecbbca59d05eb030a61bc34b"><div class="ttname"><a href="a00146.html#ac6ee8bd6ecbbca59d05eb030a61bc34b">MiraiCP::RemoteFile::finfo</a></div><div class="ttdeci">const finfo finfo</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01241">miraiCP.hpp:1241</a></div></div>
+</div><!-- fragment --><div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
+<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-2-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00146_a5348ce774c86f271380355e239383bfd_icgraph.png" border="0" usemap="#aa00146_a5348ce774c86f271380355e239383bfd_icgraph" alt=""/></div>
+<map name="aa00146_a5348ce774c86f271380355e239383bfd_icgraph" id="aa00146_a5348ce774c86f271380355e239383bfd_icgraph">
+<area shape="rect" title="构造远程(群)文件" alt="" coords="425,23,568,65"/>
+<area shape="rect" href="a00146.html#a86d0f3d9b2d7ef5aab70d377297528fc" title=" " alt="" coords="221,23,377,65"/>
+<area shape="rect" href="a00178.html#a67e05c2eec14cbd28926b789fac78409" title=" " alt="" coords="10,5,169,32"/>
+<area shape="rect" href="a00178.html#a95baa398fbcb7b447a7e211b24c58332" title=" " alt="" coords="5,56,173,83"/>
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a86d0f3d9b2d7ef5aab70d377297528fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86d0f3d9b2d7ef5aab70d377297528fc">&#9670;&nbsp;</a></span>deserializeFromString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="a00146.html">RemoteFile</a> MiraiCP::RemoteFile::deserializeFromString </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l02452">2452</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l02452"></a><span class="lineno"> 2452</span>&#160;                                                                        {</div>
+<div class="line"><a name="l02453"></a><span class="lineno"> 2453</span>&#160;        <a class="code" href="a00010.html#ad2394aaabcd94373cf32f4a14845a5ec">json</a> j;</div>
+<div class="line"><a name="l02454"></a><span class="lineno"> 2454</span>&#160;        <span class="keywordflow">try</span> {</div>
+<div class="line"><a name="l02455"></a><span class="lineno"> 2455</span>&#160;            j = json::parse(source);</div>
+<div class="line"><a name="l02456"></a><span class="lineno"> 2456</span>&#160;        }</div>
+<div class="line"><a name="l02457"></a><span class="lineno"> 2457</span>&#160;        <span class="keywordflow">catch</span> (json::parse_error &amp;e) {</div>
+<div class="line"><a name="l02458"></a><span class="lineno"> 2458</span>&#160;            <a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a class="code" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">Error</a>(<span class="stringliteral">&quot;格式化json失败，RemoteFile::deserializeFromString&quot;</span>);</div>
+<div class="line"><a name="l02459"></a><span class="lineno"> 2459</span>&#160;            <a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a class="code" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">Error</a>(source);</div>
+<div class="line"><a name="l02460"></a><span class="lineno"> 2460</span>&#160;            <a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a class="code" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">Error</a>(e.what());</div>
+<div class="line"><a name="l02461"></a><span class="lineno"> 2461</span>&#160;            <span class="keywordflow">throw</span> e;</div>
+<div class="line"><a name="l02462"></a><span class="lineno"> 2462</span>&#160;        }</div>
+<div class="line"><a name="l02463"></a><span class="lineno"> 2463</span>&#160;        <span class="keywordflow">try</span> {</div>
+<div class="line"><a name="l02464"></a><span class="lineno"> 2464</span>&#160;            <span class="keyword">struct </span><a class="code" href="a00138.html">dinfo</a> d{</div>
+<div class="line"><a name="l02465"></a><span class="lineno"> 2465</span>&#160;                    j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;url&quot;</span>],</div>
+<div class="line"><a name="l02466"></a><span class="lineno"> 2466</span>&#160;                    j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;md5&quot;</span>],</div>
+<div class="line"><a name="l02467"></a><span class="lineno"> 2467</span>&#160;                    j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;sha1&quot;</span>]</div>
+<div class="line"><a name="l02468"></a><span class="lineno"> 2468</span>&#160;            };</div>
+<div class="line"><a name="l02469"></a><span class="lineno"> 2469</span>&#160;            <span class="keyword">struct </span><a class="code" href="a00142.html">finfo</a> f{</div>
+<div class="line"><a name="l02470"></a><span class="lineno"> 2470</span>&#160;                    j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;size&quot;</span>],</div>
+<div class="line"><a name="l02471"></a><span class="lineno"> 2471</span>&#160;                    j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;uploaderid&quot;</span>],</div>
+<div class="line"><a name="l02472"></a><span class="lineno"> 2472</span>&#160;                    j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;downloadtime&quot;</span>],</div>
+<div class="line"><a name="l02473"></a><span class="lineno"> 2473</span>&#160;                    j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;uploadtime&quot;</span>],</div>
+<div class="line"><a name="l02474"></a><span class="lineno"> 2474</span>&#160;                    j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;lastmodifytime&quot;</span>]</div>
+<div class="line"><a name="l02475"></a><span class="lineno"> 2475</span>&#160;            };</div>
+<div class="line"><a name="l02476"></a><span class="lineno"> 2476</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="a00146.html#a5348ce774c86f271380355e239383bfd">RemoteFile</a>(j[<span class="stringliteral">&quot;id&quot;</span>], j[<span class="stringliteral">&quot;internalid&quot;</span>], j[<span class="stringliteral">&quot;name&quot;</span>], j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;size&quot;</span>], j[<span class="stringliteral">&quot;path&quot;</span>], d, f);</div>
+<div class="line"><a name="l02477"></a><span class="lineno"> 2477</span>&#160;        }</div>
+<div class="line"><a name="l02478"></a><span class="lineno"> 2478</span>&#160;        <span class="keywordflow">catch</span> (json::type_error &amp;e) {</div>
+<div class="line"><a name="l02479"></a><span class="lineno"> 2479</span>&#160;            <a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a class="code" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">Error</a>(<span class="stringliteral">&quot;json格式化失败，位置:RemoteFile&quot;</span>);</div>
+<div class="line"><a name="l02480"></a><span class="lineno"> 2480</span>&#160;            <a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a class="code" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">Error</a>(source);</div>
+<div class="line"><a name="l02481"></a><span class="lineno"> 2481</span>&#160;            <a class="code" href="a00010.html#a692fa757310841433964360f3f112004">logger</a>-&gt;<a class="code" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">Error</a>(e.what());</div>
+<div class="line"><a name="l02482"></a><span class="lineno"> 2482</span>&#160;            <span class="keywordflow">throw</span> e;</div>
+<div class="line"><a name="l02483"></a><span class="lineno"> 2483</span>&#160;        }</div>
+<div class="line"><a name="l02484"></a><span class="lineno"> 2484</span>&#160;    }</div>
+<div class="ttc" id="aa00010_html_a692fa757310841433964360f3f112004"><div class="ttname"><a href="a00010.html#a692fa757310841433964360f3f112004">MiraiCP::logger</a></div><div class="ttdeci">Logger * logger</div><div class="ttdoc">声明全局日志对象</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00531">miraiCP.hpp:531</a></div></div>
+<div class="ttc" id="aa00010_html_ad2394aaabcd94373cf32f4a14845a5ec"><div class="ttname"><a href="a00010.html#ad2394aaabcd94373cf32f4a14845a5ec">MiraiCP::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00024">miraiCP.hpp:24</a></div></div>
+<div class="ttc" id="aa00054_html_ace9bbedca050fc72d1592440d16bd8f7"><div class="ttname"><a href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">MiraiCP::Logger_interface::Error</a></div><div class="ttdeci">void Error(const std::string &amp;, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdoc">发送错误(error级日志)</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02343">miraiCP.hpp:2343</a></div></div>
+<div class="ttc" id="aa00138_html"><div class="ttname"><a href="a00138.html">MiraiCP::dinfo</a></div><div class="ttdoc">下载信息</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01200">miraiCP.hpp:1200</a></div></div>
+<div class="ttc" id="aa00142_html"><div class="ttname"><a href="a00142.html">MiraiCP::finfo</a></div><div class="ttdoc">文件信息</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01210">miraiCP.hpp:1210</a></div></div>
+<div class="ttc" id="aa00146_html_a5348ce774c86f271380355e239383bfd"><div class="ttname"><a href="a00146.html#a5348ce774c86f271380355e239383bfd">MiraiCP::RemoteFile::RemoteFile</a></div><div class="ttdeci">RemoteFile(const std::string &amp;i, unsigned int ii, const std::string &amp;n, long long s, const std::string &amp;p, struct dinfo d, struct finfo f)</div><div class="ttdoc">构造远程(群)文件</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01257">miraiCP.hpp:1257</a></div></div>
+</div><!-- fragment --><div id="dynsection-3" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-3-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
+<div id="dynsection-3-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-3-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00146_a86d0f3d9b2d7ef5aab70d377297528fc_cgraph.png" border="0" usemap="#aa00146_a86d0f3d9b2d7ef5aab70d377297528fc_cgraph" alt=""/></div>
+<map name="aa00146_a86d0f3d9b2d7ef5aab70d377297528fc_cgraph" id="aa00146_a86d0f3d9b2d7ef5aab70d377297528fc_cgraph">
+<area shape="rect" title=" " alt="" coords="5,39,161,80"/>
+<area shape="rect" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7" title="发送错误(error级日志)" alt="" coords="209,5,380,47"/>
+<area shape="rect" href="a00146.html#a5348ce774c86f271380355e239383bfd" title="构造远程(群)文件" alt="" coords="223,71,366,112"/>
+<area shape="rect" href="a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="428,5,599,47"/>
+</map>
+</div>
+<div id="dynsection-4" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-4-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
+<div id="dynsection-4-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-4-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00146_a86d0f3d9b2d7ef5aab70d377297528fc_icgraph.png" border="0" usemap="#aa00146_a86d0f3d9b2d7ef5aab70d377297528fc_icgraph" alt=""/></div>
+<map name="aa00146_a86d0f3d9b2d7ef5aab70d377297528fc_icgraph" id="aa00146_a86d0f3d9b2d7ef5aab70d377297528fc_icgraph">
+<area shape="rect" title=" " alt="" coords="221,23,377,65"/>
+<area shape="rect" href="a00178.html#a67e05c2eec14cbd28926b789fac78409" title=" " alt="" coords="10,5,169,32"/>
+<area shape="rect" href="a00178.html#a95baa398fbcb7b447a7e211b24c58332" title=" " alt="" coords="5,56,173,83"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a037f0b6bb7ad3900335080fc4f219618"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a037f0b6bb7ad3900335080fc4f219618">&#9670;&nbsp;</a></span>serializeToString()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> dinfo::md5</td>
+          <td class="memname">std::string MiraiCP::RemoteFile::serializeToString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>md5 可用于校验 </p>
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l02486">2486</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l02486"></a><span class="lineno"> 2486</span>&#160;                                            {</div>
+<div class="line"><a name="l02487"></a><span class="lineno"> 2487</span>&#160;        <a class="code" href="a00010.html#ad2394aaabcd94373cf32f4a14845a5ec">json</a> j;</div>
+<div class="line"><a name="l02488"></a><span class="lineno"> 2488</span>&#160;        j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;url&quot;</span>] = this-&gt;<a class="code" href="a00138.html">dinfo</a>.<a class="code" href="a00138.html#ada3eea457cb42af4fba1de73937d7e3b">url</a>;</div>
+<div class="line"><a name="l02489"></a><span class="lineno"> 2489</span>&#160;        j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;md5&quot;</span>] = this-&gt;<a class="code" href="a00138.html">dinfo</a>.<a class="code" href="a00138.html#a5686609592f395d76a6cfac8ee8c4c67">md5</a>;</div>
+<div class="line"><a name="l02490"></a><span class="lineno"> 2490</span>&#160;        j[<span class="stringliteral">&quot;dinfo&quot;</span>][<span class="stringliteral">&quot;shar1&quot;</span>] = this-&gt;<a class="code" href="a00138.html">dinfo</a>.<a class="code" href="a00138.html#a8bf2fa80fa89d67178f207c5162a0d4f">sha1</a>;</div>
+<div class="line"><a name="l02491"></a><span class="lineno"> 2491</span>&#160;        j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;size&quot;</span>] = this-&gt;<a class="code" href="a00142.html">finfo</a>.<a class="code" href="a00142.html#a12ebe79248fee9653bffcf18b5de1a0e">size</a>;</div>
+<div class="line"><a name="l02492"></a><span class="lineno"> 2492</span>&#160;        j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;uploaderid&quot;</span>] = this-&gt;<a class="code" href="a00142.html">finfo</a>.<a class="code" href="a00142.html#af6f7b39bc9b00b8b99fee63e7557a063">uploaderid</a>;</div>
+<div class="line"><a name="l02493"></a><span class="lineno"> 2493</span>&#160;        j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;downloadtime&quot;</span>] = this-&gt;<a class="code" href="a00142.html">finfo</a>.<a class="code" href="a00142.html#a6de1b43f0c90f72fd1f477c99c70fc55">downloadtime</a>;</div>
+<div class="line"><a name="l02494"></a><span class="lineno"> 2494</span>&#160;        j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;uploadtime&quot;</span>] = this-&gt;<a class="code" href="a00142.html">finfo</a>.<a class="code" href="a00142.html#aef43d0b5c58788de09c65b8094e8bf64">uploadtime</a>;</div>
+<div class="line"><a name="l02495"></a><span class="lineno"> 2495</span>&#160;        j[<span class="stringliteral">&quot;finfo&quot;</span>][<span class="stringliteral">&quot;lastmodifytime&quot;</span>] = this-&gt;<a class="code" href="a00142.html">finfo</a>.<a class="code" href="a00142.html#a35d04e7a5baf55f96fa4ad917fb13fb7">lastmodifytime</a>;</div>
+<div class="line"><a name="l02496"></a><span class="lineno"> 2496</span>&#160;        j[<span class="stringliteral">&quot;id&quot;</span>] = this-&gt;<a class="code" href="a00146.html#aa8d23730ca1c51056732ed77d4366ece">id</a>;</div>
+<div class="line"><a name="l02497"></a><span class="lineno"> 2497</span>&#160;        j[<span class="stringliteral">&quot;internalid&quot;</span>] = this-&gt;<a class="code" href="a00146.html#a96fda28f8f42735d50de07cc07f815e7">internalid</a>;</div>
+<div class="line"><a name="l02498"></a><span class="lineno"> 2498</span>&#160;        j[<span class="stringliteral">&quot;name&quot;</span>] = this-&gt;<a class="code" href="a00146.html#a5c367cbfa0e70c35e358945c0d985617">name</a>;</div>
+<div class="line"><a name="l02499"></a><span class="lineno"> 2499</span>&#160;        j[<span class="stringliteral">&quot;size&quot;</span>] = this-&gt;<a class="code" href="a00146.html#a82fb695655e847861ef00c1de1151426">size</a>;</div>
+<div class="line"><a name="l02500"></a><span class="lineno"> 2500</span>&#160;        <span class="keywordflow">return</span> j.dump();</div>
+<div class="line"><a name="l02501"></a><span class="lineno"> 2501</span>&#160;    }</div>
+<div class="ttc" id="aa00138_html_a5686609592f395d76a6cfac8ee8c4c67"><div class="ttname"><a href="a00138.html#a5686609592f395d76a6cfac8ee8c4c67">MiraiCP::dinfo::md5</a></div><div class="ttdeci">std::string md5</div><div class="ttdoc">md5 可用于校验</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01204">miraiCP.hpp:1204</a></div></div>
+<div class="ttc" id="aa00138_html_a8bf2fa80fa89d67178f207c5162a0d4f"><div class="ttname"><a href="a00138.html#a8bf2fa80fa89d67178f207c5162a0d4f">MiraiCP::dinfo::sha1</a></div><div class="ttdeci">std::string sha1</div><div class="ttdoc">sha1 可用于校验</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01206">miraiCP.hpp:1206</a></div></div>
+<div class="ttc" id="aa00138_html_ada3eea457cb42af4fba1de73937d7e3b"><div class="ttname"><a href="a00138.html#ada3eea457cb42af4fba1de73937d7e3b">MiraiCP::dinfo::url</a></div><div class="ttdeci">std::string url</div><div class="ttdoc">下载地址</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01202">miraiCP.hpp:1202</a></div></div>
+<div class="ttc" id="aa00142_html_a12ebe79248fee9653bffcf18b5de1a0e"><div class="ttname"><a href="a00142.html#a12ebe79248fee9653bffcf18b5de1a0e">MiraiCP::finfo::size</a></div><div class="ttdeci">unsigned long long size</div><div class="ttdoc">文件大小</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01212">miraiCP.hpp:1212</a></div></div>
+<div class="ttc" id="aa00142_html_a35d04e7a5baf55f96fa4ad917fb13fb7"><div class="ttname"><a href="a00142.html#a35d04e7a5baf55f96fa4ad917fb13fb7">MiraiCP::finfo::lastmodifytime</a></div><div class="ttdeci">unsigned long long lastmodifytime</div><div class="ttdoc">上次更改时间, 时间戳格式</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01220">miraiCP.hpp:1220</a></div></div>
+<div class="ttc" id="aa00142_html_a6de1b43f0c90f72fd1f477c99c70fc55"><div class="ttname"><a href="a00142.html#a6de1b43f0c90f72fd1f477c99c70fc55">MiraiCP::finfo::downloadtime</a></div><div class="ttdeci">unsigned int downloadtime</div><div class="ttdoc">下载次数</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01216">miraiCP.hpp:1216</a></div></div>
+<div class="ttc" id="aa00142_html_aef43d0b5c58788de09c65b8094e8bf64"><div class="ttname"><a href="a00142.html#aef43d0b5c58788de09c65b8094e8bf64">MiraiCP::finfo::uploadtime</a></div><div class="ttdeci">unsigned long long uploadtime</div><div class="ttdoc">上传时间, 时间戳格式</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01218">miraiCP.hpp:1218</a></div></div>
+<div class="ttc" id="aa00142_html_af6f7b39bc9b00b8b99fee63e7557a063"><div class="ttname"><a href="a00142.html#af6f7b39bc9b00b8b99fee63e7557a063">MiraiCP::finfo::uploaderid</a></div><div class="ttdeci">unsigned long long uploaderid</div><div class="ttdoc">上传者id</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l01214">miraiCP.hpp:1214</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a09c067de523c167259d81bab4b99bd4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09c067de523c167259d81bab4b99bd4a">&#9670;&nbsp;</a></span>toMiraiCode()</h2>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01037">1037</a> 行定义.</p>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string MiraiCP::RemoteFile::toMiraiCode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换 </p>
+
+<p>实现了 <a class="el" href="a00046.html#af046d2b21e5e5b13589cc81819bbf05d">MiraiCP::MiraiCodeable</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l01268">1268</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l01268"></a><span class="lineno"> 1268</span>&#160;                                {</div>
+<div class="line"><a name="l01269"></a><span class="lineno"> 1269</span>&#160;            <span class="keywordflow">if</span> (<a class="code" href="a00146.html#a96fda28f8f42735d50de07cc07f815e7">internalid</a> == 0) {</div>
+<div class="line"><a name="l01270"></a><span class="lineno"> 1270</span>&#160;                <span class="comment">// 重新上传</span></div>
+<div class="line"><a name="l01271"></a><span class="lineno"> 1271</span>&#160;                <span class="keywordflow">throw</span> <a class="code" href="a00114.html">RemoteAssetException</a>(<span class="stringliteral">&quot;toMiraiCode error: internalid错误，重新上传&quot;</span>);</div>
+<div class="line"><a name="l01272"></a><span class="lineno"> 1272</span>&#160;            }</div>
+<div class="line"><a name="l01273"></a><span class="lineno"> 1273</span>&#160;            <span class="keywordflow">return</span> <span class="stringliteral">&quot;[mirai:file:&quot;</span> + <span class="keywordtype">id</span> + <span class="stringliteral">&quot;,&quot;</span> + std::to_string(<a class="code" href="a00146.html#a96fda28f8f42735d50de07cc07f815e7">internalid</a>) + <span class="stringliteral">&quot;,&quot;</span> + <a class="code" href="a00038.html#a01f4fe41f8bef55b95953750f5cfb0c2">Tools::escapeToMiraiCode</a>(<a class="code" href="a00146.html#a5c367cbfa0e70c35e358945c0d985617">name</a>) + <span class="stringliteral">&quot;,&quot;</span> +</div>
+<div class="line"><a name="l01274"></a><span class="lineno"> 1274</span>&#160;                   std::to_string(<a class="code" href="a00146.html#a82fb695655e847861ef00c1de1151426">size</a>) + <span class="stringliteral">&quot;]&quot;</span>;</div>
+<div class="line"><a name="l01275"></a><span class="lineno"> 1275</span>&#160;        }</div>
+<div class="ttc" id="aa00038_html_a01f4fe41f8bef55b95953750f5cfb0c2"><div class="ttname"><a href="a00038.html#a01f4fe41f8bef55b95953750f5cfb0c2">MiraiCP::Tools::escapeToMiraiCode</a></div><div class="ttdeci">static std::string escapeToMiraiCode(const std::string &amp;s)</div><div class="ttdoc">转义miraicode格式</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02840">miraiCP.hpp:2840</a></div></div>
+<div class="ttc" id="aa00114_html"><div class="ttname"><a href="a00114.html">MiraiCP::RemoteAssetException</a></div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00752">miraiCP.hpp:752</a></div></div>
+</div><!-- fragment --><div id="dynsection-5" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-5-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
+<div id="dynsection-5-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-5-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00146_a09c067de523c167259d81bab4b99bd4a_cgraph.png" border="0" usemap="#aa00146_a09c067de523c167259d81bab4b99bd4a_cgraph" alt=""/></div>
+<map name="aa00146_a09c067de523c167259d81bab4b99bd4a_cgraph" id="aa00146_a09c067de523c167259d81bab4b99bd4a_cgraph">
+<area shape="rect" title="仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换" alt="" coords="5,5,148,47"/>
+<area shape="rect" href="a00038.html#a01f4fe41f8bef55b95953750f5cfb0c2" title="转义miraicode格式" alt="" coords="196,5,367,47"/>
+<area shape="rect" href="a00038.html#aa8a5d5266e279711effa33d3cefecaa1" title="替换全部在一个字符串中." alt="" coords="415,13,572,39"/>
+</map>
+</div>
 
 </div>
 </div>
-<a id="aa13ebef9ac586704f4913eeb7dae1a7c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa13ebef9ac586704f4913eeb7dae1a7c">&#9670;&nbsp;</a></span>sha1</h2>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a15dc1285dd1a2c72a3605729f7dcccc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15dc1285dd1a2c72a3605729f7dcccc8">&#9670;&nbsp;</a></span>dinfo</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> dinfo::sha1</td>
+          <td class="memname">const <a class="el" href="a00138.html">dinfo</a> MiraiCP::RemoteFile::dinfo</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>文件下载信息 </p><dl class="section see"><dt>参见</dt><dd><a class="el" href="a00138.html" title="下载信息">dinfo</a> </dd></dl>
 
-<p>sha1 可用于校验 </p>
-
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01039">1039</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l01238">1238</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a27f1fe72da17504a88993b1895bff874"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a27f1fe72da17504a88993b1895bff874">&#9670;&nbsp;</a></span>url</h2>
+<a id="ac6ee8bd6ecbbca59d05eb030a61bc34b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6ee8bd6ecbbca59d05eb030a61bc34b">&#9670;&nbsp;</a></span>finfo</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> dinfo::url</td>
+          <td class="memname">const <a class="el" href="a00142.html">finfo</a> MiraiCP::RemoteFile::finfo</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>文件信息 </p><dl class="section see"><dt>参见</dt><dd><a class="el" href="a00142.html" title="文件信息">finfo</a> </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l01241">1241</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa8d23730ca1c51056732ed77d4366ece"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8d23730ca1c51056732ed77d4366ece">&#9670;&nbsp;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string MiraiCP::RemoteFile::id</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>下载地址 </p>
+<p>文件唯一id, 用于识别 </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l01035">1035</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l01227">1227</a> 行定义.</p>
 
 </div>
 </div>
-<hr/>该结构体的文档由以下文件生成:<ul>
-<li><a class="el" href="a00026_source.html">tools.h</a></li>
+<a id="a96fda28f8f42735d50de07cc07f815e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96fda28f8f42735d50de07cc07f815e7">&#9670;&nbsp;</a></span>internalid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int MiraiCP::RemoteFile::internalid</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>文件内部id, 用于构造miraiCode发送 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l01229">1229</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c367cbfa0e70c35e358945c0d985617"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c367cbfa0e70c35e358945c0d985617">&#9670;&nbsp;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string MiraiCP::RemoteFile::name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>文件名 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l01231">1231</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab199d0484d5eedbc28219171b0af5a4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab199d0484d5eedbc28219171b0af5a4c">&#9670;&nbsp;</a></span>path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string MiraiCP::RemoteFile::path</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>文件在群文件的路径 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l01235">1235</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a82fb695655e847861ef00c1de1151426"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82fb695655e847861ef00c1de1151426">&#9670;&nbsp;</a></span>size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const long long MiraiCP::RemoteFile::size</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>文件大小 </p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l01233">1233</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li><a class="el" href="a00002_source.html">miraiCP.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -193,8 +607,8 @@ Public 属性</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="a00146.html">dinfo</a></li>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:54:59 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="navelem"><a class="el" href="a00010.html">MiraiCP</a></li><li class="navelem"><a class="el" href="a00146.html">RemoteFile</a></li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:05 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

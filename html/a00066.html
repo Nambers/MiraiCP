@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MiraiCP: MiraiCodeable类 参考</title>
+<title>MiraiCP: MiraiCP::IdLogger类 参考</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -90,52 +90,109 @@ $(document).ready(function(){initNavTree('a00066.html',''); initResizable(); });
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="#pro-methods">Protected 成员函数</a> &#124;
 <a href="a00063.html">所有成员列表</a>  </div>
   <div class="headertitle">
-<div class="title">MiraiCodeable类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+<div class="title">MiraiCP::IdLogger类 参考</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>MiraiCode父类, 指可以被转换成miraicode的类型  
+<p>带id(一般为bot账号)的logger  
  <a href="a00066.html#details">更多...</a></p>
 
-<p><code>#include &lt;<a class="el" href="a00026_source.html">tools.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="a00002_source.html">miraiCP.hpp</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 MiraiCodeable 继承关系图:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> 类 MiraiCP::IdLogger 继承关系图:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00065.png" border="0" usemap="#a_mirai_codeable_inherit__map" alt="Inheritance graph"/></div>
-<map name="a_mirai_codeable_inherit__map" id="a_mirai_codeable_inherit__map">
-<area shape="rect" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="258,5,387,97"/>
-<area shape="rect" href="a00134.html" title="图像类声明" alt="" coords="5,197,203,421"/>
-<area shape="rect" href="a00142.html" title=" " alt="" coords="227,219,419,399"/>
-<area shape="rect" href="a00154.html" title="远程(群)文件类型" alt="" coords="443,145,645,472"/>
+<div class="center"><img src="a00065.png" border="0" usemap="#a_mirai_c_p_1_1_id_logger_inherit__map" alt="Inheritance graph"/></div>
+<map name="a_mirai_c_p_1_1_id_logger_inherit__map" id="a_mirai_c_p_1_1_id_logger_inherit__map">
+<area shape="rect" title="带id(一般为bot账号)的logger" alt="" coords="8,541,187,692"/>
+<area shape="rect" href="a00054.html" title=" " alt="" coords="5,5,189,493"/>
 </map>
 </div>
 <div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> MiraiCodeable 的协作图:</div>
+  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> MiraiCP::IdLogger 的协作图:</div>
 <div id="dynsection-1-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00064.png" border="0" usemap="#a_mirai_codeable_coll__map" alt="Collaboration graph"/></div>
-<map name="a_mirai_codeable_coll__map" id="a_mirai_codeable_coll__map">
-<area shape="rect" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,5,135,97"/>
+<div class="center"><img src="a00064.png" border="0" usemap="#a_mirai_c_p_1_1_id_logger_coll__map" alt="Collaboration graph"/></div>
+<map name="a_mirai_c_p_1_1_id_logger_coll__map" id="a_mirai_c_p_1_1_id_logger_coll__map">
+<area shape="rect" title="带id(一般为bot账号)的logger" alt="" coords="176,851,355,987"/>
+<area shape="rect" href="a00054.html" title=" " alt="" coords="73,315,257,788"/>
+<area shape="rect" href="a00058.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="5,160,176,252"/>
+<area shape="rect" title=" " alt="" coords="13,13,59,90"/>
+<area shape="rect" title=" " alt="" coords="84,5,207,97"/>
+<area shape="rect" title=" " alt="" coords="200,167,280,245"/>
+<area shape="rect" title=" " alt="" coords="282,513,449,590"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
-<tr class="memitem:a5067f9067fd47eb8413c28881084d044"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00066.html#a5067f9067fd47eb8413c28881084d044">toMiraiCode</a> ()=0</td></tr>
-<tr class="separator:a5067f9067fd47eb8413c28881084d044"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a487444febbb3c62dd05e3bd45f9d224c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00066.html#a487444febbb3c62dd05e3bd45f9d224c">IdLogger</a> (unsigned long long <a class="el" href="a00066.html#abc60ef8607cfec7a296f3a00b0364ec9">id</a>, <a class="el" href="a00062.html">Logger</a> *l)</td></tr>
+<tr class="separator:a487444febbb3c62dd05e3bd45f9d224c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_a00054"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_a00054')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="a00054.html">MiraiCP::Logger_interface</a></td></tr>
+<tr class="memitem:a9601e541a8622aececf1ab755b0c5c08 inherit pub_methods_a00054"><td class="memItemLeft" align="right" valign="top">jmethodID&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#a9601e541a8622aececf1ab755b0c5c08">getjmethod</a> ()</td></tr>
+<tr class="separator:a9601e541a8622aececf1ab755b0c5c08 inherit pub_methods_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a164d026a252bdcf2421bc0747f48f685 inherit pub_methods_a00054"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#a164d026a252bdcf2421bc0747f48f685">init</a> (JNIEnv *=<a class="el" href="a00010.html#af127a20ba623d8010802599ab3b71614">manager</a>-&gt;getEnv())</td></tr>
+<tr class="separator:a164d026a252bdcf2421bc0747f48f685 inherit pub_methods_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d6fe55d99b2fafba4605fba7e830168 inherit pub_methods_a00054"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#a0d6fe55d99b2fafba4605fba7e830168">Info</a> (const std::string &amp;, JNIEnv *=<a class="el" href="a00010.html#af127a20ba623d8010802599ab3b71614">manager</a>-&gt;getEnv())</td></tr>
+<tr class="memdesc:a0d6fe55d99b2fafba4605fba7e830168 inherit pub_methods_a00054"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送普通(info级日志)  <a href="a00054.html#a0d6fe55d99b2fafba4605fba7e830168">更多...</a><br /></td></tr>
+<tr class="separator:a0d6fe55d99b2fafba4605fba7e830168 inherit pub_methods_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea590d4519acaaaf6fea68e44bf9306e inherit pub_methods_a00054"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#aea590d4519acaaaf6fea68e44bf9306e">Info</a> (<a class="el" href="a00050.html">MiraiCode</a> msg, JNIEnv *env=<a class="el" href="a00010.html#af127a20ba623d8010802599ab3b71614">manager</a>-&gt;getEnv())</td></tr>
+<tr class="memdesc:aea590d4519acaaaf6fea68e44bf9306e inherit pub_methods_a00054"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送普通(info级日志)  <a href="a00054.html#aea590d4519acaaaf6fea68e44bf9306e">更多...</a><br /></td></tr>
+<tr class="separator:aea590d4519acaaaf6fea68e44bf9306e inherit pub_methods_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5fdb7f72a1d9b8bb99a3ef1300c094c inherit pub_methods_a00054"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#ac5fdb7f72a1d9b8bb99a3ef1300c094c">Warning</a> (const std::string &amp;, JNIEnv *=<a class="el" href="a00010.html#af127a20ba623d8010802599ab3b71614">manager</a>-&gt;getEnv())</td></tr>
+<tr class="memdesc:ac5fdb7f72a1d9b8bb99a3ef1300c094c inherit pub_methods_a00054"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送警告(warning级日志)  <a href="a00054.html#ac5fdb7f72a1d9b8bb99a3ef1300c094c">更多...</a><br /></td></tr>
+<tr class="separator:ac5fdb7f72a1d9b8bb99a3ef1300c094c inherit pub_methods_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3600946c76b2b6f63a3865d186209770 inherit pub_methods_a00054"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#a3600946c76b2b6f63a3865d186209770">Warning</a> (<a class="el" href="a00050.html">MiraiCode</a> msg, JNIEnv *env=<a class="el" href="a00010.html#af127a20ba623d8010802599ab3b71614">manager</a>-&gt;getEnv())</td></tr>
+<tr class="memdesc:a3600946c76b2b6f63a3865d186209770 inherit pub_methods_a00054"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送警告(warning级日志)  <a href="a00054.html#a3600946c76b2b6f63a3865d186209770">更多...</a><br /></td></tr>
+<tr class="separator:a3600946c76b2b6f63a3865d186209770 inherit pub_methods_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace9bbedca050fc72d1592440d16bd8f7 inherit pub_methods_a00054"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">Error</a> (const std::string &amp;, JNIEnv *=<a class="el" href="a00010.html#af127a20ba623d8010802599ab3b71614">manager</a>-&gt;getEnv())</td></tr>
+<tr class="memdesc:ace9bbedca050fc72d1592440d16bd8f7 inherit pub_methods_a00054"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送错误(error级日志)  <a href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7">更多...</a><br /></td></tr>
+<tr class="separator:ace9bbedca050fc72d1592440d16bd8f7 inherit pub_methods_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56c3100d8113c0d1782f09a8576dba0a inherit pub_methods_a00054"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#a56c3100d8113c0d1782f09a8576dba0a">Error</a> (<a class="el" href="a00050.html">MiraiCode</a> msg, JNIEnv *env=<a class="el" href="a00010.html#af127a20ba623d8010802599ab3b71614">manager</a>-&gt;getEnv())</td></tr>
+<tr class="memdesc:a56c3100d8113c0d1782f09a8576dba0a inherit pub_methods_a00054"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送错误(error级日志)  <a href="a00054.html#a56c3100d8113c0d1782f09a8576dba0a">更多...</a><br /></td></tr>
+<tr class="separator:a56c3100d8113c0d1782f09a8576dba0a inherit pub_methods_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cd6aa5f135e8a238df84876aa006a52 inherit pub_methods_a00054"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#a6cd6aa5f135e8a238df84876aa006a52">registerHandle</a> (<a class="el" href="a00054.html#a35254694837852f95ac33eae4d439f85">action</a> <a class="el" href="a00054.html#a35254694837852f95ac33eae4d439f85">action</a>)</td></tr>
+<tr class="separator:a6cd6aa5f135e8a238df84876aa006a52 inherit pub_methods_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ed1680508618b446c94ed004c211ea9 inherit pub_methods_a00054"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#a3ed1680508618b446c94ed004c211ea9">setHandleState</a> (bool state)</td></tr>
+<tr class="separator:a3ed1680508618b446c94ed004c211ea9 inherit pub_methods_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:abc60ef8607cfec7a296f3a00b0364ec9"><td class="memItemLeft" align="right" valign="top">const unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00066.html#abc60ef8607cfec7a296f3a00b0364ec9">id</a></td></tr>
+<tr class="separator:abc60ef8607cfec7a296f3a00b0364ec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_a00054"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_a00054')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="a00054.html">MiraiCP::Logger_interface</a></td></tr>
+<tr class="memitem:a9a466dfbb89d5b36cae8ff3751bacf6e inherit pub_attribs_a00054"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00058.html">handler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#a9a466dfbb89d5b36cae8ff3751bacf6e">loggerhandler</a></td></tr>
+<tr class="separator:a9a466dfbb89d5b36cae8ff3751bacf6e inherit pub_attribs_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected 成员函数</h2></td></tr>
+<tr class="memitem:a89017629370efaa9bc2d3012b9bd5682"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00066.html#a89017629370efaa9bc2d3012b9bd5682">log0</a> (const std::string &amp;content, int level, JNIEnv *env) override</td></tr>
+<tr class="memdesc:a89017629370efaa9bc2d3012b9bd5682"><td class="mdescLeft">&#160;</td><td class="mdescRight">日志底层实现封装  <a href="a00066.html#a89017629370efaa9bc2d3012b9bd5682">更多...</a><br /></td></tr>
+<tr class="separator:a89017629370efaa9bc2d3012b9bd5682"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_types_a00054"><td colspan="2" onclick="javascript:toggleInherit('pub_types_a00054')"><img src="closed.png" alt="-"/>&#160;Public 类型 继承自 <a class="el" href="a00054.html">MiraiCP::Logger_interface</a></td></tr>
+<tr class="memitem:a35254694837852f95ac33eae4d439f85 inherit pub_types_a00054"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; void(std::string, int)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#a35254694837852f95ac33eae4d439f85">action</a></td></tr>
+<tr class="memdesc:a35254694837852f95ac33eae4d439f85 inherit pub_types_a00054"><td class="mdescLeft">&#160;</td><td class="mdescRight">封装lambda类型  <a href="a00054.html#a35254694837852f95ac33eae4d439f85">更多...</a><br /></td></tr>
+<tr class="separator:a35254694837852f95ac33eae4d439f85 inherit pub_types_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_a00054"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_a00054')"><img src="closed.png" alt="-"/>&#160;Protected 属性 继承自 <a class="el" href="a00054.html">MiraiCP::Logger_interface</a></td></tr>
+<tr class="memitem:ac1f75ae7a4298f72c7e2934a653e3a63 inherit pro_attribs_a00054"><td class="memItemLeft" align="right" valign="top">jmethodID&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00054.html#ac1f75ae7a4298f72c7e2934a653e3a63">log</a> = nullptr</td></tr>
+<tr class="separator:ac1f75ae7a4298f72c7e2934a653e3a63 inherit pro_attribs_a00054"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock"><p>MiraiCode父类, 指可以被转换成miraicode的类型 </p>
+<div class="textblock"><p>带id(一般为bot账号)的logger </p>
 
-<p class="definition">在文件 <a class="el" href="a00026_source.html">tools.h</a> 第 <a class="el" href="a00026_source.html#l00203">203</a> 行定义.</p>
-</div><h2 class="groupheader">成员函数说明</h2>
-<a id="a5067f9067fd47eb8413c28881084d044"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5067f9067fd47eb8413c28881084d044">&#9670;&nbsp;</a></span>toMiraiCode()</h2>
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00507">507</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a487444febbb3c62dd05e3bd45f9d224c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a487444febbb3c62dd05e3bd45f9d224c">&#9670;&nbsp;</a></span>IdLogger()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -144,45 +201,157 @@ Public 成员函数</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="a00011.html#aca454f84dd198a937af6499dd758aa3d">std::string</a> MiraiCodeable::toMiraiCode </td>
+          <td class="memname">MiraiCP::IdLogger::IdLogger </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">unsigned long long&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="a00062.html">Logger</a> *&#160;</td>
+          <td class="paramname"><em>l</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>在 <a class="el" href="a00154.html#a1ca55a2e4cead686e9ea5f0e9260dfa0">RemoteFile</a>, <a class="el" href="a00142.html#a2f294b6092bdac3a0602ca19fb937fcc">LightApp</a> , 以及 <a class="el" href="a00134.html#a1f23cd8327ee4b8814ad8574b6a35e82">Image</a> 内被实现.</p>
-<div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> 这是这个函数的调用关系图:</div>
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00513">513</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;                                                   : <a class="code" href="a00066.html#abc60ef8607cfec7a296f3a00b0364ec9">id</a>(<span class="keywordtype">id</span>) {</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;            this-&gt;<a class="code" href="a00054.html#a9a466dfbb89d5b36cae8ff3751bacf6e">loggerhandler</a> = l-&gt;<a class="code" href="a00054.html#a9a466dfbb89d5b36cae8ff3751bacf6e">loggerhandler</a>;</div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;            this-&gt;<a class="code" href="a00054.html#ac1f75ae7a4298f72c7e2934a653e3a63">log</a> = l-&gt;<a class="code" href="a00054.html#a9601e541a8622aececf1ab755b0c5c08">getjmethod</a>();</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;        }</div>
+<div class="ttc" id="aa00054_html_a9601e541a8622aececf1ab755b0c5c08"><div class="ttname"><a href="a00054.html#a9601e541a8622aececf1ab755b0c5c08">MiraiCP::Logger_interface::getjmethod</a></div><div class="ttdeci">jmethodID getjmethod()</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00434">miraiCP.hpp:434</a></div></div>
+<div class="ttc" id="aa00054_html_a9a466dfbb89d5b36cae8ff3751bacf6e"><div class="ttname"><a href="a00054.html#a9a466dfbb89d5b36cae8ff3751bacf6e">MiraiCP::Logger_interface::loggerhandler</a></div><div class="ttdeci">handler loggerhandler</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00452">miraiCP.hpp:452</a></div></div>
+<div class="ttc" id="aa00054_html_ac1f75ae7a4298f72c7e2934a653e3a63"><div class="ttname"><a href="a00054.html#ac1f75ae7a4298f72c7e2934a653e3a63">MiraiCP::Logger_interface::log</a></div><div class="ttdeci">jmethodID log</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00432">miraiCP.hpp:432</a></div></div>
+<div class="ttc" id="aa00066_html_abc60ef8607cfec7a296f3a00b0364ec9"><div class="ttname"><a href="a00066.html#abc60ef8607cfec7a296f3a00b0364ec9">MiraiCP::IdLogger::id</a></div><div class="ttdeci">const unsigned long long id</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00511">miraiCP.hpp:511</a></div></div>
+</div><!-- fragment --><div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
 <div id="dynsection-2-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-2-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="a00066_a5067f9067fd47eb8413c28881084d044_icgraph.png" border="0" usemap="#aa00066_a5067f9067fd47eb8413c28881084d044_icgraph" alt=""/></div>
-<map name="aa00066_a5067f9067fd47eb8413c28881084d044_icgraph" id="aa00066_a5067f9067fd47eb8413c28881084d044_icgraph">
-<area shape="rect" title=" " alt="" coords="520,155,701,181"/>
-<area shape="rect" href="a00070.html#a03a0bc66a6fa10cda5b195047e2496a7" title="从MiraiCodeable类型初始化一个miraicode字符串" alt="" coords="294,104,441,131"/>
-<area shape="rect" href="a00070.html#af50c8e268885cb5a30639cdfd93ab69a" title=" " alt="" coords="39,5,181,32"/>
-<area shape="rect" href="a00070.html#ad855466d9041e36a3e74c20050de286f" title=" " alt="" coords="35,63,185,89"/>
-<area shape="rect" href="a00070.html#ae0f3c44dd9a20a6551e5b8eb5eff4cf3" title=" " alt="" coords="39,125,181,152"/>
-<area shape="rect" href="a00070.html#a75d55984b6eec06704f76f726eeead1d" title=" " alt="" coords="54,201,166,228"/>
-<area shape="rect" href="a00130.html#a16d0ad039dd11b00fae58bede8ba0ab5" title="回复(引用并发送miraicode)" alt="" coords="263,257,472,298"/>
-<area shape="rect" href="a00138.html#a7f3578533d424fcaada52bc32225d5d9" title="发送miraicode" alt="" coords="287,323,448,349"/>
-<area shape="rect" href="a00130.html#a158264e0d0eb4c6ef516b67eb89b6269" title=" " alt="" coords="5,257,215,298"/>
-<area shape="rect" href="a00138.html#abd2cdd5e1aa11add1f75ef4dd6454293" title="发送miraicode" alt="" coords="29,373,191,400"/>
-<area shape="rect" href="a00142.html#aafe621350dfc1350853959b5a1b9ff13" title=" " alt="" coords="49,323,171,349"/>
+<div class="center"><img src="a00066_a487444febbb3c62dd05e3bd45f9d224c_cgraph.png" border="0" usemap="#aa00066_a487444febbb3c62dd05e3bd45f9d224c_cgraph" alt=""/></div>
+<map name="aa00066_a487444febbb3c62dd05e3bd45f9d224c_cgraph" id="aa00066_a487444febbb3c62dd05e3bd45f9d224c_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,139,47"/>
+<area shape="rect" href="a00054.html#a9601e541a8622aececf1ab755b0c5c08" title=" " alt="" coords="187,5,357,47"/>
 </map>
 </div>
 
 </div>
 </div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a89017629370efaa9bc2d3012b9bd5682"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89017629370efaa9bc2d3012b9bd5682">&#9670;&nbsp;</a></span>log0()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MiraiCP::IdLogger::log0 </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>log</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JNIEnv *&#160;</td>
+          <td class="paramname"><em>env</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>日志底层实现封装 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">log</td><td>日志内容 </td></tr>
+    <tr><td class="paramname">botid</td><td>botid </td></tr>
+    <tr><td class="paramname">level</td><td>日志等级 </td></tr>
+    <tr><td class="paramname">env</td><td>jnienv </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>实现了 <a class="el" href="a00054.html#aaeeaa321f40dd6bf2c653459248fd747">MiraiCP::Logger_interface</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l02360">2360</a> 行定义.</p>
+<div class="fragment"><div class="line"><a name="l02360"></a><span class="lineno"> 2360</span>&#160;                                                                        {</div>
+<div class="line"><a name="l02361"></a><span class="lineno"> 2361</span>&#160;        <span class="keywordflow">if</span> (this-&gt;<a class="code" href="a00054.html#a9a466dfbb89d5b36cae8ff3751bacf6e">loggerhandler</a>.<a class="code" href="a00058.html#a1901bfc7de095017996e3fa17da9ae72">enable</a>)</div>
+<div class="line"><a name="l02362"></a><span class="lineno"> 2362</span>&#160;            this-&gt;<a class="code" href="a00054.html#a9a466dfbb89d5b36cae8ff3751bacf6e">loggerhandler</a>.<a class="code" href="a00058.html#a5cd33f28e4dba8cb81a917d06c01ca8d">action</a>(content, level);</div>
+<div class="line"><a name="l02363"></a><span class="lineno"> 2363</span>&#160;        <a class="code" href="a00010.html#ad2394aaabcd94373cf32f4a14845a5ec">json</a> j;</div>
+<div class="line"><a name="l02364"></a><span class="lineno"> 2364</span>&#160;        j[<span class="stringliteral">&quot;id&quot;</span>] = <a class="code" href="a00066.html#abc60ef8607cfec7a296f3a00b0364ec9">id</a>;</div>
+<div class="line"><a name="l02365"></a><span class="lineno"> 2365</span>&#160;        j[<span class="stringliteral">&quot;log&quot;</span>] = content;</div>
+<div class="line"><a name="l02366"></a><span class="lineno"> 2366</span>&#160;        env-&gt;CallStaticVoidMethod(<a class="code" href="a00010.html#a4e3deae0e7854c90b7b8dfb8cda125fe">config</a>-&gt;<a class="code" href="a00042.html#a71fd29df0981bb7474283eee1ea18493">CPP_lib</a>, <a class="code" href="a00054.html#ac1f75ae7a4298f72c7e2934a653e3a63">log</a>, <a class="code" href="a00038.html#a3a21451de8b65ec77a8097924f681ee1">Tools::str2jstring</a>(j.dump().c_str()), (jint) level);</div>
+<div class="line"><a name="l02367"></a><span class="lineno"> 2367</span>&#160;    }</div>
+<div class="ttc" id="aa00010_html_a4e3deae0e7854c90b7b8dfb8cda125fe"><div class="ttname"><a href="a00010.html#a4e3deae0e7854c90b7b8dfb8cda125fe">MiraiCP::config</a></div><div class="ttdeci">Config * config</div><div class="ttdoc">全局Config对象</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00345">miraiCP.hpp:345</a></div></div>
+<div class="ttc" id="aa00010_html_ad2394aaabcd94373cf32f4a14845a5ec"><div class="ttname"><a href="a00010.html#ad2394aaabcd94373cf32f4a14845a5ec">MiraiCP::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00024">miraiCP.hpp:24</a></div></div>
+<div class="ttc" id="aa00038_html_a3a21451de8b65ec77a8097924f681ee1"><div class="ttname"><a href="a00038.html#a3a21451de8b65ec77a8097924f681ee1">MiraiCP::Tools::str2jstring</a></div><div class="ttdeci">static jstring str2jstring(const char *pat, JNIEnv *=manager-&gt;getEnv())</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l02774">miraiCP.hpp:2774</a></div></div>
+<div class="ttc" id="aa00042_html_a71fd29df0981bb7474283eee1ea18493"><div class="ttname"><a href="a00042.html#a71fd29df0981bb7474283eee1ea18493">MiraiCP::Config::CPP_lib</a></div><div class="ttdeci">jclass CPP_lib</div><div class="ttdoc">kt中JNI接口类</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00281">miraiCP.hpp:281</a></div></div>
+<div class="ttc" id="aa00058_html_a1901bfc7de095017996e3fa17da9ae72"><div class="ttname"><a href="a00058.html#a1901bfc7de095017996e3fa17da9ae72">MiraiCP::Logger_interface::handler::enable</a></div><div class="ttdeci">bool enable</div><div class="ttdoc">是否启用</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00448">miraiCP.hpp:448</a></div></div>
+<div class="ttc" id="aa00058_html_a5cd33f28e4dba8cb81a917d06c01ca8d"><div class="ttname"><a href="a00058.html#a5cd33f28e4dba8cb81a917d06c01ca8d">MiraiCP::Logger_interface::handler::action</a></div><div class="ttdeci">action action</div><div class="ttdoc">执行的操作，格式为lambda</div><div class="ttdef"><b>Definition:</b> <a href="a00002_source.html#l00450">miraiCP.hpp:450</a></div></div>
+</div><!-- fragment --><div id="dynsection-3" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-3-trigger" src="closed.png" alt="+"/> 函数调用图:</div>
+<div id="dynsection-3-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-3-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="a00066_a89017629370efaa9bc2d3012b9bd5682_cgraph.png" border="0" usemap="#aa00066_a89017629370efaa9bc2d3012b9bd5682_cgraph" alt=""/></div>
+<map name="aa00066_a89017629370efaa9bc2d3012b9bd5682_cgraph" id="aa00066_a89017629370efaa9bc2d3012b9bd5682_cgraph">
+<area shape="rect" title="日志底层实现封装" alt="" coords="5,13,163,39"/>
+<area shape="rect" href="a00038.html#a3a21451de8b65ec77a8097924f681ee1" title=" " alt="" coords="211,13,383,39"/>
+<area shape="rect" href="a00054.html#ace9bbedca050fc72d1592440d16bd8f7" title="发送错误(error级日志)" alt="" coords="431,5,601,47"/>
+<area shape="rect" href="a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="649,5,820,47"/>
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="abc60ef8607cfec7a296f3a00b0364ec9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc60ef8607cfec7a296f3a00b0364ec9">&#9670;&nbsp;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned long long MiraiCP::IdLogger::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="a00002_source.html">miraiCP.hpp</a> 第 <a class="el" href="a00002_source.html#l00511">511</a> 行定义.</p>
+
+</div>
+</div>
 <hr/>该类的文档由以下文件生成:<ul>
-<li><a class="el" href="a00026_source.html">tools.h</a></li>
+<li><a class="el" href="a00002_source.html">miraiCP.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -190,8 +359,8 @@ Public 成员函数</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="a00066.html">MiraiCodeable</a></li>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:21 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="navelem"><a class="el" href="a00010.html">MiraiCP</a></li><li class="navelem"><a class="el" href="a00066.html">IdLogger</a></li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:03 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

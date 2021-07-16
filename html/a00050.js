@@ -1,13 +1,16 @@
 var a00050 =
 [
-    [ "t", "a00054.html", "a00054" ],
-    [ "threadManager", "a00050.html#accd69746301a7216bcbe26bbb82ccb76", null ],
-    [ "detach", "a00050.html#a807b673ce4d4199cf0bfdfff5521d2c0", null ],
-    [ "getEnv", "a00050.html#a75639792816fe3f8af8a5a3fde89e4af", null ],
-    [ "getThreadId", "a00050.html#a3401a8976c99d293ef1b8b8c7a1db9d1", null ],
-    [ "included", "a00050.html#a648b29dc90c990d1915ca1a92eb210e6", null ],
-    [ "newEnv", "a00050.html#a8210ba94ee5c9bfe1318319500576c85", null ],
-    [ "setEnv", "a00050.html#af9c06705302ca26890977cd3a2054d3e", null ],
-    [ "_threads", "a00050.html#a6a4ad09cc87c5753e2a2154f3574efc4", null ],
-    [ "mtx", "a00050.html#aabdf75fbc59433d091f74d2850800552", null ]
+    [ "MiraiCode", "a00050.html#a357aa786136dc94421877f5572ca150a", null ],
+    [ "MiraiCode", "a00050.html#a17c87ce330b1b1b91bd953f0f1a41f08", null ],
+    [ "operator+", "a00050.html#aced348510d8532bf2a101cd50a9fae19", null ],
+    [ "operator+", "a00050.html#a0eaa447d03e47e561dbde4748ce12623", null ],
+    [ "operator+=", "a00050.html#ad641a5cab007205e87648892f2db354e", null ],
+    [ "operator+=", "a00050.html#af2064b5171af438008ae1c88c04d0352", null ],
+    [ "operator=", "a00050.html#a5595fb1cdc339c213531bd274dbc9d3c", null ],
+    [ "operator=", "a00050.html#a21bfa33a71f41ee2ef3728cbb8f7f1de", null ],
+    [ "plus", "a00050.html#a016fbece8589f03516f5a92a8a3cb177", null ],
+    [ "plus", "a00050.html#a9b579a011de49908176b0e3c8cfaf923", null ],
+    [ "toMiraiCode", "a00050.html#a8343f0ecc5e0dfae3badd97fe42a1bd1", null ],
+    [ "toString", "a00050.html#a9b46bf5804f88f2504d97c87d3e1b7fc", null ],
+    [ "content", "a00050.html#a10f382c47adbdf7874ee6aff2c1b1850", null ]
 ];

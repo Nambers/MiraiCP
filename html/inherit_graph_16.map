@@ -1,4 +1,3 @@
 <map id="类继承关系图" name="类继承关系图">
-<area shape="rect" id="node1" href="$a00074.html" title="以MiraiCP的名义发送日志, 日志表现格式是: 2021&#45;06&#45;28 09:37:22 [log level]/MiraiCP: [log content]" alt="" coords="5,5,67,32"/>
-<area shape="rect" id="node2" href="$a00082.html" title="以bot的名义发送日志, 表现格式为: 2021&#45;06&#45;28 09:37:22 [log level]/Bot [botid]: [log content]" alt="" coords="115,5,196,32"/>
+<area shape="rect" id="node1" href="$a00026.html" title="风格3" alt="" coords="5,5,169,32"/>
 </map>

@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,48 +89,57 @@ $(document).ready(function(){initNavTree('a00178.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Friend 成员列表</div>  </div>
+<div class="title">MiraiCP::Group 成员列表</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>成员的完整列表，这些成员属于 <a class="el" href="a00178.html">Friend</a>,包括所有继承而来的类成员</p>
+<p>成员的完整列表，这些成员属于 <a class="el" href="a00178.html">MiraiCP::Group</a>,包括所有继承而来的类成员</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#a92b8feb1a780637b71e06f3f9e954043">_avatarUrl</a></td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a88b041d798fb05e1347c51d149c12a21">_botid</a></td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#ad10855c0071226743dffc553dc913b88">_groupid</a></td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a12ab960a72b55b8e7562d04d0b4bd6e0">_id</a></td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#ae8c0a3a8718a84d9766d528df278ad4b">_nickOrNameCard</a></td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a7841db9af58406a50d53d0ad6f7fa374">_type</a></td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#a10cf00a3c2dfef0bdc29c3f89e508293">avatarUrl</a>()</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a869c10fc8e1abeedc10d805576b1450a">botid</a>()</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#ae39444f378e6de7fd6c3e60981949af5">Contact</a>()</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#acff216bf0459571db3304576f563f6cc">Contact</a>(int type, unsigned long long id, unsigned long long gid, std::string name, unsigned long long botid)</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00178.html#aa51792d32e55433d321d0635e1506610">deleteFriend</a>(JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">Friend</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#aafc428cdb4c1920864bf747ad7dce9f2">deserializationFromJson</a>(nlohmann::json root)</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#a1ae828255543de1ff394bc79e9262cc7">deserializationFromString</a>(const std::string &amp;source)</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00178.html#a24d5d1e22b735f5f78ac30da904bbc73">Friend</a>(unsigned long long friendid, unsigned long long botid, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">Friend</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00178.html#a4f453179ab383da2d6a15aff7618fc11">Friend</a>(Contact c)</td><td class="entry"><a class="el" href="a00178.html">Friend</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a07e7ddca539bf8e5ac2d2ad00d8b7ba4">groupid</a>()</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#a220e55b907d54958cd2afb95e65da5a1">id</a>()</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a3f78c5f66d0b71ad06267c6a3b492066">nickOrNameCard</a>()</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00178.html#a9f8fce3fce96e79537c2860871ce8652">refreshInfo</a>(JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">Friend</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a7f3578533d424fcaada52bc32225d5d9">sendMiraiCode</a>(MiraiCodeable *msg)</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#abd2cdd5e1aa11add1f75ef4dd6454293">sendMiraiCode</a>(MiraiCode msg)</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a46348753dfc0d1ecaf658d93511bd721">sendMiraiCode</a>(std::string msg, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#ac8e7ac7c9330803c5e1862bff68096cd">sendMsg</a>(std::string msg, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a93a378bd7b596f11bc709b0268aa4627">sendMsg</a>(MiraiCode msg)</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#afeb2b3da5b221e8120cc532371f946cc">sendVoice</a>(const std::string &amp;path, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a6739337b623df49bc51e2fc997bfd6e8">serialization</a>()</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#a190dd1c2ecfccf67edc3d2b1cff87835">serializationToString</a>()</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00138.html#a182b686fa824fe5c9a3a5181f873e2a1">type</a>()</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00138.html#a3c3699a0d797da44bd30e12153a140f3">uploadImg</a>(const std::string &amp;filename, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00138.html">Contact</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#a748809d74d0dc9c4d79a168ca582cfb9">_avatarUrl</a></td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#a5ffc048e182acbd6fe41fa9d7004a856">_botid</a></td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#a3f7d44cf84e4a01f13cd0c0b4f297801">_groupid</a></td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#a31a1408afd2fd375c920dda2bbc32382">_id</a></td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#a41fcfa82adcc643cbb27b9103904586f">_nickOrNameCard</a></td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#a13537762efd9858e3cb584ef555c9597">_type</a></td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#a34b1aaabd303eb2f0738804aa0759956">avatarUrl</a>()</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#a6aacb450dbafc87378e5b37fc32597c9">botid</a>()</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#ad8f45e856e06e89c33e2145a001b8b74">Contact</a>()</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#a97a5f415422ed5205d2fbf02bf00ad0f">Contact</a>(int type, unsigned long long id, unsigned long long gid, std::string name, unsigned long long botid)</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#a00b5120fdefae37aee9bc812ea5368b7">deserializationFromJson</a>(nlohmann::json root)</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#a735dc18a5470f8c2a1ac78434317a2a0">deserializationFromString</a>(const std::string &amp;source)</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00178.html#a67e05c2eec14cbd28926b789fac78409">getFile</a>(const std::string &amp;path, const std::string &amp;id=&quot;&quot;, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00178.html#a345eaa8e82d358897ca024bb0a509f12">getFileList</a>(const std::string &amp;path, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00178.html#af84ed56bf67cae22294802f7988c3b97">getFileListString</a>(const std::string &amp;path, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00178.html#a260a2c1b05ab430aa1eecadd836c170d">getMemberList</a>(JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00178.html#a9aec1c950ae5f24b65ca535fdfe24d4e">getOwner</a>(JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00178.html#a7eb360e2e197332335d128e7b63cd987">Group</a>(unsigned long long groupid, unsigned long long botid, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00178.html#a8e3040a60fd31298dd76d6826db96d77">Group</a>(Contact c)</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#a494097908a91ab396d7cf3a9c2b612fc">groupid</a>()</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#ab0038fd9b0d4e929f5adb0a5d4834c1a">id</a>()</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00178.html#a7e4a285e03aac96ef4152d852958329d">MemberListToString</a>()</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#a7187f3ae0c1b2be31502498d6c97fa87">nickOrNameCard</a>()</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00178.html#aaaa95471b6009d03f550e08c20c52bd3">quit</a>(JNIEnv *env=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00178.html#ac5fad9ce35def74b66ba24bb7821cb34">refreshInfo</a>(JNIEnv *env=manager-&gt;getEnv()) override</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00178.html#a95baa398fbcb7b447a7e211b24c58332">sendFile</a>(const std::string &amp;path, const std::string &amp;filepath, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#ab38f8cd725cb0c10e94ac89269ba7f8b">sendMiraiCode</a>(MiraiCodeable *msg)</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#ad60d4b05fe21f6f1716fbc132b155a59">sendMiraiCode</a>(MiraiCode msg)</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#a451cd01b15930f0bc9618f0aa66bb34f">sendMiraiCode</a>(std::string msg, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#a751de2a9043e7850ef39a8d728cae33b">sendMsg</a>(std::string msg, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#a896ade30ad03045c2c32261560cc214c">sendMsg</a>(MiraiCode msg)</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#ae57bc899ded37df31e2dbc9ccc80a7ff">sendVoice</a>(const std::string &amp;path, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00130.html#ad3a3c8b42a812af24e45e797217c5cea">serialization</a>()</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#a4110a518868dde98108de31624d1def1">serializationToString</a>()</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00178.html#a0076eeb69e08e5dee4399e424645a333">setting</a></td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#aac6c8dfc706a72e0a17035809871f5a6">type</a>()</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00178.html#a60012c688aeb0c0c22ed9cb8e8981af9">updateSetting</a>(JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00178.html">MiraiCP::Group</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00130.html#aa9188b25f70ae5f8f76281423cb30f71">uploadImg</a>(const std::string &amp;filename, JNIEnv *=manager-&gt;getEnv())</td><td class="entry"><a class="el" href="a00130.html">MiraiCP::Contact</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:03 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:05 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">

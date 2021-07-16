@@ -1,0 +1,5 @@
+<map id="MiraiCP::ThreadManager::detach" name="MiraiCP::ThreadManager::detach">
+<area shape="rect" id="node1" title=" " alt="" coords="5,39,171,80"/>
+<area shape="rect" id="node2" href="$a00030.html#a11837c8fea64ee75bea0bcd1ea56de9c" title="获取线程id." alt="" coords="219,5,384,47"/>
+<area shape="rect" id="node3" href="$a00030.html#abd1025cb50143b1aa60b55d79ec2b370" title="判断该线程id是否包含在线程池里" alt="" coords="219,71,384,112"/>
+</map>

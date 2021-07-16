@@ -1,5 +1,4 @@
-<map id="IllegalArgumentException" name="IllegalArgumentException">
-<area shape="rect" id="node1" title="参数错误" alt="" coords="5,285,187,407"/>
-<area shape="rect" id="node2" href="$a00086.html" title="总异常抽象类" alt="" coords="29,131,163,237"/>
-<area shape="rect" id="node3" title=" " alt="" coords="44,5,148,83"/>
+<map id="MiraiCP::Image" name="MiraiCP::Image">
+<area shape="rect" id="node1" title="图像类声明" alt="" coords="5,145,203,369"/>
+<area shape="rect" id="node2" href="$a00046.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="25,5,183,97"/>
 </map>

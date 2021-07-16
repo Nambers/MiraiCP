@@ -1,12 +1,4 @@
-<map id="BotEvent" name="BotEvent">
-<area shape="rect" id="node1" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="1055,5,1198,97"/>
-<area shape="rect" id="node2" href="$a00226.html" title="机器人进入某群" alt="" coords="5,255,184,450"/>
-<area shape="rect" id="node3" href="$a00206.html" title="群聊邀请事件类声明" alt="" coords="208,145,437,560"/>
-<area shape="rect" id="node4" href="$a00198.html" title="群消息事件声明" alt="" coords="461,255,728,450"/>
-<area shape="rect" id="node5" href="$a00230.html" title="群临时会话" alt="" coords="753,255,983,450"/>
-<area shape="rect" id="node6" href="$a00214.html" title="新群成员加入" alt="" coords="1007,255,1246,450"/>
-<area shape="rect" id="node7" href="$a00218.html" title="群成员离开" alt="" coords="1270,248,1514,457"/>
-<area shape="rect" id="node8" href="$a00210.html" title="好友申请事件声明" alt="" coords="1539,153,1832,553"/>
-<area shape="rect" id="node9" href="$a00202.html" title="私聊消息事件类声明" alt="" coords="1856,270,2123,435"/>
-<area shape="rect" id="node10" href="$a00222.html" title="撤回信息" alt="" coords="2147,182,2365,523"/>
+<map id="MiraiCP::GroupMessageEvent" name="MiraiCP::GroupMessageEvent">
+<area shape="rect" id="node1" title="群消息事件声明" alt="" coords="5,160,272,355"/>
+<area shape="rect" id="node2" href="$a00190.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="67,5,210,112"/>
 </map>

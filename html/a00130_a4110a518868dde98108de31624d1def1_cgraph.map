@@ -1,0 +1,9 @@
+<map id="MiraiCP::Contact::serializationToString" name="MiraiCP::Contact::serializationToString">
+<area shape="rect" id="node1" title=" " alt="" coords="5,99,204,141"/>
+<area shape="rect" id="node2" href="$a00130.html#ad3a3c8b42a812af24e45e797217c5cea" title="序列化到json对象" alt="" coords="252,107,451,133"/>
+<area shape="rect" id="node3" href="$a00130.html#a6aacb450dbafc87378e5b37fc32597c9" title="所属bot" alt="" coords="505,5,663,32"/>
+<area shape="rect" id="node4" href="$a00130.html#a494097908a91ab396d7cf3a9c2b612fc" title="当type为3的时候存在，否则为0，可以看作补充id" alt="" coords="499,56,669,83"/>
+<area shape="rect" id="node5" href="$a00130.html#ab0038fd9b0d4e929f5adb0a5d4834c1a" title="id在全部情况存在" alt="" coords="515,107,653,133"/>
+<area shape="rect" id="node6" href="$a00130.html#a7187f3ae0c1b2be31502498d6c97fa87" title="群名称，群成员群名片，或好友昵称" alt="" coords="501,158,667,199"/>
+<area shape="rect" id="node7" href="$a00130.html#aac6c8dfc706a72e0a17035809871f5a6" title="当前对象类型" alt="" coords="507,224,661,251"/>
+</map>

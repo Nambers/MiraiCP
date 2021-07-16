@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['recall_652',['Recall',['../a00062.html#a61d90b56109900c1008e143a5918c254afcadbeb81fdd68eeb91960e0a30068bc',1,'Config']]],
-  ['refreshinfo_653',['RefreshInfo',['../a00062.html#a61d90b56109900c1008e143a5918c254aab2d402ea8d79513e761f3b2e3fdfaa9',1,'Config']]],
-  ['remotefileinfo_654',['RemoteFileInfo',['../a00062.html#a61d90b56109900c1008e143a5918c254aecb9fbdd3a0e8954abbe46638095ac48',1,'Config']]]
+  ['recall_665',['Recall',['../a00042.html#a1bc3c425340774687507c1683967231ba0a3c75ba9d67b444477df79a51b9f7c2',1,'MiraiCP::Config']]],
+  ['refreshinfo_666',['RefreshInfo',['../a00042.html#a1bc3c425340774687507c1683967231ba1117a41d69693010f5c5029f1eb2afe6',1,'MiraiCP::Config']]],
+  ['remotefileinfo_667',['RemoteFileInfo',['../a00042.html#a1bc3c425340774687507c1683967231ba0772d842b6129b51b12498a5d1bc1dd1',1,'MiraiCP::Config']]]
 ];

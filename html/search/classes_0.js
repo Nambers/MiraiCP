@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['apiexception_311',['APIException',['../a00094.html',1,'']]]
+  ['apiexception_319',['APIException',['../a00086.html',1,'MiraiCP']]]
 ];

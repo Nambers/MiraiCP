@@ -1,5 +1,4 @@
-<map id="threadManager" name="threadManager">
-<area shape="rect" id="node1" title="多线程管理." alt="" coords="85,160,250,369"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,167,97"/>
-<area shape="rect" id="node3" title=" " alt="" coords="191,13,307,90"/>
+<map id="MiraiCP::MiraiCode" name="MiraiCP::MiraiCode">
+<area shape="rect" id="node1" title="miraicode字符串" alt="" coords="5,145,232,487"/>
+<area shape="rect" id="node2" title=" " alt="" coords="91,5,146,83"/>
 </map>

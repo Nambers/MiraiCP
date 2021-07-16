@@ -1,0 +1,6 @@
+<map id="MiraiCP::Event::registerEvent" name="MiraiCP::Event::registerEvent">
+<area shape="rect" id="node1" title="监听函数" alt="" coords="5,5,164,47"/>
+<area shape="rect" id="node2" href="$a00234.html#a0d897f343e124fdae78fc9794272a2d5" title="取链表尾节点" alt="" coords="212,13,345,39"/>
+<area shape="rect" id="node3" href="$a00054.html#ace9bbedca050fc72d1592440d16bd8f7" title="发送错误(error级日志)" alt="" coords="393,5,564,47"/>
+<area shape="rect" id="node4" href="$a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="612,5,783,47"/>
+</map>

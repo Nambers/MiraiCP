@@ -1,0 +1,4 @@
+<map id="MiraiCP::RemoteFile" name="MiraiCP::RemoteFile">
+<area shape="rect" id="node1" title="远程(群)文件类型" alt="" coords="5,145,208,472"/>
+<area shape="rect" id="node2" href="$a00046.html" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="27,5,186,97"/>
+</map>

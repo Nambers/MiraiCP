@@ -1,9 +1,10 @@
 var a00134 =
 [
-    [ "Image", "a00134.html#aa574ff79b5b2d3a1bd46ff55cd9d9283", null ],
-    [ "GetImgIdsFromMiraiCode", "a00134.html#a54b8b32a4a36d6263f570b2c380079e6", null ],
-    [ "GetImgIdsFromMiraiCode", "a00134.html#a209162f6355c501f5fde9db40de39188", null ],
-    [ "queryURL", "a00134.html#a33f8850fcab39bb5ca332a04400c8d50", null ],
-    [ "toMiraiCode", "a00134.html#a1f23cd8327ee4b8814ad8574b6a35e82", null ],
-    [ "id", "a00134.html#abb1514200b5ab807423e41061f2e2411", null ]
+    [ "LightApp", "a00134.html#a7cfcefeb788e3046fb321fab0a7b813a", null ],
+    [ "LightApp", "a00134.html#a704d8c7d3b8fe73420c2842b034bc062", null ],
+    [ "LightApp", "a00134.html#a198edd84f35234613604055f3afff398", null ],
+    [ "LightApp", "a00134.html#a19e6f8e31b4788a7a32a84e7ab0e4a6c", null ],
+    [ "sendTo", "a00134.html#a94c457945cb59f2a47764506d39cce5d", null ],
+    [ "toMiraiCode", "a00134.html#a89a333f7bb827b5ee6a70f2a049760a0", null ],
+    [ "content", "a00134.html#a8dbdda815d42b9fc7469f97cb0b1b42f", null ]
 ];

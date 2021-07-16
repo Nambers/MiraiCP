@@ -1,3 +1,9 @@
-<map id="MiraiCodeable" name="MiraiCodeable">
-<area shape="rect" id="node1" title="MiraiCode父类, 指可以被转换成miraicode的类型" alt="" coords="5,5,135,97"/>
+<map id="MiraiCP::IdLogger" name="MiraiCP::IdLogger">
+<area shape="rect" id="node1" title="带id(一般为bot账号)的logger" alt="" coords="176,851,355,987"/>
+<area shape="rect" id="node2" href="$a00054.html" title=" " alt="" coords="73,315,257,788"/>
+<area shape="rect" id="node3" href="$a00058.html" title="loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等" alt="" coords="5,160,176,252"/>
+<area shape="rect" id="node4" title=" " alt="" coords="13,13,59,90"/>
+<area shape="rect" id="node5" title=" " alt="" coords="84,5,207,97"/>
+<area shape="rect" id="node6" title=" " alt="" coords="200,167,280,245"/>
+<area shape="rect" id="node7" title=" " alt="" coords="282,513,449,590"/>
 </map>

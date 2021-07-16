@@ -1,8 +1,11 @@
 var a00218 =
 [
-    [ "MemberJoinEvent", "a00218.html#ad536c8db11e375d702476aa113a19cc1", null ],
-    [ "group", "a00218.html#aae5866945dfb9d1b39504f111bccaa52", null ],
-    [ "inviterid", "a00218.html#ade2bd23f4b5cb0e6bac3cf36d7c794a2", null ],
-    [ "member", "a00218.html#ada3229d4de20a619e6c641f9c97c505b", null ],
-    [ "type", "a00218.html#af131d9d5dcc818c492ba7955cc23c275", null ]
+    [ "RecallEvent", "a00218.html#a0311dbe459e380886f0bff4c4767c21e", null ],
+    [ "authorid", "a00218.html#a81dc1d0d972d84c08085985d478d0f1a", null ],
+    [ "groupid", "a00218.html#aa03c0fe0e6c843341cce0abfdd1d25f9", null ],
+    [ "ids", "a00218.html#a4c80eac22a39e587e58cbe8b42eb16e6", null ],
+    [ "internalids", "a00218.html#af39149cef7fabd672a72c63cbaefc77f", null ],
+    [ "operatorid", "a00218.html#aea8389db883e1ba898568faf9b70da1c", null ],
+    [ "time", "a00218.html#a820274141fb0505d9892755f52fd8773", null ],
+    [ "type", "a00218.html#a4f87c489d7ea8b4970d45c831b159e3b", null ]
 ];

@@ -1,4 +1,4 @@
-<map id="MemberLeaveEvent" name="MemberLeaveEvent">
-<area shape="rect" id="node1" title="群成员离开" alt="" coords="5,160,249,369"/>
-<area shape="rect" id="node2" href="$a00198.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="52,5,203,112"/>
+<map id="MiraiCP::BotJoinGroupEvent" name="MiraiCP::BotJoinGroupEvent">
+<area shape="rect" id="node1" title="机器人进入某群" alt="" coords="5,160,192,340"/>
+<area shape="rect" id="node2" href="$a00190.html" title="所以事件处理timeoutevent都是机器人事件，指都有机器人实例" alt="" coords="27,5,170,112"/>
 </map>

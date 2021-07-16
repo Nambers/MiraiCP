@@ -1,0 +1,9 @@
+<map id="MiraiCP::Bot::getGroupList" name="MiraiCP::Bot::getGroupList">
+<area shape="rect" id="node1" title="取群列表" alt="" coords="5,60,184,87"/>
+<area shape="rect" id="node2" href="$a00042.html#a80ec6ec0a52e5794d18e9f845d14ffab" title="调用mirai操作" alt="" coords="232,31,412,57"/>
+<area shape="rect" id="node7" href="$a00038.html#a62fdfcca97cb6fe74e313daffd3ffcc9" title="从string格式化到vector" alt="" coords="241,82,403,123"/>
+<area shape="rect" id="node3" href="$a00038.html#aa2600b3f73e0d6a19a0235519c61ea19" title=" " alt="" coords="460,5,632,32"/>
+<area shape="rect" id="node6" href="$a00038.html#a3a21451de8b65ec77a8097924f681ee1" title=" " alt="" coords="460,56,632,83"/>
+<area shape="rect" id="node4" href="$a00054.html#ace9bbedca050fc72d1592440d16bd8f7" title="发送错误(error级日志)" alt="" coords="680,23,851,65"/>
+<area shape="rect" id="node5" href="$a00054.html#aaeeaa321f40dd6bf2c653459248fd747" title="日志底层实现封装" alt="" coords="899,23,1069,65"/>
+</map>

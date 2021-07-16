@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['action_636',['action',['../a00074.html#a3cc655404f5a2d454085b9047ee21cd0',1,'Logger']]]
+  ['action_650',['action',['../a00054.html#a35254694837852f95ac33eae4d439f85',1,'MiraiCP::Logger_interface']]]
 ];

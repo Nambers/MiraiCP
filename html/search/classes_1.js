@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['bot_312',['Bot',['../a00174.html',1,'']]],
-  ['botevent_313',['BotEvent',['../a00198.html',1,'']]],
-  ['botexception_314',['BotException',['../a00098.html',1,'']]],
-  ['botjoingroupevent_315',['BotJoinGroupEvent',['../a00230.html',1,'']]],
-  ['botlogger_316',['BotLogger',['../a00082.html',1,'']]],
-  ['botonlineevent_317',['BotOnlineEvent',['../a00238.html',1,'']]]
+  ['bot_320',['Bot',['../a00166.html',1,'MiraiCP']]],
+  ['botevent_321',['BotEvent',['../a00190.html',1,'MiraiCP']]],
+  ['botexception_322',['BotException',['../a00090.html',1,'MiraiCP']]],
+  ['botjoingroupevent_323',['BotJoinGroupEvent',['../a00222.html',1,'MiraiCP']]],
+  ['botonlineevent_324',['BotOnlineEvent',['../a00230.html',1,'MiraiCP']]]
 ];

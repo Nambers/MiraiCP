@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['operaterid_603',['operaterid',['../a00222.html#afe223b1e1d8a2591c013995eb4466184',1,'MemberLeaveEvent']]],
-  ['operatorid_604',['operatorid',['../a00226.html#a79c894271697ce5798850b259417dcaf',1,'RecallEvent']]]
+  ['operaterid_614',['operaterid',['../a00214.html#a5d8d8310909d55ea54f1344c8370ba3d',1,'MiraiCP::MemberLeaveEvent']]],
+  ['operatorid_615',['operatorid',['../a00218.html#aea8389db883e1ba898568faf9b70da1c',1,'MiraiCP::RecallEvent']]]
 ];

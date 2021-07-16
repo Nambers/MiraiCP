@@ -1,9 +1,4 @@
-<map id="Group" name="Group">
-<area shape="rect" id="node1" title="群聊类声明" alt="" coords="181,931,398,1477"/>
-<area shape="rect" id="node2" href="$a00138.html" title="group, friend, member的父类" alt="" coords="79,189,297,868"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,5,136,83"/>
-<area shape="rect" id="node4" title=" " alt="" coords="161,5,199,83"/>
-<area shape="rect" id="node5" title=" " alt="" coords="299,5,354,83"/>
-<area shape="rect" id="node6" href="$a00190.html" title="群设置" alt="" coords="328,490,469,567"/>
-<area shape="rect" id="node7" title=" " alt="" coords="555,5,602,83"/>
+<map id="MiraiCP::Group::file_short_info" name="MiraiCP::Group::file_short_info">
+<area shape="rect" id="node1" title="群文件的简短描述" alt="" coords="5,160,140,252"/>
+<area shape="rect" id="node2" title=" " alt="" coords="45,5,100,83"/>
 </map>

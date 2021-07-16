@@ -31,7 +31,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MiraiCP
-   &#160;<span id="projectnumber">v2.6.5</span>
+   &#160;<span id="projectnumber">v2.7-Beta</span>
    </div>
    <div id="projectbrief">MiraiCP api document</div>
   </td>
@@ -89,30 +89,27 @@ $(document).ready(function(){initNavTree('a00226.html',''); initResizable(); });
 
 <div class="header">
   <div class="headertitle">
-<div class="title">RecallEvent 成员列表</div>  </div>
+<div class="title">MiraiCP::GroupTempMessageEvent 成员列表</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>成员的完整列表，这些成员属于 <a class="el" href="a00226.html">RecallEvent</a>,包括所有继承而来的类成员</p>
+<p>成员的完整列表，这些成员属于 <a class="el" href="a00226.html">MiraiCP::GroupTempMessageEvent</a>,包括所有继承而来的类成员</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="a00226.html#a6ca09703cf5ca62b54c2f4f08465fd15">authorid</a></td><td class="entry"><a class="el" href="a00226.html">RecallEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00198.html#a2a77f086d712d0fc8d2e430e4e2d4b83">bot</a></td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00198.html#ac26c3d59fa5a3546f269549ccbe994a4">BotEvent</a>(unsigned long long botid)</td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00198.html#a1571ef8d345a7a94bedecd48df4923c7">botlogger</a></td><td class="entry"><a class="el" href="a00198.html">BotEvent</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00226.html#abeefe96135f69b9bfb095b18b33e8aaf">groupid</a></td><td class="entry"><a class="el" href="a00226.html">RecallEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00226.html#a6977185f71894989b7a01fa1ef755046">ids</a></td><td class="entry"><a class="el" href="a00226.html">RecallEvent</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00226.html#aaf7aea17696b093024696551eb4acd0a">internalids</a></td><td class="entry"><a class="el" href="a00226.html">RecallEvent</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="a00226.html#a79c894271697ce5798850b259417dcaf">operatorid</a></td><td class="entry"><a class="el" href="a00226.html">RecallEvent</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00226.html#a6b5b2940bdfd72fcb3042d42354f83d6">RecallEvent</a>(unsigned long long int botid, const int type, const int time, const unsigned long long int authorid, const unsigned long long int operatorid, const std::string &amp;ids, const std::string &amp;internalids, const unsigned long long int groupid)</td><td class="entry"><a class="el" href="a00226.html">RecallEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="a00226.html#a78201065317c32c62ea39d597ca036c3">time</a></td><td class="entry"><a class="el" href="a00226.html">RecallEvent</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="a00226.html#a5b6ba1dd154963933e1c3dc2880f0d14">type</a></td><td class="entry"><a class="el" href="a00226.html">RecallEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00190.html#a48e9bf99cfedf6627c89de58f19fdb88">bot</a></td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00190.html#abfec0bacf14ff5a3a31ccf3c86feb53b">BotEvent</a>(unsigned long long botid)</td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00190.html#a0ac8dff80b65054aecebc9ca15c4c633">botlogger</a></td><td class="entry"><a class="el" href="a00190.html">MiraiCP::BotEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00226.html#a29c18056652c7d36248f70f359f01e74">group</a></td><td class="entry"><a class="el" href="a00226.html">MiraiCP::GroupTempMessageEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00226.html#a3a22a13bfd0fb2f138c6a1d2adcb361c">GroupTempMessageEvent</a>(unsigned long long int botid, Group group, const Member &amp;sender, const std::string &amp;message, MessageSource messageSource)</td><td class="entry"><a class="el" href="a00226.html">MiraiCP::GroupTempMessageEvent</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="a00226.html#a1e33897ee63dbb0ea1dbc0e6cafae2d5">message</a></td><td class="entry"><a class="el" href="a00226.html">MiraiCP::GroupTempMessageEvent</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="a00226.html#a4e90cc280b8d1955236e925f09bbaf73">messageSource</a></td><td class="entry"><a class="el" href="a00226.html">MiraiCP::GroupTempMessageEvent</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="a00226.html#ac0252e17c1cb9a0d4f2ebf37720951db">sender</a></td><td class="entry"><a class="el" href="a00226.html">MiraiCP::GroupTempMessageEvent</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">生成于 2021年 七月 3日 星期六 19:55:23 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">生成于 2021年 七月 16日 星期五 17:29:06 , 为 MiraiCP使用  <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 <script type="text/javascript">
