@@ -33,15 +33,17 @@ jobs:
     - name: Build plugin
       run:  cd ./kotlin/ && ./gradlew plugin:buildPlugin --warning-mode all --info --stacktrace
     - name: pack
-      run: zip -r ./cpp/include.zip ./cpp/include && zip -r ./cpp/MiraiCP_CPP.zip ./cpp
+      run:  zip -r ./cpp/MiraiCP_CPP.zip ./cpp
     - name: get change log
-      run: "grep -n -i \"## v\" changelog.md | head -n2 | cut -d: -f1 >> line.tmp"
+      run: "grep -n -i \"## v\" CHANGELOG.md | head -n2 | cut -d: -f1 >> line.tmp"
     - name: get change log2
       run: cat CHANGELOG.md | head -n $((`tail -n 1 line.tmp`-1)) | tail -n +`head -n 1 line.tmp` >> release.log
+    - name: show
+      run: cat release.log
     - name: Create Release
       uses: ncipollo/release-action@v1.8.6
       with:
-          artifacts: "./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/include.zip,./cpp/MiraiCP_CPP.zip,./cpp/include/miraiCP.hpp"
+          artifacts: "./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/MiraiCP_CPP.zip,./cpp/include/miraiCP.hpp"
           bodyfile: release.log
           tag: ${{ github.event.inputs.v }}
           token: ${{ secrets.GITHUB_TOKEN }}
