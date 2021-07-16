@@ -37,7 +37,7 @@ jobs:
     - name: get change log
       run: "grep -n -i \"## v\" changelog.md | head -n2 | cut -d: -f1 >> line.tmp"
     - name: show
-      run: cat line.tmp
+      run: echo `cat line.tmp`
     - name: get change log2
       run: cat CHANGELOG.md | head -n $((`tail -n 1 line.tmp`-1)) | tail -n +`head -n 1 line.tmp` >> release.log
     - name: Create Release
