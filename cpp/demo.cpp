@@ -17,7 +17,6 @@ public:
     void onEnable() override {
         /*插件启动, 请勿在此函数运行前执行操作mirai的代码*/
         /*
-        注册事件监听-用户自定义
         logger - 日志组件
             logger->Info(string)发送消息级日志
             logger->Warning(string)发送警告级日志
@@ -27,9 +26,9 @@ public:
          2. 是CPPPlugin下的pluginLogger，为插件级logger，即当前MiraiCP加载的插件，标识符为[name]: [content], 建议用于调试信息
          3. 是每个事件的botLogger, 如:e.botLogger, 为每个机器人账号独有的logger，建议日常使用，标识符为[botid]: [content]
         procession 广播源
-            procession->registerEvent(lambda) 注册监听
-            procession->registerEvent([](GroupMessageEvent param){ \*处理*\});是监听群消息
-            procession->registerEvent([](PrivateMessageEvent param){ \*处理*\});是监听私聊消息
+            procession->registerEvent<EventType>(lambda) 注册监听
+            procession->registerEvent<GroupMessageEvent>([](GroupMessageEvent param){ \*处理*\});是监听群消息
+            procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent param){ \*处理*\});是监听私聊消息
             ...
         参数都在param变量里，在lambda块中使用param.xxx来调用
         */
