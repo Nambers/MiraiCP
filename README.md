@@ -127,9 +127,11 @@ add_library(
         ${SOURCE_HEADERS}
 )
 ```
+然后在你需要使用miraiCP sdk的文件`#include "MiraiCP.hpp"` 和 `using namespace MiraiCP;` 即可
 ### 3.2 启动SDK
 #### 3.2.1 使用loader直接使用
 适用于只在机器人上使用MiraiCP SDK插件
+
 0. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP-loader-*.jar(*号为版本)
 
 1. 在同目录下创建config.json作为配置文件
@@ -160,6 +162,7 @@ add_library(
 
 #### 3.2.2 使用plugin作为mcl的插件使用
 本种方法适用于还需要加载别的mirai-console插件
+
 0. 首先下载启动器(mcl), 下载地址 -> [官方](https://github.com/iTXTech/mirai-console-loader/)
 
 1. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP-plugin-*.mirai.jar(*号为版本)
