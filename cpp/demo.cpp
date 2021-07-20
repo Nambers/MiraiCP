@@ -68,13 +68,13 @@ public:
         Event::NodeHandle handle = procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
             unsigned long long id = e.bot.id;
             e.botlogger.Info(std::to_string(id));
-            e.messageSource.quoteAndSendMsg("HI");
+            e.message.source.quoteAndSendMsg("HI");
             std::thread func1(func, e.sender.id(), e.bot.id);
-            e.sender.sendMsg(e.message);
+            e.sender.sendMsg(e.message.content);
             func1.detach();
             // 多线程测试,线程应该在lambda中决定要detach还是join, 否则会报错
             // 测试取图片
-            std::vector<std::string> temp = Image::GetImgIdsFromMiraiCode(e.message);
+            std::vector<std::string> temp = Image::GetImgIdsFromMiraiCode(e.message.content);
             for (const std::string &a : temp) {
                 e.sender.sendMsg(a);
             }
@@ -82,7 +82,7 @@ public:
             Image tmp = e.sender.uploadImg(R"(C:\Users\19308\Desktop\a.jpg)");
             e.sender.sendMsg(tmp.toMiraiCode());
             e.sender.sendMiraiCode(tmp.toMiraiCode());
-            e.messageSource.recall();
+            e.message.source.recall();
         });
 
         // 监听群信息
@@ -91,6 +91,15 @@ public:
             logger->Info("Global");
             this->pluginLogger->Info("Plugin");
             e.botlogger.Info("bot");
+            e.botlogger.Info(e.message.content.toString());
+            if(e.message.content.toString() == "a"){
+                if(!e.getContext().content.contains("count"))
+                    e.getContext().content["count"] = 1;
+                else
+                    e.getContext().content["count"] = e.getContext().content["count"] + 1;
+            }
+            if(e.getContext().content.contains("count"))
+                e.group.sendMsg(e.getContext().content["count"].get<int>());
 //	    e.group.sendVoice(R"(D:\下载缓存\test.amr)");
 //        e.botlogger.Info(e.message);
 //        e.group.sendMiraiCode(e.message);
@@ -110,11 +119,11 @@ public:
 //        e.group.sendMiraiCode(new LightApp(LightAppStyle1()));
 //        e.group.sendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
 //        e.group.sendMiraiCode(new LightApp(LightAppStyle3()));
-            ForwardMessage(&e.group,
-                           {
-                                   ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-                                   ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
-                           }).sendTo(&e.group);
+//             ForwardMessage(&e.group,
+//                            {
+//                                    ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
+//                                    ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
+//                            }).sendTo(&e.group);
 //        // 关闭上面的私聊消息监听器
 //        handle.stop();
 //        // 当前bot属性
