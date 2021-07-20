@@ -23,7 +23,6 @@
 #include "tech_eritquearcus_miraicp_shared_CPP_lib.h"
 #include <json.hpp>
 #include <utf8.h>
-
 //C++ 标准库
 #include <utility>
 #include <vector>
@@ -383,14 +382,30 @@ LightApp风格1
         }
 
         /// 从MiraiCodeable类型初始化一个miraicode字符串
-        explicit MiraiCode(MiraiCodeable *a) {
+        MiraiCode(MiraiCodeable *a) {
             content = a->toMiraiCode();
         }
-
         /// 从文本初始化一个miraicode字符串
-        explicit MiraiCode(std::string a) {
+        MiraiCode(std::string a) {
             content = std::move(a);
         }
+        //数字支持
+        MiraiCode(int n){
+            content = std::to_string(n);
+        }
+        MiraiCode(unsigned int n){
+            content = std::to_string(n);
+        }
+        MiraiCode(long n){
+            content = std::to_string(n);
+        }
+        MiraiCode(long long n){
+            content = std::to_string(n);
+        }
+        MiraiCode(unsigned long long n){
+            content = std::to_string(n);
+        }
+
 
         MiraiCode operator+(MiraiCodeable *a) {
             return MiraiCode(content + a->toMiraiCode());
@@ -898,6 +913,52 @@ LightApp风格1
         void recall(JNIEnv * = manager->getEnv());
     };
 
+    class Message{
+    public:
+        /// 信息属性
+        MessageSource source;
+        /// 信息内容
+        MiraiCode content;
+        /// 序列化到json
+        /// @see Message::serialize2string()
+        json serialization();
+        /// 序列化到string
+        std::string serialize2string(){
+            return serialization().dump();
+        };
+        /// 反序列化到message
+        static Message deserializationFromString(std::string);
+
+        Message(MessageSource s, MiraiCode c):source(s), content(c){};
+    };
+
+    /*! @brief Context上下文会在每个事件出现
+     * @attention MeSsAgEs 为MiraiCP保存Message类型的索引，不要覆盖
+     * @detail 该上下文为全局上下文，在插件启用期间都不会销毁，得益于Json for modern c++ 现代化的特性，可以添加自定义的flag进去，不过要注意该索引是否存在，否则会抛出异常
+     * @example 增加自定义flag
+     * Context.content["enable"] = true;
+     * // 必须要以字符串作为索引，赋值的对象可以为任意类型
+     * Context.content["xxx"] = 121;
+     *
+     * @example 获取自定义flag
+     * if(Context.content["enable"]) logger->Info(Context.content["xxx"]);
+     *
+     * @example 获取上下文
+     * // 可以通过BotEvent::context或者BotEvent.getContext()获得
+     * procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
+     *  e.getContext();
+     *  BotEvent::context;
+     * }
+     */
+    class Context{
+    public:
+        /// 内容
+        json content;
+        /// 保存信息, 返回储存的信息序号, 相当于保持进聊天记录
+        int append(Message);
+        /// 取出保存的信息，返回信息,相当于取出聊天记录某条信息
+        Message get(int);
+    };
 /// 图像类声明
     class Image : public MiraiCodeable {
     public:
@@ -945,6 +1006,11 @@ LightApp风格1
  * @brief group, friend, member的父类
  */
     class Contact {
+    private:
+        /// 发送纯文本信息
+        MessageSource sendMsg0(std::string msg, JNIEnv * = manager->getEnv());
+        /// 发送miraicode
+        MessageSource sendMiraiCode0(std::string msg, JNIEnv * = manager->getEnv());
     protected:
         int _type = 0;
         unsigned long long _id;
@@ -1045,26 +1111,19 @@ LightApp风格1
 
         /**
          * @brief 发送miraicode
-         * @param msg - MiraiCodeable类型指针 - 内容
+         * @param msg - MiraiCode类型 - 内容
         */
-        MessageSource sendMiraiCode(MiraiCodeable *msg) {
-            return sendMiraiCode(msg->toMiraiCode());
-        }
-
-        /// 发送miraicode
         MessageSource sendMiraiCode(MiraiCode msg) {
-            return sendMiraiCode(msg.toMiraiCode());
+            return sendMiraiCode0(msg.toString());
         }
 
-        /// 发送miraicode
-        MessageSource sendMiraiCode(std::string msg, JNIEnv * = manager->getEnv());
-
         /// 发送纯文本信息
-        MessageSource sendMsg(std::string msg, JNIEnv * = manager->getEnv());
+        MessageSource sendMsg(std::string msg) {
+            return sendMsg0(msg);
+        }
 
-        /// 发送纯文本信息
-        MessageSource sendMsg(MiraiCode msg) {
-            return sendMsg(msg.toString());
+        MessageSource sendMsg(MiraiCode msg){
+            return sendMsg0(msg.toMiraiCode());
         }
 
         /// 发送语音
@@ -1205,7 +1264,7 @@ LightApp风格1
         }
 
         MessageSource sendTo(Contact c) {
-            return c.sendMiraiCode(toMiraiCode());
+            return c.sendMiraiCode(MiraiCode(toMiraiCode()));
         }
     };
 
@@ -1603,6 +1662,12 @@ LightApp风格1
          * @endcode
         */
         void Kick(const std::string &reason, JNIEnv * = manager->getEnv());
+
+        /// At一个群成员
+        MiraiCode At() {
+            /*返回at这个人的miraicode*/
+            return MiraiCode("[mirai:at:" + std::to_string(id()) + "]");
+        }
     };
 
 /// 群聊类声明
@@ -1753,13 +1818,13 @@ LightApp风格1
         std::string getFileListString(const std::string &path, JNIEnv * = manager->getEnv());
     };
 
-/// At一个群成员
+    /// At一个群成员
     inline MiraiCode At(Member a) {
         /*返回at这个人的miraicode*/
         return MiraiCode("[mirai:at:" + std::to_string(a.id()) + "]");
     }
 
-/// At一个群成员
+    /// At一个群成员
     inline MiraiCode At(unsigned long long a) {
         /*返回at这个人的miraicode*/
         return MiraiCode("[mirai:at:" + std::to_string(a) + "]");
@@ -1773,10 +1838,15 @@ LightApp风格1
         /// 以该机器人的名义发送日志
         /// @see BotLogger
         IdLogger botlogger;
+        /// 上下文
+        static Context context;
+        /// 获取静态上下文
+        Context& getContext(){return BotEvent::context;};
 
         BotEvent(unsigned long long botid) : bot(botid), botlogger(botid, logger) {
         }
     };
+    Context BotEvent::context = Context();
 
 ///群消息事件声明
     class GroupMessageEvent : public BotEvent {
@@ -1785,18 +1855,15 @@ LightApp风格1
         Group group;
         ///发送人
         Member sender;
-        ///信息本体
-        MiraiCode message;
-        ///消息源
-        MessageSource messageSource;
+        /// 信息
+        Message message;
 
         GroupMessageEvent(unsigned long long int botid, const Group &group, const Member &sender,
                           const std::string &message, const MessageSource &messageSource) : BotEvent(botid),
                                                                                             group(group),
                                                                                             sender(sender),
-                                                                                            message(message),
-                                                                                            messageSource(
-                                                                                                    messageSource) {}
+                                                                                            message(Message(messageSource, MiraiCode(message)))
+                                                                                            {}
     };
 
 /// 私聊消息事件类声明
@@ -1804,10 +1871,8 @@ LightApp风格1
     public:
         /// 发起人
         Friend sender;
-        /// 附带消息
-        MiraiCode message;
-        /// 信息源
-        MessageSource messageSource;
+        /// 信息
+        Message message;
 
         /*!
          * @brief 构建私聊信息
@@ -1817,8 +1882,7 @@ LightApp风格1
          * @param messageSource 消息源
          */
         PrivateMessageEvent(unsigned long long int botid, const Friend sender, const std::string &message,
-                            const MessageSource &messageSource) : BotEvent(botid), sender(sender), message(message),
-                                                                  messageSource(messageSource) {}
+                            const MessageSource &messageSource) : BotEvent(botid), sender(sender), message(messageSource, MiraiCode(message)) {}
     };
 
 /// 群聊邀请事件类声明
@@ -2072,7 +2136,7 @@ LightApp风格1
          */
         BotJoinGroupEvent(unsigned long long int botid, const int type, Group group,
                           const unsigned long long inviter)
-                : BotEvent(botid), type(type), group(std::move(group)), inviterid(inviterid) {}
+                : BotEvent(botid), type(type), group(std::move(group)), inviterid(inviter) {}
     };
 
 /// 群临时会话
@@ -2464,7 +2528,30 @@ throw: InitxException 即找不到对应签名
         }
     }
 
-//远程文件(群文件)
+    // 消息
+    json Message::serialization() {
+        json j;
+        j["content"] = this->content.toMiraiCode();
+        j["source"] = this->source.serializeToString();
+        return j;
+    }
+
+    Message Message::deserializationFromString(std::string s){
+        json j = json::parse(s);
+        return Message(MessageSource::deserializeFromString(j["source"]), MiraiCode(j["content"].get<std::string>()));
+    }
+
+    // 上下文
+    int Context::append(Message m){
+        this->content["MeSsAgEs"].push_back(m.serialize2string());
+        return this->content["MeSsAgEs"].size();
+    }
+
+    Message Context::get(int i){
+        return Message::deserializationFromString(this->content["MeSsAgEs"][i]);
+    }
+
+    //远程文件(群文件)
     RemoteFile RemoteFile::deserializeFromString(const std::string &source) {
         json j;
         try {
@@ -2607,7 +2694,7 @@ throw: InitxException 即找不到对应签名
         return MessageSource::deserializeFromString(re);
     }
 
-    MessageSource Contact::sendMiraiCode(std::string msg, JNIEnv *env) {
+    MessageSource Contact::sendMiraiCode0(std::string msg, JNIEnv *env) {
         if (msg.empty())
             throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMiraiCode");
         std::string re = LowLevelAPI::send0(std::move(msg), this, true, env);
@@ -2615,7 +2702,7 @@ throw: InitxException 即找不到对应签名
         return MessageSource::deserializeFromString(re);
     }
 
-    MessageSource Contact::sendMsg(std::string msg, JNIEnv *env) {
+    MessageSource Contact::sendMsg0(std::string msg, JNIEnv *env) {
         if (msg.empty()) {
             logger->Error("警告:发送空信息, 位置: Contact::SendMsg");
             throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg");
@@ -2961,7 +3048,7 @@ JNIEXPORT jobject JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_PluginD
     gvm->DestroyJavaVM();
     return job;
 }
-
+/*返回空值*/
 jstring returnNull() {
     return MiraiCP::Tools::str2jstring("MIRAICP_NULL");
 }
