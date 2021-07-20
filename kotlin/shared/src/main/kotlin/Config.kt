@@ -1,4 +1,22 @@
+/*
+ * Copyright (C) 2020-2021 Eritque arcus and contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or any later version(in your opinion).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package tech.eritquearcus.miraicp.shared
+
 import com.google.gson.annotations.SerializedName
 
 class Config {
@@ -9,10 +27,12 @@ class Config {
         val nickornamecard: String,
         val botid: Long
     )
+
     data class SendRequest(
         val contact: Contact,
         val content:String
     )
+
     //消息事件
     data class GroupMessage(
         val group: Contact,
@@ -43,6 +63,7 @@ class Config {
         val source: GroupInviteSource,
         val type: Int = 3
     )
+
     data class NewFriendRequestSource(
         val botid: Long,
         val eventid: Long,
@@ -51,11 +72,13 @@ class Config {
         val fromgroupid: Long,
         val fromnick: String
     )
+
     //好友邀请
     data class NewFriendRequest(
         val source: NewFriendRequestSource,
         val type: Int = 4
     )
+
     //群成员加入
     data class MemberJoin(
         val group: Contact,
@@ -70,6 +93,7 @@ class Config {
         val inviterid: Long = 0,
         val type: Int = 5
     )
+
     //群成员退出
     data class MemberLeave(
         val group: Contact,
@@ -83,6 +107,7 @@ class Config {
         val operatorid: Long = 0,
         val type: Int = 6
     )
+
     //撤回
     data class RecallEvent(
         val etype: Int,
@@ -95,12 +120,14 @@ class Config {
         val botid: Long,
         val type: Int = 7
     )
+
     data class BotJoinGroup(
         val etype: Int,
         val group: Contact,
         val inviterid: Long,
         val type: Int = 9
     )
+
     data class GroupTempMessage(
         val group: Contact,
         val member: Contact,
@@ -108,28 +135,33 @@ class Config {
         val source: String,
         val type: Int = 10
     )
+
     data class BotOnline(
         val botid: Long,
         val type: Int = 11
     )
+
     data class ForwardMessageJson (
         @SerializedName("type") val type : Int,
         @SerializedName("id") val id : Long,
         @SerializedName("id2") val id2 : Long,
         @SerializedName("content") val content: Content
     )
+
     data class Content(
         @SerializedName("type") val type : Int,
         @SerializedName("id") val id : Long,
         @SerializedName("id2") val id2 : Long,
         @SerializedName("value") val value : List<Value>
     )
+
     data class Value (
         @SerializedName("name") val name : String,
         @SerializedName("id") val id : Long,
         @SerializedName("time") val time : Int,
         @SerializedName("message") val message : String
     )
+
     data class GroupSetting(
         val name:String,
         val entranceAnnouncement:String,
@@ -138,16 +170,19 @@ class Config {
         val isAutoApproveEnabled:Boolean,
         val isAnonymousChatEnabled:Boolean
     )
+
     data class ContactInfo(
         val nickornamecard: String,
         val avatarUrl: String,
         val setting: GroupSetting = GroupSetting("", "", false, false, false, false)
     )
+
     data class DInfo(
         val url: String,
         val md5: String,
         val sha1: String
     )
+
     data class FInfo(
         val size: Long,
         val uploaderid: Long,
@@ -155,6 +190,7 @@ class Config {
         val uploadtime: Long,
         val lastmodifytime: Long,
     )
+
     data class FileInfo(
         val id: String,
         val internalid: Int = 0,
@@ -163,21 +199,23 @@ class Config {
         val dinfo: DInfo,
         val finfo: FInfo
     )
+
     data class GroupAnnouncementMsg(
         val text: String,
         val text_face: String? = null,
         val title: String? = null
     )
+
     data class accounts(
-    val accounts: List<Account>?,
-    val cppPath: String
+        val accounts: List<Account>?,
+        val cppPath: String
 ) {
-    data class Account(
-        val heatBeat: String?,
-        val id: Long,
-        val passwords: String,
-        val protocol: String?
-    )
+        data class Account(
+            val heatBeat: String?,
+            val id: Long,
+            val passwords: String,
+            val protocol: String?
+        )
 }
 }
 data class PluginConfig(

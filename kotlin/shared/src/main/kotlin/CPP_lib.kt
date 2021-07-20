@@ -1,4 +1,22 @@
+/*
+ * Copyright (C) 2020-2021 Eritque arcus and contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or any later version(in your opinion).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package tech.eritquearcus.miraicp.shared
+
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
@@ -33,6 +51,7 @@ import tech.eritquearcus.miraicp.shared.publicShared.uploadVoice
 
 class CPP_lib {
     var config:PluginConfig
+
     init {
         config = Gson().fromJson(Verify(), PluginConfig::class.java)
     }
@@ -198,42 +217,61 @@ class CPP_lib {
         enum class operation_code{
             /// 撤回信息
             Recall,
+
             /// 发送信息
             Send,
+
             /// 查询信息接口
             RefreshInfo,
+
             /// 上传图片
             UploadImg,
+
             /// 取好友列表
             QueryBFL,
+
             /// 取群组列表
             QueryBGL,
+
             /// 上传文件
             SendFile,
+
             /// 查询文件信息
             RemoteFileInfo,
+
             /// 查询图片下载地址
             QueryImgUrl,
+
             /// 禁言
             MuteM,
+
             /// 查询权限
             QueryM,
+
             /// 踢出
             KickM,
+
             /// 取群主
             QueryOwner,
+
             /// 上传语音
             UploadVoice,
+
             /// 查询群成员列表
             QueryML,
+
             /// 群设置
             GroupSetting,
+
             /// 构建转发信息
             Buildforward,
+
             /// 好友申请事件
             Nfroperation,
+
             /// 群聊邀请事件
             Gioperation,
+
             /// 回复(引用并发送)
             SendWithQuote
         }
@@ -294,6 +332,7 @@ class CPP_lib {
             }
         }
     }
+
     external fun Verify(): String
     external fun Event(content: String): String
     external fun PluginDisable(): Void
