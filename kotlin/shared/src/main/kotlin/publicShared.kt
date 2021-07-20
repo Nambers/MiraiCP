@@ -1,13 +1,31 @@
+/*
+ * Copyright (C) 2020-2021 Eritque arcus and contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or any later version(in your opinion).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.Gson
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.LowLevelApi
 import net.mamoe.mirai.Mirai
-import net.mamoe.mirai.contact.*
+import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.contact.NormalMember
+import net.mamoe.mirai.contact.PermissionDeniedException
+import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.events.*
@@ -202,6 +220,7 @@ object publicShared{
         }
         return gson.toJson(tmp)
     }
+
     fun QueryBGL(bid: Long): String{
         val AIbot = Bot.getInstance(bid)
         val tmp = java.util.ArrayList<Long>()
