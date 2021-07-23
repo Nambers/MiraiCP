@@ -89,17 +89,19 @@ public:
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
             logger->Info(e.group.setting.entranceAnnouncement);
             logger->Info("Global");
-            this->pluginLogger->Info("Plugin");
+            Main::pluginLogger->Info("Plugin");
             e.botlogger.Info("bot");
             e.botlogger.Info(e.message.content.toString());
-            if(e.message.content.toString() == "a"){
-                if(!e.getContext().content.contains("count"))
-                    e.getContext().content["count"] = 1;
-                else
-                    e.getContext().content["count"] = e.getContext().content["count"] + 1;
-            }
-            if(e.getContext().content.contains("count"))
-                e.group.sendMsg(e.getContext().content["count"].get<int>());
+            e.group.sendMiraiCode(MiraiCode("[mirai:service:1,<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\"简介 没点进来看见的样子\" serviceID=\"1\" url=\"目标url\"><item layout=\"2\"><picture cover=\"图标地址\"/><title>标题</title><summary>描述文字</summary></item><source/></msg>\\n]"));
+            e.group.sendMiraiCode(MiraiCode(new ServiceMessage(URLSharer())));
+            // if(e.message.content.toString() == "a"){
+            //     if(!e.getContext().content.contains("count"))
+            //         e.getContext().content["count"] = 1;
+            //     else
+            //         e.getContext().content["count"] = e.getContext().content["count"] + 1;
+            // }
+            // if(e.getContext().content.contains("count"))
+            //     e.group.sendMsg(e.getContext().content["count"].get<int>());
 //	    e.group.sendVoice(R"(D:\下载缓存\test.amr)");
 //        e.botlogger.Info(e.message);
 //        e.group.sendMiraiCode(e.message);
