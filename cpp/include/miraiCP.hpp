@@ -152,6 +152,20 @@ LightApp风格1
         std::string description = "Test2";
     };
 
+    /// 用serviceMessage的分享信息
+    struct URLSharer{
+        /// 简介 没点进来看见的样子
+        std::string brief="简介 没点进来看见的样子";
+        /// 目标url
+        std::string url="目标url";
+        /// 图标地址
+        std::string cover="图标地址";
+        /// 标题
+        std::string title = "标题";
+        /// 描述文字
+        std::string summary="描述文字";
+    };
+
     // 接受声明MiraiCP常量声明代码
 
     // 开始MiraiCP类声明代码
@@ -367,9 +381,12 @@ LightApp风格1
 
 /// @brief miraicode字符串
 /// @attention MiraiCode会把非miraicode组成部分(非[mirai:])转码, 输出转码前的文本用toString, 参考: https://github.com/mamoe/mirai/blob/dev/docs/Messages.md#%E8%BD%AC%E4%B9%89%E8%A7%84%E5%88%99
-    class MiraiCode {
+    class MiraiCode:MiraiCodeable {
     private:
         std::string content;
+        MiraiCode(std::string a, std::string){
+            content = std::move(a);
+        }
     public:
         /// 输出当前内容, 会自动转码
         std::string toString() {
@@ -387,7 +404,7 @@ LightApp风格1
         }
         /// 从文本初始化一个miraicode字符串
         MiraiCode(std::string a) {
-            content = std::move(a);
+            content = Tools::escapeToMiraiCode(std::move(a));
         }
         //数字支持
         MiraiCode(int n){
@@ -415,16 +432,24 @@ LightApp风格1
             return MiraiCode(content + a);
         }
 
+        MiraiCode operator+(MiraiCode a){
+            return MiraiCode::MiraiCodeWithoutEscape(content + a.content);
+        }
+
+        MiraiCode operator+(MiraiCode* a){
+            return MiraiCode::MiraiCodeWithoutEscape(content + a->content);
+        }
+
         MiraiCode operator+=(MiraiCodeable *a) {
-            return MiraiCode(this->content + a->toMiraiCode());
+            return MiraiCode::MiraiCodeWithoutEscape(content + a->toMiraiCode());
         }
 
         MiraiCode operator+=(std::string a) {
-            return MiraiCode(this->content + a);
+            return MiraiCode( a) + this;
         }
 
         MiraiCode operator=(MiraiCodeable *a) {
-            return MiraiCode(a->toMiraiCode());
+            return MiraiCode::MiraiCodeWithoutEscape(a->toMiraiCode());
         }
 
         MiraiCode operator=(std::string a) {
@@ -432,11 +457,20 @@ LightApp风格1
         }
 
         MiraiCode plus(MiraiCodeable *a) {
-            return MiraiCode(content + a->toMiraiCode());
+            return MiraiCode::MiraiCodeWithoutEscape(content + a->toMiraiCode());
         }
 
         MiraiCode plus(std::string a) {
-            return MiraiCode(content + a);
+            return MiraiCode(a)+this;
+        }
+
+        /// 不执行转义，适用于已经被MiraiCode转义过的字符串
+        static MiraiCode MiraiCodeWithoutEscape(std::string a){
+            return MiraiCode(std::move(a), "");
+        }
+        /// 不执行转义，因为MiraiCodeable的toMiraiCode已经转义过了
+        static MiraiCode MiraiCodeWithoutEscape(MiraiCodeable* a){
+            return MiraiCode::MiraiCodeWithoutEscape(a->toMiraiCode());
         }
     };
 
@@ -1263,8 +1297,26 @@ LightApp风格1
             return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
         }
 
+
         MessageSource sendTo(Contact c) {
             return c.sendMiraiCode(MiraiCode(toMiraiCode()));
+        }
+    };
+
+    class ServiceMessage : public MiraiCodeable{
+    private:
+        std::string content;
+    public:
+        std::string toMiraiCode(){
+            return "[mirai:service:1,"+ Tools::escapeToMiraiCode(content) +"]";
+        }
+
+        ServiceMessage(std::string a){
+            content = std::move(a);
+        }
+
+        ServiceMessage(URLSharer a){
+            content = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\""+a.brief+"\" serviceID=\"1\" url=\""+a.url+"\"><item layout=\"2\"><picture cover=\""+a.cover+"\"/><title>"+a.title+"</title><summary>"+a.summary+"</summary></item><source/></msg>\\n";
         }
     };
 

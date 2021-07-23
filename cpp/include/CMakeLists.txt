@@ -1,11 +1,3 @@
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-cmake_minimum_required(VERSION 3.5)
-project(MiraiCP LANGUAGES CXX)
-
-set(CMAKE_CXX_STANDARD 20)
-set(BUILD_USE_64BITS on)
-
 set_property(GLOBAL PROPERTY MIRAICP_SOURCE_PATH
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/miraicp
