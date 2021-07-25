@@ -1,17 +1,18 @@
-set_property(GLOBAL PROPERTY MIRAICP_SOURCE_PATH
-        ${CMAKE_CURRENT_SOURCE_DIR}
+set(SOURCE_PATH
+        ${CMAKE_CURRENT_SOURCE_DIR}/
         ${CMAKE_CURRENT_SOURCE_DIR}/miraicp
         ${CMAKE_CURRENT_SOURCE_DIR}/jni
         ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32
         ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/bridge
         ${CMAKE_CURRENT_SOURCE_DIR}/utf8
-        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8)
-
-set_property(GLOBAL PROPERTY
+        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8
+        )
+target_include_directories(MiraiCP PUBLIC ${SOURCE_PATH})
+set(
         MIRAICP_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/miraicp/dllmain.cpp
 )
-set_property(GLOBAL PROPERTY
+set(
         MIRAICP_SOURCE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8.h
         ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/checked.h
@@ -34,3 +35,4 @@ set_property(GLOBAL PROPERTY
         ${CMAKE_CURRENT_SOURCE_DIR}/miraicp/tech_eritquearcus_miraicp_shared_CPP_lib.h
         ${CMAKE_CURRENT_SOURCE_DIR}/miraiCP.hpp
 )
+target_sources(MiraiCP PUBLIC ${MIRAICP_SOURCE_FILES} ${MIRAICP_SOURCE_HEADERS})

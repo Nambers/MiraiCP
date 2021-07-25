@@ -92,7 +92,7 @@ public:
             Main::pluginLogger->Info("Plugin");
             e.botlogger.Info("bot");
             e.botlogger.Info(e.message.content.toString());
-            e.group.sendMiraiCode(MiraiCode("[mirai:service:1,<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\"简介 没点进来看见的样子\" serviceID=\"1\" url=\"目标url\"><item layout=\"2\"><picture cover=\"图标地址\"/><title>标题</title><summary>描述文字</summary></item><source/></msg>\\n]"));
+            e.group.sendMiraiCode(MiraiCode("[mirai:service:1,<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\"简介 没点进来看见的样子\" serviceID=\"1\" url=\"https://github.com/\"><item layout=\"2\"><picture cover=\"https://avatars.githubusercontent.com/u/35139537?s=400&u=c7e3794d25a2e0f27f15caf5ba7a57c7346962f0&v=4\"/><title>标题</title><summary>描述文字</summary></item><source/></msg>\\n]"));
             e.group.sendMiraiCode(MiraiCode(new ServiceMessage(URLSharer())));
             // if(e.message.content.toString() == "a"){
             //     if(!e.getContext().content.contains("count"))
