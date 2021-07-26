@@ -106,26 +106,11 @@ mirai需要java环境 **>=11**
 在demo.cpp中编写代码
 #### 3.1.2 在代码中加入MiraiCP sdk依赖
 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP_CPP.zip文件夹并解压, 仅保留include文件夹
-在你的cmakelist中引入include作为子文件夹:
+在你的cmakelist中构建一个动态链接库，target name必须是MiraiCP，然后在下面demo.cpp就主程序在的文件，然后加你依赖的文件，然后引入include作为子文件夹:
 ```cmake
+add_library(MiraiCP SHARED demo.cpp)
 # 增加MiraiCP依赖
 add_subdirectory(include)
-# 提取MiraiCP源代码文件
-get_property(SOURCE_FILES GLOBAL PROPERTY "MIRAICP_SOURCE_FILES")
-get_property(SOURCE_HEADERS GLOBAL PROPERTY "MIRAICP_SOURCE_HEADERS")
-get_property(SOURCE_PATH GLOBAL PROPERTY "MIRAICP_SOURCE_PATH")
-# 引入目录依赖
-include_directories(${SOURCE_PATH})
-```
-在构建动态链接库时加入依赖`${SOURCE_FILES}`和`${SOURCE_HEADERS}`，如:
-```cmake
-# 构建动态链接库
-add_library(
-        MiraiCP
-        SHARED
-        ${SOURCE_FILES}
-        ${SOURCE_HEADERS}
-)
 ```
 然后在你需要使用miraiCP sdk的文件`#include "MiraiCP.hpp"` 和 `using namespace MiraiCP;` 即可
 ### 3.2 启动SDK
