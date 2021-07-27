@@ -204,7 +204,7 @@ class CPP_lib {
         }
 
         fun KUpdateSetting(contactSource: String, source: String): String{
-            return groupSetting(gson.fromJson(contactSource, Config.Contact::class.java), source)
+            return runBlocking { groupSetting(gson.fromJson(contactSource, Config.Contact::class.java), source)}
         }
 
         fun KUploadVoice(contactSource: String, source: String):String{
