@@ -45,21 +45,21 @@ namespace MiraiCP {
     class PluginConfig{
     public:
         /// @brief 插件名称
-        const std::string name;
+        std::string name;
         /// @brief 插件版本
-        const std::string version;
+        std::string version;
         /// @brief 插件作者(及联系方式)
-        const std::string author;
+        std::string author;
         /// @brief [optional]插件描述
-        const std::string description;
+        std::string description;
         /// @brief [optional]构建时间
-        const std::string time;
+        std::string time;
         PluginConfig(std::string name, std::string version, std::string author,
                      std::string description = "", std::string time = "") : name(std::move(name)), version(std::move(version)),
                                                                                           author(std::move(author)), description(std::move(description)),
                                                                                           time(std::move(time)) {}
-        json serialize() const;
-        std::string serialize2string() const{
+        json serialize();
+        std::string serialize2string(){
             return serialize().dump();
         }
     };
@@ -249,7 +249,7 @@ LightApp风格1
          * @name str2jstring
          * @brief string类型到jsting类型 UTF8 -> UTF16
          * @note 来源https://blog.csdn.net/chunleixiahe/article/details/51394116
-         * @param pat const char*(string.c_str())转换的内容
+         * @param pat char*(string.c_str())转换的内容
          * @param env 可选JNIEnv
          * @return 转换后jstring类型
          */
@@ -361,7 +361,7 @@ LightApp风格1
          * @param json 传入数据
          * @return 返回数据
          */
-        std::string koperation(int code, const nlohmann::json &json, JNIEnv * = manager->getEnv()) const;
+        std::string koperation(int code, nlohmann::json &json, JNIEnv * = manager->getEnv());
 
         Config() {};
 
@@ -573,7 +573,7 @@ LightApp风格1
     protected:
         void log0(const std::string &content, int level, JNIEnv *env) override ;
     public:
-        const unsigned long long id;
+        unsigned long long id;
 
         IdLogger(unsigned long long id, Logger *l) : id(id) {
             this->loggerhandler = l->loggerhandler;
@@ -599,7 +599,7 @@ LightApp风格1
     class CPPPlugin {
     public:
         /// @brief 插件信息
-        const PluginConfig config;
+        PluginConfig config;
         /// @brief 插件级logger
         static PluginLogger *pluginLogger;
 
@@ -863,11 +863,11 @@ LightApp风格1
     class MessageSource {
     public:
         /// 消息的ids
-        const std::string ids;
+        std::string ids;
         /// 消息的internalids
-        const std::string internalids;
+        std::string internalids;
         /// 消息源序列化
-        const std::string source;
+        std::string source;
 
         MessageSource() {};
 
@@ -1010,7 +1010,7 @@ LightApp风格1
         /*
         * 获取图片下载url
         */
-        std::string queryURL(JNIEnv * = manager->getEnv()) const;
+        std::string queryURL(JNIEnv * = manager->getEnv());
 
         /*!
          * @brief 取一个miraicode字符串中全部的图片id，详情见Image
@@ -1351,21 +1351,21 @@ LightApp风格1
     class RemoteFile : public MiraiCodeable {
     public:
         /// 文件唯一id, 用于识别
-        const std::string id;
+        std::string id;
         /// 文件内部id, 用于构造miraiCode发送
-        const unsigned int internalid;
+        unsigned int internalid;
         /// 文件名
-        const std::string name;
+        std::string name;
         /// 文件大小
-        const long long size;
+        long long size;
         /// 文件在群文件的路径
-        const std::string path;
+        std::string path;
         /// 文件下载信息
         /// @see dinfo
-        const dinfo dinfo;
+        dinfo dinfo;
         /// 文件信息
         /// @see finfo
-        const finfo finfo;
+        finfo finfo;
 
         std::string serializeToString();
 
@@ -1475,28 +1475,28 @@ LightApp风格1
     class ForwardNode {
     public:
         ///发送者id
-        const unsigned long long id = 0;
+        unsigned long long id = 0;
         ///发送者昵称
-        const std::string name = "";
+        std::string name = "";
         ///发送信息
-        const std::string message = "";
+        std::string message = "";
         ///发送时间
-        const int time = 0;
+        int time = 0;
 
         /// @brief 聊天记录里的每条信息
         /// @param id - 发送者id
         /// @param name - 发送者昵称
         /// @param message - 发送的信息
         /// @param time - 发送时间，以时间戳记
-        ForwardNode(const unsigned long long int id, const std::string &name, const std::string &message,
-                    const int time)
+        ForwardNode(unsigned long long int id, const std::string &name, const std::string &message,
+                    int time)
                 : id(id), name(name), message(message), time(time) {}
 
         /// @brief 构造聊天记录里每条信息
         /// @param c - 发送者的contact指针
         /// @param message - 发送的信息
         /// @param t - 发送时间，时间戳格式
-        ForwardNode(Contact *c, std::string &message, int t) : id(c->id()), name(c->nickOrNameCard()), message(message),
+        ForwardNode(Contact *c, const std::string &message, int t) : id(c->id()), name(c->nickOrNameCard()), message(message),
                                                                time(t) {}
     };
 
@@ -1523,7 +1523,7 @@ LightApp风格1
         ForwardMessage(Contact *c, std::initializer_list<ForwardNode> nodes);
 
         /// 发送给群或好友或群成员
-        MessageSource sendTo(Contact *c, JNIEnv * = manager->getEnv()) const;
+        MessageSource sendTo(Contact *c, JNIEnv * = manager->getEnv());
     };
 
 /// 当前bot账号信息
@@ -1542,7 +1542,7 @@ LightApp风格1
 
     public:
         /// 该botid
-        const unsigned long long id;
+        unsigned long long id;
 
         /*!
          * @brief 刷新bot信息
@@ -1725,6 +1725,69 @@ LightApp风格1
 /// 群聊类声明
     class Group : public Contact {
     public:
+        /// 群公告参数
+        class AnnouncementParams{
+        public:
+            /// 发送给新成员
+            bool send2new;
+            /// 需要确认
+            bool requireConfirm;
+            /// 置顶
+            bool pinned;
+            /// 引导群成员修改群名片
+            bool showEditCard;
+            /// 显示弹窗
+            bool showPopup;
+            AnnouncementParams(bool send2New, bool requireConfirm, bool pinned, bool showEditCard, bool showPopup) :
+            send2new(send2New), requireConfirm(requireConfirm),
+                                                               pinned(pinned), showEditCard(showEditCard),
+                                                               showPopup(showPopup){}
+        };
+        /// 本地(未发送)群公告
+        class OfflineAnnouncement{
+        public:
+            /// 内容
+            std::string content;
+            /// 公告属性
+            AnnouncementParams params;
+            void publishTo(Group);
+
+            OfflineAnnouncement(const std::string &content, AnnouncementParams &params) : content(content),
+                                                                                                params(params) {}
+        };
+        /// 在线群公告
+        class OnlineAnnouncement{
+        public:
+            /// 内容
+            std::string content;
+            /// 公告属性
+            AnnouncementParams params;
+            /// 所在群id
+            unsigned long long groupid;
+            /// 发送者id
+            unsigned long long senderid;
+            /// 发送时间戳
+            long long publicationTime;
+            /// 唯一识别属性
+            std::string fid;
+            /// 如果需要确认，即为确认的人数
+            int confirmNum;
+            /// 图片id, 如果不存在即为空
+            std::string imageid;
+            /// 删除当前群公告
+            /// @throw BotException
+            void deleteThis();
+
+            /// 反序列化
+            static OnlineAnnouncement deserializeFromJson(json);
+
+            OnlineAnnouncement(const std::string &content, AnnouncementParams &params,
+                               unsigned long long int groupid, unsigned long long int senderid,
+                               long long int publicationTime, const std::string &fid, int confirmNum,
+                               const std::string &imageid) : content(content), params(params), groupid(groupid),
+                                                             senderid(senderid), publicationTime(publicationTime),
+                                                             fid(fid), confirmNum(confirmNum), imageid(imageid) {}
+        };
         /**
          * @brief 群设置
          * @details 使用uploadSetting上传设置，使用refreshInfo同步服务器设定，后面两项由于https://github.com/mamoe/mirai/issues/1307 还不能改
@@ -1732,9 +1795,6 @@ LightApp风格1
         struct GroupSetting {
             /// 群名称
             std::string name;
-            /// 入群显示公告 **目前暂时不能用**
-            /// @see https://github.com/Nambers/MiraiCP/issues/61
-            std::string entranceAnnouncement;
             /// 禁言全部
             bool isMuteAll;
             /// 允许群成员邀请
@@ -1753,6 +1813,10 @@ LightApp风格1
          * @see Group::refreshInfo()
          */
         void updateSetting(JNIEnv * = manager->getEnv());
+
+        /// 群公告 **目前暂时不能用**
+        /// @see https://github.com/Nambers/MiraiCP/issues/61
+        std::vector<OnlineAnnouncement> announcements;
 
         /// 取群成员列表
         /// @return vector<long>
@@ -1800,7 +1864,11 @@ LightApp风格1
             this->_avatarUrl = tmp.avatarUrl;
             nlohmann::json j = nlohmann::json::parse(re)["setting"];
             this->setting.name = j["name"];
-            this->setting.entranceAnnouncement = j["entranceAnnouncement"];
+            std::vector<OnlineAnnouncement> oa;
+            for(json e : j["announcements"]){
+                oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
+            }
+            this->announcements = oa;
             this->setting.isMuteAll = j["isMuteAll"];
             this->setting.isAllowMemberInvite = j["isAllowMemberInvite"];
             this->setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
@@ -1911,11 +1979,9 @@ LightApp风格1
         Message message;
 
         GroupMessageEvent(unsigned long long int botid, const Group &group, const Member &sender,
-                          const std::string &message, const MessageSource &messageSource) : BotEvent(botid),
-                                                                                            group(group),
-                                                                                            sender(sender),
-                                                                                            message(Message(messageSource, MiraiCode(message)))
-                                                                                            {}
+                          const MiraiCode &miraiCode,  const MessageSource &source) : BotEvent(botid), group(group),
+                          sender(sender), message(source, miraiCode) {}
+
     };
 
 /// 私聊消息事件类声明
@@ -1933,7 +1999,7 @@ LightApp风格1
          * @param message 消息
          * @param messageSource 消息源
          */
-        PrivateMessageEvent(unsigned long long int botid, const Friend sender, const std::string &message,
+        PrivateMessageEvent(unsigned long long int botid, Friend sender, const std::string &message,
                             const MessageSource &messageSource) : BotEvent(botid), sender(sender), message(messageSource, MiraiCode(message)) {}
     };
 
@@ -1941,15 +2007,15 @@ LightApp风格1
     class GroupInviteEvent : public BotEvent {
     public:
         /// 事件序列化文本
-        const std::string source;
+        std::string source;
         /// 发起人昵称
-        const std::string inviterNick = "";
+        std::string inviterNick = "";
         /// 发起人id
-        const unsigned long long inviterid = 0;
+        unsigned long long inviterid = 0;
         /// 被邀请进的组
-        const std::string groupName = "";
+        std::string groupName = "";
         /// 群号
-        const unsigned long long groupid = 0;
+        unsigned long long groupid = 0;
 
         static void reject(std::string source, JNIEnv *env = manager->getEnv()) {
             nlohmann::json j;
@@ -2004,14 +2070,14 @@ LightApp风格1
     class NewFriendRequestEvent : public BotEvent {
     public:
         /// @brief 序列化的事件信息
-        const std::string source;
+        std::string source;
         /// @brief 对方id
-        const unsigned long long fromid;
-        const unsigned long long fromgroupid;
+        unsigned long long fromid;
+        unsigned long long fromgroupid;
         /// @brief 对方昵称
-        const std::string nick;
+        std::string nick;
         /// @brief 申请理由
-        const std::string message;
+        std::string message;
 
         /// @brief 拒绝好友申请
         /// @param source 事件序列化信息
@@ -2063,8 +2129,8 @@ LightApp风格1
          * @param message 申请理由
          */
         NewFriendRequestEvent(unsigned long long int botid, const std::string &source,
-                              const unsigned long long int fromid,
-                              const unsigned long long int fromgroupid, const std::string &nick,
+                              unsigned long long int fromid,
+                              unsigned long long int fromgroupid, const std::string &nick,
                               const std::string &message)
                 : BotEvent(botid), source(source), fromid(fromid), fromgroupid(fromgroupid), nick(nick),
                   message(message) {}
@@ -2079,13 +2145,13 @@ LightApp风格1
         *   2 - 主动加入
         *   3 - 原群主通过 https://huifu.qq.com/ 恢复原来群主身份并入群
         */
-        const int type = 0;
+        int type = 0;
         ///新进入的成员
         Member member;
         ///目标群
         Group group;
         ///邀请人, 当type = 1时存在，否则则和member变量相同
-        const unsigned long long inviterid;
+        unsigned long long inviterid;
 
         /*!
          * @brief 新群成员入群事件
@@ -2095,8 +2161,8 @@ LightApp风格1
          * @param group 群组
          * @param inviterid 邀请群成员id，如果不存在和member id参数一致
          */
-        MemberJoinEvent(unsigned long long int botid, const int type, const Member &member, const Group &group,
-                        const unsigned long long &inviterid) : BotEvent(botid), type(type), member(member),
+        MemberJoinEvent(unsigned long long int botid, int type, const Member &member, const Group &group,
+                        unsigned long long inviterid) : BotEvent(botid), type(type), member(member),
                                                                group(group),
                                                                inviterid(inviterid) {}
     };
@@ -2109,13 +2175,13 @@ LightApp风格1
         *           1 - 被踢出
         *           2 - 主动退出
         */
-        const int type = 0;
+        int type = 0;
         /// 退出的成员q号
-        const unsigned long long memberid;
+        unsigned long long memberid;
         /// 目标群
         Group group;
         /// 操作人, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
-        const unsigned long long operaterid;
+        unsigned long long operaterid;
 
         /*!
          * @brief 群成员离开
@@ -2125,9 +2191,9 @@ LightApp风格1
          * @param group 群
          * @param operaterid 操作人id, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
          */
-        MemberLeaveEvent(unsigned long long int botid, const int type, const unsigned long long memberid,
+        MemberLeaveEvent(unsigned long long int botid, int type, unsigned long long memberid,
                          const Group &group,
-                         const unsigned long long &operaterid) : BotEvent(botid), type(type), memberid(memberid),
+                         unsigned long long operaterid) : BotEvent(botid), type(type), memberid(memberid),
                                                                  group(group),
                                                                  operaterid(operaterid) {}
     };
@@ -2136,19 +2202,19 @@ LightApp风格1
     class RecallEvent : public BotEvent {
     public:
         /// 为1时是好友私聊中撤回，为2时为群聊内撤回
-        const int type = 0;
+        int type = 0;
         /// 时间戳
-        const int time = 0;
+        int time = 0;
         /// 原发送者
-        const unsigned long long authorid = 0;
+        unsigned long long authorid = 0;
         /// 撤回者
-        const unsigned long long operatorid = 0;
+        unsigned long long operatorid = 0;
         /// 信息id
-        const std::string ids;
+        std::string ids;
         //内部ids
-        const std::string internalids;
+        std::string internalids;
         //当type是2的时候存在，否则为0
-        const unsigned long long groupid = 0;
+        unsigned long long groupid = 0;
 
         /*!
          * @brief 撤回事件
@@ -2161,9 +2227,9 @@ LightApp风格1
          * @param internalids 消息源internalids
          * @param groupid
          */
-        RecallEvent(unsigned long long int botid, const int type, const int time, const unsigned long long int authorid,
-                    const unsigned long long int operatorid, std::string ids, const std::string &internalids,
-                    const unsigned long long int groupid) : BotEvent(botid), type(type), time(time), authorid(authorid),
+        RecallEvent(unsigned long long int botid, int type, int time, unsigned long long int authorid,
+                    unsigned long long int operatorid, std::string ids, const std::string &internalids,
+                    unsigned long long int groupid) : BotEvent(botid), type(type), time(time), authorid(authorid),
                                                             operatorid(operatorid), ids(std::move(ids)),
                                                             internalids(internalids),
                                                             groupid(groupid) {}
@@ -2173,11 +2239,11 @@ LightApp风格1
     class BotJoinGroupEvent : public BotEvent {
     public:
         /// 1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
-        const int type;
+        int type;
         /// 进入的群
         Group group;
         /// 当type=2时存在，为邀请人，否则为空，调用可能会报错
-        const unsigned long long inviterid;
+        unsigned long long inviterid;
 
         /*!
          * @brief bot加入群
@@ -2186,8 +2252,8 @@ LightApp风格1
          * @param group 加入的群
          * @param inviter 邀请人
          */
-        BotJoinGroupEvent(unsigned long long int botid, const int type, Group group,
-                          const unsigned long long inviter)
+        BotJoinGroupEvent(unsigned long long int botid, int type, Group group,
+                          unsigned long long inviter)
                 : BotEvent(botid), type(type), group(std::move(group)), inviterid(inviter) {}
     };
 
@@ -2199,7 +2265,7 @@ LightApp风格1
         /// 发送人
         Member sender;
         /// 信息本体
-        const MiraiCode message;
+        MiraiCode message;
         /// 消息源
         MessageSource messageSource;
 
@@ -2353,11 +2419,11 @@ LightApp风格1
                 this->enable = a;
             }
 
-            void stop() const {
+            void stop() {
                 *enable = false;
             }
 
-            void resume() const {
+            void resume() {
                 *enable = true;
             }
         };
@@ -2525,7 +2591,7 @@ throw: InitxException 即找不到对应签名
         manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
     }
 
-    std::string Config::koperation(int type, const json &data, JNIEnv *env) const {
+    std::string Config::koperation(int type, json &data, JNIEnv *env) {
         json j;
         j["type"] = type;
         j["data"] = data;
@@ -2656,7 +2722,7 @@ throw: InitxException 即找不到对应签名
     }
 
 //发送这个聊天记录
-    MessageSource ForwardMessage::sendTo(Contact *c, JNIEnv *env) const {
+    MessageSource ForwardMessage::sendTo(Contact *c, JNIEnv *env) {
         json temp;
         json text;
         text["id"] = c->id();
@@ -2694,7 +2760,7 @@ throw: InitxException 即找不到对应签名
         this->id = std::move(imageId);
     }
 
-    std::string Image::queryURL(JNIEnv *env) const {
+    std::string Image::queryURL(JNIEnv *env) {
         json j;
         j["id"] = this->id;
         std::string re = config->koperation(config->QueryImgUrl, j, env);
@@ -2831,11 +2897,30 @@ throw: InitxException 即找不到对应签名
         refreshInfo(env);
     }
 
+    Group::OnlineAnnouncement Group::OnlineAnnouncement::deserializeFromJson(json j) {
+        Group::AnnouncementParams ap(
+                j["params"]["sendToNewMember"],
+                j["params"]["requireConfirmation"],
+                j["params"]["isPinned"],
+                j["params"]["showEditCard"],
+                j["params"]["showPopup"]
+        );
+        return Group::OnlineAnnouncement(
+            j["content"],
+            ap,
+            j["groupid"],
+            j["senderid"],
+            j["time"],
+            j["fid"],
+            j["confirmationNum"],
+            j["imageid"]
+        );
+    }
+
     void Group::updateSetting(JNIEnv *env) {
         json j;
         json tmp;
         j["name"] = this->setting.name;
-        j["entranceAnnouncement"] = this->setting.entranceAnnouncement;
         j["isMuteAll"] = this->setting.isMuteAll;
         j["isAllowMemberInvite"] = this->setting.isAllowMemberInvite;
         j["isAutoApproveEnabled"] = this->setting.isAutoApproveEnabled;
@@ -2937,7 +3022,7 @@ throw: InitxException 即找不到对应签名
         for (int i = 0; i < utf16line.size(); i++) {
             c[i] = utf16line[i];
         }
-        return env->NewString((const jchar *) c, (jsize) utf16line.size());
+        return env->NewString((jchar *) c, (jsize) utf16line.size());
     }
 
     std::string Tools::JLongToString(jlong qqid) {
@@ -3046,7 +3131,7 @@ throw: InitxException 即找不到对应签名
         plugin = p;
     }
 
-    json PluginConfig::serialize() const {
+    json PluginConfig::serialize() {
         json j;
         j["name"] = name;
         j["version"] = version;
@@ -3130,7 +3215,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
                         GroupMessageEvent(j["group"]["botid"],
                                           Group::deserializationFromJson(j["group"]),
                                           Member::deserializationFromJson(j["member"]),
-                                          j["message"],
+                                          MiraiCode(to_string(j["message"])),
                                           MessageSource::deserializeFromString(j["source"])
                         )
                 );
