@@ -214,7 +214,8 @@ class Config {
             val heatBeat: String?,
             val id: Long,
             val passwords: String,
-            val protocol: String?
+            val protocol: String?,
+            val md5: Boolean?
         )
 }
 }
