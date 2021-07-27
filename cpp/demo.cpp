@@ -87,13 +87,14 @@ public:
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            logger->Info(e.group.setting.entranceAnnouncement);
-            logger->Info("Global");
-            Main::pluginLogger->Info("Plugin");
-            e.botlogger.Info("bot");
-            e.botlogger.Info(e.message.content.toString());
-            e.group.sendMiraiCode(MiraiCode("[mirai:service:1,<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\"简介 没点进来看见的样子\" serviceID=\"1\" url=\"https://github.com/\"><item layout=\"2\"><picture cover=\"https://avatars.githubusercontent.com/u/35139537?s=400&u=c7e3794d25a2e0f27f15caf5ba7a57c7346962f0&v=4\"/><title>标题</title><summary>描述文字</summary></item><source/></msg>\\n]"));
-            e.group.sendMiraiCode(MiraiCode(new ServiceMessage(URLSharer())));
+            logger->Info(e.group.announcements[0].content);
+            // logger->Info(e.group.setting.entranceAnnouncement);
+            // logger->Info("Global");
+            // Main::pluginLogger->Info("Plugin");
+            // e.botlogger.Info("bot");
+            // e.botlogger.Info(e.message.content.toString());
+            // e.group.sendMiraiCode(MiraiCode("[mirai:service:1,<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\"简介 没点进来看见的样子\" serviceID=\"1\" url=\"https://github.com/\"><item layout=\"2\"><picture cover=\"https://avatars.githubusercontent.com/u/35139537?s=400&u=c7e3794d25a2e0f27f15caf5ba7a57c7346962f0&v=4\"/><title>标题</title><summary>描述文字</summary></item><source/></msg>\\n]"));
+            // e.group.sendMiraiCode(MiraiCode(new ServiceMessage(URLSharer())));
             // if(e.message.content.toString() == "a"){
             //     if(!e.getContext().content.contains("count"))
             //         e.getContext().content["count"] = 1;

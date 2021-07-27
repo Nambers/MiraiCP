@@ -25,6 +25,7 @@ import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.PermissionDeniedException
+import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
@@ -145,6 +146,26 @@ object publicShared{
         return Send0(MiraiCode.deserializeMiraiCode(message), c)
     }
 
+    private fun OnlineAnnouncement.toOnlineA(): Config.OnlineA {
+        val a = Config.AP(
+            this.parameters.sendToNewMember,
+            this.parameters.isPinned,
+            this.parameters.showEditCard,
+            this.parameters.showPopup,
+            this.parameters.requireConfirmation
+        )
+        return Config.OnlineA(
+            this.content,
+            this.fid,
+            this.parameters.image?.id ?: let { "" },
+            this.confirmedMembersCount,
+            this.senderId,
+            this.group.id,
+            this.publicationTime,
+            a
+        )
+    }
+
     @OptIn(MiraiExperimentalApi::class, LowLevelApi::class)
     suspend fun RefreshInfo(c: Config.Contact, quit: Boolean): String{
         val AIbot = Bot.getInstance(c.botid)
@@ -170,7 +191,7 @@ object publicShared{
                     return "done"
                 }
                 return gson.toJson(Config.ContactInfo(g.name, g.avatarUrl,
-                    Config.GroupSetting(g.name, g.settings.entranceAnnouncement, g.settings.isMuteAll, g.settings.isAllowMemberInvite, g.settings.isAutoApproveEnabled, g.settings.isAnonymousChatEnabled)
+                    Config.GroupSetting(g.name, g.announcements.toList().map { it.toOnlineA() }, g.settings.isMuteAll, g.settings.isAllowMemberInvite, g.settings.isAutoApproveEnabled, g.settings.isAnonymousChatEnabled)
                 ))
             }
             3->{
@@ -532,7 +553,6 @@ object publicShared{
             a.add(ForwardMessage.Node(it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)))
         }
         val re = a.build().sendTo(c1)
-        //TODO:https://github.com/mamoe/mirai/issues/1371
         return json.encodeToString(MessageSource.Serializer, re.source)
     }
 
@@ -654,7 +674,6 @@ object publicShared{
         val root = gson.fromJson(source, Config.GroupSetting::class.java)
         try {
             group.name = root.name
-            group.settings.entranceAnnouncement = root.entranceAnnouncement
             group.settings.isMuteAll = root.isMuteAll
             group.settings.isAllowMemberInvite = root.isAllowMemberInvite
         }catch(e: PermissionDeniedException){
@@ -732,7 +751,7 @@ object publicShared{
                 gson.toJson(
                     Config.MemberJoin(
                         Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
-                        Config.Contact(3, this.member.id, this.groupId, this.member.nameCardOrNick, this.bot.id),
+                        Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                         3,
                         this.member.id
                     )
@@ -744,7 +763,7 @@ object publicShared{
                 gson.toJson(
                     Config.MemberJoin(
                         Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
-                        Config.Contact(3, this.member.id, this.groupId, this.member.nameCardOrNick, this.bot.id),
+                        Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                         2,
                         this.member.id
                     )
@@ -756,7 +775,7 @@ object publicShared{
                 gson.toJson(
                     Config.MemberJoin(
                         Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
-                        Config.Contact(3, this.member.id, this.groupId, this.member.nameCardOrNick, this.bot.id),
+                        Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                         1,
                         this.invitor.id
                     )
