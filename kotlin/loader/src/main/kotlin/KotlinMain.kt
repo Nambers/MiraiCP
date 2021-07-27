@@ -32,9 +32,17 @@ import tech.eritquearcus.miraicp.shared.publicShared.gson
 import tech.eritquearcus.miraicp.shared.publicShared.now_tag
 import java.io.File
 
+private fun String.decodeHex(): ByteArray {
+    check(length % 2 == 0) { "Must have an even length" }
+
+    return chunked(2)
+        .map { it.toInt(16).toByte() }
+        .toByteArray()
+}
+
 object KotlinMain {
     @OptIn(MiraiInternalApi::class)
-    suspend fun main(j:String) {
+    suspend fun main(j: String) {
         setDefaultLoggerCreator { identity ->
             AnsiConsole.systemInstall()
             PlatformLogger(identity, AnsiConsole.out()::println, true)
@@ -86,7 +94,7 @@ object KotlinMain {
                 "REGISTER" -> BotConfiguration.HeartbeatStrategy.REGISTER
                 "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
                 null -> BotConfiguration.HeartbeatStrategy.STAT_HB
-                else->{
+                else -> {
                     logger.warning("Warning: 心跳策略无效, 应为\"STAT_HB\"\\\"REGISTEr\"\\\"None\"其中一个，使用默认的STAT_HB登录")
                     BotConfiguration.HeartbeatStrategy.STAT_HB
                 }
@@ -94,10 +102,18 @@ object KotlinMain {
             logger.info("登录bot:${it.id}")
             logger.info("协议:${p.name}")
             logger.info("心跳策略:${h.name}")
-            val b = BotFactory.newBot(it.id, it.passwords) {
-                fileBasedDeviceInfo()
-                this.protocol = p
-                this.heartbeatStrategy = h
+            val b = if (it.md5 == null || !it.md5!!) {
+                BotFactory.newBot(it.id, it.passwords) {
+                    fileBasedDeviceInfo()
+                    this.protocol = p
+                    this.heartbeatStrategy = h
+                }
+            } else {
+                BotFactory.newBot(it.id, it.passwords.decodeHex()) {
+                    fileBasedDeviceInfo()
+                    this.protocol = p
+                    this.heartbeatStrategy = h
+                }
             }
             b.eventChannel.subscribeAlways<BotOnlineEvent> {
                 cpp.Event(
