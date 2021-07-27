@@ -18,6 +18,7 @@
 package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.annotations.SerializedName
+import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
 
 class Config {
     data class Contact(
@@ -162,9 +163,33 @@ class Config {
         @SerializedName("message") val message : String
     )
 
+    // Announcement params
+    data class AP(
+        val sendToNewMember: Boolean = false,
+        /** 置顶. 可以有多个置顶公告 */
+        val isPinned: Boolean = false,
+        /** 显示能够引导群成员修改昵称的窗口 */
+        val showEditCard: Boolean = false,
+        /** 使用弹窗 */
+        val showPopup: Boolean = false,
+        /** 需要群成员确认 */
+        val requireConfirmation: Boolean = false,
+    )
+
+    data class OnlineA(
+        val content: String,
+        val fid: String,
+        val imageid: String,
+        val confirmationNum: Int,
+        val senderid: Long,
+        val groupid: Long,
+        val time: Long,
+        val params: AP
+    )
+
     data class GroupSetting(
         val name:String,
-        val entranceAnnouncement:String,
+        val announcements:List<OnlineA>?,
         val isMuteAll:Boolean,
         val isAllowMemberInvite:Boolean,
         val isAutoApproveEnabled:Boolean,
@@ -174,7 +199,7 @@ class Config {
     data class ContactInfo(
         val nickornamecard: String,
         val avatarUrl: String,
-        val setting: GroupSetting = GroupSetting("", "", false, false, false, false)
+        val setting: GroupSetting = GroupSetting("", null, false, false, false, false)
     )
 
     data class DInfo(
