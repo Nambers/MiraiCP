@@ -18,6 +18,8 @@
 package tech.eritquearcus.miraicp.loader
 
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -25,11 +27,12 @@ import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.*
 import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
 import org.fusesource.jansi.AnsiConsole
+import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
-import tech.eritquearcus.miraicp.shared.publicShared
-import tech.eritquearcus.miraicp.shared.publicShared.gson
-import tech.eritquearcus.miraicp.shared.publicShared.now_tag
+import tech.eritquearcus.miraicp.shared.PublicShared
+import tech.eritquearcus.miraicp.shared.PublicShared.gson
+import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
 import java.io.File
 
 private fun String.decodeHex(): ByteArray {
@@ -41,8 +44,12 @@ private fun String.decodeHex(): ByteArray {
 }
 
 object KotlinMain {
+    private val job = Job()
+    val coroutineScope = CoroutineScope(job)
+
     @OptIn(MiraiInternalApi::class)
     suspend fun main(j: String) {
+        job.start()
         setDefaultLoggerCreator { identity ->
             AnsiConsole.systemInstall()
             PlatformLogger(identity, AnsiConsole.out()::println, true)
@@ -59,27 +66,28 @@ object KotlinMain {
             dll_name = File(dll_name).absolutePath
         }
         logger.info("⭐当前MiraiCP版本: $now_tag")
-        publicShared.init(logger, dll_name)
+        PublicShared.init(logger, dll_name)
         logger.info("⭐c++ dll地址:${dll_name}")
         val cpp = CPP_lib()
         logger.info("⭐已加载插件: ${cpp.config.name}")
         logger.info("⭐作者: ${cpp.config.author}")
         logger.info("⭐版本: ${cpp.config.version}")
-        if(cpp.config.description!= "")
+        if (cpp.config.description != "")
             logger.info("⭐描述: ${cpp.config.description}")
-        if(cpp.config.time!="")
+        if (cpp.config.time != "")
             logger.info("⭐发行时间: ${cpp.config.time}")
-        if(c.accounts == null || c.accounts!!.isEmpty()){
+        if (c.accounts == null || c.accounts!!.isEmpty()) {
             logger.error("Error: 无可登录账号，请检查config.json内容")
             return
         }
         logger.info("⭐已成功加载MiraiCP⭐")
-        publicShared.logger4plugins.put(cpp.config.name, MiraiLogger.create(cpp.config.name))
-        if(cpp.config.MiraiCPversion != now_tag){
+        PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.create(cpp.config.name)
+        if (cpp.config.MiraiCPversion != now_tag) {
             logger.warning("Warning: 当前MiraiCP框架版本($now_tag)和加载的插件的C++ SDK(${cpp.config.MiraiCPversion})不一致")
         }
+        Console.listen()
         c.accounts!!.forEach {
-            val p = when(it.protocol?.uppercase()){
+            val p = when (it.protocol?.uppercase()) {
                 "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
                 "WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
                 "PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
@@ -89,8 +97,8 @@ object KotlinMain {
                     BotConfiguration.MiraiProtocol.ANDROID_PHONE
                 }
             }
-            val h = when(it.heatBeat?.uppercase()){
-                "STAT_HB"-> BotConfiguration.HeartbeatStrategy.STAT_HB
+            val h = when (it.heatBeat?.uppercase()) {
+                "STAT_HB" -> BotConfiguration.HeartbeatStrategy.STAT_HB
                 "REGISTER" -> BotConfiguration.HeartbeatStrategy.REGISTER
                 "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
                 null -> BotConfiguration.HeartbeatStrategy.STAT_HB
@@ -123,7 +131,7 @@ object KotlinMain {
             b.login()
         }
         val globalEventChannel = GlobalEventChannel
-        publicShared.onEnable(globalEventChannel, cpp)
+        PublicShared.onEnable(globalEventChannel, cpp)
     }
 }
 
