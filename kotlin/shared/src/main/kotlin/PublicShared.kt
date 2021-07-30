@@ -44,8 +44,8 @@ import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
 
-object publicShared{
-    private val json = Json{
+object PublicShared {
+    private val json = Json {
         Mirai
         serializersModule = MessageSerializers.serializersModule
         ignoreUnknownKeys = true
@@ -53,7 +53,7 @@ object publicShared{
     private var friend_cache = ArrayList<NormalMember>(0)
     private lateinit var cpp: CPP_lib
     val gson: Gson = Gson()
-    private lateinit var logger: MiraiLogger
+    lateinit var logger: MiraiLogger
     const val now_tag = "v2.7-Beta"
     lateinit var dll_name: String
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
@@ -64,7 +64,7 @@ object publicShared{
     }
 
     //日志部分实现
-    fun BasicSendLog(log: String, botid: Long, name: String = "") {
+    fun basicSendLog(log: String, botid: Long, name: String = "") {
         when (botid) {
             -1L -> logger4plugins[name]!!.info(log)
             -2L -> logger.info(log)
@@ -72,7 +72,7 @@ object publicShared{
         }
     }
 
-    fun SendWarning(log: String, botid: Long, name: String = "") {
+    fun sendWarning(log: String, botid: Long, name: String = "") {
         when (botid) {
             -1L -> logger4plugins[name]!!.warning(log)
             -2L -> logger.warning(log)
@@ -80,7 +80,7 @@ object publicShared{
         }
     }
 
-    fun SendError(log: String, botid: Long, name: String = "") {
+    fun sendError(log: String, botid: Long, name: String = "") {
         when (botid) {
             -1L -> logger4plugins[name]!!.error(log)
             -2L -> logger.error(log)
@@ -90,10 +90,10 @@ object publicShared{
 
     //发送消息部分实现 MiraiCode
 
-    suspend fun Send0(message: Message, c:Config.Contact):String{
+    private suspend fun send0(message: Message, c: Config.Contact): String {
         val AIbot = Bot.getInstance(c.botid)
-        when(c.type){
-            1->{
+        when (c.type) {
+            1 -> {
                 logger.info("Send message for(${c.id}) is $message")
                 val f = AIbot.getFriend(c.id) ?: let {
                     logger.error("发送消息找不到好友，位置:K-Send()，id:${c.id}")
@@ -139,11 +139,11 @@ object publicShared{
     suspend fun SendMsg(message: String, c:Config.Contact):String{
         val m = MessageChainBuilder()
         m.add(message)
-        return Send0(m.asMessageChain(), c)
+        return send0(m.asMessageChain(), c)
     }
 
     suspend fun SendMiraiCode(message: String, c:Config.Contact):String{
-        return Send0(MiraiCode.deserializeMiraiCode(message), c)
+        return send0(MiraiCode.deserializeMiraiCode(message), c)
     }
 
     private fun OnlineAnnouncement.toOnlineA(): Config.OnlineA {
