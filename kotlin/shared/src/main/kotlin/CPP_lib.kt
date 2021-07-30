@@ -20,34 +20,34 @@ package tech.eritquearcus.miraicp.shared
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
-import tech.eritquearcus.miraicp.shared.publicShared.BasicSendLog
-import tech.eritquearcus.miraicp.shared.publicShared.QueryBFL
-import tech.eritquearcus.miraicp.shared.publicShared.QueryBGL
-import tech.eritquearcus.miraicp.shared.publicShared.QueryImg
-import tech.eritquearcus.miraicp.shared.publicShared.QueryML
-import tech.eritquearcus.miraicp.shared.publicShared.RefreshInfo
-import tech.eritquearcus.miraicp.shared.publicShared.SendError
-import tech.eritquearcus.miraicp.shared.publicShared.SendMiraiCode
-import tech.eritquearcus.miraicp.shared.publicShared.SendMsg
-import tech.eritquearcus.miraicp.shared.publicShared.SendWarning
-import tech.eritquearcus.miraicp.shared.publicShared.accpetFriendRequest
-import tech.eritquearcus.miraicp.shared.publicShared.accpetGroupInvite
-import tech.eritquearcus.miraicp.shared.publicShared.buildforwardMsg
-import tech.eritquearcus.miraicp.shared.publicShared.dll_name
-import tech.eritquearcus.miraicp.shared.publicShared.getowner
-import tech.eritquearcus.miraicp.shared.publicShared.groupSetting
-import tech.eritquearcus.miraicp.shared.publicShared.gson
-import tech.eritquearcus.miraicp.shared.publicShared.kkick
-import tech.eritquearcus.miraicp.shared.publicShared.kqueryM
-import tech.eritquearcus.miraicp.shared.publicShared.mute
-import tech.eritquearcus.miraicp.shared.publicShared.recallMsg
-import tech.eritquearcus.miraicp.shared.publicShared.rejectFriendRequest
-import tech.eritquearcus.miraicp.shared.publicShared.rejectGroupInvite
-import tech.eritquearcus.miraicp.shared.publicShared.remoteFileInfo
-import tech.eritquearcus.miraicp.shared.publicShared.sendFile
-import tech.eritquearcus.miraicp.shared.publicShared.sendWithQuote
-import tech.eritquearcus.miraicp.shared.publicShared.uploadImg
-import tech.eritquearcus.miraicp.shared.publicShared.uploadVoice
+import tech.eritquearcus.miraicp.shared.PublicShared.QueryBFL
+import tech.eritquearcus.miraicp.shared.PublicShared.QueryBGL
+import tech.eritquearcus.miraicp.shared.PublicShared.QueryImg
+import tech.eritquearcus.miraicp.shared.PublicShared.QueryML
+import tech.eritquearcus.miraicp.shared.PublicShared.RefreshInfo
+import tech.eritquearcus.miraicp.shared.PublicShared.SendMiraiCode
+import tech.eritquearcus.miraicp.shared.PublicShared.SendMsg
+import tech.eritquearcus.miraicp.shared.PublicShared.accpetFriendRequest
+import tech.eritquearcus.miraicp.shared.PublicShared.accpetGroupInvite
+import tech.eritquearcus.miraicp.shared.PublicShared.basicSendLog
+import tech.eritquearcus.miraicp.shared.PublicShared.buildforwardMsg
+import tech.eritquearcus.miraicp.shared.PublicShared.dll_name
+import tech.eritquearcus.miraicp.shared.PublicShared.getowner
+import tech.eritquearcus.miraicp.shared.PublicShared.groupSetting
+import tech.eritquearcus.miraicp.shared.PublicShared.gson
+import tech.eritquearcus.miraicp.shared.PublicShared.kkick
+import tech.eritquearcus.miraicp.shared.PublicShared.kqueryM
+import tech.eritquearcus.miraicp.shared.PublicShared.mute
+import tech.eritquearcus.miraicp.shared.PublicShared.recallMsg
+import tech.eritquearcus.miraicp.shared.PublicShared.rejectFriendRequest
+import tech.eritquearcus.miraicp.shared.PublicShared.rejectGroupInvite
+import tech.eritquearcus.miraicp.shared.PublicShared.remoteFileInfo
+import tech.eritquearcus.miraicp.shared.PublicShared.sendError
+import tech.eritquearcus.miraicp.shared.PublicShared.sendFile
+import tech.eritquearcus.miraicp.shared.PublicShared.sendWarning
+import tech.eritquearcus.miraicp.shared.PublicShared.sendWithQuote
+import tech.eritquearcus.miraicp.shared.PublicShared.uploadImg
+import tech.eritquearcus.miraicp.shared.PublicShared.uploadVoice
 
 class CPP_lib {
     var config:PluginConfig
@@ -63,68 +63,66 @@ class CPP_lib {
         }
 
         //send MiraiCode
-        fun KSend(source: String, miraiCode:Boolean):String{
-            return runBlocking {
+        private fun KSend(source: String, miraiCode: Boolean): String =
+            runBlocking {
                 val tmp = gson.fromJson(source, Config.SendRequest::class.java)
                 return@runBlocking when (miraiCode) {
                     false -> SendMsg(tmp.content, tmp.contact)
                     true -> SendMiraiCode(tmp.content, tmp.contact)
                 }
             }
-        }
 
         //recall messageSource
-        fun KRecall(source: String):String {
-            return runBlocking {
+        private fun KRecall(source: String): String =
+            runBlocking {
                 recallMsg(source)
             }
-        }
 
         //查询图片下载链接
-        fun KQueryImgUrl(id:String): String {
-            return runBlocking {
+        private fun KQueryImgUrl(id: String): String =
+            runBlocking {
                 QueryImg(id)
             }
-        }
 
         @JvmStatic
         fun KSendLog(log:String, level: Int) {
             val j = JSONObject(log)
             if(j.getLong("id") == -1L)
-                when(level){
-                    0-> BasicSendLog(j.getString("log"), j.getLong("id"), j.getString("name"))
-                    1-> SendWarning(j.getString("log"), j.getLong("id"), j.getString("name"))
-                    2-> SendError(j.getString("log"), j.getLong("id"), j.getString("name"))
+                when (level) {
+                    0 -> basicSendLog(j.getString("log"), j.getLong("id"), j.getString("name"))
+                    1 -> sendWarning(j.getString("log"), j.getLong("id"), j.getString("name"))
+                    2 -> sendError(j.getString("log"), j.getLong("id"), j.getString("name"))
                 }
             else
-                when(level){
-                    0-> BasicSendLog(j.getString("log"), j.getLong("id"))
-                    1-> SendWarning(j.getString("log"), j.getLong("id"))
-                    2-> SendError(j.getString("log"), j.getLong("id"))
+                when (level) {
+                    0 -> basicSendLog(j.getString("log"), j.getLong("id"))
+                    1 -> sendWarning(j.getString("log"), j.getLong("id"))
+                    2 -> sendError(j.getString("log"), j.getLong("id"))
                 }
         }
 
-        fun KRefreshInfo(source: String, quit: Boolean): String {
-            return runBlocking {
+        private fun KRefreshInfo(source: String, quit: Boolean): String =
+            runBlocking {
                 RefreshInfo(gson.fromJson(source, Config.Contact::class.java), quit)
             }
-        }
 
-        fun KUploadImg(fileName:String,source:String):String{
-            return runBlocking {
+        private fun KUploadImg(fileName: String, source: String): String =
+            runBlocking {
                 uploadImg(fileName, gson.fromJson(source, Config.Contact::class.java))
             }
-        }
 
-        fun KSendFile(source:String, contactSource:String):String{
-            return runBlocking {
+        private fun KSendFile(source: String, contactSource: String): String =
+            runBlocking {
                 val t = JSONObject(source)
-                sendFile(t.getString("path"), t.getString("filename"), gson.fromJson(contactSource, Config.Contact::class.java))
+                sendFile(
+                    t.getString("path"),
+                    t.getString("filename"),
+                    gson.fromJson(contactSource, Config.Contact::class.java)
+                )
             }
-        }
 
-        fun KRemoteFileInfo(source: String, contactSource: String):String {
-            return runBlocking {
+        private fun KRemoteFileInfo(source: String, contactSource: String): String =
+            runBlocking {
                 val t = JSONObject(source)
                 return@runBlocking remoteFileInfo(
                     t.getString("path"),
@@ -132,89 +130,80 @@ class CPP_lib {
                     gson.fromJson(contactSource, Config.Contact::class.java)
                 )
             }
-        }
 
         //mute member
-        fun KMuteM(time: Int, contactSource: String): String{
-            return runBlocking {
+        private fun KMuteM(time: Int, contactSource: String): String =
+            runBlocking {
                 mute(time, gson.fromJson(contactSource, Config.Contact::class.java))
             }
-        }
 
         //query the permission of a member in a group
-        fun KQueryM(contactSource: String): String{
-            return kqueryM(gson.fromJson(contactSource, Config.Contact::class.java))
-        }
+        private fun KQueryM(contactSource: String): String =
+            kqueryM(gson.fromJson(contactSource, Config.Contact::class.java))
 
         //kick a member
-        fun KKickM(message: String, contactSource: String):String{
-            return runBlocking {
+        private fun KKickM(message: String, contactSource: String): String =
+            runBlocking {
                 kkick(message, gson.fromJson(contactSource, Config.Contact::class.java))
             }
-        }
 
         //query the member list of a group
-        fun KQueryML(contactSource: String):String{
+        private fun KQueryML(contactSource: String): String {
             return QueryML(gson.fromJson(contactSource, Config.Contact::class.java))
         }
 
         // query the friend lst of the bot
-        fun KQueryBFL(botid: Long): String{
+        private fun KQueryBFL(botid: Long): String {
             return QueryBFL(botid)
         }
 
         // query the group list of the bot
-        fun KQueryBGL(botid: Long): String{
+        private fun KQueryBGL(botid: Long): String {
             return QueryBGL(botid)
         }
 
         //query the owner of a group
-        fun KQueryOwner(contactSource: String):String{
-            return getowner(gson.fromJson(contactSource, Config.Contact::class.java))
-        }
+        private fun KQueryOwner(contactSource: String): String =
+            getowner(gson.fromJson(contactSource, Config.Contact::class.java))
 
         //build forward message
-        fun KBuildforward(text:String, botid: Long):String{
-            return runBlocking {
+        private fun KBuildforward(text: String, botid: Long): String =
+            runBlocking {
                 buildforwardMsg(text, botid)
             }
-        }
 
         // new friend request operation
-        fun KNfroperation(text: String, sign: Boolean):String{
-            return runBlocking {
+        private fun KNfroperation(text: String, sign: Boolean): String =
+            runBlocking {
                 val tmp = gson.fromJson(text, Config.NewFriendRequestSource::class.java)
                 if (sign) accpetFriendRequest(tmp)
                 else rejectFriendRequest(tmp)
             }
-        }
 
         // Group invite operation
-        fun KGioperation(text: String, sign: Boolean): String {
-            return runBlocking {
+        private fun KGioperation(text: String, sign: Boolean): String =
+            runBlocking {
                 if (sign) accpetGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
                 else rejectGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
             }
-        }
 
-        fun KSendWithQuote(messageSource: String, msg: String, sign: String): String {
-            return runBlocking {
+        private fun KSendWithQuote(messageSource: String, msg: String, sign: String): String =
+            runBlocking {
                 sendWithQuote(messageSource, msg, sign)
             }
-        }
 
-        fun KUpdateSetting(contactSource: String, source: String): String{
-            return runBlocking { groupSetting(gson.fromJson(contactSource, Config.Contact::class.java), source)}
-        }
 
-        fun KUploadVoice(contactSource: String, source: String):String{
+        private fun KUpdateSetting(contactSource: String, source: String): String =
+            runBlocking { groupSetting(gson.fromJson(contactSource, Config.Contact::class.java), source) }
+
+        private fun KUploadVoice(contactSource: String, source: String): String {
             val tmp = JSONObject(source)
             return runBlocking {
                 uploadVoice(tmp.getString("path"), gson.fromJson(contactSource, Config.Contact::class.java))
             }
         }
 
-        enum class operation_code{
+        enum class operation_code {
             /// 撤回信息
             Recall,
 
@@ -333,7 +322,7 @@ class CPP_lib {
         }
     }
 
-    external fun Verify(): String
+    private external fun Verify(): String
     external fun Event(content: String): String
     external fun PluginDisable(): Void
 }

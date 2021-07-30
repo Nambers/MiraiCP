@@ -17,6 +17,7 @@
 
 package tech.eritquearcus.miraicp
 
+import net.mamoe.mirai.console.MiraiConsole
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -24,7 +25,7 @@ import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
-import tech.eritquearcus.miraicp.shared.publicShared
+import tech.eritquearcus.miraicp.shared.PublicShared
 import java.io.File
 
 object PluginMain : KotlinPlugin(
@@ -56,7 +57,7 @@ object PluginMain : KotlinPlugin(
         if (!File(dll_name).exists()) {
             l.error("c++文件$dll_name 不存在")
         }
-        publicShared.init(l, dll_name)
+        PublicShared.init(l, dll_name)
         val cpp = CPP_lib()
         logger.info("⭐已加载插件: ${cpp.config.name}")
         logger.info("⭐作者: ${cpp.config.author}")
@@ -66,16 +67,17 @@ object PluginMain : KotlinPlugin(
         if(cpp.config.time!="")
             logger.info("⭐发行时间: ${cpp.config.time}")
         logger.info("⭐已成功启动MiraiCP⭐")
-        publicShared.logger4plugins[cpp.config.name] = MiraiLogger.create(cpp.config.name)
+        PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.create(cpp.config.name)
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
             cpp.Event(
-                publicShared.gson.toJson(Config.BotOnline(this.bot.id))
+                PublicShared.gson.toJson(Config.BotOnline(this.bot.id))
             )
         }
-        publicShared.onEnable(GlobalEventChannel.parentScope(this), cpp)
+        PublicShared.onEnable(GlobalEventChannel.parentScope(this), cpp)
     }
 
     override fun onDisable() {
-        publicShared.onDisable()
+        MiraiConsole
+        PublicShared.onDisable()
     }
 }
