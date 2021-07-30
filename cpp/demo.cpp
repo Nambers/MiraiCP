@@ -87,7 +87,9 @@ public:
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            logger->Info(e.group.announcements[0].content);
+            if(e.group.announcements.size() >= 1)
+                logger->Info(e.group.announcements[0].content);
+            Group::OfflineAnnouncement("Helloooooooo!", Group::AnnouncementParams()).publishTo(e.group).deleteThis();
             // logger->Info(e.group.setting.entranceAnnouncement);
             // logger->Info("Global");
             // Main::pluginLogger->Info("Plugin");

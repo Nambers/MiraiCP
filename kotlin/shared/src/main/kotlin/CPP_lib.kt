@@ -31,6 +31,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.accpetFriendRequest
 import tech.eritquearcus.miraicp.shared.PublicShared.accpetGroupInvite
 import tech.eritquearcus.miraicp.shared.PublicShared.basicSendLog
 import tech.eritquearcus.miraicp.shared.PublicShared.buildforwardMsg
+import tech.eritquearcus.miraicp.shared.PublicShared.deleteOnlineAnnouncement
 import tech.eritquearcus.miraicp.shared.PublicShared.dll_name
 import tech.eritquearcus.miraicp.shared.PublicShared.getowner
 import tech.eritquearcus.miraicp.shared.PublicShared.groupSetting
@@ -38,6 +39,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.gson
 import tech.eritquearcus.miraicp.shared.PublicShared.kkick
 import tech.eritquearcus.miraicp.shared.PublicShared.kqueryM
 import tech.eritquearcus.miraicp.shared.PublicShared.mute
+import tech.eritquearcus.miraicp.shared.PublicShared.publishOfflineAnnouncement
 import tech.eritquearcus.miraicp.shared.PublicShared.recallMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.rejectFriendRequest
 import tech.eritquearcus.miraicp.shared.PublicShared.rejectGroupInvite
@@ -203,6 +205,19 @@ class CPP_lib {
             }
         }
 
+        private fun KAnnouncement(identify: String, source: String?):String{
+            val i = gson.fromJson(identify, Config.IdentifyA::class.java)
+            return if(i.type == 1){
+                runBlocking {
+                    deleteOnlineAnnouncement(i)
+                }
+            }else if(i.type == 2){
+                runBlocking {
+                    publishOfflineAnnouncement(i, gson.fromJson(source!!, Config.BriefOfflineA::class.java))
+                }
+            }else{"EA"}
+        }
+
         enum class operation_code {
             /// 撤回信息
             Recall,
@@ -262,7 +277,10 @@ class CPP_lib {
             Gioperation,
 
             /// 回复(引用并发送)
-            SendWithQuote
+            SendWithQuote,
+
+            /// 群公告操作
+            Announcement
         }
 
         @JvmStatic
@@ -311,6 +329,7 @@ class CPP_lib {
                     operation_code.Gioperation.ordinal -> KGioperation(root.getString("text"), root.getBoolean("sign"))
                     /// 回复(引用并发送)
                     operation_code.SendWithQuote.ordinal -> KSendWithQuote(root.getString("messageSource"), root.getString("msg"), root.getString("sign"))
+                    operation_code.Announcement.ordinal -> KAnnouncement(root.getString("identify"), if(root.has("source")) root.getString("source") else null)
                     else -> "EA"
                 }
             }catch(e:Exception){

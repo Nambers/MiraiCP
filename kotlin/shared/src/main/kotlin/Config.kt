@@ -183,7 +183,20 @@ class Config {
         val confirmationNum: Int,
         val senderid: Long,
         val groupid: Long,
+        val botid: Long,
         val time: Long,
+        val params: AP
+    )
+    // Announcement identify
+    data class IdentifyA(
+        val botid: Long,
+        val groupid: Long,
+        val type: Int,
+        val fid: String?
+    )
+
+    data class BriefOfflineA(
+        val content: String,
         val params: AP
     )
 
