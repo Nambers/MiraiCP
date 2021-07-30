@@ -17,6 +17,7 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
+import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.shared.PublicShared
 import java.time.Duration
 import java.time.LocalDateTime
@@ -71,6 +72,7 @@ object Command {
         when (order) {
             "exit" -> {
                 PublicShared.onDisable()
+                KotlinMain.job.complete()
                 exitProcess(0)
             }
             "help" -> printHelp()
