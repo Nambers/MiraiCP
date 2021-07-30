@@ -25,7 +25,7 @@ import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.PermissionDeniedException
-import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
+import net.mamoe.mirai.contact.announcement.*
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
@@ -161,6 +161,7 @@ object PublicShared {
             this.confirmedMembersCount,
             this.senderId,
             this.group.id,
+            this.bot.id,
             this.publicationTime,
             a
         )
@@ -680,6 +681,45 @@ object PublicShared {
             return "E1"
         }
         return "Y"
+    }
+    suspend fun deleteOnlineAnnouncement(a : Config.IdentifyA):String{
+        val aibot = Bot.getInstance(a.botid)
+        val group = aibot.getGroup(a.groupid)?:let{
+            return "EG"
+        }
+        try {
+            group.announcements.delete(a.fid!!).let {
+                if(!it) return "E1"
+            }
+        }catch(e:PermissionDeniedException){
+            return "E2"
+        }catch(e:IllegalStateException){
+            return "E3"
+        }
+        return "Y"
+    }
+
+    suspend fun publishOfflineAnnouncement(i:Config.IdentifyA, a: Config.BriefOfflineA):String{
+        val g = Bot.getInstance(i.botid).getGroup(i.groupid) ?:let{
+            return "EG"
+        }
+        OfflineAnnouncement.create(a.content, buildAnnouncementParameters {
+            image = null
+            sendToNewMember = a.params.sendToNewMember
+            isPinned = a.params.isPinned
+            showEditCard = a.params.showEditCard
+            showPopup = a.params.showPopup
+            requireConfirmation = a.params.requireConfirmation
+        }
+        ).let { it ->
+            try {
+                it.publishTo(g)
+            }catch(e:PermissionDeniedException){
+                return "E1"
+            }.let { a->
+                return gson.toJson(a.toOnlineA())
+            }
+        }
     }
 
     fun onDisable() {

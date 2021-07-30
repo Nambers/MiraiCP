@@ -352,7 +352,9 @@ LightApp风格1
             /// 群聊邀请事件
             Gioperation,
             /// 回复(引用并发送)
-            SendWithQuote
+            SendWithQuote,
+            /// 群公告操作
+            Announcement
         };
 
         /**
@@ -633,6 +635,28 @@ LightApp风格1
     public:
         explicit UploadException(std::string text) {
             this->description = "上传(图片/文件)异常" + text;
+        }
+
+        //返回错误信息
+        std::string what() override {
+            return this->description;
+        }
+
+        void raise() override {
+            logger->Error(this->description);
+            //manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
+        }
+
+    private:
+        std::string description;
+    };
+
+    /// 通常为Mirai返回
+    /// @see MiraiCPException
+    class IllegalStateException : public MiraiCPException {
+    public:
+        explicit IllegalStateException(std::string text) {
+            this->description = "状态异常" + text;
         }
 
         //返回错误信息
@@ -1738,28 +1762,20 @@ LightApp风格1
             bool showEditCard;
             /// 显示弹窗
             bool showPopup;
-            AnnouncementParams(bool send2New, bool requireConfirm, bool pinned, bool showEditCard, bool showPopup) :
+            /// 序列化到文本
+            json serializeToJson();
+            AnnouncementParams(bool send2New = false, bool requireConfirm = false, bool pinned = false, bool showEditCard = false, bool showPopup = false) :
             send2new(send2New), requireConfirm(requireConfirm),
                                                                pinned(pinned), showEditCard(showEditCard),
                                                                showPopup(showPopup){}
-        };
-        /// 本地(未发送)群公告
-        class OfflineAnnouncement{
-        public:
-            /// 内容
-            std::string content;
-            /// 公告属性
-            AnnouncementParams params;
-            void publishTo(Group);
-
-            OfflineAnnouncement(const std::string &content, AnnouncementParams &params) : content(content),
-                                                                                                params(params) {}
         };
         /// 在线群公告
         class OnlineAnnouncement{
         public:
             /// 内容
             std::string content;
+            /// 所属bot
+            unsigned long long botid;
             /// 公告属性
             AnnouncementParams params;
             /// 所在群id
@@ -1782,11 +1798,24 @@ LightApp风格1
             static OnlineAnnouncement deserializeFromJson(json);
 
             OnlineAnnouncement(const std::string &content, AnnouncementParams &params,
-                               unsigned long long int groupid, unsigned long long int senderid,
+                               unsigned long long int groupid, unsigned long long int senderid,unsigned long long int botid,
                                long long int publicationTime, const std::string &fid, int confirmNum,
                                const std::string &imageid) : content(content), params(params), groupid(groupid),
-                                                             senderid(senderid), publicationTime(publicationTime),
+                                                             senderid(senderid), botid(botid), publicationTime(publicationTime),
                                                              fid(fid), confirmNum(confirmNum), imageid(imageid) {}
+        };
+        /// 本地(未发送)群公告
+        class OfflineAnnouncement{
+        public:
+            /// 内容
+            std::string content;
+            /// 公告属性
+            AnnouncementParams params;
+            /// 发布群公告
+            Group::OnlineAnnouncement publishTo(Group);
+
+            OfflineAnnouncement(const std::string &content, AnnouncementParams params) : content(content),
+            params(params) {}
         };
         /**
          * @brief 群设置
@@ -2897,6 +2926,49 @@ throw: InitxException 即找不到对应签名
         refreshInfo(env);
     }
 
+    void Group::OnlineAnnouncement::deleteThis(){
+        json j, i;
+        i["botid"] = this->botid;
+        i["groupid"] = this->groupid;
+        i["fid"] = this->fid;
+        i["type"] = 1;
+        j["identify"] = i.dump();
+        std::string re = config->koperation(config->Announcement, j);
+        ErrorHandle(re);
+        if(re == "E1")
+            throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)");
+        if(re == "E2")
+            throw BotException();
+        if(re == "E3")
+            throw IllegalStateException("群公告状态异常");
+    }
+
+    json Group::AnnouncementParams::serializeToJson() {
+        json j;
+        j["sendToNewMember"] = this->send2new;
+        j["isPinned"] = this->pinned;
+        j["showEditCard"] = this->showEditCard;
+        j["showPopup"] = this->showPopup;
+        j["requireConfirmation"] = this->requireConfirm;
+        return j;
+    }
+
+    Group::OnlineAnnouncement Group::OfflineAnnouncement::publishTo(Group g) {
+        json j, i, s;
+        i["botid"] = g.botid();
+        i["groupid"] = g.id();
+        i["type"] = 2;
+        j["identify"] = i.dump();
+        s["content"] = this->content;
+        s["params"] = this->params.serializeToJson();
+        j["source"] = s.dump();
+        std::string re = config->koperation(config->Announcement, j);
+        ErrorHandle(re);
+        if(re == "E1")
+            throw BotException();
+        return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
+    }
+
     Group::OnlineAnnouncement Group::OnlineAnnouncement::deserializeFromJson(json j) {
         Group::AnnouncementParams ap(
                 j["params"]["sendToNewMember"],
@@ -2910,6 +2982,7 @@ throw: InitxException 即找不到对应签名
             ap,
             j["groupid"],
             j["senderid"],
+            j["botid"],
             j["time"],
             j["fid"],
             j["confirmationNum"],

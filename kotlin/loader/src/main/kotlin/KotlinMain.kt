@@ -44,7 +44,7 @@ private fun String.decodeHex(): ByteArray {
 }
 
 object KotlinMain {
-    private val job = Job()
+    val job = Job()
     val coroutineScope = CoroutineScope(job)
 
     @OptIn(MiraiInternalApi::class)
