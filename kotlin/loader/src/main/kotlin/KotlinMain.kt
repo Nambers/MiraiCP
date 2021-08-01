@@ -18,9 +18,8 @@
 package tech.eritquearcus.miraicp.loader
 
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
+import io.ktor.util.*
+import kotlinx.coroutines.*
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.BotOnlineEvent
@@ -32,8 +31,12 @@ import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicShared.gson
+import tech.eritquearcus.miraicp.shared.PublicShared.logger
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
+import tech.eritquearcus.miraicp.shared.PublicShared.onDisable
 import java.io.File
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.system.exitProcess
 
 private fun String.decodeHex(): ByteArray {
     check(length % 2 == 0) { "Must have an even length" }
@@ -43,18 +46,68 @@ private fun String.decodeHex(): ByteArray {
         .toByteArray()
 }
 
-object KotlinMain {
-    val job = Job()
-    val coroutineScope = CoroutineScope(job)
+fun Config.accounts.Account.login(){
+    val it = this
+    val p = when (it.protocol?.uppercase()) {
+        "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
+        "WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
+        "PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
+        null -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
+        else -> {
+            logger.warning("Warning: 登录协议无效, 应为PAD/WATCH/PHONE其中一个,使用默认的PHONE进行登录")
+            BotConfiguration.MiraiProtocol.ANDROID_PHONE
+        }
+    }
+    val h = when (it.heatBeat?.uppercase()) {
+        "STAT_HB" -> BotConfiguration.HeartbeatStrategy.STAT_HB
+        "REGISTER" -> BotConfiguration.HeartbeatStrategy.REGISTER
+        "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
+        null -> BotConfiguration.HeartbeatStrategy.STAT_HB
+        else -> {
+            logger.warning("Warning: 心跳策略无效, 应为\"STAT_HB\"\\\"REGISTEr\"\\\"None\"其中一个，使用默认的STAT_HB登录")
+            BotConfiguration.HeartbeatStrategy.STAT_HB
+        }
+    }
+    logger.info("登录bot:${it.id}")
+    logger.info("协议:${p.name}")
+    logger.info("心跳策略:${h.name}")
+    val b = if (it.md5 == null || !it.md5!!) {
+        BotFactory.newBot(it.id, it.passwords) {
+            fileBasedDeviceInfo()
+            this.protocol = p
+            this.heartbeatStrategy = h
+        }
+    } else {
+        BotFactory.newBot(it.id, it.passwords.decodeHex()) {
+            fileBasedDeviceInfo()
+            this.protocol = p
+            this.heartbeatStrategy = h
+        }
+    }
+    b.eventChannel.subscribeAlways<BotOnlineEvent> {
+        PublicShared.cpp.Event(
+            gson.toJson(Config.BotOnline(this.bot.id))
+        )
+    }
+    runBlocking {
+        b.login()
+    }
+}
 
+object KotlinMain {
+    private val job = Job()
+    val coroutineScope = CoroutineScope(job)
+    lateinit var loginAccount: List<Config.accounts.Account>
+    var logined = false
     @OptIn(MiraiInternalApi::class)
-    suspend fun main(j: String) {
+    fun main(j: String) {
         job.start()
         setDefaultLoggerCreator { identity ->
             AnsiConsole.systemInstall()
             PlatformLogger(identity, AnsiConsole.out()::println, true)
         }
         val c = Gson().fromJson(j, Config.accounts::class.java)
+        loginAccount = c.accounts?: emptyList()
         val logger = MiraiLogger.create("MiraiCP")
         var dll_name = c.cppPath
         logger.info("⭐MiraiCP启动中⭐")
@@ -69,6 +122,7 @@ object KotlinMain {
         PublicShared.init(logger, dll_name)
         logger.info("⭐c++ dll地址:${dll_name}")
         val cpp = CPP_lib()
+        PublicShared.cpp = cpp
         logger.info("⭐已加载插件: ${cpp.config.name}")
         logger.info("⭐作者: ${cpp.config.author}")
         logger.info("⭐版本: ${cpp.config.version}")
@@ -86,52 +140,13 @@ object KotlinMain {
             logger.warning("Warning: 当前MiraiCP框架版本($now_tag)和加载的插件的C++ SDK(${cpp.config.MiraiCPversion})不一致")
         }
         Console.listen()
-        c.accounts!!.forEach {
-            val p = when (it.protocol?.uppercase()) {
-                "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
-                "WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
-                "PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
-                null -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
-                else -> {
-                    logger.warning("Warning: 登录协议无效, 应为PAD/WATCH/PHONE其中一个,使用默认的PHONE进行登录")
-                    BotConfiguration.MiraiProtocol.ANDROID_PHONE
-                }
-            }
-            val h = when (it.heatBeat?.uppercase()) {
-                "STAT_HB" -> BotConfiguration.HeartbeatStrategy.STAT_HB
-                "REGISTER" -> BotConfiguration.HeartbeatStrategy.REGISTER
-                "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
-                null -> BotConfiguration.HeartbeatStrategy.STAT_HB
-                else -> {
-                    logger.warning("Warning: 心跳策略无效, 应为\"STAT_HB\"\\\"REGISTEr\"\\\"None\"其中一个，使用默认的STAT_HB登录")
-                    BotConfiguration.HeartbeatStrategy.STAT_HB
-                }
-            }
-            logger.info("登录bot:${it.id}")
-            logger.info("协议:${p.name}")
-            logger.info("心跳策略:${h.name}")
-            val b = if (it.md5 == null || !it.md5!!) {
-                BotFactory.newBot(it.id, it.passwords) {
-                    fileBasedDeviceInfo()
-                    this.protocol = p
-                    this.heartbeatStrategy = h
-                }
-            } else {
-                BotFactory.newBot(it.id, it.passwords.decodeHex()) {
-                    fileBasedDeviceInfo()
-                    this.protocol = p
-                    this.heartbeatStrategy = h
-                }
-            }
-            b.eventChannel.subscribeAlways<BotOnlineEvent> {
-                cpp.Event(
-                    gson.toJson(Config.BotOnline(this.bot.id))
-                )
-            }
-            b.login()
+        c.accounts?.filter { it.autoLogin == true }?.forEach {
+            it.login()
+            logined = true
         }
+        while(!logined){}
         val globalEventChannel = GlobalEventChannel
-        PublicShared.onEnable(globalEventChannel, cpp)
+        PublicShared.onEnable(globalEventChannel)
     }
 }
 
@@ -170,7 +185,5 @@ fun main(args: Array<String>){
         }
     }
     println("正在启动\n配置文件地址:${f.absolutePath}")
-    runBlocking {
-        KotlinMain.main(f.readText())
-    }
+    KotlinMain.main(f.readText())
 }

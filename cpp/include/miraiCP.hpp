@@ -3255,7 +3255,8 @@ JNIEXPORT jobject JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_PluginD
     delete (logger);
     delete (procession);
     delete (config);
-    gvm->DestroyJavaVM();
+    delete(plugin);
+    delete(manager);
     return job;
 }
 /*返回空值*/
