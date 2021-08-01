@@ -17,7 +17,6 @@
 
 package tech.eritquearcus.miraicp
 
-import net.mamoe.mirai.console.MiraiConsole
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -56,6 +55,8 @@ object PluginMain : KotlinPlugin(
         }
         if (!File(dll_name).exists()) {
             l.error("c++文件$dll_name 不存在")
+            l.info("未找到配套dll插件，本插件退出加载，可去https://github.com/Nambers/MiraiCP 了解更多")
+            return
         }
         PublicShared.init(l, dll_name)
         val cpp = CPP_lib()
@@ -73,7 +74,7 @@ object PluginMain : KotlinPlugin(
                 PublicShared.gson.toJson(Config.BotOnline(this.bot.id))
             )
         }
-        PublicShared.onEnable(GlobalEventChannel.parentScope(this), cpp)
+        PublicShared.onEnable(GlobalEventChannel.parentScope(this))
     }
 
     override fun onDisable() {
