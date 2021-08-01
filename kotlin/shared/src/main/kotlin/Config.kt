@@ -253,7 +253,8 @@ class Config {
             val id: Long,
             val passwords: String,
             val protocol: String?,
-            val md5: Boolean?
+            val md5: Boolean?,
+            val autoLogin: Boolean?
         )
 }
 }

@@ -77,7 +77,6 @@ object PluginMain : KotlinPlugin(
     }
 
     override fun onDisable() {
-        MiraiConsole
         PublicShared.onDisable()
     }
 }
