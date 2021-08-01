@@ -17,7 +17,9 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
+import net.mamoe.mirai.BotFactory
 import tech.eritquearcus.miraicp.loader.KotlinMain
+import tech.eritquearcus.miraicp.loader.login
 import tech.eritquearcus.miraicp.shared.PublicShared
 import java.time.Duration
 import java.time.LocalDateTime
@@ -28,7 +30,8 @@ object Command {
     private fun printHelp() {
         val message = listOf(
             "exit" to "退出",
-            "status" to "查看loader状态"
+            "status" to "查看loader状态",
+            "login <qqid>" to "登录已经配置在配置文件的qq"
         )
         val prefixPlaceholder = String(CharArray(
             message.maxOfOrNull { it.first.length }!! + 3
@@ -68,11 +71,14 @@ object Command {
         PublicShared.logger.error("未知命令: '$order', 输入 \"help\" 获取命令帮助")
     }
 
+    private fun error(order: String, reason: String){
+        PublicShared.logger.error("命令错误: '$order', $reason")
+    }
+
     private fun pureOrder(order: String) {
         when (order) {
             "exit" -> {
                 PublicShared.onDisable()
-                KotlinMain.job.complete()
                 exitProcess(0)
             }
             "help" -> printHelp()
@@ -84,7 +90,27 @@ object Command {
         }
     }
 
+    private fun login(id:Long){
+        KotlinMain.loginAccount.first { it.id == id && it.autoLogin == true}.login()
+    }
+
     private fun oneParamOrder(order: Array<String>) {
-        unknown(order.joinToString(" "))
+        when(order[0]){
+            "login" -> {
+                val id = try {
+                    order[1].toLong()
+                }catch(e:NumberFormatException){
+                    error(order.joinToString(" "),order[1] + "不是有效的qq号")
+                    return
+                }
+                try{
+                    login(id)
+                }catch(e:NoSuchElementException ){
+                    error(order.joinToString(" "), "config文件中没找到关于$id 的定义或该id已经通过自动登录登录")
+                }
+                KotlinMain.logined = true
+            }
+            else -> unknown(order.joinToString(" "))
+        }
     }
 }
