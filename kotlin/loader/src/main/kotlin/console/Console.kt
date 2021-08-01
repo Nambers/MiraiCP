@@ -17,10 +17,7 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.PlatformLogger
@@ -47,7 +44,7 @@ object Console {
         }
     }
 
-    private val terminal: Terminal =
+    val terminal: Terminal =
         TerminalBuilder
             .builder()
             .name("MiraiCP Console")
@@ -83,11 +80,11 @@ object Console {
         LineReaderBuilder.builder().terminal(terminal).completer(NullCompleter()).build()
     }
     private const val prompt = "> "
-
+    lateinit var listenJob:Job
     @OptIn(DelicateCoroutinesApi::class)
     fun listen() {
-        KotlinMain.coroutineScope.launch(CoroutineName("Console Command")) {
-            while (true) {
+        listenJob = KotlinMain.coroutineScope.launch(CoroutineName("Console Command")) {
+            while (isActive) {
                 val re = try {
                     lineReader.readLine(prompt)
                 } catch (e: InterruptedException) {

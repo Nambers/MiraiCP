@@ -51,7 +51,7 @@ object PublicShared {
         ignoreUnknownKeys = true
     }
     private var friend_cache = ArrayList<NormalMember>(0)
-    private lateinit var cpp: CPP_lib
+    lateinit var cpp: CPP_lib
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
     const val now_tag = "v2.7-Beta"
@@ -723,12 +723,12 @@ object PublicShared {
     }
 
     fun onDisable() {
-        cpp.PluginDisable()
+        if(this::cpp.isInitialized)
+            cpp.PluginDisable()
     }
 
     @OptIn(MiraiExperimentalApi::class)
-    fun onEnable(eventChannel: EventChannel<Event>, c: CPP_lib){
-        cpp = c
+    fun onEnable(eventChannel: EventChannel<Event>){
         //配置文件目录 "${dataFolder.absolutePath}/"
         eventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
