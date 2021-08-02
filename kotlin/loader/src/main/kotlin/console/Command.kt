@@ -17,6 +17,7 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
+import com.google.gson.Gson
 import net.mamoe.mirai.BotFactory
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.login
@@ -31,7 +32,8 @@ object Command {
         val message = listOf(
             "exit" to "退出",
             "status" to "查看loader状态",
-            "login <qqid>" to "登录已经配置在配置文件的qq"
+            "login <qqid>" to "登录已经配置在配置文件的qq",
+            "accountList" to "查看配置文件里的qq"
         )
         val prefixPlaceholder = String(CharArray(
             message.maxOfOrNull { it.first.length }!! + 3
@@ -86,12 +88,16 @@ object Command {
                 val s = Duration.between(Console.start, LocalDateTime.now()).seconds
                 println("该Loader已经持续运行 " + String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + " 啦")
             }
+            "accountList" -> KotlinMain.loginAccount.let { acs->
+                val gson = Gson()
+                acs.forEach { println(gson.toJson(it)) }
+            }
             else -> unknown(order)
         }
     }
 
     private fun login(id:Long){
-        KotlinMain.loginAccount.first { it.id == id && it.autoLogin == true}.login()
+        KotlinMain.loginAccount.first { it.id == id && (it.logined == null || it.logined == false)}.login()
     }
 
     private fun oneParamOrder(order: Array<String>) {

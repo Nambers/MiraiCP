@@ -18,7 +18,6 @@
 package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.annotations.SerializedName
-import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
 
 class Config {
     data class Contact(
@@ -238,12 +237,6 @@ class Config {
         val finfo: FInfo
     )
 
-    data class GroupAnnouncementMsg(
-        val text: String,
-        val text_face: String? = null,
-        val title: String? = null
-    )
-
     data class accounts(
         val accounts: List<Account>?,
         val cppPath: String
@@ -254,7 +247,8 @@ class Config {
             val passwords: String,
             val protocol: String?,
             val md5: Boolean?,
-            val autoLogin: Boolean?
+            val autoLogin: Boolean?,
+            var logined: Boolean?
         )
 }
 }

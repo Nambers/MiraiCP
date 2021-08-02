@@ -39,7 +39,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.7-Beta";
+    const std::string MiraiCPVersion = "v2.7-RC-dev";
 
     /// @brief 插件信息
     class PluginConfig{
@@ -166,6 +166,8 @@ LightApp风格1
         std::string summary="描述文字";
     };
 
+    template<typename T>
+    concept Number = std::is_arithmetic<T>::value;
     // 接受声明MiraiCP常量声明代码
 
     // 开始MiraiCP类声明代码
@@ -283,7 +285,8 @@ LightApp风格1
         /// @brief long long 类型的vector格式化输出
         /// @param v vector
         /// @return string
-        static std::string VectorToString(std::vector<unsigned long long> v);
+        template<typename T>
+        static std::string VectorToString(std::vector<T> v);
 
         /// @brief 从string格式化到vector
         /// @param s string
@@ -408,23 +411,11 @@ LightApp风格1
         MiraiCode(std::string a) {
             content = Tools::escapeToMiraiCode(std::move(a));
         }
-        //数字支持
-        MiraiCode(int n){
-            content = std::to_string(n);
-        }
-        MiraiCode(unsigned int n){
-            content = std::to_string(n);
-        }
-        MiraiCode(long n){
-            content = std::to_string(n);
-        }
-        MiraiCode(long long n){
-            content = std::to_string(n);
-        }
-        MiraiCode(unsigned long long n){
-            content = std::to_string(n);
-        }
 
+        template<Number T>
+        MiraiCode (T n){
+            content = std::to_string(n);
+        }
 
         MiraiCode operator+(MiraiCodeable *a) {
             return MiraiCode(content + a->toMiraiCode());
@@ -474,6 +465,15 @@ LightApp风格1
         static MiraiCode MiraiCodeWithoutEscape(MiraiCodeable* a){
             return MiraiCode::MiraiCodeWithoutEscape(a->toMiraiCode());
         }
+
+        /// 支持提取的内容
+        enum filterType{
+            image,
+            at
+        };
+
+        /// 提取MiraiCode内容
+        std::vector<std::string> filter(filterType);
     };
 
 /*!
@@ -481,11 +481,11 @@ LightApp风格1
  * @brief 以MiraiCP的名义发送日志, 日志表现格式是: 2021-06-28 09:37:22 [log level]/MiraiCP: [log content], 为最底层的logger
  * @example 发送日志
 	 *  发送消息级日志
-	 *  @code logger->Info(string) @endcode
+	 *  @code logger->info(string) @endcode
 	 *  发送警告级日志
-	 *  @code logger->Warning(string) @endcode
+	 *  @code logger->warning(string) @endcode
 	 *  发送错误级日志
-	 *  @code logger->Error(string) @endcode
+	 *  @code logger->error(string) @endcode
  */
     class Logger_interface {
     protected:
@@ -522,27 +522,45 @@ LightApp风格1
         void init(JNIEnv * = manager->getEnv());
 
         ///发送普通(info级日志)
-        void Info(const std::string &, JNIEnv * = manager->getEnv());
+        void info(const std::string &, JNIEnv * = manager->getEnv());
 
         ///发送普通(info级日志)
-        void Info(MiraiCode msg, JNIEnv *env = manager->getEnv()) {
-            Info(msg.toString(), env);
+        void info(MiraiCode msg, JNIEnv *env = manager->getEnv()) {
+            info(msg.toString(), env);
+        }
+
+        /// 发送普通日志，重载数字
+        template<Number T>
+        void info(T msg, JNIEnv *env = manager->getEnv()){
+            info(to_string(msg), env);
         }
 
         ///发送警告(warning级日志)
-        void Warning(const std::string &, JNIEnv * = manager->getEnv());
+        void warning(const std::string &, JNIEnv * = manager->getEnv());
 
         ///发送警告(warning级日志)
-        void Warning(MiraiCode msg, JNIEnv *env = manager->getEnv()) {
-            Warning(msg.toString(), env);
+        void warning(MiraiCode msg, JNIEnv *env = manager->getEnv()) {
+            warning(msg.toString(), env);
+        }
+
+        /// 发送警告日志，重载数字
+        template<Number T>
+        void warning(T msg, JNIEnv *env = manager->getEnv()){
+            warning(to_string(msg), env);
         }
 
         ///发送错误(error级日志)
-        void Error(const std::string &, JNIEnv * = manager->getEnv());
+        void error(const std::string &, JNIEnv * = manager->getEnv());
 
         ///发送错误(error级日志)
-        void Error(MiraiCode msg, JNIEnv *env = manager->getEnv()) {
-            Error(msg.toString(), env);
+        void error(MiraiCode msg, JNIEnv *env = manager->getEnv()) {
+            error(msg.toString(), env);
+        }
+
+        /// 发送普通日志，重载数字
+        template<Number T>
+        void error(T msg, JNIEnv *env = manager->getEnv()){
+            error(to_string(msg), env);
         }
 
         /// @brief 设置loggerhandler的action
@@ -625,7 +643,7 @@ LightApp风格1
         /// raise 抛出方法
         virtual void raise() {
             if (logger != nullptr)
-                logger->Error(what());
+                logger->error(what());
         };
     };
 
@@ -643,7 +661,7 @@ LightApp风格1
         }
 
         void raise() override {
-            logger->Error(this->description);
+            logger->error(this->description);
             //manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
         }
 
@@ -665,7 +683,7 @@ LightApp风格1
         }
 
         void raise() override {
-            logger->Error(this->description);
+            logger->error(this->description);
             //manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
         }
 
@@ -687,7 +705,7 @@ LightApp风格1
         }
 
         void raise() override {
-            logger->Error(this->description);
+            logger->error(this->description);
             //manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
         }
 
@@ -866,7 +884,7 @@ LightApp风格1
         }
 
         void raise() {
-            logger->Error(this->what());
+            logger->error(this->what());
         }
     };
 
@@ -963,7 +981,7 @@ LightApp风格1
                 e.group.SendMsg("hi").recall();
             }
             catch (MiraiCPException &e) {
-                logger->Error("错误");
+                logger->error("错误");
             }
             });
          * @endcode
@@ -999,7 +1017,7 @@ LightApp风格1
      * Context.content["xxx"] = 121;
      *
      * @example 获取自定义flag
-     * if(Context.content["enable"]) logger->Info(Context.content["xxx"]);
+     * if(Context.content["enable"]) logger->info(Context.content["xxx"]);
      *
      * @example 获取上下文
      * // 可以通过BotEvent::context或者BotEvent.getContext()获得
@@ -1045,8 +1063,8 @@ LightApp风格1
          *		@code
          *          vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
          *	        for (int i = 0; i < temp.size(); i++) {
-         *	    	    logger->Info(temp[i]);
-         *	    	    logger->Info("图片下载地址:" + Image(param.env, temp[i]).queryURL());
+         *	    	    logger->info(temp[i]);
+         *	    	    logger->info("图片下载地址:" + Image(param.env, temp[i]).queryURL());
          *	         }
          *		@endcode
          */
@@ -1182,6 +1200,10 @@ LightApp风格1
 
         MessageSource sendMsg(MiraiCode msg){
             return sendMsg0(msg.toMiraiCode());
+        }
+
+        MessageSource sendMsg(std::vector<std::string> msg){
+            return sendMsg0(Tools::VectorToString(msg));
         }
 
         /// 发送语音
@@ -1724,7 +1746,7 @@ LightApp风格1
             }
             catch (BotException err) {
                 //权限不足
-                logger->Error(err.what());
+                logger->error(err.what());
             }
             catch (MemberException err) {
                 if (err.type == 1) {
@@ -2052,7 +2074,7 @@ LightApp风格1
             j["sign"] = false;
             std::string re = config->koperation(config->Gioperation, j, env);
             if (re == "Y") return;
-            if (re == "E")logger->Error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
+            if (re == "E")logger->error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
         }
 
         void reject() {
@@ -2073,7 +2095,7 @@ LightApp风格1
 //				Tools::str2jstring(source.c_str()),
 //				(jboolean)true));
             if (re == "Y") return;
-            if (re == "E")logger->Error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
+            if (re == "E")logger->error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
         }
 
         void accept() {
@@ -2120,7 +2142,7 @@ LightApp风格1
 //				Tools::str2jstring(source.c_str()),
 //				(jboolean)true));
             if (re == "Y") return;
-            if (re == "E")logger->Error("好友申请事件拒绝失败(可能因为重复处理),id:" + source);
+            if (re == "E")logger->error("好友申请事件拒绝失败(可能因为重复处理),id:" + source);
         }
 
         /// @brief 拒绝好友申请
@@ -2140,7 +2162,7 @@ LightApp风格1
 //				Tools::str2jstring(source.c_str()),
 //				(jboolean)true));
             if (re == "Y") return;
-            if (re == "E")logger->Error("好友申请事件同意失败(可能因为重复处理),id:" + source);
+            if (re == "E")logger->error("好友申请事件同意失败(可能因为重复处理),id:" + source);
         }
 
         /// @brief 接受申请
@@ -2371,7 +2393,7 @@ LightApp风格1
             } else if constexpr(std::is_same_v<T, BotOnlineEvent>) {
                 return BOHead;
             }
-            logger->Error("内部错误, 位置:C-Head");
+            logger->error("内部错误, 位置:C-Head");
             return nullptr;
         }
 
@@ -2432,7 +2454,7 @@ LightApp风格1
                 BOTail->nextNode = temp;
                 BOTail = temp;
             } else {
-                logger->Error("内部错误, 位置:C-Tail");
+                logger->error("内部错误, 位置:C-Tail");
                 return nullptr;
             }
             return &temp->enable;
@@ -2516,7 +2538,7 @@ LightApp风格1
         gvm->AttachCurrentThread((void **) &env, &args);
         t tmp{env, true};
         this->_threads.insert(std::pair<std::string, t>(ThreadManager::getThreadId(), tmp));
-        logger->Info("refresh env");
+        logger->info("refresh env");
     };
 
     void ThreadManager::detach() {
@@ -2563,15 +2585,15 @@ throw: InitException 即找不到签名
         this->loggerhandler.enable = state;
     }
 
-    void Logger_interface::Warning(const std::string &content, JNIEnv *env) {
+    void Logger_interface::warning(const std::string &content, JNIEnv *env) {
         this->log0(content, 1, env);
     }
 
-    void Logger_interface::Error(const std::string &content, JNIEnv *env) {
+    void Logger_interface::error(const std::string &content, JNIEnv *env) {
         this->log0(content, 2, env);
     }
 
-    void Logger_interface::Info(const std::string &content, JNIEnv *env) {
+    void Logger_interface::info(const std::string &content, JNIEnv *env) {
         this->log0(content, 0, env);
     }
 
@@ -2618,6 +2640,22 @@ throw: InitxException 即找不到对应签名
 
     Config::~Config() {
         manager->getEnv()->DeleteGlobalRef(this->CPP_lib);
+    }
+
+    std::vector<std::string> MiraiCode::filter(filterType t){
+        if(t == image){
+            return Image::GetImgIdsFromMiraiCode(this);
+        }else{
+            std::vector<std::string> result = std::vector<std::string>();
+            std::string temp = this->toString();
+            std::smatch m;
+            std::regex re("\\[mirai:at:(.*?)\\]");
+            while (std::regex_search(temp, m, re)) {
+                result.push_back(m[1]);
+                temp = m.suffix().str();
+            }
+            return result;
+        }
     }
 
     std::string Config::koperation(int type, json &data, JNIEnv *env) {
@@ -2668,9 +2706,9 @@ throw: InitxException 即找不到对应签名
             return MessageSource(j["ids"].dump(), j["internalIds"].dump(), source);
         }
         catch (json::type_error &e) {
-            logger->Error("消息源序列化出错，格式不符合(MessageSource::deserializeFromString)");
-            logger->Error(source);
-            logger->Error(e.what());
+            logger->error("消息源序列化出错，格式不符合(MessageSource::deserializeFromString)");
+            logger->error(source);
+            logger->error(e.what());
             throw e;
         }
     }
@@ -2705,9 +2743,9 @@ throw: InitxException 即找不到对应签名
             j = json::parse(source);
         }
         catch (json::parse_error &e) {
-            logger->Error("格式化json失败，RemoteFile::deserializeFromString");
-            logger->Error(source);
-            logger->Error(e.what());
+            logger->error("格式化json失败，RemoteFile::deserializeFromString");
+            logger->error(source);
+            logger->error(e.what());
             throw e;
         }
         try {
@@ -2726,9 +2764,9 @@ throw: InitxException 即找不到对应签名
             return RemoteFile(j["id"], j["internalid"], j["name"], j["finfo"]["size"], j["path"], d, f);
         }
         catch (json::type_error &e) {
-            logger->Error("json格式化失败，位置:RemoteFile");
-            logger->Error(source);
-            logger->Error(e.what());
+            logger->error("json格式化失败，位置:RemoteFile");
+            logger->error(source);
+            logger->error(e.what());
             throw e;
         }
     }
@@ -2851,7 +2889,7 @@ throw: InitxException 即找不到对应签名
 
     MessageSource Contact::sendMsg0(std::string msg, JNIEnv *env) {
         if (msg.empty()) {
-            logger->Error("警告:发送空信息, 位置: Contact::SendMsg");
+            logger->error("警告:发送空信息, 位置: Contact::SendMsg");
             throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg");
         }
         std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
@@ -3017,7 +3055,7 @@ throw: InitxException 即找不到对应签名
         ErrorHandle(callback);
         if (callback == "E2") throw UploadException("找不到" + filename + "位置:C-uploadfile");
         if (callback == "E3")
-            throw UploadException("Upload Error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
+            throw UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
         return RemoteFile::deserializeFromString(callback);
     }
 
@@ -3031,7 +3069,7 @@ throw: InitxException 即找不到对应签名
         j["contactSource"] = this->serializationToString();
         std::string re = config->koperation(config->RemoteFileInfo, j, env);
         ErrorHandle(re);
-        if (re == "E2") throw RemoteAssetException("Get Error: 文件路径不存在, path:" + path);
+        if (re == "E2") throw RemoteAssetException("Get error: 文件路径不存在, path:" + path);
         return RemoteFile::deserializeFromString(re);
     }
 
@@ -3071,12 +3109,12 @@ throw: InitxException 即找不到对应签名
 /*工具类实现*/
     std::string Tools::jstring2str(jstring jStr, JNIEnv *env) {
         if (!jStr) {
-            logger->Error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
+            logger->error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
             return "";
         }
         std::u16string s = reinterpret_cast<const char16_t *>(env->GetStringChars(jStr, nullptr));
         if (s.length() == 0) {
-            logger->Error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
+            logger->error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
             return "";
         }
         std::string x;
@@ -3086,7 +3124,7 @@ throw: InitxException 即找不到对应签名
 
     jstring Tools::str2jstring(const char *stra, JNIEnv *env) {
         if (!stra) {
-            logger->Error("警告:C++部分传入空字符串，位置:Tools::str2jstring");
+            logger->error("警告:C++部分传入空字符串，位置:Tools::str2jstring");
         }
         std::string str(stra);
         std::vector<unsigned short> utf16line;
@@ -3110,7 +3148,8 @@ throw: InitxException 即找不到对应签名
         return id();
     }
 
-    std::string Tools::VectorToString(std::vector<unsigned long long> a) {
+    template<typename T>
+    std::string Tools::VectorToString(std::vector<T> a) {
         std::stringstream ss;
         for (size_t i = 0; i < a.size(); ++i) {
             if (i != 0)
@@ -3170,9 +3209,9 @@ throw: InitxException 即找不到对应签名
             j = json::parse(source);
         }
         catch (json::parse_error &e) {
-            logger->Error("json序列化错误 Contact::deserializationFromString");
-            logger->Error(source);
-            logger->Error(e.what());
+            logger->error("json序列化错误 Contact::deserializationFromString");
+            logger->error(source);
+            logger->error(e.what());
         }
         return Contact::deserializationFromJson(j);
     }
@@ -3233,7 +3272,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Verify(
         logger->init();
         enrollPlugin();
         if (plugin == nullptr) {
-            logger->Error("无插件实例加载");
+            logger->error("无插件实例加载");
         } else {
             CPPPlugin::pluginLogger = new PluginLogger(logger);
             plugin->onEnable();
@@ -3277,8 +3316,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
     }
     catch (json::parse_error &e) {
         APIException("格式化json错误, JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_CPP_1lib_Event").raise();
-        logger->Error("For debug:" + j.dump());
-        logger->Error(e.what());
+        logger->error("For debug:" + j.dump());
+        logger->error(e.what());
         return returnNull();
     }
     try {
@@ -3387,13 +3426,13 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
         }
     }
     catch (json::type_error &e) {
-        logger->Error("json格式化异常,位置C-Handle");
-        logger->Error(j.dump());
-        logger->Error(e.what());
+        logger->error("json格式化异常,位置C-Handle");
+        logger->error(j.dump());
+        logger->error(e.what());
         return Tools::str2jstring("ERROR");
     } catch (MiraiCPException &e) {
-        logger->Error("MiraiCP Error:");
-        logger->Error(e.what());
+        logger->error("MiraiCP error:");
+        logger->error(e.what());
         return Tools::str2jstring("ERROR");
     }
     return returnNull();
