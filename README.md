@@ -129,7 +129,9 @@ add_subdirectory(include)
     "id": qqid,
     "passwords": "passwords密码",
     "protocol":  "pad",
-    "heatBeat": "STAT_HB"
+    "heatBeat": "STAT_HB",
+    "md5": false,
+    "autoLogin": true
   }],
   "cppPath": "dll路径"
 }
@@ -138,9 +140,11 @@ add_subdirectory(include)
 
 - accounts可以有多个机器人账户，用逗号分隔
 - id为qq号
-- passwords为qq密码
+- passwords为qq密码，可为明文密码或者32位md5密码(大小写都可以)
 - protocol为可选配置项，配置内容为登录协议，可选值为:pad/phone/watch (默认为phone)
 - heatBeat也为可选配置项，配置内容为心跳策略，可选值为: STAT_HB/REGISTER/NONE (默认为state_hb)
+- md5 如果qq密码为md5格式，填true，如果不是可以不填或者填false
+- autoLogin 如果要自动登录该账户就填true，否则不填或者填false，如果不为true要手动登录
 - cppPath为miraicp sdk生成的dll的路径，一般在sdk的cmake-build-debug文件夹下
 
 3. 使用java -jar MiraiCP-loader-*.jar 启动loader(*号为版本)
