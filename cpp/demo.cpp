@@ -34,9 +34,9 @@ public:
         /*插件启动, 请勿在此函数运行前执行操作mirai的代码*/
         /*
         logger - 日志组件
-            logger->Info(string)发送消息级日志
-            logger->Warning(string)发送警告级日志
-            logger->Error(string)发送错误级日志
+            logger->info(string)发送消息级日志
+            logger->warning(string)发送警告级日志
+            logger->error(string)发送错误级日志
         一共有3种logger
          1. 是最外层的logger指针，为MiraiCP插件级logger, 标识符为MiraiCP: [content], 不建议用这个logger输出，该logger通常在MiraiCP内部使用
          2. 是CPPPlugin下的pluginLogger，为插件级logger，即当前MiraiCP加载的插件，标识符为[name]: [content], 建议用于调试信息
@@ -49,7 +49,7 @@ public:
         参数都在param变量里，在lambda块中使用param.xxx来调用
         */
         procession->registerEvent<BotOnlineEvent>([](BotOnlineEvent e) {
-            e.botlogger.Info("Bot is Online");
+            e.botlogger.info("Bot is Online");
         });
         // 邀请事件
         // 好友申请
@@ -60,14 +60,14 @@ public:
         // 邀请加群
         procession->registerEvent<GroupInviteEvent>([](GroupInviteEvent e) {
             e.accept();
-            logger->Info("x");
+            logger->info("x");
             Group(e.groupid, e.bot.id).sendMsg("被" + e.inviterNick + "邀请进入" + e.groupName);
         });
         // 消息事件
         // 监听私聊
         Event::NodeHandle handle = procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
             unsigned long long id = e.bot.id;
-            e.botlogger.Info(std::to_string(id));
+            e.botlogger.info(std::to_string(id));
             e.message.source.quoteAndSendMsg("HI");
             std::thread func1(func, e.sender.id(), e.bot.id);
             e.sender.sendMsg(e.message.content);
@@ -87,11 +87,12 @@ public:
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            if(e.group.announcements.size() >= 1)
-                logger->Info(e.group.announcements[0].content);
-            Group::OfflineAnnouncement("Helloooooooo!", Group::AnnouncementParams()).publishTo(e.group).deleteThis();
-            // logger->Info(e.group.setting.entranceAnnouncement);
-            // logger->Info("Global");
+            if(!e.group.announcements.empty())
+                logger->info(e.group.announcements[0].content);
+            e.group.sendMsg(e.message.content.filter(MiraiCP::MiraiCode::at));
+            // Group::OfflineAnnouncement("Helloooooooo!", Group::AnnouncementParams()).publishTo(e.group).deleteThis();
+            // logger->info(e.group.setting.entranceAnnouncement);
+            // logger->info("Global");
             // Main::pluginLogger->Info("Plugin");
             // e.botlogger.Info("bot");
             // e.botlogger.Info(e.message.content.toString());

@@ -44,7 +44,7 @@ object Console {
         }
     }
 
-    val terminal: Terminal =
+    private val terminal: Terminal =
         TerminalBuilder
             .builder()
             .name("MiraiCP Console")
