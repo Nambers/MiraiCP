@@ -39,7 +39,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.7-RC-dev2";
+    const std::string MiraiCPVersion = "v2.7-RC-dev3";
 
     /// @brief 插件信息
     class PluginConfig{
@@ -389,9 +389,6 @@ LightApp风格1
     class MiraiCode:MiraiCodeable {
     private:
         std::string content;
-        MiraiCode(std::string a, std::string){
-            content = std::move(a);
-        }
     public:
         /// 输出当前内容, 会自动转码
         std::string toString() {
@@ -407,14 +404,19 @@ LightApp风格1
         MiraiCode(MiraiCodeable *a) {
             content = a->toMiraiCode();
         }
-        /// 从文本初始化一个miraicode字符串
-        MiraiCode(std::string a) {
-            content = Tools::escapeToMiraiCode(std::move(a));
-        }
 
         template<Number T>
         MiraiCode (T n){
             content = std::to_string(n);
+        }
+
+        /// 从文本初始化一个miraicode字符串, 根据第二个参数决定是否转码, 默认不转码
+        /// @attention 如果是传入文本MiraiCode，请勿转码，转码只是为了[mirai:xxx:<应该转码的部分>], 如果<应该转码>的部分里面含有'[]:,'内容，请调用Tools::escapeToMiraiCode转码
+        MiraiCode(std::string a, bool convert = false){
+            if(!convert)
+                content = a;
+            else
+                content = Tools::escapeToMiraiCode(std::move(a));
         }
 
         MiraiCode operator+(MiraiCodeable *a) {
@@ -426,23 +428,11 @@ LightApp风格1
         }
 
         MiraiCode operator+(MiraiCode a){
-            return MiraiCode::MiraiCodeWithoutEscape(content + a.content);
+            return MiraiCode(content + a.content);
         }
 
         MiraiCode operator+(MiraiCode* a){
-            return MiraiCode::MiraiCodeWithoutEscape(content + a->content);
-        }
-
-        MiraiCode operator+=(MiraiCodeable *a) {
-            return MiraiCode::MiraiCodeWithoutEscape(content + a->toMiraiCode());
-        }
-
-        MiraiCode operator+=(std::string a) {
-            return MiraiCode( a) + this;
-        }
-
-        MiraiCode operator=(MiraiCodeable *a) {
-            return MiraiCode::MiraiCodeWithoutEscape(a->toMiraiCode());
+            return MiraiCode(content + a->content);
         }
 
         MiraiCode operator=(std::string a) {
@@ -450,7 +440,7 @@ LightApp风格1
         }
 
         MiraiCode plus(MiraiCodeable *a) {
-            return MiraiCode::MiraiCodeWithoutEscape(content + a->toMiraiCode());
+            return MiraiCode(content + a->toMiraiCode());
         }
 
         MiraiCode plus(std::string a) {
@@ -459,11 +449,11 @@ LightApp风格1
 
         /// 不执行转义，适用于已经被MiraiCode转义过的字符串
         static MiraiCode MiraiCodeWithoutEscape(std::string a){
-            return MiraiCode(std::move(a), "");
+            return MiraiCode(std::move(a), false);
         }
         /// 不执行转义，因为MiraiCodeable的toMiraiCode已经转义过了
         static MiraiCode MiraiCodeWithoutEscape(MiraiCodeable* a){
-            return MiraiCode::MiraiCodeWithoutEscape(a->toMiraiCode());
+            return MiraiCode(a->toMiraiCode(), false);
         }
 
         /// 支持提取的内容
@@ -1084,8 +1074,10 @@ LightApp风格1
     class Contact {
     private:
         /// 发送纯文本信息
+        /// @throw IllegalArgumentException
         MessageSource sendMsg0(std::string msg, JNIEnv * = manager->getEnv());
         /// 发送miraicode
+        /// @throw IllegalArgumentException
         MessageSource sendMiraiCode0(std::string msg, JNIEnv * = manager->getEnv());
     protected:
         int _type = 0;
@@ -1188,20 +1180,26 @@ LightApp风格1
         /**
          * @brief 发送miraicode
          * @param msg - MiraiCode类型 - 内容
+         *  @throw IllegalArgumentException
         */
         MessageSource sendMiraiCode(MiraiCode msg) {
-            return sendMiraiCode0(msg.toString());
+            return sendMiraiCode0(msg.toMiraiCode());
         }
 
         /// 发送纯文本信息
+        /// @throw IllegalArgumentException
         MessageSource sendMsg(std::string msg) {
             return sendMsg0(msg);
         }
 
+        /// 发送纯文本信息
+        /// @throw IllegalArgumentException
         MessageSource sendMsg(MiraiCode msg){
             return sendMsg0(msg.toMiraiCode());
         }
 
+        /// 发送纯文本信息
+        /// @throw IllegalArgumentException
         MessageSource sendMsg(std::vector<std::string> msg){
             return sendMsg0(Tools::VectorToString(msg));
         }
@@ -1226,6 +1224,7 @@ LightApp风格1
 /*!
  * @brief 小程序卡片
  * @see LightAppStyle1, LightAppStyle2, LightAppStyle3
+ * @attention 自带的模板不稳定，可能发出现没有效果
  * @example 通过常量构建并发送小程序卡片
  * @code
  * procession->registerEvent([](GroupMessageEvent e) {
@@ -1349,6 +1348,8 @@ LightApp风格1
         }
     };
 
+    /// xml格式的超文本信息
+    /// @attention 自带的模板不稳定，可能发出现没有效果
     class ServiceMessage : public MiraiCodeable{
     private:
         std::string content;
@@ -1770,7 +1771,7 @@ LightApp风格1
         /// At一个群成员
         MiraiCode at() {
             /*返回at这个人的miraicode*/
-            return MiraiCode("[mirai:at:" + std::to_string(id()) + "]");
+            return MiraiCode::MiraiCodeWithoutEscape("[mirai:at:" + std::to_string(id()) + "]");
         }
     };
 
@@ -2858,8 +2859,7 @@ throw: InitxException 即找不到对应签名
         return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
     }
 
-    MessageSource
-    MessageSource::quoteAndSendMiraiCode(const std::string &content, unsigned long long groupid, JNIEnv *env) {
+    MessageSource MessageSource::quoteAndSendMiraiCode(const std::string &content, unsigned long long groupid, JNIEnv *env) {
         json obj;
         json sign;
         obj["messageSource"] = this->serializeToString();
@@ -2891,11 +2891,11 @@ throw: InitxException 即找不到对应签名
         std::string re = LowLevelAPI::send0(std::move(msg), this, true, env);
         ErrorHandle(re, "reach a error area, Contact::SendMiraiCode");
         return MessageSource::deserializeFromString(re);
-    }
+}
 
     MessageSource Contact::sendMsg0(std::string msg, JNIEnv *env) {
         if (msg.empty()) {
-            logger->error("警告:发送空信息, 位置: Contact::SendMsg");
+            logger->warning("警告:发送空信息, 位置: Contact::SendMsg");
             throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg");
         }
         std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
@@ -3334,7 +3334,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
                         GroupMessageEvent(j["group"]["botid"],
                                           Group::deserializationFromJson(j["group"]),
                                           Member::deserializationFromJson(j["member"]),
-                                          MiraiCode(to_string(j["message"])),
+                                          MiraiCode(j["message"].get<std::string>()),
                                           MessageSource::deserializeFromString(j["source"])
                         )
                 );

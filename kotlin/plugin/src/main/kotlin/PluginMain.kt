@@ -31,7 +31,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.7-RC-dev2"
+        version = "2.7-RC-dev3"
     ){
         author("Eritque arcus")
     }
