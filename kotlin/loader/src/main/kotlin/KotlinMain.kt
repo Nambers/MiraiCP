@@ -104,6 +104,7 @@ object KotlinMain {
         job.start()
         val c = Gson().fromJson(j, Config.accounts::class.java)
         loginAccount = c.accounts?: emptyList()
+        Console
         val logger = MiraiLogger.create("MiraiCP")
         var dll_name = c.cppPath
         logger.info("⭐MiraiCP启动中⭐")

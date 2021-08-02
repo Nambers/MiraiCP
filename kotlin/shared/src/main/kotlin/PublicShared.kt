@@ -54,7 +54,7 @@ object PublicShared {
     lateinit var cpp: CPP_lib
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
-    const val now_tag = "v2.7-RC-dev"
+    const val now_tag = "v2.7-RC-dev2"
     lateinit var dll_name: String
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
 
@@ -347,7 +347,10 @@ object PublicShared {
             return "EMM"
         }
         try {
-            member.mute(time)
+            if(time > 0)
+                member.mute(time)
+            else
+                member.unmute()
         }catch (e: PermissionDeniedException){
             logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:${c.groupid}，目标成员id:${c.id}")
             return "E3"
