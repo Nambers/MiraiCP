@@ -87,9 +87,11 @@ public:
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            if(!e.group.announcements.empty())
-                logger->info(e.group.announcements[0].content);
-            e.group.sendMsg(e.message.content.filter(MiraiCP::MiraiCode::at));
+            e.sender.mute(60*2);
+            e.sender.mute(0);
+            // if(!e.group.announcements.empty())
+            //     logger->info(e.group.announcements[0].content);
+            // e.group.sendMsg(e.message.content.filter(MiraiCP::MiraiCode::at));
             // Group::OfflineAnnouncement("Helloooooooo!", Group::AnnouncementParams()).publishTo(e.group).deleteThis();
             // logger->info(e.group.setting.entranceAnnouncement);
             // logger->info("Global");
