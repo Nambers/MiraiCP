@@ -1693,7 +1693,7 @@ typedef struct jvmtiInterface_1_ {
   /*   127 : Dispose Environment */
   jvmtiError (JNICALL *DisposeEnvironment) (jvmtiEnv* env);
 
-  /*   128 : Get Error Name */
+  /*   128 : Get error Name */
   jvmtiError (JNICALL *GetErrorName) (jvmtiEnv* env,
     jvmtiError error,
     char** name_ptr);
