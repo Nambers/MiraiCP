@@ -39,7 +39,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.7-RC-dev";
+    const std::string MiraiCPVersion = "v2.7-RC-dev2";
 
     /// @brief 插件信息
     class PluginConfig{
@@ -1730,10 +1730,16 @@ LightApp风格1
         unsigned int getPermission(JNIEnv * = manager->getEnv());
 
         /*!
-         * 禁言当前对象，单位是秒，最少0秒最大30天
-         * @throws 可能抛出不同错误
+         * 禁言当前对象，单位是秒，最少0秒最大30天，如果为0或者为负则unmute
+         * @throws BotException, MuteException
         */
-        void Mute(int time, JNIEnv * = manager->getEnv());
+        void mute(int time, JNIEnv * = manager->getEnv());
+
+        /// 取消禁言
+        /// @throws BotException, MuteException
+        void unMute(JNIEnv* env = manager->getEnv()){
+            mute(0, env);
+        }
 
         /*! 踢出这个群成员
         * @param reason - 原因
@@ -1759,10 +1765,10 @@ LightApp风格1
             });
          * @endcode
         */
-        void Kick(const std::string &reason, JNIEnv * = manager->getEnv());
+        void kick(const std::string &reason, JNIEnv * = manager->getEnv());
 
         /// At一个群成员
-        MiraiCode At() {
+        MiraiCode at() {
             /*返回at这个人的miraicode*/
             return MiraiCode("[mirai:at:" + std::to_string(id()) + "]");
         }
@@ -2931,7 +2937,7 @@ throw: InitxException 即找不到对应签名
         return stoi(re);
     }
 
-    void Member::Mute(int time, JNIEnv *env) {
+    void Member::mute(int time, JNIEnv *env) {
         json j;
         j["time"] = time;
         j["contactSource"] = this->serializationToString();
@@ -2945,7 +2951,7 @@ throw: InitxException 即找不到对应签名
         }
     }
 
-    void Member::Kick(const std::string &reason, JNIEnv *env) {
+    void Member::kick(const std::string &reason, JNIEnv *env) {
         json j;
         j["message"] = reason;
         j["contactSource"] = this->serializationToString();
