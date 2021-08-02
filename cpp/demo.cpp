@@ -65,7 +65,7 @@ public:
         });
         // 消息事件
         // 监听私聊
-        Event::NodeHandle handle = procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
+        procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
             unsigned long long id = e.bot.id;
             e.botlogger.info(std::to_string(id));
             e.message.source.quoteAndSendMsg("HI");
@@ -87,72 +87,64 @@ public:
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            e.sender.mute(60*2);
-            e.sender.mute(0);
-            // if(!e.group.announcements.empty())
-            //     logger->info(e.group.announcements[0].content);
-            // e.group.sendMsg(e.message.content.filter(MiraiCP::MiraiCode::at));
-            // Group::OfflineAnnouncement("Helloooooooo!", Group::AnnouncementParams()).publishTo(e.group).deleteThis();
-            // logger->info(e.group.setting.entranceAnnouncement);
-            // logger->info("Global");
-            // Main::pluginLogger->Info("Plugin");
-            // e.botlogger.Info("bot");
-            // e.botlogger.Info(e.message.content.toString());
-            // e.group.sendMiraiCode(MiraiCode("[mirai:service:1,<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\"简介 没点进来看见的样子\" serviceID=\"1\" url=\"https://github.com/\"><item layout=\"2\"><picture cover=\"https://avatars.githubusercontent.com/u/35139537?s=400&u=c7e3794d25a2e0f27f15caf5ba7a57c7346962f0&v=4\"/><title>标题</title><summary>描述文字</summary></item><source/></msg>\\n]"));
-            // e.group.sendMiraiCode(MiraiCode(new ServiceMessage(URLSharer())));
-            // if(e.message.content.toString() == "a"){
-            //     if(!e.getContext().content.contains("count"))
-            //         e.getContext().content["count"] = 1;
-            //     else
-            //         e.getContext().content["count"] = e.getContext().content["count"] + 1;
-            // }
-            // if(e.getContext().content.contains("count"))
-            //     e.group.sendMsg(e.getContext().content["count"].get<int>());
-//	    e.group.sendVoice(R"(D:\下载缓存\test.amr)");
-//        e.botlogger.Info(e.message);
-//        e.group.sendMiraiCode(e.message);
-//        e.group.sendMsg("☺");
-//        e.group.sendMsg(e.group.setting.name);
-//        e.group.setting.name = "x";
-//        e.group.updateSetting();
-//        e.messageSource.quoteAndSendMsg("HI");
-//        e.botlogger.Info(e.messageSource.serializeToString());
-//        // 发送文本信息
-//        e.group.sendMsg("HI");
-//        // 发送MiraiCode信息，At
-//        e.group.sendMiraiCode(At(e.sender));
-//        // 撤回测试
-//        e.group.sendMsg("撤回测试").recall();
-//        // 发送xml卡片测试,可以用new传miraicodeable指针进去，也可以用.toMiraiCode()
-//        e.group.sendMiraiCode(new LightApp(LightAppStyle1()));
-//        e.group.sendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
-//        e.group.sendMiraiCode(new LightApp(LightAppStyle3()));
-//             ForwardMessage(&e.group,
-//                            {
-//                                    ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-//                                    ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
-//                            }).sendTo(&e.group);
-//        // 关闭上面的私聊消息监听器
-//        handle.stop();
-//        // 当前bot属性
-//        e.sender.sendMsg(e.bot.nick());
-//        e.sender.sendMsg(e.bot.FriendListToString());
-//        e.sender.sendMsg(e.bot.GroupListToString());
-//        RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
-//        e.group.sendMsg(e.group.getFile("/", tmp.id).name);
-//        e.group.sendMsg(e.group.getFile("/test.txt").name);
-//        e.group.sendMsg(e.group.getFileListString("/"));
-//        std::vector<Group::file_short_info> a = e.group.getFileList("/");
-//        std::stringstream ss;
-//        for (size_t i = 0; i < a.size(); ++i) {
-//            if (i != 0)
-//                ss << ",";
-//            ss << "{" << a[i].path << "," << a[i].id << "}";
-//        }
-//        std::string s = ss.str();
-//        e.group.sendMsg(s);
-//        e.group.sendMsg(e.group.MemberListToString());
-//        e.messageSource.recall();
+            e.group.sendMsg("--开始测试--");
+            e.group.sendMsg(e.sender.at() + "发送纯文本MiraiCode");
+            e.group.sendMiraiCode(e.sender.at() + "发送MiraiCode");
+            e.group.sendMsg("禁言测试");
+            try{
+                e.sender.mute(60*2);
+                e.sender.mute(0);
+            }catch(BotException& b){e.group.sendMsg("权限不足");}
+            if(!e.group.announcements.empty())
+                e.group.sendMsg("第一个群公告内容: " + e.group.announcements[0].content);
+            e.group.sendMsg("消息中全部at对象: ");
+            try{
+                e.group.sendMsg(e.message.content.filter(MiraiCP::MiraiCode::at));
+            }catch(IllegalArgumentException& i){}
+            e.group.sendMsg("发送一个群公告并删除");
+            Group::OfflineAnnouncement("Helloooooooo!", Group::AnnouncementParams()).publishTo(e.group).deleteThis();
+            logger->info("Global全局日志");
+            Main::pluginLogger->info("Plugin插件日志");
+            e.botlogger.info("bot机器人日志");
+            e.botlogger.info("上一条信息:"+e.message.content.toString());
+            e.botlogger.info("上一条信息:"+e.message.content.toMiraiCode());
+            e.group.sendMiraiCode(MiraiCode("[mirai:service:1,<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\"简介 没点进来看见的样子\" serviceID=\"1\" url=\"https://github.com/\"><item layout=\"2\"><picture cover=\"https://avatars.githubusercontent.com/u/35139537?s=400&u=c7e3794d25a2e0f27f15caf5ba7a57c7346962f0&v=4\"/><title>标题</title><summary>描述文字</summary></item><source/></msg>\\n]"));
+            e.group.sendMiraiCode(MiraiCode(new ServiceMessage(URLSharer())));
+            e.group.sendMsg("上下文测试，在每接收一个'a'就加1");
+           if(e.message.content.toString() == "a"){
+               if(!e.getContext().content.contains("count"))
+                   e.getContext().content["count"] = 1;
+               else
+                   e.getContext().content["count"] = e.getContext().content["count"].get<int>() + 1;
+           }
+           if(e.getContext().content.contains("count"))
+               e.group.sendMsg(e.getContext().content["count"].get<int>());
+           e.group.sendMsg("发送语音测试:");
+           e.group.sendVoice(R"(D:\下载缓存\test.amr)");
+           e.group.sendMsg("UTF8 emoji测试: ☺");
+           e.group.sendMsg("群名称，并改名为'x':"+e.group.setting.name);
+           e.group.setting.name = "x";
+           try{
+               e.group.updateSetting();
+           }catch(BotException& b){e.group.sendMsg("没有权限");}
+           e.message.source.quoteAndSendMsg("引用测试");
+           e.botlogger.info("messageSource: "+e.message.source.serializeToString());
+           e.group.sendMsg("撤回测试:");
+           e.group.sendMsg("撤回测试").recall();
+           e.group.sendMsg("发送卡片:");
+           e.group.sendMiraiCode(new LightApp(LightAppStyle1()));
+           e.group.sendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
+           e.group.sendMiraiCode(new LightApp(LightAppStyle3()));
+           e.group.sendMsg("转发测试:");
+           ForwardMessage(&e.group,
+                          {
+               ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
+               ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
+                          }).sendTo(&e.group);
+           e.group.sendMsg("bot属性");
+           e.sender.sendMsg(e.bot.nick());
+           e.sender.sendMsg(e.bot.FriendListToString());
+           e.sender.sendMsg(e.bot.GroupListToString());
         });
         // 监听群临时会话
         procession->registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {

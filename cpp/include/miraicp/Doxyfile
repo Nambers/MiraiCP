@@ -38,7 +38,7 @@ PROJECT_NAME           = MiraiCP
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = v2.7-Beta
+PROJECT_NUMBER         = v2.7-RC-dev2
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -2583,7 +2583,7 @@ MAX_DOT_GRAPH_DEPTH    = 0
 # background. This is disabled by default, because dot on Windows does not seem
 # to support this out of the box.
 #
-# warning: Depending on the platform used, enabling this option may lead to
+# Warning: Depending on the platform used, enabling this option may lead to
 # badly anti-aliased labels on the edges of a graph (i.e. they become hard to
 # read).
 # The default value is: NO.
