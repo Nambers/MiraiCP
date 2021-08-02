@@ -2583,7 +2583,7 @@ MAX_DOT_GRAPH_DEPTH    = 0
 # background. This is disabled by default, because dot on Windows does not seem
 # to support this out of the box.
 #
-# Warning: Depending on the platform used, enabling this option may lead to
+# warning: Depending on the platform used, enabling this option may lead to
 # badly anti-aliased labels on the edges of a graph (i.e. they become hard to
 # read).
 # The default value is: NO.

@@ -18,13 +18,13 @@
 package tech.eritquearcus.miraicp.loader
 
 import com.google.gson.Gson
-import io.ktor.util.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.*
-import net.mamoe.mirai.utils.MiraiLogger.Companion.setDefaultLoggerCreator
 import org.fusesource.jansi.AnsiConsole
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.shared.CPP_lib
@@ -33,10 +33,8 @@ import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicShared.gson
 import tech.eritquearcus.miraicp.shared.PublicShared.logger
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
-import tech.eritquearcus.miraicp.shared.PublicShared.onDisable
+import tech.eritquearcus.miraicp.shared.PublicShared.onEnable
 import java.io.File
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.system.exitProcess
 
 private fun String.decodeHex(): ByteArray {
     check(length % 2 == 0) { "Must have an even length" }
@@ -48,6 +46,7 @@ private fun String.decodeHex(): ByteArray {
 
 fun Config.accounts.Account.login(){
     val it = this
+    this.logined = true
     val p = when (it.protocol?.uppercase()) {
         "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
         "WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
@@ -64,7 +63,7 @@ fun Config.accounts.Account.login(){
         "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
         null -> BotConfiguration.HeartbeatStrategy.STAT_HB
         else -> {
-            logger.warning("Warning: 心跳策略无效, 应为\"STAT_HB\"\\\"REGISTEr\"\\\"None\"其中一个，使用默认的STAT_HB登录")
+            logger.warning("Warning: 心跳策略无效, 应为\"STAT_HB\"\\\"REGISTER\"\\\"None\"其中一个，使用默认的STAT_HB登录")
             BotConfiguration.HeartbeatStrategy.STAT_HB
         }
     }
@@ -92,6 +91,7 @@ fun Config.accounts.Account.login(){
     runBlocking {
         b.login()
     }
+    onEnable(b.eventChannel)
 }
 
 object KotlinMain {
@@ -102,10 +102,6 @@ object KotlinMain {
     @OptIn(MiraiInternalApi::class)
     fun main(j: String) {
         job.start()
-        setDefaultLoggerCreator { identity ->
-            AnsiConsole.systemInstall()
-            PlatformLogger(identity, AnsiConsole.out()::println, true)
-        }
         val c = Gson().fromJson(j, Config.accounts::class.java)
         loginAccount = c.accounts?: emptyList()
         val logger = MiraiLogger.create("MiraiCP")
@@ -145,8 +141,6 @@ object KotlinMain {
             logined = true
         }
         while(!logined){}
-        val globalEventChannel = GlobalEventChannel
-        PublicShared.onEnable(globalEventChannel)
     }
 }
 

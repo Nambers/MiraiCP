@@ -54,7 +54,7 @@ object PublicShared {
     lateinit var cpp: CPP_lib
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
-    const val now_tag = "v2.7-Beta"
+    const val now_tag = "v2.7-RC-dev"
     lateinit var dll_name: String
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
 
