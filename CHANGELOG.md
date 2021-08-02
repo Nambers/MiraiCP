@@ -1,5 +1,12 @@
 # Change Log
 
+## v2.7-RC-dev2
+
++ 修复Mirai端取消mute(0)导致的不能unMute
++ 修复loader一开始启动没有名字
+
+> 该版本为v2.7-RC-dev的补丁
+
 ## v2.7-RC-dev
 
 + 优化cmake组合方式(所以推荐一并更新全部的Cmake文件)
