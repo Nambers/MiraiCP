@@ -1511,6 +1511,11 @@ LightApp风格1
         /// @see LowLevelAPI::info
         static info info0(std::string source) {
             info re;
+            try{
+                ErrorHandle(source);
+            }catch(MiraiCPException&){
+                return re;
+            }
             nlohmann::json j = nlohmann::json::parse(source);
             re.avatarUrl = j["avatarUrl"];
             re.nickornamecard = j["nickornamecard"];
@@ -2933,7 +2938,11 @@ throw: InitxException 即找不到对应签名
         json j;
         j["contactSource"] = this->serializationToString();
         std::string re = config->koperation(config->QueryM, j, env);
-        ErrorHandle(re);
+        try{
+            ErrorHandle(re);
+        }catch(MiraiCPException){
+            return 0;
+        }
         return stoi(re);
     }
 
