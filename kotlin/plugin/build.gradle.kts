@@ -17,7 +17,10 @@
 
 plugins {
     id("net.mamoe.mirai-console")
+    id("net.mamoe.maven-central-publish")
+    `maven-publish`
 }
+version = libs.versions.miraiCPVersion.get()
 
 tasks {
     afterEvaluate {
@@ -25,9 +28,9 @@ tasks {
             archiveBaseName.set("MiraiCP-plugin")
             archiveClassifier.set("")
             archiveVersion.set(libs.versions.miraiCPVersion.get())
-            manifest{
-                attributes["Description"]= "MiraiCP-Plugin"
-                attributes["Built-By"]= "Eritque arcus"
+            manifest {
+                attributes["Description"] = "MiraiCP-Plugin"
+                attributes["Built-By"] = "Eritque arcus"
                 attributes["Implementation-Version"] = libs.versions.miraiCPVersion.get()
                 attributes["Created-By"] = "Gradle " + gradle.gradleVersion
                 attributes["Build-Kotlin"] = libs.versions.kotlinVersion.get()
@@ -35,6 +38,21 @@ tasks {
         }
     }
 }
-dependencies{
-    api(project(":shared"))
+mavenCentralPublish {
+    this.useCentralS01()
+    singleDevGithubProject("Nambers", "MiraiCP", "Eritque arcus")
+    licenseFromGitHubProject("AGPL-3.0", "master")
+    publicationConfigurators.add {
+        groupId = "io.github.nambers"
+        artifactId = "MiraiCP-plugin"
+//        artifact("MiraiCP-plugin-2.7-RC-dev3.mirai.jar")
+        artifact(tasks["buildPlugin"])
+        this.pom {
+            name.set("MiraiCP-plugin")
+            version = libs.versions.miraiCPVersion.get()
+        }
+    }
+}
+dependencies {
+    implementation(project(":shared"))
 }
