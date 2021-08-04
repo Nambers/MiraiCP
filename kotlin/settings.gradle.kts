@@ -16,10 +16,11 @@
  */
 
 enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "MiraiCP-kotlin"
+rootProject.name = "MiraiCP"
 include("shared")
 include("plugin")
 include("loader")
+project(":plugin").name = "MiraiCP-plugin"
 pluginManagement {
     repositories {
         mavenLocal()
