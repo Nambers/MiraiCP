@@ -1,6 +1,6 @@
 [versions]
 kotlinVersion = "1.5.10"
-miraiVersion = "2.7-RC-dev-1"
+miraiVersion = "2.7-RC-dev-3"
 miraiCPVersion = "2.7-RC-dev3"
 
 [libraries]

@@ -19,10 +19,11 @@ plugins {
     kotlin("plugin.serialization")
 }
 dependencies {
-    implementation(libs.mirai.core.api) // mirai-core 的 API
+    compileOnly(libs.mirai.core.api) // mirai-core 的 API
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
 }
+version = libs.versions.miraiCPVersion.get()
 //val generateJniHeaders: Task by tasks.creating {
 //    group = "build"
 //    dependsOn(tasks.getByName("compileKotlin"))

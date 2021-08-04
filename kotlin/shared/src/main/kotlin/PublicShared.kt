@@ -25,7 +25,10 @@ import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.NormalMember
 import net.mamoe.mirai.contact.PermissionDeniedException
-import net.mamoe.mirai.contact.announcement.*
+import net.mamoe.mirai.contact.announcement.OfflineAnnouncement
+import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
+import net.mamoe.mirai.contact.announcement.bot
+import net.mamoe.mirai.contact.announcement.buildAnnouncementParameters
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
@@ -45,10 +48,12 @@ import org.json.JSONObject
 import java.io.File
 
 object PublicShared {
-    private val json = Json {
-        Mirai
-        serializersModule = MessageSerializers.serializersModule
-        ignoreUnknownKeys = true
+    private val json by lazy {
+        Json {
+            Mirai
+            serializersModule = MessageSerializers.serializersModule
+            ignoreUnknownKeys = true
+        }
     }
     private var friend_cache = ArrayList<NormalMember>(0)
     lateinit var cpp: CPP_lib
@@ -221,29 +226,18 @@ object PublicShared {
     }
 
     //取群成员列表
-    fun QueryML(c: Config.Contact): String {
-        val AIbot = Bot.getInstance(c.botid)
-        val g = AIbot.getGroup(c.id) ?: let {
+    fun QueryML(c: Config.Contact): String =
+        gson.toJson(Bot.getInstance(c.botid).getGroup(c.id)?.members?.map { it.id } ?: let {
             logger.error("取群成员列表找不到群,位置K-QueryML")
             return "EG"
-        }
-        val m = java.util.ArrayList<Long>()
-        g.members.forEach{
-            m.add(it.id)
-        }
-        return gson.toJson(m)
-    }
+        })
 
-    fun QueryBFL(bid: Long): String{
-        val AIbot = Bot.getInstance(bid)
-        val tmp = java.util.ArrayList<Long>()
-        AIbot.friends.forEach {
-            tmp.add(it.id)
-        }
-        return gson.toJson(tmp)
-    }
+    fun QueryBFL(bid: Long): String =
+        gson.toJson(Bot.getInstance(bid).friends.map {
+            it.id
+        })
 
-    fun QueryBGL(bid: Long): String{
+    fun QueryBGL(bid: Long): String {
         val AIbot = Bot.getInstance(bid)
         val tmp = java.util.ArrayList<Long>()
         AIbot.groups.forEach {

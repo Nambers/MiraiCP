@@ -34,19 +34,19 @@ tasks {
         archiveBaseName.set("MiraiCP-loader")
         archiveClassifier.set("")
         archiveVersion.set(libs.versions.miraiCPVersion)
-        manifest{
-            attributes["Description"]= "MiraiCP-Loader"
-            attributes["Built-By"]= "Eritque arcus"
+        manifest {
+            attributes["Description"] = "MiraiCP-Loader"
+            attributes["Built-By"] = "Eritque arcus"
             attributes["Implementation-Version"] = libs.versions.miraiCPVersion.get()
             attributes["Created-By"] = "Gradle " + gradle.gradleVersion
             attributes["Build-Kotlin"] = libs.versions.kotlinVersion.get()
         }
     }
 }
-
+version = libs.versions.miraiCPVersion.get()
 dependencies {
+    api(libs.mirai.core.self)
     implementation(project(":shared"))
-    implementation(libs.mirai.core.self)
     implementation(libs.jansi)
     implementation(libs.jline)
 }
