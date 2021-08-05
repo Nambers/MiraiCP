@@ -1,5 +1,14 @@
 # Change Log
 
+## v2.7-RC-dev4
+
++ 支持把plugin部分发布到maven, 以增加mcl支持
++ mirai依赖更新到v2.7-RC-dev-3
++ loader支持(-g)参数创建(覆盖)config.json模板
++ 修复匿名聊天造成的找不到群成员造成的异常退出
+
+> 该版本主要为了发布到maven，较于上一版没什么改动
+
 ## v2.7-RC-dev3
 
 + 优化cmake组合方式(所以推荐一并更新全部的Cmake文件)

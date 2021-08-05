@@ -15,7 +15,7 @@
 //
 
 // MiraiCP依赖文件(只需要引入这一个)
-#include "miraiCP.hpp"
+#include <miraiCP.hpp>
 using namespace std;
 using namespace MiraiCP;
 // 多线程示例

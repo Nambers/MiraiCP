@@ -24,6 +24,7 @@ import net.mamoe.mirai.utils.PlatformLogger
 import org.fusesource.jansi.Ansi
 import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
+import org.jline.reader.UserInterruptException
 import org.jline.reader.impl.completer.NullCompleter
 import org.jline.terminal.Terminal
 import org.jline.terminal.TerminalBuilder
@@ -31,6 +32,7 @@ import org.jline.terminal.impl.AbstractWindowsTerminal
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.shared.PublicShared
 import java.time.LocalDateTime
+import kotlin.system.exitProcess
 
 @OptIn(MiraiInternalApi::class)
 object Console {
@@ -93,6 +95,8 @@ object Console {
                 } catch (e: CancellationException) {
                     PublicShared.logger.error(e)
                     return@launch
+                }catch(e: UserInterruptException){
+                    exitProcess(1)
                 }
                 if (re.isEmpty() || re.isBlank()) continue
                 Command.parse(re)
