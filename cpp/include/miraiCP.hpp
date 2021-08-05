@@ -39,7 +39,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.7-RC-dev3";
+    const std::string MiraiCPVersion = "v2.7-RC-dev4";
 
     /// @brief 插件信息
     class PluginConfig{
