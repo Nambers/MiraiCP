@@ -152,6 +152,15 @@ add_subdirectory(include)
 #### 3.2.2 使用plugin作为mcl的插件使用
 本种方法适用于还需要加载别的mirai-console插件
 
+##### 3.2.2.1 使用mcl自动下载
+在mcl同级目录输入
+```
+mcl --update-package io.github.nambers:MiraiCP-plugin --channel nightly --type plugin
+```
+安装
+
+##### 3.2.2.2 手动下载
+
 0. 首先下载启动器(mcl), 下载地址 -> [官方](https://github.com/iTXTech/mirai-console-loader/)
 
 1. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP-plugin-*.mirai.jar(*号为版本)
