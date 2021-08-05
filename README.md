@@ -157,7 +157,7 @@ add_subdirectory(include)
 ```
 mcl --update-package io.github.nambers:MiraiCP-plugin --channel nightly --type plugin
 ```
-安装
+安装, 然后在mcl的路径下的data\miraiCP\路径中创建miraicp.txt里填写sdk生成的dll的路径，或者把sdk生成的dll复制进去(如果没有data\miraiCP路径需要启动一次mcl)
 
 ##### 3.2.2.2 手动下载
 
