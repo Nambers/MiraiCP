@@ -45,7 +45,7 @@ mavenCentralPublish {
     publicationConfigurators.add {
         groupId = "io.github.nambers"
         artifactId = "MiraiCP-plugin"
-//        artifact("MiraiCP-plugin-2.7-RC-dev3.mirai.jar")
+        description = "C++ SDK of Mirai"
         artifact(tasks["buildPlugin"])
         this.pom {
             name.set("MiraiCP-plugin")
