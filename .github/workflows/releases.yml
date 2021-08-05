@@ -29,9 +29,9 @@ jobs:
     - name: chmod -R 777 *
       run: chmod -R 777 *
     - name: Build loader
-      run:  cd ./kotlin/ && ./gradlew loader:shadowJar --warning-mode all --info --stacktrace
+      run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:shadowJar --warning-mode all --info --stacktrace
     - name: Build plugin
-      run:  cd ./kotlin/ && ./gradlew plugin:buildPlugin --warning-mode all --info --stacktrace
+      run:  cd ./kotlin/ && ./gradlew MiraiCP-plugin:buildPlugin --warning-mode all --info --stacktrace
     - name: pack
       run:  zip -r ./cpp/MiraiCP_CPP.zip ./cpp
     - name: get change log
