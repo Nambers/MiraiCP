@@ -35,6 +35,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.logger
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
 import tech.eritquearcus.miraicp.shared.PublicShared.onEnable
 import java.io.File
+import kotlin.system.exitProcess
 
 private fun String.decodeHex(): ByteArray {
     check(length % 2 == 0) { "Must have an even length" }
@@ -153,15 +154,36 @@ fun main(args: Array<String>){
     var f = File(path)
     when(args.size) {
         1 -> {
+            if(args[0] == "-g"){
+                File("config.json").writeText(
+                    """
+                        {
+                          "accounts": [{
+                            "id": qqid,
+                            "passwords": "passwords密码",
+                            "protocol":  "pad",
+                            "heatBeat": "STAT_HB",
+                            "md5": false,
+                            "autoLogin": false
+                          }],
+                          "cppPath": "dll路径"
+                        }
+
+                    """.trimIndent()
+                )
+                println("生成成功")
+                exitProcess(0)
+            }
             f = File(args[0])
             if (!f.exists() || !f.isFile || !f.canRead()) {
-                println("配置文件路径(${f.absolutePath})读取错误,文件不存在/不是文件/不可读, 使用默认路径重试")
+                println("配置文件路径(${f.absolutePath})读取错误,文件不存在/不是文件/不可读, 使用默认路径(./config.json)重试")
                 f = File(path)
                 if (!f.exists() || !f.isFile || !f.canRead()) {
                     f = File(path)
                     if (!f.exists() || !f.isFile || !f.canRead()) {
                         println("默认配置文件路径(${f.absolutePath})读取错误,文件不存在/不是文件/不可读")
-                        return
+                        println("使用 -g 可以生成config.json模板(java -jar MiraiCP-loader-<version>.jar -g)")
+                        exitProcess(1)
                     }
                 }
             }
@@ -171,7 +193,9 @@ fun main(args: Array<String>){
                 f = File(path)
                 if (!f.exists() || !f.isFile || !f.canRead()) {
                     println("默认配置文件路径(${f.absolutePath})读取错误,文件不存在/不是文件/不可读")
-                    return
+                    println("使用 -g 可以生成config.json模板(java -jar MiraiCP-loader-<version>.jar -g)")
+                    System.`in`.read()
+                    exitProcess(1)
                 }
             }
         }
