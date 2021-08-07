@@ -137,7 +137,7 @@ public:
            e.group.sendMiraiCode(new LightApp(LightAppStyle1()));
            e.group.sendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
            e.group.sendMiraiCode(new LightApp(LightAppStyle3()));
-           e.group.sendMiraiCode(new LightApp(R"({"app":"com.tencent.miniapp","desc":"","view":"notification","ver":"1.0.0.11","prompt":"西内黄色邀请","meta":{"notification":{"appInfo":{"appName":")"+ e.sender.nickOrNameCard() + R"(","appType":4,"appid":1109659848,"iconUrl":"https://q.qlogo.cn/headimg_dl?dst_uin=)"+e.sender.id()+R"(&spec=100"},"button":[{"action":"西内黄色","name":"邀请你和 TA 一起西内黄色"}],"data":[{"title":"正在","value":"西内黄色"}],"emphasis_keyword":""}}})"));
+           e.group.sendMiraiCode(new LightApp(R"({"app":"com.tencent.miniapp","desc":"","view":"notification","ver":"1.0.0.11","prompt":"西内黄色邀请","meta":{"notification":{"appInfo":{"appName":")"+ e.sender.nickOrNameCard() + R"(","appType":4,"appid":1109659848,"iconUrl":"https://q.qlogo.cn/headimg_dl?dst_uin=)"+std::to_string(e.sender.id())+R"(&spec=100"},"button":[{"action":"西内黄色","name":"邀请你和 TA 一起西内黄色"}],"data":[{"title":"正在","value":"西内黄色"}],"emphasis_keyword":""}}})"));
            // e.group.sendMsg("转发测试:");
            // ForwardMessage(&e.group,
            //                {
