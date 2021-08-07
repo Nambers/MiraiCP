@@ -251,19 +251,11 @@ LightApp风格1
          * @name str2jstring
          * @brief string类型到jsting类型 UTF8 -> UTF16
          * @note 来源https://blog.csdn.net/chunleixiahe/article/details/51394116
-         * @param pat char*(string.c_str())转换的内容
+         * @param stra const char*(string.c_str()转换的内容)
          * @param env 可选JNIEnv
          * @return 转换后jstring类型
          */
-        static jstring str2jstring(const char *pat, JNIEnv * = manager->getEnv());
-
-        /*!
-         * @name JLongToString
-         * @brief jlong类型到string类型
-         * @param val 需要转换的数值
-         * @return 转换后string类型
-         */
-        static std::string JLongToString(jlong val);
+        static jstring str2jstring(const char *stra, JNIEnv * = manager->getEnv());
 
         /*!
          * @brief 替换全部在一个字符串中.
@@ -283,15 +275,15 @@ LightApp风格1
         }
 
         /// @brief long long 类型的vector格式化输出
-        /// @param v vector
+        /// @param a vector
         /// @return string
         template<typename T>
-        static std::string VectorToString(std::vector<T> v);
+        static std::string VectorToString(std::vector<T> a);
 
         /// @brief 从string格式化到vector
-        /// @param s string
+        /// @param temp string
         /// @return vector
-        static std::vector<unsigned long long> StringToVector(std::string s);
+        static std::vector<unsigned long long> StringToVector(std::string temp);
 
         /// @brief 从miraicode转义到正常
         /// @param s 经过miraicode转义的字符串
@@ -362,11 +354,11 @@ LightApp风格1
 
         /**
          * @brief 调用mirai操作
-         * @param code 操作id
+         * @param type 操作id
          * @param json 传入数据
          * @return 返回数据
          */
-        std::string koperation(int code, nlohmann::json &json, JNIEnv * = manager->getEnv());
+        std::string koperation(operation_set type, nlohmann::json &json, JNIEnv * = manager->getEnv());
 
         Config() {};
 
@@ -1288,14 +1280,14 @@ LightApp风格1
 
         /// @brief 使用纯文本构造，推荐使用其他结构体方法构造
         /// @param content 构造文本
-        LightApp(std::string content) {
+        explicit LightApp(std::string content) {
             this->content = content;
         }
 
         /// 使用样式1,适合文字展示，无大图，不能交互
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        LightApp(LightAppStyle1 c) {
+        explicit LightApp(LightAppStyle1 c) {
             this->content =
                     "{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"0.0.0.1\",\"prompt\":\"[应用]\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"notification\":{\"appInfo\":"
                     "{\"appName\":\"" + c.appName + "\",\"appType\":4,\"appid\":1109659848,"
@@ -1326,7 +1318,7 @@ LightApp风格1
         /// 样式3，有大图，可以在电脑qq显示，并在电脑上点击的链接会跳转
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        LightApp(LightAppStyle3 c) {
+        explicit LightApp(LightAppStyle3 c) {
             this->content =
                     "{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
                     "\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"0.0.0.1\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
@@ -1338,7 +1330,7 @@ LightApp风格1
         }
 
         /// 返回miraicode
-        std::string toMiraiCode() {
+        std::string toMiraiCode() override {
             return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
         }
 
@@ -1354,15 +1346,15 @@ LightApp风格1
     private:
         std::string content;
     public:
-        std::string toMiraiCode(){
+        std::string toMiraiCode() override{
             return "[mirai:service:1,"+ Tools::escapeToMiraiCode(content) +"]";
         }
 
-        ServiceMessage(std::string a){
+        explicit ServiceMessage(std::string a){
             content = std::move(a);
         }
 
-        ServiceMessage(URLSharer a){
+        explicit ServiceMessage(URLSharer a){
             content = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\""+a.brief+"\" serviceID=\"1\" url=\""+a.url+"\"><item layout=\"2\"><picture cover=\""+a.cover+"\"/><title>"+a.title+"</title><summary>"+a.summary+"</summary></item><source/></msg>\\n";
         }
     };
@@ -1669,7 +1661,7 @@ LightApp风格1
          */
         Friend(unsigned long long friendid, unsigned long long botid, JNIEnv * = manager->getEnv());
 
-        Friend(Contact c) : Contact(c) { refreshInfo(); };
+        explicit Friend(Contact c) : Contact(c) { refreshInfo(); };
 
         /// 删除好友(delete是C++关键字
         void deleteFriend(JNIEnv *env = manager->getEnv()) {
@@ -1711,7 +1703,7 @@ LightApp风格1
         Member(unsigned long long qqid, unsigned long long groupid, unsigned long long botid,
                JNIEnv * = manager->getEnv());
 
-        Member(Contact c) : Contact(c) { refreshInfo(); };
+        explicit Member(Contact c) : Contact(c) { refreshInfo(); };
 
         void refreshInfo(JNIEnv *env = manager->getEnv()) override {
             std::string temp = LowLevelAPI::getInfoSource(this, env);
@@ -1916,7 +1908,7 @@ LightApp风格1
         /// @code Group(this.group.id, this.bot.id) @endcode
         Group(unsigned long long groupid, unsigned long long botid, JNIEnv * = manager->getEnv());
 
-        Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
+        explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 刷新群聊信息
         void refreshInfo(JNIEnv *env = manager->getEnv()) override {
@@ -2340,10 +2332,10 @@ LightApp风格1
          * @param message 消息
          * @param messageSource 消息源
          */
-        GroupTempMessageEvent(unsigned long long int botid, Group group, const Member &sender,
+        GroupTempMessageEvent(unsigned long long int botid, Group group, Member sender,
                               const std::string &message, MessageSource messageSource) : BotEvent(botid),
                                                                                                 group(std::move(group)),
-                                                                                                sender(sender),
+                                                                                                sender(std::move(sender)),
                                                                                                 message(message),
                                                                                                 messageSource(std::move(
                                                                                                         messageSource)) {}
@@ -2670,7 +2662,7 @@ throw: InitxException 即找不到对应签名
         }
     }
 
-    std::string Config::koperation(int type, json &data, JNIEnv *env) {
+    std::string Config::koperation(operation_set type, json &data, JNIEnv *env) {
         json j;
         j["type"] = type;
         j["data"] = data;
@@ -2972,10 +2964,10 @@ throw: InitxException 即找不到对应签名
     }
 
 /*群聊类实现*/
-    Group::Group(unsigned long long i, unsigned long long bi, JNIEnv *env) : Contact() {
+    Group::Group(unsigned long long groupid, unsigned long long botid, JNIEnv *env) : Contact() {
         this->_type = 2;
-        this->_id = i;
-        this->_botid = bi;
+        this->_id = groupid;
+        this->_botid = botid;
         refreshInfo(env);
     }
 
@@ -3151,18 +3143,6 @@ throw: InitxException 即找不到对应签名
         return env->NewString((jchar *) c, (jsize) utf16line.size());
     }
 
-    std::string Tools::JLongToString(jlong qqid) {
-        auto id = [qqid]() -> std::string {
-            std::stringstream stream;
-            stream << qqid;
-            std::string a;
-            stream >> a;
-            stream.clear();
-            return a;
-        };
-        return id();
-    }
-
     template<typename T>
     std::string Tools::VectorToString(std::vector<T> a) {
         std::stringstream ss;
@@ -3183,7 +3163,7 @@ throw: InitxException 即找不到对应签名
         std::vector<std::string> v(std::sregex_token_iterator(temp.begin(), temp.end(), ws_re, -1),
                                    std::sregex_token_iterator());
         for (auto &&s : v)
-            result.push_back(atoi(s.c_str()));
+            result.push_back(std::stoull(s));
         return result;
     }
 
@@ -3215,7 +3195,6 @@ throw: InitxException 即找不到对应签名
                                                                            ",", "\\,"),
                                                             ":", "\\:"),
                                              "]", "\\]"), "[", "\\[");
-        return std::string();
     }
 
     Contact Contact::deserializationFromString(const std::string &source) {
@@ -3232,11 +3211,11 @@ throw: InitxException 即找不到对应签名
     }
 
     Contact Contact::deserializationFromJson(nlohmann::json j) {
-        return Contact(j["type"],
+        return {j["type"],
                        j["id"],
                        j["groupid"],
                        j["nickornamecard"],
-                       j["botid"]);
+                       j["botid"]};
     }
 
     MessageSource Contact::sendVoice(const std::string &path, JNIEnv *env) {
@@ -3341,8 +3320,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
                 //GroupMessage
                 procession->broadcast<GroupMessageEvent>(
                         GroupMessageEvent(j["group"]["botid"],
-                                          Group::deserializationFromJson(j["group"]),
-                                          Member::deserializationFromJson(j["member"]),
+                                          Group(Group::deserializationFromJson(j["group"])),
+                                          Member(Member::deserializationFromJson(j["member"])),
                                           MiraiCode(j["message"].get<std::string>()),
                                           MessageSource::deserializeFromString(j["source"])
                         )
@@ -3353,7 +3332,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
                 //私聊消息
                 procession->broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
-                                            Friend::deserializationFromJson(j["friend"]),
+                                            Friend(Friend::deserializationFromJson(j["friend"])),
                                             j["message"],
                                             MessageSource::deserializeFromString(j["source"])
                         ));
@@ -3389,8 +3368,8 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
                         MemberJoinEvent(
                                 j["group"]["botid"],
                                 j["jointype"],
-                                Member::deserializationFromJson(j["member"]),
-                                Group::deserializationFromJson(j["group"]),
+                                Member(Member::deserializationFromJson(j["member"])),
+                                Group(Group::deserializationFromJson(j["group"])),
                                 j["inviterid"]
                         ));
                 break;
@@ -3400,7 +3379,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
                         j["group"]["botid"],
                         j["leavetype"],
                         j["memberid"],
-                        Group::deserializationFromJson(j["group"]),
+                        Group(Group::deserializationFromJson(j["group"])),
                         j["operatorid"]
                 ));
                 break;
@@ -3420,15 +3399,15 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
                 procession->broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
                         j["group"]["botid"],
                         j["etype"],
-                        Group::deserializationFromJson(j["group"]),
+                        Group(Group::deserializationFromJson(j["group"])),
                         j["inviterid"]
                 ));
                 break;
             case 10:
                 procession->broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
                         j["group"]["botid"],
-                        Group::deserializationFromJson(j["group"]),
-                        Member::deserializationFromJson(j["member"]),
+                        Group(Group::deserializationFromJson(j["group"])),
+                        Member(Member::deserializationFromJson(j["member"])),
                         j["message"],
                         MessageSource::deserializeFromString(j["source"])
                 ));
@@ -3446,8 +3425,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
         logger->error(e.what());
         return Tools::str2jstring("ERROR");
     } catch (MiraiCPException &e) {
-        logger->error("MiraiCP error:");
-        logger->error(e.what());
+        logger->error("MiraiCP error:" + e.what());
         return Tools::str2jstring("ERROR");
     }
     return returnNull();
