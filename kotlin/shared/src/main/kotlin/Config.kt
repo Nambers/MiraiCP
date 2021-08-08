@@ -141,6 +141,11 @@ class Config {
         val type: Int = 11
     )
 
+    data class TimeOutEvent(
+        val msg: String,
+        val type: Int = 12
+    )
+
     data class ForwardMessageJson (
         @SerializedName("type") val type : Int,
         @SerializedName("id") val id : Long,

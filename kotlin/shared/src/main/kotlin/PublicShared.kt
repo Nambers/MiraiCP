@@ -46,6 +46,9 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsVoice
 import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
 
 object PublicShared {
     private val json by lazy {
@@ -59,7 +62,7 @@ object PublicShared {
     lateinit var cpp: CPP_lib
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
-    const val now_tag = "v2.7-RC-dev4"
+    const val now_tag = "v2.7-RC-dev5"
     lateinit var dll_name: String
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
 
@@ -717,6 +720,20 @@ object PublicShared {
                 return gson.toJson(a.toOnlineA())
             }
         }
+    }
+
+    //定时任务
+    fun scheduling(time: Long, msg: String):String {
+        Timer("Timer", false).schedule(time) {
+            cpp.Event(
+                Gson().toJson(
+                    Config.TimeOutEvent(
+                        msg
+                    )
+                )
+            )
+        }
+        return "Y"
     }
 
     fun onDisable() {
