@@ -44,6 +44,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.recallMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.rejectFriendRequest
 import tech.eritquearcus.miraicp.shared.PublicShared.rejectGroupInvite
 import tech.eritquearcus.miraicp.shared.PublicShared.remoteFileInfo
+import tech.eritquearcus.miraicp.shared.PublicShared.scheduling
 import tech.eritquearcus.miraicp.shared.PublicShared.sendError
 import tech.eritquearcus.miraicp.shared.PublicShared.sendFile
 import tech.eritquearcus.miraicp.shared.PublicShared.sendWarning
@@ -280,7 +281,10 @@ class CPP_lib {
             SendWithQuote,
 
             /// 群公告操作
-            Announcement
+            Announcement,
+
+            /// 定时任务
+            Timer
         }
 
         @JvmStatic
@@ -329,7 +333,10 @@ class CPP_lib {
                     operation_code.Gioperation.ordinal -> KGioperation(root.getString("text"), root.getBoolean("sign"))
                     /// 回复(引用并发送)
                     operation_code.SendWithQuote.ordinal -> KSendWithQuote(root.getString("messageSource"), root.getString("msg"), root.getString("sign"))
+                    /// 群公告操作
                     operation_code.Announcement.ordinal -> KAnnouncement(root.getString("identify"), if(root.has("source")) root.getString("source") else null)
+                    /// 定时任务
+                    operation_code.Timer.ordinal -> scheduling(root.getLong("time"), root.getString("msg"))
                     else -> "EA"
                 }
             }catch(e:Exception){

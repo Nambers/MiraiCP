@@ -31,7 +31,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.7-RC-dev4"
+        version = "2.7-RC-dev5"
     ){
         author("Eritque arcus")
     }
@@ -60,6 +60,7 @@ object PluginMain : KotlinPlugin(
         }
         PublicShared.init(l, dll_name)
         val cpp = CPP_lib()
+        PublicShared.cpp = cpp
         logger.info("⭐已加载插件: ${cpp.config.name}")
         logger.info("⭐作者: ${cpp.config.author}")
         logger.info("⭐版本: ${cpp.config.version}")
