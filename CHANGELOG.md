@@ -1,5 +1,13 @@
 # Change Log
 
+## v2.7-RC-dev5
+
++ 修复2.7-RC-dev4中plugin端对cpp加载不正确([url](https://mirai.mamoe.net/topic/488/%E5%B0%8F%E7%99%BD%E6%B1%82%E6%95%91-mirai_cp%E6%8F%92%E4%BB%B6%E5%9C%A8mcl%E4%B8%8A%E6%94%B6%E5%88%B0%E6%B6%88%E6%81%AF%E5%B0%B1%E6%8A%A5%E9%94%99))
++ 重新支持定时任务
++ 新的LightAppStyle4
+
+> 该版本主要为修复上一个版本
+
 ## v2.7-RC-dev4
 
 + 支持把plugin部分发布到maven, 以增加mcl支持

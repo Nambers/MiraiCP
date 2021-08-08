@@ -14,6 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+// 针对clion
+#pragma clang diagnostic push
+// 禁止检查unused
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#pragma ide diagnostic ignored "cert-err58-cpp"
 #pragma once
 #ifndef CPP_MIRAICP_HPP
 #define CPP_MIRAICP_HPP
@@ -39,7 +44,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.7-RC-dev4";
+    const std::string MiraiCPVersion = "v2.7-RC-dev5";
 
     /// @brief 插件信息
     class PluginConfig{
@@ -150,6 +155,19 @@ LightApp风格1
         std::string title = "Test1";
         ///图片旁描述
         std::string description = "Test2";
+    };
+
+    /// 风格4
+    struct LightAppStyle4{
+        /// 没点进来显示的内容
+        std::string prompt = "prompt";
+        std::string appName = "appName";
+        /// 左上角图片网址
+        std::string iconUrl = "https://q.qlogo.cn/headimg_dl?dst_uin=1930893235&spec=100";
+        std::string button_action = "button_action";
+        std::string button_name = "button_name";
+        std::string data_title = "data_title";
+        std::string data_value = "data_value";
     };
 
     /// 用serviceMessage的分享信息
@@ -349,18 +367,20 @@ LightApp风格1
             /// 回复(引用并发送)
             SendWithQuote,
             /// 群公告操作
-            Announcement
+            Announcement,
+            /// 定时任务
+            TimeOut
         };
 
         /**
          * @brief 调用mirai操作
          * @param type 操作id
-         * @param json 传入数据
+         * @param data 传入数据
          * @return 返回数据
          */
-        std::string koperation(operation_set type, nlohmann::json &json, JNIEnv * = manager->getEnv());
+        std::string koperation(operation_set type, nlohmann::json &data, JNIEnv * = manager->getEnv());
 
-        Config() {};
+        Config() = default;
 
         void Init(JNIEnv * = manager->getEnv());
 
@@ -378,6 +398,7 @@ LightApp风格1
 
 /// @brief miraicode字符串
 /// @attention MiraiCode会把非miraicode组成部分(非[mirai:])转码, 输出转码前的文本用toString, 参考: https://github.com/mamoe/mirai/blob/dev/docs/Messages.md#%E8%BD%AC%E4%B9%89%E8%A7%84%E5%88%99
+/// @detail 为了便捷使用，构造函数不以explicit注释
     class MiraiCode:MiraiCodeable {
     private:
         std::string content;
@@ -388,64 +409,64 @@ LightApp风格1
         }
 
         /// 和toString作用一样, 不过不会自动转码
-        std::string toMiraiCode() {
+        std::string toMiraiCode() override {
             return content;
         }
 
         /// 从MiraiCodeable类型初始化一个miraicode字符串
-        MiraiCode(MiraiCodeable *a) {
+        MiraiCode(MiraiCodeable *a) {  // NOLINT(google-explicit-constructor)
             content = a->toMiraiCode();
         }
 
         template<Number T>
-        MiraiCode (T n){
+        MiraiCode (T n){ // NOLINT(google-explicit-constructor)
             content = std::to_string(n);
         }
 
         /// 从文本初始化一个miraicode字符串, 根据第二个参数决定是否转码, 默认不转码
         /// @attention 如果是传入文本MiraiCode，请勿转码，转码只是为了[mirai:xxx:<应该转码的部分>], 如果<应该转码>的部分里面含有'[]:,'内容，请调用Tools::escapeToMiraiCode转码
-        MiraiCode(std::string a, bool convert = false){
+        MiraiCode(const std::string& a, bool convert = false){ // NOLINT(google-explicit-constructor)
             if(!convert)
                 content = a;
             else
-                content = Tools::escapeToMiraiCode(std::move(a));
+                content = Tools::escapeToMiraiCode(a);
         }
 
         MiraiCode operator+(MiraiCodeable *a) {
-            return MiraiCode(content + a->toMiraiCode());
+            return {content + a->toMiraiCode()};
         }
 
-        MiraiCode operator+(std::string a) {
-            return MiraiCode(content + a);
+        MiraiCode operator+(const std::string& a) {
+            return {content + a};
         }
 
-        MiraiCode operator+(MiraiCode a){
-            return MiraiCode(content + a.content);
+        MiraiCode operator+(const MiraiCode& a){
+            return {content + a.content};
         }
 
         MiraiCode operator+(MiraiCode* a){
-            return MiraiCode(content + a->content);
+            return {content + a->content};
         }
 
-        MiraiCode operator=(std::string a) {
-            return MiraiCode(std::move(a));
+        MiraiCode operator=(const std::string& a) {
+            return {a};
         }
 
         MiraiCode plus(MiraiCodeable *a) {
-            return MiraiCode(content + a->toMiraiCode());
+            return {content + a->toMiraiCode()};
         }
 
         MiraiCode plus(std::string a) {
-            return MiraiCode(a)+this;
+            return MiraiCode(std::move(a))+this;
         }
 
         /// 不执行转义，适用于已经被MiraiCode转义过的字符串
         static MiraiCode MiraiCodeWithoutEscape(std::string a){
-            return MiraiCode(std::move(a), false);
+            return {std::move(a), false};
         }
         /// 不执行转义，因为MiraiCodeable的toMiraiCode已经转义过了
         static MiraiCode MiraiCodeWithoutEscape(MiraiCodeable* a){
-            return MiraiCode(a->toMiraiCode(), false);
+            return {a->toMiraiCode(), false};
         }
 
         /// 支持提取的内容
@@ -473,7 +494,6 @@ LightApp风格1
     protected:
         /// @brief 日志底层实现封装
         /// @param log 日志内容
-        /// @param botid botid
         /// @param level 日志等级
         /// @param env jnienv
         virtual void log0(const std::string &log, int level, JNIEnv *env) = 0;
@@ -564,7 +584,6 @@ LightApp风格1
     protected:
         /// @brief 日志底层实现封装
         /// @param log 日志内容
-        /// @param botid botid
         /// @param level 日志等级
         /// @param env jnienv
         void log0(const std::string &log, int level, JNIEnv *env) override;
@@ -759,6 +778,8 @@ LightApp风格1
                 case 2:
                     this->description = "找不到群成员";
                     break;
+                default:
+                    break;
             }
         }
 
@@ -787,11 +808,11 @@ LightApp风格1
         }
 
         //返回错误信息
-        std::string what() {
+        std::string what() override {
             return this->description;
         }
 
-        void raise() {
+        void raise() override {
             //manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
         }
 
@@ -808,11 +829,11 @@ LightApp风格1
         }
 
         //返回错误信息
-        std::string what() {
+        std::string what() override {
             return this->description;
         }
 
-        void raise() {
+        void raise() override {
             //manager->getEnv()->ThrowNew(config->initexception, (this->description).c_str());
         }
 
@@ -828,44 +849,44 @@ LightApp风格1
             this->description = "该消息已经被撤回";
         }
 
-        std::string what() {
+        std::string what() override {
             return this->description;
         }
 
     private:
-        std::string description = "";
+        std::string description;
     };
 
 /// 远程资源出现问题
 /// @see MiraiCPException
     class RemoteAssetException : public MiraiCPException {
     public:
-        RemoteAssetException(std::string e) {
-            this->description = e;
+        explicit RemoteAssetException(std::string e) {
+            this->description = std::move(e);
         }
 
-        std::string what() {
+        std::string what() override {
             return this->description;
         }
 
     private:
-        std::string description = "";
+        std::string description;
     };
 
 /// 参数错误
     class IllegalArgumentException : public MiraiCPException {
     private:
-        std::string description = "";
+        std::string description;
     public:
-        IllegalArgumentException(std::string e) {
-            this->description = e;
+        explicit IllegalArgumentException(std::string e) {
+            this->description = std::move(e);
         }
 
-        std::string what() {
+        std::string what() override {
             return this->description;
         }
 
-        void raise() {
+        void raise() override {
             logger->error(this->what());
         }
     };
@@ -893,7 +914,7 @@ LightApp风格1
         /// 消息源序列化
         std::string source;
 
-        MessageSource() {};
+        MessageSource() = default;;
 
         /**
          * @brief 回复(引用并发送miraicode)
@@ -985,9 +1006,9 @@ LightApp风格1
             return serialization().dump();
         };
         /// 反序列化到message
-        static Message deserializationFromString(std::string);
+        static Message deserializationFromString(const std::string&);
 
-        Message(MessageSource s, MiraiCode c):source(s), content(c){};
+        Message(MessageSource s, MiraiCode c):source(std::move(s)), content(c){};
     };
 
     /*! @brief Context上下文会在每个事件出现
@@ -1029,7 +1050,7 @@ LightApp风格1
          * @code [mirai:image:{图片id}.jpg] @endcode
         * @note 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
         */
-        Image(std::string);
+        explicit Image(std::string);
 
         /*
         * 获取图片下载url
@@ -1057,7 +1078,7 @@ LightApp风格1
         }
 
         /// 取图片Mirai码
-        std::string toMiraiCode();
+        std::string toMiraiCode() override;
     };
 
 /*!
@@ -1281,13 +1302,13 @@ LightApp风格1
         /// @brief 使用纯文本构造，推荐使用其他结构体方法构造
         /// @param content 构造文本
         explicit LightApp(std::string content) {
-            this->content = content;
+            this->content = std::move(content);
         }
 
         /// 使用样式1,适合文字展示，无大图，不能交互
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        explicit LightApp(LightAppStyle1 c) {
+        explicit LightApp(const LightAppStyle1& c) {
             this->content =
                     "{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"0.0.0.1\",\"prompt\":\"[应用]\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"notification\":{\"appInfo\":"
                     "{\"appName\":\"" + c.appName + "\",\"appType\":4,\"appid\":1109659848,"
@@ -1302,7 +1323,7 @@ LightApp风格1
         /// 使用样式2，有大图，不能交互
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        LightApp(LightAppStyle2 c) {
+        LightApp(const LightAppStyle2& c) {
             this->content = "{\"config\":"
                             "{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
                             "\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"1.0.0.103\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
@@ -1318,7 +1339,7 @@ LightApp风格1
         /// 样式3，有大图，可以在电脑qq显示，并在电脑上点击的链接会跳转
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        explicit LightApp(LightAppStyle3 c) {
+        explicit LightApp(const LightAppStyle3& c) {
             this->content =
                     "{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
                     "\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"0.0.0.1\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
@@ -1327,6 +1348,11 @@ LightApp风格1
                     c.title + "\",\"title\":\"" + c.description + "\","
                                                                   "\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" +
                     c.icon + "\",\"qqdocurl\":\"" + c.url + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
+        }
+
+        explicit LightApp(const LightAppStyle4& c){
+            this->content =
+                    "{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"1.0.0.11\",\"prompt\":\""+c.prompt+"\",\"meta\":{\"notification\":{\"appInfo\":{\"appName\":\""+c.appName+"\",\"appType\":4,\"appid\":1109659848,\"iconUrl\":\""+c.iconUrl+"\"},\"button\":[{\"action\":\""+c.button_action+"\",\"name\":\""+c.button_name+"\"}],\"data\":[{\"title\":\""+c.data_title+"\",\"value\":\""+c.data_value+"\"}],\"emphasis_keyword\":\"\"}}}";
         }
 
         /// 返回miraicode
@@ -2341,9 +2367,28 @@ LightApp风格1
                                                                                                         messageSource)) {}
     };
 
+    /// 定时任务结束
+    class TimeOutEvent{
+    public:
+        /// 事件所附信息
+        std::string msg;
+
+        explicit TimeOutEvent(std::string msg) : msg(std::move(msg)) {}
+    };
+
+    /// @brief 开启一个新的定时任务
+    /// @param time 延迟多久，毫秒为单位
+    /// @param msg string类型附带信息，推荐使用json格式方便解析
+    void schedule(long time, const std::string& msg, JNIEnv* env = manager->getEnv()){
+        json j;
+        j["time"] = time;
+        j["msg"] = msg;
+        config->koperation(Config::TimeOut, j, env);
+    }
+
     class BotOnlineEvent : public BotEvent {
     public:
-        BotOnlineEvent(unsigned long long botid) : BotEvent(botid) {}
+        explicit BotOnlineEvent(unsigned long long botid) : BotEvent(botid) {}
     };
 
 /**监听类声明*/
@@ -2372,6 +2417,7 @@ LightApp风格1
         Node<BotJoinGroupEvent> *BHead = new Node<BotJoinGroupEvent>();
         Node<GroupTempMessageEvent> *GTMHead = new Node<GroupTempMessageEvent>();
         Node<BotOnlineEvent> *BOHead = new Node<BotOnlineEvent>();
+        Node<TimeOutEvent> * TOHead = new Node<TimeOutEvent>();
 
         /// 取链表首节点
         template<class T>
@@ -2396,6 +2442,8 @@ LightApp风格1
                 return GTMHead;
             } else if constexpr(std::is_same_v<T, BotOnlineEvent>) {
                 return BOHead;
+            } else if constexpr(std::is_same_v<T, TimeOutEvent>){
+                return TOHead;
             }
             logger->error("内部错误, 位置:C-Head");
             return nullptr;
@@ -2411,6 +2459,7 @@ LightApp风格1
         Node<BotJoinGroupEvent> *BTail = BHead;
         Node<GroupTempMessageEvent> *GTMTail = GTMHead;
         Node<BotOnlineEvent> *BOTail = BOHead;
+        Node<TimeOutEvent> * TOTail = TOHead;
 
         /// 取链表尾节点
         template<class T>
@@ -2457,6 +2506,10 @@ LightApp风格1
                 BOTail->next = temp;
                 BOTail->nextNode = temp;
                 BOTail = temp;
+            } else if constexpr(std::is_same_v<T, TimeOutEvent>) {
+                TOTail->next = temp;
+                TOTail->nextNode = temp;
+                TOTail = temp;
             } else {
                 logger->error("内部错误, 位置:C-Tail");
                 return nullptr;
@@ -2470,7 +2523,7 @@ LightApp风格1
         private:
             bool *enable;
         public:
-            NodeHandle(bool *a) {
+            explicit NodeHandle(bool *a) {
                 this->enable = a;
             }
 
@@ -2486,7 +2539,7 @@ LightApp风格1
         /*!
         * 广播函数重载
         */
-        template<class T>
+        template<typename T>
         void broadcast(T e) {
             Node<T> *now = Event::head<T>();
             while (now) {
@@ -2497,14 +2550,14 @@ LightApp风格1
 
         /*!
         * @brief 监听函数
-        * @note 在极其少见(MiraiCP内部出问题的时候)会返回nullptr
+        * @note 在极其少见(MiraiCP内部出问题的时候)会抛出异常
         */
-        template<class T>
+        template<typename T>
         NodeHandle registerEvent(std::function<void(T)> f) {
             bool *e = Event::tail(f);
             if (e != nullptr)
                 return NodeHandle(e);
-            return nullptr;
+            throw APIException("位置:registerEvent");
         }
 
         ~Event();
@@ -2648,7 +2701,7 @@ throw: InitxException 即找不到对应签名
 
     std::vector<std::string> MiraiCode::filter(filterType t){
         if(t == image){
-            return Image::GetImgIdsFromMiraiCode(this);
+            return Image::GetImgIdsFromMiraiCode(*this);
         }else{
             std::vector<std::string> result = std::vector<std::string>();
             std::string temp = this->toString();
@@ -2672,7 +2725,7 @@ throw: InitxException 即找不到对应签名
     }
 
     Event::~Event() {
-        Node0 *temp[] = {GMHead, PMHead, GHead, NFHead, MJHead, MLHead, RHead, BHead};
+        Node0 *temp[] = {GMHead, PMHead, GHead, NFHead, MJHead, MLHead, RHead, BHead, TOHead};
         for (Node0 *ptr : temp) {
             Node0 *now = ptr;
             Node0 *t = nullptr;
@@ -2725,7 +2778,7 @@ throw: InitxException 即找不到对应签名
         return j;
     }
 
-    Message Message::deserializationFromString(std::string s){
+    Message Message::deserializationFromString(const std::string& s){
         json j = json::parse(s);
         return Message(MessageSource::deserializeFromString(j["source"]), MiraiCode(j["content"].get<std::string>()));
     }
@@ -3415,6 +3468,9 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
             case 11:
                 procession->broadcast<BotOnlineEvent>(BotOnlineEvent(j["botid"]));
                 break;
+            case 12:
+                procession->broadcast<TimeOutEvent>(TimeOutEvent(j["msg"]));
+                break;
             default:
                 throw APIException("Unreachable code");
         }
@@ -3432,3 +3488,4 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
 }
 //结束对接JNI接口代码
 #endif
+#pragma clang diagnostic pop
