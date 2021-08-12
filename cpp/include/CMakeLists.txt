@@ -12,27 +12,4 @@ set(
         MIRAICP_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/miraicp/dllmain.cpp
 )
-set(
-        MIRAICP_SOURCE_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/checked.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/core.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/cpp11.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/cpp17.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8/unchecked.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/bridge/AccessBridgeCallbacks.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/bridge/AccessBridgeCalls.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/bridge/AccessBridgePackages.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/jawt_md.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32/jni_md.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/classfile_constants.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/jawt.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/jdwpTransport.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/jni.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/jvmti.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/jvmticmlr.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/json.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/miraicp/tech_eritquearcus_miraicp_shared_CPP_lib.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/miraiCP.hpp
-)
-target_sources(MiraiCP PUBLIC ${MIRAICP_SOURCE_FILES} ${MIRAICP_SOURCE_HEADERS})
+target_sources(MiraiCP PUBLIC ${MIRAICP_SOURCE_FILES})
