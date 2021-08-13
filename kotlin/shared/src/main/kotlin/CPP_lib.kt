@@ -19,6 +19,7 @@ package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
+import net.mamoe.mirai.utils.MiraiLogger
 import org.json.JSONObject
 import tech.eritquearcus.miraicp.shared.PublicShared.QueryBFL
 import tech.eritquearcus.miraicp.shared.PublicShared.QueryBGL
@@ -32,7 +33,6 @@ import tech.eritquearcus.miraicp.shared.PublicShared.accpetGroupInvite
 import tech.eritquearcus.miraicp.shared.PublicShared.basicSendLog
 import tech.eritquearcus.miraicp.shared.PublicShared.buildforwardMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.deleteOnlineAnnouncement
-import tech.eritquearcus.miraicp.shared.PublicShared.dll_name
 import tech.eritquearcus.miraicp.shared.PublicShared.getowner
 import tech.eritquearcus.miraicp.shared.PublicShared.groupSetting
 import tech.eritquearcus.miraicp.shared.PublicShared.gson
@@ -52,19 +52,30 @@ import tech.eritquearcus.miraicp.shared.PublicShared.sendWithQuote
 import tech.eritquearcus.miraicp.shared.PublicShared.uploadImg
 import tech.eritquearcus.miraicp.shared.PublicShared.uploadVoice
 
-class CPP_lib {
+class CPP_lib (
+    dll_path: String
+        ){
     var config:PluginConfig
 
     init {
+        System.load(dll_path)
         config = Gson().fromJson(Verify(), PluginConfig::class.java)
     }
 
+    fun showInfo(logger: MiraiLogger = PublicShared.logger, version: String = PublicShared.now_tag){
+        logger.info("⭐已加载插件: ${config.name}")
+        logger.info("⭐作者: ${config.author}")
+        logger.info("⭐版本: ${config.version}")
+        if (config.description != "")
+            logger.info("⭐描述: ${config.description}")
+        if (config.time != "")
+            logger.info("⭐发行时间: ${config.time}")
+        if (config.MiraiCPversion != version) {
+            logger.warning("Warning: 当前MiraiCP框架版本($version)和加载的插件的C++ SDK(${config.MiraiCPversion})不一致")
+        }
+    }
     //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
     companion object{
-        init {
-            System.load(dll_name)
-        }
-
         //send MiraiCode
         private fun KSend(source: String, miraiCode: Boolean): String =
             runBlocking {
@@ -347,7 +358,6 @@ class CPP_lib {
             }
         }
     }
-
     private external fun Verify(): String
     external fun Event(content: String): String
     external fun PluginDisable(): Void

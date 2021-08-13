@@ -30,6 +30,7 @@ import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
+import tech.eritquearcus.miraicp.shared.Event
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicShared.gson
 import tech.eritquearcus.miraicp.shared.PublicShared.logger
@@ -108,36 +109,31 @@ object KotlinMain {
         loginAccount = c.accounts?: emptyList()
         Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
-        var dll_name = c.cppPath
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
-        if (!File(dll_name).exists()) {
-            logger.error("Error: dll文件$dll_name 不存在, 请检查config.json配置")
-            return
-        } else {
-            dll_name = File(dll_name).absolutePath
+        c.cppPath.forEach {
+            var dll_name = it
+            if (!File(dll_name).exists()) {
+                logger.error("Error: dll文件$dll_name 不存在, 请检查config.json配置")
+                return@forEach
+            } else {
+                dll_name = File(dll_name).absolutePath
+            }
+            logger.info("⭐当前MiraiCP版本: $now_tag")
+            PublicShared.init(logger)
+            logger.info("⭐c++ dll地址:${dll_name}")
+            val cpp = CPP_lib(dll_name)
+            cpp.showInfo()
+            PublicShared.cpp.add(cpp)
+            if(PublicShared.logger4plugins.contains(cpp.config.name))
+                logger.warning("检测到列表已经有重复的${cpp.config.name}, 请检测配置文件中是否重复或提醒开发者改插件名称，但该插件还是会加载")
+            PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.Factory.create(this::class, cpp.config.name)
         }
-        logger.info("⭐当前MiraiCP版本: $now_tag")
-        PublicShared.init(logger, dll_name)
-        logger.info("⭐c++ dll地址:${dll_name}")
-        val cpp = CPP_lib()
-        PublicShared.cpp = cpp
-        logger.info("⭐已加载插件: ${cpp.config.name}")
-        logger.info("⭐作者: ${cpp.config.author}")
-        logger.info("⭐版本: ${cpp.config.version}")
-        if (cpp.config.description != "")
-            logger.info("⭐描述: ${cpp.config.description}")
-        if (cpp.config.time != "")
-            logger.info("⭐发行时间: ${cpp.config.time}")
         if (c.accounts == null || c.accounts!!.isEmpty()) {
             logger.error("Error: 无可登录账号，请检查config.json内容")
             return
         }
         logger.info("⭐已成功加载MiraiCP⭐")
-        PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.Factory.create(this::class, cpp.config.name)
-        if (cpp.config.MiraiCPversion != now_tag) {
-            logger.warning("Warning: 当前MiraiCP框架版本($now_tag)和加载的插件的C++ SDK(${cpp.config.MiraiCPversion})不一致")
-        }
         Console.listen()
         c.accounts?.filter { it.autoLogin == true }?.forEach {
             it.login()
