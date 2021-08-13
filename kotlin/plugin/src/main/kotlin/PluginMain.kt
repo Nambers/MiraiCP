@@ -24,6 +24,7 @@ import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
+import tech.eritquearcus.miraicp.shared.Event
 import tech.eritquearcus.miraicp.shared.PublicShared
 import java.io.File
 
@@ -38,40 +39,37 @@ object PluginMain : KotlinPlugin(
 ) {
     override fun onEnable() {
         val l = MiraiLogger.Factory.create(this::class, "MiraiCP")
+        PublicShared.init(l)
         l.info("⭐MiraiCP启动中⭐")
         l.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
-        var dll_name = "cpp.dll"
-        dll_name = "${dataFolder.absoluteFile}\\$dll_name"
-        val Configuration = "${dataFolder.absoluteFile}\\miraicp.txt"
-        if (!File(Configuration).exists() || !File(Configuration).isFile) {
-            l.error("配置文件$Configuration 不存在，使用默认dll路径$dll_name")
-        } else {
-            val c = File(Configuration).readLines()
-            if (c.size != 1 || !File(c[0]).exists() || !File(c[0]).isFile || File(c[0]).extension != "dll") {
-                l.error("配置文件$Configuration 格式错误，应只包含一行且为一个已存在的dll文件，使用默认dll路径$dll_name")
-            } else {
-                dll_name = c[0]
+        File("${dataFolder.absoluteFile}\\miraicp.txt").apply{
+            if(!this.exists() || !this.isFile) {
+                l.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
+                return
             }
-        }
-        if (!File(dll_name).exists()) {
-            l.error("c++文件$dll_name 不存在")
-            l.info("未找到配套dll插件，本插件退出加载，可去https://github.com/Nambers/MiraiCP 了解更多")
-            return
-        }
-        PublicShared.init(l, dll_name)
-        val cpp = CPP_lib()
-        PublicShared.cpp = cpp
-        logger.info("⭐已加载插件: ${cpp.config.name}")
-        logger.info("⭐作者: ${cpp.config.author}")
-        logger.info("⭐版本: ${cpp.config.version}")
-        if(cpp.config.description!= "")
-            logger.info("⭐描述: ${cpp.config.description}")
-        if(cpp.config.time!="")
-            logger.info("⭐发行时间: ${cpp.config.time}")
+        }.readLines().forEach {
+                val f = File(it)
+                when{
+                    !f.isFile || !f.exists()->{
+                        error(it + "不是一个有效的文件")
+                    }
+                    f.extension != "dll" && f.extension != "so"->{
+                        error(it + "不是一个有效的dll或so文件")
+                    }
+                    else->{
+                        PublicShared.logger.info("加载${it}成功")
+                        CPP_lib(it).let {cpp->
+                            cpp.showInfo()
+                            PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.Factory.create(this::class, cpp.config.name)
+                            PublicShared.cpp.add(cpp)
+                        }
+
+                    }
+                }
+            }
         logger.info("⭐已成功启动MiraiCP⭐")
-        PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.create(cpp.config.name)
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
-            cpp.Event(
+            PublicShared.cpp.Event(
                 PublicShared.gson.toJson(Config.BotOnline(this.bot.id))
             )
         }
