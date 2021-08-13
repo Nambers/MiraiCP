@@ -37,7 +37,7 @@ object PluginMain : KotlinPlugin(
     }
 ) {
     override fun onEnable() {
-        val l = MiraiLogger.create("MiraiCP")
+        val l = MiraiLogger.Factory.create(this::class, "MiraiCP")
         l.info("⭐MiraiCP启动中⭐")
         l.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
         var dll_name = "cpp.dll"

@@ -42,12 +42,10 @@ import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsVoice
 import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 
 object PublicShared {
@@ -368,15 +366,14 @@ object PublicShared {
         val c = when (oc.type) {
             1 -> AIbot.getFriend(oc.id) ?: let { logger.error("上传语音找不到好友, id:${oc.id}"); return "EF" }
             2 -> AIbot.getGroup(oc.id) ?: let {logger.error("上传语音找不到群聊, gid:${oc.id}"); return "EG" }
-            3 -> (AIbot.getGroup(oc.groupid) ?: let {logger.error("上传语音找不到群聊, gid:${oc.groupid}"); return "EM" })[oc.id] ?: let {logger.error("上传语音找不到群成员, gid:${oc.id}"); return "EMM" }
             else -> return "EA"
         }
         return file.toExternalResource().use {
             try {
-                json.encodeToString(MessageSource.Serializer,  it.uploadAsVoice(c).sendTo(c).source)
+                json.encodeToString(MessageSource.Serializer, c.uploadAudio(it).sendTo(c).source)
             }catch(e:OverFileSizeMaxException){
-                logger.error("上传语音失败, 文件应在1MB以内, 实际大小:${it.size}, 文件路径:${file.absolutePath}")
-                ""
+                logger.error("上传语音失败, 文件应在大约1MB以内, 实际大小:${it.size}, 文件路径:${file.absolutePath}")
+                "E2"
             }
         }
     }
@@ -711,7 +708,7 @@ object PublicShared {
             showPopup = a.params.showPopup
             requireConfirmation = a.params.requireConfirmation
         }
-        ).let { it ->
+        ).let {
             try {
                 it.publishTo(g)
             }catch(e:PermissionDeniedException){

@@ -19,10 +19,10 @@ plugins {
     kotlin("plugin.serialization")
 }
 dependencies {
-    compileOnly(libs.mirai.core.api) // mirai-core 的 API
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
 }
+group = "tech.eritquearcus"
 version = libs.versions.miraiCPVersion.get()
 //val generateJniHeaders: Task by tasks.creating {
 //    group = "build"
