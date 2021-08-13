@@ -47,7 +47,21 @@ import org.json.JSONObject
 import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
+fun ArrayList<CPP_lib>.Event(content: String){
+    when{
+        PublicShared.disablePlugins.isNotEmpty()->{
+            this.filter {
+                !PublicShared.disablePlugins.contains(it.config.name)
+            }.forEach {
+                it.Event(content)
+            }
+        }
+        else->{
+            this.forEach { it.Event(content) }
+        }
+    }
 
+}
 object PublicShared {
     private val json by lazy {
         Json {
@@ -57,16 +71,15 @@ object PublicShared {
         }
     }
     private var friend_cache = ArrayList<NormalMember>(0)
-    lateinit var cpp: CPP_lib
+    val cpp: ArrayList<CPP_lib> = arrayListOf()
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
     const val now_tag = "v2.7-RC-dev5"
-    lateinit var dll_name: String
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
+    val disablePlugins = arrayListOf<String>()
 
-    fun init(l: MiraiLogger, path: String){
+    fun init(l: MiraiLogger){
         logger = l
-        dll_name = path
     }
 
     //日志部分实现
@@ -733,10 +746,7 @@ object PublicShared {
         return "Y"
     }
 
-    fun onDisable() {
-        if(this::cpp.isInitialized)
-            cpp.PluginDisable()
-    }
+    fun onDisable() = cpp.forEach {it.PluginDisable()}
 
     @OptIn(MiraiExperimentalApi::class)
     fun onEnable(eventChannel: EventChannel<Event>){

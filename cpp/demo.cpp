@@ -67,7 +67,6 @@ public:
         // 监听私聊
         procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
             unsigned long long id = e.bot.id;
-            e.sender.uploadVoice()
             e.botlogger.info(std::to_string(id));
             e.message.source.quoteAndSendMsg("HI");
             std::thread func1(func, e.sender.id(), e.bot.id);

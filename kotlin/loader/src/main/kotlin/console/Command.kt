@@ -19,9 +19,12 @@ package tech.eritquearcus.miraicp.loader.console
 
 import com.google.gson.Gson
 import net.mamoe.mirai.BotFactory
+import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.login
+import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.PublicShared
+import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.system.exitProcess
@@ -33,7 +36,14 @@ object Command {
             "exit" to "退出",
             "status" to "查看loader状态",
             "login <qqid>" to "登录已经配置在配置文件的qq",
-            "accountList" to "查看配置文件里的qq"
+            "accountList" to "简写aList, 查看配置文件里的qq",
+            "pluginList" to "简写pList, 输出全部插件信息",
+            "disablePluginList" to "简写dList, 输出全部被禁用的插件名称",
+            "disablePlugin <plugin name>" to "简写disable, 禁用插件, 后面跟插件的名字作为参数, 可用enablePlugin启用, 可能会对程序的速度造成一些影响",
+            "enablePlugin <plugin name>" to "简写enable, 启用插件, 后面跟插件的名字作为参数",
+            "loadPlugin <plugin path>" to "简写load, 加载某个插件, 后面跟插件的地址作为参数",
+            "removePlugin <plugin name>" to "简写rm, 移除插件, 后面跟插件的名字作为参数",
+            "removePlugin <plugin name> <gc>" to "简写rm, 移除插件, 后面跟插件的名字作为参数和一个bool类型参数指定是否gc"
         )
         val prefixPlaceholder = String(CharArray(
             message.maxOfOrNull { it.first.length }!! + 3
@@ -65,6 +75,7 @@ object Command {
             0 -> unknown(order)
             1 -> pureOrder(re[0])
             2 -> oneParamOrder(arrayOf(re[0], re[1]))
+            3 -> twoParamOrder(arrayOf(re[0], re[1], re[2]))
             else -> unknown(order)
         }
     }
@@ -76,6 +87,7 @@ object Command {
     private fun error(order: String, reason: String){
         PublicShared.logger.error("命令错误: '$order', $reason")
     }
+    private fun info(msg:String) = println(msg)
 
     private fun pureOrder(order: String) {
         when (order) {
@@ -88,9 +100,19 @@ object Command {
                 val s = Duration.between(Console.start, LocalDateTime.now()).seconds
                 println("该Loader已经持续运行 " + String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + " 啦")
             }
-            "accountList" -> KotlinMain.loginAccount.let { acs->
+            "accountList", "aList" -> KotlinMain.loginAccount.let { acs->
                 val gson = Gson()
                 acs.forEach { println(gson.toJson(it)) }
+            }
+            "pluginList", "pList" ->{
+                PublicShared.cpp.forEach {
+                    it.showInfo()
+                }
+            }
+            "disablePluginList", "dList"->{
+                PublicShared.disablePlugins.forEach {
+                    println(it)
+                }
             }
             else -> unknown(order)
         }
@@ -99,7 +121,22 @@ object Command {
     private fun login(id:Long){
         KotlinMain.loginAccount.first { it.id == id && (it.logined == null || it.logined == false)}.login()
     }
-
+    private fun removePlugin(order:String, name: String, gc:Boolean = false){
+        try {
+            PublicShared.cpp.filter {
+                it.config.name == name
+            }.forEach {
+                PublicShared.cpp.remove(it)
+                PublicShared.disablePlugins.contains(name)&&PublicShared.disablePlugins.remove(name)
+                if(gc)
+                    System.gc()
+                    info("gc succ")
+                info("成功移除${name}插件")
+            }
+        }catch(e:NoSuchElementException){
+            error(order, "已使用的插件列表中没有${name}")
+        }
+    }
     private fun oneParamOrder(order: Array<String>) {
         when(order[0]){
             "login" -> {
@@ -116,7 +153,53 @@ object Command {
                 }
                 KotlinMain.logined = true
             }
+            "loadPlugin", "load" ->{
+                val f = File(order[1])
+                when{
+                    !f.isFile || !f.exists()->{
+                        error(order.joinToString(" "),order[1] + "不是一个有效的文件")
+                    }
+                    f.extension != "dll" && f.extension != "so"->{
+                        error(order.joinToString(" "),order[1] + "不是一个有效的dll或so文件")
+                    }
+                    else->{
+                        CPP_lib(order[1]).let {cpp->
+                            cpp.showInfo()
+                            PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.Factory.create(this::class, cpp.config.name)
+                            PublicShared.cpp.add(cpp)
+                        }
+                        PublicShared.logger.info("加载${order[1]}成功")
+                    }
+                }
+            }
+            "disablePlugin", "disable" ->{
+                try{
+                    PublicShared.cpp.first { it.config.name == order[1] }
+                    (!PublicShared.disablePlugins.contains(order[1]))&&PublicShared.disablePlugins.add(order[1])
+                    info("禁用${order[1]}成功")
+                }catch(e:NoSuchElementException){
+                    error(order.joinToString(" "), "找不到${order[1]}插件, 关闭失败")
+                }
+            }
+            "enablePlugin", "enable"->{
+                if(PublicShared.disablePlugins.contains(order[1])){
+                    PublicShared.disablePlugins.remove(order[1])
+                    info("启用${order[1]}成功")
+                }
+            }
+            "removePlugin", "rm"->{
+                removePlugin(order.joinToString(" "), order[1])
+            }
             else -> unknown(order.joinToString(" "))
+        }
+    }
+
+    private fun twoParamOrder(order: Array<String>){
+        when(order[0]){
+            "removePlugin"->{
+                removePlugin(order.joinToString(" "), order[1], order[2].toBoolean())
+            }
+            else-> unknown(order.joinToString(" "))
         }
     }
 }
