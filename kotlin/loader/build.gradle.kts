@@ -45,8 +45,8 @@ tasks {
 }
 version = libs.versions.miraiCPVersion.get()
 dependencies {
-    api(libs.mirai.core.self)
     implementation(project(":shared"))
+    implementation(libs.mirai.core.self)
     implementation(libs.jansi)
     implementation(libs.jline)
 }
