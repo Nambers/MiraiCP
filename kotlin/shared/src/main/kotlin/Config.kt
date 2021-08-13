@@ -244,7 +244,7 @@ class Config {
 
     data class accounts(
         val accounts: List<Account>?,
-        val cppPath: String
+        val cppPath: List<String>
 ) {
         data class Account(
             val heatBeat: String?,
