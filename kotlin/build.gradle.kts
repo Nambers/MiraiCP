@@ -16,29 +16,27 @@
  */
 
 plugins {
-    kotlin("jvm") version V.kotlinVersion apply false
+    kotlin("jvm") version V.kotlinVersion
     kotlin("plugin.serialization") version V.kotlinVersion apply false
     id("com.github.johnrengelman.shadow") version "7.0.0" apply false
     id("net.mamoe.mirai-console") version V.miraiVersion apply false
     id("net.mamoe.maven-central-publish") version "0.6.0-dev-2" apply false
 }
 allprojects {
-    apply {
-        plugin("org.jetbrains.kotlin.jvm")
-    }
     repositories {
         mavenLocal()
-        maven("https://maven.aliyun.com/repository/public") // 阿里云国内代理仓库
         mavenCentral()
+        maven("https://maven.aliyun.com/repository/public") // 阿里云国内代理仓库
         gradlePluginPortal()
         google()
     }
 }
 subprojects {
-    val implementation by configurations
+    apply(plugin = "org.jetbrains.kotlin.jvm")
     dependencies {
         implementation("com.google.code.gson:gson:2.8.7")
         implementation("org.json:json:20210307")
+        compileOnly("net.mamoe:mirai-core-api:2.7-RC") // mirai-core 的 API
     }
 }
 group = "tech.eritquearcus"

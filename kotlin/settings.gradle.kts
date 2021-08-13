@@ -22,10 +22,3 @@ include("plugin")
 include("loader")
 project(":plugin").name = "MiraiCP-plugin"
 project(":loader").name = "MiraiCP-loader"
-pluginManagement {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
