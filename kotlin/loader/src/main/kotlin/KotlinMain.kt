@@ -22,10 +22,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.BotFactory
-import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.BotOnlineEvent
-import net.mamoe.mirai.utils.*
-import org.fusesource.jansi.AnsiConsole
+import net.mamoe.mirai.utils.BotConfiguration
+import net.mamoe.mirai.utils.MiraiExperimentalApi
+import net.mamoe.mirai.utils.MiraiInternalApi
+import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
@@ -106,7 +107,7 @@ object KotlinMain {
         val c = Gson().fromJson(j, Config.accounts::class.java)
         loginAccount = c.accounts?: emptyList()
         Console
-        val logger = MiraiLogger.create("MiraiCP")
+        val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
         var dll_name = c.cppPath
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
@@ -133,7 +134,7 @@ object KotlinMain {
             return
         }
         logger.info("⭐已成功加载MiraiCP⭐")
-        PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.create(cpp.config.name)
+        PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.Factory.create(this::class, cpp.config.name)
         if (cpp.config.MiraiCPversion != now_tag) {
             logger.warning("Warning: 当前MiraiCP框架版本($now_tag)和加载的插件的C++ SDK(${cpp.config.MiraiCPversion})不一致")
         }

@@ -1092,6 +1092,7 @@ LightApp风格1
         /// 发送miraicode
         /// @throw IllegalArgumentException
         MessageSource sendMiraiCode0(std::string msg, JNIEnv * = manager->getEnv());
+
     protected:
         int _type = 0;
         unsigned long long _id;
@@ -1099,6 +1100,10 @@ LightApp风格1
         std::string _nickOrNameCard;
         std::string _avatarUrl;
         unsigned long long _botid;
+
+        /// 发送语音
+        MessageSource sendVoice0(const std::string &path, JNIEnv * = manager->getEnv());
+
     public:
         /*!
          * @brief 无参初始化Contact类型
@@ -1216,9 +1221,6 @@ LightApp风格1
         MessageSource sendMsg(std::vector<std::string> msg){
             return sendMsg0(Tools::VectorToString(msg));
         }
-
-        /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv * = manager->getEnv());
 
         /*!
         * @brief上传本地图片，务必要用绝对路径
@@ -1749,6 +1751,11 @@ LightApp风格1
             }
         }
 
+        /// 发送语音
+        MessageSource sendVoice(const std::string &path, JNIEnv * env= manager->getEnv()){
+            return Contact::sendVoice0(path, env);
+        }
+
         /// 获取权限，会在构造时调用，请使用permission缓存变量
         /// @see Member::permission
         unsigned int getPermission(JNIEnv * = manager->getEnv());
@@ -1976,6 +1983,11 @@ LightApp风格1
          @endcode
         */
         RemoteFile sendFile(const std::string &path, const std::string &filepath, JNIEnv * = manager->getEnv());
+
+        /// 发送语音
+        MessageSource sendVoice(const std::string &path, JNIEnv * env= manager->getEnv()){
+            return Contact::sendVoice0(path, env);
+        }
 
         /*!
         取群文件信息,会自动搜索子目录
@@ -3271,7 +3283,7 @@ throw: InitxException 即找不到对应签名
                        j["botid"]};
     }
 
-    MessageSource Contact::sendVoice(const std::string &path, JNIEnv *env) {
+    MessageSource Contact::sendVoice0(const std::string &path, JNIEnv *env) {
         json j;
         json source;
         source["path"] = path;
@@ -3280,7 +3292,9 @@ throw: InitxException 即找不到对应签名
         std::string re = config->koperation(config->Voice, j, env);
         ErrorHandle(re);
         if (re == "E1")
-            throw UploadException("文件格式不对(必须为.amr/.silk)或文件不存在");
+            throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在");
+        else if(re == "E2")
+            throw UploadException("上传语音文件大小超过服务器限制，一般限制在1MB上下");
         return MessageSource::deserializeFromString(re);
     }
 
