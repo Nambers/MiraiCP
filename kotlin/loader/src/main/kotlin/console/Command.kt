@@ -42,8 +42,7 @@ object Command {
             "disablePlugin <plugin name>" to "简写disable, 禁用插件, 后面跟插件的名字作为参数, 可用enablePlugin启用, 可能会对程序的速度造成一些影响",
             "enablePlugin <plugin name>" to "简写enable, 启用插件, 后面跟插件的名字作为参数",
             "loadPlugin <plugin path>" to "简写load, 加载某个插件, 后面跟插件的地址作为参数",
-            "removePlugin <plugin name>" to "简写rm, 移除插件, 后面跟插件的名字作为参数",
-            "removePlugin <plugin name> <gc>" to "简写rm, 移除插件, 后面跟插件的名字作为参数和一个bool类型参数指定是否gc"
+            "removePlugin <plugin name>" to "简写rm, 移除插件但不会取消对dll文件的占用, 后面跟插件的名字作为参数"
         )
         val prefixPlaceholder = String(CharArray(
             message.maxOfOrNull { it.first.length }!! + 3
@@ -121,16 +120,13 @@ object Command {
     private fun login(id:Long){
         KotlinMain.loginAccount.first { it.id == id && (it.logined == null || it.logined == false)}.login()
     }
-    private fun removePlugin(order:String, name: String, gc:Boolean = false){
+    private fun removePlugin(order:String, name: String){
         try {
             PublicShared.cpp.filter {
                 it.config.name == name
             }.forEach {
                 PublicShared.cpp.remove(it)
                 PublicShared.disablePlugins.contains(name)&&PublicShared.disablePlugins.remove(name)
-                if(gc)
-                    System.gc()
-                    info("gc succ")
                 info("成功移除${name}插件")
             }
         }catch(e:NoSuchElementException){
@@ -196,9 +192,6 @@ object Command {
 
     private fun twoParamOrder(order: Array<String>){
         when(order[0]){
-            "removePlugin"->{
-                removePlugin(order.joinToString(" "), order[1], order[2].toBoolean())
-            }
             else-> unknown(order.joinToString(" "))
         }
     }
