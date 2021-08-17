@@ -47,21 +47,6 @@ import org.json.JSONObject
 import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
-fun ArrayList<CPP_lib>.Event(content: String){
-    when{
-        PublicShared.disablePlugins.isNotEmpty()->{
-            this.filter {
-                !PublicShared.disablePlugins.contains(it.config.name)
-            }.forEach {
-                it.Event(content)
-            }
-        }
-        else->{
-            this.forEach { it.Event(content) }
-        }
-    }
-
-}
 object PublicShared {
     private val json by lazy {
         Json {
