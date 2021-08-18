@@ -17,6 +17,8 @@
 
 package tech.eritquearcus.miraicp.shared
 
+import net.mamoe.mirai.contact.*
+
 fun ArrayList<CPP_lib>.Event(content: String){
     when{
         PublicShared.disablePlugins.isNotEmpty()->{
@@ -32,3 +34,11 @@ fun ArrayList<CPP_lib>.Event(content: String){
     }
 
 }
+internal fun Group.toContact():Config.Contact=
+    Config.Contact(2, this.id, 0, this.name, this.bot.id)
+
+internal fun Member.toContact():Config.Contact =
+    Config.Contact(3, this.id, this.group.id, this.nameCardOrNick, this.bot.id)
+
+internal fun Friend.toContact():Config.Contact =
+    Config.Contact(1, this.id, 0, this.nameCardOrNick, this.bot.id)

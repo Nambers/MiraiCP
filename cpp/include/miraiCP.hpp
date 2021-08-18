@@ -369,7 +369,11 @@ LightApp风格1
             /// 群公告操作
             Announcement,
             /// 定时任务
-            TimeOut
+            TimeOut,
+            /// 发送戳一戳
+            SendNudge,
+            /// 好友下一条信息
+            FriendNextMsg
         };
 
         /**
@@ -449,14 +453,14 @@ LightApp风格1
         }
 
         MiraiCode operator=(const std::string& a) {
-            return {a};
+            return MiraiCode(a);
         }
 
         MiraiCode plus(MiraiCodeable *a) {
             return {content + a->toMiraiCode()};
         }
 
-        MiraiCode plus(std::string a) {
+        MiraiCode plus(const std::string& a) {
             return MiraiCode(std::move(a))+this;
         }
 
@@ -674,8 +678,8 @@ LightApp风格1
     /// @see MiraiCPException
     class IllegalStateException : public MiraiCPException {
     public:
-        explicit IllegalStateException(std::string text) {
-            this->description = "状态异常" + text;
+        explicit IllegalStateException(const std::string& text) {
+            this->description = "状态异常:" + text;
         }
 
         //返回错误信息
@@ -763,12 +767,13 @@ LightApp风格1
 /// @see MiraiCPException
     class MemberException : public MiraiCPException {
     public:
+
+        int type = 0;
+
         /*
         *   "1" - 找不到群
         *	"2" - 找不到群成员
         */
-        int type = 0;
-
         explicit MemberException(int type) {
             this->type = type;
             switch (type) {
@@ -900,6 +905,8 @@ LightApp风格1
             throw MemberException(1);
         if (re == "EMM")
             throw MemberException(2);
+        if(re == "EB")
+            throw BotException("找不到bot:" + re);
         if (re == "EA")
             throw APIException(ErrorMsg);
     }
@@ -1572,8 +1579,8 @@ LightApp风格1
                                                                time(t) {}
     };
 
-///聊天记录, 由ForwardNode组成
-/// @see class ForwardNode
+    ///聊天记录, 由ForwardNode组成
+    /// @see class ForwardNode
     class ForwardMessage {
     public:
         /// json节点
@@ -1598,7 +1605,7 @@ LightApp风格1
         MessageSource sendTo(Contact *c, JNIEnv * = manager->getEnv());
     };
 
-/// 当前bot账号信息
+    /// 当前bot账号信息
     class Bot {
     private:
         bool inited = false;
@@ -1708,6 +1715,20 @@ LightApp风格1
             this->_nickOrNameCard = tmp.nickornamecard;
             this->_avatarUrl = tmp.avatarUrl;
         }
+
+        /*!
+         * @brief 发送戳一戳
+         * @warning 发送戳一戳的前提是登录该bot的协议是phone
+         * @throw MiraiCP::BotException, MiraiCP::IllegalStateException
+         */
+        void sendNudge(){
+            json j;
+            j["contactSource"] = this->serializationToString();
+            std::string re = config->koperation(config->SendNudge, j);
+            ErrorHandle(re);
+            if(re == "E1")
+                throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
+        }
     };
 
 /// 群成员类声明
@@ -1802,6 +1823,20 @@ LightApp风格1
         MiraiCode at() {
             /*返回at这个人的miraicode*/
             return MiraiCode::MiraiCodeWithoutEscape("[mirai:at:" + std::to_string(id()) + "]");
+        }
+
+        /*!
+         * @brief 发送戳一戳
+         * @warning 发送戳一戳的前提是登录该bot的协议是phone
+         * @throw MiraiCP::BotException, MiraiCP::IllegalStateException
+         */
+        void sendNudge(){
+            json j;
+            j["contactSource"] = this->serializationToString();
+            std::string re = config->koperation(config->SendNudge, j);
+            ErrorHandle(re);
+            if(re == "E1")
+                throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
         }
     };
 
@@ -2093,7 +2128,14 @@ LightApp风格1
          * @param messageSource 消息源
          */
         PrivateMessageEvent(unsigned long long int botid, Friend sender, const std::string &message,
-                            const MessageSource &messageSource) : BotEvent(botid), sender(sender), message(messageSource, MiraiCode(message)) {}
+                            const MessageSource &messageSource) : BotEvent(botid), sender(sender), message(messageSource, MiraiCode(message)) {};
+        /*!
+         * @brief 取下一个消息(发送人和接收人和本事件一样)
+         * @param time 超时时间限制
+         * @param halt 是否拦截该事件(不被注册的监听器收到处理)
+         * @return MiraiCP::Message
+         */
+        Message nextMessage(long time = -1, bool halt = true);
     };
 
 /// 群聊邀请事件类声明
@@ -2398,9 +2440,18 @@ LightApp风格1
         config->koperation(Config::TimeOut, j, env);
     }
 
+    /// 机器人上线事件
     class BotOnlineEvent : public BotEvent {
     public:
         explicit BotOnlineEvent(unsigned long long botid) : BotEvent(botid) {}
+    };
+
+    /// 戳一戳事件
+    class NudgeEvent: public BotEvent{
+    public:
+        /// 谁发送的
+        Contact from;
+        NudgeEvent(Contact c, unsigned long long botid):BotEvent(botid){}
     };
 
 /**监听类声明*/
@@ -2430,6 +2481,7 @@ LightApp风格1
         Node<GroupTempMessageEvent> *GTMHead = new Node<GroupTempMessageEvent>();
         Node<BotOnlineEvent> *BOHead = new Node<BotOnlineEvent>();
         Node<TimeOutEvent> * TOHead = new Node<TimeOutEvent>();
+        Node<NudgeEvent>* NHead = new Node<NudgeEvent>();
 
         /// 取链表首节点
         template<class T>
@@ -2456,6 +2508,8 @@ LightApp风格1
                 return BOHead;
             } else if constexpr(std::is_same_v<T, TimeOutEvent>){
                 return TOHead;
+            }else if constexpr(std::is_same_v<T, TimeOutEvent>){
+                return NHead;
             }
             logger->error("内部错误, 位置:C-Head");
             return nullptr;
@@ -2472,6 +2526,7 @@ LightApp风格1
         Node<GroupTempMessageEvent> *GTMTail = GTMHead;
         Node<BotOnlineEvent> *BOTail = BOHead;
         Node<TimeOutEvent> * TOTail = TOHead;
+        Node<NudgeEvent> * NTail = NHead;
 
         /// 取链表尾节点
         template<class T>
@@ -2522,7 +2577,11 @@ LightApp风格1
                 TOTail->next = temp;
                 TOTail->nextNode = temp;
                 TOTail = temp;
-            } else {
+            } else if constexpr(std::is_same_v<T, NudgeEvent>){
+                NTail->next = temp;
+                NTail->nextNode = temp;
+                NTail = temp;
+            }else {
                 logger->error("内部错误, 位置:C-Tail");
                 return nullptr;
             }
@@ -2979,6 +3038,16 @@ throw: InitxException 即找不到对应签名
         this->_id = id;
         this->_botid = botid;
         refreshInfo(env);
+    }
+
+    Message PrivateMessageEvent::nextMessage(long time, bool halt) {
+        json j;
+        j["fid"] = this->sender.id();
+        j["botid"] = this->bot.id;
+        j["time"] = time;
+        j["halt"] = halt;
+        json re = json::parse(config->koperation(config->FriendNextMsg, j));
+        return {MessageSource::deserializeFromString(re["messageSource"]),MiraiCode(re["message"])};
     }
 
 /*成员类实现*/
@@ -3484,6 +3553,9 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
                 break;
             case 12:
                 procession->broadcast<TimeOutEvent>(TimeOutEvent(j["msg"]));
+                break;
+            case 13:
+                procession->broadcast<NudgeEvent>(NudgeEvent(Contact::deserializationFromString(j["from"]), j["botid"]));
                 break;
             default:
                 throw APIException("Unreachable code");

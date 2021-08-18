@@ -33,6 +33,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.accpetGroupInvite
 import tech.eritquearcus.miraicp.shared.PublicShared.basicSendLog
 import tech.eritquearcus.miraicp.shared.PublicShared.buildforwardMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.deleteOnlineAnnouncement
+import tech.eritquearcus.miraicp.shared.PublicShared.friendNextMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.getowner
 import tech.eritquearcus.miraicp.shared.PublicShared.groupSetting
 import tech.eritquearcus.miraicp.shared.PublicShared.gson
@@ -47,6 +48,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.remoteFileInfo
 import tech.eritquearcus.miraicp.shared.PublicShared.scheduling
 import tech.eritquearcus.miraicp.shared.PublicShared.sendError
 import tech.eritquearcus.miraicp.shared.PublicShared.sendFile
+import tech.eritquearcus.miraicp.shared.PublicShared.sendNudge
 import tech.eritquearcus.miraicp.shared.PublicShared.sendWarning
 import tech.eritquearcus.miraicp.shared.PublicShared.sendWithQuote
 import tech.eritquearcus.miraicp.shared.PublicShared.uploadImg
@@ -230,6 +232,12 @@ class CPP_lib (
             }else{"EA"}
         }
 
+        private fun KNudge(contactSource: String):String=
+            sendNudge(gson.fromJson(contactSource, Config.Contact::class.java))
+
+        private fun KFriendNextMsg(fid: Long, botid:Long, time:Long, halt: Boolean):String=
+            friendNextMsg(fid, botid, time, halt)
+
         enum class operation_code {
             /// 撤回信息
             Recall,
@@ -295,7 +303,13 @@ class CPP_lib (
             Announcement,
 
             /// 定时任务
-            Timer
+            Timer,
+
+            ///发送戳一戳
+            Nudge,
+
+            /// 好友对象下一条消息
+            FriendNextMsg
         }
 
         @JvmStatic
@@ -348,6 +362,10 @@ class CPP_lib (
                     operation_code.Announcement.ordinal -> KAnnouncement(root.getString("identify"), if(root.has("source")) root.getString("source") else null)
                     /// 定时任务
                     operation_code.Timer.ordinal -> scheduling(root.getLong("time"), root.getString("msg"))
+                    /// 发送戳一戳
+                    operation_code.Nudge.ordinal -> KNudge(root.getString("contactSource"))
+                    /// 好友下一条信息
+                    operation_code.FriendNextMsg.ordinal -> KFriendNextMsg(root.getLong("fid"), root.getLong("botid"), root.getLong("time"), root.getBoolean("halt"))
                     else -> "EA"
                 }
             }catch(e:Exception){

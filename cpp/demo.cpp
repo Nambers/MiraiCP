@@ -66,23 +66,25 @@ public:
         // 消息事件
         // 监听私聊
         procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
-            unsigned long long id = e.bot.id;
-            e.botlogger.info(std::to_string(id));
-            e.message.source.quoteAndSendMsg("HI");
-            std::thread func1(func, e.sender.id(), e.bot.id);
-            e.sender.sendMsg(e.message.content);
-            func1.detach();
-            // 多线程测试,线程应该在lambda中决定要detach还是join, 否则会报错
-            // 测试取图片
-            std::vector<std::string> temp = Image::GetImgIdsFromMiraiCode(e.message.content);
-            for (const std::string &a : temp) {
-                e.sender.sendMsg(a);
-            }
-            // 发送图片
-            Image tmp = e.sender.uploadImg(R"(C:\Users\19308\Desktop\a.jpg)");
-            e.sender.sendMsg(tmp.toMiraiCode());
-            e.sender.sendMiraiCode(tmp.toMiraiCode());
-            e.message.source.recall();
+            // unsigned long long id = e.bot.id;
+            // e.botlogger.info(std::to_string(id));
+            // e.message.source.quoteAndSendMsg("HI");
+            // std::thread func1(func, e.sender.id(), e.bot.id);
+            // e.sender.sendMsg(e.message.content);
+            // func1.detach();
+            // // 多线程测试,线程应该在lambda中决定要detach还是join, 否则会报错
+            // // 测试取图片
+            // std::vector<std::string> temp = Image::GetImgIdsFromMiraiCode(e.message.content);
+            // for (const std::string &a : temp) {
+            //     e.sender.sendMsg(a);
+            // }
+            // // 发送图片
+            // Image tmp = e.sender.uploadImg(R"(C:\Users\19308\Desktop\a.jpg)");
+            // e.sender.sendMsg(tmp.toMiraiCode());
+            // e.sender.sendMiraiCode(tmp.toMiraiCode());
+            // e.message.source.recall();
+            logger->info("Start");
+            logger->info("content: "+e.nextMessage().content.toMiraiCode());
         });
 
         // 监听群信息
