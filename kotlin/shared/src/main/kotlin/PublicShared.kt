@@ -18,20 +18,17 @@
 package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.Gson
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.LowLevelApi
 import net.mamoe.mirai.Mirai
-import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.NormalMember
-import net.mamoe.mirai.contact.PermissionDeniedException
+import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.contact.announcement.OfflineAnnouncement
 import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
 import net.mamoe.mirai.contact.announcement.bot
 import net.mamoe.mirai.contact.announcement.buildAnnouncementParameters
-import net.mamoe.mirai.contact.nameCardOrNick
-import net.mamoe.mirai.event.Event
-import net.mamoe.mirai.event.EventChannel
+import net.mamoe.mirai.event.*
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.code.MiraiCode
@@ -47,6 +44,7 @@ import org.json.JSONObject
 import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
+
 object PublicShared {
     private val json by lazy {
         Json {
@@ -65,6 +63,24 @@ object PublicShared {
 
     fun init(l: MiraiLogger){
         logger = l
+    }
+    fun friendNextMsg(fid:Long, botid:Long, time: Long, halt: Boolean):String{
+        return runBlocking {
+            val e = nextEvent<FriendMessageEvent>(time, EventPriority.HIGHEST){
+                it.sender.id == fid && it.bot.id == botid
+            }
+            if(halt)
+                e.intercept()
+            gson.toJson(
+                Config.Message(
+                    e.message.serializeToMiraiCode(),
+                    json.encodeToString(
+                        MessageSource.Serializer,
+                        e.message[MessageSource]!!
+                    )
+                )
+            )
+        }
     }
 
     //日志部分实现
@@ -95,7 +111,9 @@ object PublicShared {
     //发送消息部分实现 MiraiCode
 
     private suspend fun send0(message: Message, c: Config.Contact): String {
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         when (c.type) {
             1 -> {
                 logger.info("Send message for(${c.id}) is $message")
@@ -173,7 +191,9 @@ object PublicShared {
 
     @OptIn(MiraiExperimentalApi::class, LowLevelApi::class)
     suspend fun RefreshInfo(c: Config.Contact, quit: Boolean): String{
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         when(c.type){
             1->{
                 val f = AIbot.getFriend(c.id) ?: let {
@@ -225,30 +245,39 @@ object PublicShared {
     }
 
     //取群成员列表
-    fun QueryML(c: Config.Contact): String =
-        gson.toJson(Bot.getInstance(c.botid).getGroup(c.id)?.members?.map { it.id } ?: let {
+    fun QueryML(c: Config.Contact): String {
+        val bot = Bot.getInstanceOrNull(c.botid) ?: let {
+            return "EB"
+        }
+        val g = bot.getGroup(c.id)?: let {
             logger.error("取群成员列表找不到群,位置K-QueryML")
-            return "EG"
-        })
+            return "EM"
+        }
+        return gson.toJson(g.members.map { it.id } )
+    }
 
-    fun QueryBFL(bid: Long): String =
-        gson.toJson(Bot.getInstance(bid).friends.map {
+    fun QueryBFL(bid: Long): String {
+        val bot = Bot.getInstanceOrNull(bid) ?: let {
+            return "EB"
+        }
+        return gson.toJson(bot.friends.map {
             it.id
         })
+    }
 
     fun QueryBGL(bid: Long): String {
-        val AIbot = Bot.getInstance(bid)
-        val tmp = java.util.ArrayList<Long>()
-        AIbot.groups.forEach {
-            tmp.add(it.id)
+        val bot = Bot.getInstanceOrNull(bid) ?: let {
+            return "EB"
         }
-        return gson.toJson(tmp)
+        return gson.toJson(bot.groups.map { it.id })
     }
 
     //图片部分实现
 
     suspend fun uploadImg(file: String, c: Config.Contact):String{
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         when(c.type){
             1->{
                 val temp = AIbot.getFriend(c.id) ?: let {
@@ -330,7 +359,9 @@ object PublicShared {
 
     //禁言
     suspend fun mute(time:Int, c: Config.Contact):String{
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         val group = AIbot.getGroup(c.groupid) ?: let{
             logger.error("禁言找不到对应群组，位置K-mute()，gid:${c.groupid}")
             return "EM"
@@ -355,7 +386,9 @@ object PublicShared {
     }
 
     suspend fun uploadVoice(path: String, oc: Config.Contact): String {
-        val AIbot = Bot.getInstance(oc.botid)
+        val AIbot = Bot.getInstanceOrNull(oc.botid)?:let{
+            return "EB"
+        }
         val file = File(path)
         if (!file.exists() || !file.isFile || !(file.extension == "amr" || file.extension == "silk")) {
             logger.error("上传的语言文件需为.amr / .silk文件, 位置: KUploadVoice")
@@ -396,7 +429,9 @@ object PublicShared {
     }
 
     suspend fun sendFile(path: String, file: String, c: Config.Contact): String {
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-uploadfile()，gid:${c.id}")
             return "EG"
@@ -424,7 +459,9 @@ object PublicShared {
     }
 
     private suspend fun remoteFileList(path: String, c: Config.Contact):String{
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-remoteFileInfo，gid:${c.id}")
             return "EG"
@@ -439,7 +476,9 @@ object PublicShared {
     }
 
     private suspend fun remoteFileInfo0(path: String, c:Config.Contact):String {
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         val group = AIbot.getGroup(c.id) ?: let {
             logger.error("找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}")
             return "EG"
@@ -453,7 +492,9 @@ object PublicShared {
     }
 
     suspend fun remoteFileInfo(path: String, id: String, c: Config.Contact):String{
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         if(id == "")
             return remoteFileInfo0(path, c)
         if(id == "-1")
@@ -471,7 +512,9 @@ object PublicShared {
 
     //查询权限
     fun kqueryM(c: Config.Contact): String{
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         val group = AIbot.getGroup(c.groupid) ?: let {
             logger.error("查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}")
             return "EM"
@@ -485,7 +528,9 @@ object PublicShared {
     }
 
     suspend fun kkick(message: String, c: Config.Contact):String{
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         val group = AIbot.getGroup(c.groupid) ?: let {
             logger.error("查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}")
             return "EM"
@@ -504,7 +549,9 @@ object PublicShared {
 
     //取群主
     fun getowner(c: Config.Contact):String{
-        val AIbot = Bot.getInstance(c.botid)
+        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+            return "EB"
+        }
         val g = AIbot.getGroup(c.id)?:let {
             logger.error("找不到群,位置:K-getowner,gid:${c.id}")
             return "EG"
@@ -514,7 +561,9 @@ object PublicShared {
 
     //构建聊天记录
     suspend fun buildforwardMsg(text:String, bid: Long):String{
-        val AIbot = Bot.getInstance(bid)
+        val AIbot = Bot.getInstanceOrNull(bid)?:let{
+            return "EB"
+        }
         val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
         val c1: Contact = when(t.type) {
             1 -> AIbot.getFriend(t.id) ?: let {
@@ -554,9 +603,12 @@ object PublicShared {
 
     @Suppress("INVISIBLE_MEMBER")
     suspend fun accpetFriendRequest(info: Config.NewFriendRequestSource): String {
+        val bot = Bot.getInstanceOrNull(info.botid)?:let{
+            return "EB"
+        }
         try {
             NewFriendRequestEvent(
-                Bot.getInstance(info.botid),
+                bot,
                 info.eventid,
                 info.message,
                 info.fromid,
@@ -571,9 +623,12 @@ object PublicShared {
 
     @Suppress("INVISIBLE_MEMBER")
     suspend fun rejectFriendRequest(info: Config.NewFriendRequestSource): String {
+        val bot = Bot.getInstanceOrNull(info.botid)?:let{
+            return "EB"
+        }
         try {
             NewFriendRequestEvent(
-                Bot.getInstance(info.botid),
+                bot,
                 info.eventid,
                 info.message,
                 info.fromid,
@@ -589,9 +644,12 @@ object PublicShared {
     @OptIn(MiraiInternalApi::class)
     @Suppress("INVISIBLE_MEMBER")
     suspend fun accpetGroupInvite(info: Config.GroupInviteSource): String {
+        val bot = Bot.getInstanceOrNull(info.botid)?:let{
+            return "EB"
+        }
         try {
             BotInvitedJoinGroupRequestEvent(
-                Bot.getInstance(info.botid),
+                bot,
                 info.eventid,
                 info.inviterid,
                 info.groupid,
@@ -607,9 +665,12 @@ object PublicShared {
     @OptIn(MiraiInternalApi::class)
     @Suppress("INVISIBLE_MEMBER")
     suspend fun rejectGroupInvite(info: Config.GroupInviteSource): String {
+        val bot = Bot.getInstanceOrNull(info.botid)?:let{
+            return "EB"
+        }
         try {
             BotInvitedJoinGroupRequestEvent(
-                Bot.getInstance(info.botid),
+                bot,
                 info.eventid,
                 info.inviterid,
                 info.groupid,
@@ -630,7 +691,9 @@ object PublicShared {
         } else {
             PlainText(msg)
         }
-        val bot = Bot.getInstance(source.botId)
+        val bot = Bot.getInstanceOrNull(source.botId)?:let{
+            return "EB"
+        }
         val c = when (source.kind) {
             MessageSourceKind.FRIEND -> {
                 bot.getFriend(source.fromId) ?: let {
@@ -663,7 +726,9 @@ object PublicShared {
     }
 
     fun groupSetting(contact: Config.Contact, source: String): String{
-        val aibot = Bot.getInstance(contact.botid)
+        val aibot = Bot.getInstanceOrNull(contact.botid)?:let{
+            return "EB"
+        }
         val group = aibot.getGroup(contact.id)?:let{
             return "EG"
         }
@@ -678,7 +743,9 @@ object PublicShared {
         return "Y"
     }
     suspend fun deleteOnlineAnnouncement(a : Config.IdentifyA):String{
-        val aibot = Bot.getInstance(a.botid)
+        val aibot = Bot.getInstanceOrNull(a.botid)?:let{
+            return "EB"
+        }
         val group = aibot.getGroup(a.groupid)?:let{
             return "EG"
         }
@@ -695,9 +762,10 @@ object PublicShared {
     }
 
     suspend fun publishOfflineAnnouncement(i:Config.IdentifyA, a: Config.BriefOfflineA):String{
-        val g = Bot.getInstance(i.botid).getGroup(i.groupid) ?:let{
-            return "EG"
+        val bot = Bot.getInstanceOrNull(i.botid)?:let{
+            return "EB"
         }
+        val g = bot.getGroup(i.groupid) ?:let{ return "EG" }
         OfflineAnnouncement.create(a.content, buildAnnouncementParameters {
             image = null
             sendToNewMember = a.params.sendToNewMember
@@ -731,6 +799,42 @@ object PublicShared {
         return "Y"
     }
 
+    fun sendNudge(c: Config.Contact):String{
+        val bot = Bot.getInstanceOrNull(c.botid)?:let {
+            return "EB" + c.botid.toString()
+        }
+        return when(c.type){
+            1->{
+                val f = bot.getFriend(c.id)?:let{
+                    return "EF"
+                }
+                try {
+                    f.nudge()
+                }catch(e:UnsupportedOperationException){
+                    logger.error("发送nudge必须使用phone协议，目前协议为:"+bot.configuration.protocol.name)
+                    return "E1"
+                }
+                "Y"
+            }
+            2->{
+                val g = bot.getGroup(c.groupid)?:let{
+                    return "EM"
+                }
+                val m = g[c.id]?:let{
+                    return "EMM"
+                }
+                try {
+                    m.nudge()
+                }catch(e:UnsupportedOperationException){
+                    logger.error("发送nudge必须使用phone协议，目前协议为:"+bot.configuration.protocol.name)
+                    return "E1"
+                }
+                "Y"
+            }
+            else->"EA"
+        }
+    }
+
     fun onDisable() = cpp.forEach {it.PluginDisable()}
 
     @OptIn(MiraiExperimentalApi::class)
@@ -738,10 +842,11 @@ object PublicShared {
         //配置文件目录 "${dataFolder.absolutePath}/"
         eventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
+            logger.info("got")
             cpp.Event(
                 gson.toJson(
                     Config.PrivateMessage(
-                        Config.Contact(1, this.sender.id, 0, this.senderName, this.bot.id),
+                        this.sender.toContact(),
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(
                             MessageSource.Serializer,
@@ -756,7 +861,7 @@ object PublicShared {
             cpp.Event(
                 gson.toJson(
                     Config.GroupMessage(
-                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.group.toContact(),
                         Config.Contact(3, this.sender.id, this.group.id, this.senderName, this.bot.id),
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
@@ -769,7 +874,7 @@ object PublicShared {
             cpp.Event(
                 gson.toJson(
                     Config.MemberLeave(
-                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.group.toContact(),
                         this.member.id,
                         1,
                         if (this.operator?.id == null) this.bot.id else this.operator!!.id
@@ -783,7 +888,7 @@ object PublicShared {
             cpp.Event(
                 gson.toJson(
                     Config.MemberLeave(
-                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.group.toContact(),
                         this.member.id,
                         2,
                         this.member.id
@@ -796,7 +901,7 @@ object PublicShared {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
-                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.group.toContact(),
                         Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                         3,
                         this.member.id
@@ -808,7 +913,7 @@ object PublicShared {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
-                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.group.toContact(),
                         Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                         2,
                         this.member.id
@@ -820,7 +925,7 @@ object PublicShared {
             cpp.Event(
                 gson.toJson(
                     Config.MemberJoin(
-                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.group.toContact(),
                         Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                         1,
                         this.invitor.id
@@ -885,7 +990,7 @@ object PublicShared {
                 gson.toJson(
                     Config.BotJoinGroup(
                         1,
-                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.group.toContact(),
                         this.invitor.id
                     )
                 )
@@ -896,7 +1001,7 @@ object PublicShared {
                 gson.toJson(
                     Config.BotJoinGroup(
                         2,
-                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.group.toContact(),
                         0
                     )
                 )
@@ -907,7 +1012,7 @@ object PublicShared {
                 gson.toJson(
                     Config.BotJoinGroup(
                         3,
-                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
+                        this.group.toContact(),
                         0
                     )
                 )
@@ -935,8 +1040,8 @@ object PublicShared {
             cpp.Event(
                 gson.toJson(
                     Config.GroupTempMessage(
-                        Config.Contact(2, this.group.id, 0, this.group.name, this.bot.id),
-                        Config.Contact(3, this.sender.id, this.group.id, this.sender.nameCardOrNick, this.bot.id),
+                        this.group.toContact(),
+                        this.sender.toContact(),
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(
                             MessageSource.Serializer,
@@ -945,6 +1050,18 @@ object PublicShared {
                     )
                 )
             )
+        }
+
+        eventChannel.subscribeAlways<NudgeEvent> {
+            cpp.Event(gson.toJson(
+                Config.NugdeEvent(
+                    if(this.subject.id == this.from.id)
+                        this.bot.getFriend(this.from.id)!!.toContact()
+                    else
+                        this.bot.getGroup(this.subject.id)!![this.from.id]!!.toContact(),
+                    this.bot.id
+                )
+            ))
         }
     }
 }
