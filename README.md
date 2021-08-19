@@ -186,7 +186,7 @@ mcl --update-package io.github.nambers:MiraiCP-plugin --channel nightly --type p
 
 论坛贴: [miraicp](https://mirai.mamoe.net/topic/532/miraicp-c-sdk)
 
-github issue: [miraicp issue](https://github.com/Nambers/MiraiCP/issue)
+github issue: [miraicp issue](https://github.com/Nambers/MiraiCP/issues)
 
 qq群: 1044565129
 
