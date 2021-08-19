@@ -20,6 +20,7 @@
       * [3\.2\.1 使用loader直接使用](#321-使用loader直接使用)
       * [3\.2\.2 使用plugin作为mcl的插件使用](#322-使用plugin作为mcl的插件使用)
 * [更新方式](#更新方式)
+* [交流方式](#交流方式)
 * [TODO](#todo)
 * [许可](#许可)
 * [依赖](#依赖)
@@ -180,6 +181,16 @@ mcl --update-package io.github.nambers:MiraiCP-plugin --channel nightly --type p
 1. 替换include/下的miraiCP.hpp
 
 2. 替换你的loader或plugin jar包
+
+# 交流方式
+
+论坛贴: [miraicp](https://mirai.mamoe.net/topic/532/miraicp-c-sdk)
+
+github issue: [miraicp issue](https://github.com/Nambers/MiraiCP/issue)
+
+qq群: 1044565129
+
+邮件: 1930893235@qq.com
 
 # TODO
 查看[本项目的milestones里程碑](https://github.com/Nambers/MiraiCP/milestones)
