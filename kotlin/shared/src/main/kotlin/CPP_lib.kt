@@ -55,11 +55,15 @@ import tech.eritquearcus.miraicp.shared.PublicShared.uploadImg
 import tech.eritquearcus.miraicp.shared.PublicShared.uploadVoice
 
 class CPP_lib (
-    dll_path: String
-        ){
+    dll_path: String,
+    dependencies: List<String>?
+){
     var config:PluginConfig
 
     init {
+        dependencies?.forEach {
+            System.load(it)
+        }
         System.load(dll_path)
         config = Gson().fromJson(Verify(), PluginConfig::class.java)
     }

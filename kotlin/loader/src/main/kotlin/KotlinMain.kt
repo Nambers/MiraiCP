@@ -20,22 +20,14 @@ package tech.eritquearcus.miraicp.loader
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
-import net.mamoe.mirai.BotFactory
-import net.mamoe.mirai.event.events.BotOnlineEvent
-import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
-import tech.eritquearcus.miraicp.shared.Event
 import tech.eritquearcus.miraicp.shared.PublicShared
-import tech.eritquearcus.miraicp.shared.PublicShared.gson
-import tech.eritquearcus.miraicp.shared.PublicShared.logger
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
-import tech.eritquearcus.miraicp.shared.PublicShared.onEnable
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -62,8 +54,13 @@ object KotlinMain {
             it.login()
             logined = true
         }
-        c.cppPath.forEach {
-            var dll_name = it
+        c.cppPaths.forEach {
+            val d = it.dependencies?.filter { p ->
+                File(p).let { f ->
+                    f.isFile && f.exists() && (f.extension == "dll" || f.extension == "lib" || f.extension == "so")
+                }
+            }
+            var dll_name = it.path
             if (!File(dll_name).exists()) {
                 logger.error("Error: dll文件$dll_name 不存在, 请检查config.json配置")
                 return@forEach
@@ -72,7 +69,7 @@ object KotlinMain {
             }
             logger.info("⭐当前MiraiCP版本: $now_tag")
             logger.info("⭐c++ dll地址:${dll_name}")
-            val cpp = CPP_lib(dll_name)
+            val cpp = CPP_lib(dll_name, d)
             cpp.showInfo()
             PublicShared.cpp.add(cpp)
             if(PublicShared.logger4plugins.contains(cpp.config.name))
@@ -105,7 +102,12 @@ fun main(args: Array<String>){
                             "md5": false,
                             "autoLogin": false
                           }],
-                          "cppPath": "dll路径"
+                          "cppPaths": {
+                          "path":"dll路径",
+                          "dependence":[
+                            "依赖的dll路径"
+                          ]
+                          }
                         }
 
                     """.trimIndent()
