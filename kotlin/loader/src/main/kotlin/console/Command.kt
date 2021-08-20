@@ -158,7 +158,7 @@ object Command {
                         error(order.joinToString(" "),order[1] + "不是一个有效的dll或so文件")
                     }
                     else->{
-                        CPP_lib(order[1]).let { cpp ->
+                        CPP_lib(order[1], emptyList()).let { cpp ->
                             cpp.showInfo()
                             PublicShared.logger4plugins[cpp.config.name] =
                                 MiraiLogger.Factory.create(this::class, cpp.config.name)

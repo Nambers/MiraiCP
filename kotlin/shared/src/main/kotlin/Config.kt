@@ -129,10 +129,19 @@ class Config {
         val finfo: FInfo
     )
 
+    data class cppPath(
+        val path: String,
+        val dependencies: List<String>?
+    )
+
+    data class pluginConfig(
+        val pluginConfig: List<cppPath>
+    )
+
     data class accounts(
         val accounts: List<Account>?,
-        val cppPath: List<String>
-) {
+        val cppPaths: List<cppPath>
+    ) {
         data class Account(
             val heatBeat: String?,
             val id: Long,

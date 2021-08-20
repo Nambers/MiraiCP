@@ -17,6 +17,7 @@
 
 package tech.eritquearcus.miraicp
 
+import com.google.gson.Gson
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -42,27 +43,47 @@ object PluginMain : KotlinPlugin(
         PublicShared.init(l)
         l.info("⭐MiraiCP启动中⭐")
         l.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
-        File("${dataFolder.absoluteFile}\\miraicp.txt").apply{
-            if(!this.exists() || !this.isFile) {
+        Gson().fromJson(File("${dataFolder.absoluteFile}\\miraicp.json").apply {
+            if (!this.exists() || !this.isFile) {
                 l.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
+                l.error("配置文件应该在(${this.absolutePath}), 并且拥有以下json格式:")
+                l.error(
+                    """
+                    {
+                    "pluginConfig":[
+                    {
+                    "path":"第一个插件路径",
+                    "dependencies":["依赖的dll列表，可为空"]
+                    }
+                    ]
+                    }
+                """.trimIndent()
+                )
                 return
             }
-        }.readLines().forEach {
-                val f = File(it)
-                when{
-                    !f.isFile || !f.exists()->{
-                        error(it + "不是一个有效的文件")
+        }.readText(), Config.pluginConfig::class.java).pluginConfig.forEach { i ->
+            val it = i.path
+            val d = i.dependencies?.filter { p ->
+                File(p).let { f ->
+                    f.isFile && f.exists() && (f.extension == "dll" || f.extension == "lib" || f.extension == "so")
+                }
+            }
+            val f = File(it)
+            when {
+                !f.isFile || !f.exists() -> {
+                    error(it + "不是一个有效的文件")
+                }
+                f.extension != "dll" && f.extension != "so" -> {
+                    error(it + "不是一个有效的dll或so文件")
+                }
+                else -> {
+                    PublicShared.logger.info("加载${it}成功")
+                    CPP_lib(it, d).let { cpp ->
+                        cpp.showInfo()
+                        PublicShared.logger4plugins[cpp.config.name] =
+                            MiraiLogger.Factory.create(this::class, cpp.config.name)
+                        PublicShared.cpp.add(cpp)
                     }
-                    f.extension != "dll" && f.extension != "so"->{
-                        error(it + "不是一个有效的dll或so文件")
-                    }
-                    else->{
-                        PublicShared.logger.info("加载${it}成功")
-                        CPP_lib(it).let {cpp->
-                            cpp.showInfo()
-                            PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.Factory.create(this::class, cpp.config.name)
-                            PublicShared.cpp.add(cpp)
-                        }
 
                     }
                 }
