@@ -18,7 +18,6 @@
 package tech.eritquearcus.miraicp.loader.console
 
 import com.google.gson.Gson
-import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.login
@@ -126,7 +125,7 @@ object Command {
                 it.config.name == name
             }.forEach {
                 PublicShared.cpp.remove(it)
-                PublicShared.disablePlugins.contains(name)&&PublicShared.disablePlugins.remove(name)
+                PublicShared.disablePlugins.contains(name) && PublicShared.disablePlugins.remove(name)
                 info("成功移除${name}插件")
             }
         }catch(e:NoSuchElementException){
@@ -159,9 +158,10 @@ object Command {
                         error(order.joinToString(" "),order[1] + "不是一个有效的dll或so文件")
                     }
                     else->{
-                        CPP_lib(order[1]).let {cpp->
+                        CPP_lib(order[1]).let { cpp ->
                             cpp.showInfo()
-                            PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.Factory.create(this::class, cpp.config.name)
+                            PublicShared.logger4plugins[cpp.config.name] =
+                                MiraiLogger.Factory.create(this::class, cpp.config.name)
                             PublicShared.cpp.add(cpp)
                         }
                         PublicShared.logger.info("加载${order[1]}成功")
@@ -171,7 +171,7 @@ object Command {
             "disablePlugin", "disable" ->{
                 try{
                     PublicShared.cpp.first { it.config.name == order[1] }
-                    (!PublicShared.disablePlugins.contains(order[1]))&&PublicShared.disablePlugins.add(order[1])
+                    (!PublicShared.disablePlugins.contains(order[1])) && PublicShared.disablePlugins.add(order[1])
                     info("禁用${order[1]}成功")
                 }catch(e:NoSuchElementException){
                     error(order.joinToString(" "), "找不到${order[1]}插件, 关闭失败")
@@ -191,8 +191,6 @@ object Command {
     }
 
     private fun twoParamOrder(order: Array<String>){
-        when(order[0]){
-            else-> unknown(order.joinToString(" "))
-        }
+        unknown(order.joinToString(" "))
     }
 }
