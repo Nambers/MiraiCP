@@ -33,13 +33,13 @@ import tech.eritquearcus.miraicp.shared.PublicShared.accpetGroupInvite
 import tech.eritquearcus.miraicp.shared.PublicShared.basicSendLog
 import tech.eritquearcus.miraicp.shared.PublicShared.buildforwardMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.deleteOnlineAnnouncement
-import tech.eritquearcus.miraicp.shared.PublicShared.friendNextMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.getowner
 import tech.eritquearcus.miraicp.shared.PublicShared.groupSetting
 import tech.eritquearcus.miraicp.shared.PublicShared.gson
 import tech.eritquearcus.miraicp.shared.PublicShared.kkick
 import tech.eritquearcus.miraicp.shared.PublicShared.kqueryM
 import tech.eritquearcus.miraicp.shared.PublicShared.mute
+import tech.eritquearcus.miraicp.shared.PublicShared.nextMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.publishOfflineAnnouncement
 import tech.eritquearcus.miraicp.shared.PublicShared.recallMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.rejectFriendRequest
@@ -212,31 +212,37 @@ class CPP_lib (
         private fun KUpdateSetting(contactSource: String, source: String): String =
             runBlocking { groupSetting(gson.fromJson(contactSource, Config.Contact::class.java), source) }
 
-        private fun KUploadVoice(contactSource: String, source: String): String {
-            val tmp = JSONObject(source)
-            return runBlocking {
-                uploadVoice(tmp.getString("path"), gson.fromJson(contactSource, Config.Contact::class.java))
+        private fun KUploadVoice(contactSource: String, source: String): String =
+            JSONObject(source).let { tmp ->
+                return runBlocking {
+                    uploadVoice(tmp.getString("path"), gson.fromJson(contactSource, Config.Contact::class.java))
+                }
             }
-        }
 
-        private fun KAnnouncement(identify: String, source: String?):String{
-            val i = gson.fromJson(identify, Config.IdentifyA::class.java)
-            return if(i.type == 1){
-                runBlocking {
-                    deleteOnlineAnnouncement(i)
+        private fun KAnnouncement(identify: String, source: String?): String =
+            gson.fromJson(identify, Config.IdentifyA::class.java).let { i ->
+                return when (i.type) {
+                    1 -> {
+                        runBlocking {
+                            deleteOnlineAnnouncement(i)
+                        }
+                    }
+                    2 -> {
+                        runBlocking {
+                            publishOfflineAnnouncement(i, gson.fromJson(source!!, Config.BriefOfflineA::class.java))
+                        }
+                    }
+                    else -> {
+                        "EA"
+                    }
                 }
-            }else if(i.type == 2){
-                runBlocking {
-                    publishOfflineAnnouncement(i, gson.fromJson(source!!, Config.BriefOfflineA::class.java))
-                }
-            }else{"EA"}
-        }
+            }
 
-        private fun KNudge(contactSource: String):String=
+        private fun KNudge(contactSource: String): String =
             sendNudge(gson.fromJson(contactSource, Config.Contact::class.java))
 
-        private fun KFriendNextMsg(fid: Long, botid:Long, time:Long, halt: Boolean):String=
-            friendNextMsg(fid, botid, time, halt)
+        private fun KNextMsg(contactSource: String, time: Long, halt: Boolean): String =
+            nextMsg(gson.fromJson(contactSource, Config.Contact::class.java), time, halt)
 
         enum class operation_code {
             /// 撤回信息
@@ -309,7 +315,7 @@ class CPP_lib (
             Nudge,
 
             /// 好友对象下一条消息
-            FriendNextMsg
+            NextMsg
         }
 
         @JvmStatic
@@ -365,7 +371,11 @@ class CPP_lib (
                     /// 发送戳一戳
                     operation_code.Nudge.ordinal -> KNudge(root.getString("contactSource"))
                     /// 好友下一条信息
-                    operation_code.FriendNextMsg.ordinal -> KFriendNextMsg(root.getLong("fid"), root.getLong("botid"), root.getLong("time"), root.getBoolean("halt"))
+                    operation_code.NextMsg.ordinal -> KNextMsg(
+                        root.getString("contactsource"),
+                        root.getLong("time"),
+                        root.getBoolean("halt")
+                    )
                     else -> "EA"
                 }
             }catch(e:Exception){

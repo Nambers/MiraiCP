@@ -18,18 +18,25 @@
 package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.Gson
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.LowLevelApi
 import net.mamoe.mirai.Mirai
-import net.mamoe.mirai.contact.*
+import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.contact.NormalMember
+import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.contact.announcement.OfflineAnnouncement
 import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
 import net.mamoe.mirai.contact.announcement.bot
 import net.mamoe.mirai.contact.announcement.buildAnnouncementParameters
-import net.mamoe.mirai.event.*
+import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.event.Event
+import net.mamoe.mirai.event.EventChannel
+import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.events.*
+import net.mamoe.mirai.event.nextEvent
 import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
@@ -61,22 +68,52 @@ object PublicShared {
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
 
-    fun init(l: MiraiLogger){
+    fun init(l: MiraiLogger) {
         logger = l
     }
-    fun friendNextMsg(fid:Long, botid:Long, time: Long, halt: Boolean):String{
+
+    fun nextMsg(c: Config.Contact, time: Long, halt: Boolean): String {
         return runBlocking {
-            val e = nextEvent<FriendMessageEvent>(time, EventPriority.HIGHEST){
-                it.sender.id == fid && it.bot.id == botid
+            val e = try {
+                when (c.type) {
+                    1 -> {
+                        nextEvent<FriendMessageEvent>(time, EventPriority.HIGHEST) {
+                            it.sender.id == c.id && it.bot.id == c.botid
+                        }.let {
+                            if (halt)
+                                it.intercept()
+                            it.message
+                        }
+                    }
+                    2 -> {
+                        nextEvent<GroupMessageEvent>(time, EventPriority.HIGHEST) {
+                            it.bot.id == c.botid && it.group.id == c.id
+                        }.let {
+                            if (halt)
+                                it.intercept()
+                            it.message
+                        }
+                    }
+                    3 -> {
+                        nextEvent<GroupMessageEvent>(time, EventPriority.HIGHEST) {
+                            it.bot.id == c.botid && it.group.id == c.groupid && it.sender.id == c.id
+                        }.let {
+                            if (halt)
+                                it.intercept()
+                            it.message
+                        }
+                    }
+                    else -> throw Exception()
+                }
+            } catch (e: TimeoutCancellationException) {
+                return@runBlocking "E1"
             }
-            if(halt)
-                e.intercept()
             gson.toJson(
                 Config.Message(
-                    e.message.serializeToMiraiCode(),
+                    e.serializeToMiraiCode(),
                     json.encodeToString(
                         MessageSource.Serializer,
-                        e.message[MessageSource]!!
+                        e[MessageSource]!!
                     )
                 )
             )
