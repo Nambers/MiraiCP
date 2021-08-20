@@ -1,19 +1,3 @@
-// Copyright (C) 2020-2021 Eritque arcus and contributors.
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as
-// published by the Free Software Foundation, either version 3 of the
-// License, or any later version(in your opinion).
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-//
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
 // MiraiCP依赖文件(只需要引入这一个)
 #include <miraiCP.hpp>
 using namespace std;
@@ -135,12 +119,12 @@ public:
            // e.botlogger.info("messageSource: "+e.message.source.serializeToString());
            // e.group.sendMsg("撤回测试:");
            // e.group.sendMsg("撤回测试").recall();
-           e.group.sendMsg("发送卡片:");
-           e.group.sendMiraiCode(new LightApp(LightAppStyle1()));
-           e.group.sendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
-           e.group.sendMiraiCode(new LightApp(LightApp(LightAppStyle3())));
-           e.group.sendMiraiCode(new LightApp(LightAppStyle4()));
-           schedule(10000, "aaa");
+           // e.group.sendMsg("发送卡片:");
+           // e.group.sendMiraiCode(new LightApp(LightAppStyle1()));
+           // e.group.sendMiraiCode(LightApp(LightAppStyle2()).toMiraiCode());
+           // e.group.sendMiraiCode(new LightApp(LightApp(LightAppStyle3())));
+           // e.group.sendMiraiCode(new LightApp(LightAppStyle4()));
+           // schedule(10000, "aaa");
            // e.group.sendMsg("转发测试:");
            // ForwardMessage(&e.group,
            //                {
@@ -151,6 +135,11 @@ public:
            // e.sender.sendMsg(e.bot.nick());
            // e.sender.sendMsg(e.bot.FriendListToString());
            // e.sender.sendMsg(e.bot.GroupListToString());
+           e.group.sendMsg("next msg test");
+           if(e.message.content.toMiraiCode() == "a")
+               logger->info("content: " + e.nextMessage().content.toString());
+           else
+               logger->info("content2: " + e.senderNextMessage().content.toString());
         });
         // 监听群临时会话
         procession->registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
