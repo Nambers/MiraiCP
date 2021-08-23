@@ -12,8 +12,9 @@ assignees: ''
 **Screenshots 相关代码和日志截图或复制上来**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information): 描述本地运行环境**
+**描述本地运行环境**
 版本:
+<!--- 在下面中括号中填`x`表明用的是哪个端--->
  - [ ] plugin
  - [ ] loader
  - MiraiCP版本: `v2.6.3`
