@@ -150,15 +150,18 @@ object Command {
             }
             "loadPlugin", "load" ->{
                 val f = File(order[1])
-                when{
-                    !f.isFile || !f.exists()->{
-                        error(order.joinToString(" "),order[1] + "不是一个有效的文件")
+                when {
+                    !f.isFile || !f.exists() -> {
+                        error(order.joinToString(" "), order[1] + "不是一个有效的文件")
                     }
-                    f.extension != "dll" && f.extension != "so"->{
-                        error(order.joinToString(" "),order[1] + "不是一个有效的dll或so文件")
+                    f.extension != "dll" && f.extension != "so" -> {
+                        error(order.joinToString(" "), order[1] + "不是一个有效的dll或so文件")
                     }
-                    else->{
-                        CPP_lib(order[1], emptyList()).let { cpp ->
+                    PublicShared.loadedPlugins.contains(f.absolutePath) -> {
+                        error("已经加载该插件")
+                    }
+                    else -> {
+                        CPP_lib(f.absolutePath, emptyList()).let { cpp ->
                             cpp.showInfo()
                             PublicShared.logger4plugins[cpp.config.name] =
                                 MiraiLogger.Factory.create(this::class, cpp.config.name)
