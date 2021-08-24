@@ -23,9 +23,8 @@
 #ifndef CPP_MIRAICP_HPP
 #define CPP_MIRAICP_HPP
 #pragma execution_character_set("utf-8")
-
 // 在include文件夹里的依赖
-#include "tech_eritquearcus_miraicp_shared_CPP_lib.h"
+#include <jni.h>
 #include <json.hpp>
 #include <utf8.h>
 //C++ 标准库
@@ -2795,8 +2794,13 @@ throw: InitxException 即找不到对应签名
 */
 
     void Config::Init(JNIEnv *env) {
+#ifndef MIRAICP_TEST
         this->CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(
                 env->FindClass("tech/eritquearcus/miraicp/shared/CPP_lib")));
+#else
+        this->CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(
+                env->FindClass("tech/eritquearcus/miraicp/shared/testUtils/CPP_lib")));
+#endif
         if (this->CPP_lib == nullptr) {
             throw APIException("初始化错误，找不到CPP_lib类");
         }
@@ -3448,13 +3452,14 @@ throw: InitxException 即找不到对应签名
     // 结束MiraiCP实现代码
 }
 //开始对接JNI接口代码
+
 /*
 * 名称:Java_com_example_plugin_CPP_1lib_Verify
 * 作用:判断是否连接上本插件，勿改
 * 参数:env 必备，job 必备
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
-JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Verify(JNIEnv *env, jobject) {
+jstring Verify(JNIEnv *env, jobject) {
     using namespace MiraiCP;
     manager->setEnv(env);
     env->GetJavaVM(&gvm);
@@ -3479,8 +3484,7 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Verify(
     return Tools::str2jstring(j.dump().c_str());//验证机制，返回当前SDK版本
 }
 /* 插件结束事件*/
-JNIEXPORT jobject JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_PluginDisable
-        (JNIEnv *env, jobject job) {
+jobject PluginDisable(JNIEnv *env, jobject job) {
     using namespace MiraiCP;
     manager->setEnv(env);
     plugin->onDisable();
@@ -3498,8 +3502,7 @@ jstring returnNull() {
 /*
 * 消息解析分流
 */
-JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
-        (JNIEnv *env, jobject, jstring content) {
+jstring Event(JNIEnv *env, jobject, jstring content) {
     using namespace MiraiCP;
     manager->setEnv(env);
     std::string tmp = Tools::jstring2str(content, env);
@@ -3635,6 +3638,48 @@ JNIEXPORT jstring JNICALL Java_tech_eritquearcus_miraicp_shared_CPP_1lib_Event
     }
     return returnNull();
 }
+
+#ifdef MIRAICP_TEST
+#define MIRAICP_JNI_CLASS "tech/eritquearcus/miraicp/shared/testUtils/CPP_lib"
+#else
+#define MIRAICP_JNI_CLASS "tech/eritquearcus/miraicp/shared/CPP_lib"
+#endif
+
+static int registerMethods(JNIEnv *env, const char *className,
+                           JNINativeMethod *gMethods, int numMethods) {
+    jclass clazz = env->FindClass(className);
+    if (clazz == NULL) {
+        return JNI_FALSE;
+    }
+    //注册native方法
+    if (env->RegisterNatives(clazz, gMethods, numMethods) < 0) {
+        return JNI_FALSE;
+    }
+    return JNI_TRUE;
+}
+
+static JNINativeMethod method_table[] = {
+        {(char*)"Verify", (char*)"()Ljava/lang/String;", (jstring*)Verify },
+        {(char*)"Event", (char*)"(Ljava/lang/String;)Ljava/lang/String;", (jstring *) Event},
+        {(char*)"PluginDisable", (char*)"()Ljava/lang/Void;", (jobject*) PluginDisable}
+        };
+
+extern "C"
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    JNIEnv *env = NULL;
+    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR;
+    }
+    assert(env != NULL);
+
+    // 注册native方法
+    if (!registerMethods(env, MIRAICP_JNI_CLASS, method_table, 3)) {
+        return JNI_ERR;
+    }
+
+    return JNI_VERSION_1_6;
+}
+
 //结束对接JNI接口代码
 #endif
 #pragma clang diagnostic pop

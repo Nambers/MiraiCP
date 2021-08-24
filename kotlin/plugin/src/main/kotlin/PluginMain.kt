@@ -23,6 +23,7 @@ import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.MiraiLogger
+import tech.eritquearcus.miraicp.console.registerCommands
 import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
 import tech.eritquearcus.miraicp.shared.Event
@@ -33,12 +34,13 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.7-RC-dev5"
+        version = "2.7-RC"
     ){
         author("Eritque arcus")
     }
 ) {
     override fun onEnable() {
+        registerCommands()
         val l = MiraiLogger.Factory.create(this::class, "MiraiCP")
         PublicShared.init(l)
         l.info("⭐MiraiCP启动中⭐")
@@ -78,7 +80,7 @@ object PluginMain : KotlinPlugin(
                 }
                 else -> {
                     PublicShared.logger.info("加载${it}成功")
-                    CPP_lib(it, d).let { cpp ->
+                    CPP_lib(f.absolutePath, d).let { cpp ->
                         cpp.showInfo()
                         PublicShared.logger4plugins[cpp.config.name] =
                             MiraiLogger.Factory.create(this::class, cpp.config.name)

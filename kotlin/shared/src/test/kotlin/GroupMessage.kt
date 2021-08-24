@@ -1,3 +1,6 @@
+import org.junit.jupiter.api.Test
+import tech.eritquearcus.miraicp.shared.testUtils.CPP_lib
+
 /*
  * Copyright (C) 2020-2021 Eritque arcus and contributors.
  *
@@ -14,28 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package tech.eritquearcus.miraicp.console
-
-import net.mamoe.mirai.console.command.CommandManager
-import net.mamoe.mirai.console.command.CommandSender
-import net.mamoe.mirai.console.command.SimpleCommand
-import tech.eritquearcus.miraicp.PluginMain
-import tech.eritquearcus.miraicp.shared.PublicShared
-
-object pluginList : SimpleCommand(
-    PluginMain,
-    "pluginList", "plist",
-    description = "Tell somebody privately"
-) {
-    @Handler
-    fun CommandSender.handle() {
-        PublicShared.cpp.forEach {
-            it.showInfo()
-        }
+class GroupMessage {
+    @Test
+    fun main() {
+        setUpStreams()
+        val c = CPP_lib(dll_path, emptyList())
     }
-}
-
-fun registerCommands() {
-    CommandManager.registerCommand(pluginList)
 }

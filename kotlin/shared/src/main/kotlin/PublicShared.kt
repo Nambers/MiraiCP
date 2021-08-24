@@ -49,11 +49,13 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
 
+
 object PublicShared {
-    private val json by lazy {
+    internal val json by lazy {
         Json {
             Mirai
             serializersModule = MessageSerializers.serializersModule
@@ -64,9 +66,10 @@ object PublicShared {
     val cpp: ArrayList<CPP_lib> = arrayListOf()
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
-    const val now_tag = "v2.7-RC-dev5"
+    const val now_tag = "v2.7-RC"
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
+    val loadedPlugins = arrayListOf<String>()
 
     fun init(l: MiraiLogger) {
         logger = l
@@ -895,6 +898,8 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
+            val sdf = SimpleDateFormat("HH:mm:ss.SSS")
+            val s = sdf.format(Date()).toString()
             cpp.Event(
                 gson.toJson(
                     Config.GroupMessage(
@@ -905,6 +910,7 @@ object PublicShared {
                     )
                 )
             )
+            logger.info(s + " | " + sdf.format(Date()).toString())
         }
         eventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
