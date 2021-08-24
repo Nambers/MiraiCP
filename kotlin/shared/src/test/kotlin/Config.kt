@@ -14,28 +14,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import com.google.gson.Gson
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.PrintStream
 
-package tech.eritquearcus.miraicp.console
 
-import net.mamoe.mirai.console.command.CommandManager
-import net.mamoe.mirai.console.command.CommandSender
-import net.mamoe.mirai.console.command.SimpleCommand
-import tech.eritquearcus.miraicp.PluginMain
-import tech.eritquearcus.miraicp.shared.PublicShared
-
-object pluginList : SimpleCommand(
-    PluginMain,
-    "pluginList", "plist",
-    description = "Tell somebody privately"
-) {
-    @Handler
-    fun CommandSender.handle() {
-        PublicShared.cpp.forEach {
-            it.showInfo()
-        }
+val dll_path: String = File("../../cpp/cmake-build-debug/MiraiCP.dll").absolutePath
+    get() {
+        println("load $field")
+        return field
     }
-}
+val g by lazy { Gson() }
+private val outContent = ByteArrayOutputStream()
+private val errContent = ByteArrayOutputStream()
 
-fun registerCommands() {
-    CommandManager.registerCommand(pluginList)
+fun setUpStreams() {
+    System.setOut(PrintStream(outContent))
+    System.setErr(PrintStream(errContent))
 }

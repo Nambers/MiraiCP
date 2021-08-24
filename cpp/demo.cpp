@@ -1,7 +1,10 @@
 // MiraiCP依赖文件(只需要引入这一个)
 #include <miraiCP.hpp>
+#include <chrono>
 using namespace std;
 using namespace MiraiCP;
+using std::chrono::high_resolution_clock;
+using std::chrono::milliseconds;
 // 多线程示例
 void func(unsigned long long i, unsigned long long botid) {
 	// 执行操作
@@ -68,12 +71,23 @@ public:
             // e.sender.sendMiraiCode(tmp.toMiraiCode());
             // e.message.source.recall();
             logger->info("Start");
-            logger->info("content: "+e.nextMessage().content.toMiraiCode());
+            // logger->info("content: "+e.nextMessage().content.toMiraiCode());
         });
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            e.group.sendMsg("--开始测试--");
+            logger->info(e.group.sendMsg("x").serializeToString());
+            SYSTEMTIME st = { 0 };
+            GetLocalTime(&st);  //获取当前时间 可精确到ms
+            logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
+            high_resolution_clock::time_point beginTime = high_resolution_clock::now();
+            for(int i = 0; i<10; i++)
+                e.group.sendMiraiCode(to_string(i));
+            high_resolution_clock::time_point endTime = high_resolution_clock::now();
+            long long re = std::chrono::duration_cast<milliseconds>(endTime - beginTime).count() / 10;
+            logger->info(to_string(re));
+            GetLocalTime(&st);  //获取当前时间 可精确到ms
+            logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
            //  e.group.sendMsg(e.sender.at() + "发送纯文本MiraiCode");
            //  e.group.sendMiraiCode(e.sender.at() + "发送MiraiCode");
            //  e.group.sendMsg("禁言测试");
@@ -135,11 +149,11 @@ public:
            // e.sender.sendMsg(e.bot.nick());
            // e.sender.sendMsg(e.bot.FriendListToString());
            // e.sender.sendMsg(e.bot.GroupListToString());
-           e.group.sendMsg("next msg test");
-           if(e.message.content.toMiraiCode() == "a")
-               logger->info("content: " + e.nextMessage().content.toString());
-           else
-               logger->info("content2: " + e.senderNextMessage().content.toString());
+           // e.group.sendMsg("next msg test");
+           // if(e.message.content.toMiraiCode() == "a")
+           //     logger->info("content: " + e.nextMessage().content.toString());
+           // else
+           //     logger->info("content2: " + e.senderNextMessage().content.toString());
         });
         // 监听群临时会话
         procession->registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
