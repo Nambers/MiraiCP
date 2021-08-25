@@ -19,12 +19,8 @@ plugins {
     kotlin("plugin.serialization")
 }
 dependencies {
-    testImplementation(kotlin("test"))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
-}
-tasks.test {
-    useJUnitPlatform()
 }
 group = "tech.eritquearcus"
 version = libs.versions.miraiCPVersion.get()
