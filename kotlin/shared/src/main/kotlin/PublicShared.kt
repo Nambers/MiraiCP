@@ -882,7 +882,6 @@ object PublicShared {
         //配置文件目录 "${dataFolder.absolutePath}/"
         eventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
-            logger.info("got")
             cpp.Event(
                 gson.toJson(
                     Config.PrivateMessage(
