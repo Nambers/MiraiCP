@@ -17,15 +17,9 @@
 
 package tech.eritquearcus.miraicp.loader
 
-import net.mamoe.mirai.Bot
-import net.mamoe.mirai.event.broadcast
-import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.message.data.toMessageChain
+import net.mamoe.mirai.utils.MiraiInternalApi
 
-suspend fun groupMessage() {
-    val b = Bot.getInstance(692928873)
-    val g = b.getGroup(788189105)!!
-    val s = g[1930893235]!!
-    val m = source(b).toMessageChain()
-    GroupMessageEvent(s.nameCard, s.permission, s, m, 1).broadcast()
+@OptIn(MiraiInternalApi::class, net.mamoe.mirai.utils.MiraiExperimentalApi::class)
+fun main() {
+    main(emptyArray())
 }
