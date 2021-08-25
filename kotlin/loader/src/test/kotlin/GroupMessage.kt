@@ -17,19 +17,27 @@
 
 package tech.eritquearcus.miraicp.loader
 
-import kotlinx.coroutines.runBlocking
-import net.mamoe.mirai.utils.MiraiInternalApi
-import org.junit.jupiter.api.Test
-import kotlin.system.exitProcess
+import net.mamoe.mirai.Bot
+import net.mamoe.mirai.Mirai
+import net.mamoe.mirai.event.broadcast
+import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.message.data.MessageSourceKind
+import net.mamoe.mirai.message.data.PlainText
+import net.mamoe.mirai.message.data.toMessageChain
 
-class Test {
-    @Test
-    @OptIn(MiraiInternalApi::class, net.mamoe.mirai.utils.MiraiExperimentalApi::class)
-    fun groupMessageTest() {
-        runBlocking {
-            main(arrayOf("../config.json"))
-            groupMessage()
-            exitProcess(0)
-        }
-    }
+suspend fun groupMessage() {
+    val b = Bot.getInstance(692928873)
+    val g = b.getGroup(788189105)!!
+    val s = g[1930893235]!!
+    val m = Mirai.constructMessageSource(
+        b.id,
+        MessageSourceKind.GROUP,
+        s.id,
+        g.id,
+        intArrayOf(1),
+        1,
+        intArrayOf(1),
+        PlainText("x").toMessageChain()
+    ).toMessageChain()
+    GroupMessageEvent(s.nameCard, s.permission, s, m, 1).broadcast()
 }
