@@ -18,6 +18,7 @@
 package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.utils.MiraiLogger
 import org.json.JSONObject
@@ -85,10 +86,22 @@ class CPP_lib (
     }
     //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
     companion object{
+        var test: Boolean = false
         //send MiraiCode
         private fun KSend(source: String, miraiCode: Boolean): String =
             runBlocking {
                 val tmp = gson.fromJson(source, Config.SendRequest::class.java)
+                if (test) {
+                    when (tmp.contact.type) {
+                        1 -> println("send Friend<MiraiCode: $miraiCode>: ${tmp.content}")
+                        2 -> println("send Group<MiraiCode: $miraiCode>: ${tmp.content}")
+                        3 -> println("send Member<MiraiCode: $miraiCode>: ${tmp.content}")
+                    }
+                    delay(171)
+                    return@runBlocking """
+                                            {"kind":"GROUP","botId":692928873,"ids":[3926],"internalIds":[1921344034],"time":1629788808,"fromId":692928873,"targetId":788189105,"originalMessage":[{"type":"PlainText","content":"x"}]}
+                                            """.trimIndent()
+                }
                 return@runBlocking when (miraiCode) {
                     false -> SendMsg(tmp.content, tmp.contact)
                     true -> SendMiraiCode(tmp.content, tmp.contact)
