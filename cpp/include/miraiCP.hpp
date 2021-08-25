@@ -1714,7 +1714,7 @@ LightApp风格1
          */
         Friend(QQID friendid, QQID botid, JNIEnv * = manager->getEnv());
 
-        explicit Friend(Contact c) : Contact(c) { refreshInfo(); };
+        explicit Friend(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 删除好友(delete是C++关键字
         void deleteFriend(JNIEnv *env = manager->getEnv()) {
@@ -2794,13 +2794,8 @@ throw: InitxException 即找不到对应签名
 */
 
     void Config::Init(JNIEnv *env) {
-#ifndef MIRAICP_TEST
         this->CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(
                 env->FindClass("tech/eritquearcus/miraicp/shared/CPP_lib")));
-#else
-        this->CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(
-                env->FindClass("tech/eritquearcus/miraicp/shared/testUtils/CPP_lib")));
-#endif
         if (this->CPP_lib == nullptr) {
             throw APIException("初始化错误，找不到CPP_lib类");
         }
@@ -3639,16 +3634,10 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
     return returnNull();
 }
 
-#ifdef MIRAICP_TEST
-#define MIRAICP_JNI_CLASS "tech/eritquearcus/miraicp/shared/testUtils/CPP_lib"
-#else
-#define MIRAICP_JNI_CLASS "tech/eritquearcus/miraicp/shared/CPP_lib"
-#endif
-
 static int registerMethods(JNIEnv *env, const char *className,
                            JNINativeMethod *gMethods, int numMethods) {
     jclass clazz = env->FindClass(className);
-    if (clazz == NULL) {
+    if (clazz == nullptr) {
         return JNI_FALSE;
     }
     //注册native方法
@@ -3666,14 +3655,14 @@ static JNINativeMethod method_table[] = {
 
 extern "C"
 JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
-    JNIEnv *env = NULL;
+    JNIEnv *env = nullptr;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
         return JNI_ERR;
     }
-    assert(env != NULL);
+    assert(env != nullptr);
 
     // 注册native方法
-    if (!registerMethods(env, MIRAICP_JNI_CLASS, method_table, 3)) {
+    if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPP_lib", method_table, 3)) {
         return JNI_ERR;
     }
 

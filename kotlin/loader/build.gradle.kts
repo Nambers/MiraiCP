@@ -45,8 +45,12 @@ tasks {
 }
 version = libs.versions.miraiCPVersion.get()
 dependencies {
+    testImplementation(kotlin("test"))
     implementation(project(":shared"))
     implementation(libs.mirai.core.self)
     implementation(libs.jansi)
     implementation(libs.jline)
+}
+tasks.test {
+    useJUnitPlatform()
 }
