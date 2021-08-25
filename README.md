@@ -97,8 +97,6 @@ mirai需要java环境 **>=11**
 
 1. 目前只确定win下可用，其他操作系统未测试，理论上liunx应该可用，生成so文件替换dll文件即可
 
-2. 如果vs报错找不到jni.h，把cpp/include文件夹加入到vs的库里面去(项目->属性->C++->常规)，include文件夹里包含了jni.h以及他的依赖文件
-
 ## 3 使用方法:
 
 ### 3.1 如何使用MiraiCP SDK?
