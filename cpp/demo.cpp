@@ -1,5 +1,6 @@
 // MiraiCP依赖文件(只需要引入这一个)
 #include <miraiCP.hpp>
+
 #include <chrono>
 using namespace std;
 using namespace MiraiCP;
@@ -76,18 +77,21 @@ public:
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            logger->info(e.group.sendMsg("x").serializeToString());
-            SYSTEMTIME st = { 0 };
-            GetLocalTime(&st);  //获取当前时间 可精确到ms
-            logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
-            high_resolution_clock::time_point beginTime = high_resolution_clock::now();
-            for(int i = 0; i<10; i++)
-                e.group.sendMiraiCode(to_string(i));
-            high_resolution_clock::time_point endTime = high_resolution_clock::now();
-            long long re = std::chrono::duration_cast<milliseconds>(endTime - beginTime).count() / 10;
-            logger->info(to_string(re));
-            GetLocalTime(&st);  //获取当前时间 可精确到ms
-            logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
+            e.group.sendMsg("HI*1", -1);
+            e.group.sendMsg("HI*2", -1);
+            e.group.sendMsg("HI*3", -1);
+            e.group.sendMsg("HI*4", -1);
+            // SYSTEMTIME st = { 0 };
+            // GetLocalTime(&st);  //获取当前时间 可精确到ms
+            // logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
+            // high_resolution_clock::time_point beginTime = high_resolution_clock::now();
+            // for(int i = 0; i<10; i++)
+            //     e.group.sendMiraiCode(to_string(i));
+            // high_resolution_clock::time_point endTime = high_resolution_clock::now();
+            // long long re = std::chrono::duration_cast<milliseconds>(endTime - beginTime).count() / 10;
+            // logger->info(to_string(re));
+            // GetLocalTime(&st);  //获取当前时间 可精确到ms
+            // logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
            //  e.group.sendMsg(e.sender.at() + "发送纯文本MiraiCode");
            //  e.group.sendMiraiCode(e.sender.at() + "发送MiraiCode");
            //  e.group.sendMsg("禁言测试");
@@ -166,7 +170,7 @@ public:
         procession->registerEvent<MemberLeaveEvent>([](MemberLeaveEvent e) {
             e.group.sendMiraiCode(At(e.group.getOwner()) + std::to_string(e.memberid) + "退出了群聊");
         });
-        procession->registerEvent<TimeOutEvent>([](TimeOutEvent e){
+        procession->registerEvent<TimeOutEvent>([](const TimeOutEvent& e){
             logger->info(e.msg);
         });
     }

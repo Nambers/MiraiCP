@@ -1,5 +1,46 @@
 # Change Log
 
+## v2.7.0
+
++ mirai版本升级到v2.7.0
++ 修复因为发送频率过快导致服务器无应答直接抛出TimeOutEvent #76
++ 增加发送消息retry机制 #76
++ 增加测试框架
++ 支持dll加载依赖的dll
++ 增加nextMessage支持
++ 增加戳一戳和戳一戳事件支持
++ 让loader先登录再加载插件，以在onEnable取到bot
++ 简化不必要的cmake代码
++ 增加和删除一些命令
++ plugin支持命令
++ loader端和plugin端配置文件格式更改
+	+ 	plugin端的配置文件从miraiCP.txt 要重命名为miraiCP.json, 然后内容为以下格式:
+		```
+		{
+			"pluginConfig":[{
+				"path":"\\cmake-build-debug\\MiraiCP.dll",
+				"dependencies":[]
+			}]
+		}
+		```
+		dependencies项是dll的依赖，如果没有就不填，上面的是dll路径
+	+ 	loader配置文件文件名不变，格式为:
+		```
+		{
+		  "accounts": [{
+			"id": ,
+			"passwords": ""
+		  }],
+		  "cppPaths":[
+			{
+			  "path":"\\cmake-build-debug\\MiraiCP.dll",
+			  "dependence": []
+			}
+		  ]
+		}
+		```
+
+
 ## v2.7-RC-dev5
 
 + 修复2.7-RC-dev4中plugin端对cpp加载不正确([url](https://mirai.mamoe.net/topic/488/%E5%B0%8F%E7%99%BD%E6%B1%82%E6%95%91-mirai_cp%E6%8F%92%E4%BB%B6%E5%9C%A8mcl%E4%B8%8A%E6%94%B6%E5%88%B0%E6%B6%88%E6%81%AF%E5%B0%B1%E6%8A%A5%E9%94%99))
