@@ -91,11 +91,12 @@ class CPP_lib (
         private fun KSend(source: String, miraiCode: Boolean): String =
             runBlocking {
                 val tmp = gson.fromJson(source, Config.SendRequest::class.java)
+                println("[${Thread.currentThread().name}]")
                 if (test) {
                     when (tmp.contact.type) {
-                        1 -> println("send Friend<MiraiCode: $miraiCode>: ${tmp.content}")
-                        2 -> println("send Group<MiraiCode: $miraiCode>: ${tmp.content}")
-                        3 -> println("send Member<MiraiCode: $miraiCode>: ${tmp.content}")
+                        1 -> println("send [${Thread.currentThread().name}] Friend<MiraiCode: $miraiCode>: ${tmp.content}")
+                        2 -> println("send [${Thread.currentThread().name}] Group<MiraiCode: $miraiCode>: ${tmp.content}")
+                        3 -> println("send [${Thread.currentThread().name}] Member<MiraiCode: $miraiCode>: ${tmp.content}")
                     }
                     delay(171)
                     return@runBlocking """
@@ -123,7 +124,15 @@ class CPP_lib (
         @JvmStatic
         fun KSendLog(log:String, level: Int) {
             val j = JSONObject(log)
-            if(j.getLong("id") == -1L)
+            if (test) {
+                when (level) {
+                    0 -> println("I: ${j.getString("log")}")
+                    1 -> println("W: ${j.getString("log")}")
+                    2 -> println("E: ${j.getString("log")}")
+                }
+                return
+            }
+            if (j.getLong("id") == -1L)
                 when (level) {
                     0 -> basicSendLog(j.getString("log"), j.getLong("id"), j.getString("name"))
                     1 -> sendWarning(j.getString("log"), j.getLong("id"), j.getString("name"))
