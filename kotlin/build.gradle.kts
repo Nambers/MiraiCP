@@ -36,7 +36,7 @@ subprojects {
     dependencies {
         implementation("com.google.code.gson:gson:2.8.8")
         implementation("org.json:json:20210307")
-        compileOnly("net.mamoe:mirai-core-api:2.7-RC") // mirai-core 的 API
+        compileOnly("net.mamoe:mirai-core-api:2.7.0") // mirai-core 的 API
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
         // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
         implementation("org.apache.logging.log4j:log4j-core:2.14.1")
