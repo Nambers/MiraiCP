@@ -19,6 +19,7 @@ package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.Gson
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
@@ -55,7 +56,7 @@ import kotlin.concurrent.schedule
 
 
 object PublicShared {
-    internal val json by lazy {
+    private val json by lazy {
         Json {
             Mirai
             serializersModule = MessageSerializers.serializersModule
@@ -151,29 +152,23 @@ object PublicShared {
     //发送消息部分实现 MiraiCode
 
     private suspend fun send0(message: Message, c: Config.Contact): String {
-        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
+        val AIbot = Bot.getInstanceOrNull(c.botid) ?: let {
             return "EB"
         }
-        when (c.type) {
+        val r = when (c.type) {
             1 -> {
                 logger.info("Send message for(${c.id}) is $message")
-                val f = AIbot.getFriend(c.id) ?: let {
+                AIbot.getFriend(c.id) ?: let {
                     logger.error("发送消息找不到好友，位置:K-Send()，id:${c.id}")
                     return "EF"
                 }
-                return json.encodeToString(
-                    MessageSource.Serializer,
-                    f.sendMessage(message).source)
             }
-            2->{
+            2 -> {
                 logger.info("Send message for Group(${c.id}) is $message")
-                val g = AIbot.getGroup(c.id) ?: let {
+                AIbot.getGroup(c.id) ?: let {
                     logger.error("发送群消息异常找不到群组，位置K-SendG，gid:${c.id}")
                     return "EG"
                 }
-                return json.encodeToString(
-                    MessageSource.Serializer,
-                    g.sendMessage(message).source)
             }
             3->{
                 logger.info("Send message for a member(${c.id}) is $message")
@@ -188,14 +183,30 @@ object PublicShared {
                     logger.error("发送消息找不到群聊，位置K-Send()，id:${c.groupid}")
                     return "EM"
                 }
-                val f = G[c.id] ?: let {
+                G[c.id] ?: let {
                     logger.error("发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupid}")
                     return "EMM"
                 }
-                return json.encodeToString(MessageSource.Serializer, f.sendMessage(message).source)
             }
             else -> return "EA"
         }
+        var s: OnlineMessageSource.Outgoing
+        var count = 0
+        while (true) {
+            try {
+                s = r.sendMessage(message).source
+            } catch (e: TimeoutCancellationException) {
+                count += 1
+                logger.warning("给${r.id}发送:$message 失败，正在重新尝试($count 次)")
+                delay(1000)
+                continue
+            }
+            break
+        }
+        return json.encodeToString(
+            MessageSource.Serializer,
+            s
+        )
     }
 
     suspend fun SendMsg(message: String, c:Config.Contact):String{

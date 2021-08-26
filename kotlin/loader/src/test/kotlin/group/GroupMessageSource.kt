@@ -16,7 +16,7 @@
  */
 @file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 
-package tech.eritquearcus.miraicp.loader
+package group
 
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.internal.message.OnlineMessageSourceFromGroupImpl
@@ -103,20 +103,21 @@ fun String.hexToBytes(): ByteArray {
     return array
 }
 
+// This function and above utils tools are from net.mamoe.mirai
 @OptIn(MiraiInternalApi::class)
-fun source(b: Bot): OnlineMessageSource = OnlineMessageSourceFromGroupImpl(
+fun source(b: Bot, sender: Long, groupid: Long): OnlineMessageSource = OnlineMessageSourceFromGroupImpl(
     b,
     listOf(
         MsgComm.Msg(
             msgHead = MsgComm.MsgHead(
-                fromUin = 1930893235,
-                toUin = 692928873,
+                fromUin = sender,
+                toUin = b.id,
                 msgType = 82,
                 msgSeq = 1628,
                 msgTime = 1629,
                 msgUid = 1441,
                 groupInfo = MsgComm.GroupInfo(
-                    groupCode = 788189105,
+                    groupCode = groupid,
                     groupType = 1,
                     groupInfoSeq = 624,
                     groupCard = "user3",
