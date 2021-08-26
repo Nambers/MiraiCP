@@ -151,7 +151,7 @@ object PublicShared {
 
     //发送消息部分实现 MiraiCode
 
-    private suspend fun send0(message: Message, c: Config.Contact): String {
+    private suspend fun send0(message: Message, c: Config.Contact, retryTime: Int): String {
         val AIbot = Bot.getInstanceOrNull(c.botid) ?: let {
             return "EB"
         }
@@ -197,7 +197,9 @@ object PublicShared {
                 s = r.sendMessage(message).source
             } catch (e: TimeoutCancellationException) {
                 count += 1
-                logger.warning("给${r.id}发送:$message 失败，正在重新尝试($count 次)")
+                logger.warning("给${r.id}发送:`$message`失败，正在重新尝试($count/${if (retryTime != -1) retryTime else "∞"}次)")
+                if (retryTime != -1 && count >= retryTime)
+                    return "ET"
                 delay(1000)
                 continue
             }
@@ -209,14 +211,14 @@ object PublicShared {
         )
     }
 
-    suspend fun SendMsg(message: String, c:Config.Contact):String{
+    suspend fun SendMsg(message: String, c: Config.Contact, retryTime: Int): String {
         val m = MessageChainBuilder()
         m.add(message)
-        return send0(m.asMessageChain(), c)
+        return send0(m.asMessageChain(), c, retryTime)
     }
 
-    suspend fun SendMiraiCode(message: String, c:Config.Contact):String{
-        return send0(MiraiCode.deserializeMiraiCode(message), c)
+    suspend fun SendMiraiCode(message: String, c: Config.Contact, retryTime: Int): String {
+        return send0(MiraiCode.deserializeMiraiCode(message), c, retryTime)
     }
 
     private fun OnlineAnnouncement.toOnlineA(): Config.OnlineA {
