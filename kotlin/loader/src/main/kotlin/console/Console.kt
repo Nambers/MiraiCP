@@ -82,7 +82,7 @@ object Console {
         LineReaderBuilder.builder().terminal(terminal).completer(NullCompleter()).build()
     }
     private const val prompt = "> "
-    lateinit var listenJob:Job
+    private lateinit var listenJob: Job
     @OptIn(DelicateCoroutinesApi::class)
     fun listen() {
         listenJob = KotlinMain.coroutineScope.launch(CoroutineName("Console Command")) {

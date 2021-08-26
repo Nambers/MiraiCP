@@ -15,17 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package tech.eritquearcus.miraicp.loader
+package tech.eritquearcus.miraicp.loader.friend
 
 import net.mamoe.mirai.Bot
-import net.mamoe.mirai.event.broadcast
-import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.message.data.toMessageChain
+import org.junit.jupiter.api.Test
 
-suspend fun groupMessage() {
-    val b = Bot.getInstance(692928873)
-    val g = b.getGroup(788189105)!!
-    val s = g[1930893235]!!
-    val m = source(b).toMessageChain()
-    GroupMessageEvent(s.nameCard, s.permission, s, m, 1).broadcast()
+fun friendMessage() {
+    val b = Bot.getInstance(1)
+    val f = b.getFriend(1930893235)!!
+    TODO("friend test")
+}
+
+class FriendMessage {
+    @Test
+    fun lotFriendMessage() {
+        TODO("friend test")
+    }
 }
