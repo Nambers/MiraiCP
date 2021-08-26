@@ -44,7 +44,7 @@ namespace MiraiCP {
     using QQID = unsigned long long;
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.7-RC";
+    const std::string MiraiCPVersion = "v2.7.0";
 
     /// @brief 插件信息
     class PluginConfig{
@@ -1112,11 +1112,8 @@ LightApp风格1
     class Contact {
     private:
         /// 发送纯文本信息
-        /// @throw IllegalArgumentException
-        MessageSource sendMsg0(std::string msg, JNIEnv * = manager->getEnv());
-        /// 发送miraicode
-        /// @throw IllegalArgumentException
-        MessageSource sendMiraiCode0(std::string msg, JNIEnv * = manager->getEnv());
+        /// @throw IllegalArgumentException, TimrOutException
+        MessageSource sendMsg0(std::string msg, int retryTime, bool miraicode = false, JNIEnv * = manager->getEnv());
 
     protected:
         int _type = 0;
@@ -1209,10 +1206,10 @@ LightApp风格1
 
         /*!
          * @brief 从json节点反序列化
-         * @param root json节点
+         * @param j json节点
          * @return Contact
          */
-        static Contact deserializationFromJson(nlohmann::json root);
+        static Contact deserializationFromJson(nlohmann::json j);
 
         /// 反序列化成bot，可以通过serializationToString序列化，利于保存
         /// @see Contact::serializationToString()
@@ -1220,31 +1217,40 @@ LightApp风格1
         /// @throw APIException
         static Contact deserializationFromString(const std::string &source);
 
-        /**
-         * @brief 发送miraicode
-         * @param msg - MiraiCode类型 - 内容
-         *  @throw IllegalArgumentException
-        */
-        MessageSource sendMiraiCode(MiraiCode msg) {
-            return sendMiraiCode0(msg.toMiraiCode());
+        /// @brief 发送MiraiCode信息
+        /// @param msg 发送的MiraiCode
+        /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
+        /// @return MessageSource
+        /// @throw IllegalArgumentException, TimeOutException
+        MessageSource sendMiraiCode(MiraiCode msg, int retryTime = 3, JNIEnv* env = manager->getEnv()) {
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 
-        /// 发送纯文本信息
-        /// @throw IllegalArgumentException
-        MessageSource sendMsg(const std::string& msg) {
-            return sendMsg0(msg);
+        /// @brief 发送纯文本信息
+        /// @param msg 发送的信息
+        /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
+        /// @return MessageSource
+        /// @throw IllegalArgumentException, TimeOutException
+        MessageSource sendMsg(const std::string& msg, int retryTime = 3, JNIEnv* env = manager->getEnv()) {
+            return sendMsg0(msg, retryTime, false, env);
         }
 
-        /// 发送纯文本信息
-        /// @throw IllegalArgumentException
-        MessageSource sendMsg(MiraiCode msg){
-            return sendMsg0(msg.toMiraiCode());
+        /// @brief 以纯文本发送MiraiCode信息
+        /// @param msg 发送的信息
+        /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
+        /// @return MessageSource
+        /// @throw IllegalArgumentException, TimeOutException
+        MessageSource sendMsg(MiraiCode msg, int retryTime = 3, JNIEnv* env = manager->getEnv()){
+            return sendMsg0(msg.toMiraiCode(), retryTime, false, env);
         }
 
-        /// 发送纯文本信息
-        /// @throw IllegalArgumentException
-        MessageSource sendMsg(std::vector<std::string> msg){
-            return sendMsg0(Tools::VectorToString(msg));
+        /// @brief 发送纯文本信息
+        /// @param msg 发送的信息
+        /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
+        /// @return MessageSource
+        /// @throw IllegalArgumentException, TimeOutException
+        MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv* env = manager->getEnv()){
+            return sendMsg0(Tools::VectorToString(msg), retryTime, false, env);
         }
 
         /*!
@@ -1503,17 +1509,15 @@ LightApp风格1
         /// @param miraicode 是否为miraicode格式
         /// @param env JNIEnv
         /// @return
-        static std::string send0(std::string content, Contact *c, bool miraicode, JNIEnv *env) {
+        static std::string send0(std::string content, Contact *c, int retryTime, bool miraicode, JNIEnv *env) {
             nlohmann::json j;
             nlohmann::json tmp;
             tmp["content"] = content;
             tmp["contact"] = c->serialization();
             j["source"] = tmp.dump();
             j["miraiCode"] = miraicode;
+            j["retryTime"] = retryTime;
             return config->koperation(config->Send, j, env);
-//		Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KSend,
-//			Tools::str2jstring(j.dump().c_str(), env),
-//			(jboolean)miraicode), env);
         }
 
         /// @brief 取该联系人的一些信息
@@ -1523,9 +1527,6 @@ LightApp风格1
             nlohmann::json j;
             j["source"] = c->serializationToString();
             return config->koperation(config->RefreshInfo, j, env);
-//		Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo,
-//			Tools::str2jstring(c->serializationToString().c_str(),
-//				env)));
         }
 
         /*!
@@ -1540,10 +1541,6 @@ LightApp风格1
             j["fileName"] = path;
             j["source"] = c->serializationToString();
             return config->koperation(config->UploadImg, j, env);
-//		Tools::jstring2str((jstring)env->CallObjectMethod(config->CPP_lib, config->KUploadImg,
-//			Tools::str2jstring(path.c_str(), env),
-//			Tools::str2jstring(c->serializationToString().c_str(),
-//				env)));
         }
 
         /// 每个对象的必有信息
@@ -1554,7 +1551,7 @@ LightApp风格1
 
         /// 获取每个对象必有信息
         /// @see LowLevelAPI::info
-        static info info0(std::string source) {
+        static info info0(const std::string& source) {
             info re;
             try{
                 ErrorHandle(source);
@@ -3042,21 +3039,15 @@ throw: InitxException 即找不到对应签名
         return MessageSource::deserializeFromString(re);
     }
 
-    MessageSource Contact::sendMiraiCode0(std::string msg, JNIEnv *env) {
-        if (msg.empty())
-            throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMiraiCode");
-        std::string re = LowLevelAPI::send0(std::move(msg), this, true, env);
-        ErrorHandle(re, "reach a error area, Contact::SendMiraiCode");
-        return MessageSource::deserializeFromString(re);
-}
-
-    MessageSource Contact::sendMsg0(std::string msg, JNIEnv *env) {
+    MessageSource Contact::sendMsg0(std::string msg, int retryTime, bool miraicode, JNIEnv *env) {
         if (msg.empty()) {
             logger->warning("警告:发送空信息, 位置: Contact::SendMsg");
             throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg");
         }
-        std::string re = LowLevelAPI::send0(std::move(msg), this, false, env);
+        std::string re = LowLevelAPI::send0(std::move(msg), this, retryTime, miraicode, env);
         ErrorHandle(re, "reach a error area, Contact::SendMiraiCode");
+        if(re == "ET")
+            throw TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg");
         return MessageSource::deserializeFromString(re);
     }
 

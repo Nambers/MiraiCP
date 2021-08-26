@@ -88,10 +88,9 @@ class CPP_lib (
     companion object{
         var test: Boolean = false
         //send MiraiCode
-        private fun KSend(source: String, miraiCode: Boolean): String =
+        private fun KSend(source: String, miraiCode: Boolean, retryTime: Int): String =
             runBlocking {
                 val tmp = gson.fromJson(source, Config.SendRequest::class.java)
-                println("[${Thread.currentThread().name}]")
                 if (test) {
                     when (tmp.contact.type) {
                         1 -> println("send [${Thread.currentThread().name}] Friend<MiraiCode: $miraiCode>: ${tmp.content}")
@@ -104,8 +103,8 @@ class CPP_lib (
                                             """.trimIndent()
                 }
                 return@runBlocking when (miraiCode) {
-                    false -> SendMsg(tmp.content, tmp.contact)
-                    true -> SendMiraiCode(tmp.content, tmp.contact)
+                    false -> SendMsg(tmp.content, tmp.contact, retryTime)
+                    true -> SendMiraiCode(tmp.content, tmp.contact, retryTime)
                 }
             }
 
@@ -356,7 +355,11 @@ class CPP_lib (
                     /// 撤回信息
                     operation_code.Recall.ordinal -> KRecall(root.getString("source"))
                     /// 发送信息
-                    operation_code.Send.ordinal -> KSend(root.getString("source"), root.getBoolean("miraiCode"))
+                    operation_code.Send.ordinal -> KSend(
+                        root.getString("source"),
+                        root.getBoolean("miraiCode"),
+                        root.getInt("retryTime")
+                    )
                     /// 查询信息接口
                     operation_code.RefreshInfo.ordinal -> KRefreshInfo(root.getString("source"), root.has("quit"))
                     /// 上传图片
