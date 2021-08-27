@@ -1,9 +1,11 @@
 # 这里是MiraiCP的文档库
 
-[events.md](https://github.com/Nambers/MiraiCP/new/master/doc/events.md) 事件文档
+[structure.md](structure.md) cpp部分框架
 
-[intro.md](https://github.com/Nambers/MiraiCP/new/master/doc/intro.md) 流程文档
+[events.md](events.md) 事件文档
 
-[example.md](https://github.com/Nambers/MiraiCP/new/master/doc/example.md) 例子文档
+[intro.md](intro.md) 流程文档
 
-[faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/faces.md) qq表情对应
+[example.md](example.md) 例子文档
+
+[faces.md](faces.md) qq表情对应
