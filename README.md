@@ -65,16 +65,19 @@
 | 消息撤回     | RecallEvent           |
 | 群临时会话   | GroupTempMessageEvent |
 | 定时事件执行 | SchedulingEvent       |
+| 戳一戳       | NugdeEvent           |
 
 </details>
 
 **[在线API文档(包含示例)](https://eritque-arcus.tech/MiraiCP/html/)**
 
-代码示例 [example.md](https://github.com/Nambers/MiraiCP/blob/master/doc/example.md)
+C++部分最小结构(`demo.cpp`中除了那些内容都可以删除) [structure.md](doc/structure.md)
 
-本项目设计流程结构 [intro.md](https://github.com/Nambers/MiraiCP/blob/master/doc/intro.md)
+代码示例 [example.md](doc/example.md)
 
-Mirai支持的qq表情(对应miraicode的face)对应序号 [faces.md](https://github.com/Nambers/MiraiCP/blob/master/doc/faces.md)
+本项目设计流程结构 [intro.md](doc/intro.md)
+
+Mirai支持的qq表情(对应miraicode的face)对应序号 [faces.md](doc/faces.md)
 
 ## 特性
 - C++ 20
