@@ -13,6 +13,7 @@
 + 简化不必要的cmake代码
 + 增加和删除一些命令
 + plugin支持命令
++ BotIsBeingMutedException
 + loader端和plugin端配置文件格式更改
 	+ 	plugin端的配置文件从miraiCP.txt 要重命名为miraiCP.json, 然后内容为以下格式:
 		```
