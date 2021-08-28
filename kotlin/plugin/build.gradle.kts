@@ -41,15 +41,15 @@ tasks {
     }
 }
 mavenCentralPublish {
-    credentials = kotlinx.serialization.protobuf.ProtoBuf.decodeFromHexString(
-        net.mamoe.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
-        rootProject.file("plugin\\c.txt").let {
-            if (it.exists())
-                it.readText()
-            else
-                ""
-        }
-    )
+    credentials = rootProject.file("plugin\\c.txt").let {
+        if (it.exists())
+            kotlinx.serialization.protobuf.ProtoBuf.decodeFromHexString(
+                net.mamoe.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
+                rootProject.file("plugin\\c.txt").readText()
+            )
+        else
+            null
+    }
     this.useCentralS01()
     singleDevGithubProject("Nambers", "MiraiCP", "Eritque arcus")
     licenseFromGitHubProject("AGPL-3.0", "master")
