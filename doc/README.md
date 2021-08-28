@@ -1,4 +1,4 @@
-# 这里是MiraiCP的文档库
+# MiraiCP 文档库
 
 [structure.md](structure.md) cpp部分框架解析
 
