@@ -87,7 +87,6 @@ class CPP_lib (
     //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
     companion object{
         var test: Boolean = false
-        //send MiraiCode
         private fun KSend(source: String, miraiCode: Boolean, retryTime: Int): String =
             runBlocking {
                 val tmp = gson.fromJson(source, Config.SendRequest::class.java)
