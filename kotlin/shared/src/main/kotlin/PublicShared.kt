@@ -25,14 +25,11 @@ import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.LowLevelApi
 import net.mamoe.mirai.Mirai
-import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.NormalMember
-import net.mamoe.mirai.contact.PermissionDeniedException
+import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.contact.announcement.OfflineAnnouncement
 import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
 import net.mamoe.mirai.contact.announcement.bot
 import net.mamoe.mirai.contact.announcement.buildAnnouncementParameters
-import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.EventPriority
@@ -201,6 +198,8 @@ object PublicShared {
                     return "ET"
                 delay(1000)
                 continue
+            } catch (e: BotIsBeingMutedException) {
+                return "EBM${e.botMuteRemaining}"
             }
             break
         }
