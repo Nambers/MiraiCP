@@ -43,7 +43,12 @@ tasks {
 mavenCentralPublish {
     credentials = kotlinx.serialization.protobuf.ProtoBuf.decodeFromHexString(
         net.mamoe.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
-        rootProject.file("plugin\\c.txt").readText()
+        rootProject.file("plugin\\c.txt").let {
+            if (it.exists())
+                it.readText()
+            else
+                ""
+        }
     )
     this.useCentralS01()
     singleDevGithubProject("Nambers", "MiraiCP", "Eritque arcus")
