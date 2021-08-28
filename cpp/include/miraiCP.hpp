@@ -713,6 +713,15 @@ LightApp风格1
         std::string description;
     };
 
+    /// 被禁言异常, 通常发生于发送信息
+    class BotIsBeingMutedException: public BotException{
+    public:
+        /// 剩余禁言时间, 单位秒
+        int timeRemain;
+        explicit BotIsBeingMutedException(int t):BotException("发送信息失败, bot已被禁言, 剩余时间"+std::to_string(t)){
+            timeRemain = t;
+        }
+    };
 /// 禁言异常
 /// @see MiraiCPException
     class MuteException : public MiraiCPException {
@@ -1086,7 +1095,7 @@ LightApp风格1
     class Contact {
     private:
         /// 发送纯文本信息
-        /// @throw IllegalArgumentException, TimrOutException
+        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMsg0(std::string msg, int retryTime, bool miraicode = false, JNIEnv * = manager->getEnv());
 
     protected:
@@ -1195,7 +1204,7 @@ LightApp风格1
         /// @param msg 发送的MiraiCode
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
-        /// @throw IllegalArgumentException, TimeOutException
+        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMiraiCode(MiraiCode msg, int retryTime = 3, JNIEnv* env = manager->getEnv()) {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
@@ -1204,7 +1213,7 @@ LightApp风格1
         /// @param msg 发送的信息
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
-        /// @throw IllegalArgumentException, TimeOutException
+        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMsg(const std::string& msg, int retryTime = 3, JNIEnv* env = manager->getEnv()) {
             return sendMsg0(msg, retryTime, false, env);
         }
@@ -1213,7 +1222,7 @@ LightApp风格1
         /// @param msg 发送的信息
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
-        /// @throw IllegalArgumentException, TimeOutException
+        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMsg(MiraiCode msg, int retryTime = 3, JNIEnv* env = manager->getEnv()){
             return sendMsg0(msg.toMiraiCode(), retryTime, false, env);
         }
@@ -1222,7 +1231,7 @@ LightApp风格1
         /// @param msg 发送的信息
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
-        /// @throw IllegalArgumentException, TimeOutException
+        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv* env = manager->getEnv()){
             return sendMsg0(Tools::VectorToString(msg), retryTime, false, env);
         }
@@ -3022,6 +3031,8 @@ throw: InitxException 即找不到对应签名
         ErrorHandle(re, "reach a error area, Contact::SendMiraiCode");
         if(re == "ET")
             throw TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg");
+        if(re.starts_with("EBM"))
+            throw BotIsBeingMutedException(std::stoi(re.substr(3)));
         return MessageSource::deserializeFromString(re);
     }
 
@@ -3057,7 +3068,7 @@ throw: InitxException 即找不到对应签名
         std::string re = config->koperation(config->QueryM, j, env);
         try{
             ErrorHandle(re);
-        }catch(MiraiCPException){
+        }catch(MiraiCPException&){
             return 0;
         }
         return stoi(re);
