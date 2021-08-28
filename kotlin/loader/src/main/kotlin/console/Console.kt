@@ -65,15 +65,6 @@ object Console {
                         err.printStackTrace()
                         return@let terminal.also { it.resume() }
                     }.getOrThrow()
-                    //                    terminal.setOnClose {
-//                        response = NoConsole
-//                    }
-//                    terminal.resume()
-//                    val pumpThread = pumpField[terminal] as? Thread ?: return@let NoConsole
-//                    @Suppress("ControlFlowWithEmptyBody")
-//                    while (pumpThread.state == Thread.State.NEW);
-//                    Thread.sleep(1000)
-//                    terminal.setOnClose(null)
                     return@let terminal.also { it.resume() }
                 }
                 terminal.also { it.resume() }

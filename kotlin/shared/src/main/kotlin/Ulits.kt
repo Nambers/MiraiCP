@@ -17,27 +17,42 @@
 
 package tech.eritquearcus.miraicp.shared
 
-import net.mamoe.mirai.contact.*
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.runInterruptible
+import net.mamoe.mirai.contact.Friend
+import net.mamoe.mirai.contact.Group
+import net.mamoe.mirai.contact.Member
+import net.mamoe.mirai.contact.nameCardOrNick
+import java.util.concurrent.Executors
 
-fun ArrayList<CPP_lib>.Event(content: String){
-    when{
-        PublicShared.disablePlugins.isNotEmpty()->{
-            this.filter {
-                !PublicShared.disablePlugins.contains(it.config.name)
-            }.forEach {
-                it.Event(content)
+private val cc by lazy { Executors.newFixedThreadPool(PublicShared.threadNum).asCoroutineDispatcher() }
+
+private suspend inline fun <T, R> T.runInTP(
+    crossinline block: T.() -> R,
+): R = runInterruptible(context = cc, block = { block() })
+
+suspend fun ArrayList<CPP_lib>.Event(content: String) {
+    runInTP {
+        when {
+            PublicShared.disablePlugins.isNotEmpty() -> {
+                this.filter {
+                    !PublicShared.disablePlugins.contains(it.config.name)
+                }.forEach {
+                    it.Event(content)
+                }
             }
-        }
-        else->{
-            this.forEach { it.Event(content) }
+            else -> {
+                this.forEach { it.Event(content) }
+            }
         }
     }
 
 }
-internal fun Group.toContact():Config.Contact=
+
+internal fun Group.toContact(): Config.Contact =
     Config.Contact(2, this.id, 0, this.name, this.bot.id)
 
-internal fun Member.toContact():Config.Contact =
+internal fun Member.toContact(): Config.Contact =
     Config.Contact(3, this.id, this.group.id, this.nameCardOrNick, this.bot.id)
 
 internal fun Friend.toContact():Config.Contact =

@@ -50,7 +50,6 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -67,7 +66,7 @@ object PublicShared {
     val cpp: ArrayList<CPP_lib> = arrayListOf()
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
-    const val now_tag = "v2.7-RC"
+    const val now_tag = "v2.7.0"
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
     val loadedPlugins = arrayListOf<String>()
@@ -841,13 +840,15 @@ object PublicShared {
     //定时任务
     fun scheduling(time: Long, msg: String):String {
         Timer("Timer", false).schedule(time) {
-            cpp.Event(
-                Gson().toJson(
-                    Config.TimeOutEvent(
-                        msg
+            runBlocking {
+                cpp.Event(
+                    Gson().toJson(
+                        Config.TimeOutEvent(
+                            msg
+                        )
                     )
                 )
-            )
+            }
         }
         return "Y"
     }
@@ -884,14 +885,16 @@ object PublicShared {
                 }
                 "Y"
             }
-            else->"EA"
+            else -> "EA"
         }
     }
 
-    fun onDisable() = cpp.forEach {it.PluginDisable()}
+    fun onDisable() = cpp.forEach { it.PluginDisable() }
+
+    var threadNum = 5
 
     @OptIn(MiraiExperimentalApi::class)
-    fun onEnable(eventChannel: EventChannel<Event>){
+    fun onEnable(eventChannel: EventChannel<Event>) {
         //配置文件目录 "${dataFolder.absolutePath}/"
         eventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
@@ -910,8 +913,6 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
-            val sdf = SimpleDateFormat("HH:mm:ss.SSS")
-            val s = sdf.format(Date()).toString()
             cpp.Event(
                 gson.toJson(
                     Config.GroupMessage(
@@ -922,7 +923,6 @@ object PublicShared {
                     )
                 )
             )
-            logger.info(s + " | " + sdf.format(Date()).toString())
         }
         eventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
