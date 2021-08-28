@@ -71,13 +71,7 @@
 
 **[在线API文档(包含示例)](https://eritque-arcus.tech/MiraiCP/html/)**
 
-C++部分最小结构(`demo.cpp`中除了那些内容都可以删除) [structure.md](doc/structure.md)
-
-代码示例 [example.md](doc/example.md)
-
-本项目设计流程结构 [intro.md](doc/intro.md)
-
-Mirai支持的qq表情(对应miraicode的face)对应序号 [faces.md](doc/faces.md)
+[文档库](doc)
 
 ## 特性
 - C++ 20
@@ -124,7 +118,6 @@ add_subdirectory(include)
 1. 在同目录下创建config.json作为配置文件
 
 2. 编写json:
-
 ```json
 {
   "accounts": [{
@@ -138,16 +131,8 @@ add_subdirectory(include)
   "cppPath": "dll路径"
 }
 ```
-其中
+详细见[config.md文档](doc/config.md#1-loader-%E7%AB%AF)
 
-- accounts可以有多个机器人账户，用逗号分隔
-- id为qq号
-- passwords为qq密码，可为明文密码或者32位md5密码(大小写都可以)
-- protocol为可选配置项，配置内容为登录协议，可选值为:pad/phone/watch (默认为phone)
-- heatBeat也为可选配置项，配置内容为心跳策略，可选值为: STAT_HB/REGISTER/NONE (默认为state_hb)
-- md5 如果qq密码为md5格式，填true，如果不是可以不填或者填false
-- autoLogin 如果要自动登录该账户就填true，否则不填或者填false，如果不为true要手动登录
-- cppPath为miraicp sdk生成的dll的路径，一般在sdk的cmake-build-debug文件夹下
 
 3. 使用java -jar MiraiCP-loader-*.jar 启动loader(*号为版本)
 
@@ -159,8 +144,15 @@ add_subdirectory(include)
 ```
 mcl --update-package io.github.nambers:MiraiCP-plugin --channel nightly --type plugin
 ```
-安装, 然后在mcl的路径下的data\miraiCP\路径中创建miraicp.txt里填写sdk生成的dll的路径，或者把sdk生成的dll复制进去(如果没有data\miraiCP路径需要启动一次mcl)
-
+安装, 然后在mcl的路径下的data\miraiCP\路径中创建miraicp.json里填写配置, 如
+```json
+{
+	"pluginConfig":[{
+		"path":"\\cmake-build-debug\\MiraiCP.dll"
+	}]
+}
+```
+详细见[config.md文档](https://github.com/Nambers/MiraiCP/blob/master/doc/config.md#2-plugin-%E7%AB%AF)
 ##### 3.2.2.2 手动下载
 
 0. 首先下载启动器(mcl), 下载地址 -> [官方](https://github.com/iTXTech/mirai-console-loader/)
@@ -169,7 +161,15 @@ mcl --update-package io.github.nambers:MiraiCP-plugin --channel nightly --type p
 
 2. 把该mirai.jar放到mcl的plugin路径下(如果没有plugin路径需要启动一次mcl)
 
-3. 在mcl的路径下的data\miraiCP\路径中创建miraicp.txt里填写sdk生成的dll的路径，或者把sdk生成的dll复制进去(如果没有data\miraiCP路径需要启动一次mcl)
+3. 在mcl的路径下的data\miraiCP\路径中创建miraicp.json里填写配置, 如
+```json
+{
+	"pluginConfig":[{
+		"path":"\\cmake-build-debug\\MiraiCP.dll"
+	}]
+}
+```
+详细见[config.md文档](https://github.com/Nambers/MiraiCP/blob/master/doc/config.md#2-plugin-%E7%AB%AF)
 
 4. 启动mcl
 
