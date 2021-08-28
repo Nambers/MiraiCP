@@ -11,3 +11,5 @@
 [example.md](example.md) 例子文档
 
 [faces.md](faces.md) qq表情与mirai id对应
+
+**[在线API文档(包含示例)](https://eritque-arcus.tech/MiraiCP/html/)**
