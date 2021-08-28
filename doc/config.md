@@ -167,4 +167,4 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 }
 ```
 
-[返回根目录](..)
+[返回根目录](.)
