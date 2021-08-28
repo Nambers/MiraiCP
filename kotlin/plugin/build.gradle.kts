@@ -1,3 +1,5 @@
+import kotlinx.serialization.decodeFromHexString
+
 /*
  * Copyright (C) 2020-2021 Eritque arcus and contributors.
  *
@@ -39,6 +41,10 @@ tasks {
     }
 }
 mavenCentralPublish {
+    credentials = kotlinx.serialization.protobuf.ProtoBuf.decodeFromHexString(
+        net.mamoe.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
+        rootProject.file("plugin\\c.txt").readText()
+    )
     this.useCentralS01()
     singleDevGithubProject("Nambers", "MiraiCP", "Eritque arcus")
     licenseFromGitHubProject("AGPL-3.0", "master")
