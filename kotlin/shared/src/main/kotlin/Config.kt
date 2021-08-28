@@ -134,11 +134,17 @@ class Config {
         val dependencies: List<String>?
     )
 
+    data class c(
+        val threadNum: Int?
+    )
+
     data class pluginConfig(
-        val pluginConfig: List<cppPath>
+        val pluginConfig: List<cppPath>,
+        val config: c?
     )
 
     data class accounts(
+        val config: c?,
         val accounts: List<Account>?,
         val cppPaths: List<cppPath>
     ) {

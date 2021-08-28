@@ -50,6 +50,7 @@ object KotlinMain {
             logger.error("Error: 无可登录账号，请检查config.json内容")
             return
         }
+        PublicShared.threadNum = c.config?.threadNum ?: let { PublicShared.threadNum }
         c.accounts?.filter { it.autoLogin == true }?.forEach {
             it.login()
             logined = true

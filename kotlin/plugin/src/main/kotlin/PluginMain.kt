@@ -63,7 +63,9 @@ object PluginMain : KotlinPlugin(
                 )
                 return
             }
-        }.readText(), Config.pluginConfig::class.java).pluginConfig.forEach { i ->
+        }.readText(), Config.pluginConfig::class.java).apply {
+            PublicShared.threadNum = this.config?.threadNum ?: let { PublicShared.threadNum }
+        }.pluginConfig.forEach { i ->
             val it = i.path
             val d = i.dependencies?.filter { p ->
                 File(p).let { f ->
