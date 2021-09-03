@@ -378,7 +378,7 @@ class CPP_lib (
                     /// 查询权限
                     operation_code.QueryM.ordinal -> KQueryM(root.getString("contactSource"))
                     /// 踢出
-                    operation_code.KickM.ordinal -> KKickM(root.getString("message"), root.getString("contactSOurce"))
+                    operation_code.KickM.ordinal -> KKickM(root.getString("message"), root.getString("contactSource"))
                     /// 取群主
                     operation_code.QueryOwner.ordinal -> KQueryOwner(root.getString("contactSource"))
                     /// 上传语音
