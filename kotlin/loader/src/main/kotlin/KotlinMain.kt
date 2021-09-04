@@ -46,15 +46,6 @@ object KotlinMain {
         PublicShared.init(logger)
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
-        if (c.accounts == null || c.accounts!!.isEmpty()) {
-            logger.error("Error: 无可登录账号，请检查config.json内容")
-            return
-        }
-        PublicShared.threadNum = c.config?.threadNum ?: let { PublicShared.threadNum }
-        c.accounts?.filter { it.autoLogin == true }?.forEach {
-            it.login()
-            logined = true
-        }
         logger.info("⭐当前MiraiCP版本: $now_tag")
         c.cppPaths.forEach {
             val d = it.dependencies?.filter { p ->
@@ -75,9 +66,19 @@ object KotlinMain {
                 logger.warning("检测到列表已经有重复的${cpp.config.name}, 请检测配置文件中是否重复或提醒开发者改插件名称，但该插件还是会加载")
             PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.Factory.create(this::class, cpp.config.name)
         }
+        if (c.accounts == null || c.accounts!!.isEmpty()) {
+            logger.error("Error: 无可登录账号，请检查config.json内容")
+            return
+        }
+        PublicShared.threadNum = c.config?.threadNum ?: let { PublicShared.threadNum }
+        c.accounts?.filter { it.autoLogin == true }?.forEach {
+            it.login()
+            logined = true
+        }
         logger.info("⭐已成功加载MiraiCP⭐")
         Console.listen()
-        while(!logined){}
+        while (!logined) {
+        }
     }
 }
 
