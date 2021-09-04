@@ -77,14 +77,7 @@ public:
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            e.group.sendMsg("HI*1", -1);
-            Sleep(5000);
-            e.group.sendMsg("HI*2", -1);
-            Sleep(5000);
-            e.group.sendMsg("HI*3", -1);
-            Sleep(5000);
-            e.group.sendMsg("HI*4", -1);
-            Sleep(5000);
+            e.sender.kick("");
             // SYSTEMTIME st = { 0 };
             // GetLocalTime(&st);  //获取当前时间 可精确到ms
             // logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));

@@ -2343,9 +2343,9 @@ LightApp风格1
          * @param operaterid 操作人id, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
          */
         MemberLeaveEvent(QQID botid, int type, QQID memberid,
-                         const Group &group,
+                         Group group,
                          QQID operaterid) : BotEvent(botid), type(type), memberid(memberid),
-                                                                 group(group),
+                                                                 group(std::move(group)),
                                                                  operaterid(operaterid) {}
     };
 
@@ -2379,10 +2379,10 @@ LightApp风格1
          * @param groupid
          */
         RecallEvent(QQID botid, int type, int time, QQID authorid,
-                    QQID operatorid, std::string ids, const std::string &internalids,
+                    QQID operatorid, std::string ids, std::string internalids,
                     QQID groupid) : BotEvent(botid), type(type), time(time), authorid(authorid),
                                                             operatorid(operatorid), ids(std::move(ids)),
-                                                            internalids(internalids),
+                                                            internalids(std::move(internalids)),
                                                             groupid(groupid) {}
     };
 
@@ -2467,7 +2467,7 @@ LightApp风格1
     public:
         /// 谁发送的
         Contact from;
-        NudgeEvent(Contact c, QQID botid):BotEvent(botid){}
+        NudgeEvent(const Contact& c, QQID botid):BotEvent(botid){}
     };
 
 /**监听类声明*/
