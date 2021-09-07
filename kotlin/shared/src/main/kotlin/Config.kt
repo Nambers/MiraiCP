@@ -279,7 +279,7 @@ class Config {
     data class NugdeEvent(
         val from: Contact,
         val botid: Long,
-        val tyoe:Int = 13
+        val type: Int = 13
     )
 }
 data class PluginConfig(
