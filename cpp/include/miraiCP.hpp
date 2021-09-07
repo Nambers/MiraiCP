@@ -44,7 +44,7 @@ namespace MiraiCP {
     using QQID = unsigned long long;
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.7.0";
+    const std::string MiraiCPVersion = "v2.7.0-patch-1";
 
     /// @brief 插件信息
     class PluginConfig{
@@ -309,17 +309,9 @@ LightApp风格1
         /// @param s
         /// @return
         static std::string escapeToMiraiCode(const std::string &s);
-	
-	/// starts_with, from <https://liam.page/2017/12/14/the-missing-starts-with-and-ends-with-in-Cpp-for-std-string/>
-	template <typename charT>
-	inline bool starts_with(const basic_string<charT>& big, const basic_string<charT>& small) {
-	    if (&big == &small) return true;
-	    const typename basic_string<charT>::size_type big_size = big.size();
-	    const typename basic_string<charT>::size_type small_size = small.size();
-	    const bool valid_ = (big_size >= small_size);
-	    const bool starts_with_ = (big.compare(0, small_size, small) == 0);
-	    return valid_ and starts_with_;
-	}    
+
+        /// starts_with, from <https://stackoverflow.com/questions/1878001/how-do-i-check-if-a-c-stdstring-starts-with-a-certain-string-and-convert-a>
+        static bool starts_with(const std::string& f, const std::string& s){return f.rfind(s, 0) == 0;}
     };
 
 /// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
