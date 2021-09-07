@@ -309,6 +309,17 @@ LightApp风格1
         /// @param s
         /// @return
         static std::string escapeToMiraiCode(const std::string &s);
+	
+	/// starts_with, from <https://liam.page/2017/12/14/the-missing-starts-with-and-ends-with-in-Cpp-for-std-string/>
+	template <typename charT>
+	inline bool starts_with(const basic_string<charT>& big, const basic_string<charT>& small) {
+	    if (&big == &small) return true;
+	    const typename basic_string<charT>::size_type big_size = big.size();
+	    const typename basic_string<charT>::size_type small_size = small.size();
+	    const bool valid_ = (big_size >= small_size);
+	    const bool starts_with_ = (big.compare(0, small_size, small) == 0);
+	    return valid_ and starts_with_;
+	}    
     };
 
 /// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
@@ -3031,7 +3042,7 @@ throw: InitxException 即找不到对应签名
         ErrorHandle(re, "reach a error area, Contact::SendMiraiCode");
         if(re == "ET")
             throw TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg");
-        if(re.starts_with("EBM"))
+        if(Tools::starts_with(re, "EBM"))
             throw BotIsBeingMutedException(std::stoi(re.substr(3)));
         return MessageSource::deserializeFromString(re);
     }
