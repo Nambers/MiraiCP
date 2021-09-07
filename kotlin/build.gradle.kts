@@ -37,7 +37,7 @@ subprojects {
         implementation("com.google.code.gson:gson:2.8.8")
         implementation("org.json:json:20210307")
         compileOnly("net.mamoe:mirai-core-api:2.7.0") // mirai-core 的 API
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     }
 }
 group = "tech.eritquearcus"
