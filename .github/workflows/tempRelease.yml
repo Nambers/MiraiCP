@@ -62,7 +62,7 @@ jobs:
     - name: pack
       run:  zip -r ./main/cpp/MiraiCP_CPP.zip ./main/cpp
     - name: moveCPP
-      run: mkdir ./tr/${{ github.event.inputs.v }} && mv ./main/cpp/MiraiCP_CPP.zip ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/include/miraiCP.hpp" ./tr/${{ github.event.inputs.v }}
+      run: rm -rf ./tr/${{ github.event.inputs.v }} && mkdir ./tr/${{ github.event.inputs.v }} && mv ./main/cpp/MiraiCP_CPP.zip ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/include/miraiCP.hpp" ./tr/${{ github.event.inputs.v }}
     - name: moveKt
       run: ls -1 ./main/kotlin/loader/build/libs/MiraiCP-loader-*.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} && ls -1 ./main/kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} 
     #name: print
