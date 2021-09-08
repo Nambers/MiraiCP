@@ -401,9 +401,9 @@ class CPP_lib (
                     operation_code.Timer.ordinal -> scheduling(root.getLong("time"), root.getString("msg"))
                     /// 发送戳一戳
                     operation_code.Nudge.ordinal -> KNudge(root.getString("contactSource"))
-                    /// 好友下一条信息
+                    /// 下一条信息
                     operation_code.NextMsg.ordinal -> KNextMsg(
-                        root.getString("contactsource"),
+                        root.getString("contactSource"),
                         root.getLong("time"),
                         root.getBoolean("halt")
                     )
