@@ -1702,7 +1702,7 @@ LightApp风格1
         /// 删除好友(delete是C++关键字
         void deleteFriend(JNIEnv *env = manager->getEnv()) {
             nlohmann::json j;
-            j["contactSource"] = this->serializationToString();
+            j["source"] = this->serializationToString();
             j["quit"] = true;
             ErrorHandle(config->koperation(config->RefreshInfo, j, env));
         }
@@ -2001,7 +2001,7 @@ LightApp风格1
 
         void quit(JNIEnv *env = manager->getEnv()) {
             nlohmann::json j;
-            j["contactSource"] = this->serializationToString();
+            j["source"] = this->serializationToString();
             j["quit"] = true;
             ErrorHandle(config->koperation(config->RefreshInfo, j, env));
         }
@@ -3254,7 +3254,7 @@ throw: InitxException 即找不到对应签名
 
     Message PrivateMessageEvent::nextMessage(long time, bool halt, JNIEnv* env) {
         json j;
-        j["contactsource"] = this->sender.serializationToString();
+        j["contactSource"] = this->sender.serializationToString();
         j["time"] = time;
         j["halt"] = halt;
         std::string r = config->koperation(config->NextMsg, j, env);
@@ -3266,7 +3266,7 @@ throw: InitxException 即找不到对应签名
 
     Message GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
         json j;
-        j["contactsource"] = this->group.serializationToString();
+        j["contactSource"] = this->group.serializationToString();
         j["time"] = time;
         j["halt"] = halt;
         std::string r = config->koperation(config->NextMsg, j, env);
@@ -3278,7 +3278,7 @@ throw: InitxException 即找不到对应签名
 
     Message GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) {
         json j;
-        j["contactsource"] = this->sender.serializationToString();
+        j["contactSource"] = this->sender.serializationToString();
         j["time"] = time;
         j["halt"] = halt;
         std::string r = config->koperation(config->NextMsg, j, env);
