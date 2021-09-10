@@ -1,4 +1,4 @@
-# 欢迎来到MiraiCP
+# MiraiCP
 [![License](https://img.shields.io/github/license/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/blob/master/LICENSE)  [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP?include_prereleases)](https://github.com/Nambers/MiraiCP/releases/) [![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/commit/master) ![Lines of code](https://img.shields.io/tokei/lines/github/Nambers/Miraicp)
 
 >[中文](https://github.com/Nambers/MiraiCP/blob/master/README.md)
