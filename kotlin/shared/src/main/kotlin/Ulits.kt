@@ -25,9 +25,9 @@ import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.contact.nameCardOrNick
 import java.util.concurrent.Executors
 
-private val cc by lazy { Executors.newFixedThreadPool(PublicShared.threadNum).asCoroutineDispatcher() }
+val cc by lazy { Executors.newFixedThreadPool(PublicShared.threadNum).asCoroutineDispatcher() }
 
-private suspend inline fun <T, R> T.runInTP(
+suspend inline fun <T, R> T.runInTP(
     crossinline block: T.() -> R,
 ): R = runInterruptible(context = cc, block = { block() })
 
@@ -46,7 +46,6 @@ suspend fun ArrayList<CPP_lib>.Event(content: String) {
             }
         }
     }
-
 }
 
 internal fun Group.toContact(): Config.Contact =
