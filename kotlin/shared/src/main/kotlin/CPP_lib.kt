@@ -87,8 +87,8 @@ class CPP_lib (
     //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
     companion object{
         var test: Boolean = false
-        private fun KSend(source: String, miraiCode: Boolean, retryTime: Int): String =
-            runBlocking {
+        private suspend fun KSend(source: String, miraiCode: Boolean, retryTime: Int): String =
+            run {
                 val tmp = gson.fromJson(source, Config.SendRequest::class.java)
                 if (test) {
                     when (tmp.contact.type) {
@@ -97,27 +97,21 @@ class CPP_lib (
                         3 -> println("send [${Thread.currentThread().name}] Member<MiraiCode: $miraiCode>: ${tmp.content}")
                     }
                     delay(171)
-                    return@runBlocking """
-                                            {"kind":"GROUP","botId":692928873,"ids":[3926],"internalIds":[1921344034],"time":1629788808,"fromId":692928873,"targetId":788189105,"originalMessage":[{"type":"PlainText","content":"x"}]}
+                    return """
+                               {"kind":"GROUP","botId":692928873,"ids":[3926],"internalIds":[1921344034],"time":1629788808,"fromId":692928873,"targetId":788189105,"originalMessage":[{"type":"PlainText","content":"x"}]}
                                             """.trimIndent()
                 }
-                return@runBlocking when (miraiCode) {
+                return when (miraiCode) {
                     false -> SendMsg(tmp.content, tmp.contact, retryTime)
                     true -> SendMiraiCode(tmp.content, tmp.contact, retryTime)
                 }
             }
 
         //recall messageSource
-        private fun KRecall(source: String): String =
-            runBlocking {
-                recallMsg(source)
-            }
+        private suspend fun KRecall(source: String): String = recallMsg(source)
 
         //查询图片下载链接
-        private fun KQueryImgUrl(id: String): String =
-            runBlocking {
-                QueryImg(id)
-            }
+        private suspend fun KQueryImgUrl(id: String): String = QueryImg(id)
 
         @JvmStatic
         fun KSendLog(log:String, level: Int) {
@@ -144,18 +138,14 @@ class CPP_lib (
                 }
         }
 
-        private fun KRefreshInfo(source: String, quit: Boolean): String =
-            runBlocking {
-                RefreshInfo(gson.fromJson(source, Config.Contact::class.java), quit)
-            }
+        private suspend fun KRefreshInfo(source: String, quit: Boolean): String =
+            RefreshInfo(gson.fromJson(source, Config.Contact::class.java), quit)
 
-        private fun KUploadImg(fileName: String, source: String): String =
-            runBlocking {
-                uploadImg(fileName, gson.fromJson(source, Config.Contact::class.java))
-            }
+        private suspend fun KUploadImg(fileName: String, source: String): String =
+            uploadImg(fileName, gson.fromJson(source, Config.Contact::class.java))
 
-        private fun KSendFile(source: String, contactSource: String): String =
-            runBlocking {
+        private suspend fun KSendFile(source: String, contactSource: String): String =
+            run {
                 val t = JSONObject(source)
                 sendFile(
                     t.getString("path"),
@@ -164,10 +154,10 @@ class CPP_lib (
                 )
             }
 
-        private fun KRemoteFileInfo(source: String, contactSource: String): String =
-            runBlocking {
+        private suspend fun KRemoteFileInfo(source: String, contactSource: String): String =
+            run {
                 val t = JSONObject(source)
-                return@runBlocking remoteFileInfo(
+                return remoteFileInfo(
                     t.getString("path"),
                     t.getString("id"),
                     gson.fromJson(contactSource, Config.Contact::class.java)
@@ -175,25 +165,20 @@ class CPP_lib (
             }
 
         //mute member
-        private fun KMuteM(time: Int, contactSource: String): String =
-            runBlocking {
-                mute(time, gson.fromJson(contactSource, Config.Contact::class.java))
-            }
+        private suspend fun KMuteM(time: Int, contactSource: String): String =
+            mute(time, gson.fromJson(contactSource, Config.Contact::class.java))
 
         //query the permission of a member in a group
         private fun KQueryM(contactSource: String): String =
             kqueryM(gson.fromJson(contactSource, Config.Contact::class.java))
 
         //kick a member
-        private fun KKickM(message: String, contactSource: String): String =
-            runBlocking {
-                kkick(message, gson.fromJson(contactSource, Config.Contact::class.java))
-            }
+        private suspend fun KKickM(message: String, contactSource: String): String =
+            kkick(message, gson.fromJson(contactSource, Config.Contact::class.java))
 
         //query the member list of a group
-        private fun KQueryML(contactSource: String): String {
-            return QueryML(gson.fromJson(contactSource, Config.Contact::class.java))
-        }
+        private fun KQueryML(contactSource: String): String =
+            QueryML(gson.fromJson(contactSource, Config.Contact::class.java))
 
         // query the friend lst of the bot
         private fun KQueryBFL(botid: Long): String {
@@ -210,54 +195,42 @@ class CPP_lib (
             getowner(gson.fromJson(contactSource, Config.Contact::class.java))
 
         //build forward message
-        private fun KBuildforward(text: String, botid: Long): String =
-            runBlocking {
-                buildforwardMsg(text, botid)
-            }
+        private suspend fun KBuildforward(text: String, botid: Long): String =
+            buildforwardMsg(text, botid)
 
         // new friend request operation
-        private fun KNfroperation(text: String, sign: Boolean): String =
-            runBlocking {
+        private suspend fun KNfroperation(text: String, sign: Boolean): String =
+            run {
                 val tmp = gson.fromJson(text, Config.NewFriendRequestSource::class.java)
                 if (sign) accpetFriendRequest(tmp)
                 else rejectFriendRequest(tmp)
             }
 
         // Group invite operation
-        private fun KGioperation(text: String, sign: Boolean): String =
-            runBlocking {
-                if (sign) accpetGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
-                else rejectGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
-            }
+        private suspend fun KGioperation(text: String, sign: Boolean): String =
+            if (sign) accpetGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
+            else rejectGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
 
-        private fun KSendWithQuote(messageSource: String, msg: String, sign: String): String =
-            runBlocking {
-                sendWithQuote(messageSource, msg, sign)
-            }
+        private suspend fun KSendWithQuote(messageSource: String, msg: String, sign: String): String =
+            sendWithQuote(messageSource, msg, sign)
 
 
         private fun KUpdateSetting(contactSource: String, source: String): String =
-            runBlocking { groupSetting(gson.fromJson(contactSource, Config.Contact::class.java), source) }
+            groupSetting(gson.fromJson(contactSource, Config.Contact::class.java), source)
 
-        private fun KUploadVoice(contactSource: String, source: String): String =
+        private suspend fun KUploadVoice(contactSource: String, source: String): String =
             JSONObject(source).let { tmp ->
-                return runBlocking {
-                    uploadVoice(tmp.getString("path"), gson.fromJson(contactSource, Config.Contact::class.java))
-                }
+                uploadVoice(tmp.getString("path"), gson.fromJson(contactSource, Config.Contact::class.java))
             }
 
-        private fun KAnnouncement(identify: String, source: String?): String =
+        private suspend fun KAnnouncement(identify: String, source: String?): String =
             gson.fromJson(identify, Config.IdentifyA::class.java).let { i ->
                 return when (i.type) {
                     1 -> {
-                        runBlocking {
-                            deleteOnlineAnnouncement(i)
-                        }
+                        deleteOnlineAnnouncement(i)
                     }
                     2 -> {
-                        runBlocking {
-                            publishOfflineAnnouncement(i, gson.fromJson(source!!, Config.BriefOfflineA::class.java))
-                        }
+                        publishOfflineAnnouncement(i, gson.fromJson(source!!, Config.BriefOfflineA::class.java))
                     }
                     else -> {
                         "EA"
@@ -350,64 +323,100 @@ class CPP_lib (
             try {
                 val j = JSONObject(content)
                 val root = j.getJSONObject("data")
-                return when (j.getInt("type")) {
-                    /// 撤回信息
-                    operation_code.Recall.ordinal -> KRecall(root.getString("source"))
-                    /// 发送信息
-                    operation_code.Send.ordinal -> KSend(
-                        root.getString("source"),
-                        root.getBoolean("miraiCode"),
-                        root.getInt("retryTime")
-                    )
-                    /// 查询信息接口
-                    operation_code.RefreshInfo.ordinal -> KRefreshInfo(root.getString("source"), root.has("quit"))
-                    /// 上传图片
-                    operation_code.UploadImg.ordinal -> KUploadImg(root.getString("fileName"), root.getString("source"))
-                    /// 取好友列表
-                    operation_code.QueryBFL.ordinal -> KQueryBFL(root.getLong("botid"))
-                    /// 取群组列表
-                    operation_code.QueryBGL.ordinal -> KQueryBGL(root.getLong("botid"))
-                    /// 上传文件
-                    operation_code.SendFile.ordinal -> KSendFile(root.getString("source"), root.getString("contactSource"))
-                    /// 查询文件信息
-                    operation_code.RemoteFileInfo.ordinal -> KRemoteFileInfo(root.getString("source"), root.getString("contactSource"))
-                    /// 查询图片下载地址
-                    operation_code.QueryImgUrl.ordinal -> KQueryImgUrl(root.getString("id"))
-                    /// 禁言
-                    operation_code.MuteM.ordinal -> KMuteM(root.getInt("time"), root.getString("contactSource"))
-                    /// 查询权限
-                    operation_code.QueryM.ordinal -> KQueryM(root.getString("contactSource"))
-                    /// 踢出
-                    operation_code.KickM.ordinal -> KKickM(root.getString("message"), root.getString("contactSource"))
-                    /// 取群主
-                    operation_code.QueryOwner.ordinal -> KQueryOwner(root.getString("contactSource"))
-                    /// 上传语音
-                    operation_code.UploadVoice.ordinal-> KUploadVoice(root.getString("contactSource"), root.getString("source"))
-                    /// 查询群成员列表
-                    operation_code.QueryML.ordinal -> KQueryML(root.getString("contactSource"))
-                    /// 群设置
-                    operation_code.GroupSetting.ordinal -> KUpdateSetting(root.getString("contactSource"), root.getString("source"))
-                    /// 构建转发信息
-                    operation_code.Buildforward.ordinal -> KBuildforward(root.getString("text"), root.getLong("botid"))
-                    /// 好友申请事件
-                    operation_code.Nfroperation.ordinal -> KNfroperation(root.getString("text"), root.getBoolean("sign"))
-                    /// 群聊邀请事件
-                    operation_code.Gioperation.ordinal -> KGioperation(root.getString("text"), root.getBoolean("sign"))
-                    /// 回复(引用并发送)
-                    operation_code.SendWithQuote.ordinal -> KSendWithQuote(root.getString("messageSource"), root.getString("msg"), root.getString("sign"))
-                    /// 群公告操作
-                    operation_code.Announcement.ordinal -> KAnnouncement(root.getString("identify"), if(root.has("source")) root.getString("source") else null)
-                    /// 定时任务
-                    operation_code.Timer.ordinal -> scheduling(root.getLong("time"), root.getString("msg"))
-                    /// 发送戳一戳
-                    operation_code.Nudge.ordinal -> KNudge(root.getString("contactSource"))
-                    /// 下一条信息
-                    operation_code.NextMsg.ordinal -> KNextMsg(
-                        root.getString("contactSource"),
-                        root.getLong("time"),
-                        root.getBoolean("halt")
-                    )
-                    else -> "EA"
+                return runBlocking(cc) {
+                    when (j.getInt("type")) {
+                        /// 撤回信息
+                        operation_code.Recall.ordinal -> KRecall(root.getString("source"))
+                        /// 发送信息
+                        operation_code.Send.ordinal -> KSend(
+                            root.getString("source"),
+                            root.getBoolean("miraiCode"),
+                            root.getInt("retryTime")
+                        )
+                        /// 查询信息接口
+                        operation_code.RefreshInfo.ordinal -> KRefreshInfo(root.getString("source"), root.has("quit"))
+                        /// 上传图片
+                        operation_code.UploadImg.ordinal -> KUploadImg(
+                            root.getString("fileName"),
+                            root.getString("source")
+                        )
+                        /// 取好友列表
+                        operation_code.QueryBFL.ordinal -> KQueryBFL(root.getLong("botid"))
+                        /// 取群组列表
+                        operation_code.QueryBGL.ordinal -> KQueryBGL(root.getLong("botid"))
+                        /// 上传文件
+                        operation_code.SendFile.ordinal -> KSendFile(
+                            root.getString("source"),
+                            root.getString("contactSource")
+                        )
+                        /// 查询文件信息
+                        operation_code.RemoteFileInfo.ordinal -> KRemoteFileInfo(
+                            root.getString("source"),
+                            root.getString("contactSource")
+                        )
+                        /// 查询图片下载地址
+                        operation_code.QueryImgUrl.ordinal -> KQueryImgUrl(root.getString("id"))
+                        /// 禁言
+                        operation_code.MuteM.ordinal -> KMuteM(root.getInt("time"), root.getString("contactSource"))
+                        /// 查询权限
+                        operation_code.QueryM.ordinal -> KQueryM(root.getString("contactSource"))
+                        /// 踢出
+                        operation_code.KickM.ordinal -> KKickM(
+                            root.getString("message"),
+                            root.getString("contactSource")
+                        )
+                        /// 取群主
+                        operation_code.QueryOwner.ordinal -> KQueryOwner(root.getString("contactSource"))
+                        /// 上传语音
+                        operation_code.UploadVoice.ordinal -> KUploadVoice(
+                            root.getString("contactSource"),
+                            root.getString("source")
+                        )
+                        /// 查询群成员列表
+                        operation_code.QueryML.ordinal -> KQueryML(root.getString("contactSource"))
+                        /// 群设置
+                        operation_code.GroupSetting.ordinal -> KUpdateSetting(
+                            root.getString("contactSource"),
+                            root.getString("source")
+                        )
+                        /// 构建转发信息
+                        operation_code.Buildforward.ordinal -> KBuildforward(
+                            root.getString("text"),
+                            root.getLong("botid")
+                        )
+                        /// 好友申请事件
+                        operation_code.Nfroperation.ordinal -> KNfroperation(
+                            root.getString("text"),
+                            root.getBoolean("sign")
+                        )
+                        /// 群聊邀请事件
+                        operation_code.Gioperation.ordinal -> KGioperation(
+                            root.getString("text"),
+                            root.getBoolean("sign")
+                        )
+                        /// 回复(引用并发送)
+                        operation_code.SendWithQuote.ordinal -> KSendWithQuote(
+                            root.getString("messageSource"),
+                            root.getString("msg"),
+                            root.getString("sign")
+                        )
+                        /// 群公告操作
+                        operation_code.Announcement.ordinal -> KAnnouncement(
+                            root.getString("identify"),
+                            if (root.has("source")) root.getString("source") else null
+                        )
+                        /// 定时任务
+                        operation_code.Timer.ordinal -> scheduling(root.getLong("time"), root.getString("msg"))
+                        /// 发送戳一戳
+                        operation_code.Nudge.ordinal -> KNudge(root.getString("contactSource"))
+                        /// 下一条信息
+                        operation_code.NextMsg.ordinal -> KNextMsg(
+                            root.getString("contactSource"),
+                            root.getLong("time"),
+                            root.getBoolean("halt")
+                        )
+                        else -> "EA"
+                    }
                 }
             }catch(e:Exception){
                 println(e.message)
