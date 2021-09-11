@@ -18,7 +18,9 @@
 package tech.eritquearcus.miraicp.shared
 
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withContext
 import net.mamoe.mirai.contact.Friend
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.Member
@@ -32,17 +34,19 @@ suspend inline fun <T, R> T.runInTP(
 ): R = runInterruptible(context = cc, block = { block() })
 
 suspend fun ArrayList<CPP_lib>.Event(content: String) {
-    runInTP {
-        when {
-            PublicShared.disablePlugins.isNotEmpty() -> {
-                this.filter {
-                    !PublicShared.disablePlugins.contains(it.config.name)
-                }.forEach {
-                    it.Event(content)
+    withContext(cc) {
+        launch {
+            when {
+                PublicShared.disablePlugins.isNotEmpty() -> {
+                    this@Event.filter {
+                        !PublicShared.disablePlugins.contains(it.config.name)
+                    }.forEach {
+                        it.Event(content)
+                    }
                 }
-            }
-            else -> {
-                this.forEach { it.Event(content) }
+                else -> {
+                    this@Event.forEach { it.Event(content) }
+                }
             }
         }
     }
