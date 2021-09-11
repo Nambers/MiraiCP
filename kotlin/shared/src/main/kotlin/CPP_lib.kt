@@ -138,8 +138,8 @@ class CPP_lib (
                 }
         }
 
-        private suspend fun KRefreshInfo(source: String, quit: Boolean): String =
-            RefreshInfo(gson.fromJson(source, Config.Contact::class.java), quit)
+        private suspend fun KRefreshInfo(source: String, quit: Boolean, announcement:Boolean): String =
+            RefreshInfo(gson.fromJson(source, Config.Contact::class.java), quit, announcement)
 
         private suspend fun KUploadImg(fileName: String, source: String): String =
             uploadImg(fileName, gson.fromJson(source, Config.Contact::class.java))
@@ -334,7 +334,7 @@ class CPP_lib (
                             root.getInt("retryTime")
                         )
                         /// 查询信息接口
-                        operation_code.RefreshInfo.ordinal -> KRefreshInfo(root.getString("source"), root.has("quit"))
+                        operation_code.RefreshInfo.ordinal -> KRefreshInfo(root.getString("source"), root.has("quit"), root.has("announcement"))
                         /// 上传图片
                         operation_code.UploadImg.ordinal -> KUploadImg(
                             root.getString("fileName"),

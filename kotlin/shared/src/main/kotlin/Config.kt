@@ -93,7 +93,6 @@ class Config {
 
     data class GroupSetting(
         val name:String,
-        val announcements:List<OnlineA>?,
         val isMuteAll:Boolean,
         val isAllowMemberInvite:Boolean,
         val isAutoApproveEnabled:Boolean,
@@ -103,7 +102,7 @@ class Config {
     data class ContactInfo(
         val nickornamecard: String,
         val avatarUrl: String,
-        val setting: GroupSetting = GroupSetting("", null, false, false, false, false)
+        val setting: GroupSetting = GroupSetting("", false, false, false, false)
     )
 
     data class DInfo(

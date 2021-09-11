@@ -1938,20 +1938,13 @@ LightApp风格1
          */
         void updateSetting(JNIEnv * = manager->getEnv());
 
-        /// 群公告 **目前暂时不能用**
-        /// @see https://github.com/Nambers/MiraiCP/issues/61
-        std::vector<OnlineAnnouncement> announcements;
-
         /// 取群成员列表
         /// @return vector<long>
         std::vector<unsigned long long> getMemberList(JNIEnv *env = manager->getEnv()) {
             nlohmann::json j;
             j["contactSource"] = this->serializationToString();
             std::string re = config->koperation(config->QueryML, j, env);
-//		        Tools::jstring2str((jstring)manager->getEnv()->CallStaticObjectMethod(config->CPP_lib,
-//			config->KQueryML,
-//			Tools::str2jstring(
-//				this->serializationToString().c_str())));
+            ErrorHandle(re);
             if (re == "E1") {
                 throw GroupException();
             }
@@ -1979,6 +1972,20 @@ LightApp风格1
 
         explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
+        /// 取群公告列表
+        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = manager->getEnv()){
+            json j;
+            j["source"] = this->serializationToString();
+            j["announcement"] = true;
+            std::string re = config->koperation(config->RefreshInfo, j, env);
+            ErrorHandle(re);
+            std::vector<OnlineAnnouncement> oa;
+            for(const json& e : json::parse(re)){
+                oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
+            }
+            return oa;
+        };
+
         /// 刷新群聊信息
         void refreshInfo(JNIEnv *env = manager->getEnv()) override {
             std::string re = LowLevelAPI::getInfoSource(this, env);
@@ -1988,11 +1995,6 @@ LightApp风格1
             this->_avatarUrl = tmp.avatarUrl;
             nlohmann::json j = nlohmann::json::parse(re)["setting"];
             this->setting.name = j["name"];
-            std::vector<OnlineAnnouncement> oa;
-            for(const json& e : j["announcements"]){
-                oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
-            }
-            this->announcements = oa;
             this->setting.isMuteAll = j["isMuteAll"];
             this->setting.isAllowMemberInvite = j["isAllowMemberInvite"];
             this->setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
