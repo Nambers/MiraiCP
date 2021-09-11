@@ -85,7 +85,7 @@ class CPP_lib (
         }
     }
     //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
-    companion object{
+    companion object {
         var test: Boolean = false
         private suspend fun KSend(source: String, miraiCode: Boolean, retryTime: Int): String =
             run {
@@ -114,7 +114,7 @@ class CPP_lib (
         private suspend fun KQueryImgUrl(id: String): String = QueryImg(id)
 
         @JvmStatic
-        fun KSendLog(log:String, level: Int) {
+        fun KSendLog(log: String, level: Int) {
             val j = JSONObject(log)
             if (test) {
                 when (level) {
@@ -319,11 +319,11 @@ class CPP_lib (
         }
 
         @JvmStatic
-        fun KOperation(content: String):String {
-            try {
-                val j = JSONObject(content)
-                val root = j.getJSONObject("data")
-                return runBlocking(cc) {
+        fun KOperation(content: String): String =
+            runBlocking(cc) {
+                try {
+                    val j = JSONObject(content)
+                    val root = j.getJSONObject("data")
                     when (j.getInt("type")) {
                         /// 撤回信息
                         operation_code.Recall.ordinal -> KRecall(root.getString("source"))
@@ -417,14 +417,13 @@ class CPP_lib (
                         )
                         else -> "EA"
                     }
+                } catch (e: Exception) {
+                    println(e.message)
+                    println(content)
+                    e.printStackTrace()
+                    "EA"
                 }
-            }catch(e:Exception){
-                println(e.message)
-                println(content)
-                e.printStackTrace()
-                return "EA"
             }
-        }
     }
     private external fun Verify(): String
     external fun Event(content: String): String
