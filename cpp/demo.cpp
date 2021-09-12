@@ -6,7 +6,7 @@ using namespace MiraiCP;
 class Main:public CPPPlugin {
 public:
     // 配置插件信息
-    Main(): CPPPlugin(PluginConfig("name", "1.0", "Eritque arcus", "hello world", "2021")){}
+    Main(): CPPPlugin(PluginConfig("Plugin name", "Version", "Author name", "Plugin description", "Publish time")){}
     void onEnable() override {
         // 监听
     }
