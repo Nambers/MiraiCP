@@ -320,7 +320,7 @@ class CPP_lib (
 
         @JvmStatic
         fun KOperation(content: String): String =
-            runBlocking(cc) {
+            runBlocking {
                 try {
                     val j = JSONObject(content)
                     val root = j.getJSONObject("data")
