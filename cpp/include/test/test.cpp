@@ -72,13 +72,14 @@ public:
             // e.sender.sendMiraiCode(tmp.toMiraiCode());
             // e.message.source.recall();
             logger->info("Start");
-            e.sender.sendMsg("B");
+            //e.sender.sendMsg("B");
             // logger->info("content: "+e.nextMessage().content.toMiraiCode());
         });
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            e.group.sendMsg("A");
+            Sleep(5000);
+            e.bot.getFriend(1930893235).sendMsg("A");
             // SYSTEMTIME st = { 0 };
             // GetLocalTime(&st);  //获取当前时间 可精确到ms
             // logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
