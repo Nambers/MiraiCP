@@ -382,7 +382,7 @@ LightApp风格1
          * @param data 传入数据
          * @return 返回数据
          */
-        std::string koperation(operation_set type, nlohmann::json &data, JNIEnv * = manager->getEnv());
+        std::string koperation(operation_set type, nlohmann::json &data, JNIEnv * = manager->getEnv(), bool catchErr = true, std::string errorInfo = "");
 
         Config() = default;
 
@@ -1495,7 +1495,7 @@ LightApp风格1
         /// @param miraicode 是否为miraicode格式
         /// @param env JNIEnv
         /// @return
-        static std::string send0(std::string content, Contact *c, int retryTime, bool miraicode, JNIEnv *env) {
+        static std::string send0(const std::string& content, Contact *c, int retryTime, bool miraicode, JNIEnv *env, std::string errorInfo = "") {
             nlohmann::json j;
             nlohmann::json tmp;
             tmp["content"] = content;
@@ -1503,7 +1503,7 @@ LightApp风格1
             j["source"] = tmp.dump();
             j["miraiCode"] = miraicode;
             j["retryTime"] = retryTime;
-            return config->koperation(config->Send, j, env);
+            return config->koperation(config->Send, j, env, true, errorInfo);
         }
 
         /// @brief 取该联系人的一些信息
@@ -1606,86 +1606,6 @@ LightApp风格1
         MessageSource sendTo(Contact *c, JNIEnv * = manager->getEnv());
     };
 
-    /// 当前bot账号信息
-    class Bot {
-    private:
-        bool inited = false;
-        std::string _nick;
-        std::string _avatarUrl;
-
-        void check() {
-            if (!this->inited) {
-                refreshInfo();
-                this->inited = true;
-            }
-        }
-
-    public:
-        /// 该botid
-        QQID id;
-
-        /*!
-         * @brief 刷新bot信息
-         * @param env
-         */
-        void refreshInfo(JNIEnv *env = manager->getEnv()) {
-            nlohmann::json j;
-            j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
-            LowLevelAPI::info tmp = LowLevelAPI::info0(config->koperation(config->RefreshInfo, j, env));
-//        Tools::jstring2str(
-//                (jstring)env->CallObjectMethod(config->CPP_lib, config->KRefreshInfo, Tools::str2jstring(
-//                        Contact(4, 0, 0, "", this->id).serializationToString().c_str(), env)))
-            this->_avatarUrl = tmp.avatarUrl;
-            this->_nick = tmp.nickornamecard;
-        }
-
-        /// 用id构建机器人
-        Bot(QQID i) : id(i) {}
-
-        /// 昵称
-        std::string nick() {
-            check();
-            return this->_nick;
-        }
-
-        /// 头像下载链接
-        std::string avatarUrl() {
-            check();
-            return this->_avatarUrl;
-        }
-
-        /// 取好友列表
-        std::vector<unsigned long long> getFriendList(JNIEnv *env = manager->getEnv()) {
-            nlohmann::json j;
-            j["botid"] = this->id;
-            std::string temp = config->koperation(config->QueryBFL, j, env);
-//		        Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
-//			config->KQueryBFL,
-//			(jlong)this->id));
-            return Tools::StringToVector(temp);
-        }
-
-        /// 好友列表string形式返回，利于保存
-        std::string FriendListToString() {
-            return Tools::VectorToString(getFriendList());
-        }
-
-        /// 取群列表
-        std::vector<unsigned long long> getGroupList(JNIEnv *env = manager->getEnv()) {
-            nlohmann::json j;
-            j["botid"] = this->id;
-            std::string temp = config->koperation(config->QueryBGL, j, env);
-//		        Tools::jstring2str((jstring)env->CallStaticObjectMethod(config->CPP_lib,
-//			config->KQueryBGL,
-//			(jlong)this->id));
-            return Tools::StringToVector(temp);
-        }
-
-        /// 群列表string形式返回，利于保存
-        std::string GroupListToString() {
-            return Tools::VectorToString(getGroupList());
-        }
-    };
 
 /// 好友类声明
     class Friend : public Contact {
@@ -1704,7 +1624,7 @@ LightApp风格1
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
-            ErrorHandle(config->koperation(config->RefreshInfo, j, env));
+            config->koperation(config->RefreshInfo, j, env);
         }
 
         void refreshInfo(JNIEnv *env = manager->getEnv()) override{
@@ -1726,7 +1646,6 @@ LightApp风格1
             json j;
             j["contactSource"] = this->serializationToString();
             std::string re = config->koperation(config->SendNudge, j);
-            ErrorHandle(re);
             if(re == "E1")
                 throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
         }
@@ -1835,7 +1754,6 @@ LightApp风格1
             json j;
             j["contactSource"] = this->serializationToString();
             std::string re = config->koperation(config->SendNudge, j);
-            ErrorHandle(re);
             if(re == "E1")
                 throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
         }
@@ -1944,7 +1862,6 @@ LightApp风格1
             nlohmann::json j;
             j["contactSource"] = this->serializationToString();
             std::string re = config->koperation(config->QueryML, j, env);
-            ErrorHandle(re);
             if (re == "E1") {
                 throw GroupException();
             }
@@ -1972,13 +1889,17 @@ LightApp风格1
 
         explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
+        /// 取群成员
+        Member getMember(QQID memberid, JNIEnv* env = manager->getEnv()){
+            return Member(memberid, this->id(), this->groupid(), env);
+        }
+
         /// 取群公告列表
         std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = manager->getEnv()){
             json j;
             j["source"] = this->serializationToString();
             j["announcement"] = true;
             std::string re = config->koperation(config->RefreshInfo, j, env);
-            ErrorHandle(re);
             std::vector<OnlineAnnouncement> oa;
             for(const json& e : json::parse(re)){
                 oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
@@ -1989,7 +1910,6 @@ LightApp风格1
         /// 刷新群聊信息
         void refreshInfo(JNIEnv *env = manager->getEnv()) override {
             std::string re = LowLevelAPI::getInfoSource(this, env);
-            ErrorHandle(re);
             LowLevelAPI::info tmp = LowLevelAPI::info0(re);
             this->_nickOrNameCard = tmp.nickornamecard;
             this->_avatarUrl = tmp.avatarUrl;
@@ -2005,7 +1925,7 @@ LightApp风格1
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
-            ErrorHandle(config->koperation(config->RefreshInfo, j, env));
+            config->koperation(config->RefreshInfo, j, env);
         }
 
         /*!
@@ -2067,6 +1987,88 @@ LightApp风格1
         /// e.group.SendMsg(e.group.getFileListString("/"));
         /// @endcode
         std::string getFileListString(const std::string &path, JNIEnv * = manager->getEnv());
+    };
+
+    /// 当前bot账号信息
+    class Bot {
+    private:
+        bool inited = false;
+        std::string _nick;
+        std::string _avatarUrl;
+
+        void check() {
+            if (!this->inited) {
+                refreshInfo();
+                this->inited = true;
+            }
+        }
+
+    public:
+        /// 该botid
+        QQID id;
+
+        /*!
+         * @brief 刷新bot信息
+         * @param env
+         */
+        void refreshInfo(JNIEnv *env = manager->getEnv()) {
+            nlohmann::json j;
+            j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
+            LowLevelAPI::info tmp = LowLevelAPI::info0(config->koperation(config->RefreshInfo, j, env));
+            this->_avatarUrl = tmp.avatarUrl;
+            this->_nick = tmp.nickornamecard;
+        }
+
+        /// 用id构建机器人
+        Bot(QQID i) : id(i) {}
+
+        /// 取好友
+        Friend getFriend(QQID i, JNIEnv* env = manager->getEnv()){
+            return Friend(i, this->id, env);
+        }
+
+        /// 取群聊
+        Group getGroup(QQID groupid, JNIEnv* env = manager->getEnv()){
+            return Group(groupid, this->id, env);
+        }
+
+        /// 昵称
+        std::string nick() {
+            check();
+            return this->_nick;
+        }
+
+        /// 头像下载链接
+        std::string avatarUrl() {
+            check();
+            return this->_avatarUrl;
+        }
+
+        /// 取好友列表
+        std::vector<unsigned long long> getFriendList(JNIEnv *env = manager->getEnv()) {
+            nlohmann::json j;
+            j["botid"] = this->id;
+            std::string temp = config->koperation(config->QueryBFL, j, env);
+            return Tools::StringToVector(temp);
+        }
+
+        /// 好友列表string形式返回，利于保存
+        std::string FriendListToString() {
+            return Tools::VectorToString(getFriendList());
+        }
+
+        /// 取群列表
+        std::vector<unsigned long long> getGroupList(JNIEnv *env = manager->getEnv()) {
+            nlohmann::json j;
+            j["botid"] = this->id;
+            std::string temp = config->koperation(config->QueryBGL, j, env);
+            return Tools::StringToVector(temp);
+        }
+
+        /// 群列表string形式返回，利于保存
+        std::string GroupListToString() {
+            return Tools::VectorToString(getGroupList());
+        }
     };
 
     /// At一个群成员
@@ -2807,13 +2809,14 @@ throw: InitxException 即找不到对应签名
         }
     }
 
-    std::string Config::koperation(operation_set type, json &data, JNIEnv *env) {
+    std::string Config::koperation(operation_set type, json &data, JNIEnv *env, bool catchErr, std::string errorInfo) {
         json j;
         j["type"] = type;
         j["data"] = data;
-        jstring re = (jstring) env->CallStaticObjectMethod(this->CPP_lib, this->KOperation,
-                                                           Tools::str2jstring(j.dump().c_str(), env));
-        return Tools::jstring2str(re, env);
+        std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(this->CPP_lib, this->KOperation,
+                                                           Tools::str2jstring(j.dump().c_str(), env)), env);
+        if(catchErr) ErrorHandle(re, errorInfo);
+        return re;
     }
 
     Event::~Event() {
@@ -2948,7 +2951,6 @@ throw: InitxException 即找不到对应签名
         temp["text"] = text.dump();
         temp["botid"] = c->botid();
         std::string re = config->koperation(config->Buildforward, temp, env);
-        ErrorHandle(re);
         //TODO:https://github.com/mamoe/mirai/issues/1371
         return MessageSource::deserializeFromString(re);
     }
@@ -3010,7 +3012,6 @@ throw: InitxException 即找不到对应签名
         sign["groupid"] = groupid;
         obj["sign"] = sign.dump();
         std::string re = config->koperation(config->SendWithQuote, obj, env);
-        ErrorHandle(re);
         return MessageSource::deserializeFromString(re);
     }
 
@@ -3023,7 +3024,6 @@ throw: InitxException 即找不到对应签名
         sign["groupid"] = groupid;
         obj["sign"] = sign.dump();
         std::string re = config->koperation(config->SendWithQuote, obj, env);
-        ErrorHandle(re);
         return MessageSource::deserializeFromString(re);
     }
 
@@ -3032,8 +3032,7 @@ throw: InitxException 即找不到对应签名
             logger->warning("警告:发送空信息, 位置: Contact::SendMsg");
             throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg");
         }
-        std::string re = LowLevelAPI::send0(std::move(msg), this, retryTime, miraicode, env);
-        ErrorHandle(re, "reach a error area, Contact::SendMiraiCode");
+        std::string re = LowLevelAPI::send0(std::move(msg), this, retryTime, miraicode, env, "reach a error area, Contact::SendMiraiCode");
         if(re == "ET")
             throw TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg");
         if(Tools::starts_with(re, "EBM"))
@@ -3043,7 +3042,6 @@ throw: InitxException 即找不到对应签名
 
     Image Contact::uploadImg(const std::string &path, JNIEnv *env) {
         std::string re = LowLevelAPI::uploadImg0(path, this, env);
-        ErrorHandle(re);
         if (re == "E2")
             throw UploadException("上传图片大小超过30MB,路径:" + path);
         return Image(re);
@@ -3070,7 +3068,7 @@ throw: InitxException 即找不到对应签名
     unsigned int Member::getPermission(JNIEnv *env) {
         json j;
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->QueryM, j, env);
+        std::string re = config->koperation(config->QueryM, j, env, false);
         try{
             ErrorHandle(re);
         }catch(MiraiCPException&){
@@ -3083,8 +3081,7 @@ throw: InitxException 即找不到对应签名
         json j;
         j["time"] = time;
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->MuteM, j, env);
-        ErrorHandle(re);
+        std::string re = config->koperation(config->MuteM, j, env, false);
         if (re == "E3") {
             throw BotException();
         }
@@ -3098,7 +3095,6 @@ throw: InitxException 即找不到对应签名
         j["message"] = reason;
         j["contactSource"] = this->serializationToString();
         std::string re = config->koperation(config->KickM, j, env);
-        ErrorHandle(re);
         if (re == "E3") {
             throw BotException();
         }
@@ -3120,7 +3116,6 @@ throw: InitxException 即找不到对应签名
         i["type"] = 1;
         j["identify"] = i.dump();
         std::string re = config->koperation(config->Announcement, j);
-        ErrorHandle(re);
         if(re == "E1")
             throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)");
         if(re == "E2")
@@ -3149,7 +3144,6 @@ throw: InitxException 即找不到对应签名
         s["params"] = this->params.serializeToJson();
         j["source"] = s.dump();
         std::string re = config->koperation(config->Announcement, j);
-        ErrorHandle(re);
         if(re == "E1")
             throw BotException();
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
@@ -3200,10 +3194,8 @@ throw: InitxException 即找不到对应签名
         tmp["source"] = source.dump();
         tmp["contactSource"] = this->serializationToString();
         std::string callback = config->koperation(config->SendFile, tmp, env);
-        ErrorHandle(callback);
         if (callback == "E2") throw UploadException("找不到" + filepath + "位置:C-uploadfile");
-        if (callback == "E3")
-            throw UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
+        if (callback == "E3") throw UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
         return RemoteFile::deserializeFromString(callback);
     }
 
@@ -3216,7 +3208,6 @@ throw: InitxException 即找不到对应签名
         j["source"] = tmp.dump();
         j["contactSource"] = this->serializationToString();
         std::string re = config->koperation(config->RemoteFileInfo, j, env);
-        ErrorHandle(re);
         if (re == "E2") throw RemoteAssetException("Get error: 文件路径不存在, path:" + path);
         return RemoteFile::deserializeFromString(re);
     }
@@ -3225,7 +3216,6 @@ throw: InitxException 即找不到对应签名
         json j;
         j["contactSource"] = this->serializationToString();
         std::string re = config->koperation(config->QueryOwner, j, env);
-        ErrorHandle(re);
         return Member(stoi(re), this->id(), this->botid());
     }
 
@@ -3236,9 +3226,7 @@ throw: InitxException 即找不到对应签名
         temp["path"] = path;
         j["source"] = temp.dump();
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->RemoteFileInfo, j, env);
-        ErrorHandle(re);
-        return re;
+        return config->koperation(config->RemoteFileInfo, j, env);
     }
 
     std::vector<Group::file_short_info> Group::getFileList(const std::string &path, JNIEnv *env) {
@@ -3402,7 +3390,6 @@ throw: InitxException 即找不到对应签名
         j["source"] = source.dump();
         j["contactSource"] = this->serializationToString();
         std::string re = config->koperation(config->Voice, j, env);
-        ErrorHandle(re);
         if (re == "E1")
             throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在");
         else if(re == "E2")
