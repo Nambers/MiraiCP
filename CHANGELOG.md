@@ -1,5 +1,16 @@
 # Change Log
 
+## v2.7.1-dev-1
+
++ 增加重载dll指令
++ 去掉windows.h依赖
++ 分离c++ test部分
++ 解决 #80 的问题
++ 获取群公告列表独立出来
++ 取消threadNum设置
+
+> 该版本为开发版, 可能包含一些问题
+
 ## v2.7.1-patch-1
 
 + mirai版本升级到v2.7.1-dev-1
