@@ -66,7 +66,7 @@ object PublicShared {
     const val now_tag = "v2.7.0-patch-1"
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
-    val loadedPlugins = arrayListOf<String>()
+    var cachePath: File = File("")
 
     fun init(l: MiraiLogger) {
         logger = l
@@ -263,7 +263,7 @@ object PublicShared {
                     return "EG"
                 }
                 if(annoucment)
-                    return gson.toJson(g.announcements.toList().map { it.toOnlineA() });
+                    return gson.toJson(g.announcements.toList().map { it.toOnlineA() })
                 if(quit){
                     g.quit()
                     return "done"
@@ -891,8 +891,6 @@ object PublicShared {
     }
 
     fun onDisable() = cpp.forEach { it.PluginDisable() }
-
-    var threadNum = 5
 
     @OptIn(MiraiExperimentalApi::class)
     fun onEnable(eventChannel: EventChannel<Event>) {

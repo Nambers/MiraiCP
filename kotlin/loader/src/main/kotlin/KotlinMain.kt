@@ -24,10 +24,10 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
-import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
+import tech.eritquearcus.miraicp.shared.loadAsCPPLib
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -40,10 +40,15 @@ object KotlinMain {
     fun main(j: String) {
         job.start()
         val c = Gson().fromJson(j, Config.accounts::class.java)
-        loginAccount = c.accounts?: emptyList()
+        loginAccount = c.accounts ?: emptyList()
         Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
         PublicShared.init(logger)
+        PublicShared.cachePath = File("./data/miraiCP/cache/")
+        if (PublicShared.cachePath.exists()) {
+            PublicShared.cachePath.deleteRecursively()
+        }
+        PublicShared.cachePath.mkdir()
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
         logger.info("⭐当前MiraiCP版本: $now_tag")
@@ -58,19 +63,12 @@ object KotlinMain {
                 logger.error("Error: dll文件${it.path} 不存在, 请检查config.json配置")
                 return@forEach
             }
-            logger.info("加载dll:${f.absolutePath}")
-            val cpp = CPP_lib(f.absolutePath, d)
-            cpp.showInfo()
-            PublicShared.cpp.add(cpp)
-            if (PublicShared.logger4plugins.contains(cpp.config.name))
-                logger.warning("检测到列表已经有重复的${cpp.config.name}, 请检测配置文件中是否重复或提醒开发者改插件名称，但该插件还是会加载")
-            PublicShared.logger4plugins[cpp.config.name] = MiraiLogger.Factory.create(this::class, cpp.config.name)
+            f.loadAsCPPLib(d)
         }
         if (c.accounts == null || c.accounts!!.isEmpty()) {
             logger.error("Error: 无可登录账号，请检查config.json内容")
             return
         }
-        PublicShared.threadNum = c.config?.threadNum ?: let { PublicShared.threadNum }
         c.accounts?.filter { it.autoLogin == true }?.forEach {
             it.login()
             logined = true
