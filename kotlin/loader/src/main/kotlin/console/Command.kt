@@ -18,11 +18,10 @@
 package tech.eritquearcus.miraicp.loader.console
 
 import com.google.gson.Gson
-import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.login
-import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.PublicShared
+import tech.eritquearcus.miraicp.shared.loadAsCPPLib
 import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
@@ -38,10 +37,11 @@ object Command {
             "accountList" to "简写aList, 查看配置文件里的qq",
             "pluginList" to "简写pList, 输出全部插件信息",
             "disablePluginList" to "简写dList, 输出全部被禁用的插件名称",
-            "disablePlugin <plugin name>" to "简写disable, 禁用插件, 后面跟插件的名字作为参数, 可用enablePlugin启用, 可能会对程序的速度造成一些影响",
-            "enablePlugin <plugin name>" to "简写enable, 启用插件, 后面跟插件的名字作为参数",
+            "disablePlugin <plugin id>" to "简写disable, 禁用插件, 后面跟插件的名字作为参数, 可用enablePlugin启用, 可能会对程序的速度造成一些影响",
+            "enablePlugin <plugin id>" to "简写enable, 启用插件, 后面跟插件的名字作为参数",
             "loadPlugin <plugin path>" to "简写load, 加载某个插件, 后面跟插件的地址作为参数",
-            "removePlugin <plugin name>" to "简写rm, 移除插件但不会取消对dll文件的占用, 后面跟插件的名字作为参数"
+            "removePlugin <plugin id>" to "简写rm, 移除插件但不会取消对dll文件的占用, 后面跟插件的名字作为参数",
+            "reloadPlugin <plugin path>" to "简写reload, 加载某个插件(位于<plugin path>), 如果已经加载则`removePlugin`那个插件, 如果未加载过则效果类似`load`"
         )
         val prefixPlaceholder = String(CharArray(
             message.maxOfOrNull { it.first.length }!! + 3
@@ -116,29 +116,52 @@ object Command {
         }
     }
 
-    private fun login(id:Long){
-        KotlinMain.loginAccount.first { it.id == id && (it.logined == null || it.logined == false)}.login()
+    private fun login(id: Long) {
+        KotlinMain.loginAccount.first { it.id == id && (it.logined == null || it.logined == false) }.login()
     }
-    private fun removePlugin(order:String, name: String){
+
+    private fun removePlugin(order: String, id: String) {
         try {
             PublicShared.cpp.filter {
-                it.config.name == name
+                it.config.id == id
             }.forEach {
                 PublicShared.cpp.remove(it)
-                PublicShared.disablePlugins.contains(name) && PublicShared.disablePlugins.remove(name)
-                info("成功移除${name}插件")
+                PublicShared.disablePlugins.contains(id) && PublicShared.disablePlugins.remove(id)
+                info("成功移除(${id})${it.config.name}插件")
             }
-        }catch(e:NoSuchElementException){
-            error(order, "已使用的插件列表中没有${name}")
+        } catch (e: NoSuchElementException) {
+            error(order, "已使用的插件列表中没有${id}")
         }
     }
+
+    private fun reload(order: String, path: String) {
+        File(path).let { plugin ->
+            when {
+                (!plugin.isFile || !plugin.exists()) -> error(order, "插件(${path})不存在")
+                (plugin.extension != "dll" && plugin.extension != "so") -> error(order, "插件(${path})不是dll或so文件")
+                else -> {
+                    val p = plugin.loadAsCPPLib(emptyList(), true)
+                    PublicShared.cpp.filter { it.config.id == p.config.id }.apply {
+                        if (this.isEmpty())
+                            PublicShared.logger.warning("重载未找到id为(${p.config.id}), 但会继续执行, 效果类似`load`")
+                    }.forEach {
+                        PublicShared.cpp.remove(it)
+                        PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
+                    }
+                    PublicShared.cpp.add(p)
+                }
+            }
+        }
+
+    }
+
     private fun oneParamOrder(order: Array<String>) {
-        when(order[0]){
+        when (order[0]) {
             "login" -> {
                 val id = try {
                     order[1].toLong()
-                }catch(e:NumberFormatException){
-                    error(order.joinToString(" "),order[1] + "不是有效的qq号")
+                } catch (e: NumberFormatException) {
+                    error(order.joinToString(" "), order[1] + "不是有效的qq号")
                     return
                 }
                 try{
@@ -157,37 +180,31 @@ object Command {
                     f.extension != "dll" && f.extension != "so" -> {
                         error(order.joinToString(" "), order[1] + "不是一个有效的dll或so文件")
                     }
-                    PublicShared.loadedPlugins.contains(f.absolutePath) -> {
-                        error("已经加载该插件")
-                    }
                     else -> {
-                        CPP_lib(f.absolutePath, emptyList()).let { cpp ->
-                            cpp.showInfo()
-                            PublicShared.logger4plugins[cpp.config.name] =
-                                MiraiLogger.Factory.create(this::class, cpp.config.name)
-                            PublicShared.cpp.add(cpp)
-                        }
-                        PublicShared.logger.info("加载${order[1]}成功")
+                        f.loadAsCPPLib(emptyList())
                     }
                 }
             }
             "disablePlugin", "disable" ->{
                 try{
-                    PublicShared.cpp.first { it.config.name == order[1] }
+                    PublicShared.cpp.first { it.config.id == order[1] }
                     (!PublicShared.disablePlugins.contains(order[1])) && PublicShared.disablePlugins.add(order[1])
                     info("禁用${order[1]}成功")
                 }catch(e:NoSuchElementException){
                     error(order.joinToString(" "), "找不到${order[1]}插件, 关闭失败")
                 }
             }
-            "enablePlugin", "enable"->{
-                if(PublicShared.disablePlugins.contains(order[1])){
+            "enablePlugin", "enable" -> {
+                if (PublicShared.disablePlugins.contains(order[1])) {
                     PublicShared.disablePlugins.remove(order[1])
                     info("启用${order[1]}成功")
                 }
             }
-            "removePlugin", "rm"->{
+            "removePlugin", "rm" -> {
                 removePlugin(order.joinToString(" "), order[1])
+            }
+            "reloadPlugin", "reload" -> {
+                reload(order.joinToString(" "), order[1])
             }
             else -> unknown(order.joinToString(" "))
         }
