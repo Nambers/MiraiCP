@@ -49,6 +49,8 @@ namespace MiraiCP {
     /// @brief 插件信息
     class PluginConfig{
     public:
+        /// @brief 插件id, 要与别人不一样否则报错无法加载(建议用类包格式，如: io.github.nambers)
+        std::string id;
         /// @brief 插件名称
         std::string name;
         /// @brief 插件版本
@@ -59,8 +61,8 @@ namespace MiraiCP {
         std::string description;
         /// @brief [optional]构建时间
         std::string time;
-        PluginConfig(std::string name, std::string version, std::string author,
-                     std::string description = "", std::string time = "") : name(std::move(name)), version(std::move(version)),
+        PluginConfig(std::string id, std::string name, std::string version, std::string author,
+                     std::string description = "", std::string time = "") : id(std::move(id)), name(std::move(name)), version(std::move(version)),
                                                                                           author(std::move(author)), description(std::move(description)),
                                                                                           time(std::move(time)) {}
         json serialize();
@@ -2770,7 +2772,7 @@ throw: InitException 即找不到签名
             this->loggerhandler.action(content, level);
         json j;
         j["id"] = -1;
-        j["name"] = plugin->config.name;
+        j["name"] = plugin->config.id;
         j["log"] = content;
         env->CallStaticVoidMethod(config->CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
     }
@@ -3410,6 +3412,7 @@ throw: InitxException 即找不到对应签名
         j["author"] = author;
         j["description"] = description;
         j["time"] = time;
+        j["id"] = id;
         return j;
     }
     // 结束MiraiCP实现代码

@@ -66,16 +66,15 @@ class CPP_lib (
             System.load(it)
         }
         System.load(dll_path)
-        PublicShared.loadedPlugins.add(dll_path)
         config = Gson().fromJson(Verify(), PluginConfig::class.java)
     }
 
     fun showInfo(logger: MiraiLogger = PublicShared.logger, version: String = PublicShared.now_tag) {
-        logger.info("⭐已加载插件: ${config.name}")
+        logger.info("⭐已加载插件(${config.id}): ${config.name}")
         logger.info("⭐作者: ${config.author}")
         logger.info("⭐版本: ${config.version}")
         logger.info("⭐本机地址: $dll_path")
-        logger.info("⭐依赖dll: ${dependencies?.joinToString(" ") ?: let { "null" }}")
+        if (dependencies != null) logger.info("⭐依赖dll: ${dependencies.joinToString(" ")}")
         if (config.description != "")
             logger.info("⭐描述: ${config.description}")
         if (config.time != "")
