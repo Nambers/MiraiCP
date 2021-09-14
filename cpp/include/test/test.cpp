@@ -78,7 +78,6 @@ public:
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            Sleep(5000);
             e.bot.getFriend(1930893235).sendMsg("A");
             // SYSTEMTIME st = { 0 };
             // GetLocalTime(&st);  //获取当前时间 可精确到ms

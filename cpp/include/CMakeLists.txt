@@ -8,8 +8,3 @@ set(SOURCE_PATH
         ${CMAKE_CURRENT_SOURCE_DIR}/utf8/utf8
         )
 target_include_directories(MiraiCP PUBLIC ${SOURCE_PATH})
-set(
-        MIRAICP_SOURCE_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/miraicp/dllmain.cpp
-)
-target_sources(MiraiCP PUBLIC ${MIRAICP_SOURCE_FILES})
