@@ -19,11 +19,10 @@ package tech.eritquearcus.miraicp.console
 
 import net.mamoe.mirai.console.command.CommandManager
 import net.mamoe.mirai.console.command.SimpleCommand
-import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.PluginMain
-import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicShared.logger
+import tech.eritquearcus.miraicp.shared.loadAsCPPLib
 import java.io.File
 
 object PluginList : SimpleCommand(
@@ -100,17 +99,34 @@ object LoadPlugin : SimpleCommand(
             f.extension != "dll" && f.extension != "so" -> {
                 logger.error("${f.absolutePath} 不是一个有效的dll或so文件")
             }
-            PublicShared.loadedPlugins.contains(f.absolutePath) -> {
-                logger.error("已经加载该插件")
-            }
             else -> {
-                CPP_lib(f.absolutePath, emptyList()).let { cpp ->
-                    cpp.showInfo()
-                    PublicShared.logger4plugins[cpp.config.name] =
-                        MiraiLogger.Factory.create(this::class, cpp.config.name)
-                    PublicShared.cpp.add(cpp)
+                f.loadAsCPPLib(emptyList())
+            }
+        }
+    }
+}
+
+object ReLoadPlugin : SimpleCommand(
+    PluginMain,
+    "reLoadPlugin", "reload",
+    description = "重新加载一个被加载过的MiraiCP插件(简写: reload)"
+) {
+    @Handler
+    fun reload(path: String) {
+        val plugin = File(path)
+        when {
+            (!plugin.isFile || !plugin.exists()) -> logger.error("插件(${path})不存在")
+            (plugin.extension != "dll" && plugin.extension != "so") -> logger.error("插件(${path})不是dll或so文件")
+            else -> {
+                val p = plugin.loadAsCPPLib(emptyList(), true)
+                PublicShared.cpp.filter { it.config.id == p.config.id }.apply {
+                    if (this.isEmpty())
+                        logger.warning("重载未找到id为(${p.config.id}), 但会继续执行, 效果类似`load`")
+                }.forEach {
+                    PublicShared.cpp.remove(it)
+                    PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
                 }
-                logger.info("加载${f.absolutePath}成功")
+                PublicShared.cpp.add(p)
             }
         }
     }
@@ -122,4 +138,5 @@ fun registerCommands() {
     CommandManager.registerCommand(EnablePlugin)
     CommandManager.registerCommand(DisablePluginList)
     CommandManager.registerCommand(LoadPlugin)
+    CommandManager.registerCommand(ReLoadPlugin)
 }

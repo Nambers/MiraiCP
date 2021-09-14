@@ -24,17 +24,17 @@ import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.console.registerCommands
-import tech.eritquearcus.miraicp.shared.CPP_lib
 import tech.eritquearcus.miraicp.shared.Config
 import tech.eritquearcus.miraicp.shared.Event
 import tech.eritquearcus.miraicp.shared.PublicShared
+import tech.eritquearcus.miraicp.shared.loadAsCPPLib
 import java.io.File
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.7-RC"
+        version = "2.7.1-patch-1"
     ){
         author("Eritque arcus")
     }
@@ -43,19 +43,23 @@ object PluginMain : KotlinPlugin(
         registerCommands()
         val l = MiraiLogger.Factory.create(this::class, "MiraiCP")
         PublicShared.init(l)
+        PublicShared.cachePath = this.dataFolder.resolve("cache")
+        if (PublicShared.cachePath.exists()) {
+            PublicShared.cachePath.deleteRecursively()
+        }
+        PublicShared.cachePath.mkdir()
         l.info("⭐MiraiCP启动中⭐")
         l.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
         Gson().fromJson(File("${dataFolder.absoluteFile}\\miraicp.json").apply {
             if (!this.exists() || !this.isFile) {
                 l.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
-                l.error("配置文件应该在(${this.absolutePath}), 并且拥有以下json格式:")
+                l.error("配置文件应该在(${this.absolutePath}), 并且拥有以下json格式(见https://github.com/Nambers/MiraiCP/blob/master/doc/config.md):")
                 l.error(
                     """
                     {
                     "pluginConfig":[
                     {
-                    "path":"第一个插件路径",
-                    "dependencies":["依赖的dll列表，可为空"]
+                    "path":"插件路径"
                     }
                     ]
                     }
@@ -63,32 +67,24 @@ object PluginMain : KotlinPlugin(
                 )
                 return
             }
-        }.readText(), Config.pluginConfig::class.java).apply {
-            PublicShared.threadNum = this.config?.threadNum ?: let { PublicShared.threadNum }
-        }.pluginConfig.forEach { i ->
-            val it = i.path
-            val d = i.dependencies?.filter { p ->
-                File(p).let { f ->
-                    f.isFile && f.exists() && (f.extension == "dll" || f.extension == "lib" || f.extension == "so")
+        }.readText(), Config.pluginConfig::class.java)
+            .pluginConfig.forEach { i ->
+                val it = i.path
+                val d = i.dependencies?.filter { p ->
+                    File(p).let { f ->
+                        f.isFile && f.exists() && (f.extension == "dll" || f.extension == "lib" || f.extension == "so")
+                    }
                 }
-            }
-            val f = File(it)
-            when {
-                !f.isFile || !f.exists() -> {
-                    error(it + "不是一个有效的文件")
+                val f = File(it)
+                when {
+                    !f.isFile || !f.exists() -> {
+                        error(it + "不是一个有效的文件")
                 }
                 f.extension != "dll" && f.extension != "so" -> {
                     error(it + "不是一个有效的dll或so文件")
                 }
                 else -> {
-                    PublicShared.logger.info("加载${it}成功")
-                    CPP_lib(f.absolutePath, d).let { cpp ->
-                        cpp.showInfo()
-                        PublicShared.logger4plugins[cpp.config.name] =
-                            MiraiLogger.Factory.create(this::class, cpp.config.name)
-                        PublicShared.cpp.add(cpp)
-                    }
-
+                    f.loadAsCPPLib(d)
                     }
                 }
             }
