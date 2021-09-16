@@ -17,10 +17,8 @@
 
 package tech.eritquearcus.miraicp.shared
 
-import net.mamoe.mirai.contact.Friend
-import net.mamoe.mirai.contact.Group
-import net.mamoe.mirai.contact.Member
-import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.Bot
+import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
 import java.util.concurrent.Executors
@@ -76,3 +74,97 @@ internal fun Member.toContact(): Config.Contact =
 
 internal fun Friend.toContact(): Config.Contact =
     Config.Contact(1, this.id, 0, this.nameCardOrNick, this.bot.id)
+
+internal inline fun withBot(botid: Long, Err: String = "", block: (Bot) -> String): String {
+    val bot = Bot.getInstanceOrNull(botid)
+    if (bot == null) {
+        if (Err != "") PublicShared.logger.error(Err)
+        return "EB"
+    }
+    return block(bot)
+}
+
+internal inline fun Config.Contact.withBot(Err: String = "", block: (Bot) -> String): String {
+    val bot = Bot.getInstanceOrNull(botid)
+    if (bot == null) {
+        if (Err != "") PublicShared.logger.error(Err)
+        return "EB"
+    }
+    return block(bot)
+}
+
+internal inline fun withFriend(bot: Bot, friendid: Long, Err: String = "", block: (Friend) -> String): String {
+    val f = bot.getFriend(friendid)
+    if (f == null) {
+        if (Err != "") PublicShared.logger.error(Err)
+        return "EF"
+    }
+    return block(f)
+}
+
+internal inline fun Config.Contact.withFriend(bot: Bot, Err: String = "", block: (Friend) -> String): String {
+    val f = bot.getFriend(this.id)
+    if (f == null) {
+        if (Err != "") PublicShared.logger.error(Err)
+        return "EF"
+    }
+    return block(f)
+}
+
+internal inline fun withGroup(bot: Bot, groupid: Long, Err: String = "", block: (Group) -> String): String {
+    val g = bot.getGroup(groupid)
+    if (g == null) {
+        if (Err != "") PublicShared.logger.error(Err)
+        return "EG"
+    }
+    return block(g)
+}
+
+internal inline fun Config.Contact.withGroup(bot: Bot, Err: String = "", block: (Group) -> String): String {
+    val g = bot.getGroup(this.groupid)
+    if (g == null) {
+        if (Err != "") PublicShared.logger.error(Err)
+        return "EG"
+    }
+    return block(g)
+}
+
+internal inline fun withMember(
+    bot: Bot,
+    groupid: Long,
+    id: Long,
+    Err1: String = "",
+    Err2: String = "",
+    block: (Group, Member) -> String
+): String {
+    val group = bot.getGroup(groupid)
+    if (group == null) {
+        if (Err1 != "") PublicShared.logger.error(Err1)
+        return "EM"
+    }
+    val m = group[id]
+    if (m == null) {
+        if (Err2 != "") PublicShared.logger.error(Err2)
+        return "EMM"
+    }
+    return block(group, m)
+}
+
+internal inline fun Config.Contact.withMember(
+    bot: Bot,
+    Err1: String = "",
+    Err2: String = "",
+    block: (Group, NormalMember) -> String
+): String {
+    val group = bot.getGroup(this.groupid)
+    if (group == null) {
+        if (Err1 != "") PublicShared.logger.error(Err1)
+        return "EM"
+    }
+    val m = group[this.id]
+    if (m == null) {
+        if (Err2 != "") PublicShared.logger.error(Err2)
+        return "EMM"
+    }
+    return block(group, m)
+}
