@@ -39,6 +39,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.groupSetting
 import tech.eritquearcus.miraicp.shared.PublicShared.gson
 import tech.eritquearcus.miraicp.shared.PublicShared.kkick
 import tech.eritquearcus.miraicp.shared.PublicShared.kqueryM
+import tech.eritquearcus.miraicp.shared.PublicShared.modifyAdmin
 import tech.eritquearcus.miraicp.shared.PublicShared.mute
 import tech.eritquearcus.miraicp.shared.PublicShared.nextMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.publishOfflineAnnouncement
@@ -243,6 +244,9 @@ class CPP_lib (
         private fun KNextMsg(contactSource: String, time: Long, halt: Boolean): String =
             nextMsg(gson.fromJson(contactSource, Config.Contact::class.java), time, halt)
 
+        private suspend fun KModifyAdmin(contactSource: String, admin: Boolean): String =
+            modifyAdmin(gson.fromJson(contactSource, Config.Contact::class.java), admin)
+
         enum class operation_code {
             /// 撤回信息
             Recall,
@@ -314,7 +318,10 @@ class CPP_lib (
             Nudge,
 
             /// 好友对象下一条消息
-            NextMsg
+            NextMsg,
+
+            /// 更改群成员权限
+            ModifyAdmin
         }
 
         @JvmStatic
@@ -413,6 +420,10 @@ class CPP_lib (
                             root.getString("contactSource"),
                             root.getLong("time"),
                             root.getBoolean("halt")
+                        )
+                        operation_code.ModifyAdmin.ordinal -> KModifyAdmin(
+                            root.getString("contactSource"),
+                            root.getBoolean("admin")
                         )
                         else -> "EA"
                     }
