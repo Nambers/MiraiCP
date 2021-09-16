@@ -43,7 +43,7 @@ namespace MiraiCP {
     using QQID = unsigned long long;
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.7.0-patch-1";
+    const std::string MiraiCPVersion = "v2.7.1-dev-1";
 
     /// @brief 插件信息
     class PluginConfig{
@@ -374,7 +374,9 @@ LightApp风格1
             /// 发送戳一戳
             SendNudge,
             /// 下一条信息
-            NextMsg
+            NextMsg,
+            /// 更改权限
+            ModifyAdmin
         };
 
         /**
@@ -1661,6 +1663,11 @@ LightApp风格1
         ///     - MEMBER群成员 为 0
         /// @note 上面那些变量在constants.h中有定义
         unsigned int permission = 0;
+
+        /// @brief 更改群成员权限
+        /// @param admin 如果为true为更改到管理员
+        /// @param env
+        void modifyAdmin(bool admin, JNIEnv* env = manager->getEnv());
 
         /// @brief 构建群成员对象
         /// @param qqid 该成员q号
@@ -3097,6 +3104,16 @@ throw: InitxException 即找不到对应签名
         j["contactSource"] = this->serializationToString();
         std::string re = config->koperation(config->KickM, j, env);
         if (re == "E3") {
+            throw BotException();
+        }
+    }
+
+    void Member::modifyAdmin(bool admin, JNIEnv* env){
+        json j;
+        j["admin"] = admin;
+        j["contactSource"] = this->serializationToString();
+        std::string re = config->koperation(config->ModifyAdmin, j, env);
+        if(re == "E1"){
             throw BotException();
         }
     }
