@@ -1037,15 +1037,17 @@ object PublicShared {
         }
 
         eventChannel.subscribeAlways<NudgeEvent> {
-            cpp.Event(gson.toJson(
-                Config.NugdeEvent(
-                    if(this.subject.id == this.from.id)
-                        this.bot.getFriend(this.from.id)!!.toContact()
-                    else
-                        this.bot.getGroup(this.subject.id)!![this.from.id]!!.toContact(),
-                    this.bot.id
+            cpp.Event(
+                gson.toJson(
+                    Config.NugdeEvent(
+                        if (this.subject.id == this.from.id)
+                            this.bot.getFriend(this.from.id)!!.toContact()
+                        else
+                            this.bot.getGroup(this.subject.id)!![this.from.id]!!.toContact(),
+                        this.bot.id
+                    )
                 )
-            ))
+            )
         }
     }
 }
