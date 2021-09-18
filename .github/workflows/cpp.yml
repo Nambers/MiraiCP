@@ -9,9 +9,10 @@ on:
     branches: [ master ]
     paths:
       - "cpp/**"
+  workflow_dispatch:
 
 jobs:
-  build-windows:
+  windows-msvc:
     runs-on: windows-latest
     steps:
     - name: checkout  
@@ -20,14 +21,27 @@ jobs:
       run: mkdir cpp/build && cd cpp/build && cmake ..
     - name: build with msvc
       run: cd ./cpp && cmake --build build --config Debug --target MiraiCP_Test
-  build-linux:
+  windows-mingw:
+    runs-on: windows-latest
+    steps:
+    - name: checkout  
+      uses: actions/checkout@v2
+    - name: configure
+      env: 
+        cc: gcc
+        cxx: g++
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" ..
+    - name: build with gcc
+      run: cd cpp && cmake --build build --target MiraiCP_Test
+  ubuntu-mingw:
     runs-on: ubuntu-latest
     steps:
     - name: checkout  
       uses: actions/checkout@v2
     - name: configure
+      env: 
+        cc: gcc
+        cxx: g++
       run: mkdir cpp/build && cd cpp/build && cmake ..
-#     - name: config gcc
-#       run: sudo update-alternatives --set gcc /usr/bin/gcc-10
     - name: build with gcc
-      run: cd ./cpp && cmake -DCMAKE_CXX_COMPILER=gcc --build build --config Debug --target MiraiCP_Test
+      run: cd cpp/build && make
