@@ -18,5 +18,16 @@ jobs:
       uses: actions/checkout@v2
     - name: configure
       run: mkdir cpp/build && cd cpp/build && cmake ..
-    - name: build
-      run: cd ./cpp && cmake --build build --config Debug
+    - name: build with msvc
+      run: cd ./cpp && cmake --build build --config Debug --target MiraiCP_Test
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout  
+      uses: actions/checkout@v2
+    - name: configure
+      run: mkdir cpp/build && cd cpp/build && cmake ..
+#     - name: config gcc
+#       run: sudo update-alternatives --set gcc /usr/bin/gcc-10
+    - name: build with gcc
+      run: cd ./cpp && cmake -DCMAKE_CXX_COMPILER=gcc --build build --config Debug --target MiraiCP_Test
