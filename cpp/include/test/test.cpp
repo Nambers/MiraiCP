@@ -17,7 +17,7 @@ void func(unsigned long long i, unsigned long long botid) {
 class Main:public CPPPlugin {
 public:
     // 配置插件信息
-    Main(): CPPPlugin(PluginConfig("io.github.nambers","testPlugin", MiraiCP::MiraiCPVersion, "Eritque arcus", "test", "2021")){}
+    Main(): CPPPlugin(PluginConfig("io.github.nambers","testPlugin", MiraiCP::MiraiCPVersion, "Eritque arcus", "test", __DATE__)){}
     void onEnable() override {
         /*插件启动, 请勿在此函数运行前执行操作mirai的代码*/
         /*
@@ -72,6 +72,8 @@ public:
             // e.sender.sendMiraiCode(tmp.toMiraiCode());
             // e.message.source.recall();
             logger->info("Start");
+            logger->error("test");
+            e.botlogger.error("test2");
             //e.sender.sendMsg("B");
             // logger->info("content: "+e.nextMessage().content.toMiraiCode());
         });
