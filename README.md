@@ -9,6 +9,7 @@
 * [使用声明](#使用声明)
 * [关于MiraiCP](#关于miraicp)
   * [特性](#特性)
+  * [test](#test)
 * [使用流程:](#使用流程)
   * [1 配置环境](#1-配置环境)
   * [2 注意事项](#2-注意事项)
@@ -82,6 +83,13 @@
 - 支持2种使用方法
 - [从2.7.0开始]代码集中到一个hpp文件和其他固定依赖文件，每次更新只需要更新那个文件
 - 不封装和隐藏底层实现代码，您可以自定义实现代码或通过实现代码提issue/pr
+
+## test
+| CI Name | status |
+|:---:|:---|
+| C++ in linux(mingw) | ![C++ Test](https://github.com/Nambers/MiraiCP/actions/workflows/cpp_linux.yml/badge.svg)|
+| C++ in windows(mingw&msvc) | ![C++ Test](https://github.com/Nambers/MiraiCP/actions/workflows/cpp_windows.yml/badge.svg)|
+| kotlin | ![kotlin Test](https://github.com/Nambers/MiraiCP/actions/workflows/gradle.yml/badge.svg)|
 
 # 使用流程:
 
