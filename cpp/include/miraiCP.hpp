@@ -212,8 +212,13 @@ LightApp风格1
             }
 
             /// push stack
-            void push(const std::string& file = __FILE__, int loc = __LINE__){
-                stackTrace.push_back("[" +file+":"+std::to_string(loc)+ "]");
+            void push(const std::string& file = __FILE__, int loc = __LINE__, const std::string& func = "", const std::string& commit = ""){
+                stackTrace.push_back(func + (commit != "" ?"(" + commit + ")":"")+"[" +file+":"+std::to_string(loc)+ "]");
+            }
+
+            /// 清空
+            void clear(){
+                stackTrace.clear();
             }
         };
         /// @brief 每个线程实例.
@@ -231,8 +236,8 @@ LightApp风格1
 
     public:
         /// 获取线程
-        static ThreadInfo getThread(){
-            return threads[getThreadId()];
+        static ThreadInfo* getThread(){
+            return &threads[getThreadId()];
         }
 
         /// @brief 获取线程id.
@@ -255,7 +260,7 @@ LightApp风格1
          * void func(){
          *      //do some things
          *      // 一个完整的线程应该在结束时调用detach来释放env的空间
-         *      manager->detch();
+         *      ThreadManager::detch();
          * }
          * @endcode
          */
@@ -263,9 +268,10 @@ LightApp风格1
 
         /// @brief 取env,如果不存在重新获取
         /// @internal 一般为`miraicp`内部调用jni接口时调用
-        /// @param file 为支持`StackTracer`而增加, 为`__FILE__`宏, 在调用处传入因为当__FILE__作为默认参数传入时不准确
-        /// @param loc 为`__LINE__`宏, 同上
-        static JNIEnv *getEnv(std::string file, int loc);
+        /// @param file 为支持`StackTracer`而增加, 为`__FILE__`宏(文件名), 在调用处传入因为当__FILE__作为默认参数传入时不准确
+        /// @param loc 为`__LINE__`宏(行号), 同上
+        /// @param func 为`__FUNC__`宏(方法名)
+        static JNIEnv *getEnv(const std::string& file, int loc, const std::string& func = "");
     };
 
     std::map<std::string, ThreadManager::ThreadInfo> ThreadManager::threads = std::map<std::string, ThreadInfo>();
@@ -2667,6 +2673,9 @@ LightApp风格1
         */
         template<typename T>
         void broadcast(T e) {
+            /// 清空stack中内容, 不然可能保留上一次Event的操作
+            ThreadManager::getThread()->stack.clear();
+            ThreadManager::getThread()->stack.push(__FILE__, __LINE__, __func__, typeid(T).name());
             Node<T> *now = Event::head<T>();
             while (now) {
                 if (now->enable) { now->f(e); }
@@ -2741,13 +2750,13 @@ LightApp风格1
         return true;
     }
 
-    JNIEnv *ThreadManager::getEnv(std::string file, int loc) {
+    JNIEnv *ThreadManager::getEnv(const std::string& file, int loc, const std::string& func) {
         mtx.lock();
         if (!ThreadManager::included(getThreadId())) {
             ThreadManager::newEnv();
         }
         JNIEnv *tmp = ThreadManager::threads[ThreadManager::getThreadId()].e;
-        ThreadManager::threads[ThreadManager::getThreadId()].stack.push(file, loc);
+        ThreadManager::threads[ThreadManager::getThreadId()].stack.push(file, loc, func);
         mtx.unlock();
         return tmp;
     }
@@ -2774,7 +2783,7 @@ throw: InitException 即找不到签名
     }
 
     void Logger_interface::error(const std::string &content, bool printStack, JNIEnv *env) {
-        ThreadManager::StackTracer a = manager->getThread().stack;
+        ThreadManager::StackTracer a = ThreadManager::getThread()->stack;
         if(printStack)
             this->log0(content + "\n" + a.print(), 2, env);
         else
@@ -3472,7 +3481,7 @@ throw: InitxException 即找不到对应签名
 */
 jstring Verify(JNIEnv *env, jobject) {
     using namespace MiraiCP;
-    manager->setEnv(env);
+    ThreadManager::setEnv(env);
     env->GetJavaVM(&gvm);
     JNIVersion = (int) env->GetVersion();
     try {
@@ -3497,7 +3506,7 @@ jstring Verify(JNIEnv *env, jobject) {
 /* 插件结束事件*/
 jobject PluginDisable(JNIEnv *env, jobject job) {
     using namespace MiraiCP;
-    manager->setEnv(env);
+    ThreadManager::setEnv(env);
     plugin->onDisable();
     delete (logger);
     delete (procession);
@@ -3515,7 +3524,7 @@ jstring returnNull() {
 */
 jstring Event(JNIEnv *env, jobject, jstring content) {
     using namespace MiraiCP;
-    manager->setEnv(env);
+    ThreadManager::setEnv(env);
     std::string tmp = Tools::jstring2str(content, env);
     json j;
     try {
