@@ -19,7 +19,6 @@
 // 禁止检查unused
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #pragma ide diagnostic ignored "cert-err58-cpp"
-#pragma once
 #ifndef CPP_MIRAICP_HPP
 #define CPP_MIRAICP_HPP
 #pragma execution_character_set("utf-8")
@@ -218,22 +217,22 @@ LightApp风格1
             }
         };
         /// @brief 每个线程实例.
-        struct t {
+        struct ThreadInfo {
             JNIEnv *e{};
             bool attach{};
             StackTracer stack;
         };
+        static std::map<std::string, ThreadInfo> threads;/// < 线程池(线程id:env).
+        static std::recursive_mutex mtx; ///< 线程池读写锁.
     private:
-        std::map<std::string, t> _threads;/// < 线程池(线程id:env).
-        std::recursive_mutex mtx; ///< 线程池读写锁.
-        void newEnv(const char *threadName = nullptr);///< 新建一个env，于getEnv中没取到env时调用.
+        static void newEnv(const char *threadName = nullptr);///< 新建一个env，于getEnv中没取到env时调用.
         /// 判断该线程id是否包含在线程池里
-        bool included(const std::string &id);
+        static bool included(const std::string &id);
 
     public:
         /// 获取线程
-        t getThread(){
-            return _threads[getThreadId()];
+        static ThreadInfo getThread(){
+            return threads[getThreadId()];
         }
 
         /// @brief 获取线程id.
@@ -244,12 +243,8 @@ LightApp风格1
             return ss.str();
         }
 
-        ThreadManager() {
-            this->_threads = std::map<std::string, t>();
-        };
-
         /// @brief 设置env给当前线程.
-        void setEnv(JNIEnv *e);
+        static void setEnv(JNIEnv *e);
 
 
         /*!
@@ -264,15 +259,17 @@ LightApp风格1
          * }
          * @endcode
          */
-        void detach();
+        static void detach();
 
         /// @brief 取env,如果不存在重新获取
         /// @internal 一般为miraicp内部调用jni接口时调用
-        JNIEnv *getEnv(std::string file, int loc);
+        static JNIEnv *getEnv(std::string file, int loc);
     };
 
+    std::map<std::string, ThreadManager::ThreadInfo> ThreadManager::threads = std::map<std::string, ThreadInfo>();
+    std::recursive_mutex ThreadManager::mtx = std::recursive_mutex();
     /// 线程管理实例
-    ThreadManager *manager = new ThreadManager();
+    [[deprecated]]ThreadManager *manager = new ThreadManager();
 
 /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
 /// @class Tools
@@ -286,7 +283,7 @@ LightApp风格1
          * @param env 可选，JNIEnv
          * @return 内容转换成jstring类型
          */
-        static std::string jstring2str(jstring jstr, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        static std::string jstring2str(jstring jstr, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /*!
          * @name str2jstring
@@ -296,7 +293,7 @@ LightApp风格1
          * @param env 可选JNIEnv
          * @return 转换后jstring类型
          */
-        static jstring str2jstring(const char *stra, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        static jstring str2jstring(const char *stra, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /*!
          * @brief 替换全部在一个字符串中.
@@ -410,11 +407,11 @@ LightApp风格1
          * @param data 传入数据
          * @return 返回数据
          */
-        std::string koperation(operation_set type, nlohmann::json &data, JNIEnv * = manager->getEnv(__FILE__, __LINE__), bool catchErr = true, std::string errorInfo = "");
+        std::string koperation(operation_set type, nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__), bool catchErr = true, std::string errorInfo = "");
 
         Config() = default;
 
-        void Init(JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        void Init(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         ~Config();
     };
@@ -548,29 +545,29 @@ LightApp风格1
         Handler loggerhandler;
 
         // 初始化 获取methodid
-        void init(JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        void init(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         ///发送普通(info级日志)
-        void info(const std::string &, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        void info(const std::string &, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         ///发送普通(info级日志)
-        void info(MiraiCode msg, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        void info(MiraiCode msg, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             info(msg.toString(), env);
         }
 
         ///发送警告(warning级日志)
-        void warning(const std::string &, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        void warning(const std::string &, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         ///发送警告(warning级日志)
-        void warning(MiraiCode msg, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        void warning(MiraiCode msg, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             warning(msg.toString(), env);
         }
 
         ///发送错误(error级日志)
-        void error(const std::string &, bool printStack = true, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        void error(const std::string &, bool printStack = true, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         ///发送错误(error级日志)
-        void error(MiraiCode msg, bool printStack = true, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        void error(MiraiCode msg, bool printStack = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             error(msg.toString(), printStack, env);
         }
 
@@ -672,7 +669,7 @@ LightApp风格1
 
         void raise() override {
             logger->error(this->description);
-            //manager->getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
         }
 
     private:
@@ -694,7 +691,7 @@ LightApp风格1
 
         void raise() override {
             logger->error(this->description);
-            //manager->getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
         }
 
     private:
@@ -716,7 +713,7 @@ LightApp风格1
 
         void raise() override {
             logger->error(this->description);
-            //manager->getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
         }
 
     private:
@@ -737,7 +734,7 @@ LightApp风格1
         }
 
         void raise() override {
-            //manager->getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
         }
 
     private:
@@ -770,7 +767,7 @@ LightApp风格1
         }
 
         void raise() override {
-            //manager->getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
         }
 
     private:
@@ -808,7 +805,7 @@ LightApp风格1
         }
 
         void raise() override {
-            //manager->getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
         }
 
     private:
@@ -832,7 +829,7 @@ LightApp风格1
         }
 
         void raise() override {
-            //manager->getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
         }
 
     private:
@@ -853,7 +850,7 @@ LightApp风格1
         }
 
         void raise() override {
-            //manager->getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
         }
 
     private:
@@ -961,14 +958,14 @@ LightApp风格1
          * @see MessageSource::quoteAndSendMiraiCode
         */
         MessageSource
-        quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
         /// 回复(引用并发送miraicode)
         /// @see MessageSource::quoteAndSendMiraiCode
         MessageSource
-        quoteAndSendMiraiCode(MiraiCode msg, QQID groupid = 0, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        quoteAndSendMiraiCode(MiraiCode msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return quoteAndSendMiraiCode(msg.toMiraiCode(), groupid, env);
         }
 
@@ -983,7 +980,7 @@ LightApp风格1
          * @endcode
          */
         MessageSource
-        quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /**
          * @brief 回复(引用并发送)
@@ -992,7 +989,7 @@ LightApp风格1
          * @return MessageSource
          */
         MessageSource
-        quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /*!
          * @brief 构建消息源
@@ -1028,7 +1025,7 @@ LightApp风格1
             });
          * @endcode
         */
-        void recall(JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        void recall(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
     };
 
     class Message{
@@ -1094,7 +1091,7 @@ LightApp风格1
         /*
         * 获取图片下载url
         */
-        std::string queryURL(JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        std::string queryURL(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /*!
          * @brief 取一个miraicode字符串中全部的图片id，详情见Image
@@ -1127,7 +1124,7 @@ LightApp风格1
     private:
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsg0(std::string msg, int retryTime, bool miraicode = false, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        MessageSource sendMsg0(std::string msg, int retryTime, bool miraicode = false, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
     protected:
         int _type = 0;
@@ -1138,7 +1135,7 @@ LightApp风格1
         QQID _botid;
 
         /// 发送语音
-        MessageSource sendVoice0(const std::string &path, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        MessageSource sendVoice0(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
     public:
         /*!
@@ -1236,7 +1233,7 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMiraiCode(MiraiCode msg, int retryTime = 3, JNIEnv* env = manager->getEnv(__FILE__, __LINE__)) {
+        MessageSource sendMiraiCode(MiraiCode msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 
@@ -1245,7 +1242,7 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsg(const std::string& msg, int retryTime = 3, JNIEnv* env = manager->getEnv(__FILE__, __LINE__)) {
+        MessageSource sendMsg(const std::string& msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return sendMsg0(msg, retryTime, false, env);
         }
 
@@ -1254,7 +1251,7 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsg(MiraiCode msg, int retryTime = 3, JNIEnv* env = manager->getEnv(__FILE__, __LINE__)){
+        MessageSource sendMsg(MiraiCode msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
             return sendMsg0(msg.toMiraiCode(), retryTime, false, env);
         }
 
@@ -1263,8 +1260,8 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv* env = manager->getEnv(__FILE__, __LINE__)){
-            return sendMsg0(Tools::VectorToString(msg), retryTime, false, env);
+        MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            return sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);
         }
 
         /*!
@@ -1275,7 +1272,7 @@ LightApp风格1
         * -可能抛出UploadException异常代表路径无效或大小大于30MB
         * -可能抛出MemberException找不到群或群成员
         */
-        Image uploadImg(const std::string &filename, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        Image uploadImg(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// 刷新当前对象信息
         virtual void refreshInfo(JNIEnv *) {};
@@ -1427,7 +1424,7 @@ LightApp风格1
             content = std::move(a);
         }
 
-        explicit ServiceMessage(URLSharer a){
+        explicit ServiceMessage(const URLSharer& a){
             content = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\""+a.brief+"\" serviceID=\"1\" url=\""+a.url+"\"><item layout=\"2\"><picture cover=\""+a.cover+"\"/><title>"+a.title+"</title><summary>"+a.summary+"</summary></item><source/></msg>\\n";
         }
     };
@@ -1537,7 +1534,7 @@ LightApp风格1
         /// @brief 取该联系人的一些信息
         /// @param c 该联系人Contact指针
         /// @return json格式字符串，待解析
-        static inline std::string getInfoSource(Contact *c, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        static inline std::string getInfoSource(Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["source"] = c->serializationToString();
             return config->koperation(config->RefreshInfo, j, env);
@@ -1550,7 +1547,7 @@ LightApp风格1
          * @param env JNIEnv
          * @return string 待解析json
          */
-        static inline std::string uploadImg0(const std::string& path, Contact *c, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        static inline std::string uploadImg0(const std::string& path, Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["fileName"] = path;
             j["source"] = c->serializationToString();
@@ -1631,7 +1628,7 @@ LightApp风格1
         ForwardMessage(Contact *c, std::initializer_list<ForwardNode> nodes);
 
         /// 发送给群或好友或群成员
-        MessageSource sendTo(Contact *c, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        MessageSource sendTo(Contact *c, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
     };
 
 
@@ -1643,19 +1640,19 @@ LightApp风格1
          * @param friendid q号
          * @param botid 对应机器人id
          */
-        Friend(QQID friendid, QQID botid, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        Friend(QQID friendid, QQID botid, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         explicit Friend(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 删除好友(delete是C++关键字
-        void deleteFriend(JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        void deleteFriend(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
             config->koperation(config->RefreshInfo, j, env);
         }
 
-        void refreshInfo(JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) override{
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override{
             std::string temp = LowLevelAPI::getInfoSource(this, env);
             if (temp == "E1") {
                 throw FriendException();
@@ -1692,7 +1689,7 @@ LightApp风格1
         /// @brief 更改群成员权限
         /// @param admin 如果为true为更改到管理员
         /// @param env
-        void modifyAdmin(bool admin, JNIEnv* env = manager->getEnv(__FILE__, __LINE__));
+        void modifyAdmin(bool admin, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// @brief 构建群成员对象
         /// @param qqid 该成员q号
@@ -1703,11 +1700,11 @@ LightApp风格1
         ///  Member(this.sender.id, this.group.id, this.bot.id)
         /// @endcode
         Member(QQID qqid, QQID groupid, QQID botid,
-               JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+               JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         explicit Member(Contact c) : Contact(c) { refreshInfo(); };
 
-        void refreshInfo(JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) override {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
             std::string temp = LowLevelAPI::getInfoSource(this, env);
             if (temp == "E1")
                 throw MemberException(1);
@@ -1726,23 +1723,23 @@ LightApp风格1
         }
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv * env= manager->getEnv(__FILE__, __LINE__)){
+        MessageSource sendVoice(const std::string &path, JNIEnv * env= ThreadManager::getEnv(__FILE__, __LINE__)){
             return Contact::sendVoice0(path, env);
         }
 
         /// 获取权限，会在构造时调用，请使用permission缓存变量
         /// @see Member::permission
-        unsigned int getPermission(JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        unsigned int getPermission(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /*!
          * 禁言当前对象，单位是秒，最少0秒最大30天，如果为0或者为负则unmute
          * @throws BotException, MuteException
         */
-        void mute(int time, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        void mute(int time, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// 取消禁言
         /// @throws BotException, MuteException
-        void unMute(JNIEnv* env = manager->getEnv(__FILE__, __LINE__)){
+        void unMute(JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
             mute(0, env);
         }
 
@@ -1770,7 +1767,7 @@ LightApp风格1
             });
          * @endcode
         */
-        void kick(const std::string &reason, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        void kick(const std::string &reason, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// At一个群成员
         MiraiCode at() {
@@ -1887,11 +1884,11 @@ LightApp风格1
          * @details 从服务器拉去群设置用refreshInfo
          * @see Group::refreshInfo()
          */
-        void updateSetting(JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        void updateSetting(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// 取群成员列表
         /// @return vector<long>
-        std::vector<unsigned long long> getMemberList(JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        std::vector<unsigned long long> getMemberList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["contactSource"] = this->serializationToString();
             std::string re = config->koperation(config->QueryML, j, env);
@@ -1911,24 +1908,24 @@ LightApp风格1
         };
 
         /// 取群主
-        Member getOwner(JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        Member getOwner(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
         /// @param botid 机器人id
         /// @example 在事件中构建Group对象
         /// @code Group(this.group.id, this.bot.id) @endcode
-        Group(QQID groupid, QQID botid, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        Group(QQID groupid, QQID botid, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 取群成员
-        Member getMember(QQID memberid, JNIEnv* env = manager->getEnv(__FILE__, __LINE__)){
+        Member getMember(QQID memberid, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
             return Member(memberid, this->id(), this->groupid(), env);
         }
 
         /// 取群公告列表
-        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = manager->getEnv(__FILE__, __LINE__)){
+        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)){
             json j;
             j["source"] = this->serializationToString();
             j["announcement"] = true;
@@ -1941,7 +1938,7 @@ LightApp风格1
         };
 
         /// 刷新群聊信息
-        void refreshInfo(JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) override {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
             std::string re = LowLevelAPI::getInfoSource(this, env);
             LowLevelAPI::info tmp = LowLevelAPI::info0(re);
             this->_nickOrNameCard = tmp.nickornamecard;
@@ -1954,7 +1951,7 @@ LightApp风格1
             this->setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
         }
 
-        void quit(JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        void quit(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
@@ -1973,10 +1970,10 @@ LightApp风格1
             });
          @endcode
         */
-        RemoteFile sendFile(const std::string &path, const std::string &filepath, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        RemoteFile sendFile(const std::string &path, const std::string &filepath, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv * env= manager->getEnv(__FILE__, __LINE__)){
+        MessageSource sendVoice(const std::string &path, JNIEnv * env= ThreadManager::getEnv(__FILE__, __LINE__)){
             return Contact::sendVoice0(path, env);
         }
 
@@ -1997,7 +1994,7 @@ LightApp风格1
             });
          @endcode
         */
-        RemoteFile getFile(const std::string &path, const std::string &id = "", JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        RemoteFile getFile(const std::string &path, const std::string &id = "", JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// 群文件的简短描述
         struct file_short_info {
@@ -2012,14 +2009,14 @@ LightApp风格1
          * @param path - 远程路径
          * @return 返回值为一个vector容器, 每一项为short_info
         */
-        std::vector<file_short_info> getFileList(const std::string &path, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        std::vector<file_short_info> getFileList(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// 取文件列表以字符串形式返回
         ///@example 取string格式群文件列表
         /// @code
         /// e.group.SendMsg(e.group.getFileListString("/"));
         /// @endcode
-        std::string getFileListString(const std::string &path, JNIEnv * = manager->getEnv(__FILE__, __LINE__));
+        std::string getFileListString(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
     };
 
     /// 当前bot账号信息
@@ -2044,7 +2041,7 @@ LightApp风格1
          * @brief 刷新bot信息
          * @param env
          */
-        void refreshInfo(JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
             LowLevelAPI::info tmp = LowLevelAPI::info0(config->koperation(config->RefreshInfo, j, env));
@@ -2056,12 +2053,12 @@ LightApp风格1
         Bot(QQID i) : id(i) {}
 
         /// 取好友
-        Friend getFriend(QQID i, JNIEnv* env = manager->getEnv(__FILE__, __LINE__)){
+        Friend getFriend(QQID i, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
             return Friend(i, this->id, env);
         }
 
         /// 取群聊
-        Group getGroup(QQID groupid, JNIEnv* env = manager->getEnv(__FILE__, __LINE__)){
+        Group getGroup(QQID groupid, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
             return Group(groupid, this->id, env);
         }
 
@@ -2078,7 +2075,7 @@ LightApp风格1
         }
 
         /// 取好友列表
-        std::vector<unsigned long long> getFriendList(JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["botid"] = this->id;
             std::string temp = config->koperation(config->QueryBFL, j, env);
@@ -2091,7 +2088,7 @@ LightApp风格1
         }
 
         /// 取群列表
-        std::vector<unsigned long long> getGroupList(JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["botid"] = this->id;
             std::string temp = config->koperation(config->QueryBGL, j, env);
@@ -2154,7 +2151,7 @@ LightApp风格1
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return MiraiCP::Message
          */
-        Message nextMessage(long time = -1, bool halt = true, JNIEnv* env = manager->getEnv(__FILE__, __LINE__));
+        Message nextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /*!
          * @brief 取群聊中同群成员的下一个消息(发送人和群与本事件一样)
@@ -2163,7 +2160,7 @@ LightApp风格1
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return MiraiCP::Message
          */
-        Message senderNextMessage(long time = -1, bool halt = true, JNIEnv* env = manager->getEnv(__FILE__, __LINE__));
+        Message senderNextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
 
     };
 
@@ -2191,7 +2188,7 @@ LightApp风格1
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return MiraiCP::Message
          */
-        Message nextMessage(long time = -1, bool halt = true, JNIEnv* env = manager->getEnv(__FILE__, __LINE__));
+        Message nextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
     };
 
 /// 群聊邀请事件类声明
@@ -2208,7 +2205,7 @@ LightApp风格1
         /// 群号
         QQID groupid = 0;
 
-        static void reject(const std::string& source, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        static void reject(const std::string& source, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["text"] = source;
             j["sign"] = false;
@@ -2225,13 +2222,13 @@ LightApp风格1
             return this->source;
         }
 
-        static void accept(std::string source, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        static void accept(std::string source, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["text"] = source;
             j["sign"] = true;
             std::string re = config->koperation(config->Gioperation, j, env);
 //		        Tools::jstring2str(
-//			(jstring)manager->getEnv(__FILE__, __LINE__)->CallStaticObjectMethod(config->CPP_lib, config->KGioperation,
+//			(jstring)ThreadManager::getEnv(__FILE__, __LINE__)->CallStaticObjectMethod(config->CPP_lib, config->KGioperation,
 //				Tools::str2jstring(source.c_str()),
 //				(jboolean)true));
             if (re == "Y") return;
@@ -2272,13 +2269,13 @@ LightApp风格1
 
         /// @brief 拒绝好友申请
         /// @param source 事件序列化信息
-        static void reject(std::string source, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        static void reject(std::string source, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["text"] = source;
             j["sign"] = false;
             std::string re = config->koperation(config->Nfroperation, j, env);
 //		        Tools::jstring2str(
-//			(jstring)manager->getEnv(__FILE__, __LINE__)->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
+//			(jstring)ThreadManager::getEnv(__FILE__, __LINE__)->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
 //				Tools::str2jstring(source.c_str()),
 //				(jboolean)true));
             if (re == "Y") return;
@@ -2292,13 +2289,13 @@ LightApp风格1
 
         /// @brief 接受好友申请
         /// @param source 事件序列化信息
-        static void accept(const std::string& source, JNIEnv *env = manager->getEnv(__FILE__, __LINE__)) {
+        static void accept(const std::string& source, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["text"] = source;
             j["sign"] = true;
             std::string re = config->koperation(config->Nfroperation, j, env);
 //		        Tools::jstring2str(
-//			(jstring)manager->getEnv(__FILE__, __LINE__)->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
+//			(jstring)ThreadManager::getEnv(__FILE__, __LINE__)->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
 //				Tools::str2jstring(source.c_str()),
 //				(jboolean)true));
             if (re == "Y") return;
@@ -2489,7 +2486,7 @@ LightApp风格1
     /// @brief 开启一个新的定时任务
     /// @param time 延迟多久，毫秒为单位
     /// @param msg string类型附带信息，推荐使用json格式方便解析
-    void schedule(long time, const std::string& msg, JNIEnv* env = manager->getEnv(__FILE__, __LINE__)){
+    void schedule(long time, const std::string& msg, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
         json j;
         j["time"] = time;
         j["msg"] = msg;
@@ -2700,14 +2697,14 @@ LightApp风格1
 
     void ThreadManager::setEnv(JNIEnv *e) {
         mtx.lock();
-        if (!this->included(ThreadManager::getThreadId())) {
-            t tmp{
+        if (!ThreadManager::included(ThreadManager::getThreadId())) {
+            ThreadInfo tmp{
                     e,
                     false
             };
-            this->_threads.insert(std::pair<std::string, t>(ThreadManager::getThreadId(), tmp));
+            ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
         } else {
-            this->_threads[ThreadManager::getThreadId()].e = e;
+            ThreadManager::threads[ThreadManager::getThreadId()].e = e;
         }
         mtx.unlock();
     }
@@ -2720,16 +2717,16 @@ LightApp风格1
                 nullptr
         };
         gvm->AttachCurrentThread((void **) &env, &args);
-        t tmp{env, true};
-        this->_threads.insert(std::pair<std::string, t>(ThreadManager::getThreadId(), tmp));
+        ThreadInfo tmp{env, true};
+        ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
         logger->info("refresh env");
     };
 
     void ThreadManager::detach() {
         mtx.lock();
-        if (this->included(ThreadManager::getThreadId())) {
-            bool att = this->_threads[ThreadManager::getThreadId()].attach;
-            this->_threads.erase(ThreadManager::getThreadId());
+        if (ThreadManager::included(ThreadManager::getThreadId())) {
+            bool att = ThreadManager::threads[ThreadManager::getThreadId()].attach;
+            ThreadManager::threads.erase(ThreadManager::getThreadId());
             if (att)
                 gvm->DetachCurrentThread();
         }
@@ -2737,18 +2734,18 @@ LightApp风格1
     }
 
     bool ThreadManager::included(const std::string &id) {
-        if (this->_threads.empty() || this->_threads.count(id) == 0)
+        if (ThreadManager::threads.empty() || ThreadManager::threads.count(id) == 0)
             return false;
         return true;
     }
 
     JNIEnv *ThreadManager::getEnv(std::string file, int loc) {
         mtx.lock();
-        if (!this->included(getThreadId())) {
-            this->newEnv();
+        if (!ThreadManager::included(getThreadId())) {
+            ThreadManager::newEnv();
         }
-        JNIEnv *tmp = this->_threads[ThreadManager::getThreadId()].e;
-        this->_threads[ThreadManager::getThreadId()].stack.push(file, loc);
+        JNIEnv *tmp = ThreadManager::threads[ThreadManager::getThreadId()].e;
+        ThreadManager::threads[ThreadManager::getThreadId()].stack.push(file, loc);
         mtx.unlock();
         return tmp;
     }
@@ -2828,7 +2825,7 @@ throw: InitxException 即找不到对应签名
     }
 
     Config::~Config() {
-        manager->getEnv(__FILE__, __LINE__)->DeleteGlobalRef(this->CPP_lib);
+        ThreadManager::getEnv(__FILE__, __LINE__)->DeleteGlobalRef(this->CPP_lib);
     }
 
     std::vector<std::string> MiraiCode::filter(filterType t){
