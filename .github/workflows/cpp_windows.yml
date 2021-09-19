@@ -33,15 +33,3 @@ jobs:
       run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" ..
     - name: build with gcc
       run: cd cpp && cmake --build build --target MiraiCP_Test
-  ubuntu-mingw:
-    runs-on: ubuntu-latest
-    steps:
-    - name: checkout  
-      uses: actions/checkout@v2
-    - name: configure
-      env: 
-        cc: gcc
-        cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake ..
-    - name: build with gcc
-      run: cd cpp/build && make
