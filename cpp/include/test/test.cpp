@@ -10,7 +10,7 @@ using std::chrono::milliseconds;
 void func(unsigned long long i, unsigned long long botid) {
     // 执行操作
     Friend(i, botid).sendMsg("hi");
-    manager->detach();
+    ThreadManager::detach();
 }
 
 // 插件实例
