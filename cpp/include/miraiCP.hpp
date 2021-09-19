@@ -219,8 +219,8 @@ LightApp风格1
         };
         /// @brief 每个线程实例.
         struct t {
-            JNIEnv *e;
-            bool attach;
+            JNIEnv *e{};
+            bool attach{};
             StackTracer stack;
         };
     private:
@@ -1436,7 +1436,7 @@ LightApp风格1
 
 /// @brief 下载信息
 /// @see RemoteFile
-    struct dinfo {
+    struct Dinfo {
         /// 下载地址
         std::string url;
         /// md5 可用于校验
@@ -1446,7 +1446,7 @@ LightApp风格1
     };
 /// @brief 文件信息
 /// @see RemoteFile
-    struct finfo {
+    struct Finfo {
         /// 文件大小
         QQID size;
         /// 上传者id
@@ -1474,10 +1474,10 @@ LightApp风格1
         std::string path;
         /// 文件下载信息
         /// @see dinfo
-        dinfo dinfo;
+        Dinfo dinfo;
         /// 文件信息
         /// @see finfo
-        finfo finfo;
+        Finfo finfo;
 
         std::string serializeToString();
 
@@ -1494,7 +1494,7 @@ LightApp风格1
          * @param f finfo
          */
         RemoteFile(const std::string &i, unsigned int ii, const std::string &n, long long s, const std::string &p,
-                   struct dinfo d, struct finfo f) : id(i),
+                   struct Dinfo d, struct Finfo f) : id(i),
                                                      internalid(
                                                              ii),
                                                      name(n),
@@ -2939,12 +2939,12 @@ throw: InitxException 即找不到对应签名
             throw e;
         }
         try {
-            struct dinfo d{
+            struct Dinfo d{
                     j["dinfo"]["url"],
                     j["dinfo"]["md5"],
                     j["dinfo"]["sha1"]
             };
-            struct finfo f{
+            struct Finfo f{
                     j["finfo"]["size"],
                     j["finfo"]["uploaderid"],
                     j["finfo"]["downloadtime"],
