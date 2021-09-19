@@ -262,13 +262,15 @@ LightApp风格1
         static void detach();
 
         /// @brief 取env,如果不存在重新获取
-        /// @internal 一般为miraicp内部调用jni接口时调用
+        /// @internal 一般为`miraicp`内部调用jni接口时调用
+        /// @param file 为支持`StackTracer`而增加, 为`__FILE__`宏, 在调用处传入因为当__FILE__作为默认参数传入时不准确
+        /// @param loc 为`__LINE__`宏, 同上
         static JNIEnv *getEnv(std::string file, int loc);
     };
 
     std::map<std::string, ThreadManager::ThreadInfo> ThreadManager::threads = std::map<std::string, ThreadInfo>();
     std::recursive_mutex ThreadManager::mtx = std::recursive_mutex();
-    /// 线程管理实例
+    /// 线程管理实例, 建议改用ThreadManager:: 以单例模式使用(如:ThreadManager::getEnv(__FILE__, __LINE__)), 而不是用instance
     [[deprecated]]ThreadManager *manager = new ThreadManager();
 
 /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
