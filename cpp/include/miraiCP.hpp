@@ -537,15 +537,15 @@ LightApp风格1
         ///     - 0 info
         ///     - 1 warning
         ///     - 2 error
-        typedef std::function<void(std::string, int)> action;
+        typedef std::function<void(std::string, int)> Action;
         /// @brief loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等
-        struct handler {
+        struct Handler {
             /// @brief 是否启用
             bool enable = true;
             /// @brief 执行的操作，格式为lambda
-            action action = [](const std::string& content, int level) {};
+            Action action = [](const std::string& content, int level) {};
         };
-        handler loggerhandler;
+        Handler loggerhandler;
 
         // 初始化 获取methodid
         void init(JNIEnv * = manager->getEnv(__FILE__, __LINE__));
@@ -581,7 +581,7 @@ LightApp风格1
         /// @code logger->registerHandle([](std::string content, int level){
         ///     \\do some things
         /// });@endcode
-        inline void registerHandle(action action);
+        inline void registerHandle(Action action);
 
         /// @brief 设置handler的启用状态
         /// @param state 状态，启用或者关闭
@@ -2762,7 +2762,7 @@ throw: InitException 即找不到签名
         this->log = env->GetStaticMethodID(config->CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
     }
 
-    void Logger_interface::registerHandle(Logger_interface::action action) {
+    void Logger_interface::registerHandle(Logger_interface::Action action) {
         this->loggerhandler.action = std::move(action);
     }
 
