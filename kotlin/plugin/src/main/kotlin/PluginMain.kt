@@ -24,10 +24,7 @@ import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.console.registerCommands
-import tech.eritquearcus.miraicp.shared.Config
-import tech.eritquearcus.miraicp.shared.Event
-import tech.eritquearcus.miraicp.shared.PublicShared
-import tech.eritquearcus.miraicp.shared.loadAsCPPLib
+import tech.eritquearcus.miraicp.shared.*
 import java.io.File
 
 object PluginMain : KotlinPlugin(
@@ -67,7 +64,7 @@ object PluginMain : KotlinPlugin(
                 )
                 return
             }
-        }.readText(), Config.pluginConfig::class.java)
+        }.readText(), CPPConfig.pluginConfig::class.java)
             .pluginConfig.forEach { i ->
                 val it = i.path
                 val d = i.dependencies?.filter { p ->
@@ -91,7 +88,7 @@ object PluginMain : KotlinPlugin(
         logger.info("⭐已成功启动MiraiCP⭐")
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
             PublicShared.cpp.Event(
-                PublicShared.gson.toJson(Config.BotOnline(this.bot.id))
+                PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
             )
         }
         PublicShared.onEnable(GlobalEventChannel.parentScope(this))

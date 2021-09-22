@@ -24,7 +24,7 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
-import tech.eritquearcus.miraicp.shared.Config
+import tech.eritquearcus.miraicp.shared.CPPConfig
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
 import tech.eritquearcus.miraicp.shared.loadAsCPPLib
@@ -34,12 +34,12 @@ import kotlin.system.exitProcess
 object KotlinMain {
     private val job = Job()
     val coroutineScope = CoroutineScope(job)
-    lateinit var loginAccount: List<Config.accounts.Account>
+    lateinit var loginAccount: List<CPPConfig.loaderConfig.Account>
     var logined = false
     @OptIn(MiraiInternalApi::class)
     fun main(j: String) {
         job.start()
-        val c = Gson().fromJson(j, Config.accounts::class.java)
+        val c = Gson().fromJson(j, CPPConfig.loaderConfig::class.java)
         loginAccount = c.accounts ?: emptyList()
         Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")

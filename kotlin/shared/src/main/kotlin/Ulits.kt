@@ -21,9 +21,18 @@ import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
-import java.util.concurrent.Executors
+import java.util.concurrent.SynchronousQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
-private val cc by lazy { Executors.newCachedThreadPool() }
+private val queue = SynchronousQueue<Runnable>()
+private val cc by lazy {
+    ThreadPoolExecutor(
+        0, PublicShared.maxThread,
+        60L, TimeUnit.SECONDS,
+        queue
+    )
+}
 
 //suspend inline fun <T, R> T.runInTP(
 //    crossinline block: T.() -> R,

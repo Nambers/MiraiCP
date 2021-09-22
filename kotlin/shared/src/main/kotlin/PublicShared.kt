@@ -67,6 +67,7 @@ object PublicShared {
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
     var cachePath: File = File("")
+    var maxThread = Integer.MAX_VALUE
 
     fun init(l: MiraiLogger) {
         logger = l
@@ -418,14 +419,14 @@ object PublicShared {
                 logger.error("上传的语言文件需为.amr / .silk文件, 位置: KUploadVoice")
                 return "E1"
             }
-            val c = when (c.type) {
+            val cc = when (c.type) {
                 1 -> bot.getFriend(c.id) ?: let { logger.error("上传语音找不到好友, id:${c.id}"); return "EF" }
                 2 -> bot.getGroup(c.id) ?: let { logger.error("上传语音找不到群聊, gid:${c.id}"); return "EG" }
                 else -> return "EA"
             }
             return file.toExternalResource().use {
                 try {
-                    json.encodeToString(MessageSource.Serializer, c.uploadAudio(it).sendTo(c).source)
+                    json.encodeToString(MessageSource.Serializer, cc.uploadAudio(it).sendTo(cc).source)
                 } catch (e: OverFileSizeMaxException) {
                     logger.error("上传语音失败, 文件应在大约1MB以内, 实际大小:${it.size}, 文件路径:${file.absolutePath}")
                     "E2"
@@ -596,7 +597,7 @@ object PublicShared {
         }
 
     @Suppress("INVISIBLE_MEMBER")
-    suspend fun accpetFriendRequest(info: Config.NewFriendRequestSource): String =
+    suspend fun accpetFriendRequest(info: CPPEvent.NewFriendRequest.NewFriendRequestSource): String =
         withBot(info.botid) { bot ->
             try {
                 NewFriendRequestEvent(
@@ -614,7 +615,7 @@ object PublicShared {
         }
 
     @Suppress("INVISIBLE_MEMBER")
-    suspend fun rejectFriendRequest(info: Config.NewFriendRequestSource): String =
+    suspend fun rejectFriendRequest(info: CPPEvent.NewFriendRequest.NewFriendRequestSource): String =
         withBot(info.botid) { bot ->
             try {
                 NewFriendRequestEvent(
@@ -633,7 +634,7 @@ object PublicShared {
 
     @OptIn(MiraiInternalApi::class)
     @Suppress("INVISIBLE_MEMBER")
-    suspend fun accpetGroupInvite(info: Config.GroupInviteSource): String =
+    suspend fun accpetGroupInvite(info: CPPEvent.GroupInvite.GroupInviteSource): String =
         withBot(info.botid) { bot ->
             try {
                 BotInvitedJoinGroupRequestEvent(
@@ -652,7 +653,7 @@ object PublicShared {
 
     @OptIn(MiraiInternalApi::class)
     @Suppress("INVISIBLE_MEMBER")
-    suspend fun rejectGroupInvite(info: Config.GroupInviteSource): String =
+    suspend fun rejectGroupInvite(info: CPPEvent.GroupInvite.GroupInviteSource): String =
         withBot(info.botid) { bot ->
             try {
                 BotInvitedJoinGroupRequestEvent(
@@ -769,7 +770,7 @@ object PublicShared {
             runBlocking {
                 cpp.Event(
                     Gson().toJson(
-                        Config.TimeOutEvent(
+                        CPPEvent.TimeOutEvent(
                             msg
                         )
                     )
@@ -829,7 +830,7 @@ object PublicShared {
             //好友信息
             cpp.Event(
                 gson.toJson(
-                    Config.PrivateMessage(
+                    CPPEvent.PrivateMessage(
                         this.sender.toContact(),
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(
@@ -844,7 +845,7 @@ object PublicShared {
             //群消息
             cpp.Event(
                 gson.toJson(
-                    Config.GroupMessage(
+                    CPPEvent.GroupMessage(
                         this.group.toContact(),
                         Config.Contact(3, this.sender.id, this.group.id, this.senderName, this.bot.id),
                         this.message.serializeToMiraiCode(),
@@ -857,7 +858,7 @@ object PublicShared {
             friend_cache.add(this.member)
             cpp.Event(
                 gson.toJson(
-                    Config.MemberLeave(
+                    CPPEvent.MemberLeave(
                         this.group.toContact(),
                         this.member.id,
                         1,
@@ -871,7 +872,7 @@ object PublicShared {
             friend_cache.add(this.member)
             cpp.Event(
                 gson.toJson(
-                    Config.MemberLeave(
+                    CPPEvent.MemberLeave(
                         this.group.toContact(),
                         this.member.id,
                         2,
@@ -884,7 +885,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MemberJoinEvent.Retrieve> {
             cpp.Event(
                 gson.toJson(
-                    Config.MemberJoin(
+                    CPPEvent.MemberJoin(
                         this.group.toContact(),
                         Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                         3,
@@ -896,7 +897,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MemberJoinEvent.Active> {
             cpp.Event(
                 gson.toJson(
-                    Config.MemberJoin(
+                    CPPEvent.MemberJoin(
                         this.group.toContact(),
                         Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                         2,
@@ -908,7 +909,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MemberJoinEvent.Invite> {
             cpp.Event(
                 gson.toJson(
-                    Config.MemberJoin(
+                    CPPEvent.MemberJoin(
                         this.group.toContact(),
                         Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                         1,
@@ -921,8 +922,8 @@ object PublicShared {
             //自动同意好友申请
             cpp.Event(
                 gson.toJson(
-                    Config.NewFriendRequest(
-                        Config.NewFriendRequestSource(
+                    CPPEvent.NewFriendRequest(
+                        CPPEvent.NewFriendRequest.NewFriendRequestSource(
                             this.bot.id,
                             this.eventId,
                             this.message,
@@ -938,7 +939,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MessageRecallEvent.FriendRecall> {
             cpp.Event(
                 gson.toJson(
-                    Config.RecallEvent(
+                    CPPEvent.RecallEvent(
                         1,
                         this.authorId,
                         this.operatorId,
@@ -955,7 +956,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MessageRecallEvent.GroupRecall> {
             cpp.Event(
                 gson.toJson(
-                    Config.RecallEvent(
+                    CPPEvent.RecallEvent(
                         2,
                         this.authorId,
                         this.operator!!.id,
@@ -972,7 +973,7 @@ object PublicShared {
         eventChannel.subscribeAlways<BotJoinGroupEvent.Invite>{
             cpp.Event(
                 gson.toJson(
-                    Config.BotJoinGroup(
+                    CPPEvent.BotJoinGroup(
                         1,
                         this.group.toContact(),
                         this.invitor.id
@@ -983,7 +984,7 @@ object PublicShared {
         eventChannel.subscribeAlways<BotJoinGroupEvent.Active>{
             cpp.Event(
                 gson.toJson(
-                    Config.BotJoinGroup(
+                    CPPEvent.BotJoinGroup(
                         2,
                         this.group.toContact(),
                         0
@@ -994,7 +995,7 @@ object PublicShared {
         eventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve>{
             cpp.Event(
                 gson.toJson(
-                    Config.BotJoinGroup(
+                    CPPEvent.BotJoinGroup(
                         3,
                         this.group.toContact(),
                         0
@@ -1006,8 +1007,8 @@ object PublicShared {
             //自动同意加群申请
             cpp.Event(
                 gson.toJson(
-                    Config.GroupInvite(
-                        Config.GroupInviteSource(
+                    CPPEvent.GroupInvite(
+                        CPPEvent.GroupInvite.GroupInviteSource(
                             this.bot.id,
                             this.eventId,
                             this.invitorId,
@@ -1023,7 +1024,7 @@ object PublicShared {
             //群临时会话
             cpp.Event(
                 gson.toJson(
-                    Config.GroupTempMessage(
+                    CPPEvent.GroupTempMessage(
                         this.group.toContact(),
                         this.sender.toContact(),
                         this.message.serializeToMiraiCode(),
@@ -1039,7 +1040,7 @@ object PublicShared {
         eventChannel.subscribeAlways<NudgeEvent> {
             cpp.Event(
                 gson.toJson(
-                    Config.NugdeEvent(
+                    CPPEvent.NugdeEvent(
                         if (this.subject.id == this.from.id)
                             this.bot.getFriend(this.from.id)!!.toContact()
                         else
