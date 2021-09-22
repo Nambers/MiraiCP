@@ -47,13 +47,13 @@ object PluginMain : KotlinPlugin(
         PublicShared.cachePath.mkdir()
         l.info("⭐MiraiCP启动中⭐")
         l.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
-        Gson().fromJson(File("${dataFolder.absoluteFile}\\miraicp.json").apply {
+        Gson().fromJson(File("${dataFolder.absoluteFile}/miraicp.json").apply {
             if (!this.exists() || !this.isFile) {
                 l.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
                 l.error("配置文件应该在(${this.absolutePath}), 并且拥有以下json格式(见https://github.com/Nambers/MiraiCP/blob/master/doc/config.md):")
                 l.error(
                     """
-                    {
+                    { 
                     "pluginConfig":[
                     {
                     "path":"插件路径"
