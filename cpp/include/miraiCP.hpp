@@ -2058,15 +2058,15 @@ LightApp风格1
         }
 
         /// 用id构建机器人
-        Bot(QQID i) : id(i) {}
+        explicit Bot(QQID i) : id(i) {}
 
         /// 取好友
-        Friend getFriend(QQID i, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+        Friend getFriend(QQID i, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) const{
             return Friend(i, this->id, env);
         }
 
         /// 取群聊
-        Group getGroup(QQID groupid, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+        Group getGroup(QQID groupid, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) const{
             return Group(groupid, this->id, env);
         }
 
@@ -2132,9 +2132,9 @@ LightApp风格1
         /// 上下文
         static Context context;
         /// 获取静态上下文
-        Context& getContext(){return BotEvent::context;};
+        static Context& getContext(){return BotEvent::context;};
 
-        BotEvent(QQID botid) : bot(botid), botlogger(botid, logger) {
+        explicit BotEvent(QQID botid) : bot(botid), botlogger(botid, logger) {
         }
     };
     Context BotEvent::context = Context();
@@ -2218,7 +2218,6 @@ LightApp风格1
             j["text"] = source;
             j["sign"] = false;
             std::string re = config->koperation(config->Gioperation, j, env);
-            if (re == "Y") return;
             if (re == "E")logger->error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
         }
 
@@ -2230,20 +2229,16 @@ LightApp风格1
             return this->source;
         }
 
-        static void accept(std::string source, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        static void accept(const std::string& source, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["text"] = source;
             j["sign"] = true;
             std::string re = config->koperation(config->Gioperation, j, env);
-//		        Tools::jstring2str(
-//			(jstring)ThreadManager::getEnv(__FILE__, __LINE__)->CallStaticObjectMethod(config->CPP_lib, config->KGioperation,
-//				Tools::str2jstring(source.c_str()),
-//				(jboolean)true));
             if (re == "Y") return;
             if (re == "E")logger->error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
         }
 
-        void accept() {
+        void accept() const {
             GroupInviteEvent::accept(this->source);
         }
 
@@ -3128,6 +3123,7 @@ throw: InitxException 即找不到对应签名
         j["time"] = time;
         j["contactSource"] = this->serializationToString();
         std::string re = config->koperation(config->MuteM, j, env, false);
+        ErrorHandle(re);
         if (re == "E3") {
             throw BotException();
         }
