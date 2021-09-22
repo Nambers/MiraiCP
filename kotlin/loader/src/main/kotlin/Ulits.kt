@@ -21,7 +21,8 @@ import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.BotConfiguration
-import tech.eritquearcus.miraicp.shared.Config
+import tech.eritquearcus.miraicp.shared.CPPConfig
+import tech.eritquearcus.miraicp.shared.CPPEvent
 import tech.eritquearcus.miraicp.shared.Event
 import tech.eritquearcus.miraicp.shared.PublicShared
 
@@ -33,7 +34,7 @@ internal fun String.decodeHex(): ByteArray {
         .toByteArray()
 }
 
-internal fun Config.accounts.Account.login(){
+internal fun CPPConfig.loaderConfig.Account.login() {
     val it = this
     this.logined = true
     val p = when (it.protocol?.uppercase()) {
@@ -74,7 +75,7 @@ internal fun Config.accounts.Account.login(){
     }
     b.eventChannel.subscribeAlways<BotOnlineEvent> {
         PublicShared.cpp.Event(
-            PublicShared.gson.toJson(Config.BotOnline(this.bot.id))
+            PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
         )
     }
     runBlocking {

@@ -201,15 +201,15 @@ class CPP_lib (
         // new friend request operation
         private suspend fun KNfroperation(text: String, sign: Boolean): String =
             run {
-                val tmp = gson.fromJson(text, Config.NewFriendRequestSource::class.java)
+                val tmp = gson.fromJson(text, CPPEvent.NewFriendRequest.NewFriendRequestSource::class.java)
                 if (sign) accpetFriendRequest(tmp)
                 else rejectFriendRequest(tmp)
             }
 
         // Group invite operation
         private suspend fun KGioperation(text: String, sign: Boolean): String =
-            if (sign) accpetGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
-            else rejectGroupInvite(gson.fromJson(text, Config.GroupInviteSource::class.java))
+            if (sign) accpetGroupInvite(gson.fromJson(text, CPPEvent.GroupInvite.GroupInviteSource::class.java))
+            else rejectGroupInvite(gson.fromJson(text, CPPEvent.GroupInvite.GroupInviteSource::class.java))
 
         private suspend fun KSendWithQuote(messageSource: String, msg: String, sign: String): String =
             sendWithQuote(messageSource, msg, sign)
@@ -247,7 +247,7 @@ class CPP_lib (
         private suspend fun KModifyAdmin(contactSource: String, admin: Boolean): String =
             modifyAdmin(gson.fromJson(contactSource, Config.Contact::class.java), admin)
 
-        enum class operation_code {
+        enum class Operation_code {
             /// 撤回信息
             Recall,
 
@@ -332,96 +332,100 @@ class CPP_lib (
                     val root = j.getJSONObject("data")
                     when (j.getInt("type")) {
                         /// 撤回信息
-                        operation_code.Recall.ordinal -> KRecall(root.getString("source"))
+                        Operation_code.Recall.ordinal -> KRecall(root.getString("source"))
                         /// 发送信息
-                        operation_code.Send.ordinal -> KSend(
+                        Operation_code.Send.ordinal -> KSend(
                             root.getString("source"),
                             root.getBoolean("miraiCode"),
                             root.getInt("retryTime")
                         )
                         /// 查询信息接口
-                        operation_code.RefreshInfo.ordinal -> KRefreshInfo(root.getString("source"), root.has("quit"), root.has("announcement"))
+                        Operation_code.RefreshInfo.ordinal -> KRefreshInfo(
+                            root.getString("source"),
+                            root.has("quit"),
+                            root.has("announcement")
+                        )
                         /// 上传图片
-                        operation_code.UploadImg.ordinal -> KUploadImg(
+                        Operation_code.UploadImg.ordinal -> KUploadImg(
                             root.getString("fileName"),
                             root.getString("source")
                         )
                         /// 取好友列表
-                        operation_code.QueryBFL.ordinal -> KQueryBFL(root.getLong("botid"))
+                        Operation_code.QueryBFL.ordinal -> KQueryBFL(root.getLong("botid"))
                         /// 取群组列表
-                        operation_code.QueryBGL.ordinal -> KQueryBGL(root.getLong("botid"))
+                        Operation_code.QueryBGL.ordinal -> KQueryBGL(root.getLong("botid"))
                         /// 上传文件
-                        operation_code.SendFile.ordinal -> KSendFile(
+                        Operation_code.SendFile.ordinal -> KSendFile(
                             root.getString("source"),
                             root.getString("contactSource")
                         )
                         /// 查询文件信息
-                        operation_code.RemoteFileInfo.ordinal -> KRemoteFileInfo(
+                        Operation_code.RemoteFileInfo.ordinal -> KRemoteFileInfo(
                             root.getString("source"),
                             root.getString("contactSource")
                         )
                         /// 查询图片下载地址
-                        operation_code.QueryImgUrl.ordinal -> KQueryImgUrl(root.getString("id"))
+                        Operation_code.QueryImgUrl.ordinal -> KQueryImgUrl(root.getString("id"))
                         /// 禁言
-                        operation_code.MuteM.ordinal -> KMuteM(root.getInt("time"), root.getString("contactSource"))
+                        Operation_code.MuteM.ordinal -> KMuteM(root.getInt("time"), root.getString("contactSource"))
                         /// 查询权限
-                        operation_code.QueryM.ordinal -> KQueryM(root.getString("contactSource"))
+                        Operation_code.QueryM.ordinal -> KQueryM(root.getString("contactSource"))
                         /// 踢出
-                        operation_code.KickM.ordinal -> KKickM(
+                        Operation_code.KickM.ordinal -> KKickM(
                             root.getString("message"),
                             root.getString("contactSource")
                         )
                         /// 取群主
-                        operation_code.QueryOwner.ordinal -> KQueryOwner(root.getString("contactSource"))
+                        Operation_code.QueryOwner.ordinal -> KQueryOwner(root.getString("contactSource"))
                         /// 上传语音
-                        operation_code.UploadVoice.ordinal -> KUploadVoice(
+                        Operation_code.UploadVoice.ordinal -> KUploadVoice(
                             root.getString("contactSource"),
                             root.getString("source")
                         )
                         /// 查询群成员列表
-                        operation_code.QueryML.ordinal -> KQueryML(root.getString("contactSource"))
+                        Operation_code.QueryML.ordinal -> KQueryML(root.getString("contactSource"))
                         /// 群设置
-                        operation_code.GroupSetting.ordinal -> KUpdateSetting(
+                        Operation_code.GroupSetting.ordinal -> KUpdateSetting(
                             root.getString("contactSource"),
                             root.getString("source")
                         )
                         /// 构建转发信息
-                        operation_code.Buildforward.ordinal -> KBuildforward(
+                        Operation_code.Buildforward.ordinal -> KBuildforward(
                             root.getString("text"),
                             root.getLong("botid")
                         )
                         /// 好友申请事件
-                        operation_code.Nfroperation.ordinal -> KNfroperation(
+                        Operation_code.Nfroperation.ordinal -> KNfroperation(
                             root.getString("text"),
                             root.getBoolean("sign")
                         )
                         /// 群聊邀请事件
-                        operation_code.Gioperation.ordinal -> KGioperation(
+                        Operation_code.Gioperation.ordinal -> KGioperation(
                             root.getString("text"),
                             root.getBoolean("sign")
                         )
                         /// 回复(引用并发送)
-                        operation_code.SendWithQuote.ordinal -> KSendWithQuote(
+                        Operation_code.SendWithQuote.ordinal -> KSendWithQuote(
                             root.getString("messageSource"),
                             root.getString("msg"),
                             root.getString("sign")
                         )
                         /// 群公告操作
-                        operation_code.Announcement.ordinal -> KAnnouncement(
+                        Operation_code.Announcement.ordinal -> KAnnouncement(
                             root.getString("identify"),
                             if (root.has("source")) root.getString("source") else null
                         )
                         /// 定时任务
-                        operation_code.Timer.ordinal -> scheduling(root.getLong("time"), root.getString("msg"))
+                        Operation_code.Timer.ordinal -> scheduling(root.getLong("time"), root.getString("msg"))
                         /// 发送戳一戳
-                        operation_code.Nudge.ordinal -> KNudge(root.getString("contactSource"))
+                        Operation_code.Nudge.ordinal -> KNudge(root.getString("contactSource"))
                         /// 下一条信息
-                        operation_code.NextMsg.ordinal -> KNextMsg(
+                        Operation_code.NextMsg.ordinal -> KNextMsg(
                             root.getString("contactSource"),
                             root.getLong("time"),
                             root.getBoolean("halt")
                         )
-                        operation_code.ModifyAdmin.ordinal -> KModifyAdmin(
+                        Operation_code.ModifyAdmin.ordinal -> KModifyAdmin(
                             root.getString("contactSource"),
                             root.getBoolean("admin")
                         )
