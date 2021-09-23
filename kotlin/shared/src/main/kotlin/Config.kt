@@ -141,13 +141,19 @@ object CPPConfig {
         val dependencies: List<String>?
     )
 
+    data class AdvanceConfig(
+        val maxThread: Int?
+    )
+
     data class pluginConfig(
-        val pluginConfig: List<cppPath>
+        val pluginConfig: List<cppPath>,
+        val advanceConfig: AdvanceConfig?
     )
 
     data class loaderConfig(
         val accounts: List<Account>?,
-        val cppPaths: List<cppPath>
+        val cppPaths: List<cppPath>,
+        val advanceConfig: AdvanceConfig?
     ) {
         data class Account(
             val heatBeat: String?,

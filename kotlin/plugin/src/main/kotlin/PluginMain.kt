@@ -65,6 +65,14 @@ object PluginMain : KotlinPlugin(
                 return
             }
         }.readText(), CPPConfig.pluginConfig::class.java)
+            .apply {
+                if (this.advanceConfig != null && this.advanceConfig!!.maxThread != null) {
+                    if (this.advanceConfig!!.maxThread!! <= 0)
+                        PublicShared.logger.error("配置错误: 配置项AdvanceConfig.maxThread的值应该>=0, 使用默认值")
+                    else
+                        PublicShared.maxThread = this.advanceConfig!!.maxThread!!
+                }
+            }
             .pluginConfig.forEach { i ->
                 val it = i.path
                 val d = i.dependencies?.filter { p ->
