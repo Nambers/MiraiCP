@@ -52,7 +52,14 @@ object KotlinMain {
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
         logger.info("⭐当前MiraiCP版本: $now_tag")
-        c.cppPaths.forEach {
+        c.apply {
+            if (this.advanceConfig != null && this.advanceConfig!!.maxThread != null) {
+                if (this.advanceConfig!!.maxThread!! <= 0)
+                    PublicShared.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
+                else
+                    PublicShared.maxThread = this.advanceConfig!!.maxThread!!
+            }
+        }.cppPaths.forEach {
             val d = it.dependencies?.filter { p ->
                 File(p).let { f ->
                     f.isFile && f.exists() && (f.extension == "dll" || f.extension == "lib" || f.extension == "so")
