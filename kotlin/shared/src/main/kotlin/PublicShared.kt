@@ -30,6 +30,8 @@ import net.mamoe.mirai.contact.announcement.OfflineAnnouncement
 import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
 import net.mamoe.mirai.contact.announcement.bot
 import net.mamoe.mirai.contact.announcement.buildAnnouncementParameters
+import net.mamoe.mirai.data.RequestEventData
+import net.mamoe.mirai.data.RequestEventData.Factory.toRequestEventData
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.EventPriority
@@ -596,55 +598,26 @@ object PublicShared {
             return json.encodeToString(MessageSource.Serializer, re.source)
         }
 
-    @Suppress("INVISIBLE_MEMBER")
-    suspend fun accpetFriendRequest(info: CPPEvent.NewFriendRequest.NewFriendRequestSource): String =
-        withBot(info.botid) { bot ->
+    suspend fun accpetFriendRequest(info: String, botid: Long, accept: Boolean, ban: Boolean?): String =
+        withBot(botid) { bot ->
             try {
-                NewFriendRequestEvent(
-                    bot,
-                    info.eventid,
-                    info.message,
-                    info.fromid,
-                    info.fromgroupid,
-                    info.fromnick
-                ).accept()
+                if (accept)
+                    gson.fromJson(info, RequestEventData.NewFriendRequest::class.java).accept(bot)
+                else
+                    gson.fromJson(info, RequestEventData.NewFriendRequest::class.java).reject(bot, ban ?: false)
             } catch (e: IllegalStateException) {
                 return "E"
             }
             return "Y"
         }
 
-    @Suppress("INVISIBLE_MEMBER")
-    suspend fun rejectFriendRequest(info: CPPEvent.NewFriendRequest.NewFriendRequestSource): String =
-        withBot(info.botid) { bot ->
+    suspend fun accpetGroupInvite(info: String, botid: Long, accept: Boolean): String =
+        withBot(botid) { bot ->
             try {
-                NewFriendRequestEvent(
-                    bot,
-                    info.eventid,
-                    info.message,
-                    info.fromid,
-                    info.fromgroupid,
-                    info.fromnick
-                ).reject()
-            } catch (e: IllegalStateException) {
-                return "E"
-            }
-            return "Y"
-        }
-
-    @OptIn(MiraiInternalApi::class)
-    @Suppress("INVISIBLE_MEMBER")
-    suspend fun accpetGroupInvite(info: CPPEvent.GroupInvite.GroupInviteSource): String =
-        withBot(info.botid) { bot ->
-            try {
-                BotInvitedJoinGroupRequestEvent(
-                    bot,
-                    info.eventid,
-                    info.inviterid,
-                    info.groupid,
-                    info.groupname,
-                    info.inviternick
-                ).accept()
+                if (accept)
+                    gson.fromJson(info, RequestEventData.BotInvitedJoinGroupRequest::class.java).accept(bot)
+                else
+                    gson.fromJson(info, RequestEventData.BotInvitedJoinGroupRequest::class.java).reject(bot)
             } catch (e: IllegalStateException) {
                 return "E"
             }
@@ -930,7 +903,8 @@ object PublicShared {
                             this.fromId,
                             this.fromGroupId,
                             this.fromNick
-                        )
+                        ),
+                        gson.toJson(this.toRequestEventData())
                     )
                 )
             )
@@ -1015,7 +989,8 @@ object PublicShared {
                             this.groupId,
                             this.groupName,
                             this.invitorNick
-                        )
+                        ),
+                        gson.toJson(this.toRequestEventData())
                     )
                 )
             )
