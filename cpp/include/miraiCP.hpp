@@ -1691,6 +1691,7 @@ LightApp风格1
         ///     - OWNER群主 为 2
         ///     - ADMINISTRATOR管理员 为 1
         ///     - MEMBER群成员 为 0
+        /// 如果是匿名群成员, 或者请求过程出现错误则为-1
         /// @note 上面那些变量在constants.h中有定义
         unsigned int permission = 0;
 
@@ -1735,7 +1736,7 @@ LightApp风格1
             return Contact::sendVoice0(path, env);
         }
 
-        /// 获取权限，会在构造时调用，请使用permission缓存变量
+        /// 获取权限，会在构造时调用，请使用permission缓存变量, 如果对象是匿名群成员或出现错误 则为-1
         /// @see Member::permission
         unsigned int getPermission(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
@@ -2213,33 +2214,21 @@ LightApp风格1
         /// 群号
         QQID groupid = 0;
 
-        static void reject(const std::string& source, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        static void operation0(const std::string& source, QQID botid,bool accept, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["text"] = source;
-            j["sign"] = false;
+            j["accept"] = accept;
+            j["botid"] = botid;
             std::string re = config->koperation(config->Gioperation, j, env);
             if (re == "E")logger->error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
         }
 
-        void reject() {
-            GroupInviteEvent::reject(this->source);
+        void reject(JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+            GroupInviteEvent::operation0(this->source, this->bot.id,false, env);
         }
 
-        std::string getSource() {
-            return this->source;
-        }
-
-        static void accept(const std::string& source, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
-            nlohmann::json j;
-            j["text"] = source;
-            j["sign"] = true;
-            std::string re = config->koperation(config->Gioperation, j, env);
-            if (re == "Y") return;
-            if (re == "E")logger->error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
-        }
-
-        void accept() const {
-            GroupInviteEvent::accept(this->source);
+        void accept(JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+            GroupInviteEvent::operation0(this->source, this->bot.id, true, env);
         }
 
         /*!
@@ -2270,44 +2259,27 @@ LightApp风格1
         /// @brief 申请理由
         std::string message;
 
-        /// @brief 拒绝好友申请
-        /// @param source 事件序列化信息
-        static void reject(std::string source, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
-            nlohmann::json j;
-            j["text"] = source;
-            j["sign"] = false;
-            std::string re = config->koperation(config->Nfroperation, j, env);
-//		        Tools::jstring2str(
-//			(jstring)ThreadManager::getEnv(__FILE__, __LINE__)->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
-//				Tools::str2jstring(source.c_str()),
-//				(jboolean)true));
-            if (re == "Y") return;
-            if (re == "E")logger->error("好友申请事件拒绝失败(可能因为重复处理),id:" + source);
-        }
-
-        /// @brief 拒绝好友申请
-        void reject() {
-            NewFriendRequestEvent::reject(this->source);
-        }
-
         /// @brief 接受好友申请
         /// @param source 事件序列化信息
-        static void accept(const std::string& source, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        static void operation0(const std::string& source, QQID botid, bool accept, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__), bool ban=false) {
             nlohmann::json j;
             j["text"] = source;
-            j["sign"] = true;
+            j["accept"] = accept;
+            j["botid"] = botid;
+            j["ban"] = ban;
             std::string re = config->koperation(config->Nfroperation, j, env);
-//		        Tools::jstring2str(
-//			(jstring)ThreadManager::getEnv(__FILE__, __LINE__)->CallStaticObjectMethod(config->CPP_lib, config->KNfroperation,
-//				Tools::str2jstring(source.c_str()),
-//				(jboolean)true));
-            if (re == "Y") return;
             if (re == "E")logger->error("好友申请事件同意失败(可能因为重复处理),id:" + source);
         }
 
+        /// @brief 拒绝好友申请
+        void reject(bool ban = false, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+            NewFriendRequestEvent::operation0(this->source, this->bot.id, false, env);
+        }
+
         /// @brief 接受申请
-        void accept() {
-            this->accept(this->source);
+        /// @param ban - 是否加入黑名单
+        void accept(JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+            NewFriendRequestEvent::operation0(this->source, this->bot.id, true, env);
         }
 
         /*!
@@ -3113,7 +3085,7 @@ throw: InitxException 即找不到对应签名
         try{
             ErrorHandle(re);
         }catch(MiraiCPException&){
-            return 0;
+            return -1;
         }
         return stoi(re);
     }
@@ -3122,8 +3094,7 @@ throw: InitxException 即找不到对应签名
         json j;
         j["time"] = time;
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->MuteM, j, env, false);
-        ErrorHandle(re);
+        std::string re = config->koperation(config->MuteM, j, env);
         if (re == "E3") {
             throw BotException();
         }
@@ -3561,7 +3532,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                 procession->broadcast<GroupInviteEvent>(
                         GroupInviteEvent(
                                 j["botid"],
-                                j["source"],
+                                j["request"],
                                 j["source"]["inviternick"],
                                 j["source"]["inviterid"],
                                 j["source"]["groupname"],
@@ -3573,7 +3544,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                 procession->broadcast<NewFriendRequestEvent>(
                         NewFriendRequestEvent(
                                 j["source"]["botid"],
-                                j["source"].dump(),
+                                j["request"],
                                 j["source"]["fromid"],
                                 j["source"]["fromgroupid"],
                                 j["source"]["fromnick"],

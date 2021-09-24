@@ -186,6 +186,7 @@ object CPPEvent {
 
     data class GroupInvite(
         val source: GroupInviteSource,
+        val request: String,
         val type: Int = 3
     ) {
         //群邀请
@@ -199,9 +200,17 @@ object CPPEvent {
         )
     }
 
+    data class Request(
+        val text: String,
+        val accept: Boolean,
+        val botid: Long,
+        val ban: Boolean?
+    )
+
     //好友邀请
     data class NewFriendRequest(
         val source: NewFriendRequestSource,
+        val reqest: String,
         val type: Int = 4
     ) {
         data class NewFriendRequestSource(
