@@ -159,7 +159,7 @@ fun source(b: Bot, sender: Long, groupid: Long): OnlineMessageSource = OnlineMes
                             ),
                         ), net.mamoe.mirai.internal.network.protocol.data.proto.ImMsgBody.Elem(
                             extraInfo = net.mamoe.mirai.internal.network.protocol.data.proto.ImMsgBody.ExtraInfo(
-                                nick = "user3".toByteArray(),
+                                nick = "user3",
                                 level = 1,
                                 groupMask = 1,
                             ),

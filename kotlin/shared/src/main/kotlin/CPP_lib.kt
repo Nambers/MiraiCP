@@ -44,8 +44,6 @@ import tech.eritquearcus.miraicp.shared.PublicShared.mute
 import tech.eritquearcus.miraicp.shared.PublicShared.nextMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.publishOfflineAnnouncement
 import tech.eritquearcus.miraicp.shared.PublicShared.recallMsg
-import tech.eritquearcus.miraicp.shared.PublicShared.rejectFriendRequest
-import tech.eritquearcus.miraicp.shared.PublicShared.rejectGroupInvite
 import tech.eritquearcus.miraicp.shared.PublicShared.remoteFileInfo
 import tech.eritquearcus.miraicp.shared.PublicShared.scheduling
 import tech.eritquearcus.miraicp.shared.PublicShared.sendError
@@ -201,15 +199,16 @@ class CPP_lib (
         // new friend request operation
         private suspend fun KNfroperation(text: String, sign: Boolean): String =
             run {
-                val tmp = gson.fromJson(text, CPPEvent.NewFriendRequest.NewFriendRequestSource::class.java)
-                if (sign) accpetFriendRequest(tmp)
-                else rejectFriendRequest(tmp)
+                val tmp = gson.fromJson(text, CPPEvent.Request::class.java)
+                accpetFriendRequest(tmp.text, tmp.botid, tmp.accept, tmp.ban)
             }
 
         // Group invite operation
         private suspend fun KGioperation(text: String, sign: Boolean): String =
-            if (sign) accpetGroupInvite(gson.fromJson(text, CPPEvent.GroupInvite.GroupInviteSource::class.java))
-            else rejectGroupInvite(gson.fromJson(text, CPPEvent.GroupInvite.GroupInviteSource::class.java))
+            run {
+                val tmp = gson.fromJson(text, CPPEvent.Request::class.java)
+                accpetGroupInvite(tmp.text, tmp.botid, tmp.accept)
+            }
 
         private suspend fun KSendWithQuote(messageSource: String, msg: String, sign: String): String =
             sendWithQuote(messageSource, msg, sign)
