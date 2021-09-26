@@ -227,5 +227,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 [UTF8-CPP: UTF-8 with C++ in a Portable Way](https://github.com/nemtrif/utfcpp) - Boost Software License 1.0
 
+`JNI headers`, 在JDK目录中(因为windows和linux的jni headers不一样, 所以目前没自带), 只要系统环境变量有jdk cmake就可以自动识别
+
 # Stargazers
 [![Stargazers repo roster for @Nambers/MiraiCP](https://reporoster.com/stars/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/stargazers)
