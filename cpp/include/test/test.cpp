@@ -47,7 +47,9 @@ public:
         });
         // 邀请加群
         procession->registerEvent<GroupInviteEvent>([](GroupInviteEvent e) {
-            e.accept();
+            logger->error(to_string(e.bot.id));
+            if(e.groupid != 1044565129)e.accept();
+            else e.reject();
             logger->info("x");
             Group(e.groupid, e.bot.id).sendMsg("被" + e.inviterNick + "邀请进入" + e.groupName);
         });
@@ -67,20 +69,23 @@ public:
             //     e.sender.sendMsg(a);
             // }
             // // 发送图片
-            // Image tmp = e.sender.uploadImg(R"(C:\Users\19308\Desktop\a.jpg)");
-            // e.sender.sendMsg(tmp.toMiraiCode());
-            // e.sender.sendMiraiCode(tmp.toMiraiCode());
+            Image tmp = e.sender.uploadImg(R"(C:\Users\19308\Desktop\a.jpg)");
+            e.sender.sendMsg(tmp.toMiraiCode());
+            e.sender.sendMiraiCode(tmp.toMiraiCode());
             // e.message.source.recall();
             logger->info("Start");
+            e.bot.getGroup(788189105).sendMsg("xxx\nxxx");
             logger->error("test");
-            e.botlogger.error("test2");
             //e.sender.sendMsg("B");
             // logger->info("content: "+e.nextMessage().content.toMiraiCode());
         });
 
         // 监听群信息
         procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            e.bot.getFriend(1930893235).sendMsg("A");
+            e.group.sendMsg("x");
+            Image tmp = e.group.uploadImg(R"(C:\Users\19308\Desktop\a.jpg)");
+            e.group.sendMsg(tmp.toMiraiCode());
+            e.group.sendMiraiCode(tmp.toMiraiCode());
             // SYSTEMTIME st = { 0 };
             // GetLocalTime(&st);  //获取当前时间 可精确到ms
             // logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
