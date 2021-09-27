@@ -1536,7 +1536,7 @@ LightApp风格1
             j["source"] = tmp.dump();
             j["miraiCode"] = miraicode;
             j["retryTime"] = retryTime;
-            return config->koperation(config->Send, j, env, true, errorInfo);
+            return config->koperation(config->Send, j, env, true, std::move(errorInfo));
         }
 
         /// @brief 取该联系人的一些信息
@@ -1708,7 +1708,7 @@ LightApp风格1
         /// @code
         ///  Member(this.sender.id, this.group.id, this.bot.id)
         /// @endcode
-        Member(QQID qqid, QQID groupid, QQID botid,
+        explicit Member(QQID qqid, QQID groupid, QQID botid,
                JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         explicit Member(Contact c) : Contact(c) { refreshInfo(); };
@@ -2214,7 +2214,7 @@ LightApp风格1
         /// 群号
         QQID groupid = 0;
 
-        static void operation0(const std::string& source, QQID botid,bool accept, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        static void operation0(const std::string& source, QQID botid, bool accept, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["text"] = source;
             j["accept"] = accept;
@@ -2227,7 +2227,7 @@ LightApp风格1
             GroupInviteEvent::operation0(this->source, this->bot.id,false, env);
         }
 
-        void accept(JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+        void accept(JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             GroupInviteEvent::operation0(this->source, this->bot.id, true, env);
         }
 
@@ -3503,6 +3503,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
         logger->error(e.what());
         return returnNull();
     }
+    ThreadManager::getThread()->stack.push(__FILE__, __LINE__, "source: " + tmp);
     try {
         switch ((int) j["type"]) {
             case 1: {
@@ -3531,7 +3532,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                 //群聊邀请
                 procession->broadcast<GroupInviteEvent>(
                         GroupInviteEvent(
-                                j["botid"],
+                                j["source"]["botid"],
                                 j["request"],
                                 j["source"]["inviternick"],
                                 j["source"]["inviterid"],

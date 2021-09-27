@@ -43,9 +43,12 @@ import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
-import net.mamoe.mirai.utils.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
+import net.mamoe.mirai.utils.MiraiExperimentalApi
+import net.mamoe.mirai.utils.MiraiLogger
+import net.mamoe.mirai.utils.OverFileSizeMaxException
+import net.mamoe.mirai.utils.RemoteFile
 import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
@@ -211,15 +214,11 @@ object PublicShared {
             )
         }
 
-    suspend fun SendMsg(message: String, c: Config.Contact, retryTime: Int): String {
-        val m = MessageChainBuilder()
-        m.add(message)
-        return send0(m.asMessageChain(), c, retryTime)
-    }
+    suspend fun SendMsg(message: String, c: Config.Contact, retryTime: Int): String =
+        send0(message.toPlainText().toMessageChain(), c, retryTime)
 
-    suspend fun SendMiraiCode(message: String, c: Config.Contact, retryTime: Int): String {
-        return send0(MiraiCode.deserializeMiraiCode(message), c, retryTime)
-    }
+    suspend fun SendMiraiCode(message: String, c: Config.Contact, retryTime: Int): String =
+        send0(MiraiCode.deserializeMiraiCode(message), c, retryTime)
 
     private fun OnlineAnnouncement.toOnlineA(): Config.OnlineA {
         val a = Config.AP(
@@ -618,25 +617,6 @@ object PublicShared {
                     gson.fromJson(info, RequestEventData.BotInvitedJoinGroupRequest::class.java).accept(bot)
                 else
                     gson.fromJson(info, RequestEventData.BotInvitedJoinGroupRequest::class.java).reject(bot)
-            } catch (e: IllegalStateException) {
-                return "E"
-            }
-            return "Y"
-        }
-
-    @OptIn(MiraiInternalApi::class)
-    @Suppress("INVISIBLE_MEMBER")
-    suspend fun rejectGroupInvite(info: CPPEvent.GroupInvite.GroupInviteSource): String =
-        withBot(info.botid) { bot ->
-            try {
-                BotInvitedJoinGroupRequestEvent(
-                    bot,
-                    info.eventid,
-                    info.inviterid,
-                    info.groupid,
-                    info.groupname,
-                    info.inviternick
-                ).ignore()
             } catch (e: IllegalStateException) {
                 return "E"
             }
