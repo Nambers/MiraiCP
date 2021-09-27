@@ -130,7 +130,7 @@ internal inline fun withGroup(bot: Bot, groupid: Long, Err: String = "", block: 
 }
 
 internal inline fun Config.Contact.withGroup(bot: Bot, Err: String = "", block: (Group) -> String): String {
-    val g = bot.getGroup(this.groupid)
+    val g = if (this.type == 2) bot.getGroup(this.id) else bot.getGroup(this.groupid)
     if (g == null) {
         if (Err != "") PublicShared.logger.error(Err)
         return "EG"

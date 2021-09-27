@@ -197,14 +197,14 @@ class CPP_lib (
             buildforwardMsg(text, botid)
 
         // new friend request operation
-        private suspend fun KNfroperation(text: String, sign: Boolean): String =
+        private suspend fun KNfroperation(text: String): String =
             run {
                 val tmp = gson.fromJson(text, CPPEvent.Request::class.java)
                 accpetFriendRequest(tmp.text, tmp.botid, tmp.accept, tmp.ban)
             }
 
         // Group invite operation
-        private suspend fun KGioperation(text: String, sign: Boolean): String =
+        private suspend fun KGioperation(text: String): String =
             run {
                 val tmp = gson.fromJson(text, CPPEvent.Request::class.java)
                 accpetGroupInvite(tmp.text, tmp.botid, tmp.accept)
@@ -395,13 +395,11 @@ class CPP_lib (
                         )
                         /// 好友申请事件
                         Operation_code.Nfroperation.ordinal -> KNfroperation(
-                            root.getString("text"),
-                            root.getBoolean("sign")
+                            root.toString()
                         )
                         /// 群聊邀请事件
                         Operation_code.Gioperation.ordinal -> KGioperation(
-                            root.getString("text"),
-                            root.getBoolean("sign")
+                            root.toString()
                         )
                         /// 回复(引用并发送)
                         Operation_code.SendWithQuote.ordinal -> KSendWithQuote(
