@@ -800,7 +800,14 @@ object PublicShared {
                 gson.toJson(
                     CPPEvent.GroupMessage(
                         this.group.toContact(),
-                        Config.Contact(3, this.sender.id, this.group.id, this.senderName, this.bot.id),
+                        Config.Contact(
+                            3,
+                            this.sender.id,
+                            this.group.id,
+                            this.senderName,
+                            this.bot.id,
+                            (this.sender is AnonymousMember)
+                        ),
                         this.message.serializeToMiraiCode(),
                         json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
                     )
