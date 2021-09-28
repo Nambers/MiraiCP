@@ -25,7 +25,8 @@ object Config {
         val id: Long,
         val groupid: Long,
         val nickornamecard: String,
-        val botid: Long
+        val botid: Long,
+        val anonymous: Boolean = false
     )
 
     data class SendRequest(
