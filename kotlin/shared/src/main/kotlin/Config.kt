@@ -210,7 +210,7 @@ object CPPEvent {
     //好友邀请
     data class NewFriendRequest(
         val source: NewFriendRequestSource,
-        val reqest: String,
+        val request: String,
         val type: Int = 4
     ) {
         data class NewFriendRequestSource(
