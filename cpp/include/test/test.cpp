@@ -22,40 +22,40 @@ public:
         /*插件启动, 请勿在此函数运行前执行操作mirai的代码*/
         /*
         logger - 日志组件
-            logger->info(string)发送消息级日志
-            logger->warning(string)发送警告级日志
-            logger->error(string)发送错误级日志
+            Logger::logger.info(string)发送消息级日志
+            Logger::logger.warning(string)发送警告级日志
+            Logger::logger.error(string)发送错误级日志
         一共有3种logger
          1. 是最外层的logger指针，为MiraiCP插件级logger, 标识符为MiraiCP: [content], 不建议用这个logger输出，该logger通常在MiraiCP内部使用
          2. 是CPPPlugin下的pluginLogger，为插件级logger，即当前MiraiCP加载的插件，标识符为[name]: [content], 建议用于调试信息
          3. 是每个事件的botLogger, 如:e.botLogger, 为每个机器人账号独有的logger，建议日常使用，标识符为[botid]: [content]
         procession 广播源
-            procession->registerEvent<EventType>(lambda) 注册监听
-            procession->registerEvent<GroupMessageEvent>([](GroupMessageEvent param){ \*处理*\});是监听群消息
-            procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent param){ \*处理*\});是监听私聊消息
+            Event::processor.registerEvent<EventType>(lambda) 注册监听
+            Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent param){ \*处理*\});是监听群消息
+            Event::processor.registerEvent<PrivateMessageEvent>([](PrivateMessageEvent param){ \*处理*\});是监听私聊消息
             ...
         参数都在param变量里，在lambda块中使用param.xxx来调用
         */
-        procession->registerEvent<BotOnlineEvent>([](BotOnlineEvent e) {
+        Event::processor.registerEvent<BotOnlineEvent>([](BotOnlineEvent e) {
             e.botlogger.info("Bot is Online");
         });
         // 邀请事件
         // 好友申请
-        procession->registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent e) {
+        Event::processor.registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent e) {
             e.accept();
             Friend(e.fromid, e.bot.id).sendMsg("HI");
         });
         // 邀请加群
-        procession->registerEvent<GroupInviteEvent>([](GroupInviteEvent e) {
-            logger->error(to_string(e.bot.id));
+        Event::processor.registerEvent<GroupInviteEvent>([](GroupInviteEvent e) {
+            Logger::logger.error(to_string(e.bot.id));
             if(e.groupid != 1044565129)e.accept();
             else e.reject();
-            logger->info("x");
+            Logger::logger.info("x");
             Group(e.groupid, e.bot.id).sendMsg("被" + e.inviterNick + "邀请进入" + e.groupName);
         });
         // 消息事件
         // 监听私聊
-        procession->registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
+        Event::processor.registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
             // unsigned long long id = e.bot.id;
             // e.botlogger.info(std::to_string(id));
             // e.message.source.quoteAndSendMsg("HI");
@@ -73,30 +73,30 @@ public:
             e.sender.sendMsg(tmp.toMiraiCode());
             e.sender.sendMiraiCode(tmp.toMiraiCode());
             // e.message.source.recall();
-            logger->info("Start");
+            Logger::logger.info("Start");
             e.bot.getGroup(788189105).sendMsg("xxx\nxxx");
-            logger->error("test");
+            Logger::logger.error("test");
             //e.sender.sendMsg("B");
-            // logger->info("content: "+e.nextMessage().content.toMiraiCode());
+            // Logger::logger.info("content: "+e.nextMessage().content.toMiraiCode());
         });
 
         // 监听群信息
-        procession->registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
+        Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
             e.group.sendMsg("x");
             Image tmp = e.group.uploadImg(R"(C:\Users\19308\Desktop\a.jpg)");
             e.group.sendMsg(tmp.toMiraiCode());
             e.group.sendMiraiCode(tmp.toMiraiCode());
             // SYSTEMTIME st = { 0 };
             // GetLocalTime(&st);  //获取当前时间 可精确到ms
-            // logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
+            // Logger::logger.info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
             // high_resolution_clock::time_point beginTime = high_resolution_clock::now();
             // for(int i = 0; i<10; i++)
             //     e.group.sendMiraiCode(to_string(i));
             // high_resolution_clock::time_point endTime = high_resolution_clock::now();
             // long long re = std::chrono::duration_cast<milliseconds>(endTime - beginTime).count() / 10;
-            // logger->info(to_string(re));
+            // Logger::logger.info(to_string(re));
             // GetLocalTime(&st);  //获取当前时间 可精确到ms
-            // logger->info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
+            // Logger::logger.info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
             //  e.group.sendMsg(e.sender.at() + "发送纯文本MiraiCode");
             //  e.group.sendMiraiCode(e.sender.at() + "发送MiraiCode");
             //  e.group.sendMsg("禁言测试");
@@ -114,7 +114,7 @@ public:
             //  e.group.sendMsg(e.group.MemberListToString());
             //  e.group.sendMsg("发送一个群公告并删除");
             //  Group::OfflineAnnouncement("Helloooooooo!", Group::AnnouncementParams()).publishTo(e.group).deleteThis();
-            //  logger->info("Global全局日志");
+            //  Logger::logger.info("Global全局日志");
             //  Main::pluginLogger->info("Plugin插件日志");
             //  e.botlogger.info("bot机器人日志");
             //  e.botlogger.info("上一条信息:"+e.message.content.toString());
@@ -160,23 +160,23 @@ public:
             // e.sender.sendMsg(e.bot.GroupListToString());
             // e.group.sendMsg("next msg test");
             // if(e.message.content.toMiraiCode() == "a")
-            //     logger->info("content: " + e.nextMessage().content.toString());
+            //     Logger::logger.info("content: " + e.nextMessage().content.toString());
             // else
-            //     logger->info("content2: " + e.senderNextMessage().content.toString());
+            //     Logger::logger.info("content2: " + e.senderNextMessage().content.toString());
         });
         // 监听群临时会话
-        procession->registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
+        Event::processor.registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
             e.sender.sendMsg("hi");
         });
         // 群事件
-        procession->registerEvent<MemberJoinEvent>([](MemberJoinEvent e) {
+        Event::processor.registerEvent<MemberJoinEvent>([](MemberJoinEvent e) {
             e.group.sendMiraiCode(At(e.group.getOwner()) + std::to_string(e.member.id()) + "加入了群聊");
         });
-        procession->registerEvent<MemberLeaveEvent>([](MemberLeaveEvent e) {
+        Event::processor.registerEvent<MemberLeaveEvent>([](MemberLeaveEvent e) {
             e.group.sendMiraiCode(At(e.group.getOwner()) + std::to_string(e.memberid) + "退出了群聊");
         });
-        procession->registerEvent<TimeOutEvent>([](const TimeOutEvent& e){
-            logger->info(e.msg);
+        Event::processor.registerEvent<TimeOutEvent>([](const TimeOutEvent& e){
+            Logger::logger.info(e.msg);
         });
     }
 
