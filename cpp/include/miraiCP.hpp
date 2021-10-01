@@ -349,9 +349,9 @@ LightApp风格1
     class Config {
     public:
         /// kt中JNI接口类
-        jclass CPP_lib = nullptr;
+        static jclass CPP_lib;
         /// 调用mirai方法
-        jmethodID KOperation = nullptr;
+        static jmethodID KOperation;
 
         /// 操作id
         enum operation_set {
@@ -413,17 +413,15 @@ LightApp风格1
          * @param data 传入数据
          * @return 返回数据
          */
-        std::string koperation(operation_set type, nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__), bool catchErr = true, const std::string& errorInfo = "");
+        static std::string koperation(operation_set type, nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__), bool catchErr = true, const std::string& errorInfo = "");
 
-        Config() = default;
+        static void construct(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
-        void Init(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
-
-        ~Config();
+        static void destruct();
     };
 
-/// 全局Config对象
-    Config *config = new Config();
+    jclass Config::CPP_lib = nullptr;
+    jmethodID Config::KOperation = nullptr;
 
 /// MiraiCode父类, 指可以被转换成miraicode的类型
     class MiraiCodeable {
@@ -599,6 +597,8 @@ LightApp风格1
         /// @param level 日志等级
         /// @param env jnienv
         void log0(const std::string &content, int level, JNIEnv *env) override;
+    private:
+        Logger()= default;;
     public:
         static Logger logger;
     };
@@ -677,7 +677,7 @@ LightApp风格1
 
         void raise() override {
             Logger::logger.error(this->description);
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -699,7 +699,7 @@ LightApp风格1
 
         void raise() override {
             Logger::logger.error(this->description);
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -721,7 +721,7 @@ LightApp风格1
 
         void raise() override {
             Logger::logger.error(this->description);
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -742,7 +742,7 @@ LightApp风格1
         }
 
         void raise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -775,7 +775,7 @@ LightApp风格1
         }
 
         void raise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -813,7 +813,7 @@ LightApp风格1
         }
 
         void raise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -837,7 +837,7 @@ LightApp风格1
         }
 
         void raise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -858,7 +858,7 @@ LightApp风格1
         }
 
         void raise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(config->initexception, (this->description).c_str());
+            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -1537,7 +1537,7 @@ LightApp风格1
             j["source"] = tmp.dump();
             j["miraiCode"] = miraicode;
             j["retryTime"] = retryTime;
-            return config->koperation(config->Send, j, env, true, std::move(errorInfo));
+            return Config::koperation(Config::Send, j, env, true, std::move(errorInfo));
         }
 
         /// @brief 取该联系人的一些信息
@@ -1546,7 +1546,7 @@ LightApp风格1
         static inline std::string getInfoSource(Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["source"] = c->serializationToString();
-            return config->koperation(config->RefreshInfo, j, env);
+            return Config::koperation(Config::RefreshInfo, j, env);
         }
 
         /*!
@@ -1560,7 +1560,7 @@ LightApp风格1
             nlohmann::json j;
             j["fileName"] = path;
             j["source"] = c->serializationToString();
-            return config->koperation(config->UploadImg, j, env);
+            return Config::koperation(Config::UploadImg, j, env);
         }
 
         /// 每个对象的必有信息
@@ -1654,7 +1654,7 @@ LightApp风格1
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
-            config->koperation(config->RefreshInfo, j, env);
+            Config::koperation(Config::RefreshInfo, j, env);
         }
 
         void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override{
@@ -1675,7 +1675,7 @@ LightApp风格1
         void sendNudge(){
             json j;
             j["contactSource"] = this->serializationToString();
-            std::string re = config->koperation(config->SendNudge, j);
+            std::string re = Config::koperation(Config::SendNudge, j);
             if(re == "E1")
                 throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
         }
@@ -1795,7 +1795,7 @@ LightApp风格1
             if(isAnonymous) return;
             json j;
             j["contactSource"] = this->serializationToString();
-            std::string re = config->koperation(config->SendNudge, j);
+            std::string re = Config::koperation(Config::SendNudge, j);
             if(re == "E1")
                 throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
         }
@@ -1903,7 +1903,7 @@ LightApp风格1
         std::vector<unsigned long long> getMemberList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["contactSource"] = this->serializationToString();
-            std::string re = config->koperation(config->QueryML, j, env);
+            std::string re = Config::koperation(Config::QueryML, j, env);
             if (re == "E1") {
                 throw GroupException();
             }
@@ -1941,7 +1941,7 @@ LightApp风格1
             json j;
             j["source"] = this->serializationToString();
             j["announcement"] = true;
-            std::string re = config->koperation(config->RefreshInfo, j, env);
+            std::string re = Config::koperation(Config::RefreshInfo, j, env);
             std::vector<OnlineAnnouncement> oa;
             for(const json& e : json::parse(re)){
                 oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
@@ -1967,7 +1967,7 @@ LightApp风格1
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
-            config->koperation(config->RefreshInfo, j, env);
+            Config::koperation(Config::RefreshInfo, j, env);
         }
 
         /*!
@@ -2056,7 +2056,7 @@ LightApp风格1
         void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
-            LowLevelAPI::info tmp = LowLevelAPI::info0(config->koperation(config->RefreshInfo, j, env));
+            LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));
             this->_avatarUrl = tmp.avatarUrl;
             this->_nick = tmp.nickornamecard;
         }
@@ -2090,7 +2090,7 @@ LightApp风格1
         std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["botid"] = this->id;
-            std::string temp = config->koperation(config->QueryBFL, j, env);
+            std::string temp = Config::koperation(Config::QueryBFL, j, env);
             return Tools::StringToVector(temp);
         }
 
@@ -2103,7 +2103,7 @@ LightApp风格1
         std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["botid"] = this->id;
-            std::string temp = config->koperation(config->QueryBGL, j, env);
+            std::string temp = Config::koperation(Config::QueryBGL, j, env);
             return Tools::StringToVector(temp);
         }
 
@@ -2222,7 +2222,7 @@ LightApp风格1
             j["text"] = source;
             j["accept"] = accept;
             j["botid"] = botid;
-            std::string re = config->koperation(config->Gioperation, j, env);
+            std::string re = Config::koperation(Config::Gioperation, j, env);
             if (re == "E")Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
         }
 
@@ -2270,7 +2270,7 @@ LightApp风格1
             j["accept"] = accept;
             j["botid"] = botid;
             j["ban"] = ban;
-            std::string re = config->koperation(config->Nfroperation, j, env);
+            std::string re = Config::koperation(Config::Nfroperation, j, env);
             if (re == "E")Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
         }
 
@@ -2468,7 +2468,7 @@ LightApp风格1
         json j;
         j["time"] = time;
         j["msg"] = msg;
-        config->koperation(Config::TimeOut, j, env);
+        Config::koperation(Config::TimeOut, j, env);
     }
 
     /// 机器人上线事件
@@ -2488,6 +2488,7 @@ LightApp风格1
 /**监听类声明*/
     class Event {
     private:
+        Event() = default;
         class Node0 {
         public:
             Node0 *nextNode = nullptr;
@@ -2741,7 +2742,7 @@ throw: InitException 即找不到签名
 */
 
     void Logger_interface::init(JNIEnv *env) {
-        this->log = env->GetStaticMethodID(config->CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
+        this->log = env->GetStaticMethodID(Config::CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
     }
 
     void Logger_interface::registerHandle(Logger_interface::Action action) {
@@ -2774,7 +2775,7 @@ throw: InitException 即找不到签名
         json j;
         j["id"] = -2;
         j["log"] = content;
-        env->CallStaticVoidMethod(config->CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
+        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
     }
 
     void IdLogger::log0(const std::string &content, int level, JNIEnv *env) {
@@ -2783,7 +2784,7 @@ throw: InitException 即找不到签名
         json j;
         j["id"] = id;
         j["log"] = content;
-        env->CallStaticVoidMethod(config->CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
+        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
     }
     void PluginLogger::log0(const std::string &content, int level, JNIEnv *env) {
         if (this->loggerhandler.enable)
@@ -2792,7 +2793,7 @@ throw: InitException 即找不到签名
         j["id"] = -1;
         j["name"] = plugin->config.id;
         j["log"] = content;
-        env->CallStaticVoidMethod(config->CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
+        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
     }
 
 /*
@@ -2800,17 +2801,17 @@ throw: InitException 即找不到签名
 throw: InitxException 即找不到对应签名
 */
 
-    void Config::Init(JNIEnv *env) {
-        this->CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(
+    void Config::construct(JNIEnv *env) {
+        Config::CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(
                 env->FindClass("tech/eritquearcus/miraicp/shared/CPP_lib")));
-        if (this->CPP_lib == nullptr) {
+        if (Config::CPP_lib == nullptr) {
             throw APIException("初始化错误，找不到CPP_lib类");
         }
-        this->KOperation = env->GetStaticMethodID(CPP_lib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
+        Config::KOperation = env->GetStaticMethodID(CPP_lib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
     }
 
-    Config::~Config() {
-        ThreadManager::getEnv(__FILE__, __LINE__)->DeleteGlobalRef(this->CPP_lib);
+    void Config::destruct() {
+        ThreadManager::getEnv(__FILE__, __LINE__)->DeleteGlobalRef(Config::CPP_lib);
     }
 
     std::vector<std::string> MiraiCode::filter(filterType t){
@@ -2833,7 +2834,7 @@ throw: InitxException 即找不到对应签名
         json j;
         j["type"] = type;
         j["data"] = data;
-        std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(this->CPP_lib, this->KOperation,
+        std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(Config::CPP_lib, Config::KOperation,
                                                            Tools::str2jstring(j.dump().c_str(), env)), env);
         if(catchErr) ErrorHandle(re, errorInfo);
         return re;
@@ -2859,7 +2860,7 @@ throw: InitxException 即找不到对应签名
     void MessageSource::recall(JNIEnv *env) {
         json j;
         j["source"] = this->serializeToString();
-        std::string re = config->koperation(config->Recall, j, env);
+        std::string re = Config::koperation(Config::Recall, j, env);
         if (re == "Y") return;
         if (re == "E1") throw BotException();
         if (re == "E2") throw RecallException();
@@ -2970,7 +2971,7 @@ throw: InitxException 即找不到对应签名
         text["content"] = sendmsg;
         temp["text"] = text.dump();
         temp["botid"] = c->botid();
-        std::string re = config->koperation(config->Buildforward, temp, env);
+        std::string re = Config::koperation(Config::Buildforward, temp, env);
         //TODO:https://github.com/mamoe/mirai/issues/1371
         return MessageSource::deserializeFromString(re);
     }
@@ -3001,7 +3002,7 @@ throw: InitxException 即找不到对应签名
     std::string Image::queryURL(JNIEnv *env) {
         json j;
         j["id"] = this->id;
-        std::string re = config->koperation(config->QueryImgUrl, j, env);
+        std::string re = Config::koperation(Config::QueryImgUrl, j, env);
         if (re == "E1")
             throw RemoteAssetException("图片id格式错误");
         return re;
@@ -3031,7 +3032,7 @@ throw: InitxException 即找不到对应签名
         sign["MiraiCode"] = true;
         sign["groupid"] = groupid;
         obj["sign"] = sign.dump();
-        std::string re = config->koperation(config->SendWithQuote, obj, env);
+        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
         return MessageSource::deserializeFromString(re);
     }
 
@@ -3043,7 +3044,7 @@ throw: InitxException 即找不到对应签名
         sign["MiraiCode"] = false;
         sign["groupid"] = groupid;
         obj["sign"] = sign.dump();
-        std::string re = config->koperation(config->SendWithQuote, obj, env);
+        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
         return MessageSource::deserializeFromString(re);
     }
 
@@ -3089,7 +3090,7 @@ throw: InitxException 即找不到对应签名
         if(isAnonymous) return 0;
         json j;
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->QueryM, j, env);
+        std::string re = Config::koperation(Config::QueryM, j, env);
         return stoi(re);
     }
 
@@ -3097,7 +3098,7 @@ throw: InitxException 即找不到对应签名
         json j;
         j["time"] = time;
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->MuteM, j, env);
+        std::string re = Config::koperation(Config::MuteM, j, env);
         if (re == "E3") {
             throw BotException();
         }
@@ -3110,7 +3111,7 @@ throw: InitxException 即找不到对应签名
         json j;
         j["message"] = reason;
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->KickM, j, env);
+        std::string re = Config::koperation(Config::KickM, j, env);
         if (re == "E3") {
             throw BotException();
         }
@@ -3121,7 +3122,7 @@ throw: InitxException 即找不到对应签名
         json j;
         j["admin"] = admin;
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->ModifyAdmin, j, env);
+        std::string re = Config::koperation(Config::ModifyAdmin, j, env);
         if(re == "E1"){
             throw BotException();
         }
@@ -3142,7 +3143,7 @@ throw: InitxException 即找不到对应签名
         i["fid"] = this->fid;
         i["type"] = 1;
         j["identify"] = i.dump();
-        std::string re = config->koperation(config->Announcement, j);
+        std::string re = Config::koperation(Config::Announcement, j);
         if(re == "E1")
             throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)");
         if(re == "E2")
@@ -3170,7 +3171,7 @@ throw: InitxException 即找不到对应签名
         s["content"] = this->content;
         s["params"] = this->params.serializeToJson();
         j["source"] = s.dump();
-        std::string re = config->koperation(config->Announcement, j);
+        std::string re = Config::koperation(Config::Announcement, j);
         if(re == "E1")
             throw BotException();
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
@@ -3207,7 +3208,7 @@ throw: InitxException 即找不到对应签名
         j["isAnonymousChatEnabled"] = this->setting.isAnonymousChatEnabled;
         tmp["source"] = j.dump();
         tmp["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->GroupSetting, tmp, env);
+        std::string re = Config::koperation(Config::GroupSetting, tmp, env);
         if (re == "E1")
             throw BotException();
         refreshInfo(env);
@@ -3220,7 +3221,7 @@ throw: InitxException 即找不到对应签名
         source["filepath"] = filepath;
         tmp["source"] = source.dump();
         tmp["contactSource"] = this->serializationToString();
-        std::string callback = config->koperation(config->SendFile, tmp, env);
+        std::string callback = Config::koperation(Config::SendFile, tmp, env);
         if (callback == "E2") throw UploadException("找不到" + filepath + "位置:C-uploadfile");
         if (callback == "E3") throw UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
         return RemoteFile::deserializeFromString(callback);
@@ -3234,7 +3235,7 @@ throw: InitxException 即找不到对应签名
         tmp["path"] = path;
         j["source"] = tmp.dump();
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->RemoteFileInfo, j, env);
+        std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
         if (re == "E2") throw RemoteAssetException("Get error: 文件路径不存在, path:" + path);
         return RemoteFile::deserializeFromString(re);
     }
@@ -3242,7 +3243,7 @@ throw: InitxException 即找不到对应签名
     Member Group::getOwner(JNIEnv *env) {
         json j;
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->QueryOwner, j, env);
+        std::string re = Config::koperation(Config::QueryOwner, j, env);
         return Member(stoi(re), this->id(), this->botid());
     }
 
@@ -3253,7 +3254,7 @@ throw: InitxException 即找不到对应签名
         temp["path"] = path;
         j["source"] = temp.dump();
         j["contactSource"] = this->serializationToString();
-        return config->koperation(config->RemoteFileInfo, j, env);
+        return Config::koperation(Config::RemoteFileInfo, j, env);
     }
 
     std::vector<Group::file_short_info> Group::getFileList(const std::string &path, JNIEnv *env) {
@@ -3274,7 +3275,7 @@ throw: InitxException 即找不到对应签名
         j["contactSource"] = this->sender.serializationToString();
         j["time"] = time;
         j["halt"] = halt;
-        std::string r = config->koperation(config->NextMsg, j, env);
+        std::string r = Config::koperation(Config::NextMsg, j, env);
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
@@ -3286,7 +3287,7 @@ throw: InitxException 即找不到对应签名
         j["contactSource"] = this->group.serializationToString();
         j["time"] = time;
         j["halt"] = halt;
-        std::string r = config->koperation(config->NextMsg, j, env);
+        std::string r = Config::koperation(Config::NextMsg, j, env);
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
@@ -3298,7 +3299,7 @@ throw: InitxException 即找不到对应签名
         j["contactSource"] = this->sender.serializationToString();
         j["time"] = time;
         j["halt"] = halt;
-        std::string r = config->koperation(config->NextMsg, j, env);
+        std::string r = Config::koperation(Config::NextMsg, j, env);
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
@@ -3418,7 +3419,7 @@ throw: InitxException 即找不到对应签名
         source["path"] = path;
         j["source"] = source.dump();
         j["contactSource"] = this->serializationToString();
-        std::string re = config->koperation(config->Voice, j, env);
+        std::string re = Config::koperation(Config::Voice, j, env);
         if (re == "E1")
             throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在");
         else if(re == "E2")
@@ -3459,7 +3460,7 @@ jstring Verify(JNIEnv *env, jobject) {
     JNIVersion = (int) env->GetVersion();
     try {
         //初始化日志模块
-        config->Init();
+        Config::construct();
         Logger::logger.init();
         enrollPlugin();
         if (plugin == nullptr) {
@@ -3483,7 +3484,6 @@ jobject PluginDisable(JNIEnv *env, jobject job) {
     plugin->onDisable();
     delete (logger);
     delete (procession);
-    delete (config);
     delete(plugin);
     return job;
 }
