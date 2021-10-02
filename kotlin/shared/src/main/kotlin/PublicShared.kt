@@ -242,61 +242,50 @@ object PublicShared {
     }
 
     @OptIn(MiraiExperimentalApi::class, LowLevelApi::class)
-    suspend fun RefreshInfo(c: Config.Contact, quit: Boolean, annoucment: Boolean): String{
-        val AIbot = Bot.getInstanceOrNull(c.botid)?:let{
-            return "EB"
-        }
-        when(c.type){
-            1->{
-                val f = AIbot.getFriend(c.id) ?: let {
-                    logger.error("找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}")
-                    return "EF"
+    suspend fun RefreshInfo(c: Config.Contact, quit: Boolean, annoucment: Boolean): String =
+        c.withBot { bot ->
+            when (c.type) {
+                1 -> c.withFriend(bot, "找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}") { f ->
+                    if (quit) {
+                        f.delete()
+                        return "done"
+                    }
+                    gson.toJson(Config.ContactInfo(f.nick, f.avatarUrl))
                 }
-                if(quit) {
-                    f.delete()
-                    return "done"
+                2 -> c.withGroup(bot, "取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}") { g ->
+                    if (annoucment)
+                        return gson.toJson(g.announcements.toList().map { it.toOnlineA() })
+                    if (quit) {
+                        g.quit()
+                        return "done"
+                    }
+                    gson.toJson(
+                        Config.ContactInfo(
+                            g.name, g.avatarUrl,
+                            Config.GroupSetting(
+                                g.name,
+                                g.settings.isMuteAll,
+                                g.settings.isAllowMemberInvite,
+                                g.settings.isAutoApproveEnabled,
+                                g.settings.isAnonymousChatEnabled
+                            )
+                        )
+                    )
                 }
-                return gson.toJson(Config.ContactInfo(f.nick, f.avatarUrl))
-            }
-            2->{
-                val g = AIbot.getGroup(c.id)?:let{
-                    logger.error("取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}")
-                    return "EG"
-                }
-                if(annoucment)
-                    return gson.toJson(g.announcements.toList().map { it.toOnlineA() })
-                if(quit){
-                    g.quit()
-                    return "done"
-                }
-                return gson.toJson(Config.ContactInfo(g.name, g.avatarUrl,
-                    Config.GroupSetting(g.name, g.settings.isMuteAll, g.settings.isAllowMemberInvite, g.settings.isAutoApproveEnabled, g.settings.isAnonymousChatEnabled)
-                ))
-            }
-            3->{
-                for (a in friend_cache) {
-                    if (a.id == c.id && a.group.id == c.groupid) {
-                        return a.nameCardOrNick
+                3 -> friend_cache.firstOrNull { a ->
+                    a.id == c.id && a.group.id == c.groupid
+                }?.nameCardOrNick ?: let {
+                    c.withMember(
+                        bot, "取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}",
+                        "取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}"
+                    ) { _, m ->
+                        return gson.toJson(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
                     }
                 }
-                val group = AIbot.getGroup(c.groupid) ?: let {
-                    logger.error("取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}")
-                    return "EM"
-                }
-                val m = group[c.id] ?: let {
-                    logger.error("取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}")
-                    return "EMM"
-                }
-                return gson.toJson(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
-            }
-            4->{
-                return gson.toJson(Config.ContactInfo(AIbot.nick, AIbot.avatarUrl))
-            }
-            else->{
-                return "EA"
+                4 -> gson.toJson(Config.ContactInfo(bot.nick, bot.avatarUrl))
+                else -> "EA"
             }
         }
-    }
 
     //取群成员列表
     fun QueryML(c: Config.Contact): String =
