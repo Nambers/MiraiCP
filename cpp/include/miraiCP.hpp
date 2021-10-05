@@ -554,6 +554,11 @@ LightApp风格1
         ///发送普通(info级日志)
         void info(const std::string &, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
+        template<typename T>
+        void info(std::vector<T> content, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            info(Tools::VectorToString(content), env);
+        }
+
         ///发送普通(info级日志)
         void info(MiraiCode msg, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             info(msg.toString(), env);
@@ -1034,6 +1039,102 @@ LightApp风格1
          * @endcode
         */
         void recall(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+    };
+
+    class SingleMessage{
+    public:
+        static std::map<int, std::string> messageType;
+        /// @brief 找对应类型的index key
+        /// @param value 类型名
+        /// @return 如果没找到返回-1
+        static int getKey(const std::string& value){
+            for(auto a : messageType){
+                if(a.second == value) return a.first;
+            }
+            return -1;
+        }
+        int type;
+        std::string content;
+        std::string toString() const{
+            if(type != 0)
+                return "[mirai:" + messageType[type] + content + "]";
+            else
+                return content;
+        }
+        SingleMessage(const std::string& content){
+            this->content = content;
+        };
+
+        SingleMessage(int type, const std::string &content) : type(type), content(content) {}
+    };
+    std::map<int, std::string> SingleMessage::messageType = {
+            {0, "plainText"},
+            {1, "at"},
+            {2, "image"}
+    };
+
+    class MessageChain{
+    public:
+        std::vector<SingleMessage> content;
+        /// @brief 找到miraiCode结尾的`]`
+        /// @param s 文本
+        /// @param start 开始位置
+        /// @return 如果不存在返回-1, 存在则返回index
+        static size_t findEnd(const std::string& s, size_t start){
+            size_t pos = start;
+            while(pos < s.length()) {
+                switch(s[pos]){
+                    case '\\':
+                        pos += 2;
+                        continue;
+                    case ']':
+                        return pos;
+                }
+                pos++;
+            }
+            return -1;
+        }
+        static MessageChain deserializationFromString(const std::string& m){
+            size_t pos = 0;
+            size_t lastPos = 0;
+            std::vector<SingleMessage> v;
+            if(m.length() <= 7){
+                v.emplace_back(0, m);
+                return MessageChain(v);
+            }
+            do{
+                if(m.length() - 7 - pos > 0 && m.substr(pos, 7) == "[mirai:"){
+                    if(pos - lastPos > 1)
+                        v.emplace_back(0, m.substr(lastPos + 1, pos - lastPos - 1));// plain text
+                    size_t back = MessageChain::findEnd(m, pos);
+                    if(back == -1) throw IllegalStateException("");
+                    std::string tmp = m.substr(pos, back - pos);
+                    tmp = Tools::replace(tmp, "[mirai:", "");
+                    size_t i = tmp.find(':');// first :
+                    int t = SingleMessage::getKey(tmp.substr(0, i));
+                    v.emplace_back(t, tmp.substr(i + 1, tmp.length() - i - 1));
+                    pos = back;
+                    if(t == 1)
+                        pos++;
+                    lastPos = pos;
+                }
+                pos++;
+            }while(pos < m.length());
+            if(lastPos + 1 < m.length())
+                v.emplace_back(0,m.substr(lastPos + 1, m.length() - lastPos - 1));// plain text
+            return MessageChain(v);
+        }
+        std::vector<std::string> toStringVector(){
+            std::vector <std::string> tmp;
+            for(const auto& a : this->content){
+                tmp.emplace_back(a.toString());
+            }
+            return tmp;
+        }
+
+
+
+        explicit MessageChain(const std::vector<SingleMessage> &content) : content(content) {}
     };
 
     class Message{
