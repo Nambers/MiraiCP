@@ -44,10 +44,9 @@ object KotlinMain {
         Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
         PublicShared.init(logger)
-        PublicShared.cachePath = File("./data/miraiCP/cache/")
-        if (PublicShared.cachePath.exists()) {
+        PublicShared.cachePath = File("cache")
+        if (PublicShared.cachePath.exists())
             PublicShared.cachePath.deleteRecursively()
-        }
         PublicShared.cachePath.mkdir()
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
