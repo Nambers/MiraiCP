@@ -119,7 +119,7 @@ LightApp风格1
 */
     struct LightAppStyle1{
         ///小图标地址
-        std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+        std::string icon = "https://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
         ///小标题，用逗号分割多个
         std::string titles = "{\"title\":\"1\", \"value\":\"t1\"},"
                              "{\"title\":\"2\", \"value\":\"t2\"}";
@@ -135,9 +135,9 @@ LightApp风格1
 /// 风格2
     struct LightAppStyle2 {
         ///小图标
-        std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+        std::string icon = "https://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
         ///预览图大图
-        std::string preview = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+        std::string preview = "https://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
         ///小图片右侧小标题
         std::string title = "Test1";
         ///图片上标题
@@ -149,9 +149,9 @@ LightApp风格1
         /// 点击跳转链接
         std::string url = "https://www.baidu.com";
         /// 图标
-        std::string icon = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+        std::string icon = "https://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
         ///预览图
-        std::string preview = "http://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
+        std::string preview = "https://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
         ///大标题
         std::string title = "Test1";
         ///图片旁描述
@@ -496,15 +496,6 @@ LightApp风格1
         static MiraiCode MiraiCodeWithoutEscape(MiraiCodeable* a){
             return {a->toMiraiCode(), false};
         }
-
-        /// 支持提取的内容
-        enum filterType{
-            image,
-            at
-        };
-
-        /// 提取MiraiCode内容
-        std::vector<std::string> filter(filterType);
     };
 
 /*!
@@ -970,16 +961,8 @@ LightApp风格1
          * @param msg - MiraiCodeable类型指针 - 内容
          * @see MessageSource::quoteAndSendMiraiCode
         */
-        MessageSource
-        quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
-        }
-
-        /// 回复(引用并发送miraicode)
-        /// @see MessageSource::quoteAndSendMiraiCode
-        MessageSource
-        quoteAndSendMiraiCode(MiraiCode msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
-            return quoteAndSendMiraiCode(msg.toMiraiCode(), groupid, env);
         }
 
         /**
@@ -992,8 +975,7 @@ LightApp风格1
          *  e.messageSource.quoteAndSendMsg("HI");
          * @endcode
          */
-        MessageSource
-        quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageSource quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /**
          * @brief 回复(引用并发送)
@@ -1001,8 +983,7 @@ LightApp风格1
          * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
          * @return MessageSource
          */
-        MessageSource
-        quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageSource quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
 
         /*!
          * @brief 构建消息源
@@ -1038,9 +1019,10 @@ LightApp风格1
             });
          * @endcode
         */
-        void recall(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void recall(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
     };
 
+    /// MessageChain的组成部分
     class SingleMessage:public MiraiCodeable{
     public:
         static std::map<int, std::string> messageType;
@@ -1058,8 +1040,8 @@ LightApp风格1
         int type;
         std::string content;
         std::string toMiraiCode() override{
-            if(type != 0)
-                return "[mirai:" + messageType[type] + ":" + content + "]";
+            if(type > 0)
+                return "[mirai:" + messageType[type] + ":" + Tools::escapeToMiraiCode(content) + "]";
             else
                 return content;
         }
@@ -1069,10 +1051,13 @@ LightApp风格1
     std::map<int, std::string> SingleMessage::messageType = {
             {0, "plainText"},
             {1, "at"},
-            {2, "image"}
+            {2, "image"},
+            {3, "app"},
+            {4, "service"}
     };
 
-    class MessageChain{
+    /// 消息链, 一般由SingleMessage组成
+    class MessageChain:public MiraiCodeable{
     public:
         std::vector<SingleMessage> content;
         /// 如果由MiraiCP构造(incoming)就会存在，否则则不存在
@@ -1095,6 +1080,7 @@ LightApp风格1
             }
             return -1;
         }
+        /// 从string构建MessageChain, 常用于Incoming message
         static MessageChain deserializationFromString(const std::string& m, const MessageSource& s){
             size_t pos = 0;
             size_t lastPos = 0;
@@ -1125,27 +1111,44 @@ LightApp风格1
                 v.emplace_back(0,m.substr(lastPos + 1, m.length() - lastPos - 1));// plain text
             return MessageChain(v, s);
         }
-        std::string toString(){
-            return Tools::VectorToString(this->toStringVector(), "");
+        std::string toMiraiCode() override{
+            return Tools::VectorToString(this->toMiraiCodeVector(), "");
         }
-        std::vector<std::string> toStringVector(){
+        std::vector<std::string> toMiraiCodeVector(){
             std::vector <std::string> tmp;
             for(auto a : this->content){
                 tmp.emplace_back(a.toMiraiCode());
             }
             return tmp;
         }
+        /// 筛选出某种特点type的信息
         std::vector<SingleMessage> filter(int);
+        /// 自定义筛选器
         std::vector<SingleMessage> filter(std::function<bool(SingleMessage)>);
+        /// 找出第一个指定的type的信息
+        SingleMessage first(int);
+        /// incoming构造器
         explicit MessageChain(std::vector<SingleMessage> content, MessageSource source) : content(std::move(content)), source(std::move(source)) {}
+        /// outcoming构造器
         explicit MessageChain(std::vector<SingleMessage> content):content(std::move(content)){};
+        /// outcoming 构造器
         MessageChain(std::initializer_list<SingleMessage> content):content(content){};
+        /// outcoming 构造器
         explicit MessageChain(SingleMessage msg):content{std::move(msg)}{};
         [[nodiscard]]
         MessageChain plus(const SingleMessage& a){
             MessageChain tmp(*this);
             tmp.content.push_back(a);
             return tmp;
+        }
+        void add(const SingleMessage& a){
+            this->content.push_back(a);
+        }
+        MessageChain operator+ (const SingleMessage& msg){
+            return this->plus(msg);
+        }
+        SingleMessage operator[](int i){
+            return this->content[i];
         }
     };
 
@@ -1187,26 +1190,6 @@ LightApp风格1
         * 获取图片下载url
         */
         std::string queryURL(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
-
-        /*!
-         * @brief 取一个miraicode字符串中全部的图片id，详情见Image
-         * @see Image
-         *  @param  miraicode的字符串
-         *  @return vector容器，每一项为一个图片id
-         *  @example 取一个miraicode字符串中全部的图片id
-         *		@code
-         *          vector<string> temp = Image::GetImgIdFromMiraiCode(param.message);
-         *	        for (int i = 0; i < temp.size(); i++) {
-         *	    	    Logger::logger.info(temp[i]);
-         *	    	    Logger::logger.info("图片下载地址:" + Image(param.env, temp[i]).queryURL());
-         *	         }
-         *		@endcode
-         */
-        static std::vector<std::string> GetImgIdsFromMiraiCode(std::string);
-
-        static std::vector<std::string> GetImgIdsFromMiraiCode(MiraiCode msg) {
-            return GetImgIdsFromMiraiCode(msg.toMiraiCode());
-        }
 
         /// 取图片Mirai码
         std::string toMiraiCode() override;
@@ -1339,7 +1322,7 @@ LightApp风格1
         /// @param retryTime 重试次数
         /// @return MessageSource
         MessageSource sendMessage(MessageChain msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
-            return sendMsg0(msg.toString(), retryTime, true, env);
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
         /// @brief 发送一条MiraiCode信息
         /// @param msg MiraiCode
@@ -1361,7 +1344,7 @@ LightApp风格1
         /// @param retryTime 重试次数
         /// @return MessageSource
         MessageSource sendMessage(SingleMessage msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
-            return sendMsg0(msg.toMiraiCode(), retryTime, env);
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 
         /// @brief 发送纯文本信息
@@ -1469,64 +1452,64 @@ LightApp风格1
 		});
  * @endcode
  */
-    class LightApp : public MiraiCodeable {
+    class LightApp : public SingleMessage {
     public:
-        std::string content;
 
         /// @brief 使用纯文本构造，推荐使用其他结构体方法构造
         /// @param content 构造文本
-        explicit LightApp(std::string content) {
-            this->content = std::move(content);
-        }
+        explicit LightApp(std::string content) : SingleMessage(3, std::move(content)) {}
 
         /// 使用样式1,适合文字展示，无大图，不能交互
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        explicit LightApp(const LightAppStyle1& c) {
+        explicit LightApp(const LightAppStyle1 &c) : SingleMessage(3,"") {
             this->content =
-                    "{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"0.0.0.1\",\"prompt\":\"[应用]\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"notification\":{\"appInfo\":"
-                    "{\"appName\":\"" + c.appName + "\",\"appType\":4,\"appid\":1109659848,"
-                                                    "\"iconUrl\":\"" + c.icon + "\"},"
-                                                                                "\"data\":[" + c.titles + "],"
-                                                                                                          "\"title\":\"" +
-                    c.title + "\",\"button\":"
-                              "[" + c.buttons + "],"
-                                                "\"emphasis_keyword\":\"\"}},\"text\":\"\",\"sourceAd\":\"\"}";
+                    "{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"0.0.0.1\",\"prompt\":\"[应用]\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"notification\":{\"appInfo\":{\"appName\":\"" +
+                    c.appName + "\",\"appType\":4,\"appid\":1109659848,\"iconUrl\":\"" + c.icon +
+                    "\"},\"data\":[" + c.titles + "],\"title\":\"" + c.title + "\",\"button\":[" + c.buttons +
+                    "],\"emphasis_keyword\":\"\"}},\"text\":\"\",\"sourceAd\":\"\"}";
         }
 
         /// 使用样式2，有大图，不能交互
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        LightApp(const LightAppStyle2& c) {
-            this->content = "{\"config\":"
-                            "{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
-                            "\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"1.0.0.103\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
-                            "\"meta\":{\"detail_1\":{\"appid\":\"1110081493\",\"preview\":\"" + c.preview +
-                            "\",\"shareTemplateData\":{},"
-                            "\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"" +
-                            c.title2 + "\",\"title\":\"" + c.title + "\","
-                                                                     "\"host\":{\"uin\":0,\"nick\":\"\"},"
-                                                                     "\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" +
-                            c.icon + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
+        explicit LightApp(const LightAppStyle2 &c) : SingleMessage(3,"") {
+            this->content =
+                    "{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"1.0.0.103\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
+                    "\"meta\":{\"detail_1\":{\"appid\":\"1110081493\",\"preview\":\"" +
+                    c.preview + "\",\"shareTemplateData\":{},"
+                                "\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"" +
+                    c.title2 + "\",\"title\":\"" + c.title +
+                    "\",\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" +
+                    c.icon + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
         }
 
         /// 样式3，有大图，可以在电脑qq显示，并在电脑上点击的链接会跳转
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        explicit LightApp(const LightAppStyle3& c) {
-            this->content =
-                    "{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
+        explicit LightApp(const LightAppStyle3 &c) : SingleMessage(3, "") {
+            this->content ="{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
                     "\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"0.0.0.1\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
-                    "\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\"" + c.preview +
+                    "\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\"" +
+                    c.preview +
                     "\",\"shareTemplateData\":{},\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"" +
-                    c.title + "\",\"title\":\"" + c.description + "\",\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" +
-                    c.icon + "\",\"qqdocurl\":\"" + c.url + "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
+                    c.title + "\",\"title\":\"" + c.description +
+                    "\",\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\"" +
+                    c.icon + "\",\"qqdocurl\":\"" + c.url +
+                    "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
         }
 
-        explicit LightApp(const LightAppStyle4& c){
-            this->content =
-                    R"({"app":"com.tencent.miniapp","desc":"","view":"notification","ver":"1.0.0.11","prompt":")"+c.prompt+"\",\"meta\":{\"notification\":{\"appInfo\":{\"appName\":\""+c.appName+"\",\"appType\":4,\"appid\":1109659848,\"iconUrl\":\""+c.iconUrl+"\"},\"button\":[{\"action\":\""+c.button_action+"\",\"name\":\""+c.button_name+"\"}],\"data\":[{\"title\":\""+c.data_title+"\",\"value\":\""+c.data_value+"\"}],\"emphasis_keyword\":\"\"}}}";
-        }
+        explicit LightApp(const LightAppStyle4 &c) : SingleMessage(3,
+                                                                   R"({"app":"com.tencent.miniapp","desc":"","view":"notification","ver":"1.0.0.11","prompt":")" +
+                                                                   c.prompt +
+                                                                   "\",\"meta\":{\"notification\":{\"appInfo\":{\"appName\":\"" +
+                                                                   c.appName +
+                                                                   "\",\"appType\":4,\"appid\":1109659848,\"iconUrl\":\"" +
+                                                                   c.iconUrl + "\"},\"button\":[{\"action\":\"" +
+                                                                   c.button_action + "\",\"name\":\"" + c.button_name +
+                                                                   "\"}],\"data\":[{\"title\":\"" + c.data_title +
+                                                                   "\",\"value\":\"" + c.data_value +
+                                                                   "\"}],\"emphasis_keyword\":\"\"}}}") {}
 
         /// 返回miraicode
         std::string toMiraiCode() override {
@@ -1541,21 +1524,21 @@ LightApp风格1
 
     /// xml格式的超文本信息
     /// @attention 自带的模板不稳定，可能发出现没有效果
-    class ServiceMessage : public MiraiCodeable{
-    private:
-        std::string content;
+    class ServiceMessage : public SingleMessage {
     public:
-        std::string toMiraiCode() override{
-            return "[mirai:service:1,"+ Tools::escapeToMiraiCode(content) +"]";
+        std::string toMiraiCode() override {
+            return "[mirai:service:" + Tools::escapeToMiraiCode(content) + "]";
         }
 
-        explicit ServiceMessage(std::string a){
-            content = std::move(a);
-        }
+        explicit ServiceMessage(std::string a) : SingleMessage(4, std::move(a)) {}
 
-        explicit ServiceMessage(const URLSharer& a){
-            content = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\""+a.brief+"\" serviceID=\"1\" url=\""+a.url+"\"><item layout=\"2\"><picture cover=\""+a.cover+"\"/><title>"+a.title+"</title><summary>"+a.summary+"</summary></item><source/></msg>\\n";
-        }
+        explicit ServiceMessage(const URLSharer &a) : SingleMessage(4,
+                                                                    "1,<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\"" +
+                                                                    a.brief + "\" serviceID=\"1\" url=\"" + a.url +
+                                                                    "\"><item layout=\"2\"><picture cover=\"" +
+                                                                    a.cover + "\"/><title>" + a.title +
+                                                                    "</title><summary>" + a.summary +
+                                                                    "</summary></item><source/></msg>\\n") {}
     };
 
 // 群文件
@@ -1619,7 +1602,7 @@ LightApp风格1
          * @param d dinfo
          * @param f finfo
          */
-        RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, const std::string &p,
+        explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, const std::string &p,
                    struct Dinfo d, struct Finfo f) : id(i),
                                                      internalid(
                                                              ii),
@@ -2544,10 +2527,8 @@ LightApp风格1
         Group group;
         /// 发送人
         Member sender;
-        /// 信息本体
-        MiraiCode message;
-        /// 消息源
-        MessageSource messageSource;
+        /// 信息
+        MessageChain message;
 
         /*!
          * @brief 群临时会话消息事件
@@ -2558,12 +2539,10 @@ LightApp风格1
          * @param messageSource 消息源
          */
         GroupTempMessageEvent(QQID botid, Group group, Member sender,
-                              const std::string &message, MessageSource messageSource) : BotEvent(botid),
-                                                                                                group(std::move(group)),
-                                                                                                sender(std::move(sender)),
-                                                                                                message(message),
-                                                                                                messageSource(std::move(
-                                                                                                        messageSource)) {}
+                              MessageChain message) : BotEvent(botid),
+                                                      group(std::move(group)),
+                                                      sender(std::move(sender)),
+                                                      message(std::move(message)) {}
     };
 
     /// 定时任务结束
@@ -2928,22 +2907,6 @@ throw: InitxException 即找不到对应签名
         ThreadManager::getEnv(__FILE__, __LINE__)->DeleteGlobalRef(Config::CPP_lib);
     }
 
-    std::vector<std::string> MiraiCode::filter(filterType t){
-        if(t == image){
-            return Image::GetImgIdsFromMiraiCode(*this);
-        }else{
-            std::vector<std::string> result = std::vector<std::string>();
-            std::string temp = this->toString();
-            std::smatch m;
-            std::regex re("\\[mirai:at:(.*?)\\]");
-            while (std::regex_search(temp, m, re)) {
-                result.push_back(m[1]);
-                temp = m.suffix().str();
-            }
-            return result;
-        }
-    }
-
     std::string Config::koperation(operation_set type, json &data, JNIEnv *env, bool catchErr, const std::string& errorInfo) {
         json j;
         j["type"] = type;
@@ -2971,7 +2934,7 @@ throw: InitxException 即找不到对应签名
         }
     }
 
-    void MessageSource::recall(JNIEnv *env) {
+    void MessageSource::recall(JNIEnv *env) const {
         json j;
         j["source"] = this->serializeToString();
         std::string re = Config::koperation(Config::Recall, j, env);
@@ -3010,6 +2973,12 @@ throw: InitxException 即找不到对应签名
         std::vector<SingleMessage> tmp;
         std::copy_if(this->content.begin(), this->content.end(), std::back_inserter(tmp), [&a](const SingleMessage& b){return a(b);});
         return tmp;
+    }
+
+    SingleMessage MessageChain::first(int type) {
+        for (auto a: this->content)
+            if (a.type == type) return a;
+        throw IllegalArgumentException("can not find type("+SingleMessage::messageType[type]+") in " + this->toMiraiCode());
     }
 
     //远程文件(群文件)
@@ -3111,23 +3080,11 @@ throw: InitxException 即找不到对应签名
         return re;
     }
 
-    std::vector<std::string> Image::GetImgIdsFromMiraiCode(std::string MiraiCode) {
-        std::vector<std::string> result = std::vector<std::string>();
-        std::string temp = std::move(MiraiCode);
-        std::smatch m;
-        std::regex re("\\[mirai:image:(.*?)\\]");
-        while (std::regex_search(temp, m, re)) {
-            result.push_back(m[1]);
-            temp = m.suffix().str();
-        }
-        return result;
-    }
-
     std::string Image::toMiraiCode() {
         return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
     }
 
-    MessageSource MessageSource::quoteAndSendMiraiCode(const std::string &content, QQID groupid, JNIEnv *env) {
+    MessageSource MessageSource::quoteAndSendMiraiCode(const std::string &content, QQID groupid, JNIEnv *env) const {
         json obj;
         json sign;
         obj["messageSource"] = this->serializeToString();
@@ -3704,8 +3661,8 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                         j["group"]["botid"],
                         Group(Group::deserializationFromJson(j["group"])),
                         Member(Member::deserializationFromJson(j["member"])),
-                        j["message"],
-                        MessageSource::deserializeFromString(j["source"])
+                        MessageChain::deserializationFromString(j["message"],
+                        MessageSource::deserializeFromString(j["source"]))
                 ));
                 break;
             case 11:
