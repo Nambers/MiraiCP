@@ -322,7 +322,7 @@ LightApp风格1
         /// @param a vector
         /// @return string
         template<typename T>
-        static std::string VectorToString(std::vector<T> a);
+        static std::string VectorToString(std::vector<T> a, const std::string& = ",");
 
         /// @brief 从string格式化到vector
         /// @param temp string
@@ -477,7 +477,7 @@ LightApp风格1
         }
 
         MiraiCode operator=(const std::string& a) {
-            return MiraiCode(a);
+            return {a};
         }
 
         MiraiCode plus(MiraiCodeable *a) {
@@ -603,7 +603,7 @@ LightApp风格1
         /// @param env jnienv
         void log0(const std::string &content, int level, JNIEnv *env) override;
     private:
-        Logger()= default;;
+        Logger()= default;
     public:
         static Logger logger;
     };
@@ -1021,7 +1021,7 @@ LightApp风格1
          */
         static MessageSource deserializeFromString(const std::string &source);
 
-        std::string serializeToString();
+        std::string serializeToString() const;
 
         /*!
          * @brief 撤回该信息
@@ -1041,31 +1041,30 @@ LightApp风格1
         void recall(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
     };
 
-    class SingleMessage{
+    class SingleMessage:public MiraiCodeable{
     public:
         static std::map<int, std::string> messageType;
         /// @brief 找对应类型的index key
         /// @param value 类型名
         /// @return 如果没找到返回-1
         static int getKey(const std::string& value){
-            for(auto a : messageType){
+            for(const auto& a : messageType){
                 if(a.second == value) return a.first;
             }
             return -1;
         }
+        /// MiraiCode类别
+        /// @see SingleMessage::messageType
         int type;
         std::string content;
-        std::string toString() const{
+        std::string toMiraiCode() override{
             if(type != 0)
-                return "[mirai:" + messageType[type] + content + "]";
+                return "[mirai:" + messageType[type] + ":" + content + "]";
             else
                 return content;
         }
-        SingleMessage(const std::string& content){
-            this->content = content;
-        };
 
-        SingleMessage(int type, const std::string &content) : type(type), content(content) {}
+        SingleMessage(int type, std::string content) : type(type), content(std::move(content)){}
     };
     std::map<int, std::string> SingleMessage::messageType = {
             {0, "plainText"},
@@ -1076,6 +1075,8 @@ LightApp风格1
     class MessageChain{
     public:
         std::vector<SingleMessage> content;
+        /// 如果由MiraiCP构造(incoming)就会存在，否则则不存在
+        MessageSource source;
         /// @brief 找到miraiCode结尾的`]`
         /// @param s 文本
         /// @param start 开始位置
@@ -1094,13 +1095,13 @@ LightApp风格1
             }
             return -1;
         }
-        static MessageChain deserializationFromString(const std::string& m){
+        static MessageChain deserializationFromString(const std::string& m, const MessageSource& s){
             size_t pos = 0;
             size_t lastPos = 0;
             std::vector<SingleMessage> v;
             if(m.length() <= 7){
                 v.emplace_back(0, m);
-                return MessageChain(v);
+                return MessageChain(v, s);
             }
             do{
                 if(m.length() - 7 - pos > 0 && m.substr(pos, 7) == "[mirai:"){
@@ -1122,69 +1123,54 @@ LightApp风格1
             }while(pos < m.length());
             if(lastPos + 1 < m.length())
                 v.emplace_back(0,m.substr(lastPos + 1, m.length() - lastPos - 1));// plain text
-            return MessageChain(v);
+            return MessageChain(v, s);
+        }
+        std::string toString(){
+            return Tools::VectorToString(this->toStringVector(), "");
         }
         std::vector<std::string> toStringVector(){
             std::vector <std::string> tmp;
-            for(const auto& a : this->content){
-                tmp.emplace_back(a.toString());
+            for(auto a : this->content){
+                tmp.emplace_back(a.toMiraiCode());
             }
             return tmp;
         }
-
-
-
-        explicit MessageChain(const std::vector<SingleMessage> &content) : content(content) {}
+        std::vector<SingleMessage> filter(int);
+        std::vector<SingleMessage> filter(std::function<bool(SingleMessage)>);
+        explicit MessageChain(std::vector<SingleMessage> content, MessageSource source) : content(std::move(content)), source(std::move(source)) {}
+        explicit MessageChain(std::vector<SingleMessage> content):content(std::move(content)){};
+        MessageChain(std::initializer_list<SingleMessage> content):content(content){};
+        explicit MessageChain(SingleMessage msg):content{std::move(msg)}{};
+        [[nodiscard]]
+        MessageChain plus(const SingleMessage& a){
+            MessageChain tmp(*this);
+            tmp.content.push_back(a);
+            return tmp;
+        }
     };
 
-    class Message{
+    /// 纯文本信息
+    class PlainText: public SingleMessage{
     public:
-        /// 信息属性
-        MessageSource source;
-        /// 信息内容
-        MiraiCode content;
-        /// 序列化到json
-        /// @see Message::serialize2string()
-        json serialization();
-        /// 序列化到string
-        std::string serialize2string(){
-            return serialization().dump();
-        };
-        /// 反序列化到message
-        static Message deserializationFromString(const std::string&);
-
-        explicit Message(MessageSource s, MiraiCode c):source(std::move(s)), content(std::move(c)){};
+        std::string content;
+        explicit PlainText(const std::string& text):SingleMessage(0, text), content(text){};
+        std::string toMiraiCode() override{
+            return content;
+        }
     };
 
-    /*! @brief Context上下文会在每个事件出现
-     * @attention MeSsAgEs 为MiraiCP保存Message类型的索引，不要覆盖
-     * @detail 该上下文为全局上下文，在插件启用期间都不会销毁，得益于Json for modern c++ 现代化的特性，可以添加自定义的flag进去，不过要注意该索引是否存在，否则会抛出异常
-     * @example 增加自定义flag
-     * Context.content["enable"] = true;
-     * // 必须要以字符串作为索引，赋值的对象可以为任意类型
-     * Context.content["xxx"] = 121;
-     *
-     * @example 获取自定义flag
-     * if(Context.content["enable"]) Logger::logger.info(Context.content["xxx"]);
-     *
-     * @example 获取上下文
-     * // 可以通过BotEvent::context或者BotEvent.getContext()获得
-     * Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-     *  e.getContext();
-     *  BotEvent::context;
-     * }
-     */
-    class Context{
+    /// @
+    class At: public SingleMessage{
     public:
-        /// 内容
-        json content;
-        /// 保存信息, 返回储存的信息序号, 相当于保持进聊天记录
-        size_t append(Message);
-        /// 取出保存的信息，返回信息,相当于取出聊天记录某条信息
-        Message get(int);
+        QQID target;
+        explicit At(QQID a):SingleMessage(1, std::to_string(a)), target(a){};
+        std::string toMiraiCode() override{
+            return "[mirai:at:"+ std::to_string(this->target) +"] ";// 后面有个空格
+        }
     };
+
 /// 图像类声明
-    class Image : public MiraiCodeable {
+    class Image : public SingleMessage {
     public:
         //图片id，样式:` {xxx}.xx `
         std::string id;
@@ -1195,7 +1181,7 @@ LightApp风格1
          * @code [mirai:image:{图片id}.jpg] @endcode
         * @note 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
         */
-        explicit Image(std::string);
+        explicit Image(std::string imageId);
 
         /*
         * 获取图片下载url
@@ -1344,8 +1330,38 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
+        [[deprecated("Use sendMessage")]]
         MessageSource sendMiraiCode(MiraiCode msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        }
+        /// @brief 发送一条MessageChain
+        /// @param msg MessageChain
+        /// @param retryTime 重试次数
+        /// @return MessageSource
+        MessageSource sendMessage(MessageChain msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            return sendMsg0(msg.toString(), retryTime, true, env);
+        }
+        /// @brief 发送一条MiraiCode信息
+        /// @param msg MiraiCode
+        /// @param retryTime 重试次数
+        /// @return MessageSource
+        MessageSource sendMessage(MiraiCode msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        }
+        /// @brief 发送一条文本信息(如果发送纯文本形式的MiraiCode)要传入`miraiCode` = true
+        /// @param msg 文本
+        /// @param miraiCode 是否是MiraiCode
+        /// @param retryTime 重试次数
+        /// @return MessageSource
+        MessageSource sendMessage(const std::string& msg, bool miraiCode = false, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            return sendMsg0(msg, retryTime, miraiCode, env);
+        }
+        /// @brief 发送一条singleMessage
+        /// @param msg SingleMessage
+        /// @param retryTime 重试次数
+        /// @return MessageSource
+        MessageSource sendMessage(SingleMessage msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            return sendMsg0(msg.toMiraiCode(), retryTime, env);
         }
 
         /// @brief 发送纯文本信息
@@ -1353,6 +1369,7 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
+        [[deprecated("Use sendMessage")]]
         MessageSource sendMsg(const std::string& msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return sendMsg0(msg, retryTime, false, env);
         }
@@ -1362,6 +1379,7 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
+        [[deprecated("Use sendMessage")]]
         MessageSource sendMsg(MiraiCode msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
             return sendMsg0(msg.toMiraiCode(), retryTime, false, env);
         }
@@ -1371,6 +1389,7 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
+        [[deprecated("Use sendMessage")]]
         MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
             return sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);
         }
@@ -1516,7 +1535,7 @@ LightApp风格1
 
 
         MessageSource sendTo(Contact c) {
-            return c.sendMiraiCode(MiraiCode(toMiraiCode()));
+            return c.sendMessage(MiraiCode(toMiraiCode()));
         }
     };
 
@@ -1882,9 +1901,9 @@ LightApp风格1
         void kick(const std::string &reason, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// At一个群成员
-        MiraiCode at() {
+        At at() {
             /*返回at这个人的miraicode*/
-            return MiraiCode::MiraiCodeWithoutEscape("[mirai:at:" + std::to_string(id()) + "]");
+            return At(this->id());
         }
 
         /*!
@@ -2234,15 +2253,10 @@ LightApp风格1
         /// 以该机器人的名义发送日志
         /// @see BotLogger
         IdLogger botlogger;
-        /// 上下文
-        static Context context;
-        /// 获取静态上下文
-        static Context& getContext(){return BotEvent::context;};
 
         explicit BotEvent(QQID botid) : bot(botid), botlogger(botid, &Logger::logger) {
         }
     };
-    Context BotEvent::context = Context();
 
 ///群消息事件声明
     class GroupMessageEvent : public BotEvent {
@@ -2252,11 +2266,11 @@ LightApp风格1
         ///发送人
         Member sender;
         /// 信息
-        Message message;
+        MessageChain message;
 
         GroupMessageEvent(QQID botid, const Group &group, const Member &sender,
-                          const MiraiCode &miraiCode,  const MessageSource &source) : BotEvent(botid), group(group),
-                          sender(sender), message(source, miraiCode) {};
+                          MessageChain mc) : BotEvent(botid), group(group),
+                          sender(sender), message(mc) {};
         /*!
          * @brief 取群聊下一个消息(群聊与本事件一样)
          * @warning 如果两次发送信息间隔过短可能会漏过信息
@@ -2264,7 +2278,7 @@ LightApp风格1
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return MiraiCP::Message
          */
-        Message nextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /*!
          * @brief 取群聊中同群成员的下一个消息(发送人和群与本事件一样)
@@ -2273,7 +2287,7 @@ LightApp风格1
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return MiraiCP::Message
          */
-        Message senderNextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageChain senderNextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
 
     };
 
@@ -2283,7 +2297,7 @@ LightApp风格1
         /// 发起人
         Friend sender;
         /// 信息
-        Message message;
+        MessageChain message{};
 
         /*!
          * @brief 构建私聊信息
@@ -2292,8 +2306,7 @@ LightApp风格1
          * @param message 消息
          * @param messageSource 消息源
          */
-        PrivateMessageEvent(QQID botid, Friend sender, const std::string &message,
-                            const MessageSource &messageSource) : BotEvent(botid), sender(std::move(sender)), message(messageSource, MiraiCode(message)) {};
+        PrivateMessageEvent(QQID botid, Friend sender, MessageChain mc) : BotEvent(botid), sender(std::move(sender)), message(mc) {};
         /*!
          * @brief 取下一个消息(发送人和接收人和本事件一样)
          * @warning 如果两次发送信息间隔过短可能会漏过信息
@@ -2301,7 +2314,7 @@ LightApp风格1
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return MiraiCP::Message
          */
-        Message nextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
     };
 
 /// 群聊邀请事件类声明
@@ -2970,14 +2983,14 @@ throw: InitxException 即找不到对应签名
     MessageSource::MessageSource(std::string ids, std::string internalids, std::string source) : ids(std::move(
             ids)), internalids(std::move(internalids)), source(std::move(source)) {}
 
-    std::string MessageSource::serializeToString() {
+    std::string MessageSource::serializeToString() const {
         return source;
     }
 
     MessageSource MessageSource::deserializeFromString(const std::string &source) {
         json j = json::parse(source);
         try {
-            return MessageSource(j["ids"].dump(), j["internalIds"].dump(), source);
+            return {j["ids"].dump(), j["internalIds"].dump(), source};
         }
         catch (json::type_error &e) {
             Logger::logger.error("消息源序列化出错，格式不符合(MessageSource::deserializeFromString)");
@@ -2987,27 +3000,16 @@ throw: InitxException 即找不到对应签名
         }
     }
 
-    // 消息
-    json Message::serialization() {
-        json j;
-        j["content"] = this->content.toMiraiCode();
-        j["source"] = this->source.serializeToString();
-        return j;
+    std::vector<SingleMessage> MessageChain::filter(int type) {
+        std::vector<SingleMessage> tmp;
+        std::copy_if(this->content.begin(), this->content.end(), std::back_inserter(tmp), [&type](const SingleMessage& a){return (a.type == type);});
+        return tmp;
     }
 
-    Message Message::deserializationFromString(const std::string& s){
-        json j = json::parse(s);
-        return Message(MessageSource::deserializeFromString(j["source"]), MiraiCode(j["content"].get<std::string>()));
-    }
-
-    // 上下文
-    size_t Context::append(Message m){
-        this->content["MeSsAgEs"].push_back(m.serialize2string());
-        return this->content["MeSsAgEs"].size();
-    }
-
-    Message Context::get(int i){
-        return Message::deserializationFromString(this->content["MeSsAgEs"][i]);
+    std::vector<SingleMessage> MessageChain::filter(std::function<bool(SingleMessage)> a) {
+        std::vector<SingleMessage> tmp;
+        std::copy_if(this->content.begin(), this->content.end(), std::back_inserter(tmp), [&a](const SingleMessage& b){return a(b);});
+        return tmp;
     }
 
     //远程文件(群文件)
@@ -3096,7 +3098,7 @@ throw: InitxException 即找不到对应签名
     }
 
 /*图片类实现*/
-    Image::Image(std::string imageId) {
+    Image::Image(std::string imageId) : SingleMessage(2, std::move(imageId)) {
         this->id = std::move(imageId);
     }
 
@@ -3371,7 +3373,7 @@ throw: InitxException 即找不到对应签名
         return re;
     }
 
-    Message PrivateMessageEvent::nextMessage(long time, bool halt, JNIEnv* env) {
+    MessageChain PrivateMessageEvent::nextMessage(long time, bool halt, JNIEnv* env) {
         json j;
         j["contactSource"] = this->sender.serializationToString();
         j["time"] = time;
@@ -3380,10 +3382,10 @@ throw: InitxException 即找不到对应签名
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return Message(MessageSource::deserializeFromString(re["messageSource"]),MiraiCode(re["message"]));
+        return MessageChain::deserializationFromString(re["message"], MessageSource::deserializeFromString(re["messageSource"]));
     }
 
-    Message GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
+    MessageChain GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
         json j;
         j["contactSource"] = this->group.serializationToString();
         j["time"] = time;
@@ -3392,10 +3394,10 @@ throw: InitxException 即找不到对应签名
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return Message(MessageSource::deserializeFromString(re["messageSource"]),MiraiCode(re["message"]));
+        return MessageChain::deserializationFromString(re["message"], MessageSource::deserializeFromString(re["messageSource"]));
     }
 
-    Message GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) {
+    MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) {
         json j;
         j["contactSource"] = this->sender.serializationToString();
         j["time"] = time;
@@ -3404,7 +3406,7 @@ throw: InitxException 即找不到对应签名
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return Message(MessageSource::deserializeFromString(re["messageSource"]),MiraiCode(re["message"]));
+        return MessageChain::deserializationFromString(re["message"], MessageSource::deserializeFromString(re["messageSource"]));
     }
 
 /*工具类实现*/
@@ -3438,11 +3440,11 @@ throw: InitxException 即找不到对应签名
     }
 
     template<typename T>
-    std::string Tools::VectorToString(std::vector<T> a) {
+    std::string Tools::VectorToString(std::vector<T> a, const std::string& separator) {
         std::stringstream ss;
         for (size_t i = 0; i < a.size(); ++i) {
             if (i != 0)
-                ss << ",";
+                ss << separator;
             ss << a[i];
         }
         std::string s = ss.str();
@@ -3583,9 +3585,7 @@ jobject PluginDisable(JNIEnv *env, jobject job) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
     plugin->onDisable();
-    delete (logger);
-    delete (procession);
-    delete(plugin);
+    plugin = nullptr;
     return job;
 }
 /*返回空值*/
@@ -3618,8 +3618,8 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                         GroupMessageEvent(j["group"]["botid"],
                                           Group(Group::deserializationFromJson(j["group"])),
                                           Member(Member::deserializationFromJson(j["member"])),
-                                          MiraiCode(j["message"].get<std::string>()),
-                                          MessageSource::deserializeFromString(j["source"])
+                                          MessageChain::deserializationFromString(j["message"].get<std::string>(),
+                                          MessageSource::deserializeFromString(j["source"]))
                         )
                 );
                 break;
@@ -3629,8 +3629,8 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
                                             Friend(Friend::deserializationFromJson(j["friend"])),
-                                            j["message"],
-                                            MessageSource::deserializeFromString(j["source"])
+                                            MessageChain::deserializationFromString(j["message"],
+                                            MessageSource::deserializeFromString(j["source"]))
                         ));
                 break;
             }
