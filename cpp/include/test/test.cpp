@@ -82,11 +82,9 @@ public:
 
         // 监听群信息
         Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            Logger::logger.info(e.message.toString());
+            e.group.sendMessage(ServiceMessage(URLSharer()));//TODO 无法发送MiraiCode形式
             // e.group.sendMsg("x");
-            SingleMessage tmp = e.group.uploadImg(R"(C:\Users\19308\Desktop\a.jpg)");
             // e.group.sendMsg(tmp.toMiraiCode());
-            e.group.sendMessage(tmp);
             // SYSTEMTIME st = { 0 };
             // GetLocalTime(&st);  //获取当前时间 可精确到ms
             // Logger::logger.info(to_string(st.wHour)+":"+to_string(st.wMinute)+":"+to_string(st.wSecond)+":"+to_string(st.wMilliseconds));
