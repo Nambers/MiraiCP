@@ -1039,14 +1039,19 @@ LightApp风格1
         /// @see SingleMessage::messageType
         int type;
         std::string content;
+        std::string prefix;
         std::string toMiraiCode() override{
             if(type > 0)
-                return "[mirai:" + messageType[type] + ":" + Tools::escapeToMiraiCode(content) + "]";
+                return "[mirai:" + messageType[type] + this->prefix + Tools::escapeToMiraiCode(content) + "]";
             else
                 return content;
         }
 
-        SingleMessage(int type, std::string content) : type(type), content(std::move(content)){}
+        /// @brief 构建单条
+        /// @param type 消息类型 @see messageType
+        /// @param content 内容
+        /// @param prefix 前缀, 默认为`:`, 第二个冒号部分的内容, 目前在serviceMesage有使用
+        SingleMessage(int type, std::string content, std::string prefix = ":") : type(type), content(std::move(content)), prefix(std::move(prefix)){}
     };
     std::map<int, std::string> SingleMessage::messageType = {
             {0, "plainText"},
@@ -1527,18 +1532,22 @@ LightApp风格1
     class ServiceMessage : public SingleMessage {
     public:
         std::string toMiraiCode() override {
-            return "[mirai:service:" + Tools::escapeToMiraiCode(content) + "]";
+            return "[mirai:service:" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
         }
 
-        explicit ServiceMessage(std::string a) : SingleMessage(4, std::move(a)) {}
+        /// @brief ServiceMessage
+        /// @param id 在xml内容前面的id (不包括逗号)
+        /// @param a xml内容 (不需要事先转码到miraiCode)
+        explicit ServiceMessage(int id, std::string a) : SingleMessage(4, std::move(a), ":" +  std::to_string(id) + ',') {}
 
         explicit ServiceMessage(const URLSharer &a) : SingleMessage(4,
-                                                                    "1,<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<msg templateID=\"12345\" action=\"web\" brief=\"" +
+                                                                    "<?xml version=\"1.0\" encoding=\"utf-8\"?><msg templateID=\"12345\" action=\"web\" brief=\"" +
                                                                     a.brief + "\" serviceID=\"1\" url=\"" + a.url +
                                                                     "\"><item layout=\"2\"><picture cover=\"" +
                                                                     a.cover + "\"/><title>" + a.title +
                                                                     "</title><summary>" + a.summary +
-                                                                    "</summary></item><source/></msg>\\n") {}
+                                                                    "</summary></item><source/></msg>",
+                                                                    ":1,") {}
     };
 
 // 群文件

@@ -9,7 +9,7 @@ using std::chrono::milliseconds;
 // 多线程示例
 void func(unsigned long long i, unsigned long long botid) {
     // 执行操作
-    Friend(i, botid).sendMsg("hi");
+    Friend(i, botid).sendMessage("hi");
     ThreadManager::detach();
 }
 
@@ -51,7 +51,7 @@ public:
             if(e.groupid != 1044565129)e.accept();
             else e.reject();
             Logger::logger.info("x");
-            Group(e.groupid, e.bot.id).sendMsg("被" + e.inviterNick + "邀请进入" + e.groupName);
+            Group(e.groupid, e.bot.id).sendMessage("被" + e.inviterNick + "邀请进入" + e.groupName);
         });
         // 消息事件
         // 监听私聊
@@ -70,11 +70,11 @@ public:
             // }
             // // 发送图片
             Image tmp = e.sender.uploadImg(R"(C:\Users\19308\Desktop\a.jpg)");
-            e.sender.sendMsg(tmp.toMiraiCode());
-            e.sender.sendMiraiCode(tmp.toMiraiCode());
+            e.sender.sendMessage(tmp.toMiraiCode());
+            e.sender.sendMessage(tmp.toMiraiCode(), true);
             // e.message.source.recall();
             Logger::logger.info("Start");
-            e.bot.getGroup(788189105).sendMsg("xxx\nxxx");
+            e.bot.getGroup(788189105).sendMessage("xxx\nxxx");
             Logger::logger.error("test");
             //e.sender.sendMsg("B");
             // Logger::logger.info("content: "+e.nextMessage().content.toMiraiCode());
@@ -83,6 +83,7 @@ public:
         // 监听群信息
         Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
             e.group.sendMessage(ServiceMessage(URLSharer()));//TODO 无法发送MiraiCode形式
+            Logger::logger.info(ServiceMessage(URLSharer()).toMiraiCode());
             // e.group.sendMsg("x");
             // e.group.sendMsg(tmp.toMiraiCode());
             // SYSTEMTIME st = { 0 };
@@ -165,14 +166,14 @@ public:
         });
         // 监听群临时会话
         Event::processor.registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
-            e.sender.sendMsg("hi");
+            e.sender.sendMessage("hi");
         });
         // 群事件
         Event::processor.registerEvent<MemberJoinEvent>([](MemberJoinEvent e) {
-            e.group.sendMiraiCode(At(e.group.getOwner()) + std::to_string(e.member.id()) + "加入了群聊");
+            e.group.sendMessage(At(e.group.getOwner()) + std::to_string(e.member.id()) + "加入了群聊");
         });
         Event::processor.registerEvent<MemberLeaveEvent>([](MemberLeaveEvent e) {
-            e.group.sendMiraiCode(At(e.group.getOwner()) + std::to_string(e.memberid) + "退出了群聊");
+            e.group.sendMessage(At(e.group.getOwner()) + std::to_string(e.memberid) + "退出了群聊");
         });
         Event::processor.registerEvent<TimeOutEvent>([](const TimeOutEvent& e){
             Logger::logger.info(e.msg);
