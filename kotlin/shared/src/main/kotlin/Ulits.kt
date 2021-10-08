@@ -38,18 +38,18 @@ private val cc by lazy {
 //    crossinline block: T.() -> R,
 //): R = runInterruptible(context = cc, block = { block() })
 
-fun ArrayList<CPP_lib>.Event(content: String) {
+fun ArrayList<CPP_lib>.event(content: String) {
     cc.submit {
         when {
             PublicShared.disablePlugins.isNotEmpty() -> {
-                this@Event.filter {
+                this@event.filter {
                     !PublicShared.disablePlugins.contains(it.config.name)
                 }.forEach {
                     it.Event(content)
                 }
             }
             else -> {
-                this@Event.forEach { it.Event(content) }
+                this@event.forEach { it.Event(content) }
             }
         }
     }

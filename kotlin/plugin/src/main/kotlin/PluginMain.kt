@@ -95,7 +95,7 @@ object PluginMain : KotlinPlugin(
             }
         logger.info("⭐已成功启动MiraiCP⭐")
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
-            PublicShared.cpp.Event(
+            PublicShared.cpp.event(
                 PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
             )
         }

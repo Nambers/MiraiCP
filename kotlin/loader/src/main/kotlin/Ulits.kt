@@ -23,8 +23,8 @@ import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.BotConfiguration
 import tech.eritquearcus.miraicp.shared.CPPConfig
 import tech.eritquearcus.miraicp.shared.CPPEvent
-import tech.eritquearcus.miraicp.shared.Event
 import tech.eritquearcus.miraicp.shared.PublicShared
+import tech.eritquearcus.miraicp.shared.event
 
 internal fun String.decodeHex(): ByteArray {
     check(length % 2 == 0) { "Must have an even length" }
@@ -74,7 +74,7 @@ internal fun CPPConfig.loaderConfig.Account.login() {
         }
     }
     b.eventChannel.subscribeAlways<BotOnlineEvent> {
-        PublicShared.cpp.Event(
+        PublicShared.cpp.event(
             PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
         )
     }
