@@ -710,7 +710,7 @@ object PublicShared {
     fun scheduling(time: Long, msg: String): String {
         Timer("Timer", false).schedule(time) {
             runBlocking {
-                cpp.Event(
+                cpp.event(
                     Gson().toJson(
                         CPPEvent.TimeOutEvent(
                             msg
@@ -770,7 +770,7 @@ object PublicShared {
         //配置文件目录 "${dataFolder.absolutePath}/"
         eventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.PrivateMessage(
                         this.sender.toContact(),
@@ -785,7 +785,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.GroupMessage(
                         this.group.toContact(),
@@ -805,7 +805,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.MemberLeave(
                         this.group.toContact(),
@@ -819,7 +819,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<MemberLeaveEvent.Quit> {
             friend_cache.add(this.member)
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.MemberLeave(
                         this.group.toContact(),
@@ -832,7 +832,7 @@ object PublicShared {
             friend_cache.remove(this.member)
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Retrieve> {
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.MemberJoin(
                         this.group.toContact(),
@@ -844,7 +844,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Active> {
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.MemberJoin(
                         this.group.toContact(),
@@ -856,7 +856,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Invite> {
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.MemberJoin(
                         this.group.toContact(),
@@ -869,7 +869,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<NewFriendRequestEvent> {
             //自动同意好友申请
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.NewFriendRequest(
                         CPPEvent.NewFriendRequest.NewFriendRequestSource(
@@ -887,7 +887,7 @@ object PublicShared {
 
         }
         eventChannel.subscribeAlways<MessageRecallEvent.FriendRecall> {
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.RecallEvent(
                         1,
@@ -904,7 +904,7 @@ object PublicShared {
 
         }
         eventChannel.subscribeAlways<MessageRecallEvent.GroupRecall> {
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.RecallEvent(
                         2,
@@ -921,7 +921,7 @@ object PublicShared {
 
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Invite>{
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.BotJoinGroup(
                         1,
@@ -932,7 +932,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Active>{
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.BotJoinGroup(
                         2,
@@ -943,7 +943,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve>{
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.BotJoinGroup(
                         3,
@@ -955,7 +955,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.GroupInvite(
                         CPPEvent.GroupInvite.GroupInviteSource(
@@ -973,7 +973,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<GroupTempMessageEvent> {
             //群临时会话
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.GroupTempMessage(
                         this.group.toContact(),
@@ -989,7 +989,7 @@ object PublicShared {
         }
 
         eventChannel.subscribeAlways<NudgeEvent> {
-            cpp.Event(
+            cpp.event(
                 gson.toJson(
                     CPPEvent.NugdeEvent(
                         if (this.subject.id == this.from.id)
