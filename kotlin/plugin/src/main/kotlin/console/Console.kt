@@ -18,10 +18,10 @@
 package tech.eritquearcus.miraicp.console
 
 import net.mamoe.mirai.console.command.CommandManager
+import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.command.SimpleCommand
 import tech.eritquearcus.miraicp.PluginMain
 import tech.eritquearcus.miraicp.shared.PublicShared
-import tech.eritquearcus.miraicp.shared.PublicShared.logger
 import tech.eritquearcus.miraicp.shared.loadAsCPPLib
 import java.io.File
 
@@ -31,7 +31,7 @@ object PluginList : SimpleCommand(
     description = "打印已经被加载的全部MiraiCP插件"
 ) {
     @Handler
-    fun pluginList() {
+    fun ConsoleCommandSender.pluginList() {
         PublicShared.cpp.forEach {
             it.showInfo()
         }
@@ -44,13 +44,13 @@ object DisablePlugin : SimpleCommand(
     description = "禁用一个已经加载的MiraiCP插件[可被enable指令启用](简写: disable)"
 ) {
     @Handler
-    fun disable(name: String) {
+    suspend fun ConsoleCommandSender.disable(name: String) {
         try {
             PublicShared.cpp.first { it.config.name == name }
             (!PublicShared.disablePlugins.contains(name)) && PublicShared.disablePlugins.add(name)
-            logger.info("禁用${name}成功")
+            sendMessage("禁用${name}成功")
         } catch (e: NoSuchElementException) {
-            logger.error("找不到${name}插件, 关闭失败")
+            sendMessage("找不到${name}插件, 关闭失败")
         }
     }
 }
@@ -61,12 +61,12 @@ object EnablePlugin : SimpleCommand(
     description = "启用一个被加载的MiraiCP插件[可被disable指令禁用](简写: enable)"
 ) {
     @Handler
-    fun enable(name: String) {
+    suspend fun ConsoleCommandSender.enable(name: String) {
         if (PublicShared.disablePlugins.contains(name)) {
             PublicShared.disablePlugins.remove(name)
-            logger.info("启用${name}成功")
+            sendMessage("启用${name}成功")
         } else {
-            logger.warning("未在禁用插件列表中找到 $name")
+            sendMessage("未在禁用插件列表中找到 $name")
         }
     }
 }
@@ -77,9 +77,9 @@ object DisablePluginList : SimpleCommand(
     description = "打印被禁用的MiraiCP插件列表(简写: dList)"
 ) {
     @Handler
-    fun dList() {
+    suspend fun ConsoleCommandSender.dList() {
         PublicShared.disablePlugins.forEach {
-            logger.info(it)
+            sendMessage(it)
         }
     }
 }
@@ -90,14 +90,14 @@ object LoadPlugin : SimpleCommand(
     description = "加载一个未被加载过的MiraiCP插件(简写: load)"
 ) {
     @Handler
-    fun load(path: String) {
+    suspend fun ConsoleCommandSender.load(path: String) {
         val f = File(path)
         when {
             !f.isFile || !f.exists() -> {
-                logger.error("${f.absolutePath} 不是一个有效的文件")
+                sendMessage("Err:${f.absolutePath} 不是一个有效的文件")
             }
             f.extension != "dll" && f.extension != "so" -> {
-                logger.error("${f.absolutePath} 不是一个有效的dll或so文件")
+                sendMessage("${f.absolutePath} 不是一个有效的dll或so文件")
             }
             else -> {
                 f.loadAsCPPLib(emptyList())
@@ -112,16 +112,16 @@ object ReLoadPlugin : SimpleCommand(
     description = "重新加载一个被加载过的MiraiCP插件(简写: reload)"
 ) {
     @Handler
-    fun reload(path: String) {
+    suspend fun ConsoleCommandSender.reload(path: String) {
         val plugin = File(path)
         when {
-            (!plugin.isFile || !plugin.exists()) -> logger.error("插件(${path})不存在")
-            (plugin.extension != "dll" && plugin.extension != "so") -> logger.error("插件(${path})不是dll或so文件")
+            (!plugin.isFile || !plugin.exists()) -> sendMessage("插件(${path})不存在")
+            (plugin.extension != "dll" && plugin.extension != "so") -> sendMessage("插件(${path})不是dll或so文件")
             else -> {
                 val p = plugin.loadAsCPPLib(emptyList(), true)
                 PublicShared.cpp.filter { it.config.id == p.config.id }.apply {
                     if (this.isEmpty())
-                        logger.warning("重载未找到id为(${p.config.id}), 但会继续执行, 效果类似`load`")
+                        sendMessage("重载未找到id为(${p.config.id}), 但会继续执行, 效果类似`load`")
                 }.forEach {
                     PublicShared.cpp.remove(it)
                     PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
