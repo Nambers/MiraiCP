@@ -1152,7 +1152,7 @@ LightApp风格1
         MessageChain operator+ (const SingleMessage& msg){
             return this->plus(msg);
         }
-        SingleMessage operator[](int i){
+        SingleMessage operator[](int i) {
             return this->content[i];
         }
     };
@@ -1165,12 +1165,20 @@ LightApp风格1
         std::string toMiraiCode() override{
             return content;
         }
+        explicit PlainText(const SingleMessage& sg):SingleMessage(sg){
+            if(sg.type != 0) throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText");
+            this->content = sg.content;
+        }
     };
 
     /// @
     class At: public SingleMessage{
     public:
         QQID target;
+        explicit At(const SingleMessage& sg):SingleMessage(sg){
+            if(sg.type != 1) throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At");
+            this->target = std::stol(sg.content);
+        }
         explicit At(QQID a):SingleMessage(1, std::to_string(a)), target(a){};
         std::string toMiraiCode() override{
             return "[mirai:at:"+ std::to_string(this->target) +"] ";// 后面有个空格
@@ -1190,6 +1198,11 @@ LightApp风格1
         * @note 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
         */
         explicit Image(std::string imageId);
+
+        explicit Image(const SingleMessage& sg):SingleMessage(sg){
+            if(sg.type != 2) assert(sg.type != 2);
+            this->id = sg.content;
+        }
 
         /*
         * 获取图片下载url
@@ -1464,6 +1477,10 @@ LightApp风格1
         /// @param content 构造文本
         explicit LightApp(std::string content) : SingleMessage(3, std::move(content)) {}
 
+        explicit LightApp(const SingleMessage& sg):SingleMessage(sg){
+            if(sg.type != 3) throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp");
+        }
+
         /// 使用样式1,适合文字展示，无大图，不能交互
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
@@ -1540,6 +1557,10 @@ LightApp风格1
         /// @param a xml内容 (不需要事先转码到miraiCode)
         explicit ServiceMessage(int id, std::string a) : SingleMessage(4, std::move(a), ":" +  std::to_string(id) + ',') {}
 
+        explicit ServiceMessage(const SingleMessage& sg):SingleMessage(sg){
+            if(sg.type != 4)throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage");
+        }
+
         explicit ServiceMessage(const URLSharer &a) : SingleMessage(4,
                                                                     "<?xml version=\"1.0\" encoding=\"utf-8\"?><msg templateID=\"12345\" action=\"web\" brief=\"" +
                                                                     a.brief + "\" serviceID=\"1\" url=\"" + a.url +
@@ -1613,8 +1634,7 @@ LightApp风格1
          */
         explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, const std::string &p,
                    struct Dinfo d, struct Finfo f) : id(i),
-                                                     internalid(
-                                                             ii),
+                                                     internalid(ii),
                                                      name(std::move(n)),
                                                      size(s),
                                                      path(p),
