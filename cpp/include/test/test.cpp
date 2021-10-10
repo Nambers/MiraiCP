@@ -43,7 +43,7 @@ public:
         // 好友申请
         Event::processor.registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent e) {
             e.accept();
-            Friend(e.fromid, e.bot.id).sendMsg("HI");
+            Friend(e.fromid, e.bot.id).sendMessage("HI");
         });
         // 邀请加群
         Event::processor.registerEvent<GroupInviteEvent>([](GroupInviteEvent e) {
@@ -82,7 +82,7 @@ public:
 
         // 监听群信息
         Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            e.group.sendMessage(ServiceMessage(URLSharer()));//TODO 无法发送MiraiCode形式
+            e.group.sendMessage(ServiceMessage(URLSharer()));
             Logger::logger.info(ServiceMessage(URLSharer()).toMiraiCode());
             // e.group.sendMsg("x");
             // e.group.sendMsg(tmp.toMiraiCode());
