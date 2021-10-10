@@ -249,76 +249,52 @@ class CPP_lib (
         enum class Operation_code {
             /// 撤回信息
             Recall,
-
             /// 发送信息
             Send,
-
             /// 查询信息接口
             RefreshInfo,
-
             /// 上传图片
             UploadImg,
-
             /// 取好友列表
             QueryBFL,
-
             /// 取群组列表
             QueryBGL,
-
             /// 上传文件
             SendFile,
-
             /// 查询文件信息
             RemoteFileInfo,
-
             /// 查询图片下载地址
             QueryImgUrl,
-
             /// 禁言
             MuteM,
-
             /// 查询权限
             QueryM,
-
             /// 踢出
             KickM,
-
             /// 取群主
             QueryOwner,
-
             /// 上传语音
             UploadVoice,
-
             /// 查询群成员列表
             QueryML,
-
             /// 群设置
             GroupSetting,
-
             /// 构建转发信息
             Buildforward,
-
             /// 好友申请事件
             Nfroperation,
-
             /// 群聊邀请事件
             Gioperation,
-
             /// 回复(引用并发送)
             SendWithQuote,
-
             /// 群公告操作
             Announcement,
-
             /// 定时任务
             Timer,
-
             ///发送戳一戳
             Nudge,
-
             /// 好友对象下一条消息
             NextMsg,
-
             /// 更改群成员权限
             ModifyAdmin
         }
