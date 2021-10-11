@@ -43,7 +43,7 @@ namespace MiraiCP {
     using QQID = unsigned long long;
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.7.1-dev-1";
+    const std::string MiraiCPVersion = "v2.8.0-M1";
 
     /// @brief 插件信息
     class PluginConfig{
