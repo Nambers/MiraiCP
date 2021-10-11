@@ -1,5 +1,26 @@
 # Change Log
 
+## v2.8.0-M1
+
++ 升级Mirai到v2.8.0-M1
++ 修复Linux下路径问题
++ 修复可能的loader缓存文件创建不成功的问题(路径简化到单层路径)
++ 修改一些配置项, 增加`advanceConfig.maxThread`最大线程缓存池大小
++ 用`EventRequest`替代原先的`@suppress`的 constructor (#20)
++ 修复 #85 的一系列问题
++ 修复匿名群成员的一些问题 (#86)
++ 代码格式优化
++ MiraiCode parser
++ MessageChain和SingleMessage (#87)
++ 把一些全局指针替换成单例, 造成一些方法的`deprecated`, 按照提示更改就行了
+
+break changes:
++ 删除`At`方法, 用`At`类代替
++ 删除`Context`类, 该类看起来没什么用
++ 删除`Message`类, 应该用`MessageChain`类代替
+
+> 该版本为开发版, 可能包含一些问题
+
 ## v2.7.1-dev-1
 
 + 增加重载dll指令
