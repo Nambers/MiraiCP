@@ -82,8 +82,11 @@ public:
 
         // 监听群信息
         Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            e.group.sendMessage(ServiceMessage(URLSharer()));
-            Logger::logger.info(ServiceMessage(URLSharer()).toMiraiCode());
+            e.group.sendMessage(MessageChain({
+                                        PlainText("a"),
+                                        PlainText("b"),
+                                        At(e.sender.id())
+                                }));
             // e.group.sendMsg("x");
             // e.group.sendMsg(tmp.toMiraiCode());
             // SYSTEMTIME st = { 0 };
@@ -170,10 +173,10 @@ public:
         });
         // 群事件
         Event::processor.registerEvent<MemberJoinEvent>([](MemberJoinEvent e) {
-            e.group.sendMessage(At(e.group.getOwner()) + std::to_string(e.member.id()) + "加入了群聊");
+            e.group.sendMessage(e.group.getOwner().at().toMiraiCode() + std::to_string(e.member.id()) + "加入了群聊");
         });
         Event::processor.registerEvent<MemberLeaveEvent>([](MemberLeaveEvent e) {
-            e.group.sendMessage(At(e.group.getOwner()) + std::to_string(e.memberid) + "退出了群聊");
+            e.group.sendMessage(e.group.getOwner().at().toMiraiCode() + std::to_string(e.memberid) + "退出了群聊");
         });
         Event::processor.registerEvent<TimeOutEvent>([](const TimeOutEvent& e){
             Logger::logger.info(e.msg);
