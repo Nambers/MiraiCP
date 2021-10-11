@@ -68,7 +68,7 @@ object PublicShared {
     val cpp: ArrayList<CPP_lib> = arrayListOf()
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
-    const val now_tag = "v2.7.1-dev-1"
+    const val now_tag = "v2.7.0-M1"
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
     var cachePath: File = File("")
