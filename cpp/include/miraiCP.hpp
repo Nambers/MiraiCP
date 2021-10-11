@@ -2245,18 +2245,6 @@ LightApp风格1
         }
     };
 
-    /// At一个群成员
-    inline MiraiCode At(const Member& a) {
-        /*返回at这个人的miraicode*/
-        return MiraiCode("[mirai:at:" + std::to_string(a.id()) + "]");
-    }
-
-    /// At一个群成员
-    inline MiraiCode At(QQID a) {
-        /*返回at这个人的miraicode*/
-        return MiraiCode("[mirai:at:" + std::to_string(a) + "]");
-    }
-
 /// 所以事件处理timeoutevent都是机器人事件，指都有机器人实例
     class BotEvent {
     public:
