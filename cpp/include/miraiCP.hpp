@@ -1304,23 +1304,107 @@ LightApp风格1
 
     /// 消息链, 一般由SingleMessage组成
     class MessageChain:public MiraiCodeable{
+    public:
+        class Message{
+        private:
+            std::shared_ptr<SingleMessage> content;
+        public:
+            /// 代表的子类
+            /// @see MessageChain::messageType
+            int type() const{
+                return this->content->type;
+            };
+            template<class T>
+            explicit Message(T a){
+                static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
+                content = std::make_shared<SingleMessage>(a);
+            }
+            explicit Message(std::shared_ptr<SingleMessage> a){
+                content = std::move(a);
+            }
+            std::shared_ptr<SingleMessage> getPtr(){
+                return this->content;
+            }
+            std::shared_ptr<SingleMessage> operator->() const{
+                return this->content;
+            }
+
+            template<class T>
+            T get(){
+                auto tmp = this->content;
+                switch(tmp->type){
+                    case -1:
+                        if(std::is_same_v<T, UnSupportMessage>)
+                            return (UnSupportMessage)(*tmp);
+                        else
+                            throw IllegalArgumentException("转换错误");
+                    case 0:
+                        if(std::is_same_v<T, PlainText>)
+                            return (PlainText)(*tmp);
+                        else
+                            throw IllegalArgumentException("转换错误");
+                    case 1:
+                        if(std::is_same_v<T, At>)
+                            return (At)(*tmp);
+                        else
+                            throw IllegalArgumentException("转换错误");
+                    case 2:
+                        if(std::is_same_v<T, Image>)
+                            return (Image)(*tmp);
+                        else
+                            throw IllegalArgumentException("转换错误");
+                    case 3:
+                        if(std::is_same_v<T, LightApp>)
+                            return (LightApp)(*tmp);
+                        else
+                            throw IllegalArgumentException("转换错误");
+                    case 4:
+                        if(std::is_same_v<T, ServiceMessage>)
+                            return (ServiceMessage)(*tmp);
+                        else
+                            throw IllegalArgumentException("转换错误");
+                    default:// cannot reach
+                        throw APIException("");
+                }
+            }
+
+            std::variant<PlainText, At, Image, LightApp, ServiceMessage, UnSupportMessage> get() const{
+                auto tmp = this->content;
+                switch(tmp->type){
+                    case -1:
+                        return (UnSupportMessage)(*tmp);
+                    case 0:
+                        return (PlainText)(*tmp);
+                    case 1:
+                        return (At)(*tmp);
+                    case 2:
+                        return (Image)(*tmp);
+                    case 3:
+                        return (LightApp)(*tmp);
+                    case 4:
+                        return (ServiceMessage)(*tmp);
+                    default:
+                        throw APIException("位置MessageChain::get");
+                }
+            }
+        };
     private:
-        void p(std::vector<std::shared_ptr<SingleMessage>>* v){}
+        void p(std::vector<Message>* v){}
         template<class T1, class... T2>
-        void p(std::vector<std::shared_ptr<SingleMessage>>* v, T1 h, T2 ... args){
+        void p(std::vector<Message>* v, T1 h, T2 ... args){
             static_assert(std::is_base_of_v<SingleMessage, T1>, "只支持SingleMessage子类");
-            v->push_back(std::make_shared<SingleMessage>(h));
+            v->push_back(Message(h));
             Logger::logger.info(((SingleMessage)h).toMiraiCode());
             p(v,args...);
         }
-        std::vector<std::shared_ptr<SingleMessage>> content;
+        std::vector<Message> content;
 
     public:
         size_t size(){
             return this->content.size();
         }
 
-        const std::vector<std::shared_ptr<SingleMessage>>& vector(){
+        const std::vector<Message>& vector(){
             return this->content;
         }
 
@@ -1349,9 +1433,8 @@ LightApp风格1
         }
         std::vector<std::string> toMiraiCodeVector(){
             std::vector <std::string> tmp;
-            for(const auto& a : this->content){
+            for(const auto& a : this->content)
                 tmp.emplace_back(a->toMiraiCode());
-            }
             return tmp;
         }
         /// @brief 添加元素
@@ -1360,7 +1443,7 @@ LightApp风格1
         template<class T>
         void add(const T& a){
             static_assert(std::is_base_of_v<SingleMessage, T>, "只接受SingleMessage的子类");
-            this->content.push_back(std::make_shared<SingleMessage>(a));
+            this->content.push_back(Message(a));
         }
         void add(const MessageSource& val){
             this->source = val;
@@ -1370,7 +1453,7 @@ LightApp风格1
         std::vector<T> filter(int type){
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
-            for(const auto& a:this->content){
+            for(auto a:this->content){
                 if(a->type == type)
                     re.push_back(std::static_pointer_cast<T>(a));
             }
@@ -1378,10 +1461,10 @@ LightApp风格1
         }
         /// 自定义筛选器
         template<class T>
-        std::vector<T> filter(std::function<bool(std::shared_ptr<SingleMessage>)> func){
+        std::vector<T> filter(std::function<bool(Message)> func){
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
-            for(const auto& a:this->content){
+            for(auto a:this->content){
                 if(func(a))
                     re.push_back(std::static_pointer_cast<T>(a));
             }
@@ -1390,7 +1473,7 @@ LightApp风格1
         /// 找出第一个指定的type的信息
         template<class T>
         T first(int type){
-            for(const auto& a:this->content)
+            for(auto a:this->content)
                 if(a->type == type)
                     return std::static_pointer_cast<T>(a);
         }
@@ -1399,9 +1482,6 @@ LightApp风格1
         explicit MessageChain(MessageSource ms, T ... args): source(std::move(ms)){
             this->p(&this->content, args...);
         };
-        explicit MessageChain(const std::vector<std::shared_ptr<SingleMessage>>& v){
-            this->content = v;
-        }
         /// outcoming构造器
         template<class... T>
         explicit MessageChain(T ... args){
@@ -1411,7 +1491,7 @@ LightApp风格1
         template<class T>
         explicit MessageChain(const T& msg){
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage子类");
-            this->content.push_back(std::make_shared<SingleMessage>(msg));
+            this->content.push_back(Message(msg));
         };
         template<class T>
         [[nodiscard]] MessageChain plus(const T& a){
@@ -1430,25 +1510,8 @@ LightApp风格1
             return this->plus(msg);
         }
 
-        // TODO
-        std::variant<PlainText, At, Image, LightApp, ServiceMessage, UnSupportMessage> operator[](size_t i){
-            auto tmp = this->content[i];
-            switch(tmp->type){
-                case -1:
-                    return (UnSupportMessage)(*tmp);
-                case 0:
-                    return (PlainText)(*tmp);
-                case 1:
-                    return (At)(*tmp);
-                case 2:
-                    return (Image)(*tmp);
-                case 3:
-                    return (LightApp)(*tmp);
-                case 4:
-                    return (ServiceMessage)(*tmp);
-                default:
-                    throw APIException("位置MessageChain::get");
-            }
+        Message operator[](size_t i){
+            return this->content[i];
         }
 
         /// 从string构建MessageChain, 常用于Incoming message
