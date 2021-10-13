@@ -1,5 +1,4 @@
 find_package(JNI)
-
 if (JNI_FOUND)
     message (STATUS "FOUND JNI IN ${JAVA_INCLUDE_PATH}")
     set(SOURCE_PATH
