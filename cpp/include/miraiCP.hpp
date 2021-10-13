@@ -550,6 +550,13 @@ LightApp风格1
             info(Tools::VectorToString(content), env);
         }
 
+        template<typename T>
+        void info(T content, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            std::stringstream sst;
+            sst << content;
+            info(sst.str(), env);
+        }
+
         ///发送普通(info级日志)
         void info(MiraiCode msg, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             info(msg.toString(), env);
@@ -961,7 +968,7 @@ LightApp风格1
          * @param msg - MiraiCodeable类型指针 - 内容
          * @see MessageSource::quoteAndSendMiraiCode
         */
-        MessageSource quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
@@ -1042,7 +1049,10 @@ LightApp风格1
         std::string prefix;
         std::string toMiraiCode() override{
             if(type > 0)
-                return "[mirai:" + messageType[type] + this->prefix + Tools::escapeToMiraiCode(content) + "]";
+                if(type == 1)
+                    return "[mirai:at:" + content + "] ";
+                else
+                    return "[mirai:" + messageType[type] + this->prefix + Tools::escapeToMiraiCode(content) + "]";
             else
                 return content;
         }
@@ -1054,6 +1064,7 @@ LightApp风格1
         SingleMessage(int type, std::string content, std::string prefix = ":") : type(type), content(std::move(content)), prefix(std::move(prefix)){}
     };
     std::map<int, std::string> SingleMessage::messageType = {
+            {-1, "unSupportMessage"},
             {0, "plainText"},
             {1, "at"},
             {2, "image"},
@@ -1063,8 +1074,20 @@ LightApp风格1
 
     /// 消息链, 一般由SingleMessage组成
     class MessageChain:public MiraiCodeable{
+    private:
+        void p(std::vector<std::shared_ptr<SingleMessage>>* v){}
+        template<class T1, class... T2>
+        void p(std::vector<std::shared_ptr<SingleMessage>>* v, T1 h, T2 ... args){
+            static_assert(std::is_base_of_v<SingleMessage, T1>, "只支持SingleMessage子类");
+            v->push_back(std::make_shared<SingleMessage>(h));
+            Logger::logger.info(((SingleMessage)h).toMiraiCode());
+            p(v,args...);
+        }
+
     public:
-        std::vector<SingleMessage> content;
+        std::vector<std::shared_ptr<SingleMessage>> content;
+        // TODO 包装一层shared_ptr
+
         /// 如果由MiraiCP构造(incoming)就会存在，否则则不存在
         MessageSource source;
         /// @brief 找到miraiCode结尾的`]`
@@ -1085,75 +1108,90 @@ LightApp风格1
             }
             return -1;
         }
-        /// 从string构建MessageChain, 常用于Incoming message
-        static MessageChain deserializationFromString(const std::string& m, const MessageSource& s){
-            size_t pos = 0;
-            size_t lastPos = 0;
-            std::vector<SingleMessage> v;
-            if(m.length() <= 7){
-                v.emplace_back(0, m);
-                return MessageChain(v, s);
-            }
-            do{
-                if(m.length() - 7 - pos > 0 && m.substr(pos, 7) == "[mirai:"){
-                    if(pos - lastPos > 1)
-                        v.emplace_back(0, m.substr(lastPos + 1, pos - lastPos - 1));// plain text
-                    size_t back = MessageChain::findEnd(m, pos);
-                    if(back == -1) throw IllegalStateException("");
-                    std::string tmp = m.substr(pos, back - pos);
-                    tmp = Tools::replace(tmp, "[mirai:", "");
-                    size_t i = tmp.find(':');// first :
-                    int t = SingleMessage::getKey(tmp.substr(0, i));
-                    v.emplace_back(t, tmp.substr(i + 1, tmp.length() - i - 1));
-                    pos = back;
-                    if(t == 1)
-                        pos++;
-                    lastPos = pos;
-                }
-                pos++;
-            }while(pos < m.length());
-            if(lastPos + 1 < m.length())
-                v.emplace_back(0,m.substr(lastPos + 1, m.length() - lastPos - 1));// plain text
-            return MessageChain(v, s);
-        }
         std::string toMiraiCode() override{
             return Tools::VectorToString(this->toMiraiCodeVector(), "");
         }
         std::vector<std::string> toMiraiCodeVector(){
             std::vector <std::string> tmp;
-            for(auto a : this->content){
-                tmp.emplace_back(a.toMiraiCode());
+            for(const auto& a : this->content){
+                tmp.emplace_back(a->toMiraiCode());
             }
             return tmp;
         }
+        /// @brief 添加元素
+        /// @tparam T 任意的SingleMessage的子类
+        /// @param a 添加的值
+        template<class T>
+        void add(const T& a){
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只接受SingleMessage的子类");
+            this->content.push_back(std::make_shared<SingleMessage>(a));
+        }
+        void add(const MessageSource& val){
+            this->source = val;
+        }
         /// 筛选出某种特点type的信息
-        std::vector<SingleMessage> filter(int);
+        template<class T>
+        std::vector<T> filter(int type){
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
+            std::vector<T> re;
+            for(const auto& a:this->content){
+                if(a->type == type)
+                    re.push_back(std::static_pointer_cast<T>(a));
+            }
+            return re;
+        }
         /// 自定义筛选器
-        std::vector<SingleMessage> filter(std::function<bool(SingleMessage)>);
+        template<class T>
+        std::vector<T> filter(std::function<bool(std::shared_ptr<SingleMessage>)> func){
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
+            std::vector<T> re;
+            for(const auto& a:this->content){
+                if(func(a))
+                    re.push_back(std::static_pointer_cast<T>(a));
+            }
+            return re;
+        }
         /// 找出第一个指定的type的信息
-        SingleMessage first(int);
+        template<class T>
+        T first(int type){
+            for(const auto& a:this->content)
+                if(a->type == type)
+                    return std::static_pointer_cast<T>(a);
+        }
         /// incoming构造器
-        explicit MessageChain(std::vector<SingleMessage> content, MessageSource source) : content(std::move(content)), source(std::move(source)) {}
+        template<class... T>
+        explicit MessageChain(MessageSource ms, T ... args): source(std::move(ms)){
+            this->p(&this->content, args...);
+        };
+        explicit MessageChain(const std::vector<std::shared_ptr<SingleMessage>>& v){
+            this->content = v;
+        }
         /// outcoming构造器
-        explicit MessageChain(std::vector<SingleMessage> content):content(std::move(content)){};
+        template<class... T>
+        explicit MessageChain(T ... args){
+            p(&this->content, args...);
+        };
         /// outcoming 构造器
-        MessageChain(std::initializer_list<SingleMessage> content):content(content){};
-        /// outcoming 构造器
-        explicit MessageChain(SingleMessage msg):content{std::move(msg)}{};
-        [[nodiscard]]
-        MessageChain plus(const SingleMessage& a){
+        template<class T>
+        explicit MessageChain(const T& msg){
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage子类");
+            this->content.push_back(std::make_shared<SingleMessage>(msg));
+        };
+        template<class T>
+        [[nodiscard]] MessageChain plus(const T& a){
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             MessageChain tmp(*this);
-            tmp.content.push_back(a);
+            tmp.content.push_back(std::make_shared<SingleMessage>(a));
             return tmp;
         }
-        void add(const SingleMessage& a){
-            this->content.push_back(a);
+        MessageChain plus(const MessageSource& ms){
+            MessageChain tmp(*this);
+            tmp.source = ms;
+            return tmp;
         }
-        MessageChain operator+ (const SingleMessage& msg){
+        template<class T>
+        MessageChain operator+ (const T& msg){
             return this->plus(msg);
-        }
-        SingleMessage operator[](int i) {
-            return this->content[i];
         }
     };
 
@@ -1161,7 +1199,6 @@ LightApp风格1
     class PlainText: public SingleMessage{
     public:
         std::string content;
-        explicit PlainText(const std::string& text):SingleMessage(0, text), content(text){};
         std::string toMiraiCode() override{
             return content;
         }
@@ -1169,6 +1206,12 @@ LightApp风格1
             if(sg.type != 0) throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText");
             this->content = sg.content;
         }
+        template<typename T>
+        explicit PlainText(const T& a):SingleMessage(0, ([&a]() ->std::string{
+            std::stringstream sst;
+            sst << a;
+            return sst.str();
+        })()){}
     };
 
     /// @
@@ -1570,6 +1613,68 @@ LightApp风格1
                                                                     "</summary></item><source/></msg>",
                                                                     ":1,") {}
     };
+
+    class UnSupportMessage:public SingleMessage{
+    public:
+        std::string content;
+        std::string toMiraiCode() override{
+            return content;
+        }
+        explicit UnSupportMessage(const std::string& content):SingleMessage(-1, content){}
+    };
+
+    /// 从string构建MessageChain, 常用于Incoming message
+    MessageChain deserializationFromString(const std::string& m){
+        size_t pos = 0;
+        size_t lastPos = -1;
+        MessageChain mc;
+        if(m.length() <= 7){
+            return MessageChain(PlainText(m));
+        }
+        do{
+            if(m.length() - 7 - pos > 0 && m.substr(pos, 7) == "[mirai:"){
+                if(pos - lastPos > 1)
+                    mc.add(PlainText(m.substr(lastPos + 1, pos - lastPos - 1)));// plain text
+                size_t back = MessageChain::findEnd(m, pos);
+                if(back == -1) throw IllegalStateException("");
+                std::string tmp = m.substr(pos, back - pos);
+                tmp = Tools::replace(tmp, "[mirai:", "");
+                size_t i = tmp.find(':');// first :
+                int t = SingleMessage::getKey(tmp.substr(0, i));
+                switch(t) {
+                    case 0:
+                        // no miraiCode key is PlainText
+                        break;
+                    case 1:
+                        mc.add(At(std::stoll(tmp.substr(i + 1, tmp.length() - i - 1))));
+                        break;
+                    case 2:
+                        mc.add(Image(tmp.substr(i + 1, tmp.length() - i - 1)));
+                        break;
+                    case 3:
+                        mc.add(LightApp(tmp.substr(i + 1, tmp.length() - i - 1)));
+                        break;
+                    case 4: {
+                        size_t comma = tmp.find(',');
+                        mc.add(ServiceMessage(std::stoi(tmp.substr(i + 1, comma - i - 1)),
+                                              tmp.substr(comma + 1, tmp.length() - comma - 1)));
+                        break;
+                    }
+                    default:
+                        mc.add(UnSupportMessage("[mirai:" + tmp));
+                        break;
+                }
+                pos = back;
+                lastPos = pos;
+                if(t == 1)
+                    lastPos++;
+            }
+            pos++;
+        }while(pos < m.length());
+        if(lastPos + 1 < m.length())
+            mc.add(PlainText(m.substr(lastPos + 1, m.length() - lastPos - 1)));// plain text
+        return mc;
+    }
 
 // 群文件
 
@@ -2980,24 +3085,6 @@ throw: InitxException 即找不到对应签名
         }
     }
 
-    std::vector<SingleMessage> MessageChain::filter(int type) {
-        std::vector<SingleMessage> tmp;
-        std::copy_if(this->content.begin(), this->content.end(), std::back_inserter(tmp), [&type](const SingleMessage& a){return (a.type == type);});
-        return tmp;
-    }
-
-    std::vector<SingleMessage> MessageChain::filter(std::function<bool(SingleMessage)> a) {
-        std::vector<SingleMessage> tmp;
-        std::copy_if(this->content.begin(), this->content.end(), std::back_inserter(tmp), [&a](const SingleMessage& b){return a(b);});
-        return tmp;
-    }
-
-    SingleMessage MessageChain::first(int type) {
-        for (auto a: this->content)
-            if (a.type == type) return a;
-        throw IllegalArgumentException("can not find type("+SingleMessage::messageType[type]+") in " + this->toMiraiCode());
-    }
-
     //远程文件(群文件)
     RemoteFile RemoteFile::deserializeFromString(const std::string &source) {
         json j;
@@ -3356,7 +3443,7 @@ throw: InitxException 即找不到对应签名
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return MessageChain::deserializationFromString(re["message"], MessageSource::deserializeFromString(re["messageSource"]));
+        return deserializationFromString(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
     MessageChain GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
@@ -3368,7 +3455,7 @@ throw: InitxException 即找不到对应签名
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return MessageChain::deserializationFromString(re["message"], MessageSource::deserializeFromString(re["messageSource"]));
+        return deserializationFromString(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
     MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) {
@@ -3380,7 +3467,7 @@ throw: InitxException 即找不到对应签名
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return MessageChain::deserializationFromString(re["message"], MessageSource::deserializeFromString(re["messageSource"]));
+        return deserializationFromString(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
 /*工具类实现*/
@@ -3592,8 +3679,8 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                         GroupMessageEvent(j["group"]["botid"],
                                           Group(Group::deserializationFromJson(j["group"])),
                                           Member(Member::deserializationFromJson(j["member"])),
-                                          MessageChain::deserializationFromString(j["message"].get<std::string>(),
-                                          MessageSource::deserializeFromString(j["source"]))
+                                          deserializationFromString(j["message"].get<std::string>())
+                                          .plus(MessageSource::deserializeFromString(j["source"]))
                         )
                 );
                 break;
@@ -3603,8 +3690,8 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
                                             Friend(Friend::deserializationFromJson(j["friend"])),
-                                            MessageChain::deserializationFromString(j["message"],
-                                            MessageSource::deserializeFromString(j["source"]))
+                                            deserializationFromString(j["message"])
+                                                    .plus(MessageSource::deserializeFromString(j["source"]))
                         ));
                 break;
             }
@@ -3678,8 +3765,8 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                         j["group"]["botid"],
                         Group(Group::deserializationFromJson(j["group"])),
                         Member(Member::deserializationFromJson(j["member"])),
-                        MessageChain::deserializationFromString(j["message"],
-                        MessageSource::deserializeFromString(j["source"]))
+                        deserializationFromString(j["message"])
+                                .plus(MessageSource::deserializeFromString(j["source"]))
                 ));
                 break;
             case 11:
