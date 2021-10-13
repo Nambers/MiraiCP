@@ -82,11 +82,7 @@ public:
 
         // 监听群信息
         Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            e.group.sendMessage(MessageChain({
-                                        PlainText("a"),
-                                        PlainText("b"),
-                                        At(e.sender.id())
-                                }));
+            e.group.sendMessage(deserializationFromString(e.message.toMiraiCode()));
             // e.group.sendMsg("x");
             // e.group.sendMsg(tmp.toMiraiCode());
             // SYSTEMTIME st = { 0 };
