@@ -2785,7 +2785,7 @@ LightApp风格1
     public:
         /// 谁发送的
         Contact from;
-        NudgeEvent(const Contact& c, QQID botid):BotEvent(botid){}
+        NudgeEvent(const Contact& c, QQID botid):BotEvent(botid),from(c){}
     };
 
 /**监听类声明*/
@@ -2843,7 +2843,7 @@ LightApp风格1
                 return BOHead;
             } else if constexpr(std::is_same_v<T, TimeOutEvent>){
                 return TOHead;
-            }else if constexpr(std::is_same_v<T, TimeOutEvent>){
+            }else if constexpr(std::is_same_v<T, NudgeEvent>){
                 return NHead;
             }
             Logger::logger.error("内部错误, 位置:C-Head");
@@ -3864,7 +3864,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast<TimeOutEvent>(TimeOutEvent(j["msg"]));
                 break;
             case 13:
-                Event::processor.broadcast<NudgeEvent>(NudgeEvent(Contact::deserializationFromString(j["from"]), j["botid"]));
+                Event::processor.broadcast<NudgeEvent>(NudgeEvent(Contact::deserializationFromJson(j["from"]), j["botid"]));
                 break;
             default:
                 throw APIException("Unreachable code");
