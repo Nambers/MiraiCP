@@ -1750,36 +1750,6 @@ LightApp风格1
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
-        /// @brief 发送一条MessageChain
-        /// @param msg MessageChain
-        /// @param retryTime 重试次数
-        /// @return MessageSource
-        template<>
-        MessageSource sendMessage(MessageChain msg, int retryTime, JNIEnv* env){
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
-        }
-        /// @brief 发送一条MiraiCode信息
-        /// @param msg MiraiCode
-        /// @param retryTime 重试次数
-        /// @return MessageSource
-        template<>
-        MessageSource sendMessage(MiraiCode msg, int retryTime, JNIEnv* env){
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
-        }
-        /// @brief 发送一条文本信息(如果发送纯文本形式的MiraiCode)要传入`miraiCode` = true
-        /// @param msg 文本
-        /// @param miraiCode 是否是MiraiCode
-        /// @param retryTime 重试次数
-        /// @return MessageSource
-        template<>
-        MessageSource sendMessage<const char*>(const char* msg, int retryTime, JNIEnv* env){
-            return sendMsg0(msg, retryTime, false, env);
-        }
-
-        template<>
-        MessageSource sendMessage(std::string msg, int retryTime, JNIEnv* env){
-            return sendMsg0(msg, retryTime, false, env);
-        }
 
         /// @brief 发送纯文本信息
         /// @param msg 发送的信息
@@ -1824,6 +1794,37 @@ LightApp风格1
         /// 刷新当前对象信息
         virtual void refreshInfo(JNIEnv *) {};
     };
+
+    /// @brief 发送一条MessageChain
+    /// @param msg MessageChain
+    /// @param retryTime 重试次数
+    /// @return MessageSource
+    template<>
+    MessageSource Contact::sendMessage<MessageChain>(MessageChain msg, int retryTime, JNIEnv* env){
+        return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+    }
+    /// @brief 发送一条MiraiCode信息
+    /// @param msg MiraiCode
+    /// @param retryTime 重试次数
+    /// @return MessageSource
+    template<>
+    MessageSource Contact::sendMessage<MiraiCode>(MiraiCode msg, int retryTime, JNIEnv* env){
+        return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+    }
+    /// @brief 发送一条文本信息(如果发送纯文本形式的MiraiCode)要传入`miraiCode` = true
+    /// @param msg 文本
+    /// @param miraiCode 是否是MiraiCode
+    /// @param retryTime 重试次数
+    /// @return MessageSource
+    template<>
+    MessageSource Contact::sendMessage<std::string>(std::string msg, int retryTime, JNIEnv* env){
+        return sendMsg0(msg, retryTime, false, env);
+    }
+
+    template<>
+    MessageSource Contact::sendMessage<const char*>(const char* msg, int retryTime, JNIEnv* env){
+        return sendMsg0(std::string(msg), retryTime, false, env);
+    }
 
 // 群文件
 

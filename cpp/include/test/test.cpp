@@ -9,7 +9,7 @@ using std::chrono::milliseconds;
 // 多线程示例
 void func(unsigned long long i, unsigned long long botid) {
     // 执行操作
-    Friend(i, botid).sendMessage("hi");
+    Friend(i, botid).sendMessage("hidd");
     ThreadManager::detach();
 }
 
