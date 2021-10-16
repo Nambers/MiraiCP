@@ -80,6 +80,9 @@ public:
         // 监听群信息
         Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
             Logger::logger.info(e.message.source->source);
+            Logger::logger.info(e.message.toMiraiCode());
+            MessageChain mc = MessageChain::deserializationFromMessageSourceJson(json::parse(e.message.source->source));
+            e.group.sendMessage(mc);
             // e.group.sendMsg("x");
             // e.group.sendMsg(tmp.toMiraiCode());
             // SYSTEMTIME st = { 0 };
