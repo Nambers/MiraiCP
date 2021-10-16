@@ -343,6 +343,22 @@ LightApp风格1
 
         /// starts_with, from <https://stackoverflow.com/questions/1878001/how-do-i-check-if-a-c-stdstring-starts-with-a-certain-string-and-convert-a>
         static bool starts_with(const std::string& f, const std::string& s){return f.rfind(s, 0) == 0;}
+
+        static bool icompareChar(char & c1, char & c2)
+        {
+            if (c1 == c2)
+                return true;
+            else if (std::toupper(c1) == std::toupper(c2))
+                return true;
+            return false;
+        }
+
+        /// case insensitive string compare from https://thispointer.com/c-case-insensitive-string-comparison-using-stl-c11-boost-library/
+        static bool iequal(std::string str1, std::string str2)
+        {
+            return ( (str1.size() == str2.size() ) &&
+                     std::equal(str1.begin(), str1.end(), str2.begin(), &icompareChar) );
+        }
     };
 
 /// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
@@ -970,7 +986,7 @@ LightApp风格1
          * @param msg - MiraiCodeable类型指针 - 内容
          * @see MessageSource::quoteAndSendMiraiCode
         */
-        [[deprecated("Use quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+        [[deprecated("Use MessageChain.quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
@@ -984,7 +1000,7 @@ LightApp风格1
          *  e.messageSource.quoteAndSendMsg("HI");
          * @endcode
          */
-        [[deprecated("Use quoteAndSendMessage")]] MessageSource quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+        [[deprecated("Use MessageChain.quoteAndSendMessage")]] MessageSource quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
 
         /**
          * @brief 回复(引用并发送)
@@ -992,7 +1008,7 @@ LightApp风格1
          * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
          * @return MessageSource
          */
-        [[deprecated("Use quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+        [[deprecated("Use MessageChain.quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
 
         /*!
          * @brief 构建消息源
@@ -1040,7 +1056,7 @@ LightApp风格1
         /// @return 如果没找到返回-1
         static int getKey(const std::string& value){
             for(const auto& a : messageType){
-                if(a.second == value) return a.first;
+                if(Tools::iequal(a.second, value)) return a.first;
             }
             return -1;
         }
@@ -1053,6 +1069,8 @@ LightApp风格1
             if(type > 0)
                 if(type == 1)
                     return "[mirai:at:" + content + "] ";
+                else if(type == 2)
+                    return "[mirai:atall] ";
                 else
                     return "[mirai:" + messageType[type] + this->prefix + Tools::escapeToMiraiCode(content) + "]";
             else
@@ -1066,13 +1084,14 @@ LightApp风格1
         SingleMessage(int type, std::string content, std::string prefix = ":") : type(type), content(std::move(content)), prefix(std::move(prefix)){}
     };
     std::map<int, std::string> SingleMessage::messageType = {
-            {-2, "quote"},
+            {-2, "QuoteReply"},
             {-1, "unSupportMessage"},
             {0, "plainText"},
             {1, "at"},
-            {2, "image"},
-            {3, "app"},
-            {4, "service"}
+            {2, "atAll"},
+            {3, "image"},
+            {4, "app"},
+            {5, "service"}
     };
 
     /// 纯文本信息
@@ -1108,6 +1127,14 @@ LightApp风格1
         }
     };
 
+    class AtAll: public SingleMessage{
+    public:
+        std::string toMiraiCode() override {
+            return "[mirai:atall] ";
+        }
+        AtAll():SingleMessage(2, "", ""){}
+    };
+
 /// 图像类声明
     class Image : public SingleMessage {
     public:
@@ -1120,7 +1147,9 @@ LightApp风格1
          * @code [mirai:image:{图片id}.jpg] @endcode
         * @note 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
         */
-        explicit Image(std::string imageId);
+        explicit Image(std::string imageId):SingleMessage(3, std::move(imageId)){
+            this->id = std::move(imageId);
+        }
 
         explicit Image(const SingleMessage& sg):SingleMessage(sg){
             if(sg.type != 2) assert(sg.type != 2);
@@ -1202,7 +1231,7 @@ LightApp风格1
 
         /// @brief 使用纯文本构造，推荐使用其他结构体方法构造
         /// @param content 构造文本
-        explicit LightApp(std::string content) : SingleMessage(3, std::move(content)) {}
+        explicit LightApp(std::string content) : SingleMessage(4, std::move(content)) {}
 
         explicit LightApp(const SingleMessage& sg):SingleMessage(sg){
             if(sg.type != 3) throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp");
@@ -1211,7 +1240,7 @@ LightApp风格1
         /// 使用样式1,适合文字展示，无大图，不能交互
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        explicit LightApp(const LightAppStyle1 &c) : SingleMessage(3,"") {
+        explicit LightApp(const LightAppStyle1 &c) : SingleMessage(4,"") {
             this->content =
                     "{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"0.0.0.1\",\"prompt\":\"[应用]\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"notification\":{\"appInfo\":{\"appName\":\"" +
                     c.appName + "\",\"appType\":4,\"appid\":1109659848,\"iconUrl\":\"" + c.icon +
@@ -1222,7 +1251,7 @@ LightApp风格1
         /// 使用样式2，有大图，不能交互
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        explicit LightApp(const LightAppStyle2 &c) : SingleMessage(3,"") {
+        explicit LightApp(const LightAppStyle2 &c) : SingleMessage(4,"") {
             this->content =
                     "{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"1.0.0.103\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
                     "\"meta\":{\"detail_1\":{\"appid\":\"1110081493\",\"preview\":\"" +
@@ -1236,7 +1265,7 @@ LightApp风格1
         /// 样式3，有大图，可以在电脑qq显示，并在电脑上点击的链接会跳转
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        explicit LightApp(const LightAppStyle3 &c) : SingleMessage(3, "") {
+        explicit LightApp(const LightAppStyle3 &c) : SingleMessage(4, "") {
             this->content ="{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
                     "\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"0.0.0.1\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
                     "\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\"" +
@@ -1248,7 +1277,7 @@ LightApp风格1
                     "\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
         }
 
-        explicit LightApp(const LightAppStyle4 &c) : SingleMessage(3,
+        explicit LightApp(const LightAppStyle4 &c) : SingleMessage(4,
                                                                    R"({"app":"com.tencent.miniapp","desc":"","view":"notification","ver":"1.0.0.11","prompt":")" +
                                                                    c.prompt +
                                                                    "\",\"meta\":{\"notification\":{\"appInfo\":{\"appName\":\"" +
@@ -1277,13 +1306,13 @@ LightApp风格1
         /// @brief ServiceMessage
         /// @param id 在xml内容前面的id (不包括逗号)
         /// @param a xml内容 (不需要事先转码到miraiCode)
-        explicit ServiceMessage(int id, std::string a) : SingleMessage(4, std::move(a), ":" +  std::to_string(id) + ',') {}
+        explicit ServiceMessage(int id, std::string a) : SingleMessage(5, std::move(a), ":" +  std::to_string(id) + ',') {}
 
         explicit ServiceMessage(const SingleMessage& sg):SingleMessage(sg){
             if(sg.type != 4)throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage");
         }
 
-        explicit ServiceMessage(const URLSharer &a) : SingleMessage(4,
+        explicit ServiceMessage(const URLSharer &a) : SingleMessage(5,
                                                                     "<?xml version=\"1.0\" encoding=\"utf-8\"?><msg templateID=\"12345\" action=\"web\" brief=\"" +
                                                                     a.brief + "\" serviceID=\"1\" url=\"" + a.url +
                                                                     "\"><item layout=\"2\"><picture cover=\"" +
@@ -1294,14 +1323,14 @@ LightApp风格1
     };
 
     /// 引用信息, 不可直接发送, 发送引用信息用MessageChain.quoteAndSendMessage
-    class Quote : public SingleMessage {
+    class QuoteReply : public SingleMessage {
     public:
         [[deprecated("cannot use, use MessageChain.quote")]] std::string toMiraiCode() override{
             return "";
         }
         /// 引用信息的MessageSource
         MessageSource source;
-        Quote():SingleMessage(-2, ""){};
+        explicit QuoteReply(MessageSource source):SingleMessage(-2, ""), source(std::move(source)){};
     };
 
     class UnSupportMessage:public SingleMessage{
@@ -1586,9 +1615,12 @@ LightApp风格1
                             mc.add(Image(tmp.substr(i + 1, tmp.length() - i - 1)));
                             break;
                         case 3:
+                            mc.add(AtAll());
+                            break;
+                        case 4:
                             mc.add(LightApp(tmp.substr(i + 1, tmp.length() - i - 1)));
                             break;
-                        case 4: {
+                        case 5: {
                             size_t comma = tmp.find(',');
                             mc.add(ServiceMessage(std::stoi(tmp.substr(i + 1, comma - i - 1)),
                                                   tmp.substr(comma + 1, tmp.length() - comma - 1)));
@@ -1610,7 +1642,52 @@ LightApp风格1
             return mc;
         }
 
-        static MessageChain deserializationFromMessageSource(const std::string& m){}
+        static MessageChain deserializationFromMessageSourceJson(const json& tmp) {
+            json j = tmp["originalMessage"];
+            MessageChain mc;
+            for (auto node: j) {
+                if(node["type"] == "SimpleServiceMessage"){
+                    mc.add(ServiceMessage(node["serviceId"], node["content"]));
+                    continue;
+                }
+                if(node["type"] == "LightApp"){
+                    mc.add(LightApp(node["content"]));
+                    continue;
+                }
+                int type = SingleMessage::getKey(node["type"]);
+                switch (type) {
+                    case -2:
+                        mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
+                        break;
+                    case 0:
+                        mc.add(PlainText(node["content"]));
+                        break;
+                    case 1:
+                        mc.add(At(node["target"]));
+                        break;
+                    case 2:
+                        mc.add(AtAll());
+                        break;
+                    case 3:
+                        mc.add(Image(node["imageId"]));
+                        break;
+                    case 4:
+                        Logger::logger.error("MiraiCP碰到了预料之外的错误(原因:匹配到了LightApp)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以修复: MessageSource:" +
+                                             j.dump());
+                        break;
+                    case 5:
+                        Logger::logger.error("MiraiCP碰到了预料之外的错误(原因:匹配到了ServiceMessage)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以修复: MessageSource:" +
+                                             j.dump());
+                        break;
+                    default:
+                        mc.add(UnSupportMessage(node["content"]));
+                        Logger::logger.error(
+                                "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以支持这种消息: MessageSource:" +
+                                j.dump());
+                }
+            }
+            return mc;
+        }
     };
 
     /*!
@@ -1741,8 +1818,13 @@ LightApp风格1
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 
-        /// @brief 发送一条singleMessage
-        /// @param msg SingleMessage
+        /// @brief 发送一条Message
+        /// @detail 支持
+        /// - std::string: 相当于发送PlainText(str), 不会反序列化miraicode
+        /// - MiraiCode: 相当于发送反序列化后的
+        /// - 各种SingleMessage的子类
+        /// - MessageChain
+        /// @param msg Message
         /// @param retryTime 重试次数
         /// @return MessageSource
         template<class T>
@@ -1795,27 +1877,16 @@ LightApp风格1
         virtual void refreshInfo(JNIEnv *) {};
     };
 
-    /// @brief 发送一条MessageChain
-    /// @param msg MessageChain
-    /// @param retryTime 重试次数
-    /// @return MessageSource
     template<>
     MessageSource Contact::sendMessage<MessageChain>(MessageChain msg, int retryTime, JNIEnv* env){
         return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
     }
-    /// @brief 发送一条MiraiCode信息
-    /// @param msg MiraiCode
-    /// @param retryTime 重试次数
-    /// @return MessageSource
+
     template<>
     MessageSource Contact::sendMessage<MiraiCode>(MiraiCode msg, int retryTime, JNIEnv* env){
         return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
     }
-    /// @brief 发送一条文本信息(如果发送纯文本形式的MiraiCode)要传入`miraiCode` = true
-    /// @param msg 文本
-    /// @param miraiCode 是否是MiraiCode
-    /// @param retryTime 重试次数
-    /// @return MessageSource
+
     template<>
     MessageSource Contact::sendMessage<std::string>(std::string msg, int retryTime, JNIEnv* env){
         return sendMsg0(msg, retryTime, false, env);
@@ -3329,9 +3400,6 @@ throw: InitxException 即找不到对应签名
     }
 
 /*图片类实现*/
-    Image::Image(std::string imageId) : SingleMessage(2, std::move(imageId)) {
-        this->id = std::move(imageId);
-    }
 
     std::string Image::queryURL(JNIEnv *env) {
         json j;
