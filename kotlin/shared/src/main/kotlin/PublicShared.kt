@@ -68,7 +68,7 @@ object PublicShared {
     val cpp: ArrayList<CPP_lib> = arrayListOf()
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
-    const val now_tag = "v2.7.0-M1"
+    const val now_tag = "v2.8.0-M1"
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
     var cachePath: File = File("")
@@ -992,10 +992,14 @@ object PublicShared {
             cpp.event(
                 gson.toJson(
                     CPPEvent.NugdeEvent(
-                        if (this.subject.id == this.from.id)
+                        if (this.subject.id == this.from.id)// if subject and from is same -> friend
                             this.bot.getFriend(this.from.id)!!.toContact()
-                        else
+                        else // not -> group
                             this.bot.getGroup(this.subject.id)!![this.from.id]!!.toContact(),
+                        if (this.subject.id == this.from.id)
+                            this.bot.asFriend.toContact()
+                        else
+                            this.bot.getGroup(this.subject.id)!![this.target.id]!!.toContact(),
                         this.bot.id
                     )
                 )

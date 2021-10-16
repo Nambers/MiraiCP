@@ -1,5 +1,5 @@
 # 最低cmake版本
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.10)
 # 以utf8编译
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
