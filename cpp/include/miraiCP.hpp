@@ -970,7 +970,7 @@ LightApp风格1
          * @param msg - MiraiCodeable类型指针 - 内容
          * @see MessageSource::quoteAndSendMiraiCode
         */
-        MessageSource quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+        [[deprecated("Use quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
@@ -984,7 +984,7 @@ LightApp风格1
          *  e.messageSource.quoteAndSendMsg("HI");
          * @endcode
          */
-        MessageSource quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        [[deprecated("Use quoteAndSendMessage")]] MessageSource quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
 
         /**
          * @brief 回复(引用并发送)
@@ -992,7 +992,7 @@ LightApp风格1
          * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
          * @return MessageSource
          */
-        MessageSource quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+        [[deprecated("Use quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
 
         /*!
          * @brief 构建消息源
@@ -1066,6 +1066,7 @@ LightApp风格1
         SingleMessage(int type, std::string content, std::string prefix = ":") : type(type), content(std::move(content)), prefix(std::move(prefix)){}
     };
     std::map<int, std::string> SingleMessage::messageType = {
+            {-2, "quote"},
             {-1, "unSupportMessage"},
             {0, "plainText"},
             {1, "at"},
@@ -1292,6 +1293,17 @@ LightApp风格1
                                                                     ":1,") {}
     };
 
+    /// 引用信息, 不可直接发送, 发送引用信息用MessageChain.quoteAndSendMessage
+    class Quote : public SingleMessage {
+    public:
+        [[deprecated("cannot use, use MessageChain.quote")]] std::string toMiraiCode() override{
+            return "";
+        }
+        /// 引用信息的MessageSource
+        MessageSource source;
+        Quote():SingleMessage(-2, ""){};
+    };
+
     class UnSupportMessage:public SingleMessage{
     public:
         std::string content;
@@ -1514,8 +1526,39 @@ LightApp风格1
             return this->content[i];
         }
 
+        /// @brief 回复并发送
+        /// @param msg 内容
+        /// @param groupid 如果是TempGroupMessage就要提供
+        MessageSource quoteAndSendMessage(const std::string& msg, QQID groupid, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            json obj;
+            json sign;
+            obj["messageSource"] = this->source->serializeToString();
+            obj["msg"] = msg;
+            sign["MiraiCode"] = true;
+            sign["groupid"] = groupid;
+            obj["sign"] = sign.dump();
+            std::string re = Config::koperation(Config::SendWithQuote, obj, env);
+            return MessageSource::deserializeFromString(re);
+        }
+
+        /// @brief 回复并发送
+        /// @param mc 内容
+        /// @param groupid 如果是TempGroupMessage就要提供
+        MessageSource quoteAndSendMessage(MessageChain mc, QQID groupid, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            return this->quoteAndSendMessage(mc.toMiraiCode(), groupid, env);
+        }
+
+        /// @brief 回复并发送
+        /// @param s 内容
+        /// @param groupid 如果是TempGroupMessage就要提供
+        template<class T>
+        MessageSource quoteAndSendMessage(T s, QQID groupid, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+            return this->template quoteAndSendMessage(s.toMiraiCode(), groupid, env);
+        }
+
         /// 从string构建MessageChain, 常用于Incoming message
-        static MessageChain deserializationFromString(const std::string& m){
+        static MessageChain deserializationFromMiraiCode(const std::string& m){
             size_t pos = 0;
             size_t lastPos = -1;
             MessageChain mc;
@@ -1566,6 +1609,8 @@ LightApp风格1
                 mc.add(PlainText(m.substr(lastPos + 1, m.length() - lastPos - 1)));// plain text
             return mc;
         }
+
+        static MessageChain deserializationFromMessageSource(const std::string& m){}
     };
 
     /*!
@@ -1601,6 +1646,11 @@ LightApp风格1
             this->_nickOrNameCard = "";
             this->_botid = 0;
         }
+
+        bool operator==(const Contact& c) const{
+            return this->id() == c.id();
+        }
+
 
         /*!
          * @brief 构造contact类型
@@ -1690,18 +1740,30 @@ LightApp风格1
         MessageSource sendMiraiCode(MiraiCode msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
+
+        /// @brief 发送一条singleMessage
+        /// @param msg SingleMessage
+        /// @param retryTime 重试次数
+        /// @return MessageSource
+        template<class T>
+        MessageSource sendMessage(T msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        }
         /// @brief 发送一条MessageChain
         /// @param msg MessageChain
         /// @param retryTime 重试次数
         /// @return MessageSource
-        MessageSource sendMessage(MessageChain msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+        template<>
+        MessageSource sendMessage(MessageChain msg, int retryTime, JNIEnv* env){
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
         /// @brief 发送一条MiraiCode信息
         /// @param msg MiraiCode
         /// @param retryTime 重试次数
         /// @return MessageSource
-        MessageSource sendMessage(MiraiCode msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+        template<>
+        MessageSource sendMessage(MiraiCode msg, int retryTime, JNIEnv* env){
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
         /// @brief 发送一条文本信息(如果发送纯文本形式的MiraiCode)要传入`miraiCode` = true
@@ -1709,15 +1771,14 @@ LightApp风格1
         /// @param miraiCode 是否是MiraiCode
         /// @param retryTime 重试次数
         /// @return MessageSource
-        MessageSource sendMessage(const std::string& msg, bool miraiCode = false, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
-            return sendMsg0(msg, retryTime, miraiCode, env);
+        template<>
+        MessageSource sendMessage<const char*>(const char* msg, int retryTime, JNIEnv* env){
+            return sendMsg0(msg, retryTime, false, env);
         }
-        /// @brief 发送一条singleMessage
-        /// @param msg SingleMessage
-        /// @param retryTime 重试次数
-        /// @return MessageSource
-        MessageSource sendMessage(SingleMessage msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+
+        template<>
+        MessageSource sendMessage(std::string msg, int retryTime, JNIEnv* env){
+            return sendMsg0(msg, retryTime, false, env);
         }
 
         /// @brief 发送纯文本信息
@@ -2436,6 +2497,13 @@ LightApp风格1
         std::string GroupListToString() {
             return Tools::VectorToString(getGroupList());
         }
+
+        bool operator==(const Contact& c)const{
+            return this->id == c.id();
+        }
+        bool operator==(const Bot& b)const{
+            return this->id == b.id;
+        }
     };
 
 /// 所以事件处理timeoutevent都是机器人事件，指都有机器人实例
@@ -2785,7 +2853,8 @@ LightApp风格1
     public:
         /// 谁发送的
         Contact from;
-        NudgeEvent(const Contact& c, QQID botid):BotEvent(botid),from(c){}
+        Contact target;
+        NudgeEvent(Contact c, Contact target, QQID botid):BotEvent(botid),from(std::move(c)),target(std::move(target)){}
     };
 
 /**监听类声明*/
@@ -3288,7 +3357,7 @@ throw: InitxException 即找不到对应签名
         return MessageSource::deserializeFromString(re);
     }
 
-    MessageSource MessageSource::quoteAndSendMsg(const std::string &content, QQID groupid, JNIEnv *env) {
+    MessageSource MessageSource::quoteAndSendMsg(const std::string &content, QQID groupid, JNIEnv *env) const {
         json obj;
         json sign;
         obj["messageSource"] = this->serializeToString();
@@ -3531,7 +3600,7 @@ throw: InitxException 即找不到对应签名
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return MessageChain::deserializationFromString(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
+        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
     MessageChain GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
@@ -3543,7 +3612,7 @@ throw: InitxException 即找不到对应签名
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return MessageChain::deserializationFromString(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
+        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
     MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) {
@@ -3555,7 +3624,7 @@ throw: InitxException 即找不到对应签名
         if(r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return MessageChain::deserializationFromString(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
+        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
 /*工具类实现*/
@@ -3767,7 +3836,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                         GroupMessageEvent(j["group"]["botid"],
                                           Group(Group::deserializationFromJson(j["group"])),
                                           Member(Member::deserializationFromJson(j["member"])),
-                                          MessageChain::deserializationFromString(j["message"].get<std::string>())
+                                          MessageChain::deserializationFromMiraiCode(j["message"].get<std::string>())
                                           .plus(MessageSource::deserializeFromString(j["source"]))
                         )
                 );
@@ -3778,7 +3847,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
                                             Friend(Friend::deserializationFromJson(j["friend"])),
-                                            MessageChain::deserializationFromString(j["message"])
+                                            MessageChain::deserializationFromMiraiCode(j["message"])
                                                     .plus(MessageSource::deserializeFromString(j["source"]))
                         ));
                 break;
@@ -3853,7 +3922,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                         j["group"]["botid"],
                         Group(Group::deserializationFromJson(j["group"])),
                         Member(Member::deserializationFromJson(j["member"])),
-                        MessageChain::deserializationFromString(j["message"])
+                        MessageChain::deserializationFromMiraiCode(j["message"])
                                 .plus(MessageSource::deserializeFromString(j["source"]))
                 ));
                 break;
@@ -3864,7 +3933,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast<TimeOutEvent>(TimeOutEvent(j["msg"]));
                 break;
             case 13:
-                Event::processor.broadcast<NudgeEvent>(NudgeEvent(Contact::deserializationFromJson(j["from"]), j["botid"]));
+                Event::processor.broadcast<NudgeEvent>(NudgeEvent(Contact::deserializationFromJson(j["from"]),Contact::deserializationFromJson(j["target"]),  j["botid"]));
                 break;
             default:
                 throw APIException("Unreachable code");

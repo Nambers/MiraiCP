@@ -70,20 +70,16 @@ public:
             // }
             // // 发送图片
             Image tmp = e.sender.uploadImg(R"(C:\Users\19308\Desktop\a.jpg)");
-            e.sender.sendMessage(tmp.toMiraiCode());
-            e.sender.sendMessage(tmp.toMiraiCode(), true);
+            e.sender.sendMessage(tmp);
+            Logger::logger.info(e.message.source->serializeToString());
             // e.message.source.recall();
-            Logger::logger.info("Start");
-            e.bot.getGroup(788189105).sendMessage("xxx\nxxx");
-            Logger::logger.error("test");
             //e.sender.sendMsg("B");
             // Logger::logger.info("content: "+e.nextMessage().content.toMiraiCode());
         });
 
         // 监听群信息
         Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
-            Logger::logger.info(e.message.toMiraiCode());
-            e.group.sendMessage("ss");
+            Logger::logger.info(e.message.source->source);
             // e.group.sendMsg("x");
             // e.group.sendMsg(tmp.toMiraiCode());
             // SYSTEMTIME st = { 0 };
@@ -167,6 +163,7 @@ public:
         // 监听群临时会话
         Event::processor.registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
             e.sender.sendMessage("hi");
+            e.sender.sendMessage("");
         });
         // 群事件
         Event::processor.registerEvent<MemberJoinEvent>([](MemberJoinEvent e) {
