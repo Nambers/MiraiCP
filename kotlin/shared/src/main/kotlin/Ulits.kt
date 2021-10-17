@@ -84,6 +84,9 @@ internal fun Member.toContact(): Config.Contact =
 internal fun Friend.toContact(): Config.Contact =
     Config.Contact(1, this.id, 0, this.nameCardOrNick, this.bot.id)
 
+internal fun emptyContact(botid: Long): Config.Contact =
+    Config.Contact(0, 0, 0, "", botid)
+
 internal inline fun withBot(botid: Long, Err: String = "", block: (Bot) -> String): String {
     val bot = Bot.getInstanceOrNull(botid)
     if (bot == null) {

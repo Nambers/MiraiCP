@@ -697,10 +697,10 @@ object PublicShared {
                     requireConfirmation = a.params.requireConfirmation
                 }
                 ).let {
-                    try {
-                        return gson.toJson(it.publishTo(g).toOnlineA())
+                    return try {
+                        gson.toJson(it.publishTo(g).toOnlineA())
                     } catch (e: PermissionDeniedException) {
-                        return "E1"
+                        "E1"
                     }
                 }
             }
@@ -759,6 +759,17 @@ object PublicShared {
                 } catch (e: PermissionDeniedException) {
                     return "E1"
                 }
+                "Y"
+            }
+        }
+
+    suspend fun memberJoinRequest(source: String, b: Boolean, botid: Long, msg:String):String =
+        withBot(botid){bot->
+            return gson.fromJson(source, RequestEventData.MemberJoinRequest::class.java).let {
+                if(b)
+                    it.accept(bot)
+                else
+                    it.reject(bot, msg)
                 "Y"
             }
         }
@@ -1001,6 +1012,27 @@ object PublicShared {
                         else
                             this.bot.getGroup(this.subject.id)!![this.target.id]!!.toContact(),
                         this.bot.id
+                    )
+                )
+            )
+        }
+        eventChannel.subscribeAlways<BotLeaveEvent> {
+            cpp.event(
+                gson.toJson(
+                    CPPEvent.BotLeaveEvent(
+                        this.group.id,
+                        this.bot.id
+                    )
+                )
+            )
+        }
+        eventChannel.subscribeAlways<MemberJoinRequestEvent> {
+            cpp.event(
+                gson.toJson(
+                    CPPEvent.MemberJoinRequestEvent(
+                        this.group?.toContact() ?: emptyContact(this.bot.id),
+                        this.invitor?.toContact() ?: emptyContact(this.bot.id),
+                        gson.toJson(this.toRequestEventData())
                     )
                 )
             )
