@@ -297,6 +297,18 @@ object CPPEvent {
         val botid: Long,
         val type: Int = 13
     )
+    data class BotLeaveEvent(
+        val groupid: Long,
+        val botid: Long,
+        //val leavetype: Int TODO(见Mirai源码, 目前BotLeave还不稳定)
+        val type : Int = 14
+    )
+    data class MemberJoinRequestEvent(
+        val group: Config.Contact,
+        val inviter: Config.Contact,
+        val requestData: String,
+        val type: Int = 15
+    )
 }
 
 data class PluginConfig(

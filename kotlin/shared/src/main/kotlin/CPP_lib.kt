@@ -39,6 +39,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.groupSetting
 import tech.eritquearcus.miraicp.shared.PublicShared.gson
 import tech.eritquearcus.miraicp.shared.PublicShared.kkick
 import tech.eritquearcus.miraicp.shared.PublicShared.kqueryM
+import tech.eritquearcus.miraicp.shared.PublicShared.memberJoinRequest
 import tech.eritquearcus.miraicp.shared.PublicShared.modifyAdmin
 import tech.eritquearcus.miraicp.shared.PublicShared.mute
 import tech.eritquearcus.miraicp.shared.PublicShared.nextMsg
@@ -246,6 +247,9 @@ class CPP_lib (
         private suspend fun KModifyAdmin(contactSource: String, admin: Boolean): String =
             modifyAdmin(gson.fromJson(contactSource, Config.Contact::class.java), admin)
 
+        private suspend fun KMemberJoinRequest(source: String, sign:Boolean, botid: Long, msg: String)=
+            memberJoinRequest(source, sign, botid, msg)
+
         enum class Operation_code {
             /// 撤回信息
             Recall,
@@ -296,7 +300,9 @@ class CPP_lib (
             /// 好友对象下一条消息
             NextMsg,
             /// 更改群成员权限
-            ModifyAdmin
+            ModifyAdmin,
+            /// 群成员申请
+            MemberJoinRequest
         }
 
         @JvmStatic
@@ -401,6 +407,12 @@ class CPP_lib (
                         Operation_code.ModifyAdmin.ordinal -> KModifyAdmin(
                             root.getString("contactSource"),
                             root.getBoolean("admin")
+                        )
+                        Operation_code.MemberJoinRequest.ordinal-> KMemberJoinRequest(
+                            root.getString("source"),
+                            root.getBoolean("sign"),
+                            root.getLong("botid"),
+                            root.getString("msg")
                         )
                         else -> "EA"
                     }
