@@ -81,6 +81,7 @@ public:
         Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
             Logger::logger.info(e.message.source->source);
             Logger::logger.info(e.message.toMiraiCode());
+            e.message.quoteAndSendMessage("xxx" + e.message.toMiraiCode());
             MessageChain mc = MessageChain::deserializationFromMessageSourceJson(json::parse(e.message.source->source));
             e.group.sendMessage(mc);
             // e.group.sendMsg("x");
@@ -177,6 +178,10 @@ public:
         });
         Event::processor.registerEvent<TimeOutEvent>([](const TimeOutEvent& e){
             Logger::logger.info(e.msg);
+        });
+        Event::processor.registerEvent<NudgeEvent>([](const NudgeEvent& e){
+            Logger::logger.info(e.from.id());
+            Logger::logger.info(e.target.id());
         });
     }
 
