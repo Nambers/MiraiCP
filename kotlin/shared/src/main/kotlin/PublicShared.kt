@@ -1008,7 +1008,10 @@ object PublicShared {
                         else // not -> group
                             this.bot.getGroup(this.subject.id)!![this.from.id]!!.toContact(),
                         if (this.subject.id == this.from.id)
-                            this.bot.asFriend.toContact()
+                            if (this.target.id == this.bot.id)
+                                this.bot.asFriend.toContact()
+                            else
+                                this.bot.getFriend(this.target.id)!!.toContact()
                         else
                             this.bot.getGroup(this.subject.id)!![this.target.id]!!.toContact(),
                         this.bot.id
