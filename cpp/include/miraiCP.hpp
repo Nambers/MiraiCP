@@ -1437,8 +1437,17 @@ LightApp风格1
         void p(std::vector<Message>* v, T1 h, T2 ... args){
             static_assert(std::is_base_of_v<SingleMessage, T1>, "只支持SingleMessage子类");
             v->push_back(Message(h));
-            Logger::logger.info(((SingleMessage)h).toMiraiCode());
             p(v,args...);
+        }
+        template<class... T2>
+        void p(std::vector<Message>* v, std::string h, T2 ... args){
+            v->push_back(Message(PlainText(h)));
+            p(v, args...);
+        }
+        template<class... T2>
+        void p(std::vector<Message>* v, const char* h, T2 ... args){
+            v->push_back(Message(PlainText(h)));
+            p(v, args...);
         }
         std::vector<Message> content;
         MessageSource quoteAndSend0(const std::string& msg, QQID groupid = -1, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
@@ -1824,6 +1833,11 @@ LightApp风格1
         [[deprecated("Use sendMessage")]]
         MessageSource sendMiraiCode(MiraiCode msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        }
+
+        template<class ... T>
+        MessageSource sendMessage(T ... val){
+            return this->sendMessage(MessageChain(val...), 3, ThreadManager::getEnv(__FILE__, __LINE__));
         }
 
         /// @brief 发送一条Message
@@ -2963,7 +2977,7 @@ LightApp风格1
     public:
         /// 申请的群, 如果不存在就表明广播这个事件的时候机器人已经退出该群
         std::optional<Group> group;
-        /// 邀请人, 如果不支持表明这个邀请人退出了群
+        /// 邀请人, 如果不存在表明这个邀请人退出了群或没有邀请人为主动进群
         std::optional<Member> inviter;
         MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, const std::string& source):BotEvent(botid), group(std::move(g)), inviter(std::move(i)), source(source){};
         /// 通过
@@ -4074,7 +4088,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
             case 15: {
                 std::optional<Group> a;
                 std::optional<Member> b;
-                Contact temp = Contact::deserializationFromString(j["group"]);
+                Contact temp = Contact::deserializationFromJson(j["group"]);
                 if(temp.id() == 0)
                     a = std::nullopt;
                 else
@@ -4084,7 +4098,7 @@ jstring Event(JNIEnv *env, jobject, jstring content) {
                     b = std::nullopt;
                 else
                     b = Member(temp);
-                Event::processor.broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["source"]));
+                Event::processor.broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requestData"]));
                 break;
             }
             default:

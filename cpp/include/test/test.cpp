@@ -171,10 +171,10 @@ public:
         });
         // 群事件
         Event::processor.registerEvent<MemberJoinEvent>([](MemberJoinEvent e) {
-            e.group.sendMessage(e.group.getOwner().at().toMiraiCode() + std::to_string(e.member.id()) + "加入了群聊");
+            e.group.sendMessage(e.group.getOwner().at(), std::to_string(e.member.id()), "加入了群聊");
         });
         Event::processor.registerEvent<MemberLeaveEvent>([](MemberLeaveEvent e) {
-            e.group.sendMessage(e.group.getOwner().at().toMiraiCode() + std::to_string(e.memberid) + "退出了群聊");
+            e.group.sendMessage(e.group.getOwner().at(), std::to_string(e.memberid), "退出了群聊");
         });
         Event::processor.registerEvent<TimeOutEvent>([](const TimeOutEvent& e){
             Logger::logger.info(e.msg);
@@ -182,6 +182,9 @@ public:
         Event::processor.registerEvent<NudgeEvent>([](const NudgeEvent& e){
             Logger::logger.info(e.from.id());
             Logger::logger.info(e.target.id());
+        });
+        Event::processor.registerEvent<MemberJoinRequestEvent>([](MemberJoinRequestEvent e){
+            e.accept();
         });
     }
 
