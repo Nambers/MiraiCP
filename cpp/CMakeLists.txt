@@ -15,6 +15,7 @@ set(BUILD_USE_64BITS on)
 add_library(
         MiraiCP
         SHARED
+        include/miraiCP.cpp
         demo.cpp)
 # 设置输出的dll文件的名字(最后一个参数)，目前是MiraiCP.dll
 set_target_properties(MiraiCP PROPERTIES OUTPUT_NAME MiraiCP)
@@ -23,6 +24,7 @@ set_target_properties(MiraiCP PROPERTIES OUTPUT_NAME MiraiCP)
 add_library(
         MiraiCP_Test
         SHARED
+        include/miraiCP.cpp
         include/test/test.cpp
         include/test/test2.cpp)
 set_target_properties(MiraiCP_Test PROPERTIES OUTPUT_NAME MiraiCP)
