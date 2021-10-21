@@ -1446,12 +1446,26 @@ LightApp风格1
             return MessageSource::deserializeFromString(re);
         }
 
+        template<class T>
+        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+            return this->quoteAndSend0(s.toMiraiCode(), groupid, env);
+        }
+
+        MessageSource quoteAndSend1(std::string s, QQID groupid, JNIEnv *env) {
+            return this->quoteAndSend0(s, groupid, env);
+        }
+
+        MessageSource quoteAndSend1(MessageChain mc, QQID groupid, JNIEnv *env) {
+            return this->quoteAndSend0(mc.toMiraiCode(), groupid, env);
+        }
+
     public:
-        size_t size(){
+        size_t size() {
             return this->content.size();
         }
 
-        const std::vector<Message>& vector(){
+        const std::vector<Message> &vector() {
             return this->content;
         }
 
@@ -1572,23 +1586,7 @@ LightApp风格1
         template<class T>
         MessageSource
         quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return this->quoteAndSend0(s.toMiraiCode(), groupid, env);
-        }
-
-        template<>
-        MessageSource quoteAndSendMessage(std::string s, QQID groupid, JNIEnv *env) {
-            return this->quoteAndSend0(s, groupid, env);
-        }
-
-        template<>
-        MessageSource quoteAndSendMessage(const char *s, QQID groupid, JNIEnv *env) {
-            return this->quoteAndSend0(s, groupid, env);
-        }
-
-        template<>
-        MessageSource quoteAndSendMessage(MessageChain mc, QQID groupid, JNIEnv *env) {
-            return this->quoteAndSend0(mc.toMiraiCode(), groupid, env);
+            return this->quoteAndSend1(s, groupid, env);
         }
 
         /// 从string构建MessageChain, 常用于Incoming message
@@ -1702,7 +1700,30 @@ LightApp风格1
     private:
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsg0(const std::string& msg, int retryTime, bool miraicode = false, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageSource sendMsg0(const std::string &msg, int retryTime, bool miraicode = false,
+                               JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+
+        template<class T>
+        MessageSource send1(T msg, int retryTime, JNIEnv *env) {
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        }
+
+        MessageSource send1(MessageChain msg, int retryTime, JNIEnv *env) {
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        }
+
+        MessageSource send1(MiraiCode msg, int retryTime, JNIEnv *env) {
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        }
+
+        MessageSource send1(std::string msg, int retryTime, JNIEnv *env) {
+            return sendMsg0(msg, retryTime, false, env);
+        }
+
+        MessageSource send1(const char *msg, int retryTime, JNIEnv *env) {
+            return sendMsg0(std::string(msg), retryTime, false, env);
+        }
 
     protected:
         int _type = 0;
@@ -1840,28 +1861,7 @@ LightApp风格1
         /// @return MessageSource
         template<class T>
         MessageSource sendMessage(T msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
-        }
-
-        template<>
-        MessageSource sendMessage(MessageChain msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
-        }
-
-        template<>
-        MessageSource sendMessage(MiraiCode msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
-        }
-
-        template<>
-        MessageSource sendMessage<std::string>(std::string msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(msg, retryTime, false, env);
-        }
-
-        template<>
-        MessageSource sendMessage<const char *>(const char *msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(std::string(msg), retryTime, false, env);
+            return this->send1(msg, retryTime, env);
         }
 
         /// @brief 发送纯文本信息
