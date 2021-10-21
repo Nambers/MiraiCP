@@ -23,7 +23,8 @@ set_target_properties(MiraiCP PROPERTIES OUTPUT_NAME MiraiCP)
 add_library(
         MiraiCP_Test
         SHARED
-        include/test/test.cpp)
+        include/test/test.cpp
+        include/test/test2.cpp)
 set_target_properties(MiraiCP_Test PROPERTIES OUTPUT_NAME MiraiCP)
 add_subdirectory(include/test)
 #---测试相关---
