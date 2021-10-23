@@ -29,6 +29,7 @@
 #include <utf8.h>
 //C++ 标准库
 #include <utility>
+#include <array>
 #include <variant>
 #include <optional>
 #include <vector>
@@ -1311,22 +1312,52 @@ LightApp风格1
     /// 引用信息, 不可直接发送, 发送引用信息用MessageChain.quoteAndSendMessage
     class QuoteReply : public SingleMessage {
     public:
-        [[deprecated("cannot use, use MessageChain.quote")]] std::string toMiraiCode() const override{
+        [[deprecated("cannot use, use MessageChain.quote")]] std::string toMiraiCode() const override {
             return "";
         }
+
         /// 引用信息的MessageSource
         MessageSource source;
-        explicit QuoteReply(MessageSource source):SingleMessage(-2, ""), source(std::move(source)){};
+
+        explicit QuoteReply(MessageSource source) : SingleMessage(-2, ""), source(std::move(source)) {};
     };
 
-    class UnSupportMessage:public SingleMessage{
+    class OnlineAudio : public SingleMessage {
+    public:
+        /// 文件名
+        std::string filename;
+        /// 下载地址
+        std::string url;
+        /// 文件大小
+        int size;
+        /// 编码方式
+        int codec;
+        /// 时长(单位s)
+        int length;
+        /// 16位md5
+        std::array<uint8_t, 16> md5;
+
+        [[deprecated("cannot use, use Contact.sendAudio")]] std::string toMiraiCode() const override {
+            return "";
+        }
+
+        explicit OnlineAudio(std::string f, std::array<uint8_t, 16> md5, int size, int codec, int length,
+                             std::string url) : SingleMessage(-3, ""),
+                                                filename(std::move(f)), md5(md5), size(size), codec(codec),
+                                                length(length), url(std::move(url)) {};
+    };
+
+    class UnSupportMessage : public SingleMessage {
     public:
         std::string content;
-        std::string toMiraiCode() const override{
+
+        std::string toMiraiCode() const override {
             return content;
         }
-        explicit UnSupportMessage(const SingleMessage& s):SingleMessage(s){};
-        explicit UnSupportMessage(const std::string& content):SingleMessage(-1, content){}
+
+        explicit UnSupportMessage(const SingleMessage &s) : SingleMessage(s) {};
+
+        explicit UnSupportMessage(const std::string &content) : SingleMessage(-1, content) {}
     };
 
     /// 消息链, 一般由SingleMessage组成
@@ -1590,107 +1621,9 @@ LightApp风格1
         }
 
         /// 从string构建MessageChain, 常用于Incoming message
-        static MessageChain deserializationFromMiraiCode(const std::string &m) {
-            size_t pos = 0;
-            size_t lastPos = -1;
-            MessageChain mc;
-            if (m.length() <= 7) {
-                return MessageChain(PlainText(m));
-            }
-            do {
-                if (m.length() - 7 - pos > 0 && m.substr(pos, 7) == "[mirai:") {
-                    if(pos - lastPos > 1)
-                        mc.add(PlainText(m.substr(lastPos + 1, pos - lastPos - 1)));// plain text
-                    size_t back = MessageChain::findEnd(m, pos);
-                    if(back == -1) throw IllegalStateException("");
-                    std::string tmp = m.substr(pos, back - pos);
-                    tmp = Tools::replace(tmp, "[mirai:", "");
-                    size_t i = tmp.find(':');// first :
-                    int t = SingleMessage::getKey(tmp.substr(0, i));
-                    switch(t) {
-                        case 0:
-                            // no miraiCode key is PlainText
-                            break;
-                        case 1:
-                            mc.add(At(std::stoll(tmp.substr(i + 1, tmp.length() - i - 1))));
-                            break;
-                        case 2:
-                            mc.add(Image(tmp.substr(i + 1, tmp.length() - i - 1)));
-                            break;
-                        case 3:
-                            mc.add(AtAll());
-                            break;
-                        case 4:
-                            mc.add(LightApp(tmp.substr(i + 1, tmp.length() - i - 1)));
-                            break;
-                        case 5: {
-                            size_t comma = tmp.find(',');
-                            mc.add(ServiceMessage(std::stoi(tmp.substr(i + 1, comma - i - 1)),
-                                                  tmp.substr(comma + 1, tmp.length() - comma - 1)));
-                            break;
-                        }
-                        default:
-                            mc.add(UnSupportMessage("[mirai:" + tmp));
-                            break;
-                    }
-                    pos = back;
-                    lastPos = pos;
-                    if(t == 1)
-                        lastPos++;
-                }
-                pos++;
-            }while(pos < m.length());
-            if(lastPos + 1 < m.length())
-                mc.add(PlainText(m.substr(lastPos + 1, m.length() - lastPos - 1)));// plain text
-            return mc;
-        }
+        static MessageChain deserializationFromMiraiCode(const std::string &m);
 
-        static MessageChain deserializationFromMessageSourceJson(const json& tmp) {
-            json j = tmp["originalMessage"];
-            MessageChain mc;
-            for (auto node: j) {
-                if(node["type"] == "SimpleServiceMessage"){
-                    mc.add(ServiceMessage(node["serviceId"], node["content"]));
-                    continue;
-                }
-                if(node["type"] == "LightApp"){
-                    mc.add(LightApp(node["content"]));
-                    continue;
-                }
-                int type = SingleMessage::getKey(node["type"]);
-                switch (type) {
-                    case -2:
-                        mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
-                        break;
-                    case 0:
-                        mc.add(PlainText(node["content"]));
-                        break;
-                    case 1:
-                        mc.add(At(node["target"]));
-                        break;
-                    case 2:
-                        mc.add(AtAll());
-                        break;
-                    case 3:
-                        mc.add(Image(node["imageId"]));
-                        break;
-                    case 4:
-                        Logger::logger.error("MiraiCP碰到了预料之外的错误(原因:匹配到了LightApp)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以修复: MessageSource:" +
-                                             j.dump());
-                        break;
-                    case 5:
-                        Logger::logger.error("MiraiCP碰到了预料之外的错误(原因:匹配到了ServiceMessage)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以修复: MessageSource:" +
-                                             j.dump());
-                        break;
-                    default:
-                        mc.add(UnSupportMessage(node["content"]));
-                        Logger::logger.error(
-                                "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以支持这种消息: MessageSource:" +
-                                j.dump());
-                }
-            }
-            return mc;
-        }
+        static MessageChain deserializationFromMessageSourceJson(const json &tmp);
     };
 
     /*!

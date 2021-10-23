@@ -167,7 +167,6 @@ public:
         // 监听群临时会话
         Event::processor.registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
             e.sender.sendMessage("hi");
-            e.sender.sendMessage("");
         });
         // 群事件
         Event::processor.registerEvent<MemberJoinEvent>([](MemberJoinEvent e) {
@@ -187,7 +186,7 @@ public:
             e.accept();
         });
         Event::processor.registerEvent<BotLeaveEvent>([](const BotLeaveEvent &e) {
-            Logger::logger.info(e.groupid, "Leaved", "");
+            Logger::logger.info(e.groupid, "Leave", "");
         });
     }
 
