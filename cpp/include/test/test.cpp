@@ -176,15 +176,18 @@ public:
         Event::processor.registerEvent<MemberLeaveEvent>([](MemberLeaveEvent e) {
             e.group.sendMessage(e.group.getOwner().at(), std::to_string(e.memberid), "退出了群聊");
         });
-        Event::processor.registerEvent<TimeOutEvent>([](const TimeOutEvent& e){
+        Event::processor.registerEvent<TimeOutEvent>([](const TimeOutEvent &e) {
             Logger::logger.info(e.msg);
         });
-        Event::processor.registerEvent<NudgeEvent>([](const NudgeEvent& e){
+        Event::processor.registerEvent<NudgeEvent>([](const NudgeEvent &e) {
             Logger::logger.info(e.from.id());
             Logger::logger.info(e.target.id());
         });
-        Event::processor.registerEvent<MemberJoinRequestEvent>([](MemberJoinRequestEvent e){
+        Event::processor.registerEvent<MemberJoinRequestEvent>([](MemberJoinRequestEvent e) {
             e.accept();
+        });
+        Event::processor.registerEvent<BotLeaveEvent>([](const BotLeaveEvent &e) {
+            Logger::logger.info(e.groupid, "Leaved", "");
         });
     }
 
