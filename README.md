@@ -5,7 +5,6 @@
 >
 >[English](https://github.com/Nambers/MiraiCP/blob/master/README_en.md)
 
-* [欢迎来到MiraiCP](#欢迎来到miraicp)
 * [使用声明](#使用声明)
 * [关于MiraiCP](#关于miraicp)
   * [特性](#特性)
