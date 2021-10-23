@@ -529,6 +529,23 @@ LightApp风格1
 	 *  @code Logger::logger.error(string) @endcode
  */
     class Logger_interface {
+    private:
+        std::string p(const std::string &before) {
+            return before;
+        }
+
+        template<class T, class ... T1>
+        std::string p(std::string before, T val, T1 ... val1) {
+            std::stringstream sstream;
+            sstream << val;
+            return p(before + sstream.str(), val1...);
+        }
+
+        template<class ... T>
+        std::string p(std::string before, MiraiCodeable &val, T ... val1) {
+            return p(before + val.toMiraiCode(), val1...);
+        }
+
     protected:
         /// @brief 日志底层实现封装
         /// @param log 日志内容
@@ -562,39 +579,22 @@ LightApp风格1
         void init(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         ///发送普通(info级日志)
-        void info(const std::string &, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
-
-        template<typename T>
-        void info(std::vector<T> content, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
-            info(Tools::VectorToString(content), env);
-        }
-
-        template<typename T>
-        void info(T content, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
-            std::stringstream sst;
-            sst << content;
-            info(sst.str(), env);
-        }
-
-        ///发送普通(info级日志)
-        void info(MiraiCode msg, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
-            info(msg.toString(), env);
+        template<class ... T>
+        void info(T ... val) {
+            this->log0(p("", val...), 0, ThreadManager::getEnv(__FILE__, __LINE__));
         }
 
         ///发送警告(warning级日志)
-        void warning(const std::string &, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
-
-        ///发送警告(warning级日志)
-        void warning(MiraiCode msg, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
-            warning(msg.toString(), env);
+        template<class ... T>
+        void warning(T ... val) {
+            this->log0(p("", val...), 1, ThreadManager::getEnv(__FILE__, __LINE__));
         }
 
-        ///发送错误(error级日志)
-        void error(const std::string &, bool printStack = true, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
-
-        ///发送错误(error级日志)
-        void error(MiraiCode msg, bool printStack = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
-            error(msg.toString(), printStack, env);
+        ///发送警告(warning级日志)
+        template<class ... T>
+        void error(T ... val) {
+            ThreadManager::StackTracer a = ThreadManager::getThread()->stack;
+            this->log0(p("", val...) + "\n" + a.print(), 2, ThreadManager::getEnv(__FILE__, __LINE__));
         }
 
         /// @brief 设置loggerhandler的action
