@@ -9,6 +9,9 @@ on:
    pre:
     required: true
     description: pre-release
+   notHppAndCpp:
+    required: false
+    description: Do not contain hpp and cpp file
 
 jobs:
   tagged-release:
@@ -40,10 +43,18 @@ jobs:
       run: cat CHANGELOG.md | head -n $((`tail -n 1 line.tmp`-1)) | tail -n +`head -n 1 line.tmp` >> release.log
     - name: show
       run: cat release.log
+    - name: generate release files list
+      run: |
+           if ${{ github.event.inputs.notHppAndCpp }} == true; then
+            echo "flist=./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/MiraiCP_CPP.zip,./cpp/include/miraiCP.hpp,./cpp/include/miraiCP.cpp" >> $GITHUB_ENV
+            echo "flist=./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/MiraiCP_CPP.zip,./cpp/include/miraiCP.hpp,./cpp/include/miraiCP.cpp"
+           else
+            echo "flist=./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/MiraiCP_CPP.zip" >> $GITHUB_ENV
+            echo "flist=./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/MiraiCP_CPP.zip"
     - name: Create Release
       uses: ncipollo/release-action@v1.8.6
       with:
-          artifacts: "./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/MiraiCP_CPP.zip,./cpp/include/miraiCP.hpp"
+          artifacts: env.flist
           bodyfile: release.log
           tag: ${{ github.event.inputs.v }}
           token: ${{ secrets.GITHUB_TOKEN }}
