@@ -126,22 +126,6 @@ throw: InitException 即找不到签名
         this->loggerhandler.enable = state;
     }
 
-    void Logger_interface::warning(const std::string &content, JNIEnv *env) {
-        this->log0(content, 1, env);
-    }
-
-    void Logger_interface::error(const std::string &content, bool printStack, JNIEnv *env) {
-        ThreadManager::StackTracer a = ThreadManager::getThread()->stack;
-        if (printStack)
-            this->log0(content + "\n" + a.print(), 2, env);
-        else
-            this->log0(content, 2, env);
-    }
-
-    void Logger_interface::info(const std::string &content, JNIEnv *env) {
-        this->log0(content, 0, env);
-    }
-
     void Logger::log0(const std::string &content, int level, JNIEnv *env) {
         if (this->loggerhandler.enable)
             this->loggerhandler.action(content, level);
