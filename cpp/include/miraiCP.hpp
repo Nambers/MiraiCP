@@ -1322,6 +1322,7 @@ LightApp风格1
         explicit QuoteReply(MessageSource source) : SingleMessage(-2, ""), source(std::move(source)) {};
     };
 
+    /// 接收到的音频文件, 发送用`Contact.sendAudio`
     class OnlineAudio : public SingleMessage {
     public:
         /// 文件名
@@ -1346,6 +1347,97 @@ LightApp风格1
                                                 filename(std::move(f)), md5(md5), size(size), codec(codec),
                                                 length(length), url(std::move(url)) {};
     };
+
+    /// @brief 远程(群)文件类型
+    class RemoteFile : public SingleMessage {
+    public:
+        /// @brief 下载信息
+/// @see RemoteFile
+        struct Dinfo {
+            /// 下载地址
+            std::string url;
+            /// md5 可用于校验
+            std::string md5;
+            /// sha1 可用于校验
+            std::string sha1;
+        };
+/// @brief 文件信息
+/// @see RemoteFile
+        struct Finfo {
+            /// 文件大小
+            QQID size;
+            /// 上传者id
+            QQID uploaderid;
+            /// 下载次数
+            unsigned int downloadtime;
+            /// 上传时间, 时间戳格式
+            QQID uploadtime;
+            /// 上次更改时间, 时间戳格式
+            QQID lastmodifytime;
+        };
+        /// 文件唯一id, 用于识别
+        std::string id;
+        /// 文件内部id, 用于构造miraiCode发送
+        unsigned int internalid;
+        /// 文件名
+        std::string name;
+        /// 文件大小
+        long long size;
+        /// 文件在群文件的路径
+        std::string path;
+        /// 文件下载信息
+        /// @see dinfo
+        Dinfo dinfo;
+        /// 文件信息
+        /// @see finfo
+        Finfo finfo;
+
+        std::string serializeToString();
+
+        RemoteFile plus(unsigned int ii) {
+            RemoteFile tmp(*this);
+            tmp.internalid = ii;
+            tmp.content = id + "," + std::to_string(ii) + "," + Tools::escapeToMiraiCode(std::move(name)) + "," +
+                          std::to_string(size);
+            return tmp;
+        }
+
+        static RemoteFile deserializeFromString(const std::string &source);
+
+        /*!
+         * @brief 构造远程(群)文件
+         * @param i ids
+         * @param ii internalids
+         * @param n name
+         * @param s size
+         * @param p path
+         * @param d dinfo
+         * @param f finfo
+         */
+        explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, std::string p,
+                            struct Dinfo d, struct Finfo f) : SingleMessage(6, i + "," + std::to_string(ii) + "," +
+                                                                               Tools::escapeToMiraiCode(std::move(n)) +
+                                                                               "," +
+                                                                               std::to_string(s)),
+                                                              id(i),
+                                                              internalid(ii),
+                                                              name(std::move(n)),
+                                                              size(s),
+                                                              path(std::move(p)),
+                                                              dinfo(std::move(d)),
+                                                              finfo(f) {};
+
+        /// 仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换
+        std::string toMiraiCode() const override {
+            if (internalid == 0) {
+                // 重新上传
+                throw RemoteAssetException("toMiraiCode error: internalid, 错误，重新上传");
+            }
+            return "[mirai:file:" + id + "," + std::to_string(internalid) + "," + Tools::escapeToMiraiCode(name) + "," +
+                   std::to_string(size) + "]";
+        }
+    };
+
 
     class UnSupportMessage : public SingleMessage {
     public:
@@ -1843,87 +1935,6 @@ LightApp风格1
         virtual void refreshInfo(JNIEnv *) {};
     };
 
-// 群文件
-
-/// @brief 下载信息
-/// @see RemoteFile
-    struct Dinfo {
-        /// 下载地址
-        std::string url;
-        /// md5 可用于校验
-        std::string md5;
-        /// sha1 可用于校验
-        std::string sha1;
-    };
-/// @brief 文件信息
-/// @see RemoteFile
-    struct Finfo {
-        /// 文件大小
-        QQID size;
-        /// 上传者id
-        QQID uploaderid;
-        /// 下载次数
-        unsigned int downloadtime;
-        /// 上传时间, 时间戳格式
-        QQID uploadtime;
-        /// 上次更改时间, 时间戳格式
-        QQID lastmodifytime;
-    };
-
-/// @brief 远程(群)文件类型
-    class RemoteFile : public MiraiCodeable {
-    public:
-        /// 文件唯一id, 用于识别
-        std::string id;
-        /// 文件内部id, 用于构造miraiCode发送
-        unsigned int internalid;
-        /// 文件名
-        std::string name;
-        /// 文件大小
-        long long size;
-        /// 文件在群文件的路径
-        std::string path;
-        /// 文件下载信息
-        /// @see dinfo
-        Dinfo dinfo;
-        /// 文件信息
-        /// @see finfo
-        Finfo finfo;
-
-        std::string serializeToString();
-
-        static RemoteFile deserializeFromString(const std::string &source);
-
-        /*!
-         * @brief 构造远程(群)文件
-         * @param i ids
-         * @param ii internalids
-         * @param n name
-         * @param s size
-         * @param p path
-         * @param d dinfo
-         * @param f finfo
-         */
-        explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, const std::string &p,
-                   struct Dinfo d, struct Finfo f) : id(i),
-                                                     internalid(ii),
-                                                     name(std::move(n)),
-                                                     size(s),
-                                                     path(p),
-                                                     dinfo(std::move(d)),
-                                                     finfo(f) {};
-
-        /// 仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换
-        std::string toMiraiCode() const override {
-            if (internalid == 0) {
-                // 重新上传
-                throw RemoteAssetException("toMiraiCode error: internalid错误，重新上传");
-            }
-            return "[mirai:file:" + id + "," + std::to_string(internalid) + "," + Tools::escapeToMiraiCode(name) + "," +
-                   std::to_string(size) + "]";
-        }
-    };
-
 /// 较底层api
     class LowLevelAPI {
     public:
@@ -2402,7 +2413,7 @@ LightApp风格1
          @example 取群文件信息
          @code
          //根据qq群远程路径(不带文件名)和文件id, 文件id可以在上传返回的RemoteFile类型中获得, 会在子目录中查找如果当前目录未找到
-         //根据qq群远程路径(带文件名)找, 不过由于qq群文件允许同名文件这一特性, 返回的文件为群文件中同名文件中随机一个
+         //根据qq群远程路径(带文件名)找, 不过由于qq群文件允许同名文件这一特性, 返回的文件为群文件中同名文件中随机一个(不可靠)
          Event::processor.registerEvent([](GroupMessageEvent e) {
             e.group.SendMsg(e.group.getFile("/", id).name());
             e.group.SendMsg(e.group.getFile("/test.txt").name());
@@ -2410,7 +2421,16 @@ LightApp风格1
             });
          @endcode
         */
-        RemoteFile getFile(const std::string &path, const std::string &id = "", JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        RemoteFile getFile(const std::string &path, const std::string &id = "",
+                           JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+
+        /*!
+         * @brief 取文件信息(根据id)
+         * @param id 文件id
+         * @return 文件
+         * @detail 相当于从根目录开始遍历查找文件, 相当于getFile("/", id);
+         */
+        RemoteFile getFileById(const std::string &id, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// 群文件的简短描述
         struct file_short_info {

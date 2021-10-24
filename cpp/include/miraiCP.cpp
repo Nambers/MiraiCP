@@ -46,7 +46,8 @@ namespace MiraiCP {
             {2,  "atAll"},
             {3,  "image"},
             {4,  "app"},
-            {5,  "service"}
+            {5,  "service"},
+            {6,  "file"}
     };
 
     Event Event::processor = Event();
@@ -303,6 +304,10 @@ throw: InitxException 即找不到对应签名
             if (node["type"] == "OnlineAudio") {
                 mc.add(OnlineAudio(node["filename"], node["fileMd5"], node["fileSize"], node["codec"], node["length"],
                                    node["urlForDownload"]));
+                continue;
+            }
+            if (node["type"] == "FileMessage") {
+                mc.add(Group(tmp["targetId"], tmp["botId"]).getFileById(node["id"]).plus(node["internalId"]));
                 continue;
             }
             int type = SingleMessage::getKey(node["type"]);
@@ -656,7 +661,18 @@ throw: InitxException 即找不到对应签名
         j["source"] = tmp.dump();
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
-        if (re == "E2") throw RemoteAssetException("Get error: 文件路径不存在, path:" + path);
+        if (re == "E2") throw RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id);
+        return RemoteFile::deserializeFromString(re);
+    }
+
+    RemoteFile Group::getFileById(const std::string &id, JNIEnv *env) {
+        json tmp;
+        json j;
+        tmp["id"] = id;
+        j["source"] = tmp.dump();
+        j["contactSource"] = this->serializationToString();
+        std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
+        if (re == "E1") throw RemoteAssetException("Get error: 文件路径不存在, id:" + id);
         return RemoteFile::deserializeFromString(re);
     }
 
