@@ -156,11 +156,14 @@ class CPP_lib (
         private suspend fun KRemoteFileInfo(source: String, contactSource: String): String =
             run {
                 val t = JSONObject(source)
-                return remoteFileInfo(
-                    t.getString("path"),
-                    t.getString("id"),
-                    gson.fromJson(contactSource, Config.Contact::class.java)
-                )
+                return if(t.has("path"))
+                    remoteFileInfo(
+                        t.getString("path"),
+                        t.getString("id"),
+                        gson.fromJson(contactSource, Config.Contact::class.java)
+                    )
+                else
+                    remoteFileInfo(t.getString("id"), gson.fromJson(contactSource, Config.Contact::class.java))
             }
 
         //mute member
