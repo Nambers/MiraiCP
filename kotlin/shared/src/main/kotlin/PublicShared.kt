@@ -503,8 +503,19 @@ object PublicShared {
                 return remoteFileList(path, c)
             c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
                 val tmp = group.filesRoot.resolve(path).resolveById(id) ?: let {
-                    logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id")
+                    logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id, path:$path")
                     return "E2"
+                }
+                return fileInfo0(tmp)
+            }
+        }
+
+    suspend fun remoteFileInfo(id: String, c: Config.Contact): String =
+        c.withBot { bot ->
+            c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
+                val tmp = group.filesRoot.resolveById(id) ?: let {
+                    logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id")
+                    return "E1"
                 }
                 return fileInfo0(tmp)
             }
