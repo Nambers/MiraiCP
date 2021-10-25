@@ -983,7 +983,7 @@ LightApp风格1
          * @param msg - MiraiCodeable类型指针 - 内容
          * @see MessageSource::quoteAndSendMiraiCode
         */
-        [[deprecated("Use MessageChain.quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
@@ -997,7 +997,7 @@ LightApp风格1
          *  e.messageSource.quoteAndSendMsg("HI");
          * @endcode
          */
-        [[deprecated("Use MessageChain.quoteAndSendMessage")]] MessageSource quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
 
         /**
          * @brief 回复(引用并发送)
@@ -1005,7 +1005,7 @@ LightApp风格1
          * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
          * @return MessageSource
          */
-        [[deprecated("Use MessageChain.quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
 
         /*!
          * @brief 构建消息源
@@ -1707,8 +1707,7 @@ LightApp风格1
         /// - SingleMessage的各种派生类
         /// - MessageChain
         template<class T>
-        MessageSource
-        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        [[deprecated("use Contact.quoteAndSend")]] MessageSource quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return this->quoteAndSend1(s, groupid, env);
         }
 
@@ -1748,6 +1747,32 @@ LightApp风格1
 
         MessageSource send1(const char *msg, int retryTime, JNIEnv *env) {
             return sendMsg0(std::string(msg), retryTime, false, env);
+        }
+
+        MessageSource quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+            json obj;
+            json sign;
+            obj["messageSource"] = ms.serializeToString();
+            obj["msg"] = msg;
+            sign["MiraiCode"] = true;
+            sign["groupid"] = this->groupid();
+            obj["sign"] = sign.dump();
+            std::string re = Config::koperation(Config::SendWithQuote, obj, env);
+            return MessageSource::deserializeFromString(re);
+        }
+
+        template<class T>
+        MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+            return this->quoteAndSend0(s.toMiraiCode(), ms, env);
+        }
+
+        MessageSource quoteAndSend1(std::string s, MessageSource ms, JNIEnv *env) {
+            return this->quoteAndSend0(s, ms, env);
+        }
+
+        MessageSource quoteAndSend1(MessageChain mc, MessageSource ms, JNIEnv *env) {
+            return this->quoteAndSend0(mc.toMiraiCode(), ms, env);
         }
 
     protected:
@@ -1864,15 +1889,32 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        [[deprecated("Use sendMessage")]]
-        MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
-                                    JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        [[deprecated("Use sendMessage")]] MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
+                                                                      JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 
-        template<class ... T>
-        MessageSource sendMessage(T ... msg) {
-            return this->sendMessage(MessageChain(msg...), 3, ThreadManager::getEnv(__FILE__, __LINE__));
+        /// @brief 回复并发送
+        /// @param s 内容
+        /// @param groupid 如果是来源于TempGroupMessage就要提供(因为要找到那个Member)
+        /// @note 可以改MessageSource里的内容, 客户端在发送的时候并不会校验MessageSource的内容正确性(比如改originalMessage来改引用的文本的内容, 或者改id来定位到其他信息)
+        /// @detail 支持以下类型传入
+        /// - std::string / const char* 相当于传入PlainText(str)
+        /// - SingleMessage的各种派生类
+        /// - MessageChain
+        template<class T>
+        MessageSource quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+            return this->quoteAndSend1(s, ms, env);
+        }
+
+        template<class... T>
+        MessageSource quoteAndSendMessage(MessageSource ms, T... val) {
+            return this->quoteAndSendMessage(MessageChain(val...), ms);
+        }
+
+        template<class... T>
+        MessageSource sendMessage(T... msg) {
+            return this->sendMessage(MessageChain(msg...));
         }
 
         /// @brief 发送一条Message
