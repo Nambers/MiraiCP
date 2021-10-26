@@ -1,5 +1,16 @@
 # Change Log
 
+## v2.8.0-M2
+
++ 支持MessageChain和大部分SingleMessage #87
++ 支持解析coming audio, FileMessage, 和 quote (ForwardMessage要等mirai支持) #90
++ 修复戳一戳事件的问题和增加`target`对象(#92 @Zipper-1)
++ 支持`BotLeaveEvent`(机器人退出群聊: 踢出/退出/解散) 和 `MemberJoinRequetEvent`(新群成员申请) #91
++ 分散实现代码到`MiraiCP.cpp`以解决重复定义问题 #96
++ 移动`quoteAndSendMessage`从`MessageSource`和`MessageChain`类，移动到`Contact`类并deprecate
+
+> 该版本为开发版, 可能包含一些问题
+
 ## v2.8.0-M1
 
 + 升级Mirai到v2.8.0-M1
