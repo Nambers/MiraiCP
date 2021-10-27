@@ -28,29 +28,30 @@
 #include <json.hpp>
 #include <utf8.h>
 //C++ 标准库
-#include <utility>
 #include <array>
-#include <variant>
-#include <optional>
-#include <vector>
-#include <string>
 #include <functional>
-#include <sstream>
-#include <regex>
-#include <thread>
 #include <map>
 #include <mutex>
+#include <optional>
+#include <regex>
+#include <sstream>
 #include <stack>
+#include <string>
+#include <thread>
+#include <utility>
+#include <variant>
+#include <vector>
 
 namespace MiraiCP {
     using json = nlohmann::json;
     using QQID = unsigned long long;
+
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
     const std::string MiraiCPVersion = "v2.8.0-M1";
 
     /// @brief 插件信息
-    class PluginConfig{
+    class PluginConfig {
     public:
         /// @brief 插件id, 要与别人不一样否则报错无法加载(建议用类包格式，如: io.github.nambers)
         std::string id;
@@ -64,64 +65,85 @@ namespace MiraiCP {
         std::string description;
         /// @brief [optional]构建时间, 默认为__DATE__宏
         std::string time;
-        PluginConfig(std::string id, std::string name, std::string version, std::string author,
-                     std::string description = "", std::string time = __DATE__) : id(std::move(id)), name(std::move(name)), version(std::move(version)),
-                                                                                          author(std::move(author)), description(std::move(description)),
-                                                                                          time(std::move(time)) {}
+
+        PluginConfig(std::string id,
+                     std::string name,
+                     std::string version,
+                     std::string author,
+                     std::string description = "",
+                     std::string time = __DATE__)
+            : id(std::move(id)),
+              name(std::move(name)),
+              version(std::move(version)),
+              author(std::move(author)),
+              description(std::move(description)),
+              time(std::move(time)) {}
+
         json serialize();
-        std::string serialize2string(){
+
+        std::string serialize2string() {
             return serialize().dump();
         }
     };
 
-/*! @addtogroup 需要表态的值
- * @brief 如加好友事件
- * @{*/
-///拒绝
+    //region 需要表态的值，如加好友事件
+    /*! @addtogroup 需要表态的值
+     * @brief 如加好友事件
+     * @{
+     */
+    /// 拒绝
     static const bool REJECT = false;
-/// 同意
+    /// 同意
     static const bool ACCEPT = true;
-/// @}
+    /// @}
+    //endregion
 
-/*! @addtogroup 群成员退出事件
- * @{*/
-
-///被踢出
+    //region 群成员退出事件
+    /*! @addtogroup 群成员退出事件
+     * @{
+     */
+    ///被踢出
     static const int T_KICK = 1;
-///主动退出
+    ///主动退出
     static const int T_QUIT = 2;
-/// @}
+    /// @}
+    //endregion
 
-/*!
- * @addtogroup 新群成员事件
- * @{
- * */
-/*!被邀请进入*/
+    //region 新群成员事件
+    /*! @addtogroup 新群成员事件
+     * @{
+     */
+    /*!被邀请进入*/
     static const int T_INVITE = 1;
-/*!主动加入*/
+    /*!主动加入*/
     static const int T_ACTIVE = 2;
-/*!旧群主恢复群主位置*/
+    /*!旧群主恢复群主位置*/
     static const int T_Retrieve = 3;
-/// @}
+    /// @}
+    //endregion
 
-/*!@addtogroup 群成员权限
- * @{*/
-/// 群主
+    //region 群成员权限
+    /*! @addtogroup 群成员权限
+     * @{
+     */
+    /// 群主
     static const int P_Owner = 2;
-/// 管理员
+    /// 管理员
     static const int P_Administer = 1;
-/// 群成员
+    /// 群成员
     static const int P_Member = 0;
-///@}
+    /// @}
+    //endregion
 
-/*!
- * @addtogroup LightApp风格
- * @{
- */
-/*!
-LightApp风格1
-*/
-    struct LightAppStyle1{
+    //region LightApp风格
+    /*!
+    * @addtogroup LightApp风格
+    * @{
+    */
+    /*!
+    LightApp风格1
+    */
+    struct LightAppStyle1 {
         ///小图标地址
         std::string icon = "https://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
         ///小标题，用逗号分割多个
@@ -136,7 +158,7 @@ LightApp风格1
         std::string title = "test2";
     };
 
-/// 风格2
+    /// 风格2
     struct LightAppStyle2 {
         ///小图标
         std::string icon = "https://gchat.qpic.cn/gchatpic_new/1924306130/1044565129-2580521429-8ECE44863FC01DBD17FB8A177B355356/0";
@@ -148,7 +170,7 @@ LightApp风格1
         std::string title2 = "Test2";
     };
 
-/// 风格3
+    /// 风格3
     struct LightAppStyle3 {
         /// 点击跳转链接
         std::string url = "https://www.baidu.com";
@@ -163,7 +185,7 @@ LightApp风格1
     };
 
     /// 风格4
-    struct LightAppStyle4{
+    struct LightAppStyle4 {
         /// 没点进来显示的内容
         std::string prompt = "prompt";
         std::string appName = "appName";
@@ -176,61 +198,69 @@ LightApp风格1
     };
 
     /// 用serviceMessage的分享信息
-    struct URLSharer{
+    struct URLSharer {
         /// 简介 没点进来看见的样子
-        std::string brief="简介 没点进来看见的样子";
+        std::string brief = "简介 没点进来看见的样子";
         /// 目标url
-        std::string url="目标url";
+        std::string url = "目标url";
         /// 图标地址
-        std::string cover="图标地址";
+        std::string cover = "图标地址";
         /// 标题
         std::string title = "标题";
         /// 描述文字
-        std::string summary="描述文字";
+        std::string summary = "描述文字";
     };
-    // 接受声明MiraiCP常量声明代码
+    /// @}
+    // endregion
+
+    // 结束声明MiraiCP常量声明代码
 
     // 开始MiraiCP类声明代码
-///@}
 
-/*!
- * @class threadManager
- * @brief 多线程管理.
- */
+    //region MiraiCP类声明
+    /*!
+    * @class threadManager
+    * @brief 多线程管理.
+    */
     class ThreadManager {
     public:
         class StackTracer {
         private:
             std::vector<std::string> stackTrace = std::vector<std::string>();
+
         public:
             /// print all
             std::string print() {
                 std::string re = "StackTrace:";
-                for (const auto &a: stackTrace)
+                for (const auto &a : stackTrace)
                     re += "\n" + a;
                 return re;
             }
 
             /// push stack
-            void push(const std::string& file = __FILE__, int loc = __LINE__, const std::string& func = "", const std::string& commit = ""){
-                stackTrace.push_back(func + (!commit.empty() ?"(" + commit + ")":"")+"[" +file+":"+std::to_string(loc)+ "]");
+            void push(const std::string &file = __FILE__, int loc = __LINE__, const std::string &func = "",
+                      const std::string &commit = "") {
+                stackTrace.push_back(
+                        func + (!commit.empty() ? "(" + commit + ")" : "") + "[" + file + ":" + std::to_string(loc) +
+                        "]");
             }
 
             /// 清空
-            void clear(){
+            void clear() {
                 stackTrace.clear();
             }
         };
+
         /// @brief 每个线程实例.
         struct ThreadInfo {
             JNIEnv *e{};
             bool attach{};
             StackTracer stack;
         };
-        static std::map<std::string, ThreadInfo> threads;/// < 线程池(线程id:env).
-        static std::recursive_mutex mtx; ///< 线程池读写锁.
+        static std::map<std::string, ThreadInfo> threads; /// < 线程池(线程id:env).
+        static std::recursive_mutex mtx;                  ///< 线程池读写锁.
     private:
-        static void newEnv(const char *threadName = nullptr);///< 新建一个env，于getEnv中没取到env时调用.
+        static void newEnv(const char *threadName = nullptr); ///< 新建一个env，于getEnv中没取到env时调用.
         /// 判断该线程id是否包含在线程池里
         static bool included(const std::string &id);
 
@@ -278,11 +308,11 @@ LightApp风格1
         /// @param file 为支持`StackTracer`而增加, 为`__FILE__`宏(文件名), 在调用处传入因为当__FILE__作为默认参数传入时不准确
         /// @param loc 为`__LINE__`宏(行号), 同上
         /// @param func 为`__FUNC__`宏(方法名)
-        static JNIEnv *getEnv(const std::string& file, int loc, const std::string& func = "");
+        static JNIEnv *getEnv(const std::string &file, int loc, const std::string &func = "");
     };
 
-/// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
-/// @class Tools
+    /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
+    /// @class Tools
     class Tools {
     public:
         /*!
@@ -326,7 +356,7 @@ LightApp风格1
         /// @param a vector
         /// @return string
         template<typename T>
-        static std::string VectorToString(std::vector<T> a, const std::string& = ",");
+        static std::string VectorToString(std::vector<T> a, const std::string & = ",");
 
         /// @brief 从string格式化到vector
         /// @param temp string
@@ -344,28 +374,22 @@ LightApp风格1
         static std::string escapeToMiraiCode(const std::string &s);
 
         /// starts_with, from <https://stackoverflow.com/questions/1878001/how-do-i-check-if-a-c-stdstring-starts-with-a-certain-string-and-convert-a>
-        static bool starts_with(const std::string& f, const std::string& s){return f.rfind(s, 0) == 0;}
+        static bool starts_with(const std::string &f, const std::string &s) { return f.rfind(s, 0) == 0; }
 
-        static bool icompareChar(char & c1, char & c2)
-        {
-            if (c1 == c2)
-                return true;
-            else if (std::toupper(c1) == std::toupper(c2))
-                return true;
-            return false;
+        static bool icompareChar(char &c1, char &c2) {
+            return c1 == c2 || std::toupper(c1) == std::toupper(c2);
         }
 
         /// case insensitive string compare from https://thispointer.com/c-case-insensitive-string-comparison-using-stl-c11-boost-library/
-        static bool iequal(std::string str1, std::string str2)
-        {
-            return ( (str1.size() == str2.size() ) &&
-                     std::equal(str1.begin(), str1.end(), str2.begin(), &icompareChar) );
+        static bool iequal(std::string str1, std::string str2) {
+            return ((str1.size() == str2.size()) &&
+                    std::equal(str1.begin(), str1.end(), str2.begin(), &icompareChar));
         }
     };
 
-/// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
-/// @internal 一般为MiraiCP内部调用jni接口使用
-/// @class Config
+    /// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
+    /// @internal 一般为MiraiCP内部调用jni接口使用
+    /// @class Config
     class Config {
     public:
         /// kt中JNI接口类
@@ -435,25 +459,28 @@ LightApp风格1
          * @param data 传入数据
          * @return 返回数据
          */
-        static std::string koperation(operation_set type, nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__), bool catchErr = true, const std::string& errorInfo = "");
+        static std::string
+        koperation(operation_set type, nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__),
+                   bool catchErr = true, const std::string &errorInfo = "");
 
         static void construct(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         static void destruct();
     };
 
-/// MiraiCode父类, 指可以被转换成miraicode的类型
+    /// MiraiCode父类, 指可以被转换成miraicode的类型
     class MiraiCodeable {
     public:
         virtual std::string toMiraiCode() const = 0;
     };
 
-/// @brief miraicode字符串
-/// @attention MiraiCode会把非miraicode组成部分(非[mirai:])转码, 输出转码前的文本用toString, 参考: https://github.com/mamoe/mirai/blob/dev/docs/Messages.md#%E8%BD%AC%E4%B9%89%E8%A7%84%E5%88%99
-/// @detail 为了便捷使用，构造函数不以explicit注释
+    /// @brief miraicode字符串
+    /// @attention MiraiCode会把非miraicode组成部分(非[mirai:])转码, 输出转码前的文本用toString, 参考: https://github.com/mamoe/mirai/blob/dev/docs/Messages.md#%E8%BD%AC%E4%B9%89%E8%A7%84%E5%88%99
+    /// @detail 为了便捷使用，构造函数不以explicit注释
     class MiraiCode : public MiraiCodeable {
     private:
         std::string content;
+
     public:
         /// 输出当前内容, 会自动转码
         std::string toString() {
@@ -466,14 +493,14 @@ LightApp风格1
         }
 
         /// 从MiraiCodeable类型初始化一个miraicode字符串
-        MiraiCode(MiraiCodeable *a) {  // NOLINT(google-explicit-constructor)
+        MiraiCode(MiraiCodeable *a) { // NOLINT(google-explicit-constructor)
             content = a->toMiraiCode();
         }
 
         /// 从文本初始化一个miraicode字符串, 根据第二个参数决定是否转码, 默认不转码
         /// @attention 如果是传入文本MiraiCode，请勿转码，转码只是为了[mirai:xxx:<应该转码的部分>], 如果<应该转码>的部分里面含有'[]:,'内容，请调用Tools::escapeToMiraiCode转码
-        MiraiCode(const std::string& a, bool convert = false){ // NOLINT(google-explicit-constructor)
-            if(!convert)
+        MiraiCode(const std::string &a, bool convert = false) { // NOLINT(google-explicit-constructor)
+            if (!convert)
                 content = a;
             else
                 content = Tools::escapeToMiraiCode(a);
@@ -483,7 +510,7 @@ LightApp风格1
             return {content + a->toMiraiCode()};
         }
 
-        MiraiCode operator+(const std::string& a) {
+        MiraiCode operator+(const std::string &a) {
             return {content + a};
         }
 
@@ -509,41 +536,42 @@ LightApp风格1
         }
 
         /// 不执行转义，适用于已经被MiraiCode转义过的字符串
-        static MiraiCode MiraiCodeWithoutEscape(const std::string& a){
+        static MiraiCode MiraiCodeWithoutEscape(const std::string &a) {
             return {a, false};
         }
+
         /// 不执行转义，因为MiraiCodeable的toMiraiCode已经转义过了
-        static MiraiCode MiraiCodeWithoutEscape(MiraiCodeable* a){
+        static MiraiCode MiraiCodeWithoutEscape(MiraiCodeable *a) {
             return {a->toMiraiCode(), false};
         }
     };
 
-/*!
- * @class Logger
- * @brief 以MiraiCP的名义发送日志, 日志表现格式是: 2021-06-28 09:37:22 [log level]/MiraiCP: [log content], 为最底层的logger
- * @example 发送日志
-	 *  发送消息级日志
-	 *  @code Logger::logger.info(string) @endcode
-	 *  发送警告级日志
-	 *  @code Logger::logger.warning(string) @endcode
-	 *  发送错误级日志
-	 *  @code Logger::logger.error(string) @endcode
- */
+    /*!
+    * @class Logger
+    * @brief 以MiraiCP的名义发送日志, 日志表现格式是: 2021-06-28 09:37:22 [log level]/MiraiCP: [log content], 为最底层的logger
+    * @example 发送日志
+	* 发送消息级日志
+	* @code Logger::logger.info(string) @endcode
+	* 发送警告级日志
+	* @code Logger::logger.warning(string) @endcode
+	* 发送错误级日志
+	* @code Logger::logger.error(string) @endcode
+    */
     class Logger_interface {
     private:
         std::string p(const std::string &before) {
             return before;
         }
 
-        template<class T, class ... T1>
-        std::string p(std::string before, T val, T1 ... val1) {
+        template<class T, class... T1>
+        std::string p(std::string before, T val, T1... val1) {
             std::stringstream sstream;
             sstream << val;
             return p(before + sstream.str(), val1...);
         }
 
-        template<class ... T>
-        std::string p(std::string before, MiraiCodeable &val, T ... val1) {
+        template<class... T>
+        std::string p(std::string before, MiraiCodeable &val, T... val1) {
             return p(before + val.toMiraiCode(), val1...);
         }
 
@@ -555,6 +583,7 @@ LightApp风格1
         virtual void log0(const std::string &log, int level, JNIEnv *env) = 0;
 
         jmethodID log = nullptr;
+
     public:
         jmethodID getjmethod() {
             return this->log;
@@ -572,7 +601,7 @@ LightApp风格1
             /// @brief 是否启用
             bool enable = true;
             /// @brief 执行的操作，格式为lambda
-            Action action = [](const std::string& content, int level) {};
+            Action action = [](const std::string &content, int level) {};
         };
         Handler loggerhandler;
 
@@ -580,20 +609,20 @@ LightApp风格1
         void init(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         ///发送普通(info级日志)
-        template<class ... T>
-        void info(T ... val) {
+        template<class... T>
+        void info(T... val) {
             this->log0(p("", val...), 0, ThreadManager::getEnv(__FILE__, __LINE__));
         }
 
         ///发送警告(warning级日志)
-        template<class ... T>
-        void warning(T ... val) {
+        template<class... T>
+        void warning(T... val) {
             this->log0(p("", val...), 1, ThreadManager::getEnv(__FILE__, __LINE__));
         }
 
         ///发送警告(warning级日志)
-        template<class ... T>
-        void error(T ... val) {
+        template<class... T>
+        void error(T... val) {
             ThreadManager::StackTracer a = ThreadManager::getThread()->stack;
             this->log0(p("", val...) + "\n" + a.print(), 2, ThreadManager::getEnv(__FILE__, __LINE__));
         }
@@ -613,23 +642,27 @@ LightApp风格1
         /// @code Logger::logger.setHandleState(ture); @endcode
         inline void setHandleState(bool state);
     };
-    class Logger: public Logger_interface{
+
+    class Logger : public Logger_interface {
     protected:
         /// @brief 日志底层实现封装
         /// @param content 日志内容
         /// @param level 日志等级
         /// @param env jnienv
         void log0(const std::string &content, int level, JNIEnv *env) override;
+
     private:
-        Logger()= default;
+        Logger() = default;
+
     public:
         static Logger logger;
     };
 
-/// 带id(一般为bot账号)的logger
+    /// 带id(一般为bot账号)的logger
     class IdLogger : public Logger_interface {
     protected:
-        void log0(const std::string &content, int level, JNIEnv *env) override ;
+        void log0(const std::string &content, int level, JNIEnv *env) override;
+
     public:
         QQID id;
 
@@ -643,6 +676,7 @@ LightApp风格1
     class PluginLogger : public Logger_interface {
     protected:
         void log0(const std::string &content, int level, JNIEnv *env) override;
+
     public:
         explicit PluginLogger(Logger *l) {
             this->loggerhandler = l->loggerhandler;
@@ -650,7 +684,7 @@ LightApp风格1
         }
     };
 
-/// 插件父类
+    /// 插件父类
     class CPPPlugin {
     public:
         /// @brief 插件信息
@@ -667,33 +701,57 @@ LightApp风格1
         explicit CPPPlugin(PluginConfig c) : config(std::move(c)) {}
     };
 
-/// @brief 总异常抽象类
-/// @interface MiraiCPException
-    class MiraiCPException : public std::exception {
-    public:
-        /// 异常信息
-        virtual std::string what() { return "MiraiCP异常"; };
+    //仅声明
+    class MiraiCPException;
 
-        /// raise 抛出方法
-        virtual void raise() {
-            Logger::logger.error(what());
-        };
+    /// @brief 异常事件广播
+    class ExceptionBroadcasting {
+    public:
+        MiraiCPException *e;
+        ExceptionBroadcasting(MiraiCPException *ex);
+        ~ExceptionBroadcasting();
     };
 
-/// 文件读取异常.
-/// @see MiraiCPException
+    /// @brief 总异常抽象类
+    /// @interface MiraiCPException
+    class MiraiCPException : public std::exception {
+    protected:
+        /// 异常的类型
+        const std::string exceptionType;
+
+    public:
+        explicit MiraiCPException(const std::string &&type) : exceptionType(type) { ExceptionBroadcasting(this); }
+
+        /// 获取异常类型
+        std::string getExceptionType() { return exceptionType; }
+
+        /// 异常信息
+        virtual std::string what() { return getExceptionType() + "MiraiCP异常"; }
+
+        /// basicRaise 基本抛出方法，子类重写该方法
+        virtual void basicRaise() {
+            Logger::logger.error(what());
+        };
+
+        /// 实际抛出方法
+        void raise() { basicRaise(); }
+    };
+
+
+    /// 文件读取异常.
+    /// @see MiraiCPException
     class UploadException : public MiraiCPException {
     public:
-        explicit UploadException(const std::string& text) {
+        explicit UploadException(const std::string &text) : MiraiCPException("UploadException") {
             this->description = "上传(图片/文件)异常" + text;
         }
 
         //返回错误信息
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
-        void raise() override {
+        void basicRaise() override {
             Logger::logger.error(this->description);
             //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
@@ -706,38 +764,38 @@ LightApp风格1
     /// @see MiraiCPException
     class IllegalStateException : public MiraiCPException {
     public:
-        explicit IllegalStateException(const std::string& text) {
+        explicit IllegalStateException(const std::string &text) : MiraiCPException("IllegalStateException") {
             this->description = "状态异常:" + text;
         }
 
         //返回错误信息
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
-        void raise() override {
+        void basicRaise() override {
             Logger::logger.error(this->description);
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            // ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
         std::string description;
     };
 
-/// 内部异常, 通常为json读写问题
-/// @see MiraiCPException
+    /// 内部异常, 通常为json读写问题
+    /// @see MiraiCPException
     class APIException : public MiraiCPException {
     public:
-        explicit APIException(const std::string& text) {
+        explicit APIException(const std::string &text) : MiraiCPException("APIException") {
             this->description = "MiraiCP内部无法预料的错误:" + text;
         }
 
         //返回错误信息
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
-        void raise() override {
+        void basicRaise() override {
             Logger::logger.error(this->description);
             //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
@@ -746,20 +804,21 @@ LightApp风格1
         std::string description;
     };
 
-/// 机器人操作异常
-/// @see MiraiCPException
+    /// 机器人操作异常
+    /// @see MiraiCPException
     class BotException : public MiraiCPException {
     public:
-        explicit BotException(std::string d = "没有权限执行该操作") {
+        explicit BotException(std::string d = "没有权限执行该操作", const std::string &&type = "BotException")
+            : MiraiCPException(std::move(type)) {
             this->description = std::move(d);
         }
 
         //返回错误信息
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
-        void raise() override {
+        void basicRaise() override {
             //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
@@ -768,31 +827,34 @@ LightApp风格1
     };
 
     /// 被禁言异常, 通常发生于发送信息
-    class BotIsBeingMutedException: public BotException{
+    class BotIsBeingMutedException : public BotException {
     public:
         /// 剩余禁言时间, 单位秒
         int timeRemain;
-        explicit BotIsBeingMutedException(int t):BotException("发送信息失败, bot已被禁言, 剩余时间"+std::to_string(t)){
+
+        explicit BotIsBeingMutedException(int t) : BotException("发送信息失败, bot已被禁言, 剩余时间" + std::to_string(t),
+                                                                "BotIsBeingMutedException") {
             timeRemain = t;
         }
     };
-/// 禁言异常
-/// @see MiraiCPException
+
+    /// 禁言异常
+    /// @see MiraiCPException
     class MuteException : public MiraiCPException {
     public:
         /*
         *	 禁言时间超出0s~30d
         */
-        MuteException() {
+        MuteException() : MiraiCPException("MuteException") {
             this->description = "禁言时长不在0s~30d中间";
         }
 
         //返回错误信息
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
-        void raise() override {
+        void basicRaise() override {
             //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
@@ -800,18 +862,17 @@ LightApp风格1
         std::string description;
     };
 
-/// 获取群成员错误
-/// @see MiraiCPException
+    /// 获取群成员错误
+    /// @see MiraiCPException
     class MemberException : public MiraiCPException {
     public:
-
         int type = 0;
 
         /*
         *   "1" - 找不到群
         *	"2" - 找不到群成员
         */
-        explicit MemberException(int type) {
+        explicit MemberException(int type) : MiraiCPException("MemberException") {
             this->type = type;
             switch (type) {
                 case 1:
@@ -827,10 +888,10 @@ LightApp风格1
 
         //返回错误信息
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
-        void raise() override {
+        void basicRaise() override {
             //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
@@ -838,23 +899,23 @@ LightApp风格1
         std::string description;
     };
 
-/// 获取群成员错误
-/// @see MiraiCPException
+    /// 获取群成员错误
+    /// @see MiraiCPException
     class FriendException : public MiraiCPException {
     public:
         /*
         *   找不到好友
         */
-        FriendException() {
+        FriendException() : MiraiCPException("FriendException") {
             this->description = "找不到好友";
         }
 
         //返回错误信息
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
-        void raise() override {
+        void basicRaise() override {
             //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
@@ -862,20 +923,20 @@ LightApp风格1
         std::string description;
     };
 
-/// 获取群错误
-/// @see MiraiCPException
+    /// 获取群错误
+    /// @see MiraiCPException
     class GroupException : public MiraiCPException {
     public:
-        GroupException() {
+        GroupException() : MiraiCPException("GroupException") {
             this->description = "C++:找不到群";
         }
 
         //返回错误信息
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
-        void raise() override {
+        void basicRaise() override {
             //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
@@ -883,70 +944,74 @@ LightApp风格1
         std::string description;
     };
 
-/// 撤回异常
-/// @see MiraiCPException
+    /// 撤回异常
+    /// @see MiraiCPException
     class RecallException : public MiraiCPException {
     public:
-        RecallException() {
+        RecallException() : MiraiCPException("RecallException") {
             this->description = "该消息已经被撤回";
         }
 
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
     private:
         std::string description;
     };
 
-/// 远程资源出现问题
-/// @see MiraiCPException
+    /// 远程资源出现问题
+    /// @see MiraiCPException
     class RemoteAssetException : public MiraiCPException {
     public:
-        explicit RemoteAssetException(std::string e) {
+        explicit RemoteAssetException(std::string e) : MiraiCPException("RemoteAssetException") {
             this->description = std::move(e);
         }
 
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
     private:
         std::string description;
     };
 
-/// 参数错误
+    /// 参数错误
+    /// @see MiraiCPException
     class IllegalArgumentException : public MiraiCPException {
     private:
         std::string description;
+
     public:
-        explicit IllegalArgumentException(std::string e) {
+        explicit IllegalArgumentException(std::string e) : MiraiCPException("IllegalArgumentException") {
             this->description = std::move(e);
         }
 
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
-        void raise() override {
+        void basicRaise() override {
             Logger::logger.error(this->what());
         }
     };
 
     /// 超时
+    /// @see MiraiCPException
     class TimeOutException : public MiraiCPException {
     private:
         std::string description;
+
     public:
-        explicit TimeOutException(std::string e) {
+        explicit TimeOutException(std::string e) : MiraiCPException("TimeOutException") {
             this->description = std::move(e);
         }
 
         std::string what() override {
-            return this->description;
+            return exceptionType + this->description;
         }
 
-        void raise() override {
+        void basicRaise() override {
             Logger::logger.error(this->what());
         }
     };
@@ -960,13 +1025,13 @@ LightApp风格1
             throw MemberException(1);
         if (re == "EMM")
             throw MemberException(2);
-        if(re == "EB")
+        if (re == "EB")
             throw BotException("找不到bot:" + re);
         if (re == "EA")
             throw APIException(ErrorMsg);
     }
 
-/// 消息源声明
+    /// 消息源声明
     class MessageSource {
     public:
         /// 消息的ids
@@ -983,7 +1048,9 @@ LightApp风格1
          * @param msg - MiraiCodeable类型指针 - 内容
          * @see MessageSource::quoteAndSendMiraiCode
         */
-        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
+        quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
+                              JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
@@ -997,7 +1064,9 @@ LightApp风格1
          *  e.messageSource.quoteAndSendMsg("HI");
          * @endcode
          */
-        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource quoteAndSendMsg(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
+        quoteAndSendMsg(const std::string &c, QQID groupid = 0,
+                        JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
 
         /**
          * @brief 回复(引用并发送)
@@ -1005,7 +1074,9 @@ LightApp风格1
          * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
          * @return MessageSource
          */
-        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
+        quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
+                              JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
 
         /*!
          * @brief 构建消息源
@@ -1045,28 +1116,31 @@ LightApp风格1
     };
 
     /// MessageChain的组成部分
-    class SingleMessage:public MiraiCodeable{
+    class SingleMessage : public MiraiCodeable {
     public:
         static std::map<int, std::string> messageType;
+
         /// @brief 找对应类型的index key
         /// @param value 类型名
         /// @return 如果没找到返回-1
-        static int getKey(const std::string& value){
-            for(const auto& a : messageType){
-                if(Tools::iequal(a.second, value)) return a.first;
+        static int getKey(const std::string &value) {
+            for (const auto &a : messageType) {
+                if (Tools::iequal(a.second, value)) return a.first;
             }
             return -1;
         }
+
         /// MiraiCode类别
         /// @see SingleMessage::messageType
         int type;
         std::string content;
         std::string prefix;
-        std::string toMiraiCode() const override{
-            if(type > 0)
-                if(type == 1)
+
+        std::string toMiraiCode() const override {
+            if (type > 0)
+                if (type == 1)
                     return "[mirai:at:" + content + "] ";
-                else if(type == 2)
+                else if (type == 2)
                     return "[mirai:atall] ";
                 else
                     return "[mirai:" + messageType[type] + this->prefix + Tools::escapeToMiraiCode(content) + "]";
@@ -1078,51 +1152,65 @@ LightApp风格1
         /// @param type 消息类型 @see messageType
         /// @param content 内容
         /// @param prefix 前缀, 默认为`:`, 第二个冒号部分的内容, 目前在serviceMesage有使用
-        SingleMessage(int type, std::string content, std::string prefix = ":") : type(type), content(std::move(content)), prefix(std::move(prefix)){}
+        SingleMessage(int type, std::string content, std::string prefix = ":") : type(type),
+                                                                                 content(std::move(content)),
+                                                                                 prefix(std::move(prefix)) {}
     };
 
     /// 纯文本信息
-    class PlainText: public SingleMessage{
+    class PlainText : public SingleMessage {
     public:
         std::string content;
-        std::string toMiraiCode() const override{
+
+        std::string toMiraiCode() const override {
             return content;
         }
-        explicit PlainText(const SingleMessage& sg):SingleMessage(sg){
-            if(sg.type != 0) throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText");
+
+        explicit PlainText(const SingleMessage &sg) : SingleMessage(sg) {
+            if (sg.type != 0)
+                throw IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText");
             this->content = sg.content;
         }
+
         template<typename T>
-        explicit PlainText(const T& a):SingleMessage(0, ([&a]() ->std::string{
-            std::stringstream sst;
-            sst << a;
-            return sst.str();
-        })()){}
+        explicit PlainText(const T &a) : SingleMessage(0, ([&a]() -> std::string {
+                                                           std::stringstream sst;
+                                                           sst << a;
+                                                           return sst.str();
+                                                       })()) {}
     };
 
     /// @
-    class At: public SingleMessage{
+    class At : public SingleMessage {
     public:
         QQID target;
-        explicit At(const SingleMessage& sg):SingleMessage(sg){
-            if(sg.type != 1) throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At");
+
+        explicit At(const SingleMessage &sg) : SingleMessage(sg) {
+            if (sg.type != 1)
+                throw IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At");
             this->target = std::stol(sg.content);
         }
-        explicit At(QQID a):SingleMessage(1, std::to_string(a)), target(a){};
-        std::string toMiraiCode() const override{
-            return "[mirai:at:"+ std::to_string(this->target) +"] ";// 后面有个空格
+
+        explicit At(QQID a) : SingleMessage(1, std::to_string(a)), target(a){};
+
+        std::string toMiraiCode() const override {
+            return "[mirai:at:" + std::to_string(this->target) + "] "; // 后面有个空格
         }
     };
 
-    class AtAll: public SingleMessage{
+    /// @brief \@全体
+    class AtAll : public SingleMessage {
     public:
         std::string toMiraiCode() const override {
             return "[mirai:atall] ";
         }
-        AtAll():SingleMessage(2, "", ""){}
+
+        AtAll() : SingleMessage(2, "", "") {}
     };
 
-/// 图像类声明
+    /// 图像类声明
     class Image : public SingleMessage {
     public:
         //图片id，样式:` {xxx}.xx `
@@ -1134,12 +1222,12 @@ LightApp风格1
          * @code [mirai:image:{图片id}.jpg] @endcode
         * @note 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
         */
-        explicit Image(std::string imageId):SingleMessage(3, std::move(imageId)){
+        explicit Image(std::string imageId) : SingleMessage(3, std::move(imageId)) {
             this->id = std::move(imageId);
         }
 
-        explicit Image(const SingleMessage& sg):SingleMessage(sg){
-            if(sg.type != 2) assert(sg.type != 2);
+        explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
+            if (sg.type != 2) assert(sg.type != 2);
             this->id = sg.content;
         }
 
@@ -1152,12 +1240,12 @@ LightApp风格1
         std::string toMiraiCode() const override;
     };
 
-/*!
- * @brief 小程序卡片
- * @see LightAppStyle1, LightAppStyle2, LightAppStyle3
- * @attention 自带的模板不稳定，可能发出现没有效果
- * @example 通过常量构建并发送小程序卡片
- * @code
+    /*!
+    * @brief 小程序卡片
+    * @see LightAppStyle1, LightAppStyle2, LightAppStyle3
+    * @attention 自带的模板不稳定，可能发出现没有效果
+    * @example 通过常量构建并发送小程序卡片
+    * @code
  * Event::processor.registerEvent([](GroupMessageEvent e) {
 		//修改里面的属性从而自定义
 		LightAppStyle1 a = LightAppStyle1();
@@ -1167,9 +1255,9 @@ LightApp风格1
 		e.group.SendMiraiCode(LightApp(b).toMiraiCode());
 		e.group.SendMiraiCode(LightApp(c).toMiraiCode());
 	});
- * @endcode
- * @example 通过文本构建并发送小程序卡片
- * @code
+    * @endcode
+    * @example 通过文本构建并发送小程序卡片
+    * @code
  * Event::processor.registerEvent([](GroupMessageEvent e) {
 		//风格1，适合文字展示，不能交互,无大图
 		//图标地址，应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接
@@ -1211,23 +1299,24 @@ LightApp风格1
 			"\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\""+preview+"\",\"shareTemplateData\":{},\"gamePointsUrl\":\"\",\"gamePoints\":\"\",\"url\":\"m.q.qq.com\",\"scene\":0,\"desc\":\"Test1\",\"title\":\"Test3\",\"host\":{\"uin\":0,\"nick\":\"\"},\"shareTemplateId\":\"8C8E89B49BE609866298ADDFF2DBABA4\",\"icon\":\""+icon+"\",\"qqdocurl\":\""+url+"\",\"showLittleTail\":\"\"}},\"desc\":\"\"}";
 		e.group.SendMiraiCode(LightApp(b).toString());
 		});
- * @endcode
- */
+    * @endcode
+    */
     class LightApp : public SingleMessage {
     public:
-
         /// @brief 使用纯文本构造，推荐使用其他结构体方法构造
         /// @param content 构造文本
         explicit LightApp(std::string content) : SingleMessage(4, std::move(content)) {}
 
-        explicit LightApp(const SingleMessage& sg):SingleMessage(sg){
-            if(sg.type != 3) throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp");
+        explicit LightApp(const SingleMessage &sg) : SingleMessage(sg) {
+            if (sg.type != 3)
+                throw IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp");
         }
 
         /// 使用样式1,适合文字展示，无大图，不能交互
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        explicit LightApp(const LightAppStyle1 &c) : SingleMessage(4,"") {
+        explicit LightApp(const LightAppStyle1 &c) : SingleMessage(4, "") {
             this->content =
                     "{\"app\":\"com.tencent.miniapp\",\"desc\":\"\",\"view\":\"notification\",\"ver\":\"0.0.0.1\",\"prompt\":\"[应用]\",\"appID\":\"\",\"sourceName\":\"\",\"actionData\":\"\",\"actionData_A\":\"\",\"sourceUrl\":\"\",\"meta\":{\"notification\":{\"appInfo\":{\"appName\":\"" +
                     c.appName + "\",\"appType\":4,\"appid\":1109659848,\"iconUrl\":\"" + c.icon +
@@ -1238,7 +1327,7 @@ LightApp风格1
         /// 使用样式2，有大图，不能交互
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
-        explicit LightApp(const LightAppStyle2 &c) : SingleMessage(4,"") {
+        explicit LightApp(const LightAppStyle2 &c) : SingleMessage(4, "") {
             this->content =
                     "{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"1.0.0.103\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
                     "\"meta\":{\"detail_1\":{\"appid\":\"1110081493\",\"preview\":\"" +
@@ -1253,7 +1342,8 @@ LightApp风格1
         /// @param c 结构体，用于自定义里面的数据
         /// @see LightAppStyle1 in pch.h
         explicit LightApp(const LightAppStyle3 &c) : SingleMessage(4, "") {
-            this->content ="{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
+            this->content =
+                    "{\"config\":{\"height\":0,\"forward\":1,\"ctime\":0,\"width\":0,\"type\":\"normal\",\"token\":\"\",\"autoSize\":0},"
                     "\"prompt\":\"[QQ小程序]\",\"app\":\"com.tencent.miniapp_01\",\"ver\":\"0.0.0.1\",\"view\":\"view_8C8E89B49BE609866298ADDFF2DBABA4\","
                     "\"meta\":{\"detail_1\":{\"appid\":\"1109937557\",\"preview\":\"" +
                     c.preview +
@@ -1266,15 +1356,15 @@ LightApp风格1
 
         explicit LightApp(const LightAppStyle4 &c) : SingleMessage(4,
                                                                    R"({"app":"com.tencent.miniapp","desc":"","view":"notification","ver":"1.0.0.11","prompt":")" +
-                                                                   c.prompt +
-                                                                   "\",\"meta\":{\"notification\":{\"appInfo\":{\"appName\":\"" +
-                                                                   c.appName +
-                                                                   "\",\"appType\":4,\"appid\":1109659848,\"iconUrl\":\"" +
-                                                                   c.iconUrl + "\"},\"button\":[{\"action\":\"" +
-                                                                   c.button_action + "\",\"name\":\"" + c.button_name +
-                                                                   "\"}],\"data\":[{\"title\":\"" + c.data_title +
-                                                                   "\",\"value\":\"" + c.data_value +
-                                                                   "\"}],\"emphasis_keyword\":\"\"}}}") {}
+                                                                           c.prompt +
+                                                                           "\",\"meta\":{\"notification\":{\"appInfo\":{\"appName\":\"" +
+                                                                           c.appName +
+                                                                           "\",\"appType\":4,\"appid\":1109659848,\"iconUrl\":\"" +
+                                                                           c.iconUrl + "\"},\"button\":[{\"action\":\"" +
+                                                                           c.button_action + "\",\"name\":\"" + c.button_name +
+                                                                           "\"}],\"data\":[{\"title\":\"" + c.data_title +
+                                                                           "\",\"value\":\"" + c.data_value +
+                                                                           "\"}],\"emphasis_keyword\":\"\"}}}") {}
 
         /// 返回miraicode
         std::string toMiraiCode() const override {
@@ -1293,19 +1383,22 @@ LightApp风格1
         /// @brief ServiceMessage
         /// @param id 在xml内容前面的id (不包括逗号)
         /// @param a xml内容 (不需要事先转码到miraiCode)
-        explicit ServiceMessage(int id, std::string a) : SingleMessage(5, std::move(a), ":" +  std::to_string(id) + ',') {}
+        explicit ServiceMessage(int id, std::string a) : SingleMessage(5, std::move(a),
+                                                                       ":" + std::to_string(id) + ',') {}
 
-        explicit ServiceMessage(const SingleMessage& sg):SingleMessage(sg){
-            if(sg.type != 4)throw IllegalArgumentException("Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage");
+        explicit ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
+            if (sg.type != 4)
+                throw IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage");
         }
 
         explicit ServiceMessage(const URLSharer &a) : SingleMessage(5,
                                                                     "<?xml version=\"1.0\" encoding=\"utf-8\"?><msg templateID=\"12345\" action=\"web\" brief=\"" +
-                                                                    a.brief + "\" serviceID=\"1\" url=\"" + a.url +
-                                                                    "\"><item layout=\"2\"><picture cover=\"" +
-                                                                    a.cover + "\"/><title>" + a.title +
-                                                                    "</title><summary>" + a.summary +
-                                                                    "</summary></item><source/></msg>",
+                                                                            a.brief + "\" serviceID=\"1\" url=\"" + a.url +
+                                                                            "\"><item layout=\"2\"><picture cover=\"" +
+                                                                            a.cover + "\"/><title>" + a.title +
+                                                                            "</title><summary>" + a.summary +
+                                                                            "</summary></item><source/></msg>",
                                                                     ":1,") {}
     };
 
@@ -1319,7 +1412,7 @@ LightApp风格1
         /// 引用信息的MessageSource
         MessageSource source;
 
-        explicit QuoteReply(MessageSource source) : SingleMessage(-2, ""), source(std::move(source)) {};
+        explicit QuoteReply(MessageSource source) : SingleMessage(-2, ""), source(std::move(source)){};
     };
 
     /// 接收到的音频文件, 发送用`Contact.sendAudio`
@@ -1345,14 +1438,14 @@ LightApp风格1
         explicit OnlineAudio(std::string f, std::array<uint8_t, 16> md5, int size, int codec, int length,
                              std::string url) : SingleMessage(-3, ""),
                                                 filename(std::move(f)), md5(md5), size(size), codec(codec),
-                                                length(length), url(std::move(url)) {};
+                                                length(length), url(std::move(url)){};
     };
 
     /// @brief 远程(群)文件类型
     class RemoteFile : public SingleMessage {
     public:
         /// @brief 下载信息
-/// @see RemoteFile
+        /// @see RemoteFile
         struct Dinfo {
             /// 下载地址
             std::string url;
@@ -1361,8 +1454,8 @@ LightApp风格1
             /// sha1 可用于校验
             std::string sha1;
         };
-/// @brief 文件信息
-/// @see RemoteFile
+        /// @brief 文件信息
+        /// @see RemoteFile
         struct Finfo {
             /// 文件大小
             QQID size;
@@ -1416,16 +1509,16 @@ LightApp风格1
          */
         explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, std::string p,
                             struct Dinfo d, struct Finfo f) : SingleMessage(6, i + "," + std::to_string(ii) + "," +
-                                                                               Tools::escapeToMiraiCode(std::move(n)) +
-                                                                               "," +
-                                                                               std::to_string(s)),
+                                                                                       Tools::escapeToMiraiCode(std::move(n)) +
+                                                                                       "," +
+                                                                                       std::to_string(s)),
                                                               id(i),
                                                               internalid(ii),
                                                               name(std::move(n)),
                                                               size(s),
                                                               path(std::move(p)),
                                                               dinfo(std::move(d)),
-                                                              finfo(f) {};
+                                                              finfo(f){};
 
         /// 仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换
         std::string toMiraiCode() const override {
@@ -1438,7 +1531,7 @@ LightApp风格1
         }
     };
 
-
+    /// @brief 目前不支持的消息类型
     class UnSupportMessage : public SingleMessage {
     public:
         std::string content;
@@ -1447,117 +1540,129 @@ LightApp风格1
             return content;
         }
 
-        explicit UnSupportMessage(const SingleMessage &s) : SingleMessage(s) {};
+        explicit UnSupportMessage(const SingleMessage &s) : SingleMessage(s){};
 
         explicit UnSupportMessage(const std::string &content) : SingleMessage(-1, content) {}
     };
 
     /// 消息链, 一般由SingleMessage组成
-    class MessageChain:public MiraiCodeable{
+    class MessageChain : public MiraiCodeable {
     public:
-        class Message{
+        class Message {
         private:
             std::shared_ptr<SingleMessage> content;
+
         public:
             /// 代表的子类
             /// @see MessageChain::messageType
-            int type() const{
+            int type() const {
                 return this->content->type;
             };
+
             template<class T>
-            explicit Message(T a){
+            explicit Message(T a) {
                 static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
                 content = std::make_shared<SingleMessage>(a);
             }
-            explicit Message(std::shared_ptr<SingleMessage> a){
+
+            explicit Message(std::shared_ptr<SingleMessage> a) {
                 content = std::move(a);
             }
-            std::shared_ptr<SingleMessage> getPtr(){
+
+            std::shared_ptr<SingleMessage> getPtr() {
                 return this->content;
             }
-            std::shared_ptr<SingleMessage> operator->() const{
+
+            std::shared_ptr<SingleMessage> operator->() const {
                 return this->content;
             }
 
             template<class T>
-            T get(){
+            T get() {
                 auto tmp = this->content;
-                switch(tmp->type){
+                switch (tmp->type) {
                     case -1:
-                        if(std::is_same_v<T, UnSupportMessage>)
-                            return (UnSupportMessage)(*tmp);
+                        if (std::is_same_v<T, UnSupportMessage>)
+                            return (UnSupportMessage) (*tmp);
                         else
                             throw IllegalArgumentException("转换错误");
                     case 0:
-                        if(std::is_same_v<T, PlainText>)
-                            return (PlainText)(*tmp);
+                        if (std::is_same_v<T, PlainText>)
+                            return (PlainText) (*tmp);
                         else
                             throw IllegalArgumentException("转换错误");
                     case 1:
-                        if(std::is_same_v<T, At>)
-                            return (At)(*tmp);
+                        if (std::is_same_v<T, At>)
+                            return (At) (*tmp);
                         else
                             throw IllegalArgumentException("转换错误");
                     case 2:
-                        if(std::is_same_v<T, Image>)
-                            return (Image)(*tmp);
+                        if (std::is_same_v<T, Image>)
+                            return (Image) (*tmp);
                         else
                             throw IllegalArgumentException("转换错误");
                     case 3:
-                        if(std::is_same_v<T, LightApp>)
-                            return (LightApp)(*tmp);
+                        if (std::is_same_v<T, LightApp>)
+                            return (LightApp) (*tmp);
                         else
                             throw IllegalArgumentException("转换错误");
                     case 4:
-                        if(std::is_same_v<T, ServiceMessage>)
-                            return (ServiceMessage)(*tmp);
+                        if (std::is_same_v<T, ServiceMessage>)
+                            return (ServiceMessage) (*tmp);
                         else
                             throw IllegalArgumentException("转换错误");
-                    default:// cannot reach
+                    default: // cannot reach
                         throw APIException("");
                 }
             }
 
-            std::variant<PlainText, At, Image, LightApp, ServiceMessage, UnSupportMessage> get() const{
+            std::variant<PlainText, At, Image, LightApp, ServiceMessage, UnSupportMessage> get() const {
                 auto tmp = this->content;
-                switch(tmp->type){
+                switch (tmp->type) {
                     case -1:
-                        return (UnSupportMessage)(*tmp);
+                        return (UnSupportMessage) (*tmp);
                     case 0:
-                        return (PlainText)(*tmp);
+                        return (PlainText) (*tmp);
                     case 1:
-                        return (At)(*tmp);
+                        return (At) (*tmp);
                     case 2:
-                        return (Image)(*tmp);
+                        return (Image) (*tmp);
                     case 3:
-                        return (LightApp)(*tmp);
+                        return (LightApp) (*tmp);
                     case 4:
-                        return (ServiceMessage)(*tmp);
+                        return (ServiceMessage) (*tmp);
                     default:
                         throw APIException("位置MessageChain::get");
                 }
             }
         };
+
     private:
-        void p(std::vector<Message>* v){}
+        void p(std::vector<Message> *v) {}
+
         template<class T1, class... T2>
-        void p(std::vector<Message>* v, T1 h, T2 ... args){
+        void p(std::vector<Message> *v, T1 h, T2... args) {
             static_assert(std::is_base_of_v<SingleMessage, T1>, "只支持SingleMessage子类");
             v->push_back(Message(h));
-            p(v,args...);
+            p(v, args...);
         }
+
         template<class... T2>
-        void p(std::vector<Message>* v, std::string h, T2 ... args){
+        void p(std::vector<Message> *v, std::string h, T2... args) {
             v->push_back(Message(PlainText(h)));
             p(v, args...);
         }
+
         template<class... T2>
-        void p(std::vector<Message>* v, const char* h, T2 ... args){
+        void p(std::vector<Message> *v, const char *h, T2... args) {
             v->push_back(Message(PlainText(h)));
             p(v, args...);
         }
+
         std::vector<Message> content;
-        MessageSource quoteAndSend0(const std::string& msg, QQID groupid = -1, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+
+        MessageSource quoteAndSend0(const std::string &msg, QQID groupid = -1,
+                                    JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             json obj;
             json sign;
             obj["messageSource"] = this->source->serializeToString();
@@ -1594,14 +1699,15 @@ LightApp风格1
 
         /// 如果由MiraiCP构造(incoming)就会存在，否则则不存在
         std::optional<MessageSource> source = std::nullopt;
+
         /// @brief 找到miraiCode结尾的`]`
         /// @param s 文本
         /// @param start 开始位置
         /// @return 如果不存在返回-1, 存在则返回index
-        static size_t findEnd(const std::string& s, size_t start){
+        static size_t findEnd(const std::string &s, size_t start) {
             size_t pos = start;
-            while(pos < s.length()) {
-                switch(s[pos]){
+            while (pos < s.length()) {
+                switch (s[pos]) {
                     case '\\':
                         pos += 2;
                         continue;
@@ -1612,89 +1718,102 @@ LightApp风格1
             }
             return -1;
         }
-        std::string toMiraiCode() const override{
+
+        std::string toMiraiCode() const override {
             return Tools::VectorToString(this->toMiraiCodeVector(), "");
         }
-        std::vector<std::string> toMiraiCodeVector() const{
-            std::vector <std::string> tmp;
-            for(const auto& a : this->content)
+
+        std::vector<std::string> toMiraiCodeVector() const {
+            std::vector<std::string> tmp;
+            for (const auto &a : this->content)
                 tmp.emplace_back(a->toMiraiCode());
             return tmp;
         }
+
         /// @brief 添加元素
         /// @tparam T 任意的SingleMessage的子类
         /// @param a 添加的值
         template<class T>
-        void add(const T& a){
+        void add(const T &a) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只接受SingleMessage的子类");
             this->content.push_back(Message(a));
         }
-        void add(const MessageSource& val){
+
+        void add(const MessageSource &val) {
             this->source = val;
         }
+
         /// 筛选出某种特点type的信息
         template<class T>
-        std::vector<T> filter(int type){
+        std::vector<T> filter(int type) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
-            for(auto a:this->content){
-                if(a->type == type)
+            for (auto a : this->content) {
+                if (a->type == type)
                     re.push_back(std::static_pointer_cast<T>(a));
             }
             return re;
         }
+
         /// 自定义筛选器
         template<class T>
-        std::vector<T> filter(std::function<bool(Message)> func){
+        std::vector<T> filter(std::function<bool(Message)> func) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
-            for(auto a:this->content){
-                if(func(a))
+            for (auto a : this->content) {
+                if (func(a))
                     re.push_back(std::static_pointer_cast<T>(a));
             }
             return re;
         }
+
         /// 找出第一个指定的type的信息
         template<class T>
-        T first(int type){
-            for(auto a:this->content)
-                if(a->type == type)
+        T first(int type) {
+            for (auto a : this->content)
+                if (a->type == type)
                     return std::static_pointer_cast<T>(a);
         }
+
         /// incoming构造器
         template<class... T>
-        explicit MessageChain(MessageSource ms, T ... args): source(std::move(ms)){
+        explicit MessageChain(MessageSource ms, T... args) : source(std::move(ms)) {
             this->p(&this->content, args...);
         };
+
         /// outcoming构造器
         template<class... T>
-        explicit MessageChain(T ... args){
+        explicit MessageChain(T... args) {
             p(&this->content, args...);
         };
+
         /// outcoming 构造器
         template<class T>
-        explicit MessageChain(const T& msg){
+        explicit MessageChain(const T &msg) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage子类");
             this->content.push_back(Message(msg));
         };
+
         template<class T>
-        [[nodiscard]] MessageChain plus(const T& a){
+        [[nodiscard]] MessageChain plus(const T &a) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             MessageChain tmp(*this);
             tmp.content.push_back(std::make_shared<SingleMessage>(a));
             return tmp;
         }
-        MessageChain plus(const MessageSource& ms){
+
+        MessageChain plus(const MessageSource &ms) {
             MessageChain tmp(*this);
             tmp.source = ms;
             return tmp;
         }
+
         template<class T>
-        MessageChain operator+ (const T& msg){
+        MessageChain operator+(const T &msg) {
             return this->plus(msg);
         }
 
-        Message operator[](size_t i){
+        Message operator[](size_t i) {
             return this->content[i];
         }
 
@@ -1707,7 +1826,8 @@ LightApp风格1
         /// - SingleMessage的各种派生类
         /// - MessageChain
         template<class T>
-        [[deprecated("use Contact.quoteAndSend")]] MessageSource quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        [[deprecated("use Contact.quoteAndSend")]] MessageSource
+        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return this->quoteAndSend1(s, groupid, env);
         }
 
@@ -1718,8 +1838,8 @@ LightApp风格1
     };
 
     /*!
- * @brief group, friend, member的父类
- */
+    * @brief group, friend, member的父类
+    */
     class Contact {
     private:
         /// 发送纯文本信息
@@ -1749,7 +1869,8 @@ LightApp风格1
             return sendMsg0(std::string(msg), retryTime, false, env);
         }
 
-        MessageSource quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource
+        quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             json obj;
             json sign;
             obj["messageSource"] = ms.serializeToString();
@@ -1800,7 +1921,7 @@ LightApp风格1
             this->_botid = 0;
         }
 
-        bool operator==(const Contact& c) const{
+        bool operator==(const Contact &c) const {
             return this->id() == c.id();
         }
 
@@ -1817,7 +1938,7 @@ LightApp风格1
          *  @see Contact::name()
          * @param botid 对应的botid
          */
-        explicit Contact(int type, QQID id, QQID gid, const std::string& name, QQID botid, bool anonymous = false) {
+        explicit Contact(int type, QQID id, QQID gid, const std::string &name, QQID botid, bool anonymous = false) {
             this->_type = type;
             this->_id = id;
             this->_groupid = gid;
@@ -1890,7 +2011,8 @@ LightApp风格1
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         [[deprecated("Use sendMessage")]] MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
-                                                                      JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+                                                                      JNIEnv *env = ThreadManager::getEnv(__FILE__,
+                                                                                                          __LINE__)) {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 
@@ -1903,7 +2025,8 @@ LightApp风格1
         /// - SingleMessage的各种派生类
         /// - MessageChain
         template<class T>
-        MessageSource quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource
+        quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return this->quoteAndSend1(s, ms, env);
         }
 
@@ -1936,8 +2059,7 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        [[deprecated("Use sendMessage")]]
-        MessageSource
+        [[deprecated("Use sendMessage")]] MessageSource
         sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return sendMsg0(msg, retryTime, false, env);
         }
@@ -1947,8 +2069,7 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        [[deprecated("Use sendMessage")]]
-        MessageSource
+        [[deprecated("Use sendMessage")]] MessageSource
         sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return sendMsg0(msg.toMiraiCode(), retryTime, false, env);
         }
@@ -1958,8 +2079,8 @@ LightApp风格1
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        [[deprecated("Use sendMessage")]]
-        MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+        [[deprecated("Use sendMessage")]] MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3,
+                                                                JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);
         }
 
@@ -1974,10 +2095,10 @@ LightApp风格1
         Image uploadImg(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// 刷新当前对象信息
-        virtual void refreshInfo(JNIEnv *) {};
+        virtual void refreshInfo(JNIEnv *){};
     };
 
-/// 较底层api
+    /// 较底层api
     class LowLevelAPI {
     public:
         /// @brief 抽象封装底层发送信息接口
@@ -1986,7 +2107,8 @@ LightApp风格1
         /// @param miraicode 是否为miraicode格式
         /// @param env JNIEnv
         /// @return
-        static std::string send0(const std::string& content, Contact *c, int retryTime, bool miraicode, JNIEnv *env, std::string errorInfo = "") {
+        static std::string send0(const std::string &content, Contact *c, int retryTime, bool miraicode, JNIEnv *env,
+                                 std::string errorInfo = "") {
             nlohmann::json j;
             nlohmann::json tmp;
             tmp["content"] = content;
@@ -2013,7 +2135,8 @@ LightApp风格1
          * @param env JNIEnv
          * @return string 待解析json
          */
-        static inline std::string uploadImg0(const std::string& path, Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        static inline std::string
+        uploadImg0(const std::string &path, Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["fileName"] = path;
             j["source"] = c->serializationToString();
@@ -2028,7 +2151,7 @@ LightApp风格1
 
         /// 获取每个对象必有信息
         /// @see LowLevelAPI::info
-        static info info0(const std::string& source) {
+        static info info0(const std::string &source) {
             info re;
             ErrorHandle(source);
             nlohmann::json j = nlohmann::json::parse(source);
@@ -2038,7 +2161,7 @@ LightApp风格1
         }
     };
 
-///聊天记录里每个消息
+    ///聊天记录里每个消息
     class ForwardNode {
     public:
         ///发送者id
@@ -2057,14 +2180,15 @@ LightApp风格1
         /// @param time - 发送时间，以时间戳记
         ForwardNode(QQID id, const std::string &name, const std::string &message,
                     int time)
-                : id(id), name(name), message(message), time(time) {}
+            : id(id), name(name), message(message), time(time) {}
 
         /// @brief 构造聊天记录里每条信息
         /// @param c - 发送者的contact指针
         /// @param message - 发送的信息
         /// @param t - 发送时间，时间戳格式
-        ForwardNode(Contact *c, const std::string &message, int t) : id(c->id()), name(c->nickOrNameCard()), message(message),
-                                                               time(t) {}
+        ForwardNode(Contact *c, const std::string &message, int t) : id(c->id()), name(c->nickOrNameCard()),
+                                                                     message(message),
+                                                                     time(t) {}
     };
 
     ///聊天记录, 由ForwardNode组成
@@ -2094,7 +2218,7 @@ LightApp风格1
     };
 
 
-/// 好友类声明
+    /// 好友类声明
     class Friend : public Contact {
     public:
         /*!
@@ -2114,7 +2238,7 @@ LightApp风格1
             Config::koperation(Config::RefreshInfo, j, env);
         }
 
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override{
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
             std::string temp = LowLevelAPI::getInfoSource(this, env);
             if (temp == "E1") {
                 throw FriendException();
@@ -2129,16 +2253,16 @@ LightApp风格1
          * @warning 发送戳一戳的前提是登录该bot的协议是phone
          * @throw MiraiCP::BotException, MiraiCP::IllegalStateException
          */
-        void sendNudge(){
+        void sendNudge() {
             json j;
             j["contactSource"] = this->serializationToString();
             std::string re = Config::koperation(Config::SendNudge, j);
-            if(re == "E1")
+            if (re == "E1")
                 throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
         }
     };
 
-/// 群成员类声明
+    /// 群成员类声明
     class Member : public Contact {
     public:
         /// @brief 权限等级
@@ -2151,7 +2275,7 @@ LightApp风格1
         /// @brief 更改群成员权限
         /// @param admin 如果为true为更改到管理员
         /// @param env
-        void modifyAdmin(bool admin, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
+        void modifyAdmin(bool admin, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// @brief 构建群成员对象
         /// @param qqid 该成员q号
@@ -2162,16 +2286,19 @@ LightApp风格1
         ///  Member(this.sender.id, this.group.id, this.bot.id)
         /// @endcode
         explicit Member(QQID qqid, QQID groupid, QQID botid,
-               JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                        JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
-        explicit Member(Contact c) : Contact(std::move(c)) { this->isAnonymous = this->_anonymous; refreshInfo(); };
+        explicit Member(Contact c) : Contact(std::move(c)) {
+            this->isAnonymous = this->_anonymous;
+            refreshInfo();
+        };
 
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
         bool isAnonymous = false;
 
         /// 重新获取(刷新)群成员信息
         void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
-            if(isAnonymous)
+            if (isAnonymous)
                 return;
             std::string temp = LowLevelAPI::getInfoSource(this, env);
             if (temp == "E1")
@@ -2191,7 +2318,7 @@ LightApp风格1
         }
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv * env= ThreadManager::getEnv(__FILE__, __LINE__)){
+        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return Contact::sendVoice0(path, env);
         }
 
@@ -2207,7 +2334,7 @@ LightApp风格1
 
         /// 取消禁言
         /// @throws BotException, MuteException
-        void unMute(JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+        void unMute(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             mute(0, env);
         }
 
@@ -2248,21 +2375,21 @@ LightApp风格1
          * @warning 发送戳一戳的前提是登录该bot的协议是phone
          * @throw MiraiCP::BotException, MiraiCP::IllegalStateException
          */
-        void sendNudge(){
-            if(isAnonymous) return;
+        void sendNudge() {
+            if (isAnonymous) return;
             json j;
             j["contactSource"] = this->serializationToString();
             std::string re = Config::koperation(Config::SendNudge, j);
-            if(re == "E1")
+            if (re == "E1")
                 throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
         }
     };
 
-/// 群聊类声明
+    /// 群聊类声明
     class Group : public Contact {
     public:
         /// 群公告参数
-        class AnnouncementParams{
+        class AnnouncementParams {
         public:
             /// 发送给新成员
             bool send2new;
@@ -2274,15 +2401,21 @@ LightApp风格1
             bool showEditCard;
             /// 显示弹窗
             bool showPopup;
+
             /// 序列化到文本
             json serializeToJson();
-            explicit AnnouncementParams(bool send2New = false, bool requireConfirm = false, bool pinned = false, bool showEditCard = false, bool showPopup = false) :
-            send2new(send2New), requireConfirm(requireConfirm),
-                                                               pinned(pinned), showEditCard(showEditCard),
-                                                               showPopup(showPopup){}
+
+            explicit AnnouncementParams(bool send2New = false, bool requireConfirm = false, bool pinned = false,
+                                        bool showEditCard = false, bool showPopup = false) : send2new(send2New),
+                                                                                             requireConfirm(
+                                                                                                     requireConfirm),
+                                                                                             pinned(pinned),
+                                                                                             showEditCard(showEditCard),
+                                                                                             showPopup(showPopup) {}
         };
+
         /// 在线群公告
-        class OnlineAnnouncement{
+        class OnlineAnnouncement {
         public:
             /// 内容
             std::string content;
@@ -2302,6 +2435,7 @@ LightApp风格1
             int confirmNum;
             /// 图片id, 如果不存在即为空
             std::string imageid;
+
             /// 删除当前群公告
             /// @throw BotException
             void deleteThis();
@@ -2310,25 +2444,29 @@ LightApp风格1
             static OnlineAnnouncement deserializeFromJson(json);
 
             OnlineAnnouncement(const std::string &content, AnnouncementParams &params,
-                               QQID groupid, QQID senderid,QQID botid,
+                               QQID groupid, QQID senderid, QQID botid,
                                long long int publicationTime, const std::string &fid, int confirmNum,
                                const std::string &imageid) : content(content), params(params), groupid(groupid),
-                                                             senderid(senderid), botid(botid), publicationTime(publicationTime),
+                                                             senderid(senderid), botid(botid),
+                                                             publicationTime(publicationTime),
                                                              fid(fid), confirmNum(confirmNum), imageid(imageid) {}
         };
+
         /// 本地(未发送)群公告
-        class OfflineAnnouncement{
+        class OfflineAnnouncement {
         public:
             /// 内容
             std::string content;
             /// 公告属性
             AnnouncementParams params;
+
             /// 发布群公告
-            Group::OnlineAnnouncement publishTo(const Group&);
+            Group::OnlineAnnouncement publishTo(const Group &);
 
             OfflineAnnouncement(const std::string &content, AnnouncementParams params) : content(content),
-            params(params) {}
+                                                                                         params(params) {}
         };
+
         /**
          * @brief 群设置
          * @details 使用uploadSetting上传设置，使用refreshInfo同步服务器设定，后面两项由于https://github.com/mamoe/mirai/issues/1307 还不能改
@@ -2389,18 +2527,18 @@ LightApp风格1
         explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 取群成员
-        Member getMember(QQID memberid, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)){
+        Member getMember(QQID memberid, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return Member(memberid, this->id(), this->groupid(), env);
         }
 
         /// 取群公告列表
-        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)){
+        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             json j;
             j["source"] = this->serializationToString();
             j["announcement"] = true;
             std::string re = Config::koperation(Config::RefreshInfo, j, env);
             std::vector<OnlineAnnouncement> oa;
-            for(const json& e : json::parse(re)){
+            for (const json &e : json::parse(re)) {
                 oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
             }
             return oa;
@@ -2439,10 +2577,11 @@ LightApp风格1
             });
          @endcode
         */
-        RemoteFile sendFile(const std::string &path, const std::string &filepath, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        RemoteFile sendFile(const std::string &path, const std::string &filepath,
+                            JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv * env= ThreadManager::getEnv(__FILE__, __LINE__)){
+        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             return Contact::sendVoice0(path, env);
         }
 
@@ -2487,7 +2626,8 @@ LightApp风格1
          * @param path - 远程路径
          * @return 返回值为一个vector容器, 每一项为short_info
         */
-        std::vector<file_short_info> getFileList(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        std::vector<file_short_info>
+        getFileList(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /// 取文件列表以字符串形式返回
         ///@example 取string格式群文件列表
@@ -2531,12 +2671,12 @@ LightApp风格1
         explicit Bot(QQID i) : id(i) {}
 
         /// 取好友
-        Friend getFriend(QQID i, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) const{
+        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
             return Friend(i, this->id, env);
         }
 
         /// 取群聊
-        Group getGroup(QQID groupid, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) const{
+        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
             return Group(groupid, this->id, env);
         }
 
@@ -2578,15 +2718,16 @@ LightApp风格1
             return Tools::VectorToString(getGroupList());
         }
 
-        bool operator==(const Contact& c)const{
+        bool operator==(const Contact &c) const {
             return this->id == c.id();
         }
-        bool operator==(const Bot& b)const{
+
+        bool operator==(const Bot &b) const {
             return this->id == b.id;
         }
     };
 
-/// 所以事件处理timeoutevent都是机器人事件，指都有机器人实例
+    /// 所以事件处理timeoutevent都是机器人事件，指都有机器人实例
     class BotEvent {
     public:
         /// 该事件接受的机器人
@@ -2599,7 +2740,7 @@ LightApp风格1
         }
     };
 
-///群消息事件声明
+    ///群消息事件声明
     class GroupMessageEvent : public BotEvent {
     public:
         ///来源群
@@ -2611,7 +2752,8 @@ LightApp风格1
 
         GroupMessageEvent(QQID botid, const Group &group, const Member &sender,
                           MessageChain mc) : BotEvent(botid), group(group),
-                          sender(sender), message(std::move(mc)) {};
+                                             sender(sender), message(std::move(mc)){};
+
         /*!
          * @brief 取群聊下一个消息(群聊与本事件一样)
          * @warning 如果两次发送信息间隔过短可能会漏过信息
@@ -2619,7 +2761,8 @@ LightApp风格1
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return MiraiCP::Message
          */
-        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageChain
+        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
 
         /*!
          * @brief 取群聊中同群成员的下一个消息(发送人和群与本事件一样)
@@ -2628,11 +2771,11 @@ LightApp风格1
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return MiraiCP::Message
          */
-        MessageChain senderNextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
-
+        MessageChain
+        senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
     };
 
-/// 私聊消息事件类声明
+    /// 私聊消息事件类声明
     class PrivateMessageEvent : public BotEvent {
     public:
         /// 发起人
@@ -2647,7 +2790,9 @@ LightApp风格1
          * @param message 消息
          * @param messageSource 消息源
          */
-        PrivateMessageEvent(QQID botid, Friend sender, MessageChain mc) : BotEvent(botid), sender(std::move(sender)), message(mc) {};
+        PrivateMessageEvent(QQID botid, Friend sender, MessageChain mc) : BotEvent(botid), sender(std::move(sender)),
+                                                                          message(mc){};
+
         /*!
          * @brief 取下一个消息(发送人和接收人和本事件一样)
          * @warning 如果两次发送信息间隔过短可能会漏过信息
@@ -2655,10 +2800,11 @@ LightApp风格1
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return MiraiCP::Message
          */
-        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageChain
+        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
     };
 
-/// 群聊邀请事件类声明
+    /// 群聊邀请事件类声明
     class GroupInviteEvent : public BotEvent {
     public:
         /// 事件序列化文本
@@ -2672,20 +2818,21 @@ LightApp风格1
         /// 群号
         QQID groupid = 0;
 
-        static void operation0(const std::string& source, QQID botid, bool accept, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        static void operation0(const std::string &source, QQID botid, bool accept,
+                               JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             nlohmann::json j;
             j["text"] = source;
             j["operate"] = accept;
             j["botid"] = botid;
             std::string re = Config::koperation(Config::Gioperation, j, env);
-            if (re == "E")Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
+            if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
         }
 
-        void reject(JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
-            GroupInviteEvent::operation0(this->source, this->bot.id,false, env);
+        void reject(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+            GroupInviteEvent::operation0(this->source, this->bot.id, false, env);
         }
 
-        void accept(JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void accept(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             GroupInviteEvent::operation0(this->source, this->bot.id, true, env);
         }
 
@@ -2700,11 +2847,11 @@ LightApp风格1
          */
         GroupInviteEvent(QQID botid, const std::string &source, const std::string &inviterNick,
                          QQID inviterid, const std::string &groupName, QQID groupid)
-                : BotEvent(botid), source(source), inviterNick(inviterNick), inviterid(inviterid), groupName(groupName),
-                  groupid(groupid) {}
+            : BotEvent(botid), source(source), inviterNick(inviterNick), inviterid(inviterid), groupName(groupName),
+              groupid(groupid) {}
     };
 
-/// 好友申请事件声明
+    /// 好友申请事件声明
     class NewFriendRequestEvent : public BotEvent {
     public:
         /// @brief 序列化的事件信息
@@ -2719,24 +2866,25 @@ LightApp风格1
 
         /// @brief 接受好友申请
         /// @param source 事件序列化信息
-        static void operation0(const std::string& source, QQID botid, bool accept, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__), bool ban=false) {
+        static void operation0(const std::string &source, QQID botid, bool accept,
+                               JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__), bool ban = false) {
             nlohmann::json j;
             j["text"] = source;
             j["operate"] = accept;
             j["botid"] = botid;
             j["ban"] = ban;
             std::string re = Config::koperation(Config::Nfroperation, j, env);
-            if (re == "E")Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
+            if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
         }
 
         /// @brief 拒绝好友申请
-        void reject(bool ban = false, JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void reject(bool ban = false, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             NewFriendRequestEvent::operation0(this->source, this->bot.id, false, env);
         }
 
         /// @brief 接受申请
         /// @param ban - 是否加入黑名单
-        void accept(JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void accept(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
             NewFriendRequestEvent::operation0(this->source, this->bot.id, true, env);
         }
 
@@ -2753,11 +2901,11 @@ LightApp风格1
                               QQID fromid,
                               QQID fromgroupid, const std::string &nick,
                               const std::string &message)
-                : BotEvent(botid), source(source), fromid(fromid), fromgroupid(fromgroupid), nick(nick),
-                  message(message) {}
+            : BotEvent(botid), source(source), fromid(fromid), fromgroupid(fromgroupid), nick(nick),
+              message(message) {}
     };
 
-/// 新群成员加入
+    /// 新群成员加入
     class MemberJoinEvent : public BotEvent {
     public:
         /*!
@@ -2784,11 +2932,11 @@ LightApp风格1
          */
         MemberJoinEvent(QQID botid, int type, const Member &member, const Group &group,
                         QQID inviterid) : BotEvent(botid), type(type), member(member),
-                                                               group(group),
-                                                               inviterid(inviterid) {}
+                                          group(group),
+                                          inviterid(inviterid) {}
     };
 
-/// 群成员离开
+    /// 群成员离开
     class MemberLeaveEvent : public BotEvent {
     public:
         /*!
@@ -2815,11 +2963,11 @@ LightApp风格1
         MemberLeaveEvent(QQID botid, int type, QQID memberid,
                          Group group,
                          QQID operaterid) : BotEvent(botid), type(type), memberid(memberid),
-                                                                 group(std::move(group)),
-                                                                 operaterid(operaterid) {}
+                                            group(std::move(group)),
+                                            operaterid(operaterid) {}
     };
 
-/// 撤回信息
+    /// 撤回信息
     class RecallEvent : public BotEvent {
     public:
         /// 为1时是好友私聊中撤回，为2时为群聊内撤回
@@ -2851,12 +2999,12 @@ LightApp风格1
         RecallEvent(QQID botid, int type, int time, QQID authorid,
                     QQID operatorid, std::string ids, std::string internalids,
                     QQID groupid) : BotEvent(botid), type(type), time(time), authorid(authorid),
-                                                            operatorid(operatorid), ids(std::move(ids)),
-                                                            internalids(std::move(internalids)),
-                                                            groupid(groupid) {}
+                                    operatorid(operatorid), ids(std::move(ids)),
+                                    internalids(std::move(internalids)),
+                                    groupid(groupid) {}
     };
 
-/// 机器人进入某群
+    /// 机器人进入某群
     class BotJoinGroupEvent : public BotEvent {
     public:
         /// 1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
@@ -2875,10 +3023,10 @@ LightApp风格1
          */
         BotJoinGroupEvent(QQID botid, int type, Group group,
                           QQID inviter)
-                : BotEvent(botid), type(type), group(std::move(group)), inviterid(inviter) {}
+            : BotEvent(botid), type(type), group(std::move(group)), inviterid(inviter) {}
     };
 
-/// 群临时会话
+    /// 群临时会话
     class GroupTempMessageEvent : public BotEvent {
     public:
         /// 来源群
@@ -2904,7 +3052,7 @@ LightApp风格1
     };
 
     /// 定时任务结束
-    class TimeOutEvent{
+    class TimeOutEvent {
     public:
         /// 事件所附信息
         std::string msg;
@@ -2929,30 +3077,35 @@ LightApp风格1
     };
 
     /// 戳一戳事件
-    class NudgeEvent: public BotEvent{
+    class NudgeEvent : public BotEvent {
     public:
         /// 谁发送的
         Contact from;
         Contact target;
-        NudgeEvent(Contact c, Contact target, QQID botid):BotEvent(botid),from(std::move(c)),target(std::move(target)){}
+
+        NudgeEvent(Contact c, Contact target, QQID botid) : BotEvent(botid), from(std::move(c)),
+                                                            target(std::move(target)) {}
     };
 
     /// 机器人退群事件
     /// 可能有3种类型, 主动退/被踢/解散
     /// 目前mirai的botLeave事件还不稳定暂时不支持类型
-    class BotLeaveEvent: public BotEvent{
+    class BotLeaveEvent : public BotEvent {
     public:
         /// 退出的群
         /// @attension 收到这个事件时已经退出该群, 可能取不到相关信息
         QQID groupid;
-        BotLeaveEvent(QQID g, QQID botid):BotEvent(botid), groupid(g){}
+
+        BotLeaveEvent(QQID g, QQID botid) : BotEvent(botid), groupid(g) {}
     };
 
     /// 申请加群事件, bot需为管理员或者群主
-    class MemberJoinRequestEvent: public BotEvent{
+    class MemberJoinRequestEvent : public BotEvent {
     private:
         std::string source;
-        void operate(const std::string& s, QQID botid, bool sign, const std::string& msg = "", JNIEnv* env = ThreadManager::getEnv(__FILE__, __LINE__))const{
+
+        void operate(const std::string &s, QQID botid, bool sign, const std::string &msg = "",
+                     JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
             json j;
             j["source"] = s;
             j["botid"] = botid;
@@ -2960,26 +3113,47 @@ LightApp风格1
             j["msg"] = msg;
             Config::koperation(Config::MemberJoinRequest, j, env);
         }
+
     public:
         /// 申请的群, 如果不存在就表明广播这个事件的时候机器人已经退出该群
         std::optional<Group> group;
         /// 邀请人, 如果不存在表明这个邀请人退出了群或没有邀请人为主动进群
         std::optional<Member> inviter;
-        MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, const std::string& source):BotEvent(botid), group(std::move(g)), inviter(std::move(i)), source(source){};
+
+        MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, const std::string &source)
+            : BotEvent(botid), group(std::move(g)), inviter(std::move(i)), source(source){};
+
         /// 通过
-        void accept(){
-           operate(this->source, this->bot.id, true);
+        void accept() {
+            operate(this->source, this->bot.id, true);
         }
+
         /// 拒绝
-        void reject(const std::string& msg){
+        void reject(const std::string &msg) {
             operate(this->source, this->bot.id, false, msg);
         }
     };
 
-/**监听类声明*/
+    /// @brief 异常抛出事件
+    class MiraiCPExceptionEvent {
+    private:
+        MiraiCPException *exceptionPtr;
+
+    public:
+        MiraiCPExceptionEvent(MiraiCPException *err) {
+            exceptionPtr = err;
+        }
+
+        MiraiCPException &getException() {
+            return *exceptionPtr;
+        }
+    };
+
+    /**监听类声明*/
     class Event {
     private:
         Event() = default;
+
         class Node0 {
         public:
             Node0 *nextNode = nullptr;
@@ -3003,42 +3177,45 @@ LightApp风格1
         Node<BotJoinGroupEvent> *BHead = new Node<BotJoinGroupEvent>();
         Node<GroupTempMessageEvent> *GTMHead = new Node<GroupTempMessageEvent>();
         Node<BotOnlineEvent> *BOHead = new Node<BotOnlineEvent>();
-        Node<TimeOutEvent> * TOHead = new Node<TimeOutEvent>();
-        Node<NudgeEvent>* NHead = new Node<NudgeEvent>();
-        Node<BotLeaveEvent>* BLHead = new Node<BotLeaveEvent>();
-        Node<MemberJoinRequestEvent>* MJRHead = new Node<MemberJoinRequestEvent>();
+        Node<TimeOutEvent> *TOHead = new Node<TimeOutEvent>();
+        Node<NudgeEvent> *NHead = new Node<NudgeEvent>();
+        Node<BotLeaveEvent> *BLHead = new Node<BotLeaveEvent>();
+        Node<MemberJoinRequestEvent> *MJRHead = new Node<MemberJoinRequestEvent>();
+        Node<MiraiCPExceptionEvent> *MCPEHead = new Node<MiraiCPExceptionEvent>();
 
         /// 取链表首节点
         template<class T>
         Node<T> *head() {
-            if constexpr(std::is_same_v<T, GroupMessageEvent>) {
+            if constexpr (std::is_same_v<T, GroupMessageEvent>) {
                 return GMHead;
-            } else if constexpr(std::is_same_v<T, PrivateMessageEvent>) {
+            } else if constexpr (std::is_same_v<T, PrivateMessageEvent>) {
                 return PMHead;
-            } else if constexpr(std::is_same_v<T, GroupInviteEvent>) {
+            } else if constexpr (std::is_same_v<T, GroupInviteEvent>) {
                 return GHead;
-            } else if constexpr(std::is_same_v<T, NewFriendRequestEvent>) {
+            } else if constexpr (std::is_same_v<T, NewFriendRequestEvent>) {
                 return NFHead;
-            } else if constexpr(std::is_same_v<T, MemberJoinEvent>) {
+            } else if constexpr (std::is_same_v<T, MemberJoinEvent>) {
                 return MJHead;
-            } else if constexpr(std::is_same_v<T, MemberLeaveEvent>) {
+            } else if constexpr (std::is_same_v<T, MemberLeaveEvent>) {
                 return MLHead;
-            } else if constexpr(std::is_same_v<T, RecallEvent>) {
+            } else if constexpr (std::is_same_v<T, RecallEvent>) {
                 return RHead;
-            } else if constexpr(std::is_same_v<T, BotJoinGroupEvent>) {
+            } else if constexpr (std::is_same_v<T, BotJoinGroupEvent>) {
                 return BHead;
-            } else if constexpr(std::is_same_v<T, GroupTempMessageEvent>) {
+            } else if constexpr (std::is_same_v<T, GroupTempMessageEvent>) {
                 return GTMHead;
-            } else if constexpr(std::is_same_v<T, BotOnlineEvent>) {
+            } else if constexpr (std::is_same_v<T, BotOnlineEvent>) {
                 return BOHead;
-            } else if constexpr(std::is_same_v<T, TimeOutEvent>){
+            } else if constexpr (std::is_same_v<T, TimeOutEvent>) {
                 return TOHead;
-            }else if constexpr(std::is_same_v<T, NudgeEvent>){
+            } else if constexpr (std::is_same_v<T, NudgeEvent>) {
                 return NHead;
-            }else if constexpr(std::is_same_v<T, BotLeaveEvent>){
+            } else if constexpr (std::is_same_v<T, BotLeaveEvent>) {
                 return BLHead;
-            }else if constexpr(std::is_same_v<T, MemberJoinRequestEvent>){
+            } else if constexpr (std::is_same_v<T, MemberJoinRequestEvent>) {
                 return MJRHead;
+            } else if constexpr (std::is_same_v<T, MiraiCPExceptionEvent>) {
+                return MCPEHead;
             }
             Logger::logger.error("内部错误, 位置:C-Head");
             return nullptr;
@@ -3054,74 +3231,78 @@ LightApp风格1
         Node<BotJoinGroupEvent> *BTail = BHead;
         Node<GroupTempMessageEvent> *GTMTail = GTMHead;
         Node<BotOnlineEvent> *BOTail = BOHead;
-        Node<TimeOutEvent> * TOTail = TOHead;
-        Node<NudgeEvent> * NTail = NHead;
-        Node<BotLeaveEvent>* BLTail = BLHead;
-        Node<MemberJoinRequestEvent>* MJRTail = MJRHead;
+        Node<TimeOutEvent> *TOTail = TOHead;
+        Node<NudgeEvent> *NTail = NHead;
+        Node<BotLeaveEvent> *BLTail = BLHead;
+        Node<MemberJoinRequestEvent> *MJRTail = MJRHead;
+        Node<MiraiCPExceptionEvent> *MCPETail = MCPEHead;
 
         /// 取链表尾节点
         template<class T>
         bool *tail(std::function<void(T)> f) {
             Node<T> *temp = new Node<T>();
             temp->f = f;
-            if constexpr(std::is_same_v<T, GroupMessageEvent>) {
+            if constexpr (std::is_same_v<T, GroupMessageEvent>) {
                 GMTail->next = temp;
                 GMTail->nextNode = temp;
                 GMTail = temp;
-            } else if constexpr(std::is_same_v<T, PrivateMessageEvent>) {
+            } else if constexpr (std::is_same_v<T, PrivateMessageEvent>) {
                 PMTail->next = temp;
                 PMTail->nextNode = temp;
                 PMTail = temp;
-            } else if constexpr(std::is_same_v<T, GroupInviteEvent>) {
+            } else if constexpr (std::is_same_v<T, GroupInviteEvent>) {
                 GTail->next = temp;
                 GTail->nextNode = temp;
                 GTail = temp;
-            } else if constexpr(std::is_same_v<T, NewFriendRequestEvent>) {
+            } else if constexpr (std::is_same_v<T, NewFriendRequestEvent>) {
                 NFTail->next = temp;
                 NFTail->nextNode = temp;
                 NFTail = temp;
-            } else if constexpr(std::is_same_v<T, MemberJoinEvent>) {
+            } else if constexpr (std::is_same_v<T, MemberJoinEvent>) {
                 MJTail->next = temp;
                 MJTail->nextNode = temp;
                 MJTail = temp;
-            } else if constexpr(std::is_same_v<T, MemberLeaveEvent>) {
+            } else if constexpr (std::is_same_v<T, MemberLeaveEvent>) {
                 MLTail->next = temp;
                 MLTail->nextNode = temp;
                 MLTail = temp;
-            } else if constexpr(std::is_same_v<T, RecallEvent>) {
+            } else if constexpr (std::is_same_v<T, RecallEvent>) {
                 RTail->next = temp;
                 RTail->nextNode = temp;
                 RTail = temp;
-            } else if constexpr(std::is_same_v<T, BotJoinGroupEvent>) {
+            } else if constexpr (std::is_same_v<T, BotJoinGroupEvent>) {
                 BTail->next = temp;
                 BTail->nextNode = temp;
                 BTail = temp;
-            } else if constexpr(std::is_same_v<T, GroupTempMessageEvent>) {
+            } else if constexpr (std::is_same_v<T, GroupTempMessageEvent>) {
                 GTMTail->next = temp;
                 GTMTail->nextNode = temp;
                 GTMTail = temp;
-            } else if constexpr(std::is_same_v<T, BotOnlineEvent>) {
+            } else if constexpr (std::is_same_v<T, BotOnlineEvent>) {
                 BOTail->next = temp;
                 BOTail->nextNode = temp;
                 BOTail = temp;
-            } else if constexpr(std::is_same_v<T, TimeOutEvent>) {
+            } else if constexpr (std::is_same_v<T, TimeOutEvent>) {
                 TOTail->next = temp;
                 TOTail->nextNode = temp;
                 TOTail = temp;
-            } else if constexpr(std::is_same_v<T, NudgeEvent>){
+            } else if constexpr (std::is_same_v<T, NudgeEvent>) {
                 NTail->next = temp;
                 NTail->nextNode = temp;
                 NTail = temp;
-
-            }else if constexpr(std::is_same_v<T, BotLeaveEvent>){
-                BLTail -> next = temp;
-                BLTail -> nextNode = temp;
+            } else if constexpr (std::is_same_v<T, BotLeaveEvent>) {
+                BLTail->next = temp;
+                BLTail->nextNode = temp;
                 BLTail = temp;
-            }else if constexpr(std::is_same_v<T, MemberJoinRequestEvent>){
+            } else if constexpr (std::is_same_v<T, MemberJoinRequestEvent>) {
                 MJRTail->next = temp;
                 MJRTail->nextNode = temp;
                 MJRTail = temp;
-            }else{
+            } else if constexpr (std::is_same_v<T, MiraiCPExceptionEvent>) {
+                MCPETail->next = temp;
+                MCPETail->nextNode = temp;
+                MCPETail = temp;
+            } else {
                 Logger::logger.error("内部错误, 位置:C-Tail");
                 return nullptr;
             }
@@ -3133,6 +3314,7 @@ LightApp风格1
         class NodeHandle {
         private:
             bool *enable;
+
         public:
             explicit NodeHandle(bool *a) {
                 this->enable = a;
@@ -3185,7 +3367,8 @@ LightApp风格1
         CPPPlugin::plugin = p;
     }
 
-// 结束MiraiCP类声明代码
-}
+    // endregion
+    // 结束MiraiCP类声明代码
+} // namespace MiraiCP
 #endif //CPP_MIRAICP_HPP
 #pragma clang diagnostic pop
