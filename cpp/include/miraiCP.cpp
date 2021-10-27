@@ -18,9 +18,9 @@
 
 namespace MiraiCP {
 
-// 开始MiraiCP实现代码
+    // 开始MiraiCP实现代码
 
-// 静态成员
+    // 静态成员
 
     std::map<std::string, ThreadManager::ThreadInfo> ThreadManager::threads = std::map<std::string, ThreadInfo>();
     std::recursive_mutex ThreadManager::mtx = std::recursive_mutex();
@@ -31,8 +31,7 @@ namespace MiraiCP {
     jmethodID Config::KOperation = nullptr;
 
     Logger Logger::logger = Logger();
-    [[deprecated("Use Logger::logger instead")]]
-    Logger *const logger = &Logger::logger;
+    [[deprecated("Use Logger::logger instead")]] Logger *const logger = &Logger::logger;
 
     PluginLogger *CPPPlugin::pluginLogger = nullptr;
     CPPPlugin *CPPPlugin::plugin = nullptr;
@@ -41,28 +40,23 @@ namespace MiraiCP {
             {-3, "OnlineAudio"},
             {-2, "QuoteReply"},
             {-1, "unSupportMessage"},
-            {0,  "plainText"},
-            {1,  "at"},
-            {2,  "atAll"},
-            {3,  "image"},
-            {4,  "app"},
-            {5,  "service"},
-            {6,  "file"}
-    };
+            {0, "plainText"},
+            {1, "at"},
+            {2, "atAll"},
+            {3, "image"},
+            {4, "app"},
+            {5, "service"},
+            {6, "file"}};
 
     Event Event::processor = Event();
-    [[deprecated("Use Event::processor instead")]]
-    Event *const procession = &Event::processor;
+    [[deprecated("Use Event::processor instead")]] Event *const procession = &Event::processor;
 
-// 结束静态成员
+    // 结束静态成员
 
     void ThreadManager::setEnv(JNIEnv *e) {
         mtx.lock();
         if (!ThreadManager::included(ThreadManager::getThreadId())) {
-            ThreadInfo tmp{
-                    e,
-                    false
-            };
+            ThreadInfo tmp{e, false};
             ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
         } else {
             ThreadManager::threads[ThreadManager::getThreadId()].e = e;
@@ -72,11 +66,9 @@ namespace MiraiCP {
 
     void ThreadManager::newEnv(const char *threadName) {
         JNIEnv *env = nullptr;
-        JavaVMAttachArgs args{
-                JNIVersion,
-                const_cast<char *>(threadName),
-                nullptr
-        };
+        JavaVMAttachArgs args{JNIVersion,
+                              const_cast<char *>(threadName),
+                              nullptr};
         gvm->AttachCurrentThread((void **) &env, &args);
         ThreadInfo tmp{env, true};
         ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
@@ -111,11 +103,10 @@ namespace MiraiCP {
         return tmp;
     }
 
-/*
-日志类实现
-throw: InitException 即找不到签名
-*/
-
+    /*
+    日志类实现
+    throw: InitException 即找不到签名
+    */
     void Logger_interface::init(JNIEnv *env) {
         this->log = env->GetStaticMethodID(Config::CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
     }
@@ -156,11 +147,10 @@ throw: InitException 即找不到签名
         env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
     }
 
-/*
-配置类实现
-throw: InitxException 即找不到对应签名
-*/
-
+    /*
+    配置类实现
+    throw: InitxException 即找不到对应签名
+    */
     void Config::construct(JNIEnv *env) {
         Config::CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(
                 env->FindClass("tech/eritquearcus/miraicp/shared/CPP_lib")));
@@ -179,16 +169,22 @@ throw: InitxException 即找不到对应签名
         json j;
         j["type"] = type;
         j["data"] = data;
-        std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(Config::CPP_lib, Config::KOperation,
+        std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(Config::CPP_lib,
+                                                                                  Config::KOperation,
                                                                                   Tools::str2jstring(j.dump().c_str(),
-                                                                                                     env)), env);
+                                                                                                     env)),
+                                            env);
         if (catchErr) ErrorHandle(re, errorInfo);
         return re;
+    }
+    ExceptionBroadcasting::ExceptionBroadcasting(MiraiCPException *ex) : e(ex) {}
+    ExceptionBroadcasting::~ExceptionBroadcasting() {
+        Event::processor.broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(e));
     }
 
     Event::~Event() {
         Node0 *temp[] = {GMHead, PMHead, GHead, NFHead, MJHead, MLHead, RHead, BHead, TOHead};
-        for (Node0 *ptr: temp) {
+        for (Node0 *ptr : temp) {
             Node0 *now = ptr;
             Node0 *t = nullptr;
             while (true) {
@@ -212,8 +208,12 @@ throw: InitxException 即找不到对应签名
         if (re == "E2") throw RecallException();
     }
 
-    MessageSource::MessageSource(std::string ids, std::string internalids, std::string source) : ids(std::move(
-            ids)), internalids(std::move(internalids)), source(std::move(source)) {}
+    MessageSource::MessageSource(std::string ids,
+                                 std::string internalids,
+                                 std::string source)
+        : ids(std::move(ids)),
+          internalids(std::move(internalids)),
+          source(std::move(source)) {}
 
     std::string MessageSource::serializeToString() const {
         return source;
@@ -223,8 +223,7 @@ throw: InitxException 即找不到对应签名
         json j = json::parse(source);
         try {
             return {j["ids"].dump(), j["internalIds"].dump(), source};
-        }
-        catch (json::type_error &e) {
+        } catch (json::type_error &e) {
             Logger::logger.error("消息源序列化出错，格式不符合(MessageSource::deserializeFromString)");
             Logger::logger.error(source);
             Logger::logger.error(e.what());
@@ -233,7 +232,6 @@ throw: InitxException 即找不到对应签名
     }
 
     //message chain
-
     MessageChain MessageChain::deserializationFromMiraiCode(const std::string &m) {
         size_t pos = 0;
         size_t lastPos = -1;
@@ -244,12 +242,12 @@ throw: InitxException 即找不到对应签名
         do {
             if (m.length() - 7 - pos > 0 && m.substr(pos, 7) == "[mirai:") {
                 if (pos - lastPos > 1)
-                    mc.add(PlainText(m.substr(lastPos + 1, pos - lastPos - 1)));// plain text
+                    mc.add(PlainText(m.substr(lastPos + 1, pos - lastPos - 1))); // plain text
                 size_t back = MessageChain::findEnd(m, pos);
                 if (back == -1) throw IllegalStateException("");
                 std::string tmp = m.substr(pos, back - pos);
                 tmp = Tools::replace(tmp, "[mirai:", "");
-                size_t i = tmp.find(':');// first :
+                size_t i = tmp.find(':'); // first :
                 int t = SingleMessage::getKey(tmp.substr(0, i));
                 switch (t) {
                     case 0:
@@ -285,14 +283,14 @@ throw: InitxException 即找不到对应签名
             pos++;
         } while (pos < m.length());
         if (lastPos + 1 < m.length())
-            mc.add(PlainText(m.substr(lastPos + 1, m.length() - lastPos - 1)));// plain text
+            mc.add(PlainText(m.substr(lastPos + 1, m.length() - lastPos - 1))); // plain text
         return mc;
     }
 
     MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp) {
         json j = tmp["originalMessage"];
         MessageChain mc;
-        for (auto node: j) {
+        for (auto node : j) {
             if (node["type"] == "SimpleServiceMessage") {
                 mc.add(ServiceMessage(node["serviceId"], node["content"]));
                 continue;
@@ -347,34 +345,32 @@ throw: InitxException 即找不到对应签名
         return mc;
     }
 
-//远程文件(群文件)
+    //远程文件(群文件)
     RemoteFile RemoteFile::deserializeFromString(const std::string &source) {
         json j;
         try {
             j = json::parse(source);
-        }
-        catch (json::parse_error &e) {
+        } catch (json::parse_error &e) {
             Logger::logger.error("格式化json失败，RemoteFile::deserializeFromString");
             Logger::logger.error(source);
             Logger::logger.error(e.what());
             throw e;
         }
         try {
-            struct Dinfo d{
-                    j["dinfo"]["url"],
-                    j["dinfo"]["md5"],
-                    j["dinfo"]["sha1"]
+            struct Dinfo d {
+                j["dinfo"]["url"],
+                        j["dinfo"]["md5"],
+                        j["dinfo"]["sha1"]
             };
-            struct Finfo f{
-                    j["finfo"]["size"],
-                    j["finfo"]["uploaderid"],
-                    j["finfo"]["downloadtime"],
-                    j["finfo"]["uploadtime"],
-                    j["finfo"]["lastmodifytime"]
+            struct Finfo f {
+                j["finfo"]["size"],
+                        j["finfo"]["uploaderid"],
+                        j["finfo"]["downloadtime"],
+                        j["finfo"]["uploadtime"],
+                        j["finfo"]["lastmodifytime"]
             };
             return RemoteFile(j["id"], j["internalid"], j["name"], j["finfo"]["size"], j["path"], d, f);
-        }
-        catch (json::type_error &e) {
+        } catch (json::type_error &e) {
             Logger::logger.error("json格式化失败，位置:RemoteFile");
             Logger::logger.error(source);
             Logger::logger.error(e.what());
@@ -399,7 +395,7 @@ throw: InitxException 即找不到对应签名
         return j.dump();
     }
 
-//发送这个聊天记录
+    //发送这个聊天记录
     MessageSource ForwardMessage::sendTo(Contact *c, JNIEnv *env) {
         json temp;
         json text;
@@ -420,7 +416,7 @@ throw: InitxException 即找不到对应签名
         root["type"] = c->type();
         root["id"] = c->id();
         root["id2"] = c->groupid();
-        for (const ForwardNode &node: nodes) {
+        for (const ForwardNode &node : nodes) {
             json temp;
             temp["id"] = node.id;
             temp["time"] = node.time;
@@ -432,8 +428,7 @@ throw: InitxException 即找不到对应签名
         sendmsg = root;
     }
 
-/*图片类实现*/
-
+    /*图片类实现*/
     std::string Image::queryURL(JNIEnv *env) {
         json j;
         j["id"] = this->id;
@@ -492,7 +487,7 @@ throw: InitxException 即找不到对应签名
         return Image(re);
     }
 
-/*好友类实现*/
+    /*好友类实现*/
     Friend::Friend(QQID id, QQID botid, JNIEnv *env) : Contact() {
         this->_type = 1;
         this->_id = id;
@@ -500,9 +495,9 @@ throw: InitxException 即找不到对应签名
         refreshInfo(env);
     }
 
-/*成员类实现*/
+    /*成员类实现*/
     Member::Member(QQID id, QQID groupid, QQID botid, JNIEnv *env)
-            : Contact() {
+        : Contact() {
         this->_type = 3;
         this->_id = id;
         this->_groupid = groupid;
@@ -542,7 +537,7 @@ throw: InitxException 即找不到对应签名
     }
 
     void Member::modifyAdmin(bool admin, JNIEnv *env) {
-        if (isAnonymous)return;
+        if (isAnonymous) return;
         json j;
         j["admin"] = admin;
         j["contactSource"] = this->serializationToString();
@@ -552,7 +547,7 @@ throw: InitxException 即找不到对应签名
         }
     }
 
-/*群聊类实现*/
+    /*群聊类实现*/
     Group::Group(QQID groupid, QQID botid, JNIEnv *env) : Contact() {
         this->_type = 2;
         this->_id = groupid;
@@ -607,8 +602,7 @@ throw: InitxException 即找不到对应签名
                 j["params"]["requireConfirmation"],
                 j["params"]["isPinned"],
                 j["params"]["showEditCard"],
-                j["params"]["showPopup"]
-        );
+                j["params"]["showPopup"]);
         return Group::OnlineAnnouncement(
                 j["content"],
                 ap,
@@ -618,8 +612,7 @@ throw: InitxException 即找不到对应签名
                 j["time"],
                 j["fid"],
                 j["confirmationNum"],
-                j["imageid"]
-        );
+                j["imageid"]);
     }
 
     void Group::updateSetting(JNIEnv *env) {
@@ -697,7 +690,7 @@ throw: InitxException 即找不到对应签名
         std::vector<file_short_info> re = std::vector<file_short_info>();
         std::string tmp = getFileListString(path, env);
         json root = json::parse(tmp);
-        for (auto &i: root) {
+        for (auto &i : root) {
             file_short_info t;
             t.path = i[0];
             t.id = i[1];
@@ -715,8 +708,7 @@ throw: InitxException 即找不到对应签名
         if (r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(
-                MessageSource::deserializeFromString(re["messageSource"]));
+        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
     MessageChain GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
@@ -728,8 +720,7 @@ throw: InitxException 即找不到对应签名
         if (r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(
-                MessageSource::deserializeFromString(re["messageSource"]));
+        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
     MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) {
@@ -741,11 +732,10 @@ throw: InitxException 即找不到对应签名
         if (r == "-1")
             throw TimeOutException("取下一条信息超时");
         json re = json::parse(r);
-        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(
-                MessageSource::deserializeFromString(re["messageSource"]));
+        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
-/*工具类实现*/
+    /*工具类实现*/
     std::string Tools::jstring2str(jstring jStr, JNIEnv *env) {
         if (!jStr) {
             Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
@@ -795,7 +785,7 @@ throw: InitxException 即找不到对应签名
         std::vector<std::string> v(std::sregex_token_iterator(temp.begin(), temp.end(), ws_re, -1),
                                    std::sregex_token_iterator());
         result.reserve(v.size());
-        for (auto &&s: v)
+        for (auto &&s : v)
             result.push_back(std::stoull(s));
         return result;
     }
@@ -814,7 +804,8 @@ throw: InitxException 即找不到对应签名
                                                        "\\\\", "\\"),
                                         "\\,", ","),
                                 "\\:", ":"),
-                        "\\]", "]"), "\\[", "[");
+                        "\\]", "]"),
+                "\\[", "[");
     }
 
     std::string Tools::escapeToMiraiCode(const std::string &s) {
@@ -823,19 +814,19 @@ throw: InitxException 即找不到对应签名
         //:	\:
         //,	\,
         //\	\\ /
-        return Tools::replace(Tools::replace(Tools::replace(Tools::replace(Tools::replace(s,
-                                                                                          "\\", "\\\\"),
-                                                                           ",", "\\,"),
-                                                            ":", "\\:"),
-                                             "]", "\\]"), "[", "\\[");
+        return replace(replace(replace(replace(replace(s,
+                                                       "\\", "\\\\"),
+                                               ",", "\\,"),
+                                       ":", "\\:"),
+                               "]", "\\]"),
+                       "[", "\\[");
     }
 
     Contact Contact::deserializationFromString(const std::string &source) {
         json j;
         try {
             j = json::parse(source);
-        }
-        catch (json::parse_error &e) {
+        } catch (json::parse_error &e) {
             Logger::logger.error("json序列化错误 Contact::deserializationFromString");
             Logger::logger.error(source);
             Logger::logger.error(e.what());
@@ -876,8 +867,9 @@ throw: InitxException 即找不到对应签名
         j["id"] = id;
         return j;
     }
-// 结束MiraiCP实现代码
-}
+    // 结束MiraiCP实现代码
+} // namespace MiraiCP
+
 //开始对接JNI接口代码
 
 /*
@@ -886,57 +878,108 @@ throw: InitxException 即找不到对应签名
 * 参数:env 必备，job 必备
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
-JNIEXPORT jstring Verify(JNIEnv *env, jobject) {
+JNIEXPORT jstring
+Verify(JNIEnv
+               *env,
+       jobject) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
     MiraiCP::ThreadManager::JNIVersion = env->GetVersion();
     try {
         //初始化日志模块
         Config::construct();
-        Logger::logger.init();
+
+        Logger::logger.
+
+                init();
+
         enrollPlugin();
+
         if (CPPPlugin::plugin == nullptr) {
             Logger::logger.error("无插件实例加载");
         } else {
             CPPPlugin::pluginLogger = new PluginLogger(&Logger::logger);
-            CPPPlugin::plugin->onEnable();
+            CPPPlugin::plugin->
+
+                    onEnable();
         }
-    }
-    catch (MiraiCPException &e) {
-        e.raise();
+    } catch (
+            MiraiCPException &e) {
+        e.
+
+                raise();
     }
     json j = CPPPlugin::plugin->config.serialize();
-    j["MiraiCPversion"] = MiraiCPVersion;
-    return Tools::str2jstring(j.dump().c_str());//验证机制，返回当前SDK版本
+    j["MiraiCPversion"] =
+            MiraiCPVersion;
+    return Tools::str2jstring(j
+                                      .
+
+                              dump()
+
+                                      .
+
+                              c_str()
+
+    ); //验证机制，返回当前SDK版本
 }
+
 /* 插件结束事件*/
-JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job) {
+JNIEXPORT jobject
+PluginDisable(JNIEnv
+                      *env,
+              jobject job) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
-    CPPPlugin::plugin->onDisable();
+    CPPPlugin::plugin->
+
+            onDisable();
+
     CPPPlugin::plugin = nullptr;
     return job;
 }
+
 /*返回空值*/
-JNIEXPORT jstring returnNull() {
+JNIEXPORT jstring
+
+returnNull() {
     return MiraiCP::Tools::str2jstring("MIRAICP_NULL");
 }
+
 /*
 * 消息解析分流
 */
-JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
+JNIEXPORT jstring
+Event(JNIEnv
+              *env,
+      jobject,
+      jstring content) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
     std::string tmp = Tools::jstring2str(content, env);
     json j;
     try {
         j = json::parse(tmp);
-    }
-    catch (json::parse_error &e) {
-        APIException("格式化json错误").raise();
-        Logger::logger.error("For debug:" + j.dump());
-        Logger::logger.error(e.what(), false);
-        return returnNull();
+    } catch (
+            json::parse_error &e) {
+        APIException("格式化json错误").
+
+                raise();
+
+        Logger::logger.error("For debug:" + j.
+
+                                            dump()
+
+        );
+        Logger::logger.error(e
+                                     .
+
+                             what(),
+
+                             false);
+        return
+
+                returnNull();
     }
     ThreadManager::getThread()->stack.push(__FILE__, __LINE__, "source: " + tmp);
     try {
@@ -948,9 +991,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                                           Group(Group::deserializationFromJson(j["group"])),
                                           Member(Member::deserializationFromJson(j["member"])),
                                           MessageChain::deserializationFromMiraiCode(j["message"].get<std::string>())
-                                                  .plus(MessageSource::deserializeFromString(j["source"]))
-                        )
-                );
+                                                  .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             }
             case 2: {
@@ -959,8 +1000,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                         PrivateMessageEvent(j["friend"]["botid"],
                                             Friend(Friend::deserializationFromJson(j["friend"])),
                                             MessageChain::deserializationFromMiraiCode(j["message"])
-                                                    .plus(MessageSource::deserializeFromString(j["source"]))
-                        ));
+                                                    .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             }
             case 3:
@@ -972,8 +1012,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                                 j["source"]["inviternick"],
                                 j["source"]["inviterid"],
                                 j["source"]["groupname"],
-                                j["source"]["groupid"]
-                        ));
+                                j["source"]["groupid"]));
                 break;
             case 4:
                 //好友
@@ -984,8 +1023,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                                 j["source"]["fromid"],
                                 j["source"]["fromgroupid"],
                                 j["source"]["fromnick"],
-                                j["source"]["message"]
-                        ));
+                                j["source"]["message"]));
                 break;
             case 5:
                 //新成员加入
@@ -995,8 +1033,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                                 j["jointype"],
                                 Member(Member::deserializationFromJson(j["member"])),
                                 Group(Group::deserializationFromJson(j["group"])),
-                                j["inviterid"]
-                        ));
+                                j["inviterid"]));
                 break;
             case 6:
                 //群成员退出
@@ -1005,8 +1042,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                         j["leavetype"],
                         j["memberid"],
                         Group(Group::deserializationFromJson(j["group"])),
-                        j["operatorid"]
-                ));
+                        j["operatorid"]));
                 break;
             case 7:
                 Event::processor.broadcast<RecallEvent>(RecallEvent(
@@ -1017,16 +1053,14 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                         j["operatorid"],
                         j["ids"],
                         j["internalids"],
-                        j["groupid"]
-                ));
+                        j["groupid"]));
                 break;
             case 9:
                 Event::processor.broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
                         j["group"]["botid"],
                         j["etype"],
                         Group(Group::deserializationFromJson(j["group"])),
-                        j["inviterid"]
-                ));
+                        j["inviterid"]));
                 break;
             case 10:
                 Event::processor.broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
@@ -1034,8 +1068,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                         Group(Group::deserializationFromJson(j["group"])),
                         Member(Member::deserializationFromJson(j["member"])),
                         MessageChain::deserializationFromMiraiCode(j["message"])
-                                .plus(MessageSource::deserializeFromString(j["source"]))
-                ));
+                                .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             case 11:
                 Event::processor.broadcast<BotOnlineEvent>(BotOnlineEvent(j["botid"]));
@@ -1055,12 +1088,20 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                 std::optional<Group> a;
                 std::optional<Member> b;
                 Contact temp = Contact::deserializationFromJson(j["group"]);
-                if (temp.id() == 0)
+                if (temp.
+
+                    id()
+
+                    == 0)
                     a = std::nullopt;
                 else
                     a = Group(temp);
                 temp = Contact::deserializationFromJson(j["inviter"]);
-                if (temp.id() == 0)
+                if (temp.
+
+                    id()
+
+                    == 0)
                     b = std::nullopt;
                 else
                     b = Member(temp);
@@ -1070,20 +1111,35 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
             default:
                 throw APIException("Unreachable code");
         }
-    }
-    catch (json::type_error &e) {
+    } catch (
+            json::type_error &e) {
         Logger::logger.error("json格式化异常,位置C-Handle");
-        Logger::logger.error(e.what(), false);
+        Logger::logger.error(e
+                                     .
+
+                             what(),
+
+                             false);
         return Tools::str2jstring("ERROR");
-    } catch (MiraiCPException &e) {
-        Logger::logger.error("MiraiCP error:" + e.what());
+    } catch (
+            MiraiCPException &e) {
+        Logger::logger.error("MiraiCP error:" + e.
+
+                                                what()
+
+        );
         return Tools::str2jstring("ERROR");
     }
-    return returnNull();
+    return
+
+            returnNull();
 }
 
-int registerMethods(JNIEnv *env, const char *className,
-                    JNINativeMethod *gMethods, int numMethods) {
+int registerMethods(JNIEnv *env,
+                    const char *className,
+                    JNINativeMethod
+                            *gMethods,
+                    int numMethods) {
     jclass clazz = env->FindClass(className);
     if (clazz == nullptr) {
         return JNI_FALSE;
@@ -1096,13 +1152,14 @@ int registerMethods(JNIEnv *env, const char *className,
 }
 
 JNINativeMethod method_table[] = {
-        {(char *) "Verify",        (char *) "()Ljava/lang/String;",                   (jstring *) Verify},
-        {(char *) "Event",         (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) Event},
-        {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;",                     (jobject *) PluginDisable}
-};
+        {(char *) "Verify", (char *) "()Ljava/lang/String;", (jstring *) Verify},
+        {(char *) "Event", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) Event},
+        {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;", (jobject *) PluginDisable}};
 
-extern "C"
-JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
+extern "C" JNIEXPORT jint
+JNI_OnLoad(JavaVM
+                   *vm,
+           void *) {
     JNIEnv *env = nullptr;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
         return JNI_ERR;
@@ -1110,7 +1167,8 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
     assert(env != nullptr);
     MiraiCP::ThreadManager::gvm = vm;
     // 注册native方法
-    if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPP_lib", method_table, 3)) {
+    if (!registerMethods(env,
+                         "tech/eritquearcus/miraicp/shared/CPP_lib", method_table, 3)) {
         return JNI_ERR;
     }
 
