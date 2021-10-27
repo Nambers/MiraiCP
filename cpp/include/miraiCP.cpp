@@ -171,8 +171,7 @@ namespace MiraiCP {
         j["data"] = data;
         std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(Config::CPP_lib,
                                                                                   Config::KOperation,
-                                                                                  Tools::str2jstring(j.dump().c_str(),
-                                                                                                     env)),
+                                                                                  Tools::str2jstring(j.dump().c_str(), env)),
                                             env);
         if (catchErr) ErrorHandle(re, errorInfo);
         return re;
@@ -879,9 +878,7 @@ namespace MiraiCP {
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
 JNIEXPORT jstring
-Verify(JNIEnv
-               *env,
-       jobject) {
+Verify(JNIEnv *env, jobject) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
     MiraiCP::ThreadManager::JNIVersion = env->GetVersion();
@@ -889,9 +886,7 @@ Verify(JNIEnv
         //初始化日志模块
         Config::construct();
 
-        Logger::logger.
-
-                init();
+        Logger::logger.init();
 
         enrollPlugin();
 
@@ -899,41 +894,24 @@ Verify(JNIEnv
             Logger::logger.error("无插件实例加载");
         } else {
             CPPPlugin::pluginLogger = new PluginLogger(&Logger::logger);
-            CPPPlugin::plugin->
-
-                    onEnable();
+            CPPPlugin::plugin->onEnable();
         }
-    } catch (
-            MiraiCPException &e) {
-        e.
-
-                raise();
+    } catch (MiraiCPException &e) {
+        e.raise();
     }
     json j = CPPPlugin::plugin->config.serialize();
     j["MiraiCPversion"] =
             MiraiCPVersion;
-    return Tools::str2jstring(j
-                                      .
-
-                              dump()
-
-                                      .
-
-                              c_str()
-
-    ); //验证机制，返回当前SDK版本
+    return Tools::str2jstring(j.dump().c_str());
+    //验证机制，返回当前SDK版本
 }
 
 /* 插件结束事件*/
 JNIEXPORT jobject
-PluginDisable(JNIEnv
-                      *env,
-              jobject job) {
+PluginDisable(JNIEnv *env, jobject job) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
-    CPPPlugin::plugin->
-
-            onDisable();
+    CPPPlugin::plugin->onDisable();
 
     CPPPlugin::plugin = nullptr;
     return job;
@@ -950,10 +928,7 @@ returnNull() {
 * 消息解析分流
 */
 JNIEXPORT jstring
-Event(JNIEnv
-              *env,
-      jobject,
-      jstring content) {
+Event(JNIEnv *env, jobject, jstring content) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
     std::string tmp = Tools::jstring2str(content, env);
@@ -962,24 +937,10 @@ Event(JNIEnv
         j = json::parse(tmp);
     } catch (
             json::parse_error &e) {
-        APIException("格式化json错误").
-
-                raise();
-
-        Logger::logger.error("For debug:" + j.
-
-                                            dump()
-
-        );
-        Logger::logger.error(e
-                                     .
-
-                             what(),
-
-                             false);
-        return
-
-                returnNull();
+        APIException("格式化json错误").raise();
+        Logger::logger.error("For debug:" + j.dump());
+        Logger::logger.error(e.what(), false);
+        return returnNull();
     }
     ThreadManager::getThread()->stack.push(__FILE__, __LINE__, "source: " + tmp);
     try {
@@ -1088,20 +1049,12 @@ Event(JNIEnv
                 std::optional<Group> a;
                 std::optional<Member> b;
                 Contact temp = Contact::deserializationFromJson(j["group"]);
-                if (temp.
-
-                    id()
-
-                    == 0)
+                if (temp.id() == 0)
                     a = std::nullopt;
                 else
                     a = Group(temp);
                 temp = Contact::deserializationFromJson(j["inviter"]);
-                if (temp.
-
-                    id()
-
-                    == 0)
+                if (temp.id() == 0)
                     b = std::nullopt;
                 else
                     b = Member(temp);
@@ -1114,25 +1067,14 @@ Event(JNIEnv
     } catch (
             json::type_error &e) {
         Logger::logger.error("json格式化异常,位置C-Handle");
-        Logger::logger.error(e
-                                     .
-
-                             what(),
-
-                             false);
+        Logger::logger.error(e.what(), false);
         return Tools::str2jstring("ERROR");
     } catch (
             MiraiCPException &e) {
-        Logger::logger.error("MiraiCP error:" + e.
-
-                                                what()
-
-        );
+        Logger::logger.error("MiraiCP error:" + e.what());
         return Tools::str2jstring("ERROR");
     }
-    return
-
-            returnNull();
+    return returnNull();
 }
 
 int registerMethods(JNIEnv *env,
@@ -1157,9 +1099,7 @@ JNINativeMethod method_table[] = {
         {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;", (jobject *) PluginDisable}};
 
 extern "C" JNIEXPORT jint
-JNI_OnLoad(JavaVM
-                   *vm,
-           void *) {
+JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnv *env = nullptr;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
         return JNI_ERR;
@@ -1167,8 +1107,7 @@ JNI_OnLoad(JavaVM
     assert(env != nullptr);
     MiraiCP::ThreadManager::gvm = vm;
     // 注册native方法
-    if (!registerMethods(env,
-                         "tech/eritquearcus/miraicp/shared/CPP_lib", method_table, 3)) {
+    if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPP_lib", method_table, 3)) {
         return JNI_ERR;
     }
 
