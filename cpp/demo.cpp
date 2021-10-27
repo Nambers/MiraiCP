@@ -3,10 +3,10 @@
 using namespace MiraiCP;
 
 // 插件实例
-class Main:public CPPPlugin {
-public:
+class Main : public CPPPlugin {
+  public:
     // 配置插件信息
-    Main(): CPPPlugin(PluginConfig("Plugin id", "Plugin name", "Version", "Author name", "Plugin description", "Publish time")){}
+    Main() : CPPPlugin(PluginConfig("Plugin id", "Plugin name", "Version", "Author name", "Plugin description", "Publish time")) {}
     void onEnable() override {
         // 监听
     }
@@ -17,6 +17,6 @@ public:
 };
 
 // 绑定当前插件实例
-void MiraiCP::enrollPlugin(){
+void MiraiCP::enrollPlugin() {
     MiraiCP::enrollPlugin0(new Main());
 }

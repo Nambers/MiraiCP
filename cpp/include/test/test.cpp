@@ -14,10 +14,10 @@ void func(unsigned long long i, unsigned long long botid) {
 }
 
 // 插件实例
-class Main:public CPPPlugin {
-public:
+class Main : public CPPPlugin {
+  public:
     // 配置插件信息
-    Main(): CPPPlugin(PluginConfig("io.github.nambers","testPlugin", MiraiCP::MiraiCPVersion, "Eritque arcus", "test", __DATE__)){}
+    Main() : CPPPlugin(PluginConfig("io.github.nambers", "testPlugin", MiraiCP::MiraiCPVersion, "Eritque arcus", "test", __DATE__)) {}
     void onEnable() override {
         /*插件启动, 请勿在此函数运行前执行操作mirai的代码*/
         /*
@@ -30,32 +30,34 @@ public:
          2. 是CPPPlugin下的pluginLogger，为插件级logger，即当前MiraiCP加载的插件，标识符为[name]: [content], 建议用于调试信息
          3. 是每个事件的botLogger, 如:e.botLogger, 为每个机器人账号独有的logger，建议日常使用，标识符为[botid]: [content]
         procession 广播源
-            Event::processor.registerEvent<EventType>(lambda) 注册监听
-            Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent param){ \*处理*\});是监听群消息
-            Event::processor.registerEvent<PrivateMessageEvent>([](PrivateMessageEvent param){ \*处理*\});是监听私聊消息
+            Event1::processor.registerEvent<EventType>(lambda) 注册监听
+            Event1::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent param){ \*处理*\});是监听群消息
+            Event1::processor.registerEvent<PrivateMessageEvent>([](PrivateMessageEvent param){ \*处理*\});是监听私聊消息
             ...
         参数都在param变量里，在lambda块中使用param.xxx来调用
         */
-        Event::processor.registerEvent<BotOnlineEvent>([](BotOnlineEvent e) {
+        Event1::processor.registerEvent<BotOnlineEvent>([](BotOnlineEvent e) {
             e.botlogger.info("Bot is Online");
         });
         // 邀请事件
         // 好友申请
-        Event::processor.registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent e) {
+        Event1::processor.registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent e) {
             e.accept();
             Friend(e.fromid, e.bot.id).sendMessage("HI");
         });
         // 邀请加群
-        Event::processor.registerEvent<GroupInviteEvent>([](GroupInviteEvent e) {
+        Event1::processor.registerEvent<GroupInviteEvent>([](GroupInviteEvent e) {
             Logger::logger.error(to_string(e.bot.id));
-            if(e.groupid != 1044565129)e.accept();
-            else e.reject();
+            if (e.groupid != 1044565129)
+                e.accept();
+            else
+                e.reject();
             Logger::logger.info("x");
             Group(e.groupid, e.bot.id).sendMessage("被" + e.inviterNick + "邀请进入" + e.groupName);
         });
         // 消息事件
         // 监听私聊
-        Event::processor.registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
+        Event1::processor.registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) {
             // unsigned long long id = e.bot.id;
             // e.botlogger.info(std::to_string(id));
             // e.message.source.quoteAndSendMsg("HI");
@@ -78,7 +80,7 @@ public:
         });
 
         // 监听群信息
-        Event::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
+        Event1::processor.registerEvent<GroupMessageEvent>([=](GroupMessageEvent e) {
             Logger::logger.info(e.message.source->source);
             Logger::logger.info(e.message.toMiraiCode());
             e.message.quoteAndSendMessage("xxx" + e.message.toMiraiCode());
@@ -165,27 +167,27 @@ public:
             //     Logger::logger.info("content2: " + e.senderNextMessage().content.toString());
         });
         // 监听群临时会话
-        Event::processor.registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
+        Event1::processor.registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent e) {
             e.sender.sendMessage("hi");
         });
         // 群事件
-        Event::processor.registerEvent<MemberJoinEvent>([](MemberJoinEvent e) {
+        Event1::processor.registerEvent<MemberJoinEvent>([](MemberJoinEvent e) {
             e.group.sendMessage(e.group.getOwner().at(), std::to_string(e.member.id()), "加入了群聊");
         });
-        Event::processor.registerEvent<MemberLeaveEvent>([](MemberLeaveEvent e) {
+        Event1::processor.registerEvent<MemberLeaveEvent>([](MemberLeaveEvent e) {
             e.group.sendMessage(e.group.getOwner().at(), std::to_string(e.memberid), "退出了群聊");
         });
-        Event::processor.registerEvent<TimeOutEvent>([](const TimeOutEvent &e) {
+        Event1::processor.registerEvent<TimeOutEvent>([](const TimeOutEvent &e) {
             Logger::logger.info(e.msg);
         });
-        Event::processor.registerEvent<NudgeEvent>([](const NudgeEvent &e) {
+        Event1::processor.registerEvent<NudgeEvent>([](const NudgeEvent &e) {
             Logger::logger.info(e.from.id());
             Logger::logger.info(e.target.id());
         });
-        Event::processor.registerEvent<MemberJoinRequestEvent>([](MemberJoinRequestEvent e) {
+        Event1::processor.registerEvent<MemberJoinRequestEvent>([](MemberJoinRequestEvent e) {
             e.accept();
         });
-        Event::processor.registerEvent<BotLeaveEvent>([](const BotLeaveEvent &e) {
+        Event1::processor.registerEvent<BotLeaveEvent>([](const BotLeaveEvent &e) {
             Logger::logger.info(e.groupid, "Leave", "");
         });
     }
@@ -196,6 +198,6 @@ public:
 };
 
 // 绑定当前插件实例
-void MiraiCP::enrollPlugin(){
+void MiraiCP::enrollPlugin() {
     MiraiCP::enrollPlugin0(new Main());
 }
