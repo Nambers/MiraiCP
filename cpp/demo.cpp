@@ -4,7 +4,7 @@ using namespace MiraiCP;
 
 // 插件实例
 class Main : public CPPPlugin {
-  public:
+public:
     // 配置插件信息
     Main() : CPPPlugin(PluginConfig("Plugin id", "Plugin name", "Version", "Author name", "Plugin description", "Publish time")) {}
     void onEnable() override {

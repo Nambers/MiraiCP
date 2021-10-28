@@ -49,8 +49,7 @@ namespace MiraiCP {
             {6, "file"}};
 
     Event Event::processor = Event();
-    [[deprecated("Use Event1::processor instead")]] Event *const procession = &Event::processor;
-    Event1 Event1::processor = Event1();
+    [[deprecated("Use Event::processor instead")]] Event *const procession = &Event::processor;
 
     // 结束静态成员
 
@@ -179,24 +178,7 @@ namespace MiraiCP {
     }
     ExceptionBroadcasting::ExceptionBroadcasting(MiraiCPException *ex) : e(ex) {}
     ExceptionBroadcasting::~ExceptionBroadcasting() {
-        Event1::processor.broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(e));
-    }
-
-    Event::~Event() {
-        Node0 *temp[] = {GMHead, PMHead, GHead, NFHead, MJHead, MLHead, RHead, BHead, TOHead};
-        for (Node0 *ptr: temp) {
-            Node0 *now = ptr;
-            Node0 *t = nullptr;
-            while (true) {
-                t = now;
-                if (now->nextNode == nullptr) {
-                    delete now;
-                    break;
-                }
-                now = now->nextNode;
-                delete t;
-            }
-        }
+        Event::processor.broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(e));
     }
 
     void MessageSource::recall(JNIEnv *env) const {
@@ -314,7 +296,7 @@ namespace MiraiCP {
                     mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
                     break;
                 case 0:
-                    mc.add(PlainText(node["content"]));
+                    mc.add(PlainText(node["content"].get<std::string>()));
                     break;
                 case 1:
                     mc.add(At(node["target"]));
@@ -931,8 +913,7 @@ Event(JNIEnv *env, jobject, jstring content) {
     json j;
     try {
         j = json::parse(tmp);
-    } catch (
-            json::parse_error &e) {
+    } catch (json::parse_error &e) {
         APIException("格式化json错误").raise();
         Logger::logger.error("For debug:" + j.dump());
         Logger::logger.error(e.what(), false);
@@ -943,7 +924,7 @@ Event(JNIEnv *env, jobject, jstring content) {
         switch ((int) j["type"]) {
             case 1: {
                 //GroupMessage
-                Event1::processor.broadcast<GroupMessageEvent>(
+                Event::processor.broadcast<GroupMessageEvent>(
                         GroupMessageEvent(j["group"]["botid"],
                                           Group(Group::deserializationFromJson(j["group"])),
                                           Member(Member::deserializationFromJson(j["member"])),
@@ -953,7 +934,7 @@ Event(JNIEnv *env, jobject, jstring content) {
             }
             case 2: {
                 //私聊消息
-                Event1::processor.broadcast<PrivateMessageEvent>(
+                Event::processor.broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
                                             Friend(Friend::deserializationFromJson(j["friend"])),
                                             MessageChain::deserializationFromMiraiCode(j["message"])
@@ -962,7 +943,7 @@ Event(JNIEnv *env, jobject, jstring content) {
             }
             case 3:
                 //群聊邀请
-                Event1::processor.broadcast<GroupInviteEvent>(
+                Event::processor.broadcast<GroupInviteEvent>(
                         GroupInviteEvent(
                                 j["source"]["botid"],
                                 j["request"],
@@ -973,7 +954,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                 break;
             case 4:
                 //好友
-                Event1::processor.broadcast<NewFriendRequestEvent>(
+                Event::processor.broadcast<NewFriendRequestEvent>(
                         NewFriendRequestEvent(
                                 j["source"]["botid"],
                                 j["request"],
@@ -984,7 +965,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                 break;
             case 5:
                 //新成员加入
-                Event1::processor.broadcast<MemberJoinEvent>(
+                Event::processor.broadcast<MemberJoinEvent>(
                         MemberJoinEvent(
                                 j["group"]["botid"],
                                 j["jointype"],
@@ -994,7 +975,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                 break;
             case 6:
                 //群成员退出
-                Event1::processor.broadcast<MemberLeaveEvent>(MemberLeaveEvent(
+                Event::processor.broadcast<MemberLeaveEvent>(MemberLeaveEvent(
                         j["group"]["botid"],
                         j["leavetype"],
                         j["memberid"],
@@ -1002,7 +983,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                         j["operatorid"]));
                 break;
             case 7:
-                Event1::processor.broadcast<RecallEvent>(RecallEvent(
+                Event::processor.broadcast<RecallEvent>(RecallEvent(
                         j["botid"],
                         j["etype"],
                         j["time"],
@@ -1013,14 +994,14 @@ Event(JNIEnv *env, jobject, jstring content) {
                         j["groupid"]));
                 break;
             case 9:
-                Event1::processor.broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
+                Event::processor.broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
                         j["group"]["botid"],
                         j["etype"],
                         Group(Group::deserializationFromJson(j["group"])),
                         j["inviterid"]));
                 break;
             case 10:
-                Event1::processor.broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
+                Event::processor.broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
                         j["group"]["botid"],
                         Group(Group::deserializationFromJson(j["group"])),
                         Member(Member::deserializationFromJson(j["member"])),
@@ -1028,18 +1009,18 @@ Event(JNIEnv *env, jobject, jstring content) {
                                 .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             case 11:
-                Event1::processor.broadcast<BotOnlineEvent>(BotOnlineEvent(j["botid"]));
+                Event::processor.broadcast<BotOnlineEvent>(BotOnlineEvent(j["botid"]));
                 break;
             case 12:
-                Event1::processor.broadcast<TimeOutEvent>(TimeOutEvent(j["msg"]));
+                Event::processor.broadcast<TimeOutEvent>(TimeOutEvent(j["msg"]));
                 break;
             case 13:
-                Event1::processor.broadcast<NudgeEvent>(NudgeEvent(Contact::deserializationFromJson(j["from"]),
-                                                                   Contact::deserializationFromJson(j["target"]),
-                                                                   j["botid"]));
+                Event::processor.broadcast<NudgeEvent>(NudgeEvent(Contact::deserializationFromJson(j["from"]),
+                                                                  Contact::deserializationFromJson(j["target"]),
+                                                                  j["botid"]));
                 break;
             case 14:
-                Event1::processor.broadcast(BotLeaveEvent(j["groupid"], j["botid"]));
+                Event::processor.broadcast(BotLeaveEvent(j["groupid"], j["botid"]));
                 break;
             case 15: {
                 std::optional<Group> a;
@@ -1054,7 +1035,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                     b = std::nullopt;
                 else
                     b = Member(temp);
-                Event1::processor.broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requestData"]));
+                Event::processor.broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requestData"]));
                 break;
             }
             default:
@@ -1066,6 +1047,10 @@ Event(JNIEnv *env, jobject, jstring content) {
         return Tools::str2jstring("ERROR");
     } catch (MiraiCPException &e) {
         Logger::logger.error("MiraiCP error:" + e.what());
+        return Tools::str2jstring("ERROR");
+    } catch (std::exception &e) {
+        // 这里如果不catch全部exception就会带崩jvm
+        Logger::logger.error(e.what());
         return Tools::str2jstring("ERROR");
     }
     return returnNull();
@@ -1088,8 +1073,7 @@ JNINativeMethod method_table[] = {
         {(char *) "Event", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) Event},
         {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;", (jobject *) PluginDisable}};
 
-extern "C" JNIEXPORT jint
-JNI_OnLoad(JavaVM *vm, void *) {
+extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnv *env = nullptr;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
         return JNI_ERR;
