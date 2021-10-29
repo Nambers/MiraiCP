@@ -48,7 +48,7 @@ namespace MiraiCP {
 
     // 开始声明MiraiCP常量声明代码
     /// MiraiCP当前版本
-    const std::string MiraiCPVersion = "v2.8.0-M1";
+    const std::string MiraiCPVersion = "v2.8.0-M2";
 
     /// @brief 插件信息
     class PluginConfig {

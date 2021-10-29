@@ -1,7 +1,7 @@
 [versions]
 kotlinVersion = "1.5.10"
 miraiVersion = "2.8.0-M1"
-miraiCPVersion = "2.8.0-M1"
+miraiCPVersion = "2.8.0-M2"
 
 [libraries]
 mirai-core-api = { module = "net.mamoe:mirai-core-api", version.ref = "miraiVersion" }

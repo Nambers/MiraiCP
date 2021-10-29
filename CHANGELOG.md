@@ -8,8 +8,10 @@
 + 支持`BotLeaveEvent`(机器人退出群聊: 踢出/退出/解散) 和 `MemberJoinRequetEvent`(新群成员申请) #91
 + 分散实现代码到`MiraiCP.cpp`以解决重复定义问题 #96
 + 移动`quoteAndSendMessage`从`MessageSource`和`MessageChain`类，移动到`Contact`类并deprecate
++ 重新设计`Event`类 #95, #99
 
 > 该版本为开发版, 可能包含一些问题
+> 需要下载压缩包替换原本全部cmake文件, miraicp.hpp和加入新增加的miraicp.cpp文件
 
 ## v2.8.0-M1
 
