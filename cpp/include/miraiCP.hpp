@@ -1179,8 +1179,6 @@ namespace MiraiCP {
                                                            sst << a;
                                                            return sst.str();
                                                        })()) {}
-        template<>
-        explicit PlainText(const std::string &text) : SingleMessage(0, text) {}
     };
 
     /// @
