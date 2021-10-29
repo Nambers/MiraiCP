@@ -45,16 +45,18 @@ jobs:
       run: cat release.log
     - name: generate release files list
       run: |
-           if ${{ github.event.inputs.notHppAndCpp }} == true; then
+           if [ ${{ github.event.inputs.notHppAndCpp }} == false ]
+           then
             echo "flist=./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/MiraiCP_CPP.zip,./cpp/include/miraiCP.hpp,./cpp/include/miraiCP.cpp" >> $GITHUB_ENV
             echo "flist=./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/MiraiCP_CPP.zip,./cpp/include/miraiCP.hpp,./cpp/include/miraiCP.cpp"
            else
             echo "flist=./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/MiraiCP_CPP.zip" >> $GITHUB_ENV
             echo "flist=./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar,./cpp/MiraiCP_CPP.zip"
+           fi
     - name: Create Release
       uses: ncipollo/release-action@v1.8.6
       with:
-          artifacts: env.flist
+          artifacts: ${{ env.flist }}
           bodyfile: release.log
           tag: ${{ github.event.inputs.v }}
           token: ${{ secrets.GITHUB_TOKEN }}
