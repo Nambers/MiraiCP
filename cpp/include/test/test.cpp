@@ -14,10 +14,10 @@ void func(unsigned long long i, unsigned long long botid) {
 }
 
 // 插件实例
-class Main:public CPPPlugin {
+class Main : public CPPPlugin {
 public:
     // 配置插件信息
-    Main(): CPPPlugin(PluginConfig("io.github.nambers","testPlugin", MiraiCP::MiraiCPVersion, "Eritque arcus", "test", __DATE__)){}
+    Main() : CPPPlugin(PluginConfig("io.github.nambers", "testPlugin", MiraiCP::MiraiCPVersion, "Eritque arcus", "test", __DATE__)) {}
     void onEnable() override {
         /*插件启动, 请勿在此函数运行前执行操作mirai的代码*/
         /*
@@ -48,8 +48,10 @@ public:
         // 邀请加群
         Event::processor.registerEvent<GroupInviteEvent>([](GroupInviteEvent e) {
             Logger::logger.error(to_string(e.bot.id));
-            if(e.groupid != 1044565129)e.accept();
-            else e.reject();
+            if (e.groupid != 1044565129)
+                e.accept();
+            else
+                e.reject();
             Logger::logger.info("x");
             Group(e.groupid, e.bot.id).sendMessage("被" + e.inviterNick + "邀请进入" + e.groupName);
         });
@@ -196,6 +198,6 @@ public:
 };
 
 // 绑定当前插件实例
-void MiraiCP::enrollPlugin(){
+void MiraiCP::enrollPlugin() {
     MiraiCP::enrollPlugin0(new Main());
 }

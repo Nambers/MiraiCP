@@ -232,7 +232,7 @@ namespace MiraiCP {
             /// print all
             std::string print() {
                 std::string re = "StackTrace:";
-                for (const auto &a : stackTrace)
+                for (const auto &a: stackTrace)
                     re += "\n" + a;
                 return re;
             }
@@ -1124,7 +1124,7 @@ namespace MiraiCP {
         /// @param value 类型名
         /// @return 如果没找到返回-1
         static int getKey(const std::string &value) {
-            for (const auto &a : messageType) {
+            for (const auto &a: messageType) {
                 if (Tools::iequal(a.second, value)) return a.first;
             }
             return -1;
@@ -1725,7 +1725,7 @@ namespace MiraiCP {
 
         std::vector<std::string> toMiraiCodeVector() const {
             std::vector<std::string> tmp;
-            for (const auto &a : this->content)
+            for (const auto &a: this->content)
                 tmp.emplace_back(a->toMiraiCode());
             return tmp;
         }
@@ -1748,7 +1748,7 @@ namespace MiraiCP {
         std::vector<T> filter(int type) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
-            for (auto a : this->content) {
+            for (auto a: this->content) {
                 if (a->type == type)
                     re.push_back(std::static_pointer_cast<T>(a));
             }
@@ -1760,7 +1760,7 @@ namespace MiraiCP {
         std::vector<T> filter(std::function<bool(Message)> func) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
-            for (auto a : this->content) {
+            for (auto a: this->content) {
                 if (func(a))
                     re.push_back(std::static_pointer_cast<T>(a));
             }
@@ -1770,7 +1770,7 @@ namespace MiraiCP {
         /// 找出第一个指定的type的信息
         template<class T>
         T first(int type) {
-            for (auto a : this->content)
+            for (auto a: this->content)
                 if (a->type == type)
                     return std::static_pointer_cast<T>(a);
         }
@@ -2538,7 +2538,7 @@ namespace MiraiCP {
             j["announcement"] = true;
             std::string re = Config::koperation(Config::RefreshInfo, j, env);
             std::vector<OnlineAnnouncement> oa;
-            for (const json &e : json::parse(re)) {
+            for (const json &e: json::parse(re)) {
                 oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
             }
             return oa;
@@ -2727,8 +2727,11 @@ namespace MiraiCP {
         }
     };
 
+    /// Event 基类
+    class MiraiCPEvent {};
+
     /// 所以事件处理timeoutevent都是机器人事件，指都有机器人实例
-    class BotEvent {
+    class BotEvent : public MiraiCPEvent {
     public:
         /// 该事件接受的机器人
         Bot bot;
@@ -3052,7 +3055,7 @@ namespace MiraiCP {
     };
 
     /// 定时任务结束
-    class TimeOutEvent {
+    class TimeOutEvent : public MiraiCPEvent {
     public:
         /// 事件所附信息
         std::string msg;
@@ -3135,12 +3138,12 @@ namespace MiraiCP {
     };
 
     /// @brief 异常抛出事件
-    class MiraiCPExceptionEvent {
+    class MiraiCPExceptionEvent : public MiraiCPEvent {
     private:
         MiraiCPException *exceptionPtr;
 
     public:
-        MiraiCPExceptionEvent(MiraiCPException *err) {
+        explicit MiraiCPExceptionEvent(MiraiCPException *err) {
             exceptionPtr = err;
         }
 
@@ -3149,165 +3152,59 @@ namespace MiraiCP {
         }
     };
 
-    /**监听类声明*/
     class Event {
     private:
-        Event() = default;
-
-        class Node0 {
-        public:
-            Node0 *nextNode = nullptr;
-            bool enable = true;
-        };
-
-        template<class T>
-        class Node : public Node0 {
-        public:
-            std::function<void(T)> f = [](T) -> void {};
-            Node *next = nullptr;
-        };
-
-        Node<GroupMessageEvent> *GMHead = new Node<GroupMessageEvent>();
-        Node<PrivateMessageEvent> *PMHead = new Node<PrivateMessageEvent>();
-        Node<GroupInviteEvent> *GHead = new Node<GroupInviteEvent>;
-        Node<NewFriendRequestEvent> *NFHead = new Node<NewFriendRequestEvent>();
-        Node<MemberJoinEvent> *MJHead = new Node<MemberJoinEvent>();
-        Node<MemberLeaveEvent> *MLHead = new Node<MemberLeaveEvent>();
-        Node<RecallEvent> *RHead = new Node<RecallEvent>();
-        Node<BotJoinGroupEvent> *BHead = new Node<BotJoinGroupEvent>();
-        Node<GroupTempMessageEvent> *GTMHead = new Node<GroupTempMessageEvent>();
-        Node<BotOnlineEvent> *BOHead = new Node<BotOnlineEvent>();
-        Node<TimeOutEvent> *TOHead = new Node<TimeOutEvent>();
-        Node<NudgeEvent> *NHead = new Node<NudgeEvent>();
-        Node<BotLeaveEvent> *BLHead = new Node<BotLeaveEvent>();
-        Node<MemberJoinRequestEvent> *MJRHead = new Node<MemberJoinRequestEvent>();
-        Node<MiraiCPExceptionEvent> *MCPEHead = new Node<MiraiCPExceptionEvent>();
-
-        /// 取链表首节点
-        template<class T>
-        Node<T> *head() {
+        template<typename T>
+        int id() const {
+            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播继承MiraiCPEvent的事件");
             if constexpr (std::is_same_v<T, GroupMessageEvent>) {
-                return GMHead;
+                return 0;
             } else if constexpr (std::is_same_v<T, PrivateMessageEvent>) {
-                return PMHead;
+                return 1;
             } else if constexpr (std::is_same_v<T, GroupInviteEvent>) {
-                return GHead;
+                return 2;
             } else if constexpr (std::is_same_v<T, NewFriendRequestEvent>) {
-                return NFHead;
+                return 3;
             } else if constexpr (std::is_same_v<T, MemberJoinEvent>) {
-                return MJHead;
+                return 4;
             } else if constexpr (std::is_same_v<T, MemberLeaveEvent>) {
-                return MLHead;
+                return 5;
             } else if constexpr (std::is_same_v<T, RecallEvent>) {
-                return RHead;
+                return 6;
             } else if constexpr (std::is_same_v<T, BotJoinGroupEvent>) {
-                return BHead;
+                return 7;
             } else if constexpr (std::is_same_v<T, GroupTempMessageEvent>) {
-                return GTMHead;
+                return 8;
             } else if constexpr (std::is_same_v<T, BotOnlineEvent>) {
-                return BOHead;
-            } else if constexpr (std::is_same_v<T, TimeOutEvent>) {
-                return TOHead;
+                return 9;
             } else if constexpr (std::is_same_v<T, NudgeEvent>) {
-                return NHead;
+                return 10;
             } else if constexpr (std::is_same_v<T, BotLeaveEvent>) {
-                return BLHead;
+                return 11;
             } else if constexpr (std::is_same_v<T, MemberJoinRequestEvent>) {
-                return MJRHead;
+                return 12;
+            } else if constexpr (std::is_same_v<T, TimeOutEvent>) {
+                return 13;
             } else if constexpr (std::is_same_v<T, MiraiCPExceptionEvent>) {
-                return MCPEHead;
+                return 14;
             }
             Logger::logger.error("内部错误, 位置:C-Head");
-            return nullptr;
+            return -1;
         }
-
-        Node<GroupMessageEvent> *GMTail = GMHead;
-        Node<PrivateMessageEvent> *PMTail = PMHead;
-        Node<GroupInviteEvent> *GTail = GHead;
-        Node<NewFriendRequestEvent> *NFTail = NFHead;
-        Node<MemberJoinEvent> *MJTail = MJHead;
-        Node<MemberLeaveEvent> *MLTail = MLHead;
-        Node<RecallEvent> *RTail = RHead;
-        Node<BotJoinGroupEvent> *BTail = BHead;
-        Node<GroupTempMessageEvent> *GTMTail = GTMHead;
-        Node<BotOnlineEvent> *BOTail = BOHead;
-        Node<TimeOutEvent> *TOTail = TOHead;
-        Node<NudgeEvent> *NTail = NHead;
-        Node<BotLeaveEvent> *BLTail = BLHead;
-        Node<MemberJoinRequestEvent> *MJRTail = MJRHead;
-        Node<MiraiCPExceptionEvent> *MCPETail = MCPEHead;
-
-        /// 取链表尾节点
-        template<class T>
-        bool *tail(std::function<void(T)> f) {
-            Node<T> *temp = new Node<T>();
-            temp->f = f;
-            if constexpr (std::is_same_v<T, GroupMessageEvent>) {
-                GMTail->next = temp;
-                GMTail->nextNode = temp;
-                GMTail = temp;
-            } else if constexpr (std::is_same_v<T, PrivateMessageEvent>) {
-                PMTail->next = temp;
-                PMTail->nextNode = temp;
-                PMTail = temp;
-            } else if constexpr (std::is_same_v<T, GroupInviteEvent>) {
-                GTail->next = temp;
-                GTail->nextNode = temp;
-                GTail = temp;
-            } else if constexpr (std::is_same_v<T, NewFriendRequestEvent>) {
-                NFTail->next = temp;
-                NFTail->nextNode = temp;
-                NFTail = temp;
-            } else if constexpr (std::is_same_v<T, MemberJoinEvent>) {
-                MJTail->next = temp;
-                MJTail->nextNode = temp;
-                MJTail = temp;
-            } else if constexpr (std::is_same_v<T, MemberLeaveEvent>) {
-                MLTail->next = temp;
-                MLTail->nextNode = temp;
-                MLTail = temp;
-            } else if constexpr (std::is_same_v<T, RecallEvent>) {
-                RTail->next = temp;
-                RTail->nextNode = temp;
-                RTail = temp;
-            } else if constexpr (std::is_same_v<T, BotJoinGroupEvent>) {
-                BTail->next = temp;
-                BTail->nextNode = temp;
-                BTail = temp;
-            } else if constexpr (std::is_same_v<T, GroupTempMessageEvent>) {
-                GTMTail->next = temp;
-                GTMTail->nextNode = temp;
-                GTMTail = temp;
-            } else if constexpr (std::is_same_v<T, BotOnlineEvent>) {
-                BOTail->next = temp;
-                BOTail->nextNode = temp;
-                BOTail = temp;
-            } else if constexpr (std::is_same_v<T, TimeOutEvent>) {
-                TOTail->next = temp;
-                TOTail->nextNode = temp;
-                TOTail = temp;
-            } else if constexpr (std::is_same_v<T, NudgeEvent>) {
-                NTail->next = temp;
-                NTail->nextNode = temp;
-                NTail = temp;
-            } else if constexpr (std::is_same_v<T, BotLeaveEvent>) {
-                BLTail->next = temp;
-                BLTail->nextNode = temp;
-                BLTail = temp;
-            } else if constexpr (std::is_same_v<T, MemberJoinRequestEvent>) {
-                MJRTail->next = temp;
-                MJRTail->nextNode = temp;
-                MJRTail = temp;
-            } else if constexpr (std::is_same_v<T, MiraiCPExceptionEvent>) {
-                MCPETail->next = temp;
-                MCPETail->nextNode = temp;
-                MCPETail = temp;
-            } else {
-                Logger::logger.error("内部错误, 位置:C-Tail");
-                return nullptr;
+        Event() = default;
+        using type = std::variant<GroupMessageEvent, PrivateMessageEvent, GroupInviteEvent, NewFriendRequestEvent, MemberJoinEvent, MemberLeaveEvent, RecallEvent, BotJoinGroupEvent, GroupTempMessageEvent, BotOnlineEvent, TimeOutEvent, NudgeEvent, BotLeaveEvent, MemberJoinRequestEvent, MiraiCPExceptionEvent>;
+        template<typename T>
+        class Node {
+        public:
+            bool enable = true;
+            std::function<void(T)> func;
+            explicit Node(std::function<void(T)> f) : func(std::move(f)) {}
+            void run(type a) const {
+                func(std::get<T>(a));
             }
-            return &temp->enable;
-        }
+        };
+        using e = std::variant<Node<GroupMessageEvent>, Node<PrivateMessageEvent>, Node<GroupInviteEvent>, Node<NewFriendRequestEvent>, Node<MemberJoinEvent>, Node<MemberLeaveEvent>, Node<RecallEvent>, Node<BotJoinGroupEvent>, Node<GroupTempMessageEvent>, Node<BotOnlineEvent>, Node<NudgeEvent>, Node<BotLeaveEvent>, Node<MemberJoinRequestEvent>, Node<MiraiCPExceptionEvent>, Node<TimeOutEvent>>;
+        std::vector<e> vec[15] = {std::vector<e>()};
 
     public:
         /// 事件监听操控, 可用于stop停止监听和resume继续监听
@@ -3319,46 +3216,34 @@ namespace MiraiCP {
             explicit NodeHandle(bool *a) {
                 this->enable = a;
             }
-
             void stop() {
                 *enable = false;
             }
-
             void resume() {
                 *enable = true;
             }
         };
-
-        /*!
-        * 广播函数重载
-        */
+        // singleton mode
+        static Event processor;
+        /// 广播一个事件, 必须为MiraiCPEvent的派生类
         template<typename T>
-        void broadcast(T e) {
+        void broadcast(T val) {
+            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播MiraiCPEvent的派生类");
             /// 清空stack中内容, 不然可能保留上一次Event的操作
             ThreadManager::getThread()->stack.clear();
             ThreadManager::getThread()->stack.push(__FILE__, __LINE__, __func__, typeid(T).name());
-            Node<T> *now = Event::head<T>();
-            while (now) {
-                if (now->enable) { now->f(e); }
-                now = now->next;
+            for (e a: vec[id<T>()]) {
+                std::get<Node<T>>(a).run(static_cast<type>(val));
             }
         }
-
-        /*!
-        * @brief 监听函数
-        * @note 在极其少见(MiraiCP内部出问题的时候)会抛出异常
-        */
+        /// 注册一个事件
         template<typename T>
-        NodeHandle registerEvent(std::function<void(T)> f) {
-            bool *e = Event::tail(f);
-            if (e != nullptr)
-                return NodeHandle(e);
-            throw APIException("位置:registerEvent");
+        NodeHandle registerEvent(std::function<void(T)> a) {
+            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持注册MiraiCPEvent的派生类事件");
+            auto t = Node<T>(a);
+            vec[id<T>()].push_back(static_cast<e>(t));
+            return NodeHandle(&t.enable);
         }
-
-        ~Event();
-
-        static Event processor;
     };
 
     void enrollPlugin();
