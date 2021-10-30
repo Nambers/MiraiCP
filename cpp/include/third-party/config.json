@@ -1,0 +1,26 @@
+{
+    "project": "Mirai C++ SDK",
+    "target": "single_include/MiraiCP/MiraiCP.hpp",
+    "sources": [
+        "include/CPPPlugin.cpp",
+        "include/Config.cpp",
+        "include/Contact.cpp",
+        "include/Event.cpp",
+        "include/ExceptionBroadcasting.cpp",
+        "include/Forward.cpp",
+        "include/Friend.cpp",
+        "include/Group.cpp",
+        "include/Logger.cpp",
+        "include/Member.cpp",
+        "include/MessageChain.cpp",
+        "include/MessageSource.cpp",
+        "include/PluginConfig.cpp",
+        "include/SingleMessage.cpp",
+        "include/ThreadManager.cpp",
+        "include/Tools.cpp",
+        "include/utils.cpp"
+    ],
+    "include_paths": [
+        "include"
+    ]
+}

@@ -2,10 +2,10 @@ find_package(JNI REQUIRED)
 if (JNI_FOUND)
     message (STATUS "FOUND JNI IN ${JAVA_INCLUDE_PATH}")
     set(SOURCE_PATH
-            ${CMAKE_CURRENT_SOURCE_DIR}/../
-            ${CMAKE_CURRENT_SOURCE_DIR}/../miraicp
+            ${CMAKE_CURRENT_SOURCE_DIR}/..
             ${CMAKE_CURRENT_SOURCE_DIR}/../utf8
             ${CMAKE_CURRENT_SOURCE_DIR}/../utf8/utf8
+            ${CMAKE_CURRENT_SOURCE_DIR}/../../../include
             ${JAVA_INCLUDE_PATH}/
             ${JAVA_INCLUDE_PATH2}/
             )
@@ -13,4 +13,4 @@ if (JNI_FOUND)
 else()
     message(STATUS "Cannot find JNI")
 endif()
-target_sources(MiraiCP_Test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../miraiCP.cpp)
+target_sources(MiraiCP_Test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../../include/miraiCP.cpp)
