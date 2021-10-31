@@ -69,7 +69,7 @@
 
 </details>
 
-**[在线API文档(包含示例)](https://eritque-arcus.tech/MiraiCP/html/)**
+**[在线API文档(包含示例)](https://eritque-arcus.tech/MiraiCP/)**
 
 [文档库](doc)
 
