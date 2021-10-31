@@ -50,7 +50,16 @@ namespace MiraiCP {
         /// @param a vector
         /// @return string
         template<typename T>
-        static std::string VectorToString(std::vector<T> a, const std::string & = ",");
+        static std::string VectorToString(std::vector<T> a, const std::string &separator = ","){
+            std::stringstream ss;
+            for (size_t i = 0; i < a.size(); ++i) {
+                if (i != 0)
+                    ss << separator;
+                ss << a[i];
+            }
+            std::string s = ss.str();
+            return s;
+        }
 
         /// @brief 从string格式化到vector
         /// @param temp string

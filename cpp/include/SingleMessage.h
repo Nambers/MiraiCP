@@ -3,7 +3,7 @@
 
 #include "Exception.h"
 #include "MessageSource.h"
-#include <cassert>
+#include <array>
 
 namespace MiraiCP {
     /// 用serviceMessage的分享信息
@@ -132,7 +132,7 @@ namespace MiraiCP {
         }
 
         explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 2) assert(sg.type != 2);
+            if (sg.type != 2) throw IllegalArgumentException("传入的SingleMessage应该是Image类型");
             this->id = sg.content;
         }
 

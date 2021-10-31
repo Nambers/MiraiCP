@@ -34,18 +34,6 @@ namespace MiraiCP {
         return env->NewString((jchar *) c, (jsize) utf16line.size());
     }
 
-    template<typename T>
-    std::string Tools::VectorToString(std::vector<T> a, const std::string &separator) {
-        std::stringstream ss;
-        for (size_t i = 0; i < a.size(); ++i) {
-            if (i != 0)
-                ss << separator;
-            ss << a[i];
-        }
-        std::string s = ss.str();
-        return s;
-    }
-
     std::vector<unsigned long long> Tools::StringToVector(std::string temp) {
         std::vector<unsigned long long> result;
         temp.erase(temp.begin());

@@ -2,7 +2,7 @@
 """
 Filename: MiraiCP/cpp/include/third-party/config.py
 Path: MiraiCP/cpp/include/third-party
-Author: Antares0982@gmail.com
+Author: antares0982@gmail.com
 Copyright (c) 2021 Antares
 """
 # workpath: MiraiCP/cpp
@@ -23,7 +23,7 @@ msg = "Files to be added:\n"
 for filename in fnames:
     if filename == 'miraiCP.cpp':
         continue
-    if filename.endswith('.cpp'):
+    if filename.endswith('.h'):
         d['sources'].append("include/"+filename)
         msg += filename+"\n"
 
