@@ -9,6 +9,7 @@ namespace MiraiCP {
 //from Config.cpp
 
 
+
 namespace MiraiCP {
     // 静态成员
     jclass Config::CPP_lib = nullptr;
@@ -136,6 +137,7 @@ namespace MiraiCP {
     }
 } // namespace MiraiCP
 //from ExceptionBroadcasting.cpp
+
 
 
 namespace MiraiCP {
@@ -356,6 +358,7 @@ namespace MiraiCP {
 //from Logger.cpp
 
 
+
 namespace MiraiCP {
     // 静态成员
 
@@ -466,6 +469,7 @@ namespace MiraiCP {
 
 } // namespace MiraiCP
 //from MessageChain.cpp
+
 
 
 namespace MiraiCP {
@@ -584,6 +588,7 @@ namespace MiraiCP {
     }
 } // namespace MiraiCP
 //from MessageSource.cpp
+
 
 
 namespace MiraiCP {
@@ -760,6 +765,7 @@ namespace MiraiCP {
 //from ThreadManager.cpp
 
 
+
 namespace MiraiCP {
     // 静态成员
 
@@ -823,8 +829,8 @@ namespace MiraiCP {
 //from Tools.cpp
 
 
-#include <regex>
 #include <utf8.h>
+#include <regex>
 
 namespace MiraiCP {
     /*工具类实现*/
@@ -903,6 +909,8 @@ namespace MiraiCP {
     }
 } // namespace MiraiCP
 //from utils.cpp
+
+
 
 
 // 开始对接JNI接口代码

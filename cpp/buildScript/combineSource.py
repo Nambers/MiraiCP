@@ -13,5 +13,5 @@ for filename in sorted(os.listdir('include')):
     if filename.endswith('.cpp'):
         ss += "//from " + filename + "\n" + re.sub(r"#include \"(.*)\"", "",
                                                    open("include/" + filename, 'r', encoding="utf-8").read())
-open('single_include/MiraiCP/miraiCP.cpp', 'w', encoding='utf-8').write(ss)
+open('single_include/MiraiCP/MiraiCP.cpp', 'w', encoding='utf-8').write(ss)
 print("header file generated successfully")

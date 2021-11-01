@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <miraiCP.hpp>
+#include <MiraiCP.hpp>
 
 void useless() {
     MiraiCP::Logger::logger.info("x");
