@@ -1,5 +1,5 @@
 // MiraiCP依赖文件(只需要引入这一个)
-#include <miraiCP.hpp>
+#include <MiraiCP.hpp>
 
 #include <chrono>
 using namespace std;
