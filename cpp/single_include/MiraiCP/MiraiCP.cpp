@@ -1,153 +1,19 @@
-// Copyright (C) 2020-2021 Eritque arcus and contributors.
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as
-// published by the Free Software Foundation, either version 3 of the
-// License, or any later version(in your opinion).
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-//
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+#include <MiraiCP.hpp>
+//from CPPPlugin.cpp
 
-#include <miraiCP.hpp>
-#include <utf8.h>
-#include <regex>
 
 namespace MiraiCP {
-
-    // 开始MiraiCP实现代码
-
-    // 静态成员
-
-    std::map<std::string, ThreadManager::ThreadInfo> ThreadManager::threads = std::map<std::string, ThreadInfo>();
-    std::recursive_mutex ThreadManager::mtx = std::recursive_mutex();
-    JavaVM *ThreadManager::gvm = nullptr;
-    long ThreadManager::JNIVersion = 0;
-
-    jclass Config::CPP_lib = nullptr;
-    jmethodID Config::KOperation = nullptr;
-
-    Logger Logger::logger = Logger();
-    [[deprecated("Use Logger::logger instead")]] Logger *const logger = &Logger::logger;
-
     PluginLogger *CPPPlugin::pluginLogger = nullptr;
     CPPPlugin *CPPPlugin::plugin = nullptr;
+} // namespace MiraiCP
+//from Config.cpp
 
-    std::map<int, std::string> SingleMessage::messageType = {
-            {-3, "OnlineAudio"},
-            {-2, "QuoteReply"},
-            {-1, "unSupportMessage"},
-            {0, "plainText"},
-            {1, "at"},
-            {2, "atAll"},
-            {3, "image"},
-            {4, "app"},
-            {5, "service"},
-            {6, "file"}};
 
-    Event Event::processor = Event();
-    [[deprecated("Use Event::processor instead")]] Event *const procession = &Event::processor;
-
+namespace MiraiCP {
+    // 静态成员
+    jclass Config::CPP_lib = nullptr;
+    jmethodID Config::KOperation = nullptr;
     // 结束静态成员
-
-    void ThreadManager::setEnv(JNIEnv *e) {
-        mtx.lock();
-        if (!ThreadManager::included(ThreadManager::getThreadId())) {
-            ThreadInfo tmp{e, false};
-            ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
-        } else {
-            ThreadManager::threads[ThreadManager::getThreadId()].e = e;
-        }
-        mtx.unlock();
-    }
-
-    void ThreadManager::newEnv(const char *threadName) {
-        JNIEnv *env = nullptr;
-        JavaVMAttachArgs args{JNIVersion,
-                              const_cast<char *>(threadName),
-                              nullptr};
-        gvm->AttachCurrentThread((void **) &env, &args);
-        ThreadInfo tmp{env, true};
-        ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
-        Logger::logger.info("refresh env");
-    };
-
-    void ThreadManager::detach() {
-        mtx.lock();
-        if (ThreadManager::included(ThreadManager::getThreadId())) {
-            bool att = ThreadManager::threads[ThreadManager::getThreadId()].attach;
-            ThreadManager::threads.erase(ThreadManager::getThreadId());
-            if (att)
-                gvm->DetachCurrentThread();
-        }
-        mtx.unlock();
-    }
-
-    bool ThreadManager::included(const std::string &id) {
-        if (ThreadManager::threads.empty() || ThreadManager::threads.count(id) == 0)
-            return false;
-        return true;
-    }
-
-    JNIEnv *ThreadManager::getEnv(const std::string &file, int loc, const std::string &func) {
-        mtx.lock();
-        if (!ThreadManager::included(getThreadId())) {
-            ThreadManager::newEnv();
-        }
-        JNIEnv *tmp = ThreadManager::threads[ThreadManager::getThreadId()].e;
-        ThreadManager::threads[ThreadManager::getThreadId()].stack.push(file, loc, func);
-        mtx.unlock();
-        return tmp;
-    }
-
-    /*
-    日志类实现
-    throw: InitException 即找不到签名
-    */
-    void Logger_interface::init(JNIEnv *env) {
-        this->log = env->GetStaticMethodID(Config::CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
-    }
-
-    void Logger_interface::registerHandle(Logger_interface::Action action) {
-        this->loggerhandler.action = std::move(action);
-    }
-
-    void Logger_interface::setHandleState(bool state) {
-        this->loggerhandler.enable = state;
-    }
-
-    void Logger::log0(const std::string &content, int level, JNIEnv *env) {
-        if (this->loggerhandler.enable)
-            this->loggerhandler.action(content, level);
-        json j;
-        j["id"] = -2;
-        j["log"] = content;
-        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
-    }
-
-    void IdLogger::log0(const std::string &content, int level, JNIEnv *env) {
-        if (this->loggerhandler.enable)
-            this->loggerhandler.action(content, level);
-        json j;
-        j["id"] = id;
-        j["log"] = content;
-        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
-    }
-
-    void PluginLogger::log0(const std::string &content, int level, JNIEnv *env) {
-        if (this->loggerhandler.enable)
-            this->loggerhandler.action(content, level);
-        json j;
-        j["id"] = -1;
-        j["name"] = CPPPlugin::plugin->config.id;
-        j["log"] = content;
-        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
-    }
 
     /*
     配置类实现
@@ -166,8 +32,7 @@ namespace MiraiCP {
         ThreadManager::getEnv(__FILE__, __LINE__)->DeleteGlobalRef(Config::CPP_lib);
     }
 
-    std::string
-    Config::koperation(operation_set type, json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
+    std::string Config::koperation(operation_set type, json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
         json j;
         j["type"] = type;
         j["data"] = data;
@@ -178,207 +43,115 @@ namespace MiraiCP {
         if (catchErr) ErrorHandle(re, errorInfo);
         return re;
     }
-    ExceptionBroadcasting::ExceptionBroadcasting(MiraiCPException *ex) : e(ex) {}
-    ExceptionBroadcasting::~ExceptionBroadcasting() {
-        Event::processor.broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(e));
+
+} // namespace MiraiCP
+//from Contact.cpp
+
+
+namespace MiraiCP {
+    Image Contact::uploadImg(const std::string &path, JNIEnv *env) {
+        std::string re = LowLevelAPI::uploadImg0(path, this, env);
+        if (re == "E2")
+            throw UploadException("上传图片大小超过30MB,路径:" + path);
+        return Image(re);
     }
 
-    void MessageSource::recall(JNIEnv *env) const {
-        json j;
-        j["source"] = this->serializeToString();
-        std::string re = Config::koperation(Config::Recall, j, env);
-        if (re == "Y") return;
-        if (re == "E1") throw BotException();
-        if (re == "E2") throw RecallException();
-    }
-
-    MessageSource::MessageSource(std::string ids,
-                                 std::string internalids,
-                                 std::string source)
-        : ids(std::move(ids)),
-          internalids(std::move(internalids)),
-          source(std::move(source)) {}
-
-    std::string MessageSource::serializeToString() const {
-        return source;
-    }
-
-    MessageSource MessageSource::deserializeFromString(const std::string &source) {
-        json j = json::parse(source);
-        try {
-            return {j["ids"].dump(), j["internalIds"].dump(), source};
-        } catch (json::type_error &e) {
-            Logger::logger.error("消息源序列化出错，格式不符合(MessageSource::deserializeFromString)");
-            Logger::logger.error(source);
-            Logger::logger.error(e.what());
-            throw e;
-        }
-    }
-
-    //message chain
-    MessageChain MessageChain::deserializationFromMiraiCode(const std::string &m) {
-        size_t pos = 0;
-        size_t lastPos = -1;
-        MessageChain mc;
-        if (m.length() <= 7) {
-            return MessageChain(PlainText(m));
-        }
-        do {
-            if (m.length() - 7 - pos > 0 && m.substr(pos, 7) == "[mirai:") {
-                if (pos - lastPos > 1)
-                    mc.add(PlainText(m.substr(lastPos + 1, pos - lastPos - 1))); // plain text
-                size_t back = MessageChain::findEnd(m, pos);
-                if (back == -1) throw IllegalStateException("");
-                std::string tmp = m.substr(pos, back - pos);
-                tmp = Tools::replace(tmp, "[mirai:", "");
-                size_t i = tmp.find(':'); // first :
-                int t = SingleMessage::getKey(tmp.substr(0, i));
-                switch (t) {
-                    case 0:
-                        // no miraiCode key is PlainText
-                        break;
-                    case 1:
-                        mc.add(At(std::stoll(tmp.substr(i + 1, tmp.length() - i - 1))));
-                        break;
-                    case 2:
-                        mc.add(Image(tmp.substr(i + 1, tmp.length() - i - 1)));
-                        break;
-                    case 3:
-                        mc.add(AtAll());
-                        break;
-                    case 4:
-                        mc.add(LightApp(tmp.substr(i + 1, tmp.length() - i - 1)));
-                        break;
-                    case 5: {
-                        size_t comma = tmp.find(',');
-                        mc.add(ServiceMessage(std::stoi(tmp.substr(i + 1, comma - i - 1)),
-                                              tmp.substr(comma + 1, tmp.length() - comma - 1)));
-                        break;
-                    }
-                    default:
-                        mc.add(UnSupportMessage("[mirai:" + tmp));
-                        break;
-                }
-                pos = back;
-                lastPos = pos;
-                if (t == 1)
-                    lastPos++;
-            }
-            pos++;
-        } while (pos < m.length());
-        if (lastPos + 1 < m.length())
-            mc.add(PlainText(m.substr(lastPos + 1, m.length() - lastPos - 1))); // plain text
-        return mc;
-    }
-
-    MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp) {
-        json j = tmp["originalMessage"];
-        MessageChain mc;
-        for (auto node: j) {
-            if (node["type"] == "SimpleServiceMessage") {
-                mc.add(ServiceMessage(node["serviceId"], node["content"]));
-                continue;
-            }
-            if (node["type"] == "LightApp") {
-                mc.add(LightApp(node["content"]));
-                continue;
-            }
-            if (node["type"] == "OnlineAudio") {
-                mc.add(OnlineAudio(node["filename"], node["fileMd5"], node["fileSize"], node["codec"], node["length"],
-                                   node["urlForDownload"]));
-                continue;
-            }
-            if (node["type"] == "FileMessage") {
-                mc.add(Group(tmp["targetId"], tmp["botId"]).getFileById(node["id"]).plus(node["internalId"]));
-                continue;
-            }
-            int type = SingleMessage::getKey(node["type"]);
-            switch (type) {
-                case -2:
-                    mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
-                    break;
-                case 0:
-                    mc.add(PlainText(node["content"].get<std::string>()));
-                    break;
-                case 1:
-                    mc.add(At(node["target"]));
-                    break;
-                case 2:
-                    mc.add(AtAll());
-                    break;
-                case 3:
-                    mc.add(Image(node["imageId"]));
-                    break;
-                case 4:
-                    Logger::logger.error(
-                            "MiraiCP碰到了预料之外的错误(原因:匹配到了LightApp)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以修复: MessageSource:" +
-                            j.dump());
-                    break;
-                case 5:
-                    Logger::logger.error(
-                            "MiraiCP碰到了预料之外的错误(原因:匹配到了ServiceMessage)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以修复: MessageSource:" +
-                            j.dump());
-                    break;
-                default:
-                    mc.add(UnSupportMessage(node["content"]));
-                    Logger::logger.error(
-                            "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以支持这种消息: MessageSource:" +
-                            j.dump());
-            }
-        }
-        return mc;
-    }
-
-    //远程文件(群文件)
-    RemoteFile RemoteFile::deserializeFromString(const std::string &source) {
+    Contact Contact::deserializationFromString(const std::string &source) {
         json j;
         try {
             j = json::parse(source);
         } catch (json::parse_error &e) {
-            Logger::logger.error("格式化json失败，RemoteFile::deserializeFromString");
+            Logger::logger.error("json序列化错误 Contact::deserializationFromString");
             Logger::logger.error(source);
             Logger::logger.error(e.what());
-            throw e;
         }
-        try {
-            struct Dinfo d {
-                j["dinfo"]["url"],
-                        j["dinfo"]["md5"],
-                        j["dinfo"]["sha1"]
-            };
-            struct Finfo f {
-                j["finfo"]["size"],
-                        j["finfo"]["uploaderid"],
-                        j["finfo"]["downloadtime"],
-                        j["finfo"]["uploadtime"],
-                        j["finfo"]["lastmodifytime"]
-            };
-            return RemoteFile(j["id"], j["internalid"], j["name"], j["finfo"]["size"], j["path"], d, f);
-        } catch (json::type_error &e) {
-            Logger::logger.error("json格式化失败，位置:RemoteFile");
-            Logger::logger.error(source);
-            Logger::logger.error(e.what());
-            throw e;
-        }
+        return Contact::deserializationFromJson(j);
     }
 
-    std::string RemoteFile::serializeToString() {
+    Contact Contact::deserializationFromJson(nlohmann::json j) {
+        return Contact(j["type"],
+                       j["id"],
+                       j["groupid"],
+                       j["nickornamecard"],
+                       j["botid"],
+                       j["anonymous"]);
+    }
+
+    MessageSource Contact::sendVoice0(const std::string &path, JNIEnv *env) {
         json j;
-        j["dinfo"]["url"] = this->dinfo.url;
-        j["dinfo"]["md5"] = this->dinfo.md5;
-        j["dinfo"]["shar1"] = this->dinfo.sha1;
-        j["finfo"]["size"] = this->finfo.size;
-        j["finfo"]["uploaderid"] = this->finfo.uploaderid;
-        j["finfo"]["downloadtime"] = this->finfo.downloadtime;
-        j["finfo"]["uploadtime"] = this->finfo.uploadtime;
-        j["finfo"]["lastmodifytime"] = this->finfo.lastmodifytime;
-        j["id"] = this->id;
-        j["internalid"] = this->internalid;
-        j["name"] = this->name;
-        j["size"] = this->size;
-        return j.dump();
+        json source;
+        source["path"] = path;
+        j["source"] = source.dump();
+        j["contactSource"] = this->serializationToString();
+        std::string re = Config::koperation(Config::Voice, j, env);
+        if (re == "E1")
+            throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在");
+        else if (re == "E2")
+            throw UploadException("上传语音文件大小超过服务器限制，一般限制在1MB上下");
+        return MessageSource::deserializeFromString(re);
+    }
+} // namespace MiraiCP
+//from Event.cpp
+
+
+namespace MiraiCP {
+    Event Event::processor = Event();
+
+    [[deprecated("Use Event::processor instead")]] Event *const procession = &Event::processor;
+
+    MessageChain PrivateMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
+        json j;
+        j["contactSource"] = this->sender.serializationToString();
+        j["time"] = time;
+        j["halt"] = halt;
+        std::string r = Config::koperation(Config::NextMsg, j, env);
+        if (r == "-1")
+            throw TimeOutException("取下一条信息超时");
+        json re = json::parse(r);
+        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
+    MessageChain GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
+        json j;
+        j["contactSource"] = this->group.serializationToString();
+        j["time"] = time;
+        j["halt"] = halt;
+        std::string r = Config::koperation(Config::NextMsg, j, env);
+        if (r == "-1")
+            throw TimeOutException("取下一条信息超时");
+        json re = json::parse(r);
+        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
+    }
+
+    MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) {
+        json j;
+        j["contactSource"] = this->sender.serializationToString();
+        j["time"] = time;
+        j["halt"] = halt;
+        std::string r = Config::koperation(Config::NextMsg, j, env);
+        if (r == "-1")
+            throw TimeOutException("取下一条信息超时");
+        json re = json::parse(r);
+        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
+    }
+} // namespace MiraiCP
+//from ExceptionBroadcasting.cpp
+
+
+namespace MiraiCP {
+    class Event;
+
+    ExceptionBroadcasting::ExceptionBroadcasting(MiraiCPException *ex) : e(ex) {}
+
+    // 在 MiraiCPException 被构造之后执行，实现于析构函数
+    ExceptionBroadcasting::~ExceptionBroadcasting() {
+        Event::processor.broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(e));
+    }
+} // namespace MiraiCP
+//from Forward.cpp
+
+
+namespace MiraiCP {
     //发送这个聊天记录
     MessageSource ForwardMessage::sendTo(Contact *c, JNIEnv *env) {
         json temp;
@@ -411,66 +184,11 @@ namespace MiraiCP {
         root["value"] = value;
         sendmsg = root;
     }
+} // namespace MiraiCP
+//from Friend.cpp
 
-    /*图片类实现*/
-    std::string Image::queryURL(JNIEnv *env) {
-        json j;
-        j["id"] = this->id;
-        std::string re = Config::koperation(Config::QueryImgUrl, j, env);
-        if (re == "E1")
-            throw RemoteAssetException("图片id格式错误");
-        return re;
-    }
 
-    std::string Image::toMiraiCode() const {
-        return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
-    }
-
-    MessageSource MessageSource::quoteAndSendMiraiCode(const std::string &content, QQID groupid, JNIEnv *env) const {
-        json obj;
-        json sign;
-        obj["messageSource"] = this->serializeToString();
-        obj["msg"] = content;
-        sign["MiraiCode"] = true;
-        sign["groupid"] = groupid;
-        obj["sign"] = sign.dump();
-        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
-        return MessageSource::deserializeFromString(re);
-    }
-
-    MessageSource MessageSource::quoteAndSendMsg(const std::string &content, QQID groupid, JNIEnv *env) const {
-        json obj;
-        json sign;
-        obj["messageSource"] = this->serializeToString();
-        obj["msg"] = content;
-        sign["MiraiCode"] = false;
-        sign["groupid"] = groupid;
-        obj["sign"] = sign.dump();
-        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
-        return MessageSource::deserializeFromString(re);
-    }
-
-    MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode, JNIEnv *env) {
-        if (msg.empty()) {
-            Logger::logger.warning("警告:发送空信息, 位置: Contact::SendMsg");
-            throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg");
-        }
-        std::string re = LowLevelAPI::send0(msg, this, retryTime, miraicode, env,
-                                            "reach a error area, Contact::SendMiraiCode");
-        if (re == "ET")
-            throw TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg");
-        if (Tools::starts_with(re, "EBM"))
-            throw BotIsBeingMutedException(std::stoi(re.substr(3)));
-        return MessageSource::deserializeFromString(re);
-    }
-
-    Image Contact::uploadImg(const std::string &path, JNIEnv *env) {
-        std::string re = LowLevelAPI::uploadImg0(path, this, env);
-        if (re == "E2")
-            throw UploadException("上传图片大小超过30MB,路径:" + path);
-        return Image(re);
-    }
-
+namespace MiraiCP {
     /*好友类实现*/
     Friend::Friend(QQID id, QQID botid, JNIEnv *env) : Contact() {
         this->_type = 1;
@@ -478,59 +196,11 @@ namespace MiraiCP {
         this->_botid = botid;
         refreshInfo(env);
     }
+} // namespace MiraiCP
+//from Group.cpp
 
-    /*成员类实现*/
-    Member::Member(QQID id, QQID groupid, QQID botid, JNIEnv *env)
-        : Contact() {
-        this->_type = 3;
-        this->_id = id;
-        this->_groupid = groupid;
-        this->_botid = botid;
-        refreshInfo(env);
-    }
 
-    unsigned int Member::getPermission(JNIEnv *env) {
-        if (isAnonymous) return 0;
-        json j;
-        j["contactSource"] = this->serializationToString();
-        std::string re = Config::koperation(Config::QueryM, j, env);
-        return stoi(re);
-    }
-
-    void Member::mute(int time, JNIEnv *env) {
-        json j;
-        j["time"] = time;
-        j["contactSource"] = this->serializationToString();
-        std::string re = Config::koperation(Config::MuteM, j, env);
-        if (re == "E3") {
-            throw BotException();
-        }
-        if (re == "E4") {
-            throw MuteException();
-        }
-    }
-
-    void Member::kick(const std::string &reason, JNIEnv *env) {
-        json j;
-        j["message"] = reason;
-        j["contactSource"] = this->serializationToString();
-        std::string re = Config::koperation(Config::KickM, j, env);
-        if (re == "E3") {
-            throw BotException();
-        }
-    }
-
-    void Member::modifyAdmin(bool admin, JNIEnv *env) {
-        if (isAnonymous) return;
-        json j;
-        j["admin"] = admin;
-        j["contactSource"] = this->serializationToString();
-        std::string re = Config::koperation(Config::ModifyAdmin, j, env);
-        if (re == "E1") {
-            throw BotException();
-        }
-    }
-
+namespace MiraiCP {
     /*群聊类实现*/
     Group::Group(QQID groupid, QQID botid, JNIEnv *env) : Contact() {
         this->_type = 2;
@@ -682,43 +352,481 @@ namespace MiraiCP {
         }
         return re;
     }
+} // namespace MiraiCP
+//from Logger.cpp
 
-    MessageChain PrivateMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
-        json j;
-        j["contactSource"] = this->sender.serializationToString();
-        j["time"] = time;
-        j["halt"] = halt;
-        std::string r = Config::koperation(Config::NextMsg, j, env);
-        if (r == "-1")
-            throw TimeOutException("取下一条信息超时");
-        json re = json::parse(r);
-        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
+
+namespace MiraiCP {
+    // 静态成员
+
+    Logger Logger::logger = Logger();
+    [[deprecated("Use Logger::logger instead")]] Logger *const logger = &Logger::logger;
+
+    // 结束静态成员
+
+    /*
+    日志类实现
+    throw: InitException 即找不到签名
+    */
+    void Logger_interface::init(JNIEnv *env) {
+        this->log = env->GetStaticMethodID(Config::CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
     }
 
-    MessageChain GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
-        json j;
-        j["contactSource"] = this->group.serializationToString();
-        j["time"] = time;
-        j["halt"] = halt;
-        std::string r = Config::koperation(Config::NextMsg, j, env);
-        if (r == "-1")
-            throw TimeOutException("取下一条信息超时");
-        json re = json::parse(r);
-        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
+    void Logger_interface::registerHandle(Logger_interface::Action action) {
+        this->loggerhandler.action = std::move(action);
     }
 
-    MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) {
-        json j;
-        j["contactSource"] = this->sender.serializationToString();
-        j["time"] = time;
-        j["halt"] = halt;
-        std::string r = Config::koperation(Config::NextMsg, j, env);
-        if (r == "-1")
-            throw TimeOutException("取下一条信息超时");
-        json re = json::parse(r);
-        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
+    void Logger_interface::setHandleState(bool state) {
+        this->loggerhandler.enable = state;
     }
 
+    void Logger::log0(const std::string &content, int level, JNIEnv *env) {
+        if (this->loggerhandler.enable)
+            this->loggerhandler.action(content, level);
+        json j;
+        j["id"] = -2;
+        j["log"] = content;
+        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
+    }
+
+    void IdLogger::log0(const std::string &content, int level, JNIEnv *env) {
+        if (this->loggerhandler.enable)
+            this->loggerhandler.action(content, level);
+        json j;
+        j["id"] = id;
+        j["log"] = content;
+        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
+    }
+
+    void PluginLogger::log0(const std::string &content, int level, JNIEnv *env) {
+        if (this->loggerhandler.enable)
+            this->loggerhandler.action(content, level);
+        json j;
+        j["id"] = -1;
+        j["name"] = CPPPlugin::plugin->config.id;
+        j["log"] = content;
+        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
+    }
+} // namespace MiraiCP
+//from Member.cpp
+
+
+namespace MiraiCP {
+    /*成员类实现*/
+    Member::Member(QQID id, QQID groupid, QQID botid, JNIEnv *env)
+        : Contact() {
+        this->_type = 3;
+        this->_id = id;
+        this->_groupid = groupid;
+        this->_botid = botid;
+        refreshInfo(env);
+    }
+
+    unsigned int Member::getPermission(JNIEnv *env) {
+        if (isAnonymous) return 0;
+        json j;
+        j["contactSource"] = this->serializationToString();
+        std::string re = Config::koperation(Config::QueryM, j, env);
+        return stoi(re);
+    }
+
+    void Member::mute(int time, JNIEnv *env) {
+        json j;
+        j["time"] = time;
+        j["contactSource"] = this->serializationToString();
+        std::string re = Config::koperation(Config::MuteM, j, env);
+        if (re == "E3") {
+            throw BotException();
+        }
+        if (re == "E4") {
+            throw MuteException();
+        }
+    }
+
+    void Member::kick(const std::string &reason, JNIEnv *env) {
+        json j;
+        j["message"] = reason;
+        j["contactSource"] = this->serializationToString();
+        std::string re = Config::koperation(Config::KickM, j, env);
+        if (re == "E3") {
+            throw BotException();
+        }
+    }
+
+    void Member::modifyAdmin(bool admin, JNIEnv *env) {
+        if (isAnonymous) return;
+        json j;
+        j["admin"] = admin;
+        j["contactSource"] = this->serializationToString();
+        std::string re = Config::koperation(Config::ModifyAdmin, j, env);
+        if (re == "E1") {
+            throw BotException();
+        }
+    }
+
+} // namespace MiraiCP
+//from MessageChain.cpp
+
+
+namespace MiraiCP {
+    //message chain
+    MessageChain MessageChain::deserializationFromMiraiCode(const std::string &m) {
+        size_t pos = 0;
+        size_t lastPos = -1;
+        MessageChain mc;
+        if (m.length() <= 7) {
+            return MessageChain(PlainText(m));
+        }
+        do {
+            if (m.length() - 7 - pos > 0 && m.substr(pos, 7) == "[mirai:") {
+                if (pos - lastPos > 1)
+                    mc.add(PlainText(m.substr(lastPos + 1, pos - lastPos - 1))); // plain text
+                size_t back = MessageChain::findEnd(m, pos);
+                if (back == -1) throw IllegalStateException("");
+                std::string tmp = m.substr(pos, back - pos);
+                tmp = Tools::replace(tmp, "[mirai:", "");
+                size_t i = tmp.find(':'); // first :
+                int t = SingleMessage::getKey(tmp.substr(0, i));
+                switch (t) {
+                    case 0:
+                        // no miraiCode key is PlainText
+                        break;
+                    case 1:
+                        mc.add(At(std::stoll(tmp.substr(i + 1, tmp.length() - i - 1))));
+                        break;
+                    case 2:
+                        mc.add(Image(tmp.substr(i + 1, tmp.length() - i - 1)));
+                        break;
+                    case 3:
+                        mc.add(AtAll());
+                        break;
+                    case 4:
+                        mc.add(LightApp(tmp.substr(i + 1, tmp.length() - i - 1)));
+                        break;
+                    case 5: {
+                        size_t comma = tmp.find(',');
+                        mc.add(ServiceMessage(std::stoi(tmp.substr(i + 1, comma - i - 1)),
+                                              tmp.substr(comma + 1, tmp.length() - comma - 1)));
+                        break;
+                    }
+                    default:
+                        mc.add(UnSupportMessage("[mirai:" + tmp));
+                        break;
+                }
+                pos = back;
+                lastPos = pos;
+                if (t == 1)
+                    lastPos++;
+            }
+            pos++;
+        } while (pos < m.length());
+        if (lastPos + 1 < m.length())
+            mc.add(PlainText(m.substr(lastPos + 1, m.length() - lastPos - 1))); // plain text
+        return mc;
+    }
+
+    MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp) {
+        json j = tmp["originalMessage"];
+        MessageChain mc;
+        for (auto node: j) {
+            if (node["type"] == "SimpleServiceMessage") {
+                mc.add(ServiceMessage(node["serviceId"], node["content"]));
+                continue;
+            }
+            if (node["type"] == "LightApp") {
+                mc.add(LightApp(node["content"]));
+                continue;
+            }
+            if (node["type"] == "OnlineAudio") {
+                mc.add(OnlineAudio(node["filename"], node["fileMd5"], node["fileSize"], node["codec"], node["length"],
+                                   node["urlForDownload"]));
+                continue;
+            }
+            if (node["type"] == "FileMessage") {
+                mc.add(Group(tmp["targetId"], tmp["botId"]).getFileById(node["id"]).plus(node["internalId"]));
+                continue;
+            }
+            int type = SingleMessage::getKey(node["type"]);
+            switch (type) {
+                case -2:
+                    mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
+                    break;
+                case 0:
+                    mc.add(PlainText(node["content"].get<std::string>()));
+                    break;
+                case 1:
+                    mc.add(At(node["target"]));
+                    break;
+                case 2:
+                    mc.add(AtAll());
+                    break;
+                case 3:
+                    mc.add(Image(node["imageId"]));
+                    break;
+                case 4:
+                    Logger::logger.error(
+                            "MiraiCP碰到了预料之外的错误(原因:匹配到了LightApp)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以修复: MessageSource:" +
+                            j.dump());
+                    break;
+                case 5:
+                    Logger::logger.error(
+                            "MiraiCP碰到了预料之外的错误(原因:匹配到了ServiceMessage)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以修复: MessageSource:" +
+                            j.dump());
+                    break;
+                default:
+                    mc.add(UnSupportMessage(node["content"]));
+                    Logger::logger.error(
+                            "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以支持这种消息: MessageSource:" +
+                            j.dump());
+            }
+        }
+        return mc;
+    }
+} // namespace MiraiCP
+//from MessageSource.cpp
+
+
+namespace MiraiCP {
+    void MessageSource::recall(JNIEnv *env) const {
+        json j;
+        j["source"] = this->serializeToString();
+        std::string re = Config::koperation(Config::Recall, j, env);
+        if (re == "Y") return;
+        if (re == "E1") throw BotException();
+        if (re == "E2") throw RecallException();
+    }
+
+    MessageSource::MessageSource(std::string ids,
+                                 std::string internalids,
+                                 std::string source)
+        : ids(std::move(ids)),
+          internalids(std::move(internalids)),
+          source(std::move(source)) {}
+
+    std::string MessageSource::serializeToString() const {
+        return source;
+    }
+
+    MessageSource MessageSource::deserializeFromString(const std::string &source) {
+        json j = json::parse(source);
+        try {
+            return {j["ids"].dump(), j["internalIds"].dump(), source};
+        } catch (json::type_error &e) {
+            Logger::logger.error("消息源序列化出错，格式不符合(MessageSource::deserializeFromString)");
+            Logger::logger.error(source);
+            Logger::logger.error(e.what());
+            throw e;
+        }
+    }
+
+    MessageSource MessageSource::quoteAndSendMiraiCode(const std::string &content, QQID groupid, JNIEnv *env) const {
+        json obj;
+        json sign;
+        obj["messageSource"] = this->serializeToString();
+        obj["msg"] = content;
+        sign["MiraiCode"] = true;
+        sign["groupid"] = groupid;
+        obj["sign"] = sign.dump();
+        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
+        return MessageSource::deserializeFromString(re);
+    }
+
+    MessageSource MessageSource::quoteAndSendMsg(const std::string &content, QQID groupid, JNIEnv *env) const {
+        json obj;
+        json sign;
+        obj["messageSource"] = this->serializeToString();
+        obj["msg"] = content;
+        sign["MiraiCode"] = false;
+        sign["groupid"] = groupid;
+        obj["sign"] = sign.dump();
+        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
+        return MessageSource::deserializeFromString(re);
+    }
+
+    MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode, JNIEnv *env) {
+        if (msg.empty()) {
+            Logger::logger.warning("警告:发送空信息, 位置: Contact::SendMsg");
+            throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg");
+        }
+        std::string re = LowLevelAPI::send0(msg, this, retryTime, miraicode, env,
+                                            "reach a error area, Contact::SendMiraiCode");
+        if (re == "ET")
+            throw TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg");
+        if (Tools::starts_with(re, "EBM"))
+            throw BotIsBeingMutedException(std::stoi(re.substr(3)));
+        return MessageSource::deserializeFromString(re);
+    }
+} // namespace MiraiCP
+//from PluginConfig.cpp
+
+
+namespace MiraiCP {
+    json PluginConfig::serialize() {
+        json j;
+        j["name"] = name;
+        j["version"] = version;
+        j["author"] = author;
+        j["description"] = description;
+        j["time"] = time;
+        j["id"] = id;
+        return j;
+    }
+} // namespace MiraiCP
+//from SingleMessage.cpp
+
+
+#include <json.hpp>
+
+namespace MiraiCP {
+    // 静态成员
+    std::map<int, std::string> SingleMessage::messageType = {
+            {-3, "OnlineAudio"},
+            {-2, "QuoteReply"},
+            {-1, "unSupportMessage"},
+            {0, "plainText"},
+            {1, "at"},
+            {2, "atAll"},
+            {3, "image"},
+            {4, "app"},
+            {5, "service"},
+            {6, "file"}};
+
+    // 结束静态成员
+
+    //远程文件(群文件)
+    RemoteFile RemoteFile::deserializeFromString(const std::string &source) {
+        json j;
+        try {
+            j = json::parse(source);
+        } catch (json::parse_error &e) {
+            Logger::logger.error("格式化json失败，RemoteFile::deserializeFromString");
+            Logger::logger.error(source);
+            Logger::logger.error(e.what());
+            throw e;
+        }
+        try {
+            struct Dinfo d {
+                j["dinfo"]["url"],
+                        j["dinfo"]["md5"],
+                        j["dinfo"]["sha1"]
+            };
+            struct Finfo f {
+                j["finfo"]["size"],
+                        j["finfo"]["uploaderid"],
+                        j["finfo"]["downloadtime"],
+                        j["finfo"]["uploadtime"],
+                        j["finfo"]["lastmodifytime"]
+            };
+            return RemoteFile(j["id"], j["internalid"], j["name"], j["finfo"]["size"], j["path"], d, f);
+        } catch (json::type_error &e) {
+            Logger::logger.error("json格式化失败，位置:RemoteFile");
+            Logger::logger.error(source);
+            Logger::logger.error(e.what());
+            throw e;
+        }
+    }
+
+    std::string RemoteFile::serializeToString() {
+        json j;
+        j["dinfo"]["url"] = this->dinfo.url;
+        j["dinfo"]["md5"] = this->dinfo.md5;
+        j["dinfo"]["shar1"] = this->dinfo.sha1;
+        j["finfo"]["size"] = this->finfo.size;
+        j["finfo"]["uploaderid"] = this->finfo.uploaderid;
+        j["finfo"]["downloadtime"] = this->finfo.downloadtime;
+        j["finfo"]["uploadtime"] = this->finfo.uploadtime;
+        j["finfo"]["lastmodifytime"] = this->finfo.lastmodifytime;
+        j["id"] = this->id;
+        j["internalid"] = this->internalid;
+        j["name"] = this->name;
+        j["size"] = this->size;
+        return j.dump();
+    }
+
+    /*图片类实现*/
+    std::string Image::queryURL(JNIEnv *env) {
+        json j;
+        j["id"] = this->id;
+        std::string re = Config::koperation(Config::QueryImgUrl, j, env);
+        if (re == "E1")
+            throw RemoteAssetException("图片id格式错误");
+        return re;
+    }
+
+    std::string Image::toMiraiCode() const {
+        return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
+    }
+} // namespace MiraiCP
+//from ThreadManager.cpp
+
+
+namespace MiraiCP {
+    // 静态成员
+
+    std::map<std::string, ThreadManager::ThreadInfo> ThreadManager::threads = std::map<std::string, ThreadInfo>();
+    std::recursive_mutex ThreadManager::mtx = std::recursive_mutex();
+    JavaVM *ThreadManager::gvm = nullptr;
+    long ThreadManager::JNIVersion = 0;
+
+    // 结束静态成员
+
+    void ThreadManager::setEnv(JNIEnv *e) {
+        mtx.lock();
+        if (!ThreadManager::included(ThreadManager::getThreadId())) {
+            ThreadInfo tmp{e, false};
+            ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
+        } else {
+            ThreadManager::threads[ThreadManager::getThreadId()].e = e;
+        }
+        mtx.unlock();
+    }
+
+    void ThreadManager::newEnv(const char *threadName) {
+        JNIEnv *env = nullptr;
+        JavaVMAttachArgs args{JNIVersion,
+                              const_cast<char *>(threadName),
+                              nullptr};
+        gvm->AttachCurrentThread((void **) &env, &args);
+        ThreadInfo tmp{env, true};
+        ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
+        Logger::logger.info("refresh env");
+    };
+
+    void ThreadManager::detach() {
+        mtx.lock();
+        if (ThreadManager::included(ThreadManager::getThreadId())) {
+            bool att = ThreadManager::threads[ThreadManager::getThreadId()].attach;
+            ThreadManager::threads.erase(ThreadManager::getThreadId());
+            if (att)
+                gvm->DetachCurrentThread();
+        }
+        mtx.unlock();
+    }
+
+    bool ThreadManager::included(const std::string &id) {
+        if (ThreadManager::threads.empty() || ThreadManager::threads.count(id) == 0)
+            return false;
+        return true;
+    }
+
+    JNIEnv *ThreadManager::getEnv(const std::string &file, int loc, const std::string &func) {
+        mtx.lock();
+        if (!ThreadManager::included(getThreadId())) {
+            ThreadManager::newEnv();
+        }
+        JNIEnv *tmp = ThreadManager::threads[ThreadManager::getThreadId()].e;
+        ThreadManager::threads[ThreadManager::getThreadId()].stack.push(file, loc, func);
+        mtx.unlock();
+        return tmp;
+    }
+} // namespace MiraiCP
+//from Tools.cpp
+
+
+#include <regex>
+#include <utf8.h>
+
+namespace MiraiCP {
     /*工具类实现*/
     std::string Tools::jstring2str(jstring jStr, JNIEnv *env) {
         if (!jStr) {
@@ -747,18 +855,6 @@ namespace MiraiCP {
             c[i] = utf16line[i];
         }
         return env->NewString((jchar *) c, (jsize) utf16line.size());
-    }
-
-    template<typename T>
-    std::string Tools::VectorToString(std::vector<T> a, const std::string &separator) {
-        std::stringstream ss;
-        for (size_t i = 0; i < a.size(); ++i) {
-            if (i != 0)
-                ss << separator;
-            ss << a[i];
-        }
-        std::string s = ss.str();
-        return s;
     }
 
     std::vector<unsigned long long> Tools::StringToVector(std::string temp) {
@@ -805,56 +901,11 @@ namespace MiraiCP {
                                "]", "\\]"),
                        "[", "\\[");
     }
-
-    Contact Contact::deserializationFromString(const std::string &source) {
-        json j;
-        try {
-            j = json::parse(source);
-        } catch (json::parse_error &e) {
-            Logger::logger.error("json序列化错误 Contact::deserializationFromString");
-            Logger::logger.error(source);
-            Logger::logger.error(e.what());
-        }
-        return Contact::deserializationFromJson(j);
-    }
-
-    Contact Contact::deserializationFromJson(nlohmann::json j) {
-        return Contact(j["type"],
-                       j["id"],
-                       j["groupid"],
-                       j["nickornamecard"],
-                       j["botid"],
-                       j["anonymous"]);
-    }
-
-    MessageSource Contact::sendVoice0(const std::string &path, JNIEnv *env) {
-        json j;
-        json source;
-        source["path"] = path;
-        j["source"] = source.dump();
-        j["contactSource"] = this->serializationToString();
-        std::string re = Config::koperation(Config::Voice, j, env);
-        if (re == "E1")
-            throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在");
-        else if (re == "E2")
-            throw UploadException("上传语音文件大小超过服务器限制，一般限制在1MB上下");
-        return MessageSource::deserializeFromString(re);
-    }
-
-    json PluginConfig::serialize() {
-        json j;
-        j["name"] = name;
-        j["version"] = version;
-        j["author"] = author;
-        j["description"] = description;
-        j["time"] = time;
-        j["id"] = id;
-        return j;
-    }
-    // 结束MiraiCP实现代码
 } // namespace MiraiCP
+//from utils.cpp
 
-//开始对接JNI接口代码
+
+// 开始对接JNI接口代码
 
 /*
 * 名称:Java_com_example_plugin_CPP_1lib_Verify

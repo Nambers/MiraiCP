@@ -284,7 +284,16 @@ namespace MiraiCP {
         /// @param a vector
         /// @return string
         template<typename T>
-        static std::string VectorToString(std::vector<T> a, const std::string & = ",");
+        static std::string VectorToString(std::vector<T> a, const std::string &separator = ",") {
+            std::stringstream ss;
+            for (size_t i = 0; i < a.size(); ++i) {
+                if (i != 0)
+                    ss << separator;
+                ss << a[i];
+            }
+            std::string s = ss.str();
+            return s;
+        }
 
         /// @brief 从string格式化到vector
         /// @param temp string
@@ -1000,7 +1009,7 @@ namespace MiraiCP {
 
 // #include "MessageSource.h"
 
-#include <cassert>
+#include <array>
 
 namespace MiraiCP {
     /// 用serviceMessage的分享信息
@@ -1129,7 +1138,7 @@ namespace MiraiCP {
         }
 
         explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 2) assert(sg.type != 2);
+            if (sg.type != 2) throw IllegalArgumentException("传入的SingleMessage应该是Image类型");
             this->id = sg.content;
         }
 
@@ -5273,7 +5282,7 @@ namespace MiraiCP {
 
 // #include "MessageSource.h"
 
-#include <cassert>
+#include <array>
 
 namespace MiraiCP {
     /// 用serviceMessage的分享信息
@@ -5402,7 +5411,7 @@ namespace MiraiCP {
         }
 
         explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 2) assert(sg.type != 2);
+            if (sg.type != 2) throw IllegalArgumentException("传入的SingleMessage应该是Image类型");
             this->id = sg.content;
         }
 
@@ -5829,7 +5838,16 @@ namespace MiraiCP {
         /// @param a vector
         /// @return string
         template<typename T>
-        static std::string VectorToString(std::vector<T> a, const std::string & = ",");
+        static std::string VectorToString(std::vector<T> a, const std::string &separator = ",") {
+            std::stringstream ss;
+            for (size_t i = 0; i < a.size(); ++i) {
+                if (i != 0)
+                    ss << separator;
+                ss << a[i];
+            }
+            std::string s = ss.str();
+            return s;
+        }
 
         /// @brief 从string格式化到vector
         /// @param temp string

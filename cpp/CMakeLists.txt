@@ -24,7 +24,7 @@ add_library(
         SHARED
         demo/multi_include/demo.cpp
         ${MIRAI_CPP_PATH}
-)
+        demo/multi_include/test2.cpp)
 
 # 设置输出的dll文件的名字(最后一个参数)，目前是MiraiCP.dll
 set_target_properties(MiraiCP_multi PROPERTIES OUTPUT_NAME MiraiCP)
@@ -58,8 +58,9 @@ endif()
 target_sources(MiraiCP_single PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/single_include/miraiCP/miraiCP.cpp)
 
 add_custom_target(
-        amalgamate
+        generateSingleHeader
         COMMAND python include/third-party/config.py
         COMMAND python include/third-party/amalgamate.py -c include/third-party/config.json -s . --verbose=yes
+        COMMAND python buildScript/combineSource.py
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
