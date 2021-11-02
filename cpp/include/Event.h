@@ -460,8 +460,25 @@ namespace MiraiCP {
             Logger::logger.error("内部错误, 位置:C-Head");
             return -1;
         }
+
         Event() = default;
-        using type = std::variant<GroupMessageEvent, PrivateMessageEvent, GroupInviteEvent, NewFriendRequestEvent, MemberJoinEvent, MemberLeaveEvent, RecallEvent, BotJoinGroupEvent, GroupTempMessageEvent, BotOnlineEvent, TimeOutEvent, NudgeEvent, BotLeaveEvent, MemberJoinRequestEvent, MiraiCPExceptionEvent>;
+
+        using type = std::variant<GroupMessageEvent,
+                                  PrivateMessageEvent,
+                                  GroupInviteEvent,
+                                  NewFriendRequestEvent,
+                                  MemberJoinEvent,
+                                  MemberLeaveEvent,
+                                  RecallEvent,
+                                  BotJoinGroupEvent,
+                                  GroupTempMessageEvent,
+                                  BotOnlineEvent,
+                                  TimeOutEvent,
+                                  NudgeEvent,
+                                  BotLeaveEvent,
+                                  MemberJoinRequestEvent,
+                                  MiraiCPExceptionEvent>;
+
         template<typename T>
         class Node {
         public:
@@ -472,7 +489,23 @@ namespace MiraiCP {
                 func(std::get<T>(a));
             }
         };
-        using e = std::variant<Node<GroupMessageEvent>, Node<PrivateMessageEvent>, Node<GroupInviteEvent>, Node<NewFriendRequestEvent>, Node<MemberJoinEvent>, Node<MemberLeaveEvent>, Node<RecallEvent>, Node<BotJoinGroupEvent>, Node<GroupTempMessageEvent>, Node<BotOnlineEvent>, Node<NudgeEvent>, Node<BotLeaveEvent>, Node<MemberJoinRequestEvent>, Node<MiraiCPExceptionEvent>, Node<TimeOutEvent>>;
+
+        using e = std::variant<Node<GroupMessageEvent>,
+                               Node<PrivateMessageEvent>,
+                               Node<GroupInviteEvent>,
+                               Node<NewFriendRequestEvent>,
+                               Node<MemberJoinEvent>,
+                               Node<MemberLeaveEvent>,
+                               Node<RecallEvent>,
+                               Node<BotJoinGroupEvent>,
+                               Node<GroupTempMessageEvent>,
+                               Node<BotOnlineEvent>,
+                               Node<NudgeEvent>,
+                               Node<BotLeaveEvent>,
+                               Node<MemberJoinRequestEvent>,
+                               Node<MiraiCPExceptionEvent>,
+                               Node<TimeOutEvent>>;
+
         std::vector<e> vec[15] = {std::vector<e>()};
 
     public:
@@ -482,18 +515,14 @@ namespace MiraiCP {
             bool *enable;
 
         public:
-            explicit NodeHandle(bool *a) {
-                this->enable = a;
-            }
-            void stop() {
-                *enable = false;
-            }
-            void resume() {
-                *enable = true;
-            }
+            explicit NodeHandle(bool *a) { this->enable = a; }
+            void stop() { *enable = false; }
+            void resume() { *enable = true; }
         };
+
         // singleton mode
         static Event processor;
+
         /// 广播一个事件, 必须为MiraiCPEvent的派生类
         template<typename T>
         void broadcast(T val) {
@@ -505,6 +534,7 @@ namespace MiraiCP {
                 std::get<Node<T>>(a).run(static_cast<type>(val));
             }
         }
+
         /// 注册一个事件
         template<typename T>
         NodeHandle registerEvent(std::function<void(T)> a) {
