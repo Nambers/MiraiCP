@@ -110,16 +110,16 @@ namespace MiraiCP {
          * @details 从服务器拉去群设置用refreshInfo
          * @see Group::refreshInfo()
          */
-        void updateSetting(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void updateSetting(JNIEnv * = ThreadManager::getEnv());
 
         /// 取群成员列表
         /// @return vector<long>
-        std::vector<unsigned long long> getMemberList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        std::vector<unsigned long long> getMemberList(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["contactSource"] = this->serializationToString();
             std::string re = Config::koperation(Config::QueryML, j, env);
             if (re == "E1") {
-                throw GroupException();
+                MiraiCPThrow(GroupException());
             }
             return Tools::StringToVector(re);
         }
@@ -134,24 +134,24 @@ namespace MiraiCP {
         };
 
         /// 取群主
-        Member getOwner(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        Member getOwner(JNIEnv * = ThreadManager::getEnv());
 
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
         /// @param botid 机器人id
         /// @example 在事件中构建Group对象
         /// @code Group(this.group.id, this.bot.id) @endcode
-        Group(QQID groupid, QQID botid, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        Group(QQID groupid, QQID botid, JNIEnv * = ThreadManager::getEnv());
 
         explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 取群成员
-        Member getMember(QQID memberid, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        Member getMember(QQID memberid, JNIEnv *env = ThreadManager::getEnv()) {
             return Member(memberid, this->id(), this->groupid(), env);
         }
 
         /// 取群公告列表
-        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = ThreadManager::getEnv()) {
             json j;
             j["source"] = this->serializationToString();
             j["announcement"] = true;
@@ -164,7 +164,7 @@ namespace MiraiCP {
         };
 
         /// 刷新群聊信息
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override {
             std::string re = LowLevelAPI::getInfoSource(this, env);
             LowLevelAPI::info tmp = LowLevelAPI::info0(re);
             this->_nickOrNameCard = tmp.nickornamecard;
@@ -177,7 +177,7 @@ namespace MiraiCP {
             this->setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
         }
 
-        void quit(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void quit(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
@@ -197,10 +197,10 @@ namespace MiraiCP {
          @endcode
         */
         RemoteFile sendFile(const std::string &path, const std::string &filepath,
-                            JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                            JNIEnv * = ThreadManager::getEnv());
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv()) {
             return Contact::sendVoice0(path, env);
         }
 
@@ -222,7 +222,7 @@ namespace MiraiCP {
          @endcode
         */
         RemoteFile getFile(const std::string &path, const std::string &id = "",
-                           JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                           JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * @brief 取文件信息(根据id)
@@ -230,7 +230,7 @@ namespace MiraiCP {
          * @return 文件
          * @detail 相当于从根目录开始遍历查找文件, 相当于getFile("/", id);
          */
-        RemoteFile getFileById(const std::string &id, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        RemoteFile getFileById(const std::string &id, JNIEnv * = ThreadManager::getEnv());
 
         /// 群文件的简短描述
         struct file_short_info {
@@ -246,14 +246,14 @@ namespace MiraiCP {
          * @return 返回值为一个vector容器, 每一项为short_info
         */
         std::vector<file_short_info>
-        getFileList(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        getFileList(const std::string &path, JNIEnv * = ThreadManager::getEnv());
 
         /// 取文件列表以字符串形式返回
         ///@example 取string格式群文件列表
         /// @code
         /// e.group.SendMsg(e.group.getFileListString("/"));
         /// @endcode
-        std::string getFileListString(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        std::string getFileListString(const std::string &path, JNIEnv * = ThreadManager::getEnv());
     };
 } // namespace MiraiCP
 

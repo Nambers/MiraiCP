@@ -25,10 +25,10 @@ namespace MiraiCP {
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::MuteM, j, env);
         if (re == "E3") {
-            throw BotException();
+            MiraiCPThrow(BotException());
         }
         if (re == "E4") {
-            throw MuteException();
+            MiraiCPThrow(MuteException());
         }
     }
 
@@ -38,7 +38,7 @@ namespace MiraiCP {
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::KickM, j, env);
         if (re == "E3") {
-            throw BotException();
+            MiraiCPThrow(BotException());
         }
     }
 
@@ -49,7 +49,7 @@ namespace MiraiCP {
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::ModifyAdmin, j, env);
         if (re == "E1") {
-            throw BotException();
+            MiraiCPThrow(BotException());
         }
     }
 

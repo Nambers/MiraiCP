@@ -17,7 +17,7 @@ namespace MiraiCP {
          * @param env 可选，JNIEnv
          * @return 内容转换成jstring类型
          */
-        static std::string jstring2str(jstring jstr, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        static std::string jstring2str(jstring jstr, JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * @name str2jstring
@@ -27,7 +27,7 @@ namespace MiraiCP {
          * @param env 可选JNIEnv
          * @return 转换后jstring类型
          */
-        static jstring str2jstring(const char *stra, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        static jstring str2jstring(const char *stra, JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * @brief 替换全部在一个字符串中.

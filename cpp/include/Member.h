@@ -17,7 +17,7 @@ namespace MiraiCP {
         /// @brief 更改群成员权限
         /// @param admin 如果为true为更改到管理员
         /// @param env
-        void modifyAdmin(bool admin, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
+        void modifyAdmin(bool admin, JNIEnv *env = ThreadManager::getEnv());
 
         /// @brief 构建群成员对象
         /// @param qqid 该成员q号
@@ -28,7 +28,7 @@ namespace MiraiCP {
         ///  Member(this.sender.id, this.group.id, this.bot.id)
         /// @endcode
         explicit Member(QQID qqid, QQID groupid, QQID botid,
-                        JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                        JNIEnv * = ThreadManager::getEnv());
 
         explicit Member(Contact c) : Contact(std::move(c)) {
             this->isAnonymous = this->_anonymous;
@@ -39,44 +39,44 @@ namespace MiraiCP {
         bool isAnonymous = false;
 
         /// 重新获取(刷新)群成员信息
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override {
             if (isAnonymous)
                 return;
             std::string temp = LowLevelAPI::getInfoSource(this, env);
             if (temp == "E1")
-                throw MemberException(1);
+                MiraiCPThrow(MemberException(1));
             if (temp == "E2")
-                throw MemberException(2);
+                MiraiCPThrow(MemberException(2));
             LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
             this->_nickOrNameCard = tmp.nickornamecard;
             this->_avatarUrl = tmp.avatarUrl;
             this->permission = getPermission();
             if (temp == "E1") {
-                throw MemberException(1);
+                MiraiCPThrow(MemberException(1));
             }
             if (temp == "E2") {
-                throw MemberException(2);
+                MiraiCPThrow(MemberException(2));
             }
         }
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv()) {
             return Contact::sendVoice0(path, env);
         }
 
         /// 获取权限，会在构造时调用，请使用permission缓存变量
         /// @see Member::permission
-        unsigned int getPermission(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        unsigned int getPermission(JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * 禁言当前对象，单位是秒，最少0秒最大30天，如果为0或者为负则unmute
          * @throws BotException, MuteException
         */
-        void mute(int time, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void mute(int time, JNIEnv * = ThreadManager::getEnv());
 
         /// 取消禁言
         /// @throws BotException, MuteException
-        void unMute(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void unMute(JNIEnv *env = ThreadManager::getEnv()) {
             mute(0, env);
         }
 
@@ -104,7 +104,7 @@ namespace MiraiCP {
             });
          * @endcode
         */
-        void kick(const std::string &reason, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void kick(const std::string &reason, JNIEnv * = ThreadManager::getEnv());
 
         /// At一个群成员
         At at() {
@@ -123,7 +123,7 @@ namespace MiraiCP {
             j["contactSource"] = this->serializationToString();
             std::string re = Config::koperation(Config::SendNudge, j);
             if (re == "E1")
-                throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
+                MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));
         }
     };
 } // namespace MiraiCP

@@ -67,25 +67,24 @@ namespace MiraiCP {
         Handler loggerhandler;
 
         // 初始化 获取methodid
-        void init(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void init(JNIEnv * = ThreadManager::getEnv());
 
         ///发送普通(info级日志)
         template<class... T>
         void info(T... val) {
-            this->log0(p("", val...), 0, ThreadManager::getEnv(__FILE__, __LINE__));
+            this->log0(p("", val...), 0, ThreadManager::getEnv());
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void warning(T... val) {
-            this->log0(p("", val...), 1, ThreadManager::getEnv(__FILE__, __LINE__));
+            this->log0(p("", val...), 1, ThreadManager::getEnv());
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void error(T... val) {
-            ThreadManager::StackTracer a = ThreadManager::getThread()->stack;
-            this->log0(p("", val...) + "\n" + a.print(), 2, ThreadManager::getEnv(__FILE__, __LINE__));
+            this->log0(p("", val...), 2, ThreadManager::getEnv());
         }
 
         /// @brief 设置loggerhandler的action

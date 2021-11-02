@@ -8,13 +8,12 @@
 namespace MiraiCP {
     const std::string MiraiCPVersion = "v2.8.0-M2";
 
-    inline void schedule(long time, const std::string &msg, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+    inline void schedule(long time, const std::string &msg, JNIEnv *env = ThreadManager::getEnv()) {
         json j;
         j["time"] = time;
         j["msg"] = msg;
         Config::koperation(Config::TimeOut, j, env);
     }
-
     void enrollPlugin();
 
     inline void enrollPlugin0(CPPPlugin *p) {

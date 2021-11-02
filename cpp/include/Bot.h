@@ -28,7 +28,7 @@ namespace MiraiCP {
          * @brief 刷新bot信息
          * @param env
          */
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
             LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));
@@ -40,12 +40,12 @@ namespace MiraiCP {
         explicit Bot(QQID i) : id(i) {}
 
         /// 取好友
-        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv()) const {
             return Friend(i, this->id, env);
         }
 
         /// 取群聊
-        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv()) const {
             return Group(groupid, this->id, env);
         }
 
@@ -62,7 +62,7 @@ namespace MiraiCP {
         }
 
         /// 取好友列表
-        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["botid"] = this->id;
             std::string temp = Config::koperation(Config::QueryBFL, j, env);
@@ -75,7 +75,7 @@ namespace MiraiCP {
         }
 
         /// 取群列表
-        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["botid"] = this->id;
             std::string temp = Config::koperation(Config::QueryBGL, j, env);

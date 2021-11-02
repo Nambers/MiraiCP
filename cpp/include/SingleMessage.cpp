@@ -74,7 +74,7 @@ namespace MiraiCP {
         j["id"] = this->id;
         std::string re = Config::koperation(Config::QueryImgUrl, j, env);
         if (re == "E1")
-            throw RemoteAssetException("图片id格式错误");
+            MiraiCPThrow(RemoteAssetException("图片id格式错误"));
         return re;
     }
 

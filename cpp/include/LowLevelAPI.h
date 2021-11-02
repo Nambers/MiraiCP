@@ -29,7 +29,7 @@ namespace MiraiCP {
         /// @brief 取该联系人的一些信息
         /// @param c 该联系人Contact指针
         /// @return json格式字符串，待解析
-        static inline std::string getInfoSource(Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        static inline std::string getInfoSource(Contact *c, JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["source"] = c->serializationToString();
             return Config::koperation(Config::RefreshInfo, j, env);
@@ -43,7 +43,7 @@ namespace MiraiCP {
          * @return string 待解析json
          */
         static inline std::string
-        uploadImg0(const std::string &path, Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        uploadImg0(const std::string &path, Contact *c, JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["fileName"] = path;
             j["source"] = c->serializationToString();

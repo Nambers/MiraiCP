@@ -24,7 +24,7 @@ namespace MiraiCP {
         */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
-                              JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+                              JNIEnv *env = ThreadManager::getEnv()) const {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
@@ -40,7 +40,7 @@ namespace MiraiCP {
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMsg(const std::string &c, QQID groupid = 0,
-                        JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+                        JNIEnv * = ThreadManager::getEnv()) const;
 
         /**
          * @brief 回复(引用并发送)
@@ -50,7 +50,7 @@ namespace MiraiCP {
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
-                              JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+                              JNIEnv * = ThreadManager::getEnv()) const;
 
         /*!
          * @brief 构建消息源
@@ -86,7 +86,7 @@ namespace MiraiCP {
             });
          * @endcode
         */
-        void recall(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+        void recall(JNIEnv * = ThreadManager::getEnv()) const;
     };
 } // namespace MiraiCP
 

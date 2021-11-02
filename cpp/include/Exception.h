@@ -15,6 +15,14 @@ namespace MiraiCP {
         const std::string exceptionType;
 
     public:
+        int lineNum = 0;
+        std::string filename = "";
+
+        MiraiCPException append(const std::string &name, int line) {
+            lineNum = line;
+            filename = name;
+            return *this;
+        }
         explicit MiraiCPException(const std::string &&type) : exceptionType(type) { ExceptionBroadcasting(this); }
 
         /// 获取异常类型
@@ -29,7 +37,11 @@ namespace MiraiCP {
         };
 
         /// 实际抛出方法
-        void raise() { basicRaise(); }
+        void raise() {
+            basicRaise();
+            if (filename != "" && lineNum != 0)
+                Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
+        }
     };
 
     /// 文件读取异常.
@@ -47,7 +59,7 @@ namespace MiraiCP {
 
         void basicRaise() override {
             Logger::logger.error(this->description);
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -69,7 +81,7 @@ namespace MiraiCP {
 
         void basicRaise() override {
             Logger::logger.error(this->description);
-            // ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            // ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -91,7 +103,7 @@ namespace MiraiCP {
 
         void basicRaise() override {
             Logger::logger.error(this->description);
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -113,7 +125,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -149,7 +161,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -186,7 +198,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -210,7 +222,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -231,7 +243,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -312,17 +324,17 @@ namespace MiraiCP {
 
     inline void ErrorHandle(const std::string &re, const std::string &ErrorMsg = "") {
         if (re == "EF")
-            throw FriendException();
+            MiraiCPThrow(FriendException());
         if (re == "EG")
-            throw GroupException();
+            MiraiCPThrow(GroupException());
         if (re == "EM")
-            throw MemberException(1);
+            MiraiCPThrow(MemberException(1));
         if (re == "EMM")
-            throw MemberException(2);
+            MiraiCPThrow(MemberException(2));
         if (re == "EB")
-            throw BotException("找不到bot:" + re);
+            MiraiCPThrow(BotException("找不到bot:" + re));
         if (re == "EA")
-            throw APIException(ErrorMsg);
+            MiraiCPThrow(APIException(ErrorMsg));
     }
 } // namespace MiraiCP
 
