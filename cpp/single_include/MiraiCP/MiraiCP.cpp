@@ -24,13 +24,13 @@ namespace MiraiCP {
         Config::CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(
                 env->FindClass("tech/eritquearcus/miraicp/shared/CPP_lib")));
         if (Config::CPP_lib == nullptr) {
-            throw APIException("初始化错误，找不到CPP_lib类");
+            MiraiCPThrow(APIException("初始化错误，找不到CPP_lib类"));
         }
         Config::KOperation = env->GetStaticMethodID(CPP_lib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
     }
 
     void Config::destruct() {
-        ThreadManager::getEnv(__FILE__, __LINE__)->DeleteGlobalRef(Config::CPP_lib);
+        ThreadManager::getEnv()->DeleteGlobalRef(Config::CPP_lib);
     }
 
     std::string Config::koperation(operation_set type, json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
@@ -53,7 +53,7 @@ namespace MiraiCP {
     Image Contact::uploadImg(const std::string &path, JNIEnv *env) {
         std::string re = LowLevelAPI::uploadImg0(path, this, env);
         if (re == "E2")
-            throw UploadException("上传图片大小超过30MB,路径:" + path);
+            MiraiCPThrow(UploadException("上传图片大小超过30MB,路径:" + path));
         return Image(re);
     }
 
@@ -86,9 +86,9 @@ namespace MiraiCP {
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::Voice, j, env);
         if (re == "E1")
-            throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在");
+            MiraiCPThrow(UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在"));
         else if (re == "E2")
-            throw UploadException("上传语音文件大小超过服务器限制，一般限制在1MB上下");
+            MiraiCPThrow(UploadException("上传语音文件大小超过服务器限制，一般限制在1MB上下"));
         return MessageSource::deserializeFromString(re);
     }
 } // namespace MiraiCP
@@ -107,7 +107,7 @@ namespace MiraiCP {
         j["halt"] = halt;
         std::string r = Config::koperation(Config::NextMsg, j, env);
         if (r == "-1")
-            throw TimeOutException("取下一条信息超时");
+            MiraiCPThrow(TimeOutException("取下一条信息超时"));
         json re = json::parse(r);
         return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
@@ -119,7 +119,7 @@ namespace MiraiCP {
         j["halt"] = halt;
         std::string r = Config::koperation(Config::NextMsg, j, env);
         if (r == "-1")
-            throw TimeOutException("取下一条信息超时");
+            MiraiCPThrow(TimeOutException("取下一条信息超时"));
         json re = json::parse(r);
         return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
@@ -131,7 +131,7 @@ namespace MiraiCP {
         j["halt"] = halt;
         std::string r = Config::koperation(Config::NextMsg, j, env);
         if (r == "-1")
-            throw TimeOutException("取下一条信息超时");
+            MiraiCPThrow(TimeOutException("取下一条信息超时"));
         json re = json::parse(r);
         return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
@@ -220,11 +220,11 @@ namespace MiraiCP {
         j["identify"] = i.dump();
         std::string re = Config::koperation(Config::Announcement, j);
         if (re == "E1")
-            throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)");
+            MiraiCPThrow(IllegalArgumentException("无法根据fid找到群公告(群公告不存在)"));
         if (re == "E2")
-            throw BotException();
+            MiraiCPThrow(BotException());
         if (re == "E3")
-            throw IllegalStateException("群公告状态异常");
+            MiraiCPThrow(IllegalStateException("群公告状态异常"));
     }
 
     json Group::AnnouncementParams::serializeToJson() {
@@ -248,7 +248,7 @@ namespace MiraiCP {
         j["source"] = s.dump();
         std::string re = Config::koperation(Config::Announcement, j);
         if (re == "E1")
-            throw BotException();
+            MiraiCPThrow(BotException());
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
     }
 
@@ -283,7 +283,7 @@ namespace MiraiCP {
         tmp["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::GroupSetting, tmp, env);
         if (re == "E1")
-            throw BotException();
+            MiraiCPThrow(BotException());
         refreshInfo(env);
     }
 
@@ -295,9 +295,9 @@ namespace MiraiCP {
         tmp["source"] = source.dump();
         tmp["contactSource"] = this->serializationToString();
         std::string callback = Config::koperation(Config::SendFile, tmp, env);
-        if (callback == "E2") throw UploadException("找不到" + filepath + "位置:C-uploadfile");
+        if (callback == "E2") MiraiCPThrow(UploadException("找不到" + filepath + "位置:C-uploadfile"));
         if (callback == "E3")
-            throw UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
+            MiraiCPThrow(UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path));
         return RemoteFile::deserializeFromString(callback);
     }
 
@@ -310,7 +310,7 @@ namespace MiraiCP {
         j["source"] = tmp.dump();
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
-        if (re == "E2") throw RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id);
+        if (re == "E2") MiraiCPThrow(RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id));
         return RemoteFile::deserializeFromString(re);
     }
 
@@ -321,7 +321,7 @@ namespace MiraiCP {
         j["source"] = tmp.dump();
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
-        if (re == "E1") throw RemoteAssetException("Get error: 文件路径不存在, id:" + id);
+        if (re == "E1") MiraiCPThrow(RemoteAssetException("Get error: 文件路径不存在, id:" + id));
         return RemoteFile::deserializeFromString(re);
     }
 
@@ -439,10 +439,10 @@ namespace MiraiCP {
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::MuteM, j, env);
         if (re == "E3") {
-            throw BotException();
+            MiraiCPThrow(BotException());
         }
         if (re == "E4") {
-            throw MuteException();
+            MiraiCPThrow(MuteException());
         }
     }
 
@@ -452,7 +452,7 @@ namespace MiraiCP {
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::KickM, j, env);
         if (re == "E3") {
-            throw BotException();
+            MiraiCPThrow(BotException());
         }
     }
 
@@ -463,7 +463,7 @@ namespace MiraiCP {
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::ModifyAdmin, j, env);
         if (re == "E1") {
-            throw BotException();
+            MiraiCPThrow(BotException());
         }
     }
 
@@ -486,7 +486,7 @@ namespace MiraiCP {
                 if (pos - lastPos > 1)
                     mc.add(PlainText(m.substr(lastPos + 1, pos - lastPos - 1))); // plain text
                 size_t back = MessageChain::findEnd(m, pos);
-                if (back == -1) throw IllegalStateException("");
+                if (back == -1) MiraiCPThrow(IllegalStateException(""));
                 std::string tmp = m.substr(pos, back - pos);
                 tmp = Tools::replace(tmp, "[mirai:", "");
                 size_t i = tmp.find(':'); // first :
@@ -597,8 +597,8 @@ namespace MiraiCP {
         j["source"] = this->serializeToString();
         std::string re = Config::koperation(Config::Recall, j, env);
         if (re == "Y") return;
-        if (re == "E1") throw BotException();
-        if (re == "E2") throw RecallException();
+        if (re == "E1") MiraiCPThrow(BotException());
+        if (re == "E2") MiraiCPThrow(RecallException());
     }
 
     MessageSource::MessageSource(std::string ids,
@@ -651,14 +651,14 @@ namespace MiraiCP {
     MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode, JNIEnv *env) {
         if (msg.empty()) {
             Logger::logger.warning("警告:发送空信息, 位置: Contact::SendMsg");
-            throw IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg");
+            MiraiCPThrow(IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg"));
         }
         std::string re = LowLevelAPI::send0(msg, this, retryTime, miraicode, env,
                                             "reach a error area, Contact::SendMiraiCode");
         if (re == "ET")
-            throw TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg");
+            MiraiCPThrow(TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg"));
         if (Tools::starts_with(re, "EBM"))
-            throw BotIsBeingMutedException(std::stoi(re.substr(3)));
+            MiraiCPThrow(BotIsBeingMutedException(std::stoi(re.substr(3))));
         return MessageSource::deserializeFromString(re);
     }
 } // namespace MiraiCP
@@ -754,7 +754,7 @@ namespace MiraiCP {
         j["id"] = this->id;
         std::string re = Config::koperation(Config::QueryImgUrl, j, env);
         if (re == "E1")
-            throw RemoteAssetException("图片id格式错误");
+            MiraiCPThrow(RemoteAssetException("图片id格式错误"));
         return re;
     }
 
@@ -815,13 +815,12 @@ namespace MiraiCP {
         return true;
     }
 
-    JNIEnv *ThreadManager::getEnv(const std::string &file, int loc, const std::string &func) {
+    JNIEnv *ThreadManager::getEnv() {
         mtx.lock();
         if (!ThreadManager::included(getThreadId())) {
             ThreadManager::newEnv();
         }
         JNIEnv *tmp = ThreadManager::threads[ThreadManager::getThreadId()].e;
-        ThreadManager::threads[ThreadManager::getThreadId()].stack.push(file, loc, func);
         mtx.unlock();
         return tmp;
     }
@@ -980,7 +979,6 @@ Event(JNIEnv *env, jobject, jstring content) {
         Logger::logger.error(e.what(), false);
         return returnNull();
     }
-    ThreadManager::getThread()->stack.push(__FILE__, __LINE__, "source: " + tmp);
     try {
         switch ((int) j["type"]) {
             case 1: {
@@ -1100,7 +1098,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                 break;
             }
             default:
-                throw APIException("Unreachable code");
+                MiraiCPThrow(APIException("Unreachable code"));
         }
     } catch (json::type_error &e) {
         Logger::logger.error("json格式化异常,位置C-Handle");

@@ -15,13 +15,13 @@ namespace MiraiCP {
         Config::CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(
                 env->FindClass("tech/eritquearcus/miraicp/shared/CPP_lib")));
         if (Config::CPP_lib == nullptr) {
-            throw APIException("初始化错误，找不到CPP_lib类");
+            MiraiCPThrow(APIException("初始化错误，找不到CPP_lib类"));
         }
         Config::KOperation = env->GetStaticMethodID(CPP_lib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
     }
 
     void Config::destruct() {
-        ThreadManager::getEnv(__FILE__, __LINE__)->DeleteGlobalRef(Config::CPP_lib);
+        ThreadManager::getEnv()->DeleteGlobalRef(Config::CPP_lib);
     }
 
     std::string Config::koperation(operation_set type, json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {

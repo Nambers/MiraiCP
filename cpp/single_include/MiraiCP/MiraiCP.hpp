@@ -34,7 +34,7 @@
 // #include "ThreadManager.h"
 #ifndef MIRAICP_PRO_THREADMANAGER_H
 #define MIRAICP_PRO_THREADMANAGER_H
-
+#define MiraiCPThrow(x) throw((x).append(__FILE__, __LINE__))
 #include <jni.h>
 #include <map>
 #include <mutex>
@@ -50,38 +50,11 @@ namespace MiraiCP {
     */
     class ThreadManager {
     public:
-        class StackTracer {
-        private:
-            std::vector<std::string> stackTrace = std::vector<std::string>();
-
-        public:
-            /// print all
-            std::string print() {
-                std::string re = "StackTrace:";
-                for (const auto &a: stackTrace)
-                    re += "\n" + a;
-                return re;
-            }
-
-            /// push stack
-            void push(const std::string &file = __FILE__, int loc = __LINE__, const std::string &func = "",
-                      const std::string &commit = "") {
-                stackTrace.push_back(
-                        func + (!commit.empty() ? "(" + commit + ")" : "") + "[" + file + ":" + std::to_string(loc) +
-                        "]");
-            }
-
-            /// 清空
-            void clear() {
-                stackTrace.clear();
-            }
-        };
 
         /// @brief 每个线程实例.
         struct ThreadInfo {
             JNIEnv *e{};
             bool attach{};
-            StackTracer stack;
         };
         static std::map<std::string, ThreadInfo> threads; /// < 线程池(线程id:env).
         static std::recursive_mutex mtx;                  ///< 线程池读写锁.
@@ -134,7 +107,7 @@ namespace MiraiCP {
         /// @param file 为支持`StackTracer`而增加, 为`__FILE__`宏(文件名), 在调用处传入因为当__FILE__作为默认参数传入时不准确
         /// @param loc 为`__LINE__`宏(行号), 同上
         /// @param func 为`__FUNC__`宏(方法名)
-        static JNIEnv *getEnv(const std::string &file, int loc, const std::string &func = "");
+        static JNIEnv *getEnv();
     };
 } // namespace MiraiCP
 
@@ -218,10 +191,10 @@ namespace MiraiCP {
          * @return 返回数据
          */
         static std::string
-        koperation(operation_set type, nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__),
+        koperation(operation_set type, nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(),
                    bool catchErr = true, const std::string &errorInfo = "");
 
-        static void construct(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        static void construct(JNIEnv * = ThreadManager::getEnv());
 
         static void destruct();
     };
@@ -269,7 +242,7 @@ namespace MiraiCP {
          * @param env 可选，JNIEnv
          * @return 内容转换成jstring类型
          */
-        static std::string jstring2str(jstring jstr, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        static std::string jstring2str(jstring jstr, JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * @name str2jstring
@@ -279,7 +252,7 @@ namespace MiraiCP {
          * @param env 可选JNIEnv
          * @return 转换后jstring类型
          */
-        static jstring str2jstring(const char *stra, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        static jstring str2jstring(const char *stra, JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * @brief 替换全部在一个字符串中.
@@ -451,7 +424,7 @@ namespace MiraiCP {
         */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
-                              JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+                              JNIEnv *env = ThreadManager::getEnv()) const {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
@@ -467,7 +440,7 @@ namespace MiraiCP {
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMsg(const std::string &c, QQID groupid = 0,
-                        JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+                        JNIEnv * = ThreadManager::getEnv()) const;
 
         /**
          * @brief 回复(引用并发送)
@@ -477,7 +450,7 @@ namespace MiraiCP {
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
-                              JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+                              JNIEnv * = ThreadManager::getEnv()) const;
 
         /*!
          * @brief 构建消息源
@@ -513,7 +486,7 @@ namespace MiraiCP {
             });
          * @endcode
         */
-        void recall(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+        void recall(JNIEnv * = ThreadManager::getEnv()) const;
     };
 } // namespace MiraiCP
 
@@ -619,25 +592,24 @@ namespace MiraiCP {
         Handler loggerhandler;
 
         // 初始化 获取methodid
-        void init(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void init(JNIEnv * = ThreadManager::getEnv());
 
         ///发送普通(info级日志)
         template<class... T>
         void info(T... val) {
-            this->log0(p("", val...), 0, ThreadManager::getEnv(__FILE__, __LINE__));
+            this->log0(p("", val...), 0, ThreadManager::getEnv());
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void warning(T... val) {
-            this->log0(p("", val...), 1, ThreadManager::getEnv(__FILE__, __LINE__));
+            this->log0(p("", val...), 1, ThreadManager::getEnv());
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void error(T... val) {
-            ThreadManager::StackTracer a = ThreadManager::getThread()->stack;
-            this->log0(p("", val...) + "\n" + a.print(), 2, ThreadManager::getEnv(__FILE__, __LINE__));
+            this->log0(p("", val...), 2, ThreadManager::getEnv());
         }
 
         /// @brief 设置loggerhandler的action
@@ -712,6 +684,14 @@ namespace MiraiCP {
         const std::string exceptionType;
 
     public:
+        int lineNum = 0;
+        std::string filename = "";
+
+        MiraiCPException append(const std::string &name, int line) {
+            lineNum = line;
+            filename = name;
+            return *this;
+        }
         explicit MiraiCPException(const std::string &&type) : exceptionType(type) { ExceptionBroadcasting(this); }
 
         /// 获取异常类型
@@ -726,7 +706,11 @@ namespace MiraiCP {
         };
 
         /// 实际抛出方法
-        void raise() { basicRaise(); }
+        void raise() {
+            basicRaise();
+            if (filename != "" && lineNum != 0)
+                Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
+        }
     };
 
     /// 文件读取异常.
@@ -744,7 +728,7 @@ namespace MiraiCP {
 
         void basicRaise() override {
             Logger::logger.error(this->description);
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -766,7 +750,7 @@ namespace MiraiCP {
 
         void basicRaise() override {
             Logger::logger.error(this->description);
-            // ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            // ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -788,7 +772,7 @@ namespace MiraiCP {
 
         void basicRaise() override {
             Logger::logger.error(this->description);
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -810,7 +794,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -846,7 +830,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -883,7 +867,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -907,7 +891,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -928,7 +912,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -1009,17 +993,17 @@ namespace MiraiCP {
 
     inline void ErrorHandle(const std::string &re, const std::string &ErrorMsg = "") {
         if (re == "EF")
-            throw FriendException();
+            MiraiCPThrow(FriendException());
         if (re == "EG")
-            throw GroupException();
+            MiraiCPThrow(GroupException());
         if (re == "EM")
-            throw MemberException(1);
+            MiraiCPThrow(MemberException(1));
         if (re == "EMM")
-            throw MemberException(2);
+            MiraiCPThrow(MemberException(2));
         if (re == "EB")
-            throw BotException("找不到bot:" + re);
+            MiraiCPThrow(BotException("找不到bot:" + re));
         if (re == "EA")
-            throw APIException(ErrorMsg);
+            MiraiCPThrow(APIException(ErrorMsg));
     }
 } // namespace MiraiCP
 
@@ -1097,8 +1081,8 @@ namespace MiraiCP {
 
         explicit PlainText(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 0)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText"));
             this->content = sg.content;
         }
 
@@ -1117,8 +1101,8 @@ namespace MiraiCP {
 
         explicit At(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 1)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At"));
             this->target = std::stol(sg.content);
         }
 
@@ -1156,14 +1140,14 @@ namespace MiraiCP {
         }
 
         explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 2) throw IllegalArgumentException("传入的SingleMessage应该是Image类型");
+            if (sg.type != 2) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
             this->id = sg.content;
         }
 
         /*
         * 获取图片下载url
         */
-        std::string queryURL(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        std::string queryURL(JNIEnv * = ThreadManager::getEnv());
 
         /// 取图片Mirai码
         std::string toMiraiCode() const override;
@@ -1238,8 +1222,8 @@ namespace MiraiCP {
 
         explicit LightApp(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 3)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp"));
         }
 
         /// 返回miraicode
@@ -1264,8 +1248,8 @@ namespace MiraiCP {
 
         explicit ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 4)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage"));
         }
 
         explicit ServiceMessage(const URLSharer &a) : SingleMessage(5,
@@ -1400,7 +1384,7 @@ namespace MiraiCP {
         std::string toMiraiCode() const override {
             if (internalid == 0) {
                 // 重新上传
-                throw RemoteAssetException("toMiraiCode error: internalid, 错误，重新上传");
+                MiraiCPThrow(RemoteAssetException("toMiraiCode error: internalid, 错误，重新上传"));
             }
             return "[mirai:file:" + id + "," + std::to_string(internalid) + "," + Tools::escapeToMiraiCode(name) + "," +
                    std::to_string(size) + "]";
@@ -1470,34 +1454,34 @@ namespace MiraiCP {
                         if (std::is_same_v<T, UnSupportMessage>)
                             return (UnSupportMessage) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 0:
                         if (std::is_same_v<T, PlainText>)
                             return (PlainText) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 1:
                         if (std::is_same_v<T, At>)
                             return (At) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 2:
                         if (std::is_same_v<T, Image>)
                             return (Image) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 3:
                         if (std::is_same_v<T, LightApp>)
                             return (LightApp) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 4:
                         if (std::is_same_v<T, ServiceMessage>)
                             return (ServiceMessage) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     default: // cannot reach
-                        throw APIException("");
+                        MiraiCPThrow(APIException(""));
                 }
             }
 
@@ -1517,7 +1501,7 @@ namespace MiraiCP {
                     case 4:
                         return (ServiceMessage) (*tmp);
                     default:
-                        throw APIException("位置MessageChain::get");
+                        MiraiCPThrow(APIException("位置MessageChain::get"));
                 }
             }
         };
@@ -1547,7 +1531,7 @@ namespace MiraiCP {
         std::vector<Message> content;
 
         MessageSource quoteAndSend0(const std::string &msg, QQID groupid = -1,
-                                    JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+                                    JNIEnv *env = ThreadManager::getEnv()) {
             json obj;
             json sign;
             obj["messageSource"] = this->source->serializeToString();
@@ -1560,7 +1544,7 @@ namespace MiraiCP {
         }
 
         template<class T>
-        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv()) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
             return this->quoteAndSend0(s.toMiraiCode(), groupid, env);
         }
@@ -1712,7 +1696,7 @@ namespace MiraiCP {
         /// - MessageChain
         template<class T>
         [[deprecated("use Contact.quoteAndSend")]] MessageSource
-        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv()) {
             return this->quoteAndSend1(s, groupid, env);
         }
 
@@ -1739,7 +1723,7 @@ namespace MiraiCP {
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMsg0(const std::string &msg, int retryTime, bool miraicode = false,
-                               JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                               JNIEnv * = ThreadManager::getEnv());
 
         template<class T>
         MessageSource send1(T msg, int retryTime, JNIEnv *env) {
@@ -1764,7 +1748,7 @@ namespace MiraiCP {
         }
 
         MessageSource
-        quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = ThreadManager::getEnv()) {
             json obj;
             json sign;
             obj["messageSource"] = ms.serializeToString();
@@ -1777,7 +1761,7 @@ namespace MiraiCP {
         }
 
         template<class T>
-        MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv()) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
             return this->quoteAndSend0(s.toMiraiCode(), ms, env);
         }
@@ -1800,7 +1784,7 @@ namespace MiraiCP {
         bool _anonymous = false;
 
         /// 发送语音
-        MessageSource sendVoice0(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageSource sendVoice0(const std::string &path, JNIEnv * = ThreadManager::getEnv());
 
     public:
         /*!
@@ -1905,8 +1889,7 @@ namespace MiraiCP {
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         [[deprecated("Use sendMessage")]] MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
-                                                                      JNIEnv *env = ThreadManager::getEnv(__FILE__,
-                                                                                                          __LINE__)) {
+                                                                      JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 
@@ -1920,7 +1903,7 @@ namespace MiraiCP {
         /// - MessageChain
         template<class T>
         MessageSource
-        quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv()) {
             return this->quoteAndSend1(s, ms, env);
         }
 
@@ -1944,7 +1927,7 @@ namespace MiraiCP {
         /// @param retryTime 重试次数
         /// @return MessageSource
         template<class T>
-        MessageSource sendMessage(T msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource sendMessage(T msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv()) {
             return this->send1(msg, retryTime, env);
         }
 
@@ -1954,7 +1937,7 @@ namespace MiraiCP {
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         [[deprecated("Use sendMessage")]] MessageSource
-        sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(msg, retryTime, false, env);
         }
 
@@ -1964,7 +1947,7 @@ namespace MiraiCP {
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         [[deprecated("Use sendMessage")]] MessageSource
-        sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(msg.toMiraiCode(), retryTime, false, env);
         }
 
@@ -1974,7 +1957,7 @@ namespace MiraiCP {
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         [[deprecated("Use sendMessage")]] MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3,
-                                                                JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+                                                                JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);
         }
 
@@ -1986,7 +1969,7 @@ namespace MiraiCP {
         * -可能抛出UploadException异常代表路径无效或大小大于30MB
         * -可能抛出MemberException找不到群或群成员
         */
-        Image uploadImg(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        Image uploadImg(const std::string &path, JNIEnv * = ThreadManager::getEnv());
 
         /// 刷新当前对象信息
         virtual void refreshInfo(JNIEnv *){};
@@ -2024,7 +2007,7 @@ namespace MiraiCP {
         /// @brief 取该联系人的一些信息
         /// @param c 该联系人Contact指针
         /// @return json格式字符串，待解析
-        static inline std::string getInfoSource(Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        static inline std::string getInfoSource(Contact *c, JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["source"] = c->serializationToString();
             return Config::koperation(Config::RefreshInfo, j, env);
@@ -2038,7 +2021,7 @@ namespace MiraiCP {
          * @return string 待解析json
          */
         static inline std::string
-        uploadImg0(const std::string &path, Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        uploadImg0(const std::string &path, Contact *c, JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["fileName"] = path;
             j["source"] = c->serializationToString();
@@ -2076,22 +2059,22 @@ namespace MiraiCP {
          * @param friendid q号
          * @param botid 对应机器人id
          */
-        explicit Friend(QQID friendid, QQID botid, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        explicit Friend(QQID friendid, QQID botid, JNIEnv * = ThreadManager::getEnv());
 
         explicit Friend(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 删除好友(delete是C++关键字
-        void deleteFriend(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void deleteFriend(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
             Config::koperation(Config::RefreshInfo, j, env);
         }
 
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override {
             std::string temp = LowLevelAPI::getInfoSource(this, env);
             if (temp == "E1") {
-                throw FriendException();
+                MiraiCPThrow(FriendException());
             }
             LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
             this->_nickOrNameCard = tmp.nickornamecard;
@@ -2108,7 +2091,7 @@ namespace MiraiCP {
             j["contactSource"] = this->serializationToString();
             std::string re = Config::koperation(Config::SendNudge, j);
             if (re == "E1")
-                throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
+                MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));
         }
     };
 } // namespace MiraiCP
@@ -2140,7 +2123,7 @@ namespace MiraiCP {
         /// @brief 更改群成员权限
         /// @param admin 如果为true为更改到管理员
         /// @param env
-        void modifyAdmin(bool admin, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
+        void modifyAdmin(bool admin, JNIEnv *env = ThreadManager::getEnv());
 
         /// @brief 构建群成员对象
         /// @param qqid 该成员q号
@@ -2151,7 +2134,7 @@ namespace MiraiCP {
         ///  Member(this.sender.id, this.group.id, this.bot.id)
         /// @endcode
         explicit Member(QQID qqid, QQID groupid, QQID botid,
-                        JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                        JNIEnv * = ThreadManager::getEnv());
 
         explicit Member(Contact c) : Contact(std::move(c)) {
             this->isAnonymous = this->_anonymous;
@@ -2162,44 +2145,44 @@ namespace MiraiCP {
         bool isAnonymous = false;
 
         /// 重新获取(刷新)群成员信息
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override {
             if (isAnonymous)
                 return;
             std::string temp = LowLevelAPI::getInfoSource(this, env);
             if (temp == "E1")
-                throw MemberException(1);
+                MiraiCPThrow(MemberException(1));
             if (temp == "E2")
-                throw MemberException(2);
+                MiraiCPThrow(MemberException(2));
             LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
             this->_nickOrNameCard = tmp.nickornamecard;
             this->_avatarUrl = tmp.avatarUrl;
             this->permission = getPermission();
             if (temp == "E1") {
-                throw MemberException(1);
+                MiraiCPThrow(MemberException(1));
             }
             if (temp == "E2") {
-                throw MemberException(2);
+                MiraiCPThrow(MemberException(2));
             }
         }
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv()) {
             return Contact::sendVoice0(path, env);
         }
 
         /// 获取权限，会在构造时调用，请使用permission缓存变量
         /// @see Member::permission
-        unsigned int getPermission(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        unsigned int getPermission(JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * 禁言当前对象，单位是秒，最少0秒最大30天，如果为0或者为负则unmute
          * @throws BotException, MuteException
         */
-        void mute(int time, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void mute(int time, JNIEnv * = ThreadManager::getEnv());
 
         /// 取消禁言
         /// @throws BotException, MuteException
-        void unMute(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void unMute(JNIEnv *env = ThreadManager::getEnv()) {
             mute(0, env);
         }
 
@@ -2227,7 +2210,7 @@ namespace MiraiCP {
             });
          * @endcode
         */
-        void kick(const std::string &reason, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void kick(const std::string &reason, JNIEnv * = ThreadManager::getEnv());
 
         /// At一个群成员
         At at() {
@@ -2246,7 +2229,7 @@ namespace MiraiCP {
             j["contactSource"] = this->serializationToString();
             std::string re = Config::koperation(Config::SendNudge, j);
             if (re == "E1")
-                throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
+                MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));
         }
     };
 } // namespace MiraiCP
@@ -2361,16 +2344,16 @@ namespace MiraiCP {
          * @details 从服务器拉去群设置用refreshInfo
          * @see Group::refreshInfo()
          */
-        void updateSetting(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void updateSetting(JNIEnv * = ThreadManager::getEnv());
 
         /// 取群成员列表
         /// @return vector<long>
-        std::vector<unsigned long long> getMemberList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        std::vector<unsigned long long> getMemberList(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["contactSource"] = this->serializationToString();
             std::string re = Config::koperation(Config::QueryML, j, env);
             if (re == "E1") {
-                throw GroupException();
+                MiraiCPThrow(GroupException());
             }
             return Tools::StringToVector(re);
         }
@@ -2385,24 +2368,24 @@ namespace MiraiCP {
         };
 
         /// 取群主
-        Member getOwner(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        Member getOwner(JNIEnv * = ThreadManager::getEnv());
 
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
         /// @param botid 机器人id
         /// @example 在事件中构建Group对象
         /// @code Group(this.group.id, this.bot.id) @endcode
-        Group(QQID groupid, QQID botid, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        Group(QQID groupid, QQID botid, JNIEnv * = ThreadManager::getEnv());
 
         explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 取群成员
-        Member getMember(QQID memberid, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        Member getMember(QQID memberid, JNIEnv *env = ThreadManager::getEnv()) {
             return Member(memberid, this->id(), this->groupid(), env);
         }
 
         /// 取群公告列表
-        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = ThreadManager::getEnv()) {
             json j;
             j["source"] = this->serializationToString();
             j["announcement"] = true;
@@ -2415,7 +2398,7 @@ namespace MiraiCP {
         };
 
         /// 刷新群聊信息
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override {
             std::string re = LowLevelAPI::getInfoSource(this, env);
             LowLevelAPI::info tmp = LowLevelAPI::info0(re);
             this->_nickOrNameCard = tmp.nickornamecard;
@@ -2428,7 +2411,7 @@ namespace MiraiCP {
             this->setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
         }
 
-        void quit(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void quit(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
@@ -2448,10 +2431,10 @@ namespace MiraiCP {
          @endcode
         */
         RemoteFile sendFile(const std::string &path, const std::string &filepath,
-                            JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                            JNIEnv * = ThreadManager::getEnv());
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv()) {
             return Contact::sendVoice0(path, env);
         }
 
@@ -2473,7 +2456,7 @@ namespace MiraiCP {
          @endcode
         */
         RemoteFile getFile(const std::string &path, const std::string &id = "",
-                           JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                           JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * @brief 取文件信息(根据id)
@@ -2481,7 +2464,7 @@ namespace MiraiCP {
          * @return 文件
          * @detail 相当于从根目录开始遍历查找文件, 相当于getFile("/", id);
          */
-        RemoteFile getFileById(const std::string &id, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        RemoteFile getFileById(const std::string &id, JNIEnv * = ThreadManager::getEnv());
 
         /// 群文件的简短描述
         struct file_short_info {
@@ -2497,14 +2480,14 @@ namespace MiraiCP {
          * @return 返回值为一个vector容器, 每一项为short_info
         */
         std::vector<file_short_info>
-        getFileList(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        getFileList(const std::string &path, JNIEnv * = ThreadManager::getEnv());
 
         /// 取文件列表以字符串形式返回
         ///@example 取string格式群文件列表
         /// @code
         /// e.group.SendMsg(e.group.getFileListString("/"));
         /// @endcode
-        std::string getFileListString(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        std::string getFileListString(const std::string &path, JNIEnv * = ThreadManager::getEnv());
     };
 } // namespace MiraiCP
 
@@ -2536,7 +2519,7 @@ namespace MiraiCP {
          * @brief 刷新bot信息
          * @param env
          */
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
             LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));
@@ -2548,12 +2531,12 @@ namespace MiraiCP {
         explicit Bot(QQID i) : id(i) {}
 
         /// 取好友
-        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv()) const {
             return Friend(i, this->id, env);
         }
 
         /// 取群聊
-        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv()) const {
             return Group(groupid, this->id, env);
         }
 
@@ -2570,7 +2553,7 @@ namespace MiraiCP {
         }
 
         /// 取好友列表
-        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["botid"] = this->id;
             std::string temp = Config::koperation(Config::QueryBFL, j, env);
@@ -2583,7 +2566,7 @@ namespace MiraiCP {
         }
 
         /// 取群列表
-        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["botid"] = this->id;
             std::string temp = Config::koperation(Config::QueryBGL, j, env);
@@ -2761,10 +2744,10 @@ namespace MiraiCP {
          * @return 返回数据
          */
         static std::string
-        koperation(operation_set type, nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__),
+        koperation(operation_set type, nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(),
                    bool catchErr = true, const std::string &errorInfo = "");
 
-        static void construct(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        static void construct(JNIEnv * = ThreadManager::getEnv());
 
         static void destruct();
     };
@@ -2791,7 +2774,7 @@ namespace MiraiCP {
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMsg0(const std::string &msg, int retryTime, bool miraicode = false,
-                               JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                               JNIEnv * = ThreadManager::getEnv());
 
         template<class T>
         MessageSource send1(T msg, int retryTime, JNIEnv *env) {
@@ -2816,7 +2799,7 @@ namespace MiraiCP {
         }
 
         MessageSource
-        quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = ThreadManager::getEnv()) {
             json obj;
             json sign;
             obj["messageSource"] = ms.serializeToString();
@@ -2829,7 +2812,7 @@ namespace MiraiCP {
         }
 
         template<class T>
-        MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv()) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
             return this->quoteAndSend0(s.toMiraiCode(), ms, env);
         }
@@ -2852,7 +2835,7 @@ namespace MiraiCP {
         bool _anonymous = false;
 
         /// 发送语音
-        MessageSource sendVoice0(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageSource sendVoice0(const std::string &path, JNIEnv * = ThreadManager::getEnv());
 
     public:
         /*!
@@ -2957,8 +2940,7 @@ namespace MiraiCP {
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         [[deprecated("Use sendMessage")]] MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
-                                                                      JNIEnv *env = ThreadManager::getEnv(__FILE__,
-                                                                                                          __LINE__)) {
+                                                                      JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 
@@ -2972,7 +2954,7 @@ namespace MiraiCP {
         /// - MessageChain
         template<class T>
         MessageSource
-        quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv()) {
             return this->quoteAndSend1(s, ms, env);
         }
 
@@ -2996,7 +2978,7 @@ namespace MiraiCP {
         /// @param retryTime 重试次数
         /// @return MessageSource
         template<class T>
-        MessageSource sendMessage(T msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource sendMessage(T msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv()) {
             return this->send1(msg, retryTime, env);
         }
 
@@ -3006,7 +2988,7 @@ namespace MiraiCP {
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         [[deprecated("Use sendMessage")]] MessageSource
-        sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(msg, retryTime, false, env);
         }
 
@@ -3016,7 +2998,7 @@ namespace MiraiCP {
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         [[deprecated("Use sendMessage")]] MessageSource
-        sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(msg.toMiraiCode(), retryTime, false, env);
         }
 
@@ -3026,7 +3008,7 @@ namespace MiraiCP {
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         [[deprecated("Use sendMessage")]] MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3,
-                                                                JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+                                                                JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);
         }
 
@@ -3038,21 +3020,123 @@ namespace MiraiCP {
         * -可能抛出UploadException异常代表路径无效或大小大于30MB
         * -可能抛出MemberException找不到群或群成员
         */
-        Image uploadImg(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        Image uploadImg(const std::string &path, JNIEnv * = ThreadManager::getEnv());
 
         /// 刷新当前对象信息
         virtual void refreshInfo(JNIEnv *){};
     };
 
 
-
-    } // namespace MiraiCP
+} // namespace MiraiCP
 
 #endif //MIRAICP_PRO_CONTACT_H
 #ifndef MIRAICP_PRO_EVENT_H
 #define MIRAICP_PRO_EVENT_H
 
 // #include "Bot.h"
+#ifndef MIRAICP_PRO_BOT_H
+#define MIRAICP_PRO_BOT_H
+
+// #include "Friend.h"
+
+// #include "Group.h"
+
+// #include "ThreadManager.h"
+
+
+namespace MiraiCP {
+    /// 当前bot账号信息
+    class Bot {
+    private:
+        bool inited = false;
+        std::string _nick;
+        std::string _avatarUrl;
+
+        void check() {
+            if (!this->inited) {
+                refreshInfo();
+                this->inited = true;
+            }
+        }
+
+    public:
+        /// 该botid
+        QQID id;
+
+        /*!
+         * @brief 刷新bot信息
+         * @param env
+         */
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) {
+            nlohmann::json j;
+            j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
+            LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));
+            this->_avatarUrl = tmp.avatarUrl;
+            this->_nick = tmp.nickornamecard;
+        }
+
+        /// 用id构建机器人
+        explicit Bot(QQID i) : id(i) {}
+
+        /// 取好友
+        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv()) const {
+            return Friend(i, this->id, env);
+        }
+
+        /// 取群聊
+        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv()) const {
+            return Group(groupid, this->id, env);
+        }
+
+        /// 昵称
+        std::string nick() {
+            check();
+            return this->_nick;
+        }
+
+        /// 头像下载链接
+        std::string avatarUrl() {
+            check();
+            return this->_avatarUrl;
+        }
+
+        /// 取好友列表
+        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv()) {
+            nlohmann::json j;
+            j["botid"] = this->id;
+            std::string temp = Config::koperation(Config::QueryBFL, j, env);
+            return Tools::StringToVector(temp);
+        }
+
+        /// 好友列表string形式返回，利于保存
+        std::string FriendListToString() {
+            return Tools::VectorToString(getFriendList());
+        }
+
+        /// 取群列表
+        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv()) {
+            nlohmann::json j;
+            j["botid"] = this->id;
+            std::string temp = Config::koperation(Config::QueryBGL, j, env);
+            return Tools::StringToVector(temp);
+        }
+
+        /// 群列表string形式返回，利于保存
+        std::string GroupListToString() {
+            return Tools::VectorToString(getGroupList());
+        }
+
+        bool operator==(const Contact &c) const {
+            return this->id == c.id();
+        }
+
+        bool operator==(const Bot &b) const {
+            return this->id == b.id;
+        }
+    };
+} // namespace MiraiCP
+
+#endif //MIRAICP_PRO_BOT_H
 
 // #include "Contact.h"
 
@@ -3096,7 +3180,7 @@ namespace MiraiCP {
          * @return MiraiCP::Message
          */
         MessageChain
-        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
+        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
 
         /*!
          * @brief 取群聊中同群成员的下一个消息(发送人和群与本事件一样)
@@ -3106,7 +3190,7 @@ namespace MiraiCP {
          * @return MiraiCP::Message
          */
         MessageChain
-        senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
+        senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
     };
 
     /// 私聊消息事件类声明
@@ -3135,7 +3219,7 @@ namespace MiraiCP {
          * @return MiraiCP::Message
          */
         MessageChain
-        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
+        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
     };
 
     /// 群聊邀请事件类声明
@@ -3153,7 +3237,7 @@ namespace MiraiCP {
         QQID groupid = 0;
 
         static void operation0(const std::string &source, QQID botid, bool accept,
-                               JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+                               JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["text"] = source;
             j["operate"] = accept;
@@ -3162,11 +3246,11 @@ namespace MiraiCP {
             if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
         }
 
-        void reject(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void reject(JNIEnv *env = ThreadManager::getEnv()) {
             GroupInviteEvent::operation0(this->source, this->bot.id, false, env);
         }
 
-        void accept(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void accept(JNIEnv *env = ThreadManager::getEnv()) {
             GroupInviteEvent::operation0(this->source, this->bot.id, true, env);
         }
 
@@ -3201,7 +3285,7 @@ namespace MiraiCP {
         /// @brief 接受好友申请
         /// @param source 事件序列化信息
         static void operation0(const std::string &source, QQID botid, bool accept,
-                               JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__), bool ban = false) {
+                               JNIEnv *env = ThreadManager::getEnv(), bool ban = false) {
             nlohmann::json j;
             j["text"] = source;
             j["operate"] = accept;
@@ -3212,13 +3296,13 @@ namespace MiraiCP {
         }
 
         /// @brief 拒绝好友申请
-        void reject(bool ban = false, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void reject(bool ban = false, JNIEnv *env = ThreadManager::getEnv()) {
             NewFriendRequestEvent::operation0(this->source, this->bot.id, false, env);
         }
 
         /// @brief 接受申请
         /// @param ban - 是否加入黑名单
-        void accept(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void accept(JNIEnv *env = ThreadManager::getEnv()) {
             NewFriendRequestEvent::operation0(this->source, this->bot.id, true, env);
         }
 
@@ -3430,7 +3514,7 @@ namespace MiraiCP {
         std::string source;
 
         void operate(const std::string &s, QQID botid, bool sign, const std::string &msg = "",
-                     JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+                     JNIEnv *env = ThreadManager::getEnv()) const {
             json j;
             j["source"] = s;
             j["botid"] = botid;
@@ -3513,8 +3597,25 @@ namespace MiraiCP {
             Logger::logger.error("内部错误, 位置:C-Head");
             return -1;
         }
+
         Event() = default;
-        using type = std::variant<GroupMessageEvent, PrivateMessageEvent, GroupInviteEvent, NewFriendRequestEvent, MemberJoinEvent, MemberLeaveEvent, RecallEvent, BotJoinGroupEvent, GroupTempMessageEvent, BotOnlineEvent, TimeOutEvent, NudgeEvent, BotLeaveEvent, MemberJoinRequestEvent, MiraiCPExceptionEvent>;
+
+        using type = std::variant<GroupMessageEvent,
+                                  PrivateMessageEvent,
+                                  GroupInviteEvent,
+                                  NewFriendRequestEvent,
+                                  MemberJoinEvent,
+                                  MemberLeaveEvent,
+                                  RecallEvent,
+                                  BotJoinGroupEvent,
+                                  GroupTempMessageEvent,
+                                  BotOnlineEvent,
+                                  TimeOutEvent,
+                                  NudgeEvent,
+                                  BotLeaveEvent,
+                                  MemberJoinRequestEvent,
+                                  MiraiCPExceptionEvent>;
+
         template<typename T>
         class Node {
         public:
@@ -3525,7 +3626,23 @@ namespace MiraiCP {
                 func(std::get<T>(a));
             }
         };
-        using e = std::variant<Node<GroupMessageEvent>, Node<PrivateMessageEvent>, Node<GroupInviteEvent>, Node<NewFriendRequestEvent>, Node<MemberJoinEvent>, Node<MemberLeaveEvent>, Node<RecallEvent>, Node<BotJoinGroupEvent>, Node<GroupTempMessageEvent>, Node<BotOnlineEvent>, Node<NudgeEvent>, Node<BotLeaveEvent>, Node<MemberJoinRequestEvent>, Node<MiraiCPExceptionEvent>, Node<TimeOutEvent>>;
+
+        using e = std::variant<Node<GroupMessageEvent>,
+                               Node<PrivateMessageEvent>,
+                               Node<GroupInviteEvent>,
+                               Node<NewFriendRequestEvent>,
+                               Node<MemberJoinEvent>,
+                               Node<MemberLeaveEvent>,
+                               Node<RecallEvent>,
+                               Node<BotJoinGroupEvent>,
+                               Node<GroupTempMessageEvent>,
+                               Node<BotOnlineEvent>,
+                               Node<NudgeEvent>,
+                               Node<BotLeaveEvent>,
+                               Node<MemberJoinRequestEvent>,
+                               Node<MiraiCPExceptionEvent>,
+                               Node<TimeOutEvent>>;
+
         std::vector<e> vec[15] = {std::vector<e>()};
 
     public:
@@ -3535,29 +3652,23 @@ namespace MiraiCP {
             bool *enable;
 
         public:
-            explicit NodeHandle(bool *a) {
-                this->enable = a;
-            }
-            void stop() {
-                *enable = false;
-            }
-            void resume() {
-                *enable = true;
-            }
+            explicit NodeHandle(bool *a) { this->enable = a; }
+            void stop() { *enable = false; }
+            void resume() { *enable = true; }
         };
+
         // singleton mode
         static Event processor;
+
         /// 广播一个事件, 必须为MiraiCPEvent的派生类
         template<typename T>
         void broadcast(T val) {
             static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播MiraiCPEvent的派生类");
-            /// 清空stack中内容, 不然可能保留上一次Event的操作
-            ThreadManager::getThread()->stack.clear();
-            ThreadManager::getThread()->stack.push(__FILE__, __LINE__, __func__, typeid(T).name());
             for (e a: vec[id<T>()]) {
                 std::get<Node<T>>(a).run(static_cast<type>(val));
             }
         }
+
         /// 注册一个事件
         template<typename T>
         NodeHandle registerEvent(std::function<void(T)> a) {
@@ -3589,6 +3700,14 @@ namespace MiraiCP {
         const std::string exceptionType;
 
     public:
+        int lineNum = 0;
+        std::string filename = "";
+
+        MiraiCPException append(const std::string &name, int line) {
+            lineNum = line;
+            filename = name;
+            return *this;
+        }
         explicit MiraiCPException(const std::string &&type) : exceptionType(type) { ExceptionBroadcasting(this); }
 
         /// 获取异常类型
@@ -3603,7 +3722,11 @@ namespace MiraiCP {
         };
 
         /// 实际抛出方法
-        void raise() { basicRaise(); }
+        void raise() {
+            basicRaise();
+            if (filename != "" && lineNum != 0)
+                Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
+        }
     };
 
     /// 文件读取异常.
@@ -3621,7 +3744,7 @@ namespace MiraiCP {
 
         void basicRaise() override {
             Logger::logger.error(this->description);
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -3643,7 +3766,7 @@ namespace MiraiCP {
 
         void basicRaise() override {
             Logger::logger.error(this->description);
-            // ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            // ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -3665,7 +3788,7 @@ namespace MiraiCP {
 
         void basicRaise() override {
             Logger::logger.error(this->description);
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -3687,7 +3810,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -3723,7 +3846,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -3760,7 +3883,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -3784,7 +3907,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -3805,7 +3928,7 @@ namespace MiraiCP {
         }
 
         void basicRaise() override {
-            //ThreadManager::getEnv(__FILE__, __LINE__)->ThrowNew(Config::initexception, (this->description).c_str());
+            //ThreadManager::getEnv()->ThrowNew(Config::initexception, (this->description).c_str());
         }
 
     private:
@@ -3886,17 +4009,17 @@ namespace MiraiCP {
 
     inline void ErrorHandle(const std::string &re, const std::string &ErrorMsg = "") {
         if (re == "EF")
-            throw FriendException();
+            MiraiCPThrow(FriendException());
         if (re == "EG")
-            throw GroupException();
+            MiraiCPThrow(GroupException());
         if (re == "EM")
-            throw MemberException(1);
+            MiraiCPThrow(MemberException(1));
         if (re == "EMM")
-            throw MemberException(2);
+            MiraiCPThrow(MemberException(2));
         if (re == "EB")
-            throw BotException("找不到bot:" + re);
+            MiraiCPThrow(BotException("找不到bot:" + re));
         if (re == "EA")
-            throw APIException(ErrorMsg);
+            MiraiCPThrow(APIException(ErrorMsg));
     }
 } // namespace MiraiCP
 
@@ -3978,7 +4101,7 @@ namespace MiraiCP {
         ForwardMessage(Contact *c, std::initializer_list<ForwardNode> nodes);
 
         /// 发送给群或好友或群成员
-        MessageSource sendTo(Contact *c, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        MessageSource sendTo(Contact *c, JNIEnv * = ThreadManager::getEnv());
     };
 } // namespace MiraiCP
 
@@ -3998,22 +4121,22 @@ namespace MiraiCP {
          * @param friendid q号
          * @param botid 对应机器人id
          */
-        explicit Friend(QQID friendid, QQID botid, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        explicit Friend(QQID friendid, QQID botid, JNIEnv * = ThreadManager::getEnv());
 
         explicit Friend(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 删除好友(delete是C++关键字
-        void deleteFriend(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void deleteFriend(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
             Config::koperation(Config::RefreshInfo, j, env);
         }
 
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override {
             std::string temp = LowLevelAPI::getInfoSource(this, env);
             if (temp == "E1") {
-                throw FriendException();
+                MiraiCPThrow(FriendException());
             }
             LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
             this->_nickOrNameCard = tmp.nickornamecard;
@@ -4030,7 +4153,7 @@ namespace MiraiCP {
             j["contactSource"] = this->serializationToString();
             std::string re = Config::koperation(Config::SendNudge, j);
             if (re == "E1")
-                throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
+                MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));
         }
     };
 } // namespace MiraiCP
@@ -4149,16 +4272,16 @@ namespace MiraiCP {
          * @details 从服务器拉去群设置用refreshInfo
          * @see Group::refreshInfo()
          */
-        void updateSetting(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void updateSetting(JNIEnv * = ThreadManager::getEnv());
 
         /// 取群成员列表
         /// @return vector<long>
-        std::vector<unsigned long long> getMemberList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        std::vector<unsigned long long> getMemberList(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["contactSource"] = this->serializationToString();
             std::string re = Config::koperation(Config::QueryML, j, env);
             if (re == "E1") {
-                throw GroupException();
+                MiraiCPThrow(GroupException());
             }
             return Tools::StringToVector(re);
         }
@@ -4173,24 +4296,24 @@ namespace MiraiCP {
         };
 
         /// 取群主
-        Member getOwner(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        Member getOwner(JNIEnv * = ThreadManager::getEnv());
 
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
         /// @param botid 机器人id
         /// @example 在事件中构建Group对象
         /// @code Group(this.group.id, this.bot.id) @endcode
-        Group(QQID groupid, QQID botid, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        Group(QQID groupid, QQID botid, JNIEnv * = ThreadManager::getEnv());
 
         explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 取群成员
-        Member getMember(QQID memberid, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        Member getMember(QQID memberid, JNIEnv *env = ThreadManager::getEnv()) {
             return Member(memberid, this->id(), this->groupid(), env);
         }
 
         /// 取群公告列表
-        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = ThreadManager::getEnv()) {
             json j;
             j["source"] = this->serializationToString();
             j["announcement"] = true;
@@ -4203,7 +4326,7 @@ namespace MiraiCP {
         };
 
         /// 刷新群聊信息
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override {
             std::string re = LowLevelAPI::getInfoSource(this, env);
             LowLevelAPI::info tmp = LowLevelAPI::info0(re);
             this->_nickOrNameCard = tmp.nickornamecard;
@@ -4216,7 +4339,7 @@ namespace MiraiCP {
             this->setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
         }
 
-        void quit(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void quit(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["source"] = this->serializationToString();
             j["quit"] = true;
@@ -4236,10 +4359,10 @@ namespace MiraiCP {
          @endcode
         */
         RemoteFile sendFile(const std::string &path, const std::string &filepath,
-                            JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                            JNIEnv * = ThreadManager::getEnv());
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv()) {
             return Contact::sendVoice0(path, env);
         }
 
@@ -4261,7 +4384,7 @@ namespace MiraiCP {
          @endcode
         */
         RemoteFile getFile(const std::string &path, const std::string &id = "",
-                           JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                           JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * @brief 取文件信息(根据id)
@@ -4269,7 +4392,7 @@ namespace MiraiCP {
          * @return 文件
          * @detail 相当于从根目录开始遍历查找文件, 相当于getFile("/", id);
          */
-        RemoteFile getFileById(const std::string &id, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        RemoteFile getFileById(const std::string &id, JNIEnv * = ThreadManager::getEnv());
 
         /// 群文件的简短描述
         struct file_short_info {
@@ -4285,14 +4408,14 @@ namespace MiraiCP {
          * @return 返回值为一个vector容器, 每一项为short_info
         */
         std::vector<file_short_info>
-        getFileList(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        getFileList(const std::string &path, JNIEnv * = ThreadManager::getEnv());
 
         /// 取文件列表以字符串形式返回
         ///@example 取string格式群文件列表
         /// @code
         /// e.group.SendMsg(e.group.getFileListString("/"));
         /// @endcode
-        std::string getFileListString(const std::string &path, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        std::string getFileListString(const std::string &path, JNIEnv * = ThreadManager::getEnv());
     };
 } // namespace MiraiCP
 
@@ -4367,25 +4490,24 @@ namespace MiraiCP {
         Handler loggerhandler;
 
         // 初始化 获取methodid
-        void init(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void init(JNIEnv * = ThreadManager::getEnv());
 
         ///发送普通(info级日志)
         template<class... T>
         void info(T... val) {
-            this->log0(p("", val...), 0, ThreadManager::getEnv(__FILE__, __LINE__));
+            this->log0(p("", val...), 0, ThreadManager::getEnv());
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void warning(T... val) {
-            this->log0(p("", val...), 1, ThreadManager::getEnv(__FILE__, __LINE__));
+            this->log0(p("", val...), 1, ThreadManager::getEnv());
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void error(T... val) {
-            ThreadManager::StackTracer a = ThreadManager::getThread()->stack;
-            this->log0(p("", val...) + "\n" + a.print(), 2, ThreadManager::getEnv(__FILE__, __LINE__));
+            this->log0(p("", val...), 2, ThreadManager::getEnv());
         }
 
         /// @brief 设置loggerhandler的action
@@ -4480,7 +4602,7 @@ namespace MiraiCP {
         /// @brief 取该联系人的一些信息
         /// @param c 该联系人Contact指针
         /// @return json格式字符串，待解析
-        static inline std::string getInfoSource(Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        static inline std::string getInfoSource(Contact *c, JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["source"] = c->serializationToString();
             return Config::koperation(Config::RefreshInfo, j, env);
@@ -4494,7 +4616,7 @@ namespace MiraiCP {
          * @return string 待解析json
          */
         static inline std::string
-        uploadImg0(const std::string &path, Contact *c, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        uploadImg0(const std::string &path, Contact *c, JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["fileName"] = path;
             j["source"] = c->serializationToString();
@@ -4541,7 +4663,7 @@ namespace MiraiCP {
         /// @brief 更改群成员权限
         /// @param admin 如果为true为更改到管理员
         /// @param env
-        void modifyAdmin(bool admin, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
+        void modifyAdmin(bool admin, JNIEnv *env = ThreadManager::getEnv());
 
         /// @brief 构建群成员对象
         /// @param qqid 该成员q号
@@ -4552,7 +4674,7 @@ namespace MiraiCP {
         ///  Member(this.sender.id, this.group.id, this.bot.id)
         /// @endcode
         explicit Member(QQID qqid, QQID groupid, QQID botid,
-                        JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+                        JNIEnv * = ThreadManager::getEnv());
 
         explicit Member(Contact c) : Contact(std::move(c)) {
             this->isAnonymous = this->_anonymous;
@@ -4563,44 +4685,44 @@ namespace MiraiCP {
         bool isAnonymous = false;
 
         /// 重新获取(刷新)群成员信息
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) override {
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override {
             if (isAnonymous)
                 return;
             std::string temp = LowLevelAPI::getInfoSource(this, env);
             if (temp == "E1")
-                throw MemberException(1);
+                MiraiCPThrow(MemberException(1));
             if (temp == "E2")
-                throw MemberException(2);
+                MiraiCPThrow(MemberException(2));
             LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
             this->_nickOrNameCard = tmp.nickornamecard;
             this->_avatarUrl = tmp.avatarUrl;
             this->permission = getPermission();
             if (temp == "E1") {
-                throw MemberException(1);
+                MiraiCPThrow(MemberException(1));
             }
             if (temp == "E2") {
-                throw MemberException(2);
+                MiraiCPThrow(MemberException(2));
             }
         }
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv()) {
             return Contact::sendVoice0(path, env);
         }
 
         /// 获取权限，会在构造时调用，请使用permission缓存变量
         /// @see Member::permission
-        unsigned int getPermission(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        unsigned int getPermission(JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * 禁言当前对象，单位是秒，最少0秒最大30天，如果为0或者为负则unmute
          * @throws BotException, MuteException
         */
-        void mute(int time, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void mute(int time, JNIEnv * = ThreadManager::getEnv());
 
         /// 取消禁言
         /// @throws BotException, MuteException
-        void unMute(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void unMute(JNIEnv *env = ThreadManager::getEnv()) {
             mute(0, env);
         }
 
@@ -4628,7 +4750,7 @@ namespace MiraiCP {
             });
          * @endcode
         */
-        void kick(const std::string &reason, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        void kick(const std::string &reason, JNIEnv * = ThreadManager::getEnv());
 
         /// At一个群成员
         At at() {
@@ -4647,7 +4769,7 @@ namespace MiraiCP {
             j["contactSource"] = this->serializationToString();
             std::string re = Config::koperation(Config::SendNudge, j);
             if (re == "E1")
-                throw IllegalStateException("发送戳一戳失败，登录协议不为phone");
+                MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));
         }
     };
 } // namespace MiraiCP
@@ -4710,34 +4832,34 @@ namespace MiraiCP {
                         if (std::is_same_v<T, UnSupportMessage>)
                             return (UnSupportMessage) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 0:
                         if (std::is_same_v<T, PlainText>)
                             return (PlainText) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 1:
                         if (std::is_same_v<T, At>)
                             return (At) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 2:
                         if (std::is_same_v<T, Image>)
                             return (Image) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 3:
                         if (std::is_same_v<T, LightApp>)
                             return (LightApp) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 4:
                         if (std::is_same_v<T, ServiceMessage>)
                             return (ServiceMessage) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     default: // cannot reach
-                        throw APIException("");
+                        MiraiCPThrow(APIException(""));
                 }
             }
 
@@ -4757,7 +4879,7 @@ namespace MiraiCP {
                     case 4:
                         return (ServiceMessage) (*tmp);
                     default:
-                        throw APIException("位置MessageChain::get");
+                        MiraiCPThrow(APIException("位置MessageChain::get"));
                 }
             }
         };
@@ -4787,7 +4909,7 @@ namespace MiraiCP {
         std::vector<Message> content;
 
         MessageSource quoteAndSend0(const std::string &msg, QQID groupid = -1,
-                                    JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+                                    JNIEnv *env = ThreadManager::getEnv()) {
             json obj;
             json sign;
             obj["messageSource"] = this->source->serializeToString();
@@ -4800,7 +4922,7 @@ namespace MiraiCP {
         }
 
         template<class T>
-        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv()) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
             return this->quoteAndSend0(s.toMiraiCode(), groupid, env);
         }
@@ -4952,7 +5074,7 @@ namespace MiraiCP {
         /// - MessageChain
         template<class T>
         [[deprecated("use Contact.quoteAndSend")]] MessageSource
-        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv()) {
             return this->quoteAndSend1(s, groupid, env);
         }
 
@@ -4991,7 +5113,7 @@ namespace MiraiCP {
         */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
-                              JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+                              JNIEnv *env = ThreadManager::getEnv()) const {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
@@ -5007,7 +5129,7 @@ namespace MiraiCP {
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMsg(const std::string &c, QQID groupid = 0,
-                        JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+                        JNIEnv * = ThreadManager::getEnv()) const;
 
         /**
          * @brief 回复(引用并发送)
@@ -5017,7 +5139,7 @@ namespace MiraiCP {
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
-                              JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+                              JNIEnv * = ThreadManager::getEnv()) const;
 
         /*!
          * @brief 构建消息源
@@ -5053,7 +5175,7 @@ namespace MiraiCP {
             });
          * @endcode
         */
-        void recall(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__)) const;
+        void recall(JNIEnv * = ThreadManager::getEnv()) const;
     };
 } // namespace MiraiCP
 
@@ -5267,8 +5389,8 @@ namespace MiraiCP {
 
         explicit PlainText(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 0)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText"));
             this->content = sg.content;
         }
 
@@ -5287,8 +5409,8 @@ namespace MiraiCP {
 
         explicit At(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 1)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At"));
             this->target = std::stol(sg.content);
         }
 
@@ -5326,14 +5448,14 @@ namespace MiraiCP {
         }
 
         explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 2) throw IllegalArgumentException("传入的SingleMessage应该是Image类型");
+            if (sg.type != 2) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
             this->id = sg.content;
         }
 
         /*
         * 获取图片下载url
         */
-        std::string queryURL(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        std::string queryURL(JNIEnv * = ThreadManager::getEnv());
 
         /// 取图片Mirai码
         std::string toMiraiCode() const override;
@@ -5408,8 +5530,8 @@ namespace MiraiCP {
 
         explicit LightApp(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 3)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp"));
         }
 
         /// 返回miraicode
@@ -5434,8 +5556,8 @@ namespace MiraiCP {
 
         explicit ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 4)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage"));
         }
 
         explicit ServiceMessage(const URLSharer &a) : SingleMessage(5,
@@ -5570,7 +5692,7 @@ namespace MiraiCP {
         std::string toMiraiCode() const override {
             if (internalid == 0) {
                 // 重新上传
-                throw RemoteAssetException("toMiraiCode error: internalid, 错误，重新上传");
+                MiraiCPThrow(RemoteAssetException("toMiraiCode error: internalid, 错误，重新上传"));
             }
             return "[mirai:file:" + id + "," + std::to_string(internalid) + "," + Tools::escapeToMiraiCode(name) + "," +
                    std::to_string(size) + "]";
@@ -5595,7 +5717,7 @@ namespace MiraiCP {
 #endif //MIRAICP_PRO_SINGLEMESSAGE_H
 #ifndef MIRAICP_PRO_THREADMANAGER_H
 #define MIRAICP_PRO_THREADMANAGER_H
-
+#define MiraiCPThrow(x) throw((x).append(__FILE__, __LINE__))
 #include <jni.h>
 #include <map>
 #include <mutex>
@@ -5611,38 +5733,10 @@ namespace MiraiCP {
     */
     class ThreadManager {
     public:
-        class StackTracer {
-        private:
-            std::vector<std::string> stackTrace = std::vector<std::string>();
-
-        public:
-            /// print all
-            std::string print() {
-                std::string re = "StackTrace:";
-                for (const auto &a: stackTrace)
-                    re += "\n" + a;
-                return re;
-            }
-
-            /// push stack
-            void push(const std::string &file = __FILE__, int loc = __LINE__, const std::string &func = "",
-                      const std::string &commit = "") {
-                stackTrace.push_back(
-                        func + (!commit.empty() ? "(" + commit + ")" : "") + "[" + file + ":" + std::to_string(loc) +
-                        "]");
-            }
-
-            /// 清空
-            void clear() {
-                stackTrace.clear();
-            }
-        };
-
         /// @brief 每个线程实例.
         struct ThreadInfo {
             JNIEnv *e{};
             bool attach{};
-            StackTracer stack;
         };
         static std::map<std::string, ThreadInfo> threads; /// < 线程池(线程id:env).
         static std::recursive_mutex mtx;                  ///< 线程池读写锁.
@@ -5695,7 +5789,7 @@ namespace MiraiCP {
         /// @param file 为支持`StackTracer`而增加, 为`__FILE__`宏(文件名), 在调用处传入因为当__FILE__作为默认参数传入时不准确
         /// @param loc 为`__LINE__`宏(行号), 同上
         /// @param func 为`__FUNC__`宏(方法名)
-        static JNIEnv *getEnv(const std::string &file, int loc, const std::string &func = "");
+        static JNIEnv *getEnv();
     };
 } // namespace MiraiCP
 
@@ -5720,7 +5814,7 @@ namespace MiraiCP {
          * @param env 可选，JNIEnv
          * @return 内容转换成jstring类型
          */
-        static std::string jstring2str(jstring jstr, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        static std::string jstring2str(jstring jstr, JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * @name str2jstring
@@ -5730,7 +5824,7 @@ namespace MiraiCP {
          * @param env 可选JNIEnv
          * @return 转换后jstring类型
          */
-        static jstring str2jstring(const char *stra, JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        static jstring str2jstring(const char *stra, JNIEnv * = ThreadManager::getEnv());
 
         /*!
          * @brief 替换全部在一个字符串中.
@@ -5753,7 +5847,7 @@ namespace MiraiCP {
         /// @param a vector
         /// @return string
         template<typename T>
-        static std::string VectorToString(std::vector<T> a, const std::string &separator = ","){
+        static std::string VectorToString(std::vector<T> a, const std::string &separator = ",") {
             std::stringstream ss;
             for (size_t i = 0; i < a.size(); ++i) {
                 if (i != 0)
@@ -5799,6 +5893,34 @@ namespace MiraiCP {
 #define MIRAICP_PRO_UTILS_H
 
 // #include "CPPPlugin.h"
+#ifndef MIRAICP_PRO_CPPPLUGIN_H
+#define MIRAICP_PRO_CPPPLUGIN_H
+
+// #include "Logger.h"
+
+// #include "PluginConfig.h"
+
+namespace MiraiCP {
+    /// 插件父类
+    class CPPPlugin {
+    public:
+        /// @brief 插件信息
+        PluginConfig config;
+        /// @brief 插件级logger
+        static PluginLogger *pluginLogger;
+
+        static CPPPlugin *plugin;
+
+        virtual void onEnable() {}
+
+        virtual void onDisable() {}
+
+        explicit CPPPlugin(PluginConfig c) : config(std::move(c)) {}
+    };
+
+} // namespace MiraiCP
+
+#endif //MIRAICP_PRO_CPPPLUGIN_H
 
 // #include "Config.h"
 
@@ -5807,13 +5929,12 @@ namespace MiraiCP {
 namespace MiraiCP {
     const std::string MiraiCPVersion = "v2.8.0-M2";
 
-    inline void schedule(long time, const std::string &msg, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+    inline void schedule(long time, const std::string &msg, JNIEnv *env = ThreadManager::getEnv()) {
         json j;
         j["time"] = time;
         j["msg"] = msg;
         Config::koperation(Config::TimeOut, j, env);
     }
-
     void enrollPlugin();
 
     inline void enrollPlugin0(CPPPlugin *p) {

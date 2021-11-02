@@ -50,13 +50,12 @@ namespace MiraiCP {
         return true;
     }
 
-    JNIEnv *ThreadManager::getEnv(const std::string &file, int loc, const std::string &func) {
+    JNIEnv *ThreadManager::getEnv() {
         mtx.lock();
         if (!ThreadManager::included(getThreadId())) {
             ThreadManager::newEnv();
         }
         JNIEnv *tmp = ThreadManager::threads[ThreadManager::getThreadId()].e;
-        ThreadManager::threads[ThreadManager::getThreadId()].stack.push(file, loc, func);
         mtx.unlock();
         return tmp;
     }

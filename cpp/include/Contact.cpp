@@ -4,7 +4,7 @@ namespace MiraiCP {
     Image Contact::uploadImg(const std::string &path, JNIEnv *env) {
         std::string re = LowLevelAPI::uploadImg0(path, this, env);
         if (re == "E2")
-            throw UploadException("上传图片大小超过30MB,路径:" + path);
+            MiraiCPThrow(UploadException("上传图片大小超过30MB,路径:" + path));
         return Image(re);
     }
 
@@ -37,9 +37,9 @@ namespace MiraiCP {
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::Voice, j, env);
         if (re == "E1")
-            throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在");
+            MiraiCPThrow(UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在"));
         else if (re == "E2")
-            throw UploadException("上传语音文件大小超过服务器限制，一般限制在1MB上下");
+            MiraiCPThrow(UploadException("上传语音文件大小超过服务器限制，一般限制在1MB上下"));
         return MessageSource::deserializeFromString(re);
     }
 } // namespace MiraiCP

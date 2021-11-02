@@ -43,7 +43,7 @@ namespace MiraiCP {
          * @return MiraiCP::Message
          */
         MessageChain
-        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
+        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
 
         /*!
          * @brief 取群聊中同群成员的下一个消息(发送人和群与本事件一样)
@@ -53,7 +53,7 @@ namespace MiraiCP {
          * @return MiraiCP::Message
          */
         MessageChain
-        senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
+        senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
     };
 
     /// 私聊消息事件类声明
@@ -82,7 +82,7 @@ namespace MiraiCP {
          * @return MiraiCP::Message
          */
         MessageChain
-        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__));
+        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
     };
 
     /// 群聊邀请事件类声明
@@ -100,7 +100,7 @@ namespace MiraiCP {
         QQID groupid = 0;
 
         static void operation0(const std::string &source, QQID botid, bool accept,
-                               JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+                               JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
             j["text"] = source;
             j["operate"] = accept;
@@ -109,11 +109,11 @@ namespace MiraiCP {
             if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
         }
 
-        void reject(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void reject(JNIEnv *env = ThreadManager::getEnv()) {
             GroupInviteEvent::operation0(this->source, this->bot.id, false, env);
         }
 
-        void accept(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void accept(JNIEnv *env = ThreadManager::getEnv()) {
             GroupInviteEvent::operation0(this->source, this->bot.id, true, env);
         }
 
@@ -148,7 +148,7 @@ namespace MiraiCP {
         /// @brief 接受好友申请
         /// @param source 事件序列化信息
         static void operation0(const std::string &source, QQID botid, bool accept,
-                               JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__), bool ban = false) {
+                               JNIEnv *env = ThreadManager::getEnv(), bool ban = false) {
             nlohmann::json j;
             j["text"] = source;
             j["operate"] = accept;
@@ -159,13 +159,13 @@ namespace MiraiCP {
         }
 
         /// @brief 拒绝好友申请
-        void reject(bool ban = false, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void reject(bool ban = false, JNIEnv *env = ThreadManager::getEnv()) {
             NewFriendRequestEvent::operation0(this->source, this->bot.id, false, env);
         }
 
         /// @brief 接受申请
         /// @param ban - 是否加入黑名单
-        void accept(JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        void accept(JNIEnv *env = ThreadManager::getEnv()) {
             NewFriendRequestEvent::operation0(this->source, this->bot.id, true, env);
         }
 
@@ -377,7 +377,7 @@ namespace MiraiCP {
         std::string source;
 
         void operate(const std::string &s, QQID botid, bool sign, const std::string &msg = "",
-                     JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) const {
+                     JNIEnv *env = ThreadManager::getEnv()) const {
             json j;
             j["source"] = s;
             j["botid"] = botid;
@@ -527,9 +527,6 @@ namespace MiraiCP {
         template<typename T>
         void broadcast(T val) {
             static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播MiraiCPEvent的派生类");
-            /// 清空stack中内容, 不然可能保留上一次Event的操作
-            ThreadManager::getThread()->stack.clear();
-            ThreadManager::getThread()->stack.push(__FILE__, __LINE__, __func__, typeid(T).name());
             for (e a: vec[id<T>()]) {
                 std::get<Node<T>>(a).run(static_cast<type>(val));
             }

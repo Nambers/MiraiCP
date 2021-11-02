@@ -69,7 +69,6 @@ Event(JNIEnv *env, jobject, jstring content) {
         Logger::logger.error(e.what(), false);
         return returnNull();
     }
-    ThreadManager::getThread()->stack.push(__FILE__, __LINE__, "source: " + tmp);
     try {
         switch ((int) j["type"]) {
             case 1: {
@@ -189,7 +188,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                 break;
             }
             default:
-                throw APIException("Unreachable code");
+                MiraiCPThrow(APIException("Unreachable code"));
         }
     } catch (json::type_error &e) {
         Logger::logger.error("json格式化异常,位置C-Handle");

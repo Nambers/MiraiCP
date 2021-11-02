@@ -73,8 +73,8 @@ namespace MiraiCP {
 
         explicit PlainText(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 0)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText"));
             this->content = sg.content;
         }
 
@@ -93,8 +93,8 @@ namespace MiraiCP {
 
         explicit At(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 1)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At"));
             this->target = std::stol(sg.content);
         }
 
@@ -132,14 +132,14 @@ namespace MiraiCP {
         }
 
         explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 2) throw IllegalArgumentException("传入的SingleMessage应该是Image类型");
+            if (sg.type != 2) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
             this->id = sg.content;
         }
 
         /*
         * 获取图片下载url
         */
-        std::string queryURL(JNIEnv * = ThreadManager::getEnv(__FILE__, __LINE__));
+        std::string queryURL(JNIEnv * = ThreadManager::getEnv());
 
         /// 取图片Mirai码
         std::string toMiraiCode() const override;
@@ -214,8 +214,8 @@ namespace MiraiCP {
 
         explicit LightApp(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 3)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp"));
         }
 
         /// 返回miraicode
@@ -240,8 +240,8 @@ namespace MiraiCP {
 
         explicit ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 4)
-                throw IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage");
+                MiraiCPThrow(IllegalArgumentException(
+                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage"));
         }
 
         explicit ServiceMessage(const URLSharer &a) : SingleMessage(5,
@@ -376,7 +376,7 @@ namespace MiraiCP {
         std::string toMiraiCode() const override {
             if (internalid == 0) {
                 // 重新上传
-                throw RemoteAssetException("toMiraiCode error: internalid, 错误，重新上传");
+                MiraiCPThrow(RemoteAssetException("toMiraiCode error: internalid, 错误，重新上传"));
             }
             return "[mirai:file:" + id + "," + std::to_string(internalid) + "," + Tools::escapeToMiraiCode(name) + "," +
                    std::to_string(size) + "]";

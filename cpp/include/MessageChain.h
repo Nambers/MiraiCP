@@ -51,34 +51,34 @@ namespace MiraiCP {
                         if (std::is_same_v<T, UnSupportMessage>)
                             return (UnSupportMessage) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 0:
                         if (std::is_same_v<T, PlainText>)
                             return (PlainText) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 1:
                         if (std::is_same_v<T, At>)
                             return (At) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 2:
                         if (std::is_same_v<T, Image>)
                             return (Image) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 3:
                         if (std::is_same_v<T, LightApp>)
                             return (LightApp) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     case 4:
                         if (std::is_same_v<T, ServiceMessage>)
                             return (ServiceMessage) (*tmp);
                         else
-                            throw IllegalArgumentException("转换错误");
+                            MiraiCPThrow(IllegalArgumentException("转换错误"));
                     default: // cannot reach
-                        throw APIException("");
+                        MiraiCPThrow(APIException(""));
                 }
             }
 
@@ -98,7 +98,7 @@ namespace MiraiCP {
                     case 4:
                         return (ServiceMessage) (*tmp);
                     default:
-                        throw APIException("位置MessageChain::get");
+                        MiraiCPThrow(APIException("位置MessageChain::get"));
                 }
             }
         };
@@ -128,7 +128,7 @@ namespace MiraiCP {
         std::vector<Message> content;
 
         MessageSource quoteAndSend0(const std::string &msg, QQID groupid = -1,
-                                    JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+                                    JNIEnv *env = ThreadManager::getEnv()) {
             json obj;
             json sign;
             obj["messageSource"] = this->source->serializeToString();
@@ -141,7 +141,7 @@ namespace MiraiCP {
         }
 
         template<class T>
-        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv()) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
             return this->quoteAndSend0(s.toMiraiCode(), groupid, env);
         }
@@ -293,7 +293,7 @@ namespace MiraiCP {
         /// - MessageChain
         template<class T>
         [[deprecated("use Contact.quoteAndSend")]] MessageSource
-        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv(__FILE__, __LINE__)) {
+        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv()) {
             return this->quoteAndSend1(s, groupid, env);
         }
 

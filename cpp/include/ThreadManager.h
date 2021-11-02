@@ -1,6 +1,6 @@
 #ifndef MIRAICP_PRO_THREADMANAGER_H
 #define MIRAICP_PRO_THREADMANAGER_H
-
+#define MiraiCPThrow(x) throw((x).append(__FILE__, __LINE__))
 #include <jni.h>
 #include <map>
 #include <mutex>
@@ -16,38 +16,11 @@ namespace MiraiCP {
     */
     class ThreadManager {
     public:
-        class StackTracer {
-        private:
-            std::vector<std::string> stackTrace = std::vector<std::string>();
-
-        public:
-            /// print all
-            std::string print() {
-                std::string re = "StackTrace:";
-                for (const auto &a: stackTrace)
-                    re += "\n" + a;
-                return re;
-            }
-
-            /// push stack
-            void push(const std::string &file = __FILE__, int loc = __LINE__, const std::string &func = "",
-                      const std::string &commit = "") {
-                stackTrace.push_back(
-                        func + (!commit.empty() ? "(" + commit + ")" : "") + "[" + file + ":" + std::to_string(loc) +
-                        "]");
-            }
-
-            /// 清空
-            void clear() {
-                stackTrace.clear();
-            }
-        };
 
         /// @brief 每个线程实例.
         struct ThreadInfo {
             JNIEnv *e{};
             bool attach{};
-            StackTracer stack;
         };
         static std::map<std::string, ThreadInfo> threads; /// < 线程池(线程id:env).
         static std::recursive_mutex mtx;                  ///< 线程池读写锁.
@@ -100,7 +73,7 @@ namespace MiraiCP {
         /// @param file 为支持`StackTracer`而增加, 为`__FILE__`宏(文件名), 在调用处传入因为当__FILE__作为默认参数传入时不准确
         /// @param loc 为`__LINE__`宏(行号), 同上
         /// @param func 为`__FUNC__`宏(方法名)
-        static JNIEnv *getEnv(const std::string &file, int loc, const std::string &func = "");
+        static JNIEnv *getEnv();
     };
 } // namespace MiraiCP
 

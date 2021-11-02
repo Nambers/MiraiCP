@@ -18,11 +18,11 @@ namespace MiraiCP {
         j["identify"] = i.dump();
         std::string re = Config::koperation(Config::Announcement, j);
         if (re == "E1")
-            throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)");
+            MiraiCPThrow(IllegalArgumentException("无法根据fid找到群公告(群公告不存在)"));
         if (re == "E2")
-            throw BotException();
+            MiraiCPThrow(BotException());
         if (re == "E3")
-            throw IllegalStateException("群公告状态异常");
+            MiraiCPThrow(IllegalStateException("群公告状态异常"));
     }
 
     json Group::AnnouncementParams::serializeToJson() {
@@ -46,7 +46,7 @@ namespace MiraiCP {
         j["source"] = s.dump();
         std::string re = Config::koperation(Config::Announcement, j);
         if (re == "E1")
-            throw BotException();
+            MiraiCPThrow(BotException());
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
     }
 
@@ -81,7 +81,7 @@ namespace MiraiCP {
         tmp["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::GroupSetting, tmp, env);
         if (re == "E1")
-            throw BotException();
+            MiraiCPThrow(BotException());
         refreshInfo(env);
     }
 
@@ -93,9 +93,9 @@ namespace MiraiCP {
         tmp["source"] = source.dump();
         tmp["contactSource"] = this->serializationToString();
         std::string callback = Config::koperation(Config::SendFile, tmp, env);
-        if (callback == "E2") throw UploadException("找不到" + filepath + "位置:C-uploadfile");
+        if (callback == "E2") MiraiCPThrow(UploadException("找不到" + filepath + "位置:C-uploadfile"));
         if (callback == "E3")
-            throw UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path);
+            MiraiCPThrow(UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path));
         return RemoteFile::deserializeFromString(callback);
     }
 
@@ -108,7 +108,7 @@ namespace MiraiCP {
         j["source"] = tmp.dump();
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
-        if (re == "E2") throw RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id);
+        if (re == "E2") MiraiCPThrow(RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id));
         return RemoteFile::deserializeFromString(re);
     }
 
@@ -119,7 +119,7 @@ namespace MiraiCP {
         j["source"] = tmp.dump();
         j["contactSource"] = this->serializationToString();
         std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
-        if (re == "E1") throw RemoteAssetException("Get error: 文件路径不存在, id:" + id);
+        if (re == "E1") MiraiCPThrow(RemoteAssetException("Get error: 文件路径不存在, id:" + id));
         return RemoteFile::deserializeFromString(re);
     }
 

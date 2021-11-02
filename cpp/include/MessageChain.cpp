@@ -15,7 +15,7 @@ namespace MiraiCP {
                 if (pos - lastPos > 1)
                     mc.add(PlainText(m.substr(lastPos + 1, pos - lastPos - 1))); // plain text
                 size_t back = MessageChain::findEnd(m, pos);
-                if (back == -1) throw IllegalStateException("");
+                if (back == -1) MiraiCPThrow(IllegalStateException(""));
                 std::string tmp = m.substr(pos, back - pos);
                 tmp = Tools::replace(tmp, "[mirai:", "");
                 size_t i = tmp.find(':'); // first :
