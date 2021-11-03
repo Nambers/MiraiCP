@@ -2,17 +2,19 @@ name: C++ CI in windows
 
 on: 
   push:
-    branches: [ master ]
+    branches:
+      - '*' 
     paths:
       - "cpp/**"
   pull_request:
-    branches: [ master ]
+    branches:
+      - '*'
     paths:
       - "cpp/**"
   workflow_dispatch:
 
 jobs:
-  windows-msvc:
+  windows-msvc-single:
     runs-on: windows-latest
     steps:
     - name: checkout  
@@ -20,7 +22,7 @@ jobs:
     - name: configure
       run: mkdir cpp/build && cd cpp/build && cmake ..
     - name: build with msvc
-      run: cd ./cpp && cmake --build build --config Debug --target MiraiCP_Test
+      run: cd ./cpp && cmake --build build --config Debug --target generateSingleHeader && cmake --build build --config Debug --target MiraiCP_single
   windows-mingw:
     runs-on: windows-latest
     steps:
@@ -32,4 +34,4 @@ jobs:
         cxx: g++
       run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" ..
     - name: build with gcc
-      run: cd cpp && cmake --build build --target MiraiCP_Test
+      run: cd ./cpp && cmake --build build --config Debug --target generateSingleHeader && cmake --build build --config Debug --target MiraiCP_single

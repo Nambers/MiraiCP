@@ -142,7 +142,7 @@ namespace MiraiCP {
         std::string queryURL(JNIEnv * = ThreadManager::getEnv());
 
         /// 取图片Mirai码
-        std::string Image::toMiraiCode() const override {
+        std::string toMiraiCode() const override {
             return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
         }
     };
