@@ -1142,7 +1142,9 @@ namespace MiraiCP {
         std::string queryURL(JNIEnv * = ThreadManager::getEnv());
 
         /// 取图片Mirai码
-        std::string toMiraiCode() const override;
+        std::string Image::toMiraiCode() const override {
+            return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
+        }
     };
 
     /*!
@@ -1382,7 +1384,6 @@ namespace MiraiCP {
                    std::to_string(size) + "]";
         }
     };
-
     /// @brief 目前不支持的消息类型
     class UnSupportMessage : public SingleMessage {
     public:
@@ -1695,7 +1696,7 @@ namespace MiraiCP {
         /// 从string构建MessageChain, 常用于Incoming message
         static MessageChain deserializationFromMiraiCode(const std::string &m);
 
-        static MessageChain deserializationFromMessageSourceJson(const json &tmp);
+        static MessageChain deserializationFromMessageSourceJson(const json &j, bool origin = true);
     };
 } // namespace MiraiCP
 
@@ -3019,14 +3020,116 @@ namespace MiraiCP {
     };
 
 
-
-    } // namespace MiraiCP
+} // namespace MiraiCP
 
 #endif //MIRAICP_PRO_CONTACT_H
 #ifndef MIRAICP_PRO_EVENT_H
 #define MIRAICP_PRO_EVENT_H
 
 // #include "Bot.h"
+#ifndef MIRAICP_PRO_BOT_H
+#define MIRAICP_PRO_BOT_H
+
+// #include "Friend.h"
+
+// #include "Group.h"
+
+// #include "ThreadManager.h"
+
+
+namespace MiraiCP {
+    /// 当前bot账号信息
+    class Bot {
+    private:
+        bool inited = false;
+        std::string _nick;
+        std::string _avatarUrl;
+
+        void check() {
+            if (!this->inited) {
+                refreshInfo();
+                this->inited = true;
+            }
+        }
+
+    public:
+        /// 该botid
+        QQID id;
+
+        /*!
+         * @brief 刷新bot信息
+         * @param env
+         */
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) {
+            nlohmann::json j;
+            j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
+            LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));
+            this->_avatarUrl = tmp.avatarUrl;
+            this->_nick = tmp.nickornamecard;
+        }
+
+        /// 用id构建机器人
+        explicit Bot(QQID i) : id(i) {}
+
+        /// 取好友
+        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv()) const {
+            return Friend(i, this->id, env);
+        }
+
+        /// 取群聊
+        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv()) const {
+            return Group(groupid, this->id, env);
+        }
+
+        /// 昵称
+        std::string nick() {
+            check();
+            return this->_nick;
+        }
+
+        /// 头像下载链接
+        std::string avatarUrl() {
+            check();
+            return this->_avatarUrl;
+        }
+
+        /// 取好友列表
+        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv()) {
+            nlohmann::json j;
+            j["botid"] = this->id;
+            std::string temp = Config::koperation(Config::QueryBFL, j, env);
+            return Tools::StringToVector(temp);
+        }
+
+        /// 好友列表string形式返回，利于保存
+        std::string FriendListToString() {
+            return Tools::VectorToString(getFriendList());
+        }
+
+        /// 取群列表
+        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv()) {
+            nlohmann::json j;
+            j["botid"] = this->id;
+            std::string temp = Config::koperation(Config::QueryBGL, j, env);
+            return Tools::StringToVector(temp);
+        }
+
+        /// 群列表string形式返回，利于保存
+        std::string GroupListToString() {
+            return Tools::VectorToString(getGroupList());
+        }
+
+        bool operator==(const Contact &c) const {
+            return this->id == c.id();
+        }
+
+        bool operator==(const Bot &b) const {
+            return this->id == b.id;
+        }
+    };
+} // namespace MiraiCP
+
+#endif //MIRAICP_PRO_BOT_H
 
 // #include "Contact.h"
 
@@ -3922,11 +4025,9 @@ namespace MiraiCP {
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_EXCEPTION_H
-#ifndef MIRAICP_PRO_FORWARD_H
-#define MIRAICP_PRO_FORWARD_H
-
+#ifndef MIRAICP_PRO_FORWARDMESSAGE_H
+#define MIRAICP_PRO_FORWARDMESSAGE_H
 // #include "Contact.h"
-
 
 namespace MiraiCP {
     ///聊天记录里每个消息
@@ -3936,8 +4037,8 @@ namespace MiraiCP {
         QQID id = 0;
         ///发送者昵称
         std::string name;
-        ///发送信息
-        std::string message;
+        ///发送信息, TODO(这里是每个节点里面的信息，其实里面的信息就是MessageChain)
+        MessageChain message;
         ///发送时间
         int time = 0;
 
@@ -3946,20 +4047,20 @@ namespace MiraiCP {
         /// @param name - 发送者昵称
         /// @param message - 发送的信息
         /// @param time - 发送时间，以时间戳记
-        ForwardNode(QQID id, const std::string &name, const std::string &message,
+        ForwardNode(QQID id, const std::string &name, MessageChain message,
                     int time)
-            : id(id), name(name), message(message), time(time) {}
+            : id(id), name(name), message(std::move(message)), time(time) {}
 
         /// @brief 构造聊天记录里每条信息
         /// @param c - 发送者的contact指针
         /// @param message - 发送的信息
         /// @param t - 发送时间，时间戳格式
-        ForwardNode(Contact *c, const std::string &message, int t) : id(c->id()), name(c->nickOrNameCard()),
-                                                                     message(message),
-                                                                     time(t) {}
+        ForwardNode(Contact *c, MessageChain message, int t) : id(c->id()), name(c->nickOrNameCard()),
+                                                               message(std::move(message)),
+                                                               time(t) {}
     };
 
-    ///聊天记录, 由ForwardNode组成
+    ///转发消息, 由ForwardNode组成
     /// @see class ForwardNode
     class ForwardMessage {
     public:
@@ -3984,9 +4085,22 @@ namespace MiraiCP {
         /// 发送给群或好友或群成员
         MessageSource sendTo(Contact *c, JNIEnv * = ThreadManager::getEnv());
     };
-} // namespace MiraiCP
 
-#endif //MIRAICP_PRO_FORWARD_H
+    /// 接收到的转发消息, 发送用 MiraiCP::ForwardMessage
+    class OnlineForwardMessage : public SingleMessage {
+    public:
+        std::vector<ForwardNode> nodelist;
+        ServiceMessage origin;
+        std::string resourceId;
+
+        explicit OnlineForwardMessage(json o, const std::string &rid, std::vector<ForwardNode> nodes) : SingleMessage(-4, ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
+        [[deprecated("use MiraiCP::ForwardMessage to send")]] std::string toMiraiCode() const override {
+            return "";
+        }
+        static OnlineForwardMessage deserializationFromMessageSourceJson(json j);
+    };
+} // namespace MiraiCP
+#endif //MIRAICP_PRO_FORWARDMESSAGE_H
 #ifndef MIRAICP_PRO_FRIEND_H
 #define MIRAICP_PRO_FRIEND_H
 
@@ -4962,7 +5076,7 @@ namespace MiraiCP {
         /// 从string构建MessageChain, 常用于Incoming message
         static MessageChain deserializationFromMiraiCode(const std::string &m);
 
-        static MessageChain deserializationFromMessageSourceJson(const json &tmp);
+        static MessageChain deserializationFromMessageSourceJson(const json &j, bool origin = true);
     };
 } // namespace MiraiCP
 
@@ -5339,7 +5453,9 @@ namespace MiraiCP {
         std::string queryURL(JNIEnv * = ThreadManager::getEnv());
 
         /// 取图片Mirai码
-        std::string toMiraiCode() const override;
+        std::string Image::toMiraiCode() const override {
+            return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
+        }
     };
 
     /*!
@@ -5579,7 +5695,6 @@ namespace MiraiCP {
                    std::to_string(size) + "]";
         }
     };
-
     /// @brief 目前不支持的消息类型
     class UnSupportMessage : public SingleMessage {
     public:
@@ -5729,7 +5844,7 @@ namespace MiraiCP {
         /// @param a vector
         /// @return string
         template<typename T>
-        static std::string VectorToString(std::vector<T> a, const std::string &separator = ","){
+        static std::string VectorToString(std::vector<T> a, const std::string &separator = ",") {
             std::stringstream ss;
             for (size_t i = 0; i < a.size(); ++i) {
                 if (i != 0)
@@ -5775,6 +5890,34 @@ namespace MiraiCP {
 #define MIRAICP_PRO_UTILS_H
 
 // #include "CPPPlugin.h"
+#ifndef MIRAICP_PRO_CPPPLUGIN_H
+#define MIRAICP_PRO_CPPPLUGIN_H
+
+// #include "Logger.h"
+
+// #include "PluginConfig.h"
+
+namespace MiraiCP {
+    /// 插件父类
+    class CPPPlugin {
+    public:
+        /// @brief 插件信息
+        PluginConfig config;
+        /// @brief 插件级logger
+        static PluginLogger *pluginLogger;
+
+        static CPPPlugin *plugin;
+
+        virtual void onEnable() {}
+
+        virtual void onDisable() {}
+
+        explicit CPPPlugin(PluginConfig c) : config(std::move(c)) {}
+    };
+
+} // namespace MiraiCP
+
+#endif //MIRAICP_PRO_CPPPLUGIN_H
 
 // #include "Config.h"
 

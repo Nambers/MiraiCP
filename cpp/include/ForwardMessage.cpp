@@ -1,4 +1,4 @@
-#include "Forward.h"
+#include "ForwardMessage.h"
 
 namespace MiraiCP {
     //发送这个聊天记录
@@ -26,11 +26,17 @@ namespace MiraiCP {
             json temp;
             temp["id"] = node.id;
             temp["time"] = node.time;
-            temp["message"] = node.message;
+            temp["message"] = node.message.toMiraiCode();
             temp["name"] = node.name;
             value.push_back(temp);
         }
         root["value"] = value;
         sendmsg = root;
+    }
+    OnlineForwardMessage OnlineForwardMessage::deserializationFromMessageSourceJson(json j) {
+        std::vector<ForwardNode> nodes;
+        for (json a: j[1]["nodelist"])
+            nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(a["messageChain"], false), a["time"]);
+        return OnlineForwardMessage(j[0]["origin"], j[0]["resourceId"], nodes);
     }
 } // namespace MiraiCP

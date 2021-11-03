@@ -300,7 +300,7 @@ namespace MiraiCP {
         /// 从string构建MessageChain, 常用于Incoming message
         static MessageChain deserializationFromMiraiCode(const std::string &m);
 
-        static MessageChain deserializationFromMessageSourceJson(const json &tmp);
+        static MessageChain deserializationFromMessageSourceJson(const json &j, bool origin = true);
     };
 } // namespace MiraiCP
 

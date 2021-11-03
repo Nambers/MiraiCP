@@ -1,8 +1,6 @@
-#ifndef MIRAICP_PRO_FORWARD_H
-#define MIRAICP_PRO_FORWARD_H
-
+#ifndef MIRAICP_PRO_FORWARDMESSAGE_H
+#define MIRAICP_PRO_FORWARDMESSAGE_H
 #include "Contact.h"
-
 namespace MiraiCP {
     ///聊天记录里每个消息
     class ForwardNode {
@@ -11,8 +9,8 @@ namespace MiraiCP {
         QQID id = 0;
         ///发送者昵称
         std::string name;
-        ///发送信息
-        std::string message;
+        ///发送信息, TODO(这里是每个节点里面的信息，其实里面的信息就是MessageChain)
+        MessageChain message;
         ///发送时间
         int time = 0;
 
@@ -21,20 +19,20 @@ namespace MiraiCP {
         /// @param name - 发送者昵称
         /// @param message - 发送的信息
         /// @param time - 发送时间，以时间戳记
-        ForwardNode(QQID id, const std::string &name, const std::string &message,
+        ForwardNode(QQID id, const std::string &name, MessageChain message,
                     int time)
-            : id(id), name(name), message(message), time(time) {}
+            : id(id), name(name), message(std::move(message)), time(time) {}
 
         /// @brief 构造聊天记录里每条信息
         /// @param c - 发送者的contact指针
         /// @param message - 发送的信息
         /// @param t - 发送时间，时间戳格式
-        ForwardNode(Contact *c, const std::string &message, int t) : id(c->id()), name(c->nickOrNameCard()),
-                                                                     message(message),
-                                                                     time(t) {}
+        ForwardNode(Contact *c, MessageChain message, int t) : id(c->id()), name(c->nickOrNameCard()),
+                                                               message(std::move(message)),
+                                                               time(t) {}
     };
 
-    ///聊天记录, 由ForwardNode组成
+    ///转发消息, 由ForwardNode组成
     /// @see class ForwardNode
     class ForwardMessage {
     public:
@@ -59,6 +57,19 @@ namespace MiraiCP {
         /// 发送给群或好友或群成员
         MessageSource sendTo(Contact *c, JNIEnv * = ThreadManager::getEnv());
     };
-} // namespace MiraiCP
 
-#endif //MIRAICP_PRO_FORWARD_H
+    /// 接收到的转发消息, 发送用 MiraiCP::ForwardMessage
+    class OnlineForwardMessage : public SingleMessage {
+    public:
+        std::vector<ForwardNode> nodelist;
+        ServiceMessage origin;
+        std::string resourceId;
+
+        explicit OnlineForwardMessage(json o, const std::string &rid, std::vector<ForwardNode> nodes) : SingleMessage(-4, ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
+        [[deprecated("use MiraiCP::ForwardMessage to send")]] std::string toMiraiCode() const override {
+            return "";
+        }
+        static OnlineForwardMessage deserializationFromMessageSourceJson(json j);
+    };
+} // namespace MiraiCP
+#endif //MIRAICP_PRO_FORWARDMESSAGE_H
