@@ -58,8 +58,10 @@ namespace MiraiCP {
         return mc;
     }
 
-    MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp) {
-        json j = tmp["originalMessage"];
+    MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp, bool origin) {
+        json j = tmp;
+        if (origin)
+            j = tmp["originalMessage"];
         MessageChain mc;
         for (auto node: j) {
             if (node["type"] == "SimpleServiceMessage") {
@@ -79,8 +81,12 @@ namespace MiraiCP {
                 mc.add(Group(tmp["targetId"], tmp["botId"]).getFileById(node["id"]).plus(node["internalId"]));
                 continue;
             }
-            int type = SingleMessage::getKey(node["type"]);
-            switch (type) {
+            if (node["type"] == "MessageOrigin") {
+                // TODO(如果要做成这样子OnlineForwardMessage要继承SingleMessage)
+                //mc.add(OnlineForwardMessage::deserializationFromMessageSourceJson(j));
+                break;
+            }
+            switch (SingleMessage::getKey(node["type"])) {
                 case -2:
                     mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
                     break;

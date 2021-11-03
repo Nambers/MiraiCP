@@ -142,7 +142,9 @@ namespace MiraiCP {
         std::string queryURL(JNIEnv * = ThreadManager::getEnv());
 
         /// 取图片Mirai码
-        std::string toMiraiCode() const override;
+        std::string Image::toMiraiCode() const override {
+            return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
+        }
     };
 
     /*!
@@ -382,7 +384,6 @@ namespace MiraiCP {
                    std::to_string(size) + "]";
         }
     };
-
     /// @brief 目前不支持的消息类型
     class UnSupportMessage : public SingleMessage {
     public:

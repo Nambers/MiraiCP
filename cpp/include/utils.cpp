@@ -70,14 +70,14 @@ Event(JNIEnv *env, jobject, jstring content) {
         return returnNull();
     }
     try {
-        switch ((int) j["type"]) {
+        switch (j["type"].get<int>()) {
             case 1: {
                 //GroupMessage
                 Event::processor.broadcast<GroupMessageEvent>(
                         GroupMessageEvent(j["group"]["botid"],
                                           Group(Group::deserializationFromJson(j["group"])),
                                           Member(Member::deserializationFromJson(j["member"])),
-                                          MessageChain::deserializationFromMiraiCode(j["message"].get<std::string>())
+                                          MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>())["originalMessage"])
                                                   .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             }
@@ -86,7 +86,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
                                             Friend(Friend::deserializationFromJson(j["friend"])),
-                                            MessageChain::deserializationFromMiraiCode(j["message"])
+                                            MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>())["originalMessage"])
                                                     .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             }
@@ -154,7 +154,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                         j["group"]["botid"],
                         Group(Group::deserializationFromJson(j["group"])),
                         Member(Member::deserializationFromJson(j["member"])),
-                        MessageChain::deserializationFromMiraiCode(j["message"])
+                        MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>())["originalMessage"])
                                 .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             case 11:

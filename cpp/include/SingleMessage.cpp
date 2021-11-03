@@ -5,6 +5,7 @@
 namespace MiraiCP {
     // 静态成员
     std::map<int, std::string> SingleMessage::messageType = {
+            {-4, "OnlineForwardMessage"},
             {-3, "OnlineAudio"},
             {-2, "QuoteReply"},
             {-1, "unSupportMessage"},
@@ -76,9 +77,5 @@ namespace MiraiCP {
         if (re == "E1")
             MiraiCPThrow(RemoteAssetException("图片id格式错误"));
         return re;
-    }
-
-    std::string Image::toMiraiCode() const {
-        return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
     }
 } // namespace MiraiCP

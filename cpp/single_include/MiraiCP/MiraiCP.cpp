@@ -157,7 +157,6 @@ namespace MiraiCP {
 //from Exception.cpp
 
 
-
 namespace MiraiCP {
     class Event;
 
@@ -167,7 +166,7 @@ namespace MiraiCP {
     // 在 MiraiCPException 被构造之后执行，实现于析构函数
 
 } // namespace MiraiCP
-//from Forward.cpp
+//from ForwardMessage.cpp
 
 
 namespace MiraiCP {
@@ -196,12 +195,18 @@ namespace MiraiCP {
             json temp;
             temp["id"] = node.id;
             temp["time"] = node.time;
-            temp["message"] = node.message;
+            temp["message"] = node.message.toMiraiCode();
             temp["name"] = node.name;
             value.push_back(temp);
         }
         root["value"] = value;
         sendmsg = root;
+    }
+    OnlineForwardMessage OnlineForwardMessage::deserializationFromMessageSourceJson(json j) {
+        std::vector<ForwardNode> nodes;
+        for (json a: j[1]["nodelist"])
+            nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(a["messageChain"], false), a["time"]);
+        return OnlineForwardMessage(j[0]["origin"], j[0]["resourceId"], nodes);
     }
 } // namespace MiraiCP
 //from Friend.cpp
@@ -488,7 +493,6 @@ namespace MiraiCP {
 //from MessageChain.cpp
 
 
-
 namespace MiraiCP {
     //message chain
     MessageChain MessageChain::deserializationFromMiraiCode(const std::string &m) {
@@ -546,8 +550,10 @@ namespace MiraiCP {
         return mc;
     }
 
-    MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp) {
-        json j = tmp["originalMessage"];
+    MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp, bool origin) {
+        json j = tmp;
+        if (origin)
+            j = tmp["originalMessage"];
         MessageChain mc;
         for (auto node: j) {
             if (node["type"] == "SimpleServiceMessage") {
@@ -567,8 +573,12 @@ namespace MiraiCP {
                 mc.add(Group(tmp["targetId"], tmp["botId"]).getFileById(node["id"]).plus(node["internalId"]));
                 continue;
             }
-            int type = SingleMessage::getKey(node["type"]);
-            switch (type) {
+            if (node["type"] == "MessageOrigin") {
+                // TODO(如果要做成这样子OnlineForwardMessage要继承SingleMessage)
+                //mc.add(OnlineForwardMessage::deserializationFromMessageSourceJson(j));
+                break;
+            }
+            switch (SingleMessage::getKey(node["type"])) {
                 case -2:
                     mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
                     break;
@@ -702,6 +712,7 @@ namespace MiraiCP {
 namespace MiraiCP {
     // 静态成员
     std::map<int, std::string> SingleMessage::messageType = {
+            {-4, "OnlineForwardMessage"},
             {-3, "OnlineAudio"},
             {-2, "QuoteReply"},
             {-1, "unSupportMessage"},
@@ -774,13 +785,7 @@ namespace MiraiCP {
             MiraiCPThrow(RemoteAssetException("图片id格式错误"));
         return re;
     }
-
-    std::string Image::toMiraiCode() const {
-        return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
-    }
 } // namespace MiraiCP
-//from ThreadManager.cpp
-
 
 
 namespace MiraiCP {
@@ -997,14 +1002,14 @@ Event(JNIEnv *env, jobject, jstring content) {
         return returnNull();
     }
     try {
-        switch ((int) j["type"]) {
+        switch (j["type"].get<int>()) {
             case 1: {
                 //GroupMessage
                 Event::processor.broadcast<GroupMessageEvent>(
                         GroupMessageEvent(j["group"]["botid"],
                                           Group(Group::deserializationFromJson(j["group"])),
                                           Member(Member::deserializationFromJson(j["member"])),
-                                          MessageChain::deserializationFromMiraiCode(j["message"].get<std::string>())
+                                          MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>())["originalMessage"])
                                                   .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             }
@@ -1013,7 +1018,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
                                             Friend(Friend::deserializationFromJson(j["friend"])),
-                                            MessageChain::deserializationFromMiraiCode(j["message"])
+                                            MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>())["originalMessage"])
                                                     .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             }
@@ -1081,7 +1086,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                         j["group"]["botid"],
                         Group(Group::deserializationFromJson(j["group"])),
                         Member(Member::deserializationFromJson(j["member"])),
-                        MessageChain::deserializationFromMiraiCode(j["message"])
+                        MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>())["originalMessage"])
                                 .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             case 11:
