@@ -61,8 +61,8 @@ target_sources(MiraiCP_single PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/single_include
 add_custom_target(
         generateSingleHeader
         COMMAND python buildScript/addinclude.py
-        COMMAND python include/third-party/config.py
-        COMMAND python include/third-party/amalgamate.py -c include/third-party/config.json -p include/third-party/prologue -s . --verbose=yes
+        COMMAND python buildScript/third-party/config.py
+        COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
         COMMAND python buildScript/combineSource.py
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )

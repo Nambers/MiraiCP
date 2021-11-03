@@ -1,9 +1,7 @@
 #ifndef MIRAICP_PRO_EXCEPTION_H
 #define MIRAICP_PRO_EXCEPTION_H
 
-#include "ExceptionBroadcasting.h"
 #include "Logger.h"
-#include <exception>
 #include <string>
 
 namespace MiraiCP {
@@ -18,12 +16,23 @@ namespace MiraiCP {
         int lineNum = 0;
         std::string filename = "";
 
+        //构造时传入类型字符串
+        explicit MiraiCPException(const std::string &&type) : exceptionType(type) {}
+
+        /// @brief 异常事件广播
+        class ExceptionBroadcasting {
+        public:
+            MiraiCPException *e;
+            explicit ExceptionBroadcasting(MiraiCPException *ex) : e(ex) {}
+            ~ExceptionBroadcasting();
+        };
+
         MiraiCPException append(const std::string &name, int line) {
             lineNum = line;
             filename = name;
+            ExceptionBroadcasting(this);
             return *this;
         }
-        explicit MiraiCPException(const std::string &&type) : exceptionType(type) { ExceptionBroadcasting(this); }
 
         /// 获取异常类型
         std::string getExceptionType() { return exceptionType; }

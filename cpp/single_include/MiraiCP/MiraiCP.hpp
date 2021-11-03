@@ -16,6 +16,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef MIRAICP_PRO_BOT_H
 #define MIRAICP_PRO_BOT_H
 
@@ -502,25 +503,6 @@ namespace MiraiCP {
 #ifndef MIRAICP_PRO_EXCEPTION_H
 #define MIRAICP_PRO_EXCEPTION_H
 
-// #include "ExceptionBroadcasting.h"
-#ifndef MIRAICP_PRO_EXCEPTIONBROADCASTING_H
-#define MIRAICP_PRO_EXCEPTIONBROADCASTING_H
-
-namespace MiraiCP {
-    // 仅声明
-    class MiraiCPException;
-
-    /// @brief 异常事件广播
-    class ExceptionBroadcasting {
-    public:
-        MiraiCPException *e;
-        ExceptionBroadcasting(MiraiCPException *ex);
-        ~ExceptionBroadcasting();
-    };
-} // namespace MiraiCP
-
-#endif //MIRAICP_PRO_EXCEPTIONBROADCASTING_H
-
 // #include "Logger.h"
 #ifndef MIRAICP_PRO_LOGGER_H
 #define MIRAICP_PRO_LOGGER_H
@@ -672,7 +654,6 @@ namespace MiraiCP {
 
 #endif //MIRAICP_PRO_LOGGER_H
 
-#include <exception>
 #include <string>
 
 namespace MiraiCP {
@@ -687,12 +668,23 @@ namespace MiraiCP {
         int lineNum = 0;
         std::string filename = "";
 
+        //构造时传入类型字符串
+        explicit MiraiCPException(const std::string &&type) : exceptionType(type) {}
+
+        /// @brief 异常事件广播
+        class ExceptionBroadcasting {
+        public:
+            MiraiCPException *e;
+            explicit ExceptionBroadcasting(MiraiCPException *ex) : e(ex) {}
+            ~ExceptionBroadcasting();
+        };
+
         MiraiCPException append(const std::string &name, int line) {
             lineNum = line;
             filename = name;
+            ExceptionBroadcasting(this);
             return *this;
         }
-        explicit MiraiCPException(const std::string &&type) : exceptionType(type) { ExceptionBroadcasting(this); }
 
         /// 获取异常类型
         std::string getExceptionType() { return exceptionType; }
@@ -3027,116 +3019,14 @@ namespace MiraiCP {
     };
 
 
-} // namespace MiraiCP
+
+    } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_CONTACT_H
 #ifndef MIRAICP_PRO_EVENT_H
 #define MIRAICP_PRO_EVENT_H
 
 // #include "Bot.h"
-#ifndef MIRAICP_PRO_BOT_H
-#define MIRAICP_PRO_BOT_H
-
-// #include "Friend.h"
-
-// #include "Group.h"
-
-// #include "ThreadManager.h"
-
-
-namespace MiraiCP {
-    /// 当前bot账号信息
-    class Bot {
-    private:
-        bool inited = false;
-        std::string _nick;
-        std::string _avatarUrl;
-
-        void check() {
-            if (!this->inited) {
-                refreshInfo();
-                this->inited = true;
-            }
-        }
-
-    public:
-        /// 该botid
-        QQID id;
-
-        /*!
-         * @brief 刷新bot信息
-         * @param env
-         */
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
-            LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));
-            this->_avatarUrl = tmp.avatarUrl;
-            this->_nick = tmp.nickornamecard;
-        }
-
-        /// 用id构建机器人
-        explicit Bot(QQID i) : id(i) {}
-
-        /// 取好友
-        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv()) const {
-            return Friend(i, this->id, env);
-        }
-
-        /// 取群聊
-        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv()) const {
-            return Group(groupid, this->id, env);
-        }
-
-        /// 昵称
-        std::string nick() {
-            check();
-            return this->_nick;
-        }
-
-        /// 头像下载链接
-        std::string avatarUrl() {
-            check();
-            return this->_avatarUrl;
-        }
-
-        /// 取好友列表
-        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["botid"] = this->id;
-            std::string temp = Config::koperation(Config::QueryBFL, j, env);
-            return Tools::StringToVector(temp);
-        }
-
-        /// 好友列表string形式返回，利于保存
-        std::string FriendListToString() {
-            return Tools::VectorToString(getFriendList());
-        }
-
-        /// 取群列表
-        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["botid"] = this->id;
-            std::string temp = Config::koperation(Config::QueryBGL, j, env);
-            return Tools::StringToVector(temp);
-        }
-
-        /// 群列表string形式返回，利于保存
-        std::string GroupListToString() {
-            return Tools::VectorToString(getGroupList());
-        }
-
-        bool operator==(const Contact &c) const {
-            return this->id == c.id();
-        }
-
-        bool operator==(const Bot &b) const {
-            return this->id == b.id;
-        }
-    };
-} // namespace MiraiCP
-
-#endif //MIRAICP_PRO_BOT_H
 
 // #include "Contact.h"
 
@@ -3684,11 +3574,8 @@ namespace MiraiCP {
 #ifndef MIRAICP_PRO_EXCEPTION_H
 #define MIRAICP_PRO_EXCEPTION_H
 
-// #include "ExceptionBroadcasting.h"
-
 // #include "Logger.h"
 
-#include <exception>
 #include <string>
 
 namespace MiraiCP {
@@ -3703,12 +3590,23 @@ namespace MiraiCP {
         int lineNum = 0;
         std::string filename = "";
 
+        //构造时传入类型字符串
+        explicit MiraiCPException(const std::string &&type) : exceptionType(type) {}
+
+        /// @brief 异常事件广播
+        class ExceptionBroadcasting {
+        public:
+            MiraiCPException *e;
+            explicit ExceptionBroadcasting(MiraiCPException *ex) : e(ex) {}
+            ~ExceptionBroadcasting();
+        };
+
         MiraiCPException append(const std::string &name, int line) {
             lineNum = line;
             filename = name;
+            ExceptionBroadcasting(this);
             return *this;
         }
-        explicit MiraiCPException(const std::string &&type) : exceptionType(type) { ExceptionBroadcasting(this); }
 
         /// 获取异常类型
         std::string getExceptionType() { return exceptionType; }
@@ -4024,23 +3922,6 @@ namespace MiraiCP {
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_EXCEPTION_H
-#ifndef MIRAICP_PRO_EXCEPTIONBROADCASTING_H
-#define MIRAICP_PRO_EXCEPTIONBROADCASTING_H
-
-namespace MiraiCP {
-    // 仅声明
-    class MiraiCPException;
-
-    /// @brief 异常事件广播
-    class ExceptionBroadcasting {
-    public:
-        MiraiCPException *e;
-        ExceptionBroadcasting(MiraiCPException *ex);
-        ~ExceptionBroadcasting();
-    };
-} // namespace MiraiCP
-
-#endif //MIRAICP_PRO_EXCEPTIONBROADCASTING_H
 #ifndef MIRAICP_PRO_FORWARD_H
 #define MIRAICP_PRO_FORWARD_H
 
@@ -5733,6 +5614,7 @@ namespace MiraiCP {
     */
     class ThreadManager {
     public:
+
         /// @brief 每个线程实例.
         struct ThreadInfo {
             JNIEnv *e{};
@@ -5847,7 +5729,7 @@ namespace MiraiCP {
         /// @param a vector
         /// @return string
         template<typename T>
-        static std::string VectorToString(std::vector<T> a, const std::string &separator = ",") {
+        static std::string VectorToString(std::vector<T> a, const std::string &separator = ","){
             std::stringstream ss;
             for (size_t i = 0; i < a.size(); ++i) {
                 if (i != 0)
@@ -5893,34 +5775,6 @@ namespace MiraiCP {
 #define MIRAICP_PRO_UTILS_H
 
 // #include "CPPPlugin.h"
-#ifndef MIRAICP_PRO_CPPPLUGIN_H
-#define MIRAICP_PRO_CPPPLUGIN_H
-
-// #include "Logger.h"
-
-// #include "PluginConfig.h"
-
-namespace MiraiCP {
-    /// 插件父类
-    class CPPPlugin {
-    public:
-        /// @brief 插件信息
-        PluginConfig config;
-        /// @brief 插件级logger
-        static PluginLogger *pluginLogger;
-
-        static CPPPlugin *plugin;
-
-        virtual void onEnable() {}
-
-        virtual void onDisable() {}
-
-        explicit CPPPlugin(PluginConfig c) : config(std::move(c)) {}
-    };
-
-} // namespace MiraiCP
-
-#endif //MIRAICP_PRO_CPPPLUGIN_H
 
 // #include "Config.h"
 
