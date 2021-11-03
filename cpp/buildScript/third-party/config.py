@@ -24,10 +24,10 @@ for filename in fnames:
     if filename == 'miraiCP.cpp':
         continue
     if filename.endswith('.h'):
-        d['sources'].append("include/"+filename)
-        msg += filename+"\n"
+        d['sources'].append("include/" + filename)
+        msg += filename + "\n"
 
-with open('include/third-party/config.json', 'w', encoding='utf-8') as f:
+with open('buildScript/third-party/config.json', 'w', encoding='utf-8') as f:
     json.dump(d, f, ensure_ascii=False, indent=4)
 
 print(msg)
