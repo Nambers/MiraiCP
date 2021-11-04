@@ -1,8 +1,8 @@
-#include "ForwardMessage.h"
+#include "ForwardedMessage.h"
 
 namespace MiraiCP {
     //发送这个聊天记录
-    MessageSource ForwardMessage::sendTo(Contact *c, JNIEnv *env) {
+    MessageSource ForwardedMessage::sendTo(Contact *c, JNIEnv *env) {
         json temp;
         json text;
         text["id"] = c->id();
@@ -16,13 +16,13 @@ namespace MiraiCP {
         return MessageSource::deserializeFromString(re);
     }
 
-    ForwardMessage::ForwardMessage(Contact *c, std::initializer_list<ForwardNode> nodes) {
+    ForwardedMessage::ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes) {
         json root;
         json value;
         root["type"] = c->type();
         root["id"] = c->id();
         root["id2"] = c->groupid();
-        for (const ForwardNode &node: nodes) {
+        for (const ForwardedNode &node: nodes) {
             json temp;
             temp["id"] = node.id;
             temp["time"] = node.time;
@@ -33,10 +33,10 @@ namespace MiraiCP {
         root["value"] = value;
         sendmsg = root;
     }
-    OnlineForwardMessage OnlineForwardMessage::deserializationFromMessageSourceJson(json j) {
-        std::vector<ForwardNode> nodes;
-        for (json a: j[1]["nodelist"])
+    OnlineForwardedMessage OnlineForwardedMessage::deserializationFromMessageSourceJson(json j) {
+        std::vector<ForwardedNode> nodes;
+        for (json a: j[1]["nodeList"])
             nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(a["messageChain"], false), a["time"]);
-        return OnlineForwardMessage(j[0]["origin"], j[0]["resourceId"], nodes);
+        return OnlineForwardedMessage(j[0]["origin"], j[0]["resourceId"], nodes);
     }
 } // namespace MiraiCP

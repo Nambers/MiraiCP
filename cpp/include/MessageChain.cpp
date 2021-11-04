@@ -1,4 +1,4 @@
-#include "MessageChain.h"
+#include "ForwardedMessage.h"
 #include "Group.h"
 
 namespace MiraiCP {
@@ -60,9 +60,14 @@ namespace MiraiCP {
 
     MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp, bool origin) {
         json j = tmp;
+        MessageChain mc;
+        if (j.is_array() && j[0]["type"] == "MessageOrigin") {
+            mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(j));
+            return mc;
+        }
+        Logger::logger.info(tmp);
         if (origin)
             j = tmp["originalMessage"];
-        MessageChain mc;
         for (auto node: j) {
             if (node["type"] == "SimpleServiceMessage") {
                 mc.add(ServiceMessage(node["serviceId"], node["content"]));
@@ -80,11 +85,6 @@ namespace MiraiCP {
             if (node["type"] == "FileMessage") {
                 mc.add(Group(tmp["targetId"], tmp["botId"]).getFileById(node["id"]).plus(node["internalId"]));
                 continue;
-            }
-            if (node["type"] == "MessageOrigin") {
-                // TODO(如果要做成这样子OnlineForwardMessage要继承SingleMessage)
-                //mc.add(OnlineForwardMessage::deserializationFromMessageSourceJson(j));
-                break;
             }
             switch (SingleMessage::getKey(node["type"])) {
                 case -2:

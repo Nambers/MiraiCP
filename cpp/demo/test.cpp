@@ -84,8 +84,9 @@ public:
             Logger::logger.info(e.message.source->source);
             Logger::logger.info(e.message.toMiraiCode());
             e.message.quoteAndSendMessage("xxx" + e.message.toMiraiCode());
-            MessageChain mc = MessageChain::deserializationFromMessageSourceJson(json::parse(e.message.source->source));
-            e.group.sendMessage(mc);
+            e.group.sendMessage(e.message.toMiraiCode());
+            //MessageChain mc = MessageChain::deserializationFromMessageSourceJson(json::parse(e.message.source->source));
+            //e.group.sendMessage(mc);
             // e.group.sendMsg("x");
             // e.group.sendMsg(tmp.toMiraiCode());
             // SYSTEMTIME st = { 0 };
@@ -151,10 +152,10 @@ public:
             // e.group.sendMiraiCode(new LightApp(LightAppStyle4()));
             // schedule(10000, "aaa");
             // e.group.sendMsg("转发测试:");
-            // ForwardMessage(&e.group,
+            // ForwardedMessage(&e.group,
             //                {
-            //     ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-            //     ForwardNode(1930893235, "Eritque arcus", "hahaha", -100)
+            //     ForwardedNode(1930893235, "Eritque arcus", "hahaha", 1),
+            //     ForwardedNode(1930893235, "Eritque arcus", "hahaha", -100)
             //                }).sendTo(&e.group);
             // e.group.sendMsg("bot属性");
             // e.sender.sendMsg(e.bot.nick());

@@ -78,7 +78,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                                           Group(Group::deserializationFromJson(j["group"])),
                                           Member(Member::deserializationFromJson(j["member"])),
                                           MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>())["originalMessage"])
-                                                  .plus(MessageSource::deserializeFromString(j["source"]))));
+                                                  .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
                 break;
             }
             case 2: {
@@ -87,7 +87,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                         PrivateMessageEvent(j["friend"]["botid"],
                                             Friend(Friend::deserializationFromJson(j["friend"])),
                                             MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>())["originalMessage"])
-                                                    .plus(MessageSource::deserializeFromString(j["source"]))));
+                                                    .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
                 break;
             }
             case 3:

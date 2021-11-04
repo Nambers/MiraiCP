@@ -7,7 +7,7 @@
 #include "Contact.h"
 #include "Event.h"
 #include "Exception.h"
-#include "ForwardMessage.h"
+#include "ForwardedMessage.h"
 #include "Friend.h"
 #include "Group.h"
 #include "Logger.h"

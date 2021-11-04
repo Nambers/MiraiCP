@@ -666,7 +666,7 @@ namespace MiraiCP {
 
     public:
         int lineNum = 0;
-        std::string filename = "";
+        std::string filename;
 
         //构造时传入类型字符串
         explicit MiraiCPException(const std::string &&type) : exceptionType(type) {}
@@ -700,7 +700,7 @@ namespace MiraiCP {
         /// 实际抛出方法
         void raise() {
             basicRaise();
-            if (filename != "" && lineNum != 0)
+            if (!filename.empty() && lineNum != 0)
                 Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
         }
     };
@@ -1142,7 +1142,7 @@ namespace MiraiCP {
         std::string queryURL(JNIEnv * = ThreadManager::getEnv());
 
         /// 取图片Mirai码
-        std::string Image::toMiraiCode() const override {
+        std::string toMiraiCode() const override {
             return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
         }
     };
@@ -3691,7 +3691,7 @@ namespace MiraiCP {
 
     public:
         int lineNum = 0;
-        std::string filename = "";
+        std::string filename;
 
         //构造时传入类型字符串
         explicit MiraiCPException(const std::string &&type) : exceptionType(type) {}
@@ -3725,7 +3725,7 @@ namespace MiraiCP {
         /// 实际抛出方法
         void raise() {
             basicRaise();
-            if (filename != "" && lineNum != 0)
+            if (!filename.empty() && lineNum != 0)
                 Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
         }
     };
@@ -4025,13 +4025,13 @@ namespace MiraiCP {
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_EXCEPTION_H
-#ifndef MIRAICP_PRO_FORWARDMESSAGE_H
-#define MIRAICP_PRO_FORWARDMESSAGE_H
+#ifndef MIRAICP_PRO_FORWARDEDMESSAGE_H
+#define MIRAICP_PRO_FORWARDEDMESSAGE_H
 // #include "Contact.h"
 
 namespace MiraiCP {
     ///聊天记录里每个消息
-    class ForwardNode {
+    class ForwardedNode {
     public:
         ///发送者id
         QQID id = 0;
@@ -4047,22 +4047,22 @@ namespace MiraiCP {
         /// @param name - 发送者昵称
         /// @param message - 发送的信息
         /// @param time - 发送时间，以时间戳记
-        ForwardNode(QQID id, const std::string &name, MessageChain message,
-                    int time)
+        ForwardedNode(QQID id, const std::string &name, MessageChain message,
+                      int time)
             : id(id), name(name), message(std::move(message)), time(time) {}
 
         /// @brief 构造聊天记录里每条信息
         /// @param c - 发送者的contact指针
         /// @param message - 发送的信息
         /// @param t - 发送时间，时间戳格式
-        ForwardNode(Contact *c, MessageChain message, int t) : id(c->id()), name(c->nickOrNameCard()),
-                                                               message(std::move(message)),
-                                                               time(t) {}
+        ForwardedNode(Contact *c, MessageChain message, int t) : id(c->id()), name(c->nickOrNameCard()),
+                                                                 message(std::move(message)),
+                                                                 time(t) {}
     };
 
     ///转发消息, 由ForwardNode组成
-    /// @see class ForwardNode
-    class ForwardMessage {
+    /// @see class ForwardedNode
+    class ForwardedMessage {
     public:
         /// json节点
         nlohmann::json sendmsg;
@@ -4073,34 +4073,40 @@ namespace MiraiCP {
         * 然后是每条信息
         *@example 构建聊天记录
          * @code
-        *ForwardMessage(&e.group,
+        *ForwardedMessage(&e.group,
         *{
-        *	ForwardNode(1930893235, "Eritque arcus", "hahaha", 1),
-        *	ForwardNode(1930893235, "Eritque arcus", "hahaha", -1)
+        *	ForwardedNode(1930893235, "Eritque arcus", "hahaha", 1),
+        *	ForwardedNode(1930893235, "Eritque arcus", "hahaha", -1)
         *}).sendTo(&e.group);
         * @endcode
         */
-        ForwardMessage(Contact *c, std::initializer_list<ForwardNode> nodes);
+        ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes);
 
         /// 发送给群或好友或群成员
         MessageSource sendTo(Contact *c, JNIEnv * = ThreadManager::getEnv());
     };
 
-    /// 接收到的转发消息, 发送用 MiraiCP::ForwardMessage
-    class OnlineForwardMessage : public SingleMessage {
+    /// 接收到的转发消息, 发送用 MiraiCP::ForwardedMessage
+    class OnlineForwardedMessage : public SingleMessage {
     public:
-        std::vector<ForwardNode> nodelist;
+        /// 里面每条信息
+        std::vector<ForwardedNode> nodelist;
+        /// 用展示出来ServiceMessage
         ServiceMessage origin;
         std::string resourceId;
 
-        explicit OnlineForwardMessage(json o, const std::string &rid, std::vector<ForwardNode> nodes) : SingleMessage(-4, ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
-        [[deprecated("use MiraiCP::ForwardMessage to send")]] std::string toMiraiCode() const override {
-            return "";
+        explicit OnlineForwardedMessage(json o, const std::string &rid, std::vector<ForwardedNode> nodes) : SingleMessage(-4, ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
+        /// 不支持直接发送OnlineForwardMessage
+        [[deprecated("use MiraiCP::ForwardedMessage to send")]] std::string toMiraiCode() const override {
+            std::string re;
+            for (const auto &a: nodelist)
+                re += a.message.toMiraiCode() + "\n";
+            return re;
         }
-        static OnlineForwardMessage deserializationFromMessageSourceJson(json j);
+        static OnlineForwardedMessage deserializationFromMessageSourceJson(json j);
     };
 } // namespace MiraiCP
-#endif //MIRAICP_PRO_FORWARDMESSAGE_H
+#endif //MIRAICP_PRO_FORWARDEDMESSAGE_H
 #ifndef MIRAICP_PRO_FRIEND_H
 #define MIRAICP_PRO_FRIEND_H
 
@@ -5453,7 +5459,7 @@ namespace MiraiCP {
         std::string queryURL(JNIEnv * = ThreadManager::getEnv());
 
         /// 取图片Mirai码
-        std::string Image::toMiraiCode() const override {
+        std::string toMiraiCode() const override {
             return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
         }
     };
