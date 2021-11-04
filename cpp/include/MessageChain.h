@@ -191,7 +191,7 @@ namespace MiraiCP {
 
         std::vector<std::string> toMiraiCodeVector() const {
             std::vector<std::string> tmp;
-            for (const auto &a: this->content)
+            for (const Message &a: this->content)
                 tmp.emplace_back(a->toMiraiCode());
             return tmp;
         }

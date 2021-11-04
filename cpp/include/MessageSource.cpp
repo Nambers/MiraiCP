@@ -30,7 +30,7 @@ namespace MiraiCP {
             Logger::logger.error("消息源序列化出错，格式不符合(MessageSource::deserializeFromString)");
             Logger::logger.error(source);
             Logger::logger.error(e.what());
-            throw e;
+            MiraiCPThrow(IllegalArgumentException(std::string("消息源序列化出错，格式不符合(MessageSource::deserializeFromString), ") + e.what()));
         }
     }
 

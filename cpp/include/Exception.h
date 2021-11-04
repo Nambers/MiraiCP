@@ -14,7 +14,7 @@ namespace MiraiCP {
 
     public:
         int lineNum = 0;
-        std::string filename = "";
+        std::string filename;
 
         //构造时传入类型字符串
         explicit MiraiCPException(const std::string &&type) : exceptionType(type) {}
@@ -48,7 +48,7 @@ namespace MiraiCP {
         /// 实际抛出方法
         void raise() {
             basicRaise();
-            if (filename != "" && lineNum != 0)
+            if (!filename.empty() && lineNum != 0)
                 Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
         }
     };

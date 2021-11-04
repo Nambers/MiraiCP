@@ -5,7 +5,7 @@
 namespace MiraiCP {
     // 静态成员
     std::map<int, std::string> SingleMessage::messageType = {
-            {-4, "OnlineForwardMessage"},
+            {-4, "OnlineForwardedMessage"},
             {-3, "OnlineAudio"},
             {-2, "QuoteReply"},
             {-1, "unSupportMessage"},
