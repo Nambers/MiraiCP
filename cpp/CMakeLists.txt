@@ -31,6 +31,7 @@ add_library(
 set_target_properties(MiraiCP_multi PROPERTIES OUTPUT_NAME MiraiCP)
 target_include_directories(MiraiCP_multi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp")
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/)
     execute_process(COMMAND python buildScript/addinclude.py
             COMMAND python buildScript/third-party/config.py
             COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
