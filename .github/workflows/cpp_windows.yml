@@ -3,11 +3,12 @@ name: C++ CI in windows
 on: 
   push:
     branches:
-      - '*' 
+      - '*'
     paths:
       - "cpp/**"
   pull_request:
-    branches: [ master ]
+    branches:
+      - '*'
     paths:
       - "cpp/**"
   workflow_dispatch:
