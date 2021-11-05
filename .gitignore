@@ -1,4 +1,5 @@
 cpp/build/
+cpp/single_include/MiraiCP/*
 
 # Prerequisites
 *.d

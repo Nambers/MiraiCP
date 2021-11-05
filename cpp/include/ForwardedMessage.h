@@ -16,7 +16,9 @@
 
 #ifndef MIRAICP_PRO_FORWARDEDMESSAGE_H
 #define MIRAICP_PRO_FORWARDEDMESSAGE_H
+
 #include "Contact.h"
+
 namespace MiraiCP {
     ///聊天记录里每个消息
     class ForwardedNode {

@@ -19,6 +19,7 @@
 
 #include "Logger.h"
 #include "PluginConfig.h"
+
 namespace MiraiCP {
     /// 插件父类
     class CPPPlugin {
