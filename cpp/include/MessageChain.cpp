@@ -1,4 +1,20 @@
-#include "MessageChain.h"
+// Copyright (c) 2021-2021. Eritque arcus and contributors.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or any later version(in your opinion).
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#include "ForwardedMessage.h"
 #include "Group.h"
 
 namespace MiraiCP {
@@ -58,9 +74,16 @@ namespace MiraiCP {
         return mc;
     }
 
-    MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp) {
-        json j = tmp["originalMessage"];
+    MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp, bool origin) {
+        json j = tmp;
         MessageChain mc;
+        if (j.is_array() && j[0]["type"] == "MessageOrigin") {
+            mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(j));
+            return mc;
+        }
+        Logger::logger.info(tmp);
+        if (origin)
+            j = tmp["originalMessage"];
         for (auto node: j) {
             if (node["type"] == "SimpleServiceMessage") {
                 mc.add(ServiceMessage(node["serviceId"], node["content"]));
@@ -79,8 +102,7 @@ namespace MiraiCP {
                 mc.add(Group(tmp["targetId"], tmp["botId"]).getFileById(node["id"]).plus(node["internalId"]));
                 continue;
             }
-            int type = SingleMessage::getKey(node["type"]);
-            switch (type) {
+            switch (SingleMessage::getKey(node["type"])) {
                 case -2:
                     mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
                     break;

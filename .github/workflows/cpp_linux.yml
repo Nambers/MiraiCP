@@ -2,7 +2,8 @@ name: C++ CI in ubuntu
 
 on: 
   push:
-    branches: [ master ]
+    branches:
+      - '*' 
     paths:
       - "cpp/**"
   pull_request:
@@ -23,4 +24,4 @@ jobs:
         cxx: g++
       run: mkdir cpp/build && cd cpp/build && cmake ..
     - name: build with gcc
-      run: cd cpp/build && make
+      run: cd cpp/build && make generateSingleHeader && make MiraiCP_single

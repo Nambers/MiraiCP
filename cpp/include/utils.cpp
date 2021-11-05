@@ -1,3 +1,19 @@
+// Copyright (c) 2021-2021. Eritque arcus and contributors.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or any later version(in your opinion).
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #include "utils.h"
 #include "Event.h"
 #include "Exception.h"
@@ -70,15 +86,15 @@ Event(JNIEnv *env, jobject, jstring content) {
         return returnNull();
     }
     try {
-        switch ((int) j["type"]) {
+        switch (j["type"].get<int>()) {
             case 1: {
                 //GroupMessage
                 Event::processor.broadcast<GroupMessageEvent>(
                         GroupMessageEvent(j["group"]["botid"],
                                           Group(Group::deserializationFromJson(j["group"])),
                                           Member(Member::deserializationFromJson(j["member"])),
-                                          MessageChain::deserializationFromMiraiCode(j["message"].get<std::string>())
-                                                  .plus(MessageSource::deserializeFromString(j["source"]))));
+                                          MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>()))
+                                                  .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
                 break;
             }
             case 2: {
@@ -86,8 +102,8 @@ Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
                                             Friend(Friend::deserializationFromJson(j["friend"])),
-                                            MessageChain::deserializationFromMiraiCode(j["message"])
-                                                    .plus(MessageSource::deserializeFromString(j["source"]))));
+                                            MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>()))
+                                                    .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
                 break;
             }
             case 3:
@@ -154,7 +170,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                         j["group"]["botid"],
                         Group(Group::deserializationFromJson(j["group"])),
                         Member(Member::deserializationFromJson(j["member"])),
-                        MessageChain::deserializationFromMiraiCode(j["message"])
+                        MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>()))
                                 .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
             case 11:

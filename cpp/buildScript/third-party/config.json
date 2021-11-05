@@ -8,7 +8,7 @@
         "include/Contact.h",
         "include/Event.h",
         "include/Exception.h",
-        "include/Forward.h",
+        "include/ForwardedMessage.h",
         "include/Friend.h",
         "include/Group.h",
         "include/Logger.h",

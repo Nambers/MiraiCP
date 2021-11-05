@@ -1,3 +1,19 @@
+// Copyright (c) 2021-2021. Eritque arcus and contributors.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or any later version(in your opinion).
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #include "SingleMessage.h"
 #include "Config.h"
 #include <json.hpp>
@@ -5,6 +21,7 @@
 namespace MiraiCP {
     // 静态成员
     std::map<int, std::string> SingleMessage::messageType = {
+            {-4, "OnlineForwardedMessage"},
             {-3, "OnlineAudio"},
             {-2, "QuoteReply"},
             {-1, "unSupportMessage"},
@@ -76,9 +93,5 @@ namespace MiraiCP {
         if (re == "E1")
             MiraiCPThrow(RemoteAssetException("图片id格式错误"));
         return re;
-    }
-
-    std::string Image::toMiraiCode() const {
-        return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
     }
 } // namespace MiraiCP

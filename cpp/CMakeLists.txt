@@ -22,21 +22,28 @@ file(GLOB MIRAI_CPP_PATH ./include/*.cpp)
 add_library(
         MiraiCP_multi
         SHARED
-        demo/multi_include/demo.cpp
-        demo/multi_include/test2.cpp
+        demo/test.cpp
+        demo/test2.cpp
         ${MIRAI_CPP_PATH}
 )
 
 # 设置输出的dll文件的名字(最后一个参数)，目前是MiraiCP.dll
 set_target_properties(MiraiCP_multi PROPERTIES OUTPUT_NAME MiraiCP)
 target_include_directories(MiraiCP_multi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
+if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp")
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/)
+    execute_process(COMMAND python buildScript/addinclude.py
+            COMMAND python buildScript/third-party/config.py
+            COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
+            COMMAND python buildScript/combineSource.py
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif ()
 #----测试相关---
  add_library(
-        MiraiCP_single
-        SHARED
-        demo/single_include/test.cpp
-        demo/single_include/test2.cpp
+         MiraiCP_single
+         SHARED
+         demo/test.cpp
+         demo/test2.cpp
  )
  set_target_properties(MiraiCP_single PROPERTIES OUTPUT_NAME MiraiCP)
 target_include_directories(MiraiCP_single PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP)
