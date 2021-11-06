@@ -76,14 +76,13 @@ namespace MiraiCP {
 
     MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp, bool origin) {
         json j = tmp;
+        if (origin)
+            j = tmp["originalMessage"];
         MessageChain mc;
         if (j.is_array() && j[0]["type"] == "MessageOrigin") {
             mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(j));
             return mc;
         }
-        Logger::logger.info(tmp);
-        if (origin)
-            j = tmp["originalMessage"];
         for (auto node: j) {
             if (node["type"] == "SimpleServiceMessage") {
                 mc.add(ServiceMessage(node["serviceId"], node["content"]));

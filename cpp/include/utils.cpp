@@ -42,7 +42,7 @@ Verify(JNIEnv *env, jobject) {
             CPPPlugin::pluginLogger = new PluginLogger(&Logger::logger);
             CPPPlugin::plugin->onEnable();
         }
-    } catch (MiraiCPException &e) {
+    } catch (const MiraiCPException &e) {
         e.raise();
     }
     json j = CPPPlugin::plugin->config.serialize();
@@ -56,7 +56,11 @@ JNIEXPORT jobject
 PluginDisable(JNIEnv *env, jobject job) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
-    CPPPlugin::plugin->onDisable();
+    try {
+        CPPPlugin::plugin->onDisable();
+    } catch (const MiraiCPException &e) {
+        e.raise();
+    }
     CPPPlugin::plugin = nullptr;
     return job;
 }
@@ -210,10 +214,10 @@ Event(JNIEnv *env, jobject, jstring content) {
         Logger::logger.error("json格式化异常,位置C-Handle");
         Logger::logger.error(e.what(), false);
         return Tools::str2jstring("ERROR");
-    } catch (MiraiCPException &e) {
-        Logger::logger.error("MiraiCP error:" + e.what());
+    } catch (const MiraiCPException &e) {
+        e.raise();
         return Tools::str2jstring("ERROR");
-    } catch (std::exception &e) {
+    } catch (const std::exception &e) {
         // 这里如果不catch全部exception就会带崩jvm
         Logger::logger.error(e.what());
         return Tools::str2jstring("ERROR");
