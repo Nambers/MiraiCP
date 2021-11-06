@@ -21,8 +21,6 @@ fnames.sort()
 msg = "Files to be added:\n"
 
 for filename in fnames:
-    if filename == 'miraiCP.cpp':
-        continue
     if filename.endswith('.h'):
         d['sources'].append("include/" + filename)
         msg += filename + "\n"

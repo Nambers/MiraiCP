@@ -52,7 +52,7 @@ for filename in fnames:
 
 ss += "\n#endif //MIRAICP_HPP_H"
 
-with open('include/miraiCP.hpp', 'w', encoding='utf-8') as f:
+with open('include/MiraiCP.hpp', 'w', encoding='utf-8') as f:
     f.write(ss)
 
 print("header file generated successfully")
