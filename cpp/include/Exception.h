@@ -27,9 +27,9 @@ namespace MiraiCP {
     protected:
         /// 异常的类型
         const std::string exceptionType;
+        std::string re;
 
     public:
-        std::string re;
         int lineNum = 0;
         std::string filename;
 
@@ -64,7 +64,6 @@ namespace MiraiCP {
 
         /// basicRaise 基本抛出方法，子类重写该方法
         virtual void basicRaise() const {
-            throw "";
             Logger::logger.error(this->what());
         };
 
@@ -126,11 +125,6 @@ namespace MiraiCP {
             : MiraiCPException(std::move(type)) {
             this->description = std::move(d);
             this->re = type + this->description;
-        }
-
-        void basicRaise() const override {
-            throw "";
-            Logger::logger.error(this->what());
         }
     };
 
