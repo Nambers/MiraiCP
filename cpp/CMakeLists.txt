@@ -28,7 +28,9 @@ add_library(
 )
 
 # 设置输出的dll文件的名字(最后一个参数)，目前是MiraiCP.dll
-set_target_properties(MiraiCP_multi PROPERTIES OUTPUT_NAME MiraiCP)
+set_target_properties(MiraiCP_multi PROPERTIES
+        PREFIX lib
+        OUTPUT_NAME MiraiCP)
 target_include_directories(MiraiCP_multi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp")
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/)
@@ -39,13 +41,15 @@ if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp")
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 #----测试相关---
- add_library(
-         MiraiCP_single
-         SHARED
-         demo/test.cpp
-         demo/test2.cpp
- )
- set_target_properties(MiraiCP_single PROPERTIES OUTPUT_NAME MiraiCP)
+add_library(
+        MiraiCP_single
+        SHARED
+        demo/test.cpp
+        demo/test2.cpp
+)
+set_target_properties(MiraiCP_single PROPERTIES
+        PREFIX lib
+        OUTPUT_NAME MiraiCP)
 target_include_directories(MiraiCP_single PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP)
 
 find_package(JNI REQUIRED)
