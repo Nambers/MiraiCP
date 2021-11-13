@@ -21,6 +21,7 @@
 namespace MiraiCP {
     // 静态成员
     std::map<int, std::string> SingleMessage::messageType = {
+            {-5, "MarketFace"},
             {-4, "OnlineForwardedMessage"},
             {-3, "OnlineAudio"},
             {-2, "QuoteReply"},
@@ -31,7 +32,8 @@ namespace MiraiCP {
             {3, "image"},
             {4, "app"},
             {5, "service"},
-            {6, "file"}};
+            {6, "file"},
+            {7, "face"}};
 
     // 结束静态成员
 

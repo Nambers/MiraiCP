@@ -550,7 +550,7 @@ namespace MiraiCP {
             bool enable = true;
             std::function<void(MiraiCPEvent *)> func;
 
-            eventNode(std::function<void(MiraiCPEvent *)> f) : func(std::move(f)) {}
+            explicit eventNode(std::function<void(MiraiCPEvent *)> f) : func(std::move(f)) {}
 
             void run(MiraiCPEvent *a) const {
                 func(a);

@@ -51,7 +51,7 @@ namespace MiraiCP {
                 content = std::move(a);
             }
 
-            std::shared_ptr<SingleMessage> getPtr() {
+            std::shared_ptr<SingleMessage> getPtr() const {
                 return this->content;
             }
 
@@ -60,7 +60,7 @@ namespace MiraiCP {
             }
 
             template<class T>
-            T get() {
+            T get() const {
                 auto tmp = this->content;
                 switch (tmp->type) {
                     case -1:
@@ -116,6 +116,14 @@ namespace MiraiCP {
                     default:
                         MiraiCPThrow(APIException("位置MessageChain::get"));
                 }
+            }
+
+            bool operator==(const Message &m) const {
+                return this->type() == m.type() || this->content->toMiraiCode() == this->content->toMiraiCode();
+            }
+
+            bool operator!=(const Message &m) const {
+                return !(*this == m);
             }
         };
 
@@ -295,8 +303,28 @@ namespace MiraiCP {
             return this->plus(msg);
         }
 
-        Message operator[](size_t i) {
+        Message operator[](size_t i) const {
             return this->content[i];
+        }
+
+        bool operator==(const MessageChain &mc) const {
+            if (this->content.size() != mc.content.size())
+                return false;
+            for (size_t i = 0; i < this->content.size(); i++) {
+                if ((*this)[i] != mc[i])
+                    return false;
+            }
+            return true;
+        }
+
+        bool operator!=(const MessageChain &mc) const {
+            return !(*this == mc);
+        }
+
+        bool empty() const {
+            if (this->content.empty() || toMiraiCode().empty())
+                return true;
+            return false;
         }
 
         /// @brief 回复并发送

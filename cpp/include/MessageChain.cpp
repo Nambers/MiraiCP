@@ -79,7 +79,7 @@ namespace MiraiCP {
         if (origin)
             j = tmp["originalMessage"];
         MessageChain mc;
-        if (j.is_array() && j[0]["type"] == "MessageOrigin") {
+        if (j[0]["type"] == "MessageOrigin") {
             mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(j));
             return mc;
         }
@@ -101,6 +101,10 @@ namespace MiraiCP {
                 mc.add(Group(tmp["targetId"], tmp["botId"]).getFileById(node["id"]).plus(node["internalId"]));
                 continue;
             }
+            if (node["type"] == "MarketFace") {
+                mc.add(MarketFace(node["delegate"]["faceId"]));
+                break;
+            }
             switch (SingleMessage::getKey(node["type"])) {
                 case -2:
                     mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
@@ -117,21 +121,14 @@ namespace MiraiCP {
                 case 3:
                     mc.add(Image(node["imageId"]));
                     break;
-                case 4:
-                    Logger::logger.error(
-                            "MiraiCP碰到了预料之外的错误(原因:匹配到了LightApp)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以修复: MessageSource:" +
-                            j.dump());
-                    break;
-                case 5:
-                    Logger::logger.error(
-                            "MiraiCP碰到了预料之外的错误(原因:匹配到了ServiceMessage)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以修复: MessageSource:" +
-                            j.dump());
+                case 7:
+                    mc.add(Face(node["id"]));
                     break;
                 default:
-                    mc.add(UnSupportMessage(node["content"]));
                     Logger::logger.error(
                             "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以支持这种消息: MessageSource:" +
                             j.dump());
+                    mc.add(UnSupportMessage(node["content"]));
             }
         }
         return mc;

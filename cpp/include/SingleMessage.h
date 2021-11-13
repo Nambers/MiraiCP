@@ -400,11 +400,31 @@ namespace MiraiCP {
                    std::to_string(size) + "]";
         }
     };
+    /// 自带表情
+    /// @attention 有些表情会变成PlainText类型和\\xxx 的格式
+    class Face : public SingleMessage {
+    public:
+        int id;
+
+        std::string toMiraiCode() const override {
+            return "[mirai:face:" + std::to_string(id) + "]";
+        }
+
+        explicit Face(int id) : SingleMessage(7, std::to_string(id)), id(id) {}
+    };
+    class MarketFace : public SingleMessage {
+    public:
+        /// 目前无法直接发送MarketFace, 可以转发
+        [[deprecated("暂不支持直接发送")]] std::string toMiraiCode() {
+            return "";
+        }
+        std::array<uint8_t, 16> faceId;
+
+        explicit MarketFace(std::array<uint8_t, 16> id) : SingleMessage(-5, ""), faceId(id) {}
+    };
     /// @brief 目前不支持的消息类型
     class UnSupportMessage : public SingleMessage {
     public:
-        std::string content;
-
         std::string toMiraiCode() const override {
             return content;
         }
