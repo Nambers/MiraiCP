@@ -76,8 +76,7 @@ namespace MiraiCP {
 
     MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode, JNIEnv *env) {
         if (msg.empty()) {
-            Logger::logger.warning("警告:发送空信息, 位置: Contact::SendMsg");
-            MiraiCPThrow(IllegalArgumentException("参数不能为空, 位置: Contact::SendMsg"));
+            MiraiCPThrow(IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg"));
         }
         std::string re = LowLevelAPI::send0(msg, this, retryTime, miraicode, env,
                                             "reach a error area, Contact::SendMiraiCode");
