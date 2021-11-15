@@ -39,6 +39,7 @@ namespace MiraiCP {
     /// MessageChain的组成部分
     class SingleMessage : public MiraiCodeable {
     public:
+        virtual ~SingleMessage(){};
         static std::map<int, std::string> messageType;
 
         /// @brief 找对应类型的index key
@@ -67,6 +68,14 @@ namespace MiraiCP {
                     return "[mirai:" + messageType[type] + this->prefix + Tools::escapeToMiraiCode(content) + "]";
             else
                 return content;
+        }
+
+        bool operator==(const SingleMessage &m) const {
+            return this->type == m.type && this->toMiraiCode() == m.toMiraiCode();
+        }
+
+        bool operator==(SingleMessage *m) const {
+            return this->type == m->type && this->toMiraiCode() == m->toMiraiCode();
         }
 
         /// @brief 构建单条

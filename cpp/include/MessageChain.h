@@ -51,75 +51,46 @@ namespace MiraiCP {
                 content = std::move(a);
             }
 
-            std::shared_ptr<SingleMessage> getPtr() const {
-                return this->content;
-            }
-
             std::shared_ptr<SingleMessage> operator->() const {
                 return this->content;
             }
 
             template<class T>
             T get() const {
-                auto tmp = this->content;
+                SingleMessage *tmp = this->content.get();
                 switch (tmp->type) {
                     case -1:
                         if (std::is_same_v<T, UnSupportMessage>)
-                            return (UnSupportMessage) (*tmp);
-                        else
-                            MiraiCPThrow(IllegalArgumentException("转换错误"));
+                            return *dynamic_cast<UnSupportMessage *>(tmp);
+                        break;
                     case 0:
                         if (std::is_same_v<T, PlainText>)
-                            return (PlainText) (*tmp);
-                        else
-                            MiraiCPThrow(IllegalArgumentException("转换错误"));
+                            return *dynamic_cast<PlainText *>(tmp);
+                        break;
                     case 1:
                         if (std::is_same_v<T, At>)
-                            return (At) (*tmp);
-                        else
-                            MiraiCPThrow(IllegalArgumentException("转换错误"));
+                            return *dynamic_cast<At *>(tmp);
+                        break;
                     case 2:
                         if (std::is_same_v<T, Image>)
-                            return (Image) (*tmp);
-                        else
-                            MiraiCPThrow(IllegalArgumentException("转换错误"));
+                            return *dynamic_cast<Image *>(tmp);
+                        break;
                     case 3:
                         if (std::is_same_v<T, LightApp>)
-                            return (LightApp) (*tmp);
-                        else
-                            MiraiCPThrow(IllegalArgumentException("转换错误"));
+                            return *dynamic_cast<LightApp *>(tmp);
+                        break;
                     case 4:
                         if (std::is_same_v<T, ServiceMessage>)
-                            return (ServiceMessage) (*tmp);
-                        else
-                            MiraiCPThrow(IllegalArgumentException("转换错误"));
+                            return *dynamic_cast<ServiceMessage *>(tmp);
+                        break;
                     default: // cannot reach
                         MiraiCPThrow(APIException(""));
                 }
-            }
-
-            std::variant<PlainText, At, Image, LightApp, ServiceMessage, UnSupportMessage> get() const {
-                auto tmp = this->content;
-                switch (tmp->type) {
-                    case -1:
-                        return (UnSupportMessage) (*tmp);
-                    case 0:
-                        return (PlainText) (*tmp);
-                    case 1:
-                        return (At) (*tmp);
-                    case 2:
-                        return (Image) (*tmp);
-                    case 3:
-                        return (LightApp) (*tmp);
-                    case 4:
-                        return (ServiceMessage) (*tmp);
-                    default:
-                        MiraiCPThrow(APIException("位置MessageChain::get"));
-                }
+                MiraiCPThrow(IllegalArgumentException("转换错误"));
             }
 
             bool operator==(const Message &m) const {
-                return this->type() == m.type() || this->content->toMiraiCode() == this->content->toMiraiCode();
+                return this->content.get() == m.content.get();
             }
 
             bool operator!=(const Message &m) const {
@@ -128,7 +99,7 @@ namespace MiraiCP {
         };
 
     private:
-        void p(std::vector<Message> *v) {}
+        void p(std::vector<Message> *) {}
 
         template<class T1, class... T2>
         void p(std::vector<Message> *v, T1 h, T2... args) {
@@ -310,6 +281,8 @@ namespace MiraiCP {
         bool operator==(const MessageChain &mc) const {
             if (this->content.size() != mc.content.size())
                 return false;
+            if (this->toMiraiCode() == mc.toMiraiCode())
+                return true;
             for (size_t i = 0; i < this->content.size(); i++) {
                 if ((*this)[i] != mc[i])
                     return false;
@@ -341,9 +314,11 @@ namespace MiraiCP {
             return this->quoteAndSend1(s, groupid, env);
         }
 
-        /// 从string构建MessageChain, 常用于Incoming message
+        /// 从miraicode string构建MessageChain
         static MessageChain deserializationFromMiraiCode(const std::string &m);
 
+        /// 从MessageSource json中构建MessageChain, 常用于Incoming message
+        /// @attention 本方法并不会自动附加MessageSource到MessageChain, 需要用.plus方法自行附加
         static MessageChain deserializationFromMessageSourceJson(const json &j, bool origin = true);
     };
 } // namespace MiraiCP

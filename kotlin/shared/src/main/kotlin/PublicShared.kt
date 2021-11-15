@@ -84,39 +84,41 @@ object PublicShared {
                 when (c.type) {
                     1 -> {
                         nextEvent<FriendMessageEvent>(time, EventPriority.HIGHEST) {
-                            it.sender.id == c.id && it.bot.id == c.botid
-                        }.let {
-                            if (halt)
-                                it.intercept()
-                            it.message
-                        }
+                            if (it.sender.id == c.id && it.bot.id == c.botid) {
+                                if (halt)
+                                    it.intercept()
+                                true
+                            } else
+                                false
+                        }.message
                     }
                     2 -> {
                         nextEvent<GroupMessageEvent>(time, EventPriority.HIGHEST) {
-                            it.bot.id == c.botid && it.group.id == c.id
-                        }.let {
-                            if (halt)
-                                it.intercept()
-                            it.message
-                        }
+                            if(it.group.id == c.id && it.bot.id == c.botid){
+                                if (halt)
+                                    it.intercept()
+                                true
+                            }else
+                                false
+                        }.message
                     }
                     3 -> {
                         nextEvent<GroupMessageEvent>(time, EventPriority.HIGHEST) {
-                            it.bot.id == c.botid && it.group.id == c.groupid && it.sender.id == c.id
-                        }.let {
-                            if (halt)
-                                it.intercept()
-                            it.message
-                        }
+                            if(it.bot.id == c.botid && it.group.id == c.groupid && it.sender.id == c.id){
+                                if (halt)
+                                    it.intercept()
+                                true
+                            }else
+                                false
+                        }.message
                     }
-                    else -> throw Exception()
+                    else -> throw Exception() //unreachable
                 }
             } catch (e: TimeoutCancellationException) {
                 return@runBlocking "E1"
             }
             gson.toJson(
                 Config.Message(
-                    e.serializeToMiraiCode(),
                     json.encodeToString(
                         MessageSource.Serializer,
                         e[MessageSource]!!
@@ -364,14 +366,14 @@ object PublicShared {
     }
 
     //recall
-    suspend fun recallMsg(a:String): String {
-        val source = json.decodeFromString(MessageSource.Serializer,a)
-        try{
+    suspend fun recallMsg(a: String): String {
+        val source = json.decodeFromString(MessageSource.Serializer, a)
+        try {
             source.recall()
-        }catch (e: PermissionDeniedException){
+        } catch (e: PermissionDeniedException) {
             logger.error("机器人无权限撤回")
             return "E1"
-        }catch(e:IllegalStateException){
+        } catch (e: IllegalStateException) {
             logger.error("该消息已被撤回")
             return "E2"
         }
@@ -631,7 +633,7 @@ object PublicShared {
         } else {
             PlainText(msg)
         }
-        val bot = Bot.getInstanceOrNull(source.botId)?:let{
+        val bot = Bot.getInstanceOrNull(source.botId) ?: let {
             return "EB"
         }
         val c = when (source.kind) {
@@ -774,10 +776,10 @@ object PublicShared {
             }
         }
 
-    suspend fun memberJoinRequest(source: String, b: Boolean, botid: Long, msg:String):String =
-        withBot(botid){bot->
+    suspend fun memberJoinRequest(source: String, b: Boolean, botid: Long, msg: String): String =
+        withBot(botid) { bot ->
             return gson.fromJson(source, RequestEventData.MemberJoinRequest::class.java).let {
-                if(b)
+                if (b)
                     it.accept(bot)
                 else
                     it.reject(bot, msg)
@@ -807,6 +809,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
+            logger.info(this.message.serializeToMiraiCode())
             cpp.event(
                 gson.toJson(
                     CPPEvent.GroupMessage(
@@ -942,7 +945,7 @@ object PublicShared {
             )
 
         }
-        eventChannel.subscribeAlways<BotJoinGroupEvent.Invite>{
+        eventChannel.subscribeAlways<BotJoinGroupEvent.Invite> {
             cpp.event(
                 gson.toJson(
                     CPPEvent.BotJoinGroup(
@@ -953,7 +956,7 @@ object PublicShared {
                 )
             )
         }
-        eventChannel.subscribeAlways<BotJoinGroupEvent.Active>{
+        eventChannel.subscribeAlways<BotJoinGroupEvent.Active> {
             cpp.event(
                 gson.toJson(
                     CPPEvent.BotJoinGroup(
@@ -964,7 +967,7 @@ object PublicShared {
                 )
             )
         }
-        eventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve>{
+        eventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve> {
             cpp.event(
                 gson.toJson(
                     CPPEvent.BotJoinGroup(
