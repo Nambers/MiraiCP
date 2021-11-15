@@ -151,8 +151,8 @@ namespace MiraiCP {
          * @code [mirai:image:{图片id}.jpg] @endcode
         * @note 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
         */
-        explicit Image(std::string imageId) : SingleMessage(3, std::move(imageId)) {
-            this->id = std::move(imageId);
+        explicit Image(const std::string &imageId) : SingleMessage(3, imageId) {
+            this->id = imageId;
         }
 
         explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
@@ -167,7 +167,7 @@ namespace MiraiCP {
 
         /// 取图片Mirai码
         std::string toMiraiCode() const override {
-            return "[mirai:image:" + Tools::escapeToMiraiCode(this->id) + "]";
+            return "[mirai:image:" + this->id + "]";
         }
     };
 

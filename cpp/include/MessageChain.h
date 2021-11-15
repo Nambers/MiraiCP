@@ -44,33 +44,32 @@ namespace MiraiCP {
             template<class T>
             explicit Message(T a) {
                 static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
-                content = std::make_shared<SingleMessage>(a);
+                T *b = new T(a);
+                content.reset(b);
             }
 
             explicit Message(std::shared_ptr<SingleMessage> a) {
                 content = std::move(a);
             }
 
-            std::shared_ptr<SingleMessage> operator->() const {
-                return this->content;
-            }
-
             template<class T>
             T get() const {
                 static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-                return (T) (*this->content);
+                T *re = static_cast<T *>(this->content.get());
+                if (re == nullptr) MiraiCPThrow(IllegalArgumentException("x"));
+                return *re;
             }
 
             bool operator==(const Message &m) const {
-                return this->content.get() == m.content.get();
+                return this->content->type == m.content->type && this->content->toMiraiCode() == m.toMiraiCode();
             }
 
             bool operator!=(const Message &m) const {
-                return !(*this == m);
+                return this->content->type != m.content->type || this->content->toMiraiCode() != m.toMiraiCode();
             }
 
-            std::string toMiraiCode() {
-                // TODO new toMiraiCode
+            std::string toMiraiCode() const {
+                return this->content->toMiraiCode();
             }
         };
 
@@ -99,17 +98,7 @@ namespace MiraiCP {
         std::vector<Message> content;
 
         MessageSource quoteAndSend0(const std::string &msg, QQID groupid = -1,
-                                    JNIEnv *env = ThreadManager::getEnv()) {
-            json obj;
-            json sign;
-            obj["messageSource"] = this->source->serializeToString();
-            obj["msg"] = msg;
-            sign["MiraiCode"] = true;
-            sign["groupid"] = groupid;
-            obj["sign"] = sign.dump();
-            std::string re = Config::koperation(Config::SendWithQuote, obj, env);
-            return MessageSource::deserializeFromString(re);
-        }
+                                    JNIEnv *env = ThreadManager::getEnv());
 
         template<class T>
         MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv()) {
@@ -163,7 +152,7 @@ namespace MiraiCP {
         std::vector<std::string> toMiraiCodeVector() const {
             std::vector<std::string> tmp;
             for (const Message &a: this->content)
-                tmp.emplace_back(a->toMiraiCode());
+                tmp.emplace_back(a.toMiraiCode());
             return tmp;
         }
 
@@ -186,7 +175,7 @@ namespace MiraiCP {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
             for (auto a: this->content) {
-                if (a->type == type)
+                if (a.type() == type)
                     re.push_back(std::static_pointer_cast<T>(a));
             }
             return re;
@@ -194,7 +183,7 @@ namespace MiraiCP {
 
         /// 自定义筛选器
         template<class T>
-        std::vector<T> filter(std::function<bool(Message)> func) {
+        std::vector<T> filter(const std::function<bool(Message)> &func) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
             for (auto a: this->content) {
@@ -208,7 +197,7 @@ namespace MiraiCP {
         template<class T>
         T first(int type) {
             for (auto a: this->content)
-                if (a->type == type)
+                if (a.type() == type)
                     return std::static_pointer_cast<T>(a);
         }
 
@@ -260,14 +249,10 @@ namespace MiraiCP {
             if (this->toMiraiCode() == mc.toMiraiCode())
                 return true;
             for (size_t i = 0; i < this->content.size(); i++) {
-                if ((*this)[i] != mc[i])
+                if (this->content[i] != mc[i])
                     return false;
             }
             return true;
-        }
-
-        bool operator!=(const MessageChain &mc) const {
-            return !(*this == mc);
         }
 
         bool empty() const {
