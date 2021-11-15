@@ -39,7 +39,7 @@ namespace MiraiCP {
     /// MessageChain的组成部分
     class SingleMessage : public MiraiCodeable {
     public:
-        virtual ~SingleMessage(){};
+        virtual ~SingleMessage() = default;
         static std::map<int, std::string> messageType;
 
         /// @brief 找对应类型的index key
@@ -59,6 +59,7 @@ namespace MiraiCP {
         std::string prefix;
 
         std::string toMiraiCode() const override {
+            Logger::logger.info("base");
             if (type > 0)
                 if (type == 1)
                     return "[mirai:at:" + content + "] ";

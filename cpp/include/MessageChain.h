@@ -57,36 +57,36 @@ namespace MiraiCP {
 
             template<class T>
             T get() const {
+                static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
                 SingleMessage *tmp = this->content.get();
                 switch (tmp->type) {
                     case -1:
                         if (std::is_same_v<T, UnSupportMessage>)
-                            return *dynamic_cast<UnSupportMessage *>(tmp);
-                        break;
+                            break;
                     case 0:
                         if (std::is_same_v<T, PlainText>)
-                            return *dynamic_cast<PlainText *>(tmp);
-                        break;
+                            break;
                     case 1:
                         if (std::is_same_v<T, At>)
-                            return *dynamic_cast<At *>(tmp);
-                        break;
+                            break;
                     case 2:
                         if (std::is_same_v<T, Image>)
-                            return *dynamic_cast<Image *>(tmp);
-                        break;
+                            break;
                     case 3:
                         if (std::is_same_v<T, LightApp>)
-                            return *dynamic_cast<LightApp *>(tmp);
-                        break;
+                            break;
                     case 4:
                         if (std::is_same_v<T, ServiceMessage>)
-                            return *dynamic_cast<ServiceMessage *>(tmp);
-                        break;
-                    default: // cannot reach
-                        MiraiCPThrow(APIException(""));
+                            break;
+                    case 7:
+                        if (std::is_same_v<T, Face>)
+                            break;
+                    default:
+                        MiraiCPThrow(IllegalArgumentException("转换错误"));
                 }
-                MiraiCPThrow(IllegalArgumentException("转换错误"));
+                T *re = dynamic_cast<T *>(tmp);
+                if (re == nullptr) MiraiCPThrow(IllegalArgumentException("转换错误"));
+                return *re;
             }
 
             bool operator==(const Message &m) const {
@@ -95,6 +95,10 @@ namespace MiraiCP {
 
             bool operator!=(const Message &m) const {
                 return !(*this == m);
+            }
+
+            std::string toMiraiCode() {
+                // TODO new toMiraiCode
             }
         };
 
