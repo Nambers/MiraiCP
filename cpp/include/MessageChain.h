@@ -58,35 +58,7 @@ namespace MiraiCP {
             template<class T>
             T get() const {
                 static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-                SingleMessage *tmp = this->content.get();
-                switch (tmp->type) {
-                    case -1:
-                        if (std::is_same_v<T, UnSupportMessage>)
-                            break;
-                    case 0:
-                        if (std::is_same_v<T, PlainText>)
-                            break;
-                    case 1:
-                        if (std::is_same_v<T, At>)
-                            break;
-                    case 2:
-                        if (std::is_same_v<T, Image>)
-                            break;
-                    case 3:
-                        if (std::is_same_v<T, LightApp>)
-                            break;
-                    case 4:
-                        if (std::is_same_v<T, ServiceMessage>)
-                            break;
-                    case 7:
-                        if (std::is_same_v<T, Face>)
-                            break;
-                    default:
-                        MiraiCPThrow(IllegalArgumentException("转换错误"));
-                }
-                T *re = dynamic_cast<T *>(tmp);
-                if (re == nullptr) MiraiCPThrow(IllegalArgumentException("转换错误"));
-                return *re;
+                return (T) (*this->content);
             }
 
             bool operator==(const Message &m) const {

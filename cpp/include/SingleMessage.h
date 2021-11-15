@@ -91,8 +91,6 @@ namespace MiraiCP {
     /// 纯文本信息
     class PlainText : public SingleMessage {
     public:
-        std::string content;
-
         std::string toMiraiCode() const override {
             return content;
         }
@@ -292,7 +290,12 @@ namespace MiraiCP {
         /// 引用信息的MessageSource
         MessageSource source;
 
-        explicit QuoteReply(MessageSource source) : SingleMessage(-2, ""), source(std::move(source)){};
+        explicit QuoteReply(const SingleMessage &m) : SingleMessage(m) {
+            if (m.type != -2) MiraiCPThrow(IllegalArgumentException("cannot convert type(" + std::to_string(m.type) + "to QuoteReply"));
+            source = MessageSource::deserializeFromString(m.content);
+        }
+
+        explicit QuoteReply(MessageSource source) : SingleMessage(-2, source.serializeToString()), source(std::move(source)){};
     };
 
     /// 接收到的音频文件, 发送用`Contact.sendAudio`
