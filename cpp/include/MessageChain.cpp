@@ -18,6 +18,20 @@
 #include "Group.h"
 
 namespace MiraiCP {
+
+    MessageSource MessageChain::quoteAndSend0(const std::string &msg, QQID groupid,
+                                              JNIEnv *env) {
+        json obj;
+        json sign;
+        obj["messageSource"] = this->source->serializeToString();
+        obj["msg"] = msg;
+        sign["MiraiCode"] = true;
+        sign["groupid"] = groupid;
+        obj["sign"] = sign.dump();
+        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
+        return MessageSource::deserializeFromString(re);
+    }
+
     //message chain
     MessageChain MessageChain::deserializationFromMiraiCode(const std::string &m) {
         size_t pos = 0;
