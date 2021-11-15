@@ -54,6 +54,6 @@ namespace MiraiCP {
         if (r == "-1")
             MiraiCPThrow(TimeOutException("取下一条信息超时"));
         json re = json::parse(r);
-        return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
+        return MessageChain::deserializationFromMessageSourceJson(json::parse(re["messageSource"].get<std::string>())).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 } // namespace MiraiCP

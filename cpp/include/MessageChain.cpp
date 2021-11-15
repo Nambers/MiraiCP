@@ -39,6 +39,7 @@ namespace MiraiCP {
                 switch (t) {
                     case 0:
                         // no miraiCode key is PlainText
+                        Logger::logger.error("无法预料的错误, 信息: " + m);
                         break;
                     case 1:
                         mc.add(At(std::stoll(tmp.substr(i + 1, tmp.length() - i - 1))));
@@ -58,7 +59,13 @@ namespace MiraiCP {
                                               tmp.substr(comma + 1, tmp.length() - comma - 1)));
                         break;
                     }
+                    case 7:
+                        mc.add(Face(std::stoi(tmp.substr(i + 1, tmp.length() - i - 1))));
+                        break;
                     default:
+                        Logger::logger.error(
+                                "MiraiCP碰到了意料之中的错误(原因:部分SimpleMessage在MiraiCode解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: MessageSource:" +
+                                m);
                         mc.add(UnSupportMessage("[mirai:" + tmp));
                         break;
                 }
@@ -76,6 +83,7 @@ namespace MiraiCP {
 
     MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp, bool origin) {
         json j = tmp;
+        Logger::logger.info("ms: " + tmp.dump());
         if (origin)
             j = tmp["originalMessage"];
         MessageChain mc;
@@ -126,7 +134,7 @@ namespace MiraiCP {
                     break;
                 default:
                     Logger::logger.error(
-                            "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段话使MiraiCP可以支持这种消息: MessageSource:" +
+                            "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在MessageSource解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: MessageSource:" +
                             j.dump());
                     mc.add(UnSupportMessage(node["content"]));
             }

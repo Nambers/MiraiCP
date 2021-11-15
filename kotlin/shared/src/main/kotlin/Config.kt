@@ -131,7 +131,6 @@ object Config {
     )
 
     data class Message(
-        val message: String,
         val messageSource: String
     )
 }
