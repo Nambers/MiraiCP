@@ -85,6 +85,19 @@ namespace MiraiCP {
         ServiceMessage origin;
         std::string resourceId;
 
+        ForwardedNode operator[](int i) const {
+            return this->nodelist[i];
+        }
+
+        bool operator==(const OnlineForwardedMessage &m) const {
+            if (this->nodelist.size() != m.nodelist.size())
+                return false;
+            for (int i = 0; i < this->nodelist.size(); i++)
+                if (this->nodelist[i].message != m[i].message)
+                    return false;
+            return true;
+        }
+
         explicit OnlineForwardedMessage(json o, const std::string &rid, std::vector<ForwardedNode> nodes) : SingleMessage(-4, ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
         /// 不支持直接发送OnlineForwardMessage
         [[deprecated("use MiraiCP::ForwardedMessage to send")]] std::string toMiraiCode() const override {

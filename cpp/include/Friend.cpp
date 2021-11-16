@@ -24,4 +24,29 @@ namespace MiraiCP {
         this->_botid = botid;
         refreshInfo(env);
     }
+
+    void Friend::deleteFriend(JNIEnv *env) {
+        nlohmann::json j;
+        j["source"] = this->serializationToString();
+        j["quit"] = true;
+        Config::koperation(Config::RefreshInfo, j, env);
+    }
+
+    void Friend::refreshInfo(JNIEnv *env) {
+        std::string temp = LowLevelAPI::getInfoSource(this, env);
+        if (temp == "E1") {
+            MiraiCPThrow(FriendException());
+        }
+        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
+        this->_nickOrNameCard = tmp.nickornamecard;
+        this->_avatarUrl = tmp.avatarUrl;
+    }
+
+    void Friend::sendNudge() {
+        json j;
+        j["contactSource"] = this->serializationToString();
+        std::string re = Config::koperation(Config::SendNudge, j);
+        if (re == "E1")
+            MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));
+    }
 } // namespace MiraiCP

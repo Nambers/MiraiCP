@@ -54,18 +54,7 @@ namespace MiraiCP {
             return sendMsg0(std::string(msg), retryTime, false, env);
         }
 
-        MessageSource
-        quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = ThreadManager::getEnv()) {
-            json obj;
-            json sign;
-            obj["messageSource"] = ms.serializeToString();
-            obj["msg"] = msg;
-            sign["MiraiCode"] = true;
-            sign["groupid"] = this->groupid();
-            obj["sign"] = sign.dump();
-            std::string re = Config::koperation(Config::SendWithQuote, obj, env);
-            return MessageSource::deserializeFromString(re);
-        }
+        MessageSource quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = ThreadManager::getEnv());
 
         template<class T>
         MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv()) {
@@ -283,7 +272,6 @@ namespace MiraiCP {
     };
 
 
-
-    } // namespace MiraiCP
+} // namespace MiraiCP
 
 #endif //MIRAICP_PRO_CONTACT_H

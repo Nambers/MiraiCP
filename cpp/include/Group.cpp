@@ -17,14 +17,17 @@
 #include "Group.h"
 
 namespace MiraiCP {
-    /*群聊类实现*/
-    Group::Group(QQID groupid, QQID botid, JNIEnv *env) : Contact() {
-        this->_type = 2;
-        this->_id = groupid;
-        this->_botid = botid;
-        refreshInfo(env);
+    std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList(JNIEnv *env) {
+        json j;
+        j["source"] = this->serializationToString();
+        j["announcement"] = true;
+        std::string re = Config::koperation(Config::RefreshInfo, j, env);
+        std::vector<OnlineAnnouncement> oa;
+        for (const json &e: json::parse(re)) {
+            oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
+        }
+        return oa;
     }
-
     void Group::OnlineAnnouncement::deleteThis() {
         json j, i;
         i["botid"] = this->botid;
@@ -83,6 +86,39 @@ namespace MiraiCP {
                 j["fid"],
                 j["confirmationNum"],
                 j["imageid"]);
+    }
+    std::vector<unsigned long long> Group::getMemberList(JNIEnv *env) {
+        nlohmann::json j;
+        j["contactSource"] = this->serializationToString();
+        std::string re = Config::koperation(Config::QueryML, j, env);
+        if (re == "E1") {
+            MiraiCPThrow(GroupException());
+        }
+        return Tools::StringToVector(re);
+    }
+    Group::Group(QQID groupid, QQID botid, JNIEnv *env) : Contact() {
+        this->_type = 2;
+        this->_id = groupid;
+        this->_botid = botid;
+        refreshInfo(env);
+    }
+    void Group::quit(JNIEnv *env) {
+        nlohmann::json j;
+        j["source"] = this->serializationToString();
+        j["quit"] = true;
+        Config::koperation(Config::RefreshInfo, j, env);
+    }
+    void Group::refreshInfo(JNIEnv *env) {
+        std::string re = LowLevelAPI::getInfoSource(this, env);
+        LowLevelAPI::info tmp = LowLevelAPI::info0(re);
+        this->_nickOrNameCard = tmp.nickornamecard;
+        this->_avatarUrl = tmp.avatarUrl;
+        nlohmann::json j = nlohmann::json::parse(re)["setting"];
+        this->setting.name = j["name"];
+        this->setting.isMuteAll = j["isMuteAll"];
+        this->setting.isAllowMemberInvite = j["isAllowMemberInvite"];
+        this->setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
+        this->setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
     }
 
     void Group::updateSetting(JNIEnv *env) {

@@ -130,15 +130,7 @@ namespace MiraiCP {
 
         /// 取群成员列表
         /// @return vector<long>
-        std::vector<unsigned long long> getMemberList(JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["contactSource"] = this->serializationToString();
-            std::string re = Config::koperation(Config::QueryML, j, env);
-            if (re == "E1") {
-                MiraiCPThrow(GroupException());
-            }
-            return Tools::StringToVector(re);
-        }
+        std::vector<unsigned long long> getMemberList(JNIEnv *env = ThreadManager::getEnv());
 
         /*!
          * 以string格式取群成员列表
@@ -167,38 +159,12 @@ namespace MiraiCP {
         }
 
         /// 取群公告列表
-        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env = ThreadManager::getEnv()) {
-            json j;
-            j["source"] = this->serializationToString();
-            j["announcement"] = true;
-            std::string re = Config::koperation(Config::RefreshInfo, j, env);
-            std::vector<OnlineAnnouncement> oa;
-            for (const json &e: json::parse(re)) {
-                oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
-            }
-            return oa;
-        };
+        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env);
 
         /// 刷新群聊信息
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override {
-            std::string re = LowLevelAPI::getInfoSource(this, env);
-            LowLevelAPI::info tmp = LowLevelAPI::info0(re);
-            this->_nickOrNameCard = tmp.nickornamecard;
-            this->_avatarUrl = tmp.avatarUrl;
-            nlohmann::json j = nlohmann::json::parse(re)["setting"];
-            this->setting.name = j["name"];
-            this->setting.isMuteAll = j["isMuteAll"];
-            this->setting.isAllowMemberInvite = j["isAllowMemberInvite"];
-            this->setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
-            this->setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
-        }
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override;
 
-        void quit(JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["source"] = this->serializationToString();
-            j["quit"] = true;
-            Config::koperation(Config::RefreshInfo, j, env);
-        }
+        void quit(JNIEnv *env = ThreadManager::getEnv());
 
         /*!
         @brief 上传并发送远程(群)文件

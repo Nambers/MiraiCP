@@ -49,7 +49,14 @@ namespace MiraiCP {
         }
         return env->NewString((jchar *) c, (jsize) utf16line.size());
     }
-
+    std::string Tools::replace(std::string str, const std::string &from, const std::string &to) {
+        size_t start_pos = 0;
+        while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+            str.replace(start_pos, from.length(), to);
+            start_pos += to.length(); // Handles case where 'to' is a substd::string of 'from'
+        }
+        return str;
+    }
     std::vector<unsigned long long> Tools::StringToVector(std::string temp) {
         std::vector<unsigned long long> result;
         temp.erase(temp.begin());

@@ -246,13 +246,15 @@ namespace MiraiCP {
         bool operator==(const MessageChain &mc) const {
             if (this->content.size() != mc.content.size())
                 return false;
-            if (this->toMiraiCode() == mc.toMiraiCode())
-                return true;
             for (size_t i = 0; i < this->content.size(); i++) {
                 if (this->content[i] != mc[i])
                     return false;
             }
             return true;
+        }
+
+        bool operator!=(const MessageChain &mc) const {
+            return !(*this == mc);
         }
 
         bool empty() const {

@@ -17,6 +17,18 @@
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {
+    MessageSource Contact::quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env) {
+        json obj;
+        json sign;
+        obj["messageSource"] = ms.serializeToString();
+        obj["msg"] = msg;
+        sign["MiraiCode"] = true;
+        sign["groupid"] = this->groupid();
+        obj["sign"] = sign.dump();
+        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
+        return MessageSource::deserializeFromString(re);
+    }
+
     Image Contact::uploadImg(const std::string &path, JNIEnv *env) {
         std::string re = LowLevelAPI::uploadImg0(path, this, env);
         if (re == "E2")

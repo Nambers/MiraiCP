@@ -55,25 +55,7 @@ namespace MiraiCP {
         bool isAnonymous = false;
 
         /// 重新获取(刷新)群成员信息
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override {
-            if (isAnonymous)
-                return;
-            std::string temp = LowLevelAPI::getInfoSource(this, env);
-            if (temp == "E1")
-                MiraiCPThrow(MemberException(1));
-            if (temp == "E2")
-                MiraiCPThrow(MemberException(2));
-            LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
-            this->_nickOrNameCard = tmp.nickornamecard;
-            this->_avatarUrl = tmp.avatarUrl;
-            this->permission = getPermission();
-            if (temp == "E1") {
-                MiraiCPThrow(MemberException(1));
-            }
-            if (temp == "E2") {
-                MiraiCPThrow(MemberException(2));
-            }
-        }
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override;
 
         /// 发送语音
         MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv()) {
@@ -133,14 +115,7 @@ namespace MiraiCP {
          * @warning 发送戳一戳的前提是登录该bot的协议是phone
          * @throw MiraiCP::BotException, MiraiCP::IllegalStateException
          */
-        void sendNudge() {
-            if (isAnonymous) return;
-            json j;
-            j["contactSource"] = this->serializationToString();
-            std::string re = Config::koperation(Config::SendNudge, j);
-            if (re == "E1")
-                MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));
-        }
+        void sendNudge();
     };
 } // namespace MiraiCP
 
