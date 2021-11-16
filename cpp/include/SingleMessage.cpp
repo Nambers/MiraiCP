@@ -49,19 +49,28 @@ namespace MiraiCP {
             throw e;
         }
         try {
-            struct Dinfo d {
-                j["dinfo"]["url"],
-                        j["dinfo"]["md5"],
-                        j["dinfo"]["sha1"]
-            };
-            struct Finfo f {
-                j["finfo"]["size"],
-                        j["finfo"]["uploaderid"],
-                        j["finfo"]["downloadtime"],
-                        j["finfo"]["uploadtime"],
-                        j["finfo"]["lastmodifytime"]
-            };
-            return RemoteFile(j["id"], j["internalid"], j["name"], j["finfo"]["size"], j["path"], d, f);
+            auto re = RemoteFile(j["id"], j["internalid"], j["name"], j["finfo"]["size"]);
+            if (j.contains("dinfo")) {
+                struct Dinfo d {
+                    j["dinfo"]["url"],
+                            j["dinfo"]["md5"],
+                            j["dinfo"]["sha1"]
+                };
+                re.dinfo = d;
+            }
+            if (j["finfo"].contains("uploaderid")) {
+                struct Finfo f {
+                    j["finfo"]["size"],
+                            j["finfo"]["uploaderid"],
+                            j["finfo"]["downloadtime"],
+                            j["finfo"]["uploadtime"],
+                            j["finfo"]["lastmodifytime"]
+                };
+                re.finfo = f;
+            }
+            if (j.contains("path"))
+                re.path = j["path"];
+            return re;
         } catch (json::type_error &e) {
             Logger::logger.error("json格式化失败，位置:RemoteFile");
             Logger::logger.error(source);
@@ -72,18 +81,24 @@ namespace MiraiCP {
 
     std::string RemoteFile::serializeToString() {
         json j;
-        j["dinfo"]["url"] = this->dinfo.url;
-        j["dinfo"]["md5"] = this->dinfo.md5;
-        j["dinfo"]["shar1"] = this->dinfo.sha1;
-        j["finfo"]["size"] = this->finfo.size;
-        j["finfo"]["uploaderid"] = this->finfo.uploaderid;
-        j["finfo"]["downloadtime"] = this->finfo.downloadtime;
-        j["finfo"]["uploadtime"] = this->finfo.uploadtime;
-        j["finfo"]["lastmodifytime"] = this->finfo.lastmodifytime;
+        if (this->dinfo.has_value()) {
+            j["dinfo"]["url"] = this->dinfo->url;
+            j["dinfo"]["md5"] = this->dinfo->md5;
+            j["dinfo"]["shar1"] = this->dinfo->sha1;
+        }
+        if (this->finfo.has_value()) {
+            j["finfo"]["size"] = this->finfo->size;
+            j["finfo"]["uploaderid"] = this->finfo->uploaderid;
+            j["finfo"]["downloadtime"] = this->finfo->downloadtime;
+            j["finfo"]["uploadtime"] = this->finfo->uploadtime;
+            j["finfo"]["lastmodifytime"] = this->finfo->lastmodifytime;
+        }
         j["id"] = this->id;
         j["internalid"] = this->internalid;
         j["name"] = this->name;
         j["size"] = this->size;
+        if (this->path.has_value())
+            j["path"] = this->path.value();
         return j.dump();
     }
 

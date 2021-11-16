@@ -103,6 +103,10 @@ namespace MiraiCP {
          * @endcode
         */
         void recall(JNIEnv * = ThreadManager::getEnv()) const;
+
+        bool operator==(const MessageSource &ms) const {
+            return this->ids == ms.ids && this->internalids == ms.internalids;
+        }
     };
 } // namespace MiraiCP
 
