@@ -214,6 +214,10 @@ namespace MiraiCP {
          */
         RemoteFile getFileById(const std::string &id, JNIEnv * = ThreadManager::getEnv());
 
+        RemoteFile getFileByFile(const RemoteFile &file, JNIEnv *env = ThreadManager::getEnv()) {
+            return getFileById(file.id, env);
+        }
+
         /// 群文件的简短描述
         struct file_short_info {
             // 路径带文件名

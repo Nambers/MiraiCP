@@ -59,10 +59,10 @@ namespace MiraiCP {
                         mc.add(At(std::stoll(tmp.substr(i + 1, tmp.length() - i - 1))));
                         break;
                     case 2:
-                        mc.add(Image(tmp.substr(i + 1, tmp.length() - i - 1)));
+                        mc.add(AtAll());
                         break;
                     case 3:
-                        mc.add(AtAll());
+                        mc.add(Image(tmp.substr(i + 1, tmp.length() - i - 1)));
                         break;
                     case 4:
                         mc.add(LightApp(tmp.substr(i + 1, tmp.length() - i - 1)));
@@ -73,12 +73,20 @@ namespace MiraiCP {
                                               tmp.substr(comma + 1, tmp.length() - comma - 1)));
                         break;
                     }
+                    case 6: {
+                        //[mirai:file:/b53231e8-46dd-11ec-8ba5-5452007bd6c0,102,run.bat,55]
+                        size_t comma1 = tmp.find(',');
+                        size_t comma2 = tmp.find(',', comma1 + 1);
+                        size_t comma3 = tmp.find(',', comma2 + 1);
+                        mc.add(RemoteFile(tmp.substr(i + 1, comma1 - i - 1), std::stoi(tmp.substr(comma1 + 1, comma2 - comma1 - 1)), tmp.substr(comma2 + 1, comma3 - comma2 - 1), std::stoll(tmp.substr(comma3 + 1, tmp.length() - comma3 - 1))));
+                        break;
+                    }
                     case 7:
                         mc.add(Face(std::stoi(tmp.substr(i + 1, tmp.length() - i - 1))));
                         break;
                     default:
                         Logger::logger.error(
-                                "MiraiCP碰到了意料之中的错误(原因:部分SimpleMessage在MiraiCode解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: MessageSource:" +
+                                "MiraiCP碰到了意料之中的错误(原因:部分SimpleMessage在MiraiCode解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: MiraiCode:" +
                                 m);
                         mc.add(UnSupportMessage("[mirai:" + tmp));
                         break;
@@ -120,7 +128,7 @@ namespace MiraiCP {
                 continue;
             }
             if (node["type"] == "FileMessage") {
-                mc.add(Group(tmp["targetId"], tmp["botId"]).getFileById(node["id"]).plus(node["internalId"]));
+                mc.add(Group(tmp["targetId"].get<QQID>(), tmp["botId"].get<QQID>()).getFileById(node["id"]).plus(node["internalId"]));
                 continue;
             }
             if (node["type"] == "MarketFace") {
