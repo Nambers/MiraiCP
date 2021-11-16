@@ -20,6 +20,7 @@
 #include "Exception.h"
 #include "MessageSource.h"
 #include <array>
+#include <optional>
 
 namespace MiraiCP {
     /// 用serviceMessage的分享信息
