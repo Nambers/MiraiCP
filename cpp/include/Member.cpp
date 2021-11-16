@@ -27,6 +27,26 @@ namespace MiraiCP {
         refreshInfo(env);
     }
 
+    void Member::refreshInfo(JNIEnv *env) {
+        if (isAnonymous)
+            return;
+        std::string temp = LowLevelAPI::getInfoSource(this, env);
+        if (temp == "E1")
+            MiraiCPThrow(MemberException(1));
+        if (temp == "E2")
+            MiraiCPThrow(MemberException(2));
+        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
+        this->_nickOrNameCard = tmp.nickornamecard;
+        this->_avatarUrl = tmp.avatarUrl;
+        this->permission = getPermission();
+        if (temp == "E1") {
+            MiraiCPThrow(MemberException(1));
+        }
+        if (temp == "E2") {
+            MiraiCPThrow(MemberException(2));
+        }
+    }
+
     unsigned int Member::getPermission(JNIEnv *env) {
         if (isAnonymous) return 0;
         json j;
@@ -67,6 +87,15 @@ namespace MiraiCP {
         if (re == "E1") {
             MiraiCPThrow(BotException());
         }
+    }
+
+    void Member::sendNudge() {
+        if (isAnonymous) return;
+        json j;
+        j["contactSource"] = this->serializationToString();
+        std::string re = Config::koperation(Config::SendNudge, j);
+        if (re == "E1")
+            MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));
     }
 
 } // namespace MiraiCP

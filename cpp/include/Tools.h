@@ -53,14 +53,7 @@ namespace MiraiCP {
          * @return 返回替换后的字符串.
          * @note 来源:https://stackoverflow.com/a/24315631/14646226
          */
-        static std::string replace(std::string str, const std::string &from, const std::string &to) {
-            size_t start_pos = 0;
-            while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-                str.replace(start_pos, from.length(), to);
-                start_pos += to.length(); // Handles case where 'to' is a substd::string of 'from'
-            }
-            return str;
-        }
+        static std::string replace(std::string str, const std::string &from, const std::string &to);
 
         /// @brief long long 类型的vector格式化输出
         /// @param a vector

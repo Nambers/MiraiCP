@@ -31,16 +31,7 @@ namespace MiraiCP {
         /// @param env JNIEnv
         /// @return
         static std::string send0(const std::string &content, Contact *c, int retryTime, bool miraicode, JNIEnv *env,
-                                 std::string errorInfo = "") {
-            nlohmann::json j;
-            nlohmann::json tmp;
-            tmp["content"] = content;
-            tmp["contact"] = c->serialization();
-            j["source"] = tmp.dump();
-            j["miraiCode"] = miraicode;
-            j["retryTime"] = retryTime;
-            return Config::koperation(Config::Send, j, env, true, std::move(errorInfo));
-        }
+                                 const std::string &errorInfo = "");
 
         /// @brief 取该联系人的一些信息
         /// @param c 该联系人Contact指针
@@ -74,14 +65,7 @@ namespace MiraiCP {
 
         /// 获取每个对象必有信息
         /// @see LowLevelAPI::info
-        static info info0(const std::string &source) {
-            info re;
-            ErrorHandle(source, "");
-            nlohmann::json j = nlohmann::json::parse(source);
-            re.avatarUrl = j["avatarUrl"];
-            re.nickornamecard = j["nickornamecard"];
-            return re;
-        }
+        static info info0(const std::string &source);
     };
 } // namespace MiraiCP
 
