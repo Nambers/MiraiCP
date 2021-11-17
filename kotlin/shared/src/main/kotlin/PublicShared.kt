@@ -68,7 +68,7 @@ object PublicShared {
     val cpp: ArrayList<CPP_lib> = arrayListOf()
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
-    const val now_tag = "v2.8.0-M2"
+    const val now_tag = "v2.8.0"
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
     var cachePath: File = File("")
@@ -94,21 +94,21 @@ object PublicShared {
                     }
                     2 -> {
                         nextEvent<GroupMessageEvent>(time, EventPriority.HIGHEST) {
-                            if(it.group.id == c.id && it.bot.id == c.botid){
+                            if (it.group.id == c.id && it.bot.id == c.botid) {
                                 if (halt)
                                     it.intercept()
                                 true
-                            }else
+                            } else
                                 false
                         }.message
                     }
                     3 -> {
                         nextEvent<GroupMessageEvent>(time, EventPriority.HIGHEST) {
-                            if(it.bot.id == c.botid && it.group.id == c.groupid && it.sender.id == c.id){
+                            if (it.bot.id == c.botid && it.group.id == c.groupid && it.sender.id == c.id) {
                                 if (halt)
                                     it.intercept()
                                 true
-                            }else
+                            } else
                                 false
                         }.message
                     }
@@ -310,49 +310,35 @@ object PublicShared {
         }
 
     //图片部分实现
+    private suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String =
+        try {
+            File(file).uploadAsImage(temp).imageId
+        } catch (e: OverFileSizeMaxException) {
+            logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
+            err1
+        } catch (e: NullPointerException) {
+            logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
+            err2
+        }
 
     suspend fun uploadImg(file: String, c: Config.Contact): String =
         c.withBot { bot ->
             when (c.type) {
                 1 -> c.withFriend(bot, "发送图片找不到对应好友,位置:K-uploadImgFriend(),id:${c.id}") { temp ->
-                    return try {
-                        File(file).uploadAsImage(temp).imageId
-                    } catch (e: OverFileSizeMaxException) {
-                        logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-                        "E2"
-                    } catch (e: NullPointerException) {
-                        logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-                        "E3"
-                    }
+                    uploadImgAndId(file, temp)
                 }
                 2 -> c.withGroup(bot, "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.id}") { temp ->
-                    return try {
-                        File(file).uploadAsImage(temp).imageId
-                    } catch (e: OverFileSizeMaxException) {
-                        logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-                        "E2"
-                    } catch (e: NullPointerException) {
-                        logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-                        "E3"
-                    }
+                    uploadImgAndId(file, temp)
                 }
                 3 -> c.withMember(
                     bot,
                     "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.groupid}",
                     "发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:${c.id},群聊id:${c.groupid}"
                 ) { _, temp1 ->
-                    return try {
-                        File(file).uploadAsImage(temp1).imageId
-                    } catch (e: OverFileSizeMaxException) {
-                        logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-                        "E3"
-                    } catch (e: NullPointerException) {
-                        logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-                        "E4"
-                    }
+                    uploadImgAndId(file, temp1, "E3", "E4")
                 }
                 else -> {
-                    return "EA"
+                    "EA"
                 }
             }
         }
@@ -809,7 +795,6 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
-            logger.info(this.message.serializeToMiraiCode())
             cpp.event(
                 gson.toJson(
                     CPPEvent.GroupMessage(

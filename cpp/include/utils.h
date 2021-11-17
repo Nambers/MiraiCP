@@ -22,7 +22,7 @@
 #include <string>
 
 namespace MiraiCP {
-    const std::string MiraiCPVersion = "v2.8.0-M2";
+    const std::string MiraiCPVersion = "v2.8.0";
 
     inline void schedule(long time, const std::string &msg, JNIEnv *env = ThreadManager::getEnv()) {
         json j;
