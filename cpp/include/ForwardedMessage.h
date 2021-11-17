@@ -79,6 +79,7 @@ namespace MiraiCP {
     /// 接收到的转发消息, 发送用 MiraiCP::ForwardedMessage
     class OnlineForwardedMessage : public SingleMessage {
     public:
+        static int type() { return -4; }
         /// 里面每条信息
         std::vector<ForwardedNode> nodelist;
         /// 用展示出来ServiceMessage
@@ -98,7 +99,7 @@ namespace MiraiCP {
             return true;
         }
 
-        explicit OnlineForwardedMessage(json o, const std::string &rid, std::vector<ForwardedNode> nodes) : SingleMessage(-4, ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
+        explicit OnlineForwardedMessage(json o, const std::string &rid, std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
         /// 不支持直接发送OnlineForwardMessage
         [[deprecated("use MiraiCP::ForwardedMessage to send")]] std::string toMiraiCode() const override {
             std::string re;

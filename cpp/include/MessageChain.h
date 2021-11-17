@@ -52,9 +52,13 @@ namespace MiraiCP {
                 content = std::move(a);
             }
 
+            /// 取指定类型
+            /// @throw IllegalArgumentException
             template<class T>
             T get() const {
                 static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+                if (T::type() != this->type())
+                    MiraiCPThrow(IllegalArgumentException("cannot convert from " + SingleMessage::messageType[this->type()] + " to " + SingleMessage::messageType[T::type()]));
                 T *re = static_cast<T *>(this->content.get());
                 if (re == nullptr) MiraiCPThrow(IllegalArgumentException("x"));
                 return *re;

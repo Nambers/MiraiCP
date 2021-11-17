@@ -92,6 +92,7 @@ namespace MiraiCP {
     /// 纯文本信息
     class PlainText : public SingleMessage {
     public:
+        static int type() { return 0; }
         std::string toMiraiCode() const override {
             return content;
         }
@@ -104,7 +105,7 @@ namespace MiraiCP {
         }
 
         template<typename T>
-        explicit PlainText(const T &a) : SingleMessage(0, ([&a]() -> std::string {
+        explicit PlainText(const T &a) : SingleMessage(PlainText::type(), ([&a]() -> std::string {
                                                            std::stringstream sst;
                                                            sst << a;
                                                            return sst.str();
@@ -118,6 +119,7 @@ namespace MiraiCP {
     /// @
     class At : public SingleMessage {
     public:
+        static int type() { return 1; }
         QQID target;
 
         explicit At(const SingleMessage &sg) : SingleMessage(sg) {
@@ -127,7 +129,7 @@ namespace MiraiCP {
             this->target = std::stol(sg.content);
         }
 
-        explicit At(QQID a) : SingleMessage(1, std::to_string(a)), target(a){};
+        explicit At(QQID a) : SingleMessage(At::type(), std::to_string(a)), target(a){};
 
         std::string toMiraiCode() const override {
             return "[mirai:at:" + std::to_string(this->target) + "] "; // 后面有个空格
@@ -141,16 +143,18 @@ namespace MiraiCP {
     /// @brief \@全体
     class AtAll : public SingleMessage {
     public:
+        static int type() { return 2; }
         std::string toMiraiCode() const override {
             return "[mirai:atall] ";
         }
 
-        AtAll() : SingleMessage(2, "", "") {}
+        AtAll() : SingleMessage(AtAll::type(), "", "") {}
     };
 
     /// 图像类声明
     class Image : public SingleMessage {
     public:
+        static int type() { return 3; }
         //图片id，样式:` {xxx}.xx `
         std::string id;
 
@@ -160,7 +164,7 @@ namespace MiraiCP {
          * @code [mirai:image:{图片id}.jpg] @endcode
         * @note 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
         */
-        explicit Image(const std::string &imageId) : SingleMessage(3, imageId) {
+        explicit Image(const std::string &imageId) : SingleMessage(Image::type(), imageId) {
             this->id = imageId;
         }
 
@@ -247,9 +251,10 @@ namespace MiraiCP {
     */
     class LightApp : public SingleMessage {
     public:
+        static int type() { return 4; }
         /// @brief 使用纯文本构造，推荐使用其他结构体方法构造
         /// @param content 构造文本
-        explicit LightApp(std::string content) : SingleMessage(4, std::move(content)) {}
+        explicit LightApp(std::string content) : SingleMessage(LightApp::type(), std::move(content)) {}
 
         explicit LightApp(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 3)
@@ -271,6 +276,7 @@ namespace MiraiCP {
     /// @attention 自带的模板不稳定，可能发出现没有效果
     class ServiceMessage : public SingleMessage {
     public:
+        static int type() { return 5; }
         std::string toMiraiCode() const override {
             return "[mirai:service:" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
         }
@@ -278,7 +284,7 @@ namespace MiraiCP {
         /// @brief ServiceMessage
         /// @param id 在xml内容前面的id (不包括逗号)
         /// @param a xml内容 (不需要事先转码到miraiCode)
-        explicit ServiceMessage(int id, std::string a) : SingleMessage(5, std::move(a),
+        explicit ServiceMessage(int id, std::string a) : SingleMessage(ServiceMessage::type(), std::move(a),
                                                                        ":" + std::to_string(id) + ',') {}
 
         explicit ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
@@ -304,6 +310,7 @@ namespace MiraiCP {
     /// 引用信息, 不可直接发送, 发送引用信息用MessageChain.quoteAndSendMessage
     class QuoteReply : public SingleMessage {
     public:
+        static int type() { return -2; }
         [[deprecated("cannot use, use MessageChain.quote")]] std::string toMiraiCode() const override {
             return "";
         }
@@ -316,7 +323,7 @@ namespace MiraiCP {
             source = MessageSource::deserializeFromString(m.content);
         }
 
-        explicit QuoteReply(MessageSource source) : SingleMessage(-2, source.serializeToString()), source(std::move(source)){};
+        explicit QuoteReply(MessageSource source) : SingleMessage(QuoteReply::type(), source.serializeToString()), source(std::move(source)){};
 
         bool operator==(const QuoteReply &qr) const {
             return this->source == qr.source;
@@ -326,6 +333,7 @@ namespace MiraiCP {
     /// 接收到的音频文件, 发送用`Contact.sendAudio`
     class OnlineAudio : public SingleMessage {
     public:
+        static int type() { return -3; }
         /// 文件名
         std::string filename;
         /// 下载地址
@@ -344,7 +352,7 @@ namespace MiraiCP {
         }
 
         explicit OnlineAudio(std::string f, std::array<uint8_t, 16> md5, int size, int codec, int length,
-                             std::string url) : SingleMessage(-3, ""),
+                             std::string url) : SingleMessage(OnlineAudio::type(), ""),
                                                 filename(std::move(f)), md5(md5), size(size), codec(codec),
                                                 length(length), url(std::move(url)){};
 
@@ -356,6 +364,7 @@ namespace MiraiCP {
     /// @brief 远程(群)文件类型
     class RemoteFile : public SingleMessage {
     public:
+        static int type() { return 6; }
         /// @brief 下载信息
         /// @see RemoteFile
         struct Dinfo {
@@ -424,10 +433,10 @@ namespace MiraiCP {
          * @param f finfo
          */
         explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, std::string p,
-                            struct Dinfo d, struct Finfo f) : SingleMessage(6, i + "," + std::to_string(ii) + "," +
-                                                                                       Tools::escapeToMiraiCode(std::move(n)) +
-                                                                                       "," +
-                                                                                       std::to_string(s)),
+                            struct Dinfo d, struct Finfo f) : SingleMessage(RemoteFile::type(), i + "," + std::to_string(ii) + "," +
+                                                                                                        Tools::escapeToMiraiCode(std::move(n)) +
+                                                                                                        "," +
+                                                                                                        std::to_string(s)),
                                                               id(i),
                                                               internalid(ii),
                                                               name(std::move(n)),
@@ -473,13 +482,14 @@ namespace MiraiCP {
     /// @attention 有些表情会变成PlainText类型和\\xxx 的格式
     class Face : public SingleMessage {
     public:
+        static int type() { return 7; }
         int id;
 
         std::string toMiraiCode() const override {
             return "[mirai:face:" + std::to_string(id) + "]";
         }
 
-        explicit Face(int id) : SingleMessage(7, std::to_string(id)), id(id) {}
+        explicit Face(int id) : SingleMessage(Face::type(), std::to_string(id)), id(id) {}
 
         bool operator==(const Face &f) const {
             return this->id == f.id;
@@ -487,13 +497,14 @@ namespace MiraiCP {
     };
     class MarketFace : public SingleMessage {
     public:
+        static int type() { return -5; }
         /// 目前无法直接发送MarketFace, 可以转发
         [[deprecated("暂不支持直接发送")]] std::string toMiraiCode() {
             return "";
         }
         std::array<uint8_t, 16> faceId;
 
-        explicit MarketFace(std::array<uint8_t, 16> id) : SingleMessage(-5, ""), faceId(id) {}
+        explicit MarketFace(std::array<uint8_t, 16> id) : SingleMessage(MarketFace::type(), ""), faceId(id) {}
 
         bool operator==(const MarketFace &mf) const {
             return this->faceId == mf.faceId;
@@ -502,13 +513,14 @@ namespace MiraiCP {
     /// @brief 目前不支持的消息类型
     class UnSupportMessage : public SingleMessage {
     public:
+        static int type() { return -1; }
         std::string toMiraiCode() const override {
             return content;
         }
 
         explicit UnSupportMessage(const SingleMessage &s) : SingleMessage(s){};
 
-        explicit UnSupportMessage(const std::string &content) : SingleMessage(-1, content) {}
+        explicit UnSupportMessage(const std::string &content) : SingleMessage(UnSupportMessage::type(), content) {}
 
         bool operator==(const UnSupportMessage &m) const {
             return this->content == m.content;
