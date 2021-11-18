@@ -1,5 +1,19 @@
 # Change Log
 
+## v2.8.0
+
++ 优化 `SingleMessage` 设计
++ 优化 `Event` 设计
++ 修复 `nextMessage` 的一些问题
++ 修复 `deserializationFromMiraiCode` 的问题 #101
++ 引入 `deserializationFromMessageSource`
++ 支持 `Face`, `MarketFace`, `Forwarded Message` 和 `OnlineForwarded Message`
++ 分离代码到 `h` 和 `cpp` 文件
++ 重新设计 `Exception`
++ Mirai 版本升级到 v2.8.0
+
+> C++ 部分代码从本版本起移动到<https://github.com/Nambers/MiraiCP-template>
+
 ## v2.8.0-M2
 
 + 支持MessageChain和大部分SingleMessage #87
