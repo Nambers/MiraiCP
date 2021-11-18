@@ -16,6 +16,6 @@
  */
 
 object V {
-    const val kotlinVersion = "1.5.10"
+    const val kotlinVersion = "1.5.30"
     const val miraiVersion = "2.8.0"
 }

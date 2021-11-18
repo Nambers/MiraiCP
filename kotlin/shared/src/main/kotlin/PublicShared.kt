@@ -20,6 +20,8 @@ package tech.eritquearcus.miraicp.shared
 import com.google.gson.Gson
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
@@ -30,6 +32,7 @@ import net.mamoe.mirai.contact.announcement.OfflineAnnouncement
 import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
 import net.mamoe.mirai.contact.announcement.bot
 import net.mamoe.mirai.contact.announcement.buildAnnouncementParameters
+import net.mamoe.mirai.contact.file.AbsoluteFile
 import net.mamoe.mirai.data.RequestEventData
 import net.mamoe.mirai.data.RequestEventData.Factory.toRequestEventData
 import net.mamoe.mirai.event.Event
@@ -48,8 +51,6 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.OverFileSizeMaxException
-import net.mamoe.mirai.utils.RemoteFile
-import net.mamoe.mirai.utils.RemoteFile.Companion.uploadFile
 import org.json.JSONObject
 import java.io.File
 import java.util.*
@@ -412,21 +413,19 @@ object PublicShared {
             }
         }
 
-    private suspend fun fileInfo0(temp: RemoteFile): String {
-        val dinfo = temp.getDownloadInfo()!!
-        val finfo = temp.getInfo()!!
+    private suspend fun fileInfo0(temp: AbsoluteFile): String {
         return gson.toJson(
             Config.FileInfo(
-                id = finfo.id,
-                name = finfo.name,
-                path = finfo.path,
-                dinfo = Config.DInfo(dinfo.url, dinfo.md5.toString(), dinfo.sha1.toString()),
+                id = temp.id,
+                name = temp.name,
+                path = temp.absolutePath,
+                dinfo = Config.DInfo(temp.getUrl() ?: "null", temp.md5.toString(), temp.sha1.toString()),
                 finfo = Config.FInfo(
-                    finfo.length,
-                    finfo.uploaderId,
-                    finfo.downloadTimes,
-                    finfo.uploaderId,
-                    finfo.lastModifyTime
+                    temp.size,
+                    temp.uploaderId,
+                    temp.expiryTime,
+                    temp.uploadTime,
+                    temp.lastModifiedTime
                 )
             )
         )
@@ -441,7 +440,11 @@ object PublicShared {
                 }
                 val tmp =
                     try {
-                        group.uploadFile(path, f)
+                        f.toExternalResource().use {
+                            group.files.root.uploadNewFile(path, it)
+                        }
+                    } catch (e: PermissionDeniedException) {
+                        return "EB"
                     } catch (e: IllegalStateException) {
                         return "E3"
                     } catch (e: Exception) {
@@ -449,8 +452,8 @@ object PublicShared {
                         e.printStackTrace()
                         return "E3"
                     }
-                tmp.sendTo(group)
-                val temp = group.filesRoot.resolveById(tmp.id) ?: let {
+                val temp = group.files.root.resolveFolder(path.dropLast(path.length - path.lastIndexOf("/")))
+                    ?.resolveFileById(tmp.id, true) ?: let {
                     logger.error("cannot find the file, 位置:K-uploadFile, id:${tmp.id}")
                     return "E3"
                 }
@@ -462,8 +465,8 @@ object PublicShared {
         c.withBot { bot ->
             c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
                 var tmp = "["
-                group.filesRoot.resolve(path).listFilesCollection().forEach {
-                    tmp += "[\"${it.path}\", \"${it.id}\"],"
+                group.files.root.resolveFiles(path).toList().forEach {
+                    tmp += "[\"${it.absolutePath}\", \"${it.id}\"],"
                 }
                 tmp = tmp.substring(0, tmp.length - 1)
                 tmp += "]"
@@ -474,8 +477,13 @@ object PublicShared {
     private suspend fun remoteFileInfo0(path: String, c: Config.Contact): String =
         c.withBot { bot ->
             c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}") { group ->
-                val tmp = group.filesRoot.resolve(path)
-                if (!tmp.isFile() || !tmp.exists()) {
+                val tmp = try {
+                    group.files.root.resolveFiles(path).first()
+                } catch (e: NoSuchElementException) {
+                    logger.error("cannot find the file,位置:K-remoteFileinfo0, path: $path")
+                    return "E2"
+                }
+                if (!tmp.isFile || !tmp.exists()) {
                     logger.error("cannot find the file,位置:K-remoteFileinfo0, path: $path")
                     return "E2"
                 }
@@ -490,18 +498,22 @@ object PublicShared {
             if (id == "-1")
                 return remoteFileList(path, c)
             c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
-                val tmp = group.filesRoot.resolve(path).resolveById(id) ?: let {
-                    logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id, path:$path")
-                    return "E2"
+                group.files.root.resolveFolder(path).let {
+                    if (it == null)
+                        remoteFileInfo0(path, c)
+                    else
+                        fileInfo0(it.resolveFileById(id) ?: let {
+                            logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id, path:$path")
+                            return "E2"
+                        })
                 }
-                return fileInfo0(tmp)
             }
         }
 
     suspend fun remoteFileInfo(id: String, c: Config.Contact): String =
         c.withBot { bot ->
             c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
-                val tmp = group.filesRoot.resolveById(id) ?: let {
+                val tmp = group.files.root.resolveFileById(id) ?: let {
                     logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id")
                     return "E1"
                 }
@@ -546,6 +558,7 @@ object PublicShared {
         }
 
     //构建聊天记录
+    @OptIn(MiraiExperimentalApi::class)
     suspend fun buildforwardMsg(text: String, bid: Long): String =
         withBot(bid) { bot ->
             val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)

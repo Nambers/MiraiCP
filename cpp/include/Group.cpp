@@ -153,6 +153,8 @@ namespace MiraiCP {
 
     RemoteFile Group::getFile(const std::string &path, const std::string &id, JNIEnv *env) {
         // source 参数
+        if (path.empty() || path == "/")
+            return this->getFileById(id, env);
         json tmp;
         json j;
         tmp["id"] = id;
