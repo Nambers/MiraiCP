@@ -40,7 +40,7 @@ object Console {
 
     init {
         MiraiLogger.setDefaultLoggerCreator {
-            PlatformLogger(it!!) { s ->
+            PlatformLogger(it?:"Unnamed logger") { s ->
                 lineReader.printAbove(s + Ansi().reset().toString())
             }
         }
@@ -73,10 +73,9 @@ object Console {
         LineReaderBuilder.builder().terminal(terminal).completer(NullCompleter()).build()
     }
     private const val prompt = "> "
-    private lateinit var listenJob: Job
     @OptIn(DelicateCoroutinesApi::class)
     fun listen() {
-        listenJob = KotlinMain.coroutineScope.launch(CoroutineName("Console Command")) {
+        KotlinMain.coroutineScope.launch(CoroutineName("Console Command")) {
             while (isActive) {
                 val re = try {
                     lineReader.readLine(prompt)

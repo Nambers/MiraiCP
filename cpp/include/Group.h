@@ -170,6 +170,7 @@ namespace MiraiCP {
         @brief 上传并发送远程(群)文件
         @param path-群文件路径(带文件名),根目录为/
         @param filepath-本地文件路径
+        @attention 路径分隔符是 `/`
         @example 上传并发送远程(群)文件
          @code
          Event::processor.registerEvent([](GroupMessageEvent e) {
@@ -190,7 +191,7 @@ namespace MiraiCP {
         取群文件信息,会自动搜索子目录
         @param path-群文件路径(不带文件名)
         @param id-文件id,可空，空则为用路径查找(此时路径要带文件名)
-        @attention 因为群文件允许重名文件存在的特性，该查找并不可靠，只能返回重名文件中的其中一个文件
+        @attention 因为群文件允许重名文件存在的特性，如果没有id该查找并不可靠，只能返回重名文件中的其中一个文件
         @see RemoteFile
          @example 取群文件信息
          @code

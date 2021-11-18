@@ -1,12 +1,12 @@
 [versions]
-kotlinVersion = "1.5.10"
+kotlinVersion = "1.5.30"
 miraiVersion = "2.8.0"
 miraiCPVersion = "2.8.0"
 
 [libraries]
 mirai-core-api = { module = "net.mamoe:mirai-core-api", version.ref = "miraiVersion" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.5.0" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.2.1" }
-jansi = { module = "org.fusesource.jansi:jansi", version = "1.18" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.5.2" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.3.1" }
+jansi = { module = "org.fusesource.jansi:jansi", version = "2.4.0" }
 mirai-core-self = { module = "net.mamoe:mirai-core", version.ref = "miraiVersion" }
-jline = { module = "org.jline:jline", version = "3.20.0" }
+jline = { module = "org.jline:jline", version = "3.21.0" }

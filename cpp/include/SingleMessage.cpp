@@ -62,7 +62,7 @@ namespace MiraiCP {
                 struct Finfo f {
                     j["finfo"]["size"],
                             j["finfo"]["uploaderid"],
-                            j["finfo"]["downloadtime"],
+                            j["finfo"]["expirytime"],
                             j["finfo"]["uploadtime"],
                             j["finfo"]["lastmodifytime"]
                 };
@@ -89,7 +89,7 @@ namespace MiraiCP {
         if (this->finfo.has_value()) {
             j["finfo"]["size"] = this->finfo->size;
             j["finfo"]["uploaderid"] = this->finfo->uploaderid;
-            j["finfo"]["downloadtime"] = this->finfo->downloadtime;
+            j["finfo"]["expirytime"] = this->finfo->expirytime;
             j["finfo"]["uploadtime"] = this->finfo->uploadtime;
             j["finfo"]["lastmodifytime"] = this->finfo->lastmodifytime;
         }

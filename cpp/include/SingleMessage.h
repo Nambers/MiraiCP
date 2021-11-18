@@ -368,7 +368,7 @@ namespace MiraiCP {
         /// @brief 下载信息
         /// @see RemoteFile
         struct Dinfo {
-            /// 下载地址
+            /// 下载地址, 可能会是 `null` 当文件不存在
             std::string url;
             /// md5 可用于校验
             std::string md5;
@@ -382,8 +382,8 @@ namespace MiraiCP {
             QQID size;
             /// 上传者id
             QQID uploaderid;
-            /// 下载次数
-            unsigned int downloadtime;
+            /// 过期时间
+            long expirytime;
             /// 上传时间, 时间戳格式
             QQID uploadtime;
             /// 上次更改时间, 时间戳格式
@@ -464,14 +464,9 @@ namespace MiraiCP {
                                                                                                  name(std::move(n)),
                                                                                                  size(s){};
 
-        /// 仅在上传后构建的有效, 即获取到internalid时(internalid != 0) 否则重新上传并重新获取internalid再转换
-        std::string toMiraiCode() const override {
-            if (internalid == 0) {
-                // 重新上传
-                MiraiCPThrow(RemoteAssetException("toMiraiCode error: internalid, 错误，重新上传"));
-            }
-            return "[mirai:file:" + id + "," + std::to_string(internalid) + "," + Tools::escapeToMiraiCode(name) + "," +
-                   std::to_string(size) + "]";
+        /// 上传后会自动发送
+        [[deprecated("Cannot send manually")]] std::string toMiraiCode() const override {
+            return "";
         }
 
         bool operator==(const RemoteFile &rf) const {

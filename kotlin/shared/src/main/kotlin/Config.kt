@@ -116,7 +116,7 @@ object Config {
     data class FInfo(
         val size: Long,
         val uploaderid: Long,
-        val downloadtime: Int,
+        val expirytime: Long,
         val uploadtime: Long,
         val lastmodifytime: Long,
     )
