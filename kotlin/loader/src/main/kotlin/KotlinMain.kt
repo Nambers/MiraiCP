@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2021. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -13,6 +13,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 package tech.eritquearcus.miraicp.loader
@@ -58,11 +59,9 @@ object KotlinMain {
                 else
                     PublicShared.maxThread = this.advanceConfig!!.maxThread!!
             }
-        }.cppPaths.forEach {
+        }.cppPaths.forEach { it ->
             val d = it.dependencies?.filter { p ->
-                File(p).let { f ->
-                    f.isFile && f.exists() && (f.extension == "dll" || f.extension == "lib" || f.extension == "so")
-                }
+                File(p).let { f -> f.isFile && f.exists() }
             }
             val f = File(it.path)
             if (!f.exists() || !f.isFile) {
