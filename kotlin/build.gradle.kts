@@ -20,7 +20,7 @@ plugins {
     kotlin("plugin.serialization") version V.kotlinVersion apply false
     id("com.github.johnrengelman.shadow") version "7.1.0" apply false
     id("net.mamoe.mirai-console") version V.miraiVersion apply false
-    id("net.mamoe.maven-central-publish") version "0.6.1" apply false
+    id("net.mamoe.maven-central-publish") version "0.7.1" apply false
 }
 allprojects {
     repositories {
