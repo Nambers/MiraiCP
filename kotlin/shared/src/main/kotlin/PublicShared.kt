@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2021. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -13,6 +13,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 package tech.eritquearcus.miraicp.shared
@@ -452,12 +453,7 @@ object PublicShared {
                         e.printStackTrace()
                         return "E3"
                     }
-                val temp = group.files.root.resolveFolder(path.dropLast(path.length - path.lastIndexOf("/")))
-                    ?.resolveFileById(tmp.id, true) ?: let {
-                    logger.error("cannot find the file, 位置:K-uploadFile, id:${tmp.id}")
-                    return "E3"
-                }
-                return fileInfo0(temp)
+                return fileInfo0(tmp)
             }
         }
 
@@ -478,7 +474,7 @@ object PublicShared {
         c.withBot { bot ->
             c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}") { group ->
                 val tmp = try {
-                    group.files.root.resolveFiles(path).first()
+                    group.files.root.resolveFiles(path.trimStart('/')).first()
                 } catch (e: NoSuchElementException) {
                     logger.error("cannot find the file,位置:K-remoteFileinfo0, path: $path")
                     return "E2"
