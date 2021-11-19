@@ -1,0 +1,41 @@
+package tech.eritquearcus.miraicp.loader.console
+
+import org.apache.logging.log4j.core.AbstractLifeCycle
+import org.apache.logging.log4j.core.Filter
+import org.apache.logging.log4j.core.Layout
+import org.apache.logging.log4j.core.LogEvent
+import org.apache.logging.log4j.core.appender.AbstractAppender
+import org.apache.logging.log4j.core.config.plugins.Plugin
+import org.apache.logging.log4j.core.config.plugins.PluginAttribute
+import org.apache.logging.log4j.core.config.plugins.PluginElement
+import org.apache.logging.log4j.core.config.plugins.PluginFactory
+import org.fusesource.jansi.Ansi
+import java.io.Serializable
+
+@Plugin(name = "Jline3Appender", category = "Core", elementType = "appender", printObject = true)
+class Jline3AppenderImpl protected constructor(
+    name: String, filter: Filter?,
+    layout: Layout<Serializable>, ignoreExceptions: Boolean
+) : AbstractAppender(name, filter, layout, ignoreExceptions, null) {
+
+    override fun append(event: LogEvent) {
+        Console.lineReader.printAbove(String(layout.toByteArray(event)) + Ansi().reset().toString())
+    }
+
+    companion object {
+
+        @PluginFactory
+        @JvmStatic
+        fun createAppender(
+            @PluginAttribute("name") name: String?,
+            @PluginElement("Layout") layout: Layout<Serializable>,
+            @PluginElement("Filter") filter: Filter?
+        ): Jline3AppenderImpl? {
+            if (name == null) {
+                AbstractLifeCycle.LOGGER.error("No name provided for MyCustomAppenderImpl")
+                return null
+            }
+            return Jline3AppenderImpl(name, filter, layout, true)
+        }
+    }
+}

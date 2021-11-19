@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" packages="tech.eritquearcus.miraicp.loader.console" monitorInterval="0">
+    <Appenders>
+        <Jline3Appender name="jline">
+            <PatternLayout
+                    pattern="%highlight{%d{YYYY.MM.dd HH:mm:ss} [%-5level] %logger{36} - %message}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green}\n"
+                    disableAnsi="false"/>
+        </Jline3Appender>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="jline"/>
+        </Root>
+    </Loggers>
+</Configuration>

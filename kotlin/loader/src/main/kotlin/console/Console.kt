@@ -19,9 +19,6 @@ package tech.eritquearcus.miraicp.loader.console
 
 import kotlinx.coroutines.*
 import net.mamoe.mirai.utils.MiraiInternalApi
-import net.mamoe.mirai.utils.MiraiLogger
-import net.mamoe.mirai.utils.PlatformLogger
-import org.fusesource.jansi.Ansi
 import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
 import org.jline.reader.UserInterruptException
@@ -37,14 +34,6 @@ import kotlin.system.exitProcess
 @OptIn(MiraiInternalApi::class)
 object Console {
     val start: LocalDateTime = LocalDateTime.now() // 当前日期和时间
-
-    init {
-        MiraiLogger.setDefaultLoggerCreator {
-            PlatformLogger(it?:"Unnamed logger") { s ->
-                lineReader.printAbove(s + Ansi().reset().toString())
-            }
-        }
-    }
 
     private val terminal: Terminal =
         TerminalBuilder
@@ -69,10 +58,12 @@ object Console {
                 }
                 terminal.also { it.resume() }
             }
-    private val lineReader: LineReader by lazy {
+
+    internal val lineReader: LineReader by lazy {
         LineReaderBuilder.builder().terminal(terminal).completer(NullCompleter()).build()
     }
     private const val prompt = "> "
+
     @OptIn(DelicateCoroutinesApi::class)
     fun listen() {
         KotlinMain.coroutineScope.launch(CoroutineName("Console Command")) {
@@ -85,7 +76,7 @@ object Console {
                 } catch (e: CancellationException) {
                     PublicShared.logger.error(e)
                     return@launch
-                }catch(e: UserInterruptException){
+                } catch (e: UserInterruptException) {
                     exitProcess(1)
                 }
                 if (re.isEmpty() || re.isBlank()) continue

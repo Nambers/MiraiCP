@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.mirai.core.self)
     implementation(libs.jansi)
     implementation(libs.jline)
+    api("net.mamoe", "mirai-logging-log4j2", libs.versions.miraiVersion.get())
 }
 tasks.test {
     useJUnitPlatform()
