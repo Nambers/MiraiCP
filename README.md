@@ -145,7 +145,9 @@ target_include_directories(<Target name> public
     "md5": false,
     "autoLogin": true
   }],
-  "cppPath": "dll路径"
+  "cppPaths": [
+  {"path": "dll路径"}
+  ]
 }
 ```
 详细见[config.md文档](doc/config.md#1-loader-%E7%AB%AF)
@@ -194,9 +196,9 @@ mcl --update-package io.github.nambers:MiraiCP-plugin --channel nightly --type p
 **如果有其他问题，欢迎提交issue和提交PR贡献**
 
 # 更新方式
-0. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP.hpp和loader或plugin jar包
+0. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载loader或plugin的jar文件
 
-1. 替换include/下的miraiCP.hpp
+1. 从[MiraiCP-template](https://github.com/Nambers/MiraiCP-template/)下载并替换single_include/MiraiCP下全部文件(就MiraiCP.hpp和MiraiCP.cpp)
 
 2. 替换你的loader或plugin jar包
 
