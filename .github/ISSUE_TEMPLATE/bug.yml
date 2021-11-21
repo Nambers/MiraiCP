@@ -1,0 +1,43 @@
+name: Bug Report
+description: File a bug report
+title: "[Gug]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank for bug report!
+        在提交前请确保做完以下的检查:
+        - 没有相同类型issue
+        - 已经更新到最新版
+        - By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/Nambers/MiraiCP/blob/main/CODE_OF_CONDUCT.md)
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 描述遇到的问题(预期效果和目前效果)
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志
+      description: 日志文本
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 发生在哪个版本上
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: 组件
+      description: 发生在哪个组件上
+      options:
+        - Loader
+        - Plugin
+    validations:
+      required: true
