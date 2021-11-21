@@ -34,7 +34,7 @@ allprojects {
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     dependencies {
-        implementation("com.google.code.gson:gson:2.8.8")
+        implementation("com.google.code.gson:gson:2.8.9")
         implementation("org.json:json:20210307")
         compileOnly("net.mamoe:mirai-core-api:" + V.miraiVersion) // mirai-core 的 API
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
