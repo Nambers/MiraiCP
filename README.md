@@ -42,12 +42,6 @@
 
 # 关于MiraiCP
 
-> 从v2.6.3-RC开始，使用utf8作为编码
-> 
-> vs需要加/utf8编译参数，见[微软文档](https://docs.microsoft.com/zh-cn/cpp/build/reference/utf-8-set-source-and-executable-character-sets-to-utf-8?view=msvc-160&viewFallbackFrom=vs-2017)
-> 
-> cmake方式已经加了以utf8编译不用改
-
 <details>
 <summary>支持的事件</summary>
 
@@ -96,26 +90,42 @@
 mirai需要java环境 **>=11**
 
 ## 2 注意事项
-
-> MiraiCP版本规则: 从2.2.0开始 *(2021/1/31)*,版本前两位为Mirai的版本，后一位为SDK更新迭代版本
-
-1. 目前只确定win下可用，其他操作系统未测试，理论上linux应该可用，生成so文件替换dll文件即可
+- 从v2.6.3-RC开始，使用utf8作为编码, vs需要加/utf8编译参数，见[微软文档](https://docs.microsoft.com/zh-cn/cpp/build/reference/utf-8-set-source-and-executable-character-sets-to-utf-8?view=msvc-160&viewFallbackFrom=vs-2017), 而在CmakeLists里就表现为
+```
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+```
+- MiraiCP版本规则: 从2.2.0开始 *(2021/1/31)*,版本前两位为Mirai的版本，后一位为SDK更新迭代版本
+- `deprecated` 方法一般只保存3个版本
+- 编译出的动态链接库**不具备跨平台性**, 如在windows下编译的库在linux上无法使用, 要在和目标同系统下编译或者用cmake交叉编译
 
 ## 3 使用方法:
 
 ### 3.1 如何使用MiraiCP SDK?
 #### 3.1.1 在demo里写
-从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP_CPP.zip文件夹并解压
-在demo.cpp中编写代码
+从[MiraiCP-template](https://github.com/Nambers/MiraiCP-template) 中下载模板并解压
+在main.cpp中编写代码
 #### 3.1.2 在代码中加入MiraiCP sdk依赖
-从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP_CPP.zip文件夹并解压, 仅保留include文件夹
-在你的cmakelist中构建一个动态链接库，target name必须是MiraiCP，然后在下面demo.cpp就主程序在的文件，然后加你依赖的文件，然后引入include作为子文件夹:
-```cmake
-add_library(MiraiCP SHARED demo.cpp)
-# 增加MiraiCP依赖
-add_subdirectory(include)
+从[MiraiCP-template](https://github.com/Nambers/MiraiCP-template) 中下载Single_include文件夹
+1. 在你的`CMakeLists.txt`里引入JNI文件和`single_include`下的文件
 ```
-然后在你需要使用miraiCP sdk的文件`#include "MiraiCP.hpp"` 和 `using namespace MiraiCP;` 即可
+set(JAVA_AWT_LIBRARY NotNeeded)
+set(JAVA_JVM_LIBRARY NotNeeded)
+set(JAVA_AWT_INCLUDE_PATH NotNeeded)
+find_package(JNI REQUIRED)
+target_include_directories(<Target name> public 
+            ${CMAKE_CURRENT_SOURCE_DIR}/single_include/3rd_include
+            ${CMAKE_CURRENT_SOURCE_DIR}/single_include/3rd_include/utf8
+            ${CMAKE_CURRENT_SOURCE_DIR}/single_include/3rd_include/utf8/utf8
+            ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP
+            ${JAVA_INCLUDE_PATH}/
+            ${JAVA_INCLUDE_PATH2}/)
+```
+其中, `<target name>`是你构建的动态链接库的target
+
+2. 在你的target里包含 `single_include/MiraiCP/MiraiCP.cpp`
+
+4. 在你需要使用miraiCP sdk的文件`#include "MiraiCP.hpp"` 和 `using namespace MiraiCP;` 即可
 ### 3.2 启动SDK
 #### 3.2.1 使用loader直接使用
 适用于只在机器人上使用MiraiCP SDK插件
