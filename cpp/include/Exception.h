@@ -49,6 +49,7 @@ namespace MiraiCP {
             ~ExceptionBroadcasting();
         };
 
+        /// 报错位置信息, 由MiraiThrow宏传递
         MiraiCPException append(const std::string &name, int line) {
             lineNum = line;
             filename = name;

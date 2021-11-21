@@ -50,8 +50,17 @@ namespace MiraiCP {
                                                                  time(t) {}
     };
 
-    ///转发消息, 由ForwardNode组成
-    /// @see class ForwardedNode
+    /*!转发消息, 由ForwardNode组成
+     * @see class ForwardedNode
+     *@example 构建聊天记录
+     * @code
+     *ForwardedMessage(&e.group,
+     *{
+     *	ForwardedNode(1930893235, "Eritque arcus", "hahaha", 1),
+     *	ForwardedNode(1930893235, "Eritque arcus", "hahaha", -1)
+     *}).sendTo(&e.group);
+     * @endcode
+     */
     class ForwardedMessage {
     public:
         /// json节点
@@ -59,16 +68,7 @@ namespace MiraiCP {
 
         /*!
         *@brief 构建一条聊天记录
-        *@details 第一个参数是聊天记录发生的地方
-        * 然后是每条信息
-        *@example 构建聊天记录
-         * @code
-        *ForwardedMessage(&e.group,
-        *{
-        *	ForwardedNode(1930893235, "Eritque arcus", "hahaha", 1),
-        *	ForwardedNode(1930893235, "Eritque arcus", "hahaha", -1)
-        *}).sendTo(&e.group);
-        * @endcode
+        *@details 第一个参数是聊天记录发生的地方, 然后是每条信息
         */
         ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes);
 
@@ -100,12 +100,10 @@ namespace MiraiCP {
         }
 
         explicit OnlineForwardedMessage(json o, const std::string &rid, std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
-        /// 不支持直接发送OnlineForwardMessage
+
+        /// 不支持直接发送OnlineForwardMessage, ForwardedMessage发送
         [[deprecated("use MiraiCP::ForwardedMessage to send")]] std::string toMiraiCode() const override {
-            std::string re;
-            for (const auto &a: nodelist)
-                re += a.message.toMiraiCode() + "\n";
-            return re;
+            return "";
         }
         static OnlineForwardedMessage deserializationFromMessageSourceJson(json j);
     };

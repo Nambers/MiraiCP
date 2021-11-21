@@ -178,9 +178,6 @@ object Command {
                     !f.isFile || !f.exists() -> {
                         error(order.joinToString(" "), order[1] + "不是一个有效的文件")
                     }
-                    f.extension != "dll" && f.extension != "so" -> {
-                        error(order.joinToString(" "), order[1] + "不是一个有效的dll或so文件")
-                    }
                     else -> {
                         f.loadAsCPPLib(emptyList())
                     }

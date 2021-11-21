@@ -20,7 +20,33 @@
 #include "Member.h"
 
 namespace MiraiCP {
-    /// 群聊类声明
+    /*!
+     * @detail 群聊类声明
+     * @brief
+     * @example 在事件中构建Group对象
+     * @code Group(this.group.id, this.bot.id) @endcode
+     * @example 上传并发送远程(群)文件
+     *  @code
+     *   Event::processor.registerEvent([](GroupMessageEvent e) {
+     *      // 发送D:\\ValveUnhandledExceptionFilter.txt本地文件到qq群的 /test.txt 路径
+     *      RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
+     *   });
+     *   @endcode
+     *   @example 取群文件信息
+     *   @code
+     *   //根据qq群远程路径(不带文件名)和文件id, 文件id可以在上传返回的RemoteFile类型中获得, 会在子目录中查找如果当前目录未找到
+     *   //根据qq群远程路径(带文件名)找, 不过由于qq群文件允许同名文件这一特性, 返回的文件为群文件中同名文件中随机一个(不可靠)
+     *   Event::processor.registerEvent([](GroupMessageEvent e) {
+     *      e.group.SendMsg(e.group.getFile("/", id).name());
+     *      e.group.SendMsg(e.group.getFile("/test.txt").name());
+     *      e.group.SendMsg(e.group.getFileListString("/"));
+     *      });
+     *   @endcode
+     *   @example 取string格式群文件列表
+     *   @code
+     *   e.group.SendMsg(e.group.getFileListString("/"));
+     *   @endcode
+     */
     class Group : public Contact {
     public:
         /// 群公告参数
@@ -147,8 +173,6 @@ namespace MiraiCP {
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
         /// @param botid 机器人id
-        /// @example 在事件中构建Group对象
-        /// @code Group(this.group.id, this.bot.id) @endcode
         Group(QQID groupid, QQID botid, JNIEnv * = ThreadManager::getEnv());
 
         explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
@@ -171,13 +195,6 @@ namespace MiraiCP {
         @param path-群文件路径(带文件名),根目录为/
         @param filepath-本地文件路径
         @attention 路径分隔符是 `/`
-        @example 上传并发送远程(群)文件
-         @code
-         Event::processor.registerEvent([](GroupMessageEvent e) {
-            // 发送D:\\ValveUnhandledExceptionFilter.txt本地文件到qq群的 /test.txt 路径
-            RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
-            });
-         @endcode
         */
         RemoteFile sendFile(const std::string &path, const std::string &filepath,
                             JNIEnv * = ThreadManager::getEnv());
@@ -193,16 +210,6 @@ namespace MiraiCP {
         @param id-文件id,可空，空则为用路径查找(此时路径要带文件名)
         @attention 因为群文件允许重名文件存在的特性，如果没有id该查找并不可靠，只能返回重名文件中的其中一个文件
         @see RemoteFile
-         @example 取群文件信息
-         @code
-         //根据qq群远程路径(不带文件名)和文件id, 文件id可以在上传返回的RemoteFile类型中获得, 会在子目录中查找如果当前目录未找到
-         //根据qq群远程路径(带文件名)找, 不过由于qq群文件允许同名文件这一特性, 返回的文件为群文件中同名文件中随机一个(不可靠)
-         Event::processor.registerEvent([](GroupMessageEvent e) {
-            e.group.SendMsg(e.group.getFile("/", id).name());
-            e.group.SendMsg(e.group.getFile("/test.txt").name());
-            e.group.SendMsg(e.group.getFileListString("/"));
-            });
-         @endcode
         */
         RemoteFile getFile(const std::string &path, const std::string &id = "",
                            JNIEnv * = ThreadManager::getEnv());
@@ -236,10 +243,7 @@ namespace MiraiCP {
         getFileList(const std::string &path, JNIEnv * = ThreadManager::getEnv());
 
         /// 取文件列表以字符串形式返回
-        ///@example 取string格式群文件列表
-        /// @code
-        /// e.group.SendMsg(e.group.getFileListString("/"));
-        /// @endcode
+        /// @param path 文件夹路径
         std::string getFileListString(const std::string &path, JNIEnv * = ThreadManager::getEnv());
     };
 } // namespace MiraiCP

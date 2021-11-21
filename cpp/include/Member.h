@@ -20,7 +20,32 @@
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {
-    /// 群成员类声明
+    /*!
+     * @brief 群成员类声明
+     * @example 在事件中构建Member对象
+     * @code
+     *  Member(this.sender.id, this.group.id, this.bot.id)
+     * @endcode
+     * @example 踢出群成员
+     * @code
+     * Event::processor.registerEvent([](GroupMessageEvent e) {
+        try {
+            Member m = Member(qqid, e.group.id(), e.bot.id());
+            m.Kick("this_is_reason");
+        }catch (BotException err) {
+           //权限不足
+           Logger::logger.error(err.what());
+        }catch (MemberException err) {
+           if (err.type == 1) {
+               //找不到群
+           }
+           if (err.type == 2) {
+               //找不到群成员
+           }
+        }
+       });
+     * @endcode
+     */
     class Member : public Contact {
     public:
         /// @brief 权限等级
@@ -39,10 +64,6 @@ namespace MiraiCP {
         /// @param qqid 该成员q号
         /// @param groupid 所在群号
         /// @param botid 机器人id
-        /// @example 在事件中构建Member对象
-        /// @code
-        ///  Member(this.sender.id, this.group.id, this.bot.id)
-        /// @endcode
         explicit Member(QQID qqid, QQID groupid, QQID botid,
                         JNIEnv * = ThreadManager::getEnv());
 
@@ -80,27 +101,6 @@ namespace MiraiCP {
 
         /*! 踢出这个群成员
         * @param reason - 原因
-         * @example 踢出群成员
-         * @code
-         * Event::processor.registerEvent([](GroupMessageEvent e) {
-            try {
-                Member m = Member(qqid, e.group.id(), e.bot.id());
-                m.Kick("this_is_reason");
-            }
-            catch (BotException err) {
-                //权限不足
-                Logger::logger.error(err.what());
-            }
-            catch (MemberException err) {
-                if (err.type == 1) {
-                    //找不到群
-                }
-                if (err.type == 2) {
-                    //找不到群成员
-                }
-            }
-            });
-         * @endcode
         */
         void kick(const std::string &reason, JNIEnv * = ThreadManager::getEnv());
 

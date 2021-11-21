@@ -21,7 +21,15 @@
 
 namespace MiraiCP {
     using QQID = unsigned long long;
-    /// 消息源声明
+    /*! 消息源声明
+     * @example 撤回信息
+     * @code
+     * Event::processor.registerEvent([](GroupMessageEvent e) {
+           e.messageSource.recall();
+           e.group.SendMessage("hi").recall();
+       });
+     * @endcode
+    */
     class MessageSource {
     public:
         /// 消息的ids
@@ -37,6 +45,7 @@ namespace MiraiCP {
          * @brief 回复(引用并发送miraicode)
          * @param msg - MiraiCodeable类型指针 - 内容
          * @see MessageSource::quoteAndSendMiraiCode
+         * @deprecated 用Contact.quoteAndSendMessage, since v2.8.1
         */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
@@ -49,10 +58,7 @@ namespace MiraiCP {
          * @param c 引用后发送的内容, 为纯文本
          * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
          * @return MessageSource
-         * @example 回复(引用并发送)
-         * @code
-         *  e.messageSource.quoteAndSendMsg("HI");
-         * @endcode
+         * @deprecated use Contact.quoteAndSendMessage, since v2.8.1
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMsg(const std::string &c, QQID groupid = 0,
@@ -63,6 +69,7 @@ namespace MiraiCP {
          * @param c 引用后发送的内容, 为MiraiCode形式
          * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
          * @return MessageSource
+         * @deprecated use Contact.quoteAndSendMessage, since v2.8.1
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
@@ -87,21 +94,7 @@ namespace MiraiCP {
 
         std::string serializeToString() const;
 
-        /*!
-         * @brief 撤回该信息
-         * @example 撤回信息
-         * @code
-         * Event::processor.registerEvent([](GroupMessageEvent e) {
-            try {
-                e.messageSource.recall();
-                e.group.SendMsg("hi").recall();
-            }
-            catch (MiraiCPException &e) {
-                Logger::logger.error("错误");
-            }
-            });
-         * @endcode
-        */
+        /// @brief 撤回该信息
         void recall(JNIEnv * = ThreadManager::getEnv()) const;
 
         bool operator==(const MessageSource &ms) const {

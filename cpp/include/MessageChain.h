@@ -99,6 +99,12 @@ namespace MiraiCP {
             p(v, args...);
         }
 
+        template<class... T>
+        void p(std::vector<Message> *v, MessageChain mc, T... args) {
+            v->insert(v->end(), mc.content.begin(), mc.content.end());
+            p(v, args...);
+        }
+
         std::vector<Message> content;
 
         MessageSource quoteAndSend0(const std::string &msg, QQID groupid = -1,
@@ -211,7 +217,14 @@ namespace MiraiCP {
             this->p(&this->content, args...);
         };
 
-        /// outcoming构造器
+        /*!
+         * @brief 从多个参数构建MessageChain
+         * @tparam T 多个传入参数的类型
+         * 支持以下类型:
+         * - std::string / const char* 相当于传入PlainText
+         * - SingleMessage的派生类
+         * @param args 参数本身
+         */
         template<class... T>
         explicit MessageChain(T... args) {
             p(&this->content, args...);
@@ -225,21 +238,27 @@ namespace MiraiCP {
         };
 
         template<class T>
-        [[nodiscard]] MessageChain plus(const T &a) {
+        [[nodiscard]] MessageChain plus(const T &a) const {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             MessageChain tmp(*this);
             tmp.content.push_back(std::make_shared<SingleMessage>(a));
             return tmp;
         }
 
-        MessageChain plus(const MessageSource &ms) {
+        [[nodiscard]] MessageChain plus(const MessageChain &mc) const {
+            MessageChain tmp(*this);
+            tmp.content.insert(tmp.content.end(), mc.content.begin(), mc.content.end());
+            return tmp;
+        }
+
+        [[nodiscard]] MessageChain plus(const MessageSource &ms) const {
             MessageChain tmp(*this);
             tmp.source = ms;
             return tmp;
         }
 
         template<class T>
-        MessageChain operator+(const T &msg) {
+        MessageChain operator+(const T &msg) const {
             return this->plus(msg);
         }
 
@@ -275,6 +294,7 @@ namespace MiraiCP {
         /// - std::string / const char* 相当于传入PlainText(str)
         /// - SingleMessage的各种派生类
         /// - MessageChain
+        /// @deprecated use Contact.quoteAndSend, since v2.8.1
         template<class T>
         [[deprecated("use Contact.quoteAndSend")]] MessageSource
         quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv()) {

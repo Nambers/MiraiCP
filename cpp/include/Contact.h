@@ -24,6 +24,25 @@
 namespace MiraiCP {
     /*!
     * @brief group, friend, member的父类
+     * @example 发送信息
+     * 以群聊信息为例
+     * @code
+     * Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e){
+     * // 发送MessageChain
+     * e.group.sendMessage(e.message);
+     * // 发送SingleMessaeg
+     * e.group.sendMessage(PlainText("a"));
+     * e.group.sendMessaeg(e.sender.at(), PlainText(""), Face(5)));
+     * }
+     * @endcode
+     * @example 回复信息
+     * 以群聊信息为例
+     * 和发送信息很像, 除了要多传入一个MessageSource
+     * @code
+     * Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e){
+     * e.group.quoteAndSend(e.message.source.value(), PlainText("a"));
+     * }
+     * @endcode
     */
     class Contact {
     private:
@@ -184,30 +203,51 @@ namespace MiraiCP {
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
+        /// @deprecated 用 sendMessage, since v2.8.1
         [[deprecated("Use sendMessage")]] MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
                                                                       JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 
-        /// @brief 回复并发送
-        /// @param s 内容
-        /// @param groupid 如果是来源于TempGroupMessage就要提供(因为要找到那个Member)
-        /// @note 可以改MessageSource里的内容, 客户端在发送的时候并不会校验MessageSource的内容正确性(比如改originalMessage来改引用的文本的内容, 或者改id来定位到其他信息)
-        /// @detail 支持以下类型传入
-        /// - std::string / const char* 相当于传入PlainText(str)
-        /// - SingleMessage的各种派生类
-        /// - MessageChain
+        /*!
+         * @brief 回复并发送
+         * @param s 内容
+         * @detail 支持以下类型传入
+         * - std::string / const char* 相当于传入PlainText(str)
+         * - SingleMessage的各种派生类
+         * - MessageChain
+         * @param ms 回复的信息的MessageSource
+         * @note 可以改MessageSource里的内容, 客户端在发送的时候并不会校验MessageSource的内容正确性(比如改originalMessage来改引用的文本的内容, 或者改id来定位到其他信息)
+         */
         template<class T>
-        MessageSource
-        quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv()) {
+        MessageSource quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = ThreadManager::getEnv()) {
             return this->quoteAndSend1(s, ms, env);
         }
-
+        /*!
+         * @brief 回复并发送
+         * @param s 内容
+         * @param groupid 如果是来源于TempGroupMessage就要提供(因为要找到那个Member)
+         * @note 可以改MessageSource里的内容, 客户端在发送的时候并不会校验MessageSource的内容正确性(比如改originalMessage来改引用的文本的内容, 或者改id来定位到其他信息)
+         * @detail 支持以下类型传入
+         * - std::string / const char* 相当于传入PlainText(str)
+         * - SingleMessage的各种派生类
+         * - MessageChain
+         */
         template<class... T>
         MessageSource quoteAndSendMessage(MessageSource ms, T... val) {
-            return this->quoteAndSendMessage(MessageChain(val...), ms);
+            return this->quoteAndSendMessage(MessageChain(val...), std::move(ms));
         }
 
+        /*!
+         * @brief 发送信息
+         * @tparam T 类型
+         * 支持:
+         * - SingleMessage的派生类
+         * - MessageChain
+         * - std::string / const char* 相当于发送PlainText()
+         * @param msg 内容
+         * @return MessageSource
+         */
         template<class... T>
         MessageSource sendMessage(T... msg) {
             return this->sendMessage(MessageChain(msg...));
@@ -215,9 +255,9 @@ namespace MiraiCP {
 
         /// @brief 发送一条Message
         /// @detail 支持
-        /// - std::string: 相当于发送PlainText(str), 不会反序列化miraicode
-        /// - MiraiCode: 相当于发送反序列化后的
-        /// - 各种SingleMessage的子类
+        /// - std::string: 相当于发送PlainText(str)
+        /// - MiraiCode 相当于发送反序列化MiraiCode后的
+        /// - 各种SingleMessage的派生类
         /// - MessageChain
         /// @param msg Message
         /// @param retryTime 重试次数
@@ -232,6 +272,7 @@ namespace MiraiCP {
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
+        /// @deprecated 用 sendMessage, since v2.8.1
         [[deprecated("Use sendMessage")]] MessageSource
         sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(msg, retryTime, false, env);
@@ -242,6 +283,7 @@ namespace MiraiCP {
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
+        /// @deprecated 用 sendMessage, since v2.8.1
         [[deprecated("Use sendMessage")]] MessageSource
         sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(msg.toMiraiCode(), retryTime, false, env);
@@ -252,6 +294,7 @@ namespace MiraiCP {
         /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
         /// @return MessageSource
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
+        /// @deprecated 用 sendMessage, since v2.8.1
         [[deprecated("Use sendMessage")]] MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3,
                                                                 JNIEnv *env = ThreadManager::getEnv()) {
             return sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);

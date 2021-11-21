@@ -17,5 +17,5 @@
 
 object V {
     const val kotlinVersion = "1.5.30"
-    const val miraiVersion = "2.8.0"
+    const val miraiVersion = "2.9.0-M1"
 }

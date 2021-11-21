@@ -160,9 +160,8 @@ namespace MiraiCP {
 
         /*!
         * @brief 从图片id构造，适用于服务器上已经有的图片，即接收到的
-        * @example 图片miraiCode格式例子
-         * @code [mirai:image:{图片id}.jpg] @endcode
-        * @note 可以用这个正则表达式找出id ` \\[mirai:image:(.*?)\\] `
+        * @detail 图片miraiCode格式例子, `[mirai:image:{图片id}.jpg]`
+        * 可以用这个正则表达式找出id `\\[mirai:image:(.*?)\\]`
         */
         explicit Image(const std::string &imageId) : SingleMessage(Image::type(), imageId) {
             this->id = imageId;
@@ -307,10 +306,12 @@ namespace MiraiCP {
         }
     };
 
-    /// 引用信息, 不可直接发送, 发送引用信息用MessageChain.quoteAndSendMessage
+    /// 引用信息
     class QuoteReply : public SingleMessage {
     public:
         static int type() { return -2; }
+
+        /// 不可直接发送, 发送引用信息用MessageChain.quoteAndSendMessage
         [[deprecated("cannot use, use MessageChain.quote")]] std::string toMiraiCode() const override {
             return "";
         }
@@ -347,6 +348,7 @@ namespace MiraiCP {
         /// 16位md5
         std::array<uint8_t, 16> md5;
 
+        /// 不支持直接发送, 用Contact.sendAudio
         [[deprecated("cannot use, use Contact.sendAudio")]] std::string toMiraiCode() const override {
             return "";
         }
@@ -465,7 +467,7 @@ namespace MiraiCP {
                                                                                                  size(s){};
 
         /// 上传后会自动发送
-        [[deprecated("Cannot send manually")]] std::string toMiraiCode() const override {
+        [[deprecated("Cannot send manually, use Group.sendFile")]] std::string toMiraiCode() const override {
             return "";
         }
 

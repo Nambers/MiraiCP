@@ -474,7 +474,7 @@ object PublicShared {
         c.withBot { bot ->
             c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}") { group ->
                 val tmp = try {
-                    group.files.root.resolveFiles(path.trimStart('/')).first()
+                    group.files.root.resolveFiles(path).first()
                 } catch (e: NoSuchElementException) {
                     logger.error("cannot find the file,位置:K-remoteFileinfo0, path: $path")
                     return "E2"
