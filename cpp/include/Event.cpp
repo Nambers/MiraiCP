@@ -19,6 +19,7 @@
 namespace MiraiCP {
     Event Event::processor = Event();
 
+    /// @deprecated use Event::prcessor, 使用单例模式, since v2.8.1
     [[deprecated("Use Event::processor instead")]] Event *const procession = &Event::processor;
 
     MessageChain PrivateMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {

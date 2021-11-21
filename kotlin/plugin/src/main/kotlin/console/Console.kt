@@ -97,9 +97,6 @@ object LoadPlugin : SimpleCommand(
             !f.isFile || !f.exists() -> {
                 sendMessage("Err:${f.absolutePath} 不是一个有效的文件")
             }
-            f.extension != "dll" && f.extension != "so" -> {
-                sendMessage("${f.absolutePath} 不是一个有效的dll或so文件")
-            }
             else -> {
                 f.loadAsCPPLib(emptyList())
             }

@@ -9,8 +9,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 声明C++项目
 project(MiraiCP_pro LANGUAGES CXX)
-# 在64位编译
-set(BUILD_USE_64BITS on)
 
 execute_process(
         COMMAND python buildScript/addinclude.py
@@ -51,10 +49,12 @@ set_target_properties(MiraiCP_single PROPERTIES
         PREFIX lib
         OUTPUT_NAME MiraiCP)
 target_include_directories(MiraiCP_single PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP)
-
+set(JAVA_AWT_LIBRARY NotNeeded)
+set(JAVA_JVM_LIBRARY NotNeeded)
+set(JAVA_AWT_INCLUDE_PATH NotNeeded)
 find_package(JNI REQUIRED)
 if (JNI_FOUND)
-    message (STATUS "FOUND JNI IN ${JAVA_INCLUDE_PATH}")
+    message(STATUS "FOUND JNI IN ${JAVA_INCLUDE_PATH}")
     set(SOURCE_PATH
             ${CMAKE_CURRENT_SOURCE_DIR}/3rd_include/
             ${CMAKE_CURRENT_SOURCE_DIR}/3rd_include/utf8

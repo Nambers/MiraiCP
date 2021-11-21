@@ -17,6 +17,8 @@
 #ifndef MIRAICP_PRO_EVENT_H
 #define MIRAICP_PRO_EVENT_H
 
+#include <utility>
+
 #include "Bot.h"
 #include "Contact.h"
 
@@ -72,7 +74,15 @@ namespace MiraiCP {
         }
     };
 
-    ///群消息事件声明
+    /*!
+     * @brief 群消息事件声明
+     * @example 取群聊下一条消息
+     * @code
+     * auto tmp = e.nextMessage();
+     * e.group.sendMessage(tmp);
+     * @endcode
+     */
+
     class GroupMessageEvent : public BotEvent {
     public:
         ///来源群
@@ -88,30 +98,33 @@ namespace MiraiCP {
 
         /*!
          * @brief 取群聊下一个消息(群聊与本事件一样)
-         * @warning 如果两次发送信息间隔过短可能会漏过信息
          * @param time 超时时间限制
-         * @param halt 是否拦截该事件(不被注册的监听器收到处理)
-         * @return MiraiCP::Message
+         * @param halt 是否拦截该事件(不让这个消息被注册的其他监听器收到处理)
+         * @return 消息链
          */
-        MessageChain
-        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
+        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
 
         /*!
          * @brief 取群聊中同群成员的下一个消息(发送人和群与本事件一样)
-         * @warning 如果两次发送信息间隔过短可能会漏过信息
          * @param time 超时时间限制
-         * @param halt 是否拦截该事件(不被注册的监听器收到处理)
-         * @return MiraiCP::Message
+         * @param halt 是否拦截该事件(不让消息被注册的其他监听器收到处理)
+         * @return 消息链
          */
-        MessageChain
-        senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
+        MessageChain senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
 
         static eventTypes getEventType() {
             return eventTypes::GroupMessageEvent;
         }
     };
 
-    /// 私聊消息事件类声明
+    /*!
+     * @detail 私聊消息事件类声明
+     * @example 取好友下一条信息
+     * @code
+     * auto tmp = e.nextMessage();
+     * e.sender.sendMessage(tmp);
+     * @endcode
+     */
     class PrivateMessageEvent : public BotEvent {
     public:
         /// 发起人
@@ -127,17 +140,16 @@ namespace MiraiCP {
          * @param messageSource 消息源
          */
         PrivateMessageEvent(QQID botid, Friend sender, MessageChain mc) : BotEvent(botid), sender(std::move(sender)),
-                                                                          message(mc){};
+                                                                          message(std::move(mc)){};
 
         /*!
          * @brief 取下一个消息(发送人和接收人和本事件一样)
          * @warning 如果两次发送信息间隔过短可能会漏过信息
          * @param time 超时时间限制
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
-         * @return MiraiCP::Message
+         * @return 消息链
          */
-        MessageChain
-        nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
+        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
 
         static eventTypes getEventType() {
             return eventTypes::PrivateMessageEvent;

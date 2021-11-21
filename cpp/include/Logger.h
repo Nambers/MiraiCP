@@ -33,6 +33,11 @@ namespace MiraiCP {
 	* @code Logger::logger.warning(string) @endcode
 	* 发送错误级日志
 	* @code Logger::logger.error(string) @endcode
+    * @example 设置loggerhandler的action
+    * @code Logger::logger.registerHandle([](std::string content, int level){
+    *     \\do some things
+    * });
+    * @endcode
     */
     class Logger_interface {
     private:
@@ -106,10 +111,6 @@ namespace MiraiCP {
         /// @brief 设置loggerhandler的action
         /// @param action 执行的操作
         /// @see Logger::handler
-        /// @example 设置loggerhandler的action
-        /// @code Logger::logger.registerHandle([](std::string content, int level){
-        ///     \\do some things
-        /// });@endcode
         inline void registerHandle(Action action);
 
         /// @brief 设置handler的启用状态

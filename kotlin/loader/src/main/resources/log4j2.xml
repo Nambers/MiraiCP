@@ -21,6 +21,7 @@
     <Appenders>
         <Jline3Appender name="jline">
             <PatternLayout
+                    charset="UTF-8"
                     pattern="%highlight{%d{YYYY.MM.dd HH:mm:ss} [%-5level] %logger{3} - %message}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green}\n"
                     disableAnsi="false"/>
         </Jline3Appender>

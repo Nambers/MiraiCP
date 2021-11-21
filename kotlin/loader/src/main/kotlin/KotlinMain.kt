@@ -59,7 +59,7 @@ object KotlinMain {
                 else
                     PublicShared.maxThread = this.advanceConfig!!.maxThread!!
             }
-        }.cppPaths.forEach { it ->
+        }.cppPaths.forEach {
             val d = it.dependencies?.filter { p ->
                 File(p).let { f -> f.isFile && f.exists() }
             }

@@ -31,6 +31,7 @@ namespace MiraiCP {
 
         static CPPPlugin *plugin;
 
+        /// 插件启用时调用一次
         virtual void onEnable() {}
 
         virtual void onDisable() {}

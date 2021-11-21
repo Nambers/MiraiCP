@@ -30,6 +30,14 @@ namespace MiraiCP {
     /*!
     * @class threadManager
     * @brief 多线程管理.
+    * @example 多线程管理
+     * @code
+     * void func(){
+     *      //do some things
+     *      // 一个完整的线程应该在结束时调用detach来释放env的空间
+     *      ThreadManager::detch();
+     * }
+     * @endcode
     */
     class ThreadManager {
     public:
@@ -74,14 +82,6 @@ namespace MiraiCP {
         /*!
          * 	@brief 结束当前线程的env，也就是释放当前线程缓存的env.
          *  @note 不过继续调用getEnv()将再次获取，所以本方法调用后线程也可以通过getEnv重新获取一个env，本方法的作用就是在结束后释放空间
-         * @example 多线程管理
-         * @code
-         * void func(){
-         *      //do some things
-         *      // 一个完整的线程应该在结束时调用detach来释放env的空间
-         *      ThreadManager::detch();
-         * }
-         * @endcode
          */
         static void detach();
 
