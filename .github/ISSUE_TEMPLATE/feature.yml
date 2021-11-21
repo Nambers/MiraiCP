@@ -1,0 +1,40 @@
+name: feature request
+description: 申请新特性
+title: "[Freature]: "
+labels: "enhancement"
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      感谢你来到这里
+      在申请前, 请确认你已经做了这些检查
+      - 没有issue申请相同/类似的功能
+      - 在最新版没有包含这个功能
+      - By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/Nambers/MiraiCP/blob/main/CODE_OF_CONDUCT.md)
+
+- type: textarea
+  id: feature-description
+  attributes:
+    label: 功能描述
+    description: 在此详细描述功能
+  validations:
+    required: true
+- type: textarea
+  id: reason-description
+  attributes:
+    label: 原因
+    description: 为什么申请这个功能
+  validations:
+    required: true
+- type: dropdown
+  id: version
+  attributes:
+    label: 组件选择
+    description: 在哪个组件实现
+    options:
+      - loader
+      - plugin
+      - both
+  validations:
+    required: true
