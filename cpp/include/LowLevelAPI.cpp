@@ -14,13 +14,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "LowLevelAPI.h"
+#include "Exception.h"
 namespace MiraiCP {
-    std::string LowLevelAPI::send0(const std::string &content, Contact *c, int retryTime, bool miraicode, JNIEnv *env,
+    std::string LowLevelAPI::send0(const std::string &content, json c, int retryTime, bool miraicode, JNIEnv *env,
                                    const std::string &errorInfo) {
         nlohmann::json j;
         nlohmann::json tmp;
         tmp["content"] = content;
-        tmp["contact"] = c->serialization();
+        tmp["contact"] = c;
         j["source"] = tmp.dump();
         j["miraiCode"] = miraicode;
         j["retryTime"] = retryTime;

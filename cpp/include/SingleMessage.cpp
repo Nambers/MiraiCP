@@ -103,21 +103,23 @@ namespace MiraiCP {
     }
 
     /*图片类实现*/
-    std::string Image::getInfo0(int type, JNIEnv *env) {
+    void Image::refreshInfo(JNIEnv *env) {
         json j;
-        j["type"] = type;
         j["id"] = this->id;
         std::string re = Config::koperation(Config::QueryImgInfo, j, env);
         if (re == "E1")
             MiraiCPThrow(RemoteAssetException("图片id格式错误"));
-        return re;
+        j = json::parse(re);
+        this->url = j["url"];
+        this->md5 = j["md5"];
+        this->size = j["size"];
     }
 
-    bool Image::isUploaded(const std::string &md5, size_t size, Bot bot, JNIEnv *env) {
+    bool Image::isUploaded(const std::string &md5, size_t size, QQID botid, JNIEnv *env) {
         json j;
         j["md5"] = md5;
         j["size"] = size;
-        j["botid"] = bot.id;
+        j["botid"] = botid;
         std::string re = Config::koperation(Config::ImageUploaded, j, env);
         return re == "True";
     }

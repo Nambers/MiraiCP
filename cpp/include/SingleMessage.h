@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_SINGLEMESSAGE_H
 #define MIRAICP_PRO_SINGLEMESSAGE_H
 
-#include "Bot.h"
 #include "Exception.h"
 #include "MessageSource.h"
 #include <array>
@@ -154,22 +153,25 @@ namespace MiraiCP {
 
     /// 图像类声明
     class Image : public SingleMessage {
-    private:
-        std::string getInfo0(int type, JNIEnv* env);
     public:
         static int type() { return 3; }
         //图片id，样式:` {xxx}.xx `
         std::string id;
+        /// Nullable, use refreshInfo() refresh value
+        std::optional<std::string> md5;
+        /// Nullable, use refreshInfo() refresh value
+        std::optional<size_t> size;
+        /// Nullable, use refreshInfo() refresh value
+        std::optional<std::string> url;
 
         /*!
          * @brief 图片是否已经上传
          * @param md5 在kotlin端会用.toByteArray()转换
          * @param size 图片大小
-         * @param bot 所属Bot
+         * @param botid 所属Botid
          * @return 是否上传
-         * TODO Impl, and md5() in Image
          */
-        static bool isUploaded(const std::string &md5, size_t size, Bot bot, JNIEnv * = ThreadManager::getEnv());
+        static bool isUploaded(const std::string &md5, size_t size, QQID botid, JNIEnv * = ThreadManager::getEnv());
 
         /*!
         * @brief 从图片id构造，适用于服务器上已经有的图片，即接收到的
@@ -185,15 +187,9 @@ namespace MiraiCP {
             this->id = sg.content;
         }
 
-        /// 获取图片下载url
-        std::string queryURL(JNIEnv *env = ThreadManager::getEnv()){
-            return this->getInfo0(1, env);
-        }
 
-        /// 获取图片md5
-        std::string getMd5(JNIEnv * = ThreadManager::getEnv()){
-            return this->getInfo0(2, env);
-        }
+        /// 刷新信息(获取图片下载Url,md5, size)
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv());
 
         /// 取图片Mirai码
         std::string toMiraiCode() const override {

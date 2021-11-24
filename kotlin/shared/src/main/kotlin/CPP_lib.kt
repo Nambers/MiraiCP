@@ -23,12 +23,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.utils.MiraiLogger
 import org.json.JSONObject
-import tech.eritquearcus.miraicp.shared.PublicShared.QueryBFL
-import tech.eritquearcus.miraicp.shared.PublicShared.QueryBGL
-import tech.eritquearcus.miraicp.shared.PublicShared.QueryML
-import tech.eritquearcus.miraicp.shared.PublicShared.RefreshInfo
-import tech.eritquearcus.miraicp.shared.PublicShared.SendMiraiCode
-import tech.eritquearcus.miraicp.shared.PublicShared.SendMsg
+import tech.eritquearcus.miraicp.shared.PublicShared.queryBFL
+import tech.eritquearcus.miraicp.shared.PublicShared.queryBGL
+import tech.eritquearcus.miraicp.shared.PublicShared.queryML
+import tech.eritquearcus.miraicp.shared.PublicShared.refreshInfo
+import tech.eritquearcus.miraicp.shared.PublicShared.sendMiraiCode
+import tech.eritquearcus.miraicp.shared.PublicShared.sendMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.accpetFriendRequest
 import tech.eritquearcus.miraicp.shared.PublicShared.accpetGroupInvite
 import tech.eritquearcus.miraicp.shared.PublicShared.basicSendLog
@@ -37,6 +37,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.deleteOnlineAnnouncement
 import tech.eritquearcus.miraicp.shared.PublicShared.getowner
 import tech.eritquearcus.miraicp.shared.PublicShared.groupSetting
 import tech.eritquearcus.miraicp.shared.PublicShared.gson
+import tech.eritquearcus.miraicp.shared.PublicShared.isUploaded
 import tech.eritquearcus.miraicp.shared.PublicShared.kkick
 import tech.eritquearcus.miraicp.shared.PublicShared.kqueryM
 import tech.eritquearcus.miraicp.shared.PublicShared.memberJoinRequest
@@ -104,8 +105,8 @@ class CPP_lib(
                                             """.trimIndent()
                 }
                 return when (miraiCode) {
-                    false -> SendMsg(tmp.content, tmp.contact, retryTime)
-                    true -> SendMiraiCode(tmp.content, tmp.contact, retryTime)
+                    false -> sendMsg(tmp.content, tmp.contact, retryTime)
+                    true -> sendMiraiCode(tmp.content, tmp.contact, retryTime)
                 }
             }
 
@@ -232,7 +233,7 @@ class CPP_lib(
                             root.getInt("retryTime")
                         )
                         /// 查询信息接口
-                        Operation_code.RefreshInfo.ordinal -> RefreshInfo(
+                        Operation_code.RefreshInfo.ordinal -> refreshInfo(
                             contact(root.getString("source")),
                             root.has("quit"),
                             root.has("announcement")
@@ -243,9 +244,9 @@ class CPP_lib(
                             contact(root.getString("source"))
                         )
                         /// 取好友列表
-                        Operation_code.QueryBFL.ordinal -> QueryBFL(root.getLong("botid"))
+                        Operation_code.QueryBFL.ordinal -> queryBFL(root.getLong("botid"))
                         /// 取群组列表
-                        Operation_code.QueryBGL.ordinal -> QueryBGL(root.getLong("botid"))
+                        Operation_code.QueryBGL.ordinal -> queryBGL(root.getLong("botid"))
                         /// 上传文件
                         Operation_code.SendFile.ordinal -> KSendFile(
                             root.getString("source"),
@@ -257,7 +258,7 @@ class CPP_lib(
                             root.getString("contactSource")
                         )
                         /// 查询图片下载地址
-                        Operation_code.QueryImgInfo.ordinal -> queryImgInfo(root.getInt("type"), root.getString("id"))
+                        Operation_code.QueryImgInfo.ordinal -> queryImgInfo(root.getString("id"))
                         /// 禁言
                         Operation_code.MuteM.ordinal -> mute(
                             root.getInt("time"),
@@ -282,7 +283,7 @@ class CPP_lib(
                             contact(root.getString("contactSource"))
                         )
                         /// 查询群成员列表
-                        Operation_code.QueryML.ordinal -> QueryML(
+                        Operation_code.QueryML.ordinal -> queryML(
                             contact(root.getString("contactSource"))
                         )
                         /// 群设置

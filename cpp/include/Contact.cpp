@@ -14,9 +14,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "Contact.h"
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {
+    MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode, JNIEnv *env) {
+        if (msg.empty()) {
+            MiraiCPThrow(IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg"));
+        }
+        std::string re = LowLevelAPI::send0(msg, this->serialization(), retryTime, miraicode, env,
+                                            "reach a error area, Contact::SendMiraiCode");
+        if (re == "ET")
+            MiraiCPThrow(TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg"));
+        if (Tools::starts_with(re, "EBM"))
+            MiraiCPThrow(BotIsBeingMutedException(std::stoi(re.substr(3))));
+        return MessageSource::deserializeFromString(re);
+    }
     MessageSource Contact::quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env) {
         json obj;
         json sign;
@@ -30,7 +43,7 @@ namespace MiraiCP {
     }
 
     Image Contact::uploadImg(const std::string &path, JNIEnv *env) {
-        std::string re = LowLevelAPI::uploadImg0(path, this, env);
+        std::string re = LowLevelAPI::uploadImg0(path, this->serializationToString(), env);
         if (re == "E2")
             MiraiCPThrow(UploadException("上传图片大小超过30MB,路径:" + path));
         return Image(re);

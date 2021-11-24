@@ -219,10 +219,10 @@ object PublicShared {
             )
         }
 
-    suspend fun SendMsg(message: String, c: Config.Contact, retryTime: Int): String =
+    suspend fun sendMsg(message: String, c: Config.Contact, retryTime: Int): String =
         send0(message.toPlainText().toMessageChain(), c, retryTime)
 
-    suspend fun SendMiraiCode(message: String, c: Config.Contact, retryTime: Int): String =
+    suspend fun sendMiraiCode(message: String, c: Config.Contact, retryTime: Int): String =
         send0(MiraiCode.deserializeMiraiCode(message), c, retryTime)
 
     private fun OnlineAnnouncement.toOnlineA(): Config.OnlineA {
@@ -247,7 +247,7 @@ object PublicShared {
     }
 
     @OptIn(MiraiExperimentalApi::class, LowLevelApi::class)
-    suspend fun RefreshInfo(c: Config.Contact, quit: Boolean, annoucment: Boolean): String =
+    suspend fun refreshInfo(c: Config.Contact, quit: Boolean, annoucment: Boolean): String =
         c.withBot { bot ->
             when (c.type) {
                 1 -> c.withFriend(bot, "找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}") { f ->
@@ -293,21 +293,21 @@ object PublicShared {
         }
 
     //取群成员列表
-    fun QueryML(c: Config.Contact): String =
+    fun queryML(c: Config.Contact): String =
         c.withBot { bot ->
             c.withGroup(bot) { g ->
                 gson.toJson(g.members.map { it.id })
             }
         }
 
-    fun QueryBFL(bid: Long): String =
+    fun queryBFL(bid: Long): String =
         withBot(bid) { bot ->
             gson.toJson(bot.friends.map {
                 it.id
             })
         }
 
-    fun QueryBGL(bid: Long): String =
+    fun queryBGL(bid: Long): String =
         withBot(bid) { bot ->
             gson.toJson(bot.groups.map { it.id })
         }
@@ -346,13 +346,16 @@ object PublicShared {
             }
         }
 
-    suspend fun queryImgInfo(type: Int, id: String): String {
+    suspend fun queryImgInfo(id: String): String {
         return try {
-            when (type) {
-                1 -> Image(id).queryUrl()
-                2 -> Image(id).md5.toString()
-                else -> throw IllegalStateException()//unreachable
-            }
+            val tmp = Image(id)
+            gson.toJson(
+                Config.ImgInfo(
+                    tmp.md5.toString(),
+                    tmp.size,
+                    tmp.queryUrl()
+                )
+            )
         } catch (e: IllegalArgumentException) {
             "E1"
         }

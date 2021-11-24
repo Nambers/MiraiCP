@@ -14,7 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "MessageSource.h"
 #include "Config.h"
+#include "Exception.h"
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {
@@ -71,19 +73,6 @@ namespace MiraiCP {
         sign["groupid"] = groupid;
         obj["sign"] = sign.dump();
         std::string re = Config::koperation(Config::SendWithQuote, obj, env);
-        return MessageSource::deserializeFromString(re);
-    }
-
-    MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode, JNIEnv *env) {
-        if (msg.empty()) {
-            MiraiCPThrow(IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg"));
-        }
-        std::string re = LowLevelAPI::send0(msg, this, retryTime, miraicode, env,
-                                            "reach a error area, Contact::SendMiraiCode");
-        if (re == "ET")
-            MiraiCPThrow(TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg"));
-        if (Tools::starts_with(re, "EBM"))
-            MiraiCPThrow(BotIsBeingMutedException(std::stoi(re.substr(3))));
         return MessageSource::deserializeFromString(re);
     }
 } // namespace MiraiCP
