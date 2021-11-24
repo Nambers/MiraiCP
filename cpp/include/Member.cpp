@@ -30,7 +30,7 @@ namespace MiraiCP {
     void Member::refreshInfo(JNIEnv *env) {
         if (isAnonymous)
             return;
-        std::string temp = LowLevelAPI::getInfoSource(this, env);
+        std::string temp = LowLevelAPI::getInfoSource(this->serializationToString(), env);
         if (temp == "E1")
             MiraiCPThrow(MemberException(1));
         if (temp == "E2")

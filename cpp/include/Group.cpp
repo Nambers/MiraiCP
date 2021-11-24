@@ -109,7 +109,7 @@ namespace MiraiCP {
         Config::koperation(Config::RefreshInfo, j, env);
     }
     void Group::refreshInfo(JNIEnv *env) {
-        std::string re = LowLevelAPI::getInfoSource(this, env);
+        std::string re = LowLevelAPI::getInfoSource(this->serializationToString(), env);
         LowLevelAPI::info tmp = LowLevelAPI::info0(re);
         this->_nickOrNameCard = tmp.nickornamecard;
         this->_avatarUrl = tmp.avatarUrl;

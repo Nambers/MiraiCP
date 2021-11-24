@@ -33,7 +33,7 @@ namespace MiraiCP {
     }
 
     void Friend::refreshInfo(JNIEnv *env) {
-        std::string temp = LowLevelAPI::getInfoSource(this, env);
+        std::string temp = LowLevelAPI::getInfoSource(this->serializationToString(), env);
         if (temp == "E1") {
             MiraiCPThrow(FriendException());
         }

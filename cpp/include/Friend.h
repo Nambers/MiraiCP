@@ -17,6 +17,7 @@
 #ifndef MIRAICP_PRO_FRIEND_H
 #define MIRAICP_PRO_FRIEND_H
 
+#include "Contact.h"
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {

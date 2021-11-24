@@ -130,6 +130,12 @@ object Config {
         val finfo: FInfo
     )
 
+    data class ImgInfo(
+        val md5: String,
+        val size: Long,
+        val url: String
+    )
+
     data class Message(
         val messageSource: String
     )
