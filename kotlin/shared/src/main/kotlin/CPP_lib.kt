@@ -25,7 +25,6 @@ import net.mamoe.mirai.utils.MiraiLogger
 import org.json.JSONObject
 import tech.eritquearcus.miraicp.shared.PublicShared.QueryBFL
 import tech.eritquearcus.miraicp.shared.PublicShared.QueryBGL
-import tech.eritquearcus.miraicp.shared.PublicShared.QueryImg
 import tech.eritquearcus.miraicp.shared.PublicShared.QueryML
 import tech.eritquearcus.miraicp.shared.PublicShared.RefreshInfo
 import tech.eritquearcus.miraicp.shared.PublicShared.SendMiraiCode
@@ -45,6 +44,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.modifyAdmin
 import tech.eritquearcus.miraicp.shared.PublicShared.mute
 import tech.eritquearcus.miraicp.shared.PublicShared.nextMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.publishOfflineAnnouncement
+import tech.eritquearcus.miraicp.shared.PublicShared.queryImgInfo
 import tech.eritquearcus.miraicp.shared.PublicShared.recallMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.remoteFileInfo
 import tech.eritquearcus.miraicp.shared.PublicShared.scheduling
@@ -56,11 +56,11 @@ import tech.eritquearcus.miraicp.shared.PublicShared.sendWithQuote
 import tech.eritquearcus.miraicp.shared.PublicShared.uploadImg
 import tech.eritquearcus.miraicp.shared.PublicShared.uploadVoice
 
-class CPP_lib (
+class CPP_lib(
     val dll_path: String,
     val dependencies: List<String>?
-){
-    var config:PluginConfig
+) {
+    var config: PluginConfig
 
     init {
         dependencies?.forEach {
@@ -84,8 +84,10 @@ class CPP_lib (
             logger.warning("Warning: 当前MiraiCP框架版本($version)和加载的插件的C++ SDK(${config.MiraiCPversion})不一致")
         }
     }
+
     //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
     companion object {
+        private fun contact(source: String): Config.Contact = gson.fromJson(source, Config.Contact::class.java)
         var test: Boolean = false
         private suspend fun KSend(source: String, miraiCode: Boolean, retryTime: Int): String =
             run {
@@ -106,12 +108,6 @@ class CPP_lib (
                     true -> SendMiraiCode(tmp.content, tmp.contact, retryTime)
                 }
             }
-
-        //recall messageSource
-        private suspend fun KRecall(source: String): String = recallMsg(source)
-
-        //查询图片下载链接
-        private suspend fun KQueryImgUrl(id: String): String = QueryImg(id)
 
         @JvmStatic
         fun KSendLog(log: String, level: Int) {
@@ -138,68 +134,28 @@ class CPP_lib (
                 }
         }
 
-        private suspend fun KRefreshInfo(source: String, quit: Boolean, announcement:Boolean): String =
-            RefreshInfo(gson.fromJson(source, Config.Contact::class.java), quit, announcement)
-
-        private suspend fun KUploadImg(fileName: String, source: String): String =
-            uploadImg(fileName, gson.fromJson(source, Config.Contact::class.java))
-
         private suspend fun KSendFile(source: String, contactSource: String): String =
             run {
                 val t = JSONObject(source)
                 sendFile(
                     t.getString("path"),
                     t.getString("filepath"),
-                    gson.fromJson(contactSource, Config.Contact::class.java)
+                    contact(contactSource)
                 )
             }
 
         private suspend fun KRemoteFileInfo(source: String, contactSource: String): String =
             run {
                 val t = JSONObject(source)
-                return if(t.has("path"))
+                return if (t.has("path"))
                     remoteFileInfo(
                         t.getString("path"),
                         t.getString("id"),
-                        gson.fromJson(contactSource, Config.Contact::class.java)
+                        contact(contactSource)
                     )
                 else
-                    remoteFileInfo(t.getString("id"), gson.fromJson(contactSource, Config.Contact::class.java))
+                    remoteFileInfo(t.getString("id"), contact(contactSource))
             }
-
-        //mute member
-        private suspend fun KMuteM(time: Int, contactSource: String): String =
-            mute(time, gson.fromJson(contactSource, Config.Contact::class.java))
-
-        //query the permission of a member in a group
-        private fun KQueryM(contactSource: String): String =
-            kqueryM(gson.fromJson(contactSource, Config.Contact::class.java))
-
-        //kick a member
-        private suspend fun KKickM(message: String, contactSource: String): String =
-            kkick(message, gson.fromJson(contactSource, Config.Contact::class.java))
-
-        //query the member list of a group
-        private fun KQueryML(contactSource: String): String =
-            QueryML(gson.fromJson(contactSource, Config.Contact::class.java))
-
-        // query the friend lst of the bot
-        private fun KQueryBFL(botid: Long): String {
-            return QueryBFL(botid)
-        }
-
-        // query the group list of the bot
-        private fun KQueryBGL(botid: Long): String {
-            return QueryBGL(botid)
-        }
-
-        //query the owner of a group
-        private fun KQueryOwner(contactSource: String): String =
-            getowner(gson.fromJson(contactSource, Config.Contact::class.java))
-
-        //build forward message
-        private suspend fun KBuildforward(text: String, botid: Long): String =
-            buildforwardMsg(text, botid)
 
         // new friend request operation
         private suspend fun KNfroperation(text: String): String =
@@ -213,18 +169,6 @@ class CPP_lib (
             run {
                 val tmp = gson.fromJson(text, CPPEvent.Request::class.java)
                 accpetGroupInvite(tmp.text, tmp.botid, tmp.accept)
-            }
-
-        private suspend fun KSendWithQuote(messageSource: String, msg: String, sign: String): String =
-            sendWithQuote(messageSource, msg, sign)
-
-
-        private fun KUpdateSetting(contactSource: String, source: String): String =
-            groupSetting(gson.fromJson(contactSource, Config.Contact::class.java), source)
-
-        private suspend fun KUploadVoice(contactSource: String, source: String): String =
-            JSONObject(source).let { tmp ->
-                uploadVoice(tmp.getString("path"), gson.fromJson(contactSource, Config.Contact::class.java))
             }
 
         private suspend fun KAnnouncement(identify: String, source: String?): String =
@@ -242,71 +186,34 @@ class CPP_lib (
                 }
             }
 
-        private fun KNudge(contactSource: String): String =
-            sendNudge(gson.fromJson(contactSource, Config.Contact::class.java))
-
-        private fun KNextMsg(contactSource: String, time: Long, halt: Boolean): String =
-            nextMsg(gson.fromJson(contactSource, Config.Contact::class.java), time, halt)
-
-        private suspend fun KModifyAdmin(contactSource: String, admin: Boolean): String =
-            modifyAdmin(gson.fromJson(contactSource, Config.Contact::class.java), admin)
-
-        private suspend fun KMemberJoinRequest(source: String, sign:Boolean, botid: Long, msg: String)=
-            memberJoinRequest(source, sign, botid, msg)
-
         enum class Operation_code {
-            /// 撤回信息
             Recall,
-            /// 发送信息
             Send,
-            /// 查询信息接口
             RefreshInfo,
-            /// 上传图片
             UploadImg,
-            /// 取好友列表
             QueryBFL,
-            /// 取群组列表
             QueryBGL,
-            /// 上传文件
             SendFile,
-            /// 查询文件信息
             RemoteFileInfo,
-            /// 查询图片下载地址
-            QueryImgUrl,
-            /// 禁言
+            QueryImgInfo,
             MuteM,
-            /// 查询权限
             QueryM,
-            /// 踢出
             KickM,
-            /// 取群主
             QueryOwner,
-            /// 上传语音
             UploadVoice,
-            /// 查询群成员列表
             QueryML,
-            /// 群设置
             GroupSetting,
-            /// 构建转发信息
             Buildforward,
-            /// 好友申请事件
             Nfroperation,
-            /// 群聊邀请事件
             Gioperation,
-            /// 回复(引用并发送)
             SendWithQuote,
-            /// 群公告操作
             Announcement,
-            /// 定时任务
             Timer,
-            ///发送戳一戳
             Nudge,
-            /// 好友对象下一条消息
             NextMsg,
-            /// 更改群成员权限
             ModifyAdmin,
-            /// 群成员申请
-            MemberJoinRequest
+            MemberJoinRequest,
+            ImageUploaded
         }
 
         @JvmStatic
@@ -317,7 +224,7 @@ class CPP_lib (
                     val root = j.getJSONObject("data")
                     when (j.getInt("type")) {
                         /// 撤回信息
-                        Operation_code.Recall.ordinal -> KRecall(root.getString("source"))
+                        Operation_code.Recall.ordinal -> recallMsg(root.getString("source"))
                         /// 发送信息
                         Operation_code.Send.ordinal -> KSend(
                             root.getString("source"),
@@ -325,20 +232,20 @@ class CPP_lib (
                             root.getInt("retryTime")
                         )
                         /// 查询信息接口
-                        Operation_code.RefreshInfo.ordinal -> KRefreshInfo(
-                            root.getString("source"),
+                        Operation_code.RefreshInfo.ordinal -> RefreshInfo(
+                            contact(root.getString("source")),
                             root.has("quit"),
                             root.has("announcement")
                         )
                         /// 上传图片
-                        Operation_code.UploadImg.ordinal -> KUploadImg(
+                        Operation_code.UploadImg.ordinal -> uploadImg(
                             root.getString("fileName"),
-                            root.getString("source")
+                            contact(root.getString("source"))
                         )
                         /// 取好友列表
-                        Operation_code.QueryBFL.ordinal -> KQueryBFL(root.getLong("botid"))
+                        Operation_code.QueryBFL.ordinal -> QueryBFL(root.getLong("botid"))
                         /// 取群组列表
-                        Operation_code.QueryBGL.ordinal -> KQueryBGL(root.getLong("botid"))
+                        Operation_code.QueryBGL.ordinal -> QueryBGL(root.getLong("botid"))
                         /// 上传文件
                         Operation_code.SendFile.ordinal -> KSendFile(
                             root.getString("source"),
@@ -350,32 +257,41 @@ class CPP_lib (
                             root.getString("contactSource")
                         )
                         /// 查询图片下载地址
-                        Operation_code.QueryImgUrl.ordinal -> KQueryImgUrl(root.getString("id"))
+                        Operation_code.QueryImgInfo.ordinal -> queryImgInfo(root.getInt("type"), root.getString("id"))
                         /// 禁言
-                        Operation_code.MuteM.ordinal -> KMuteM(root.getInt("time"), root.getString("contactSource"))
+                        Operation_code.MuteM.ordinal -> mute(
+                            root.getInt("time"),
+                            contact(root.getString("contactSource"))
+                        )
                         /// 查询权限
-                        Operation_code.QueryM.ordinal -> KQueryM(root.getString("contactSource"))
+                        Operation_code.QueryM.ordinal -> kqueryM(
+                            contact(root.getString("contactSource"))
+                        )
                         /// 踢出
-                        Operation_code.KickM.ordinal -> KKickM(
+                        Operation_code.KickM.ordinal -> kkick(
                             root.getString("message"),
-                            root.getString("contactSource")
+                            contact(root.getString("contactSource"))
                         )
                         /// 取群主
-                        Operation_code.QueryOwner.ordinal -> KQueryOwner(root.getString("contactSource"))
+                        Operation_code.QueryOwner.ordinal -> getowner(
+                            contact(root.getString("contactSource"))
+                        )
                         /// 上传语音
-                        Operation_code.UploadVoice.ordinal -> KUploadVoice(
-                            root.getString("contactSource"),
-                            root.getString("source")
+                        Operation_code.UploadVoice.ordinal -> uploadVoice(
+                            JSONObject(root.getString("source")).getString("path"),
+                            contact(root.getString("contactSource"))
                         )
                         /// 查询群成员列表
-                        Operation_code.QueryML.ordinal -> KQueryML(root.getString("contactSource"))
+                        Operation_code.QueryML.ordinal -> QueryML(
+                            contact(root.getString("contactSource"))
+                        )
                         /// 群设置
-                        Operation_code.GroupSetting.ordinal -> KUpdateSetting(
-                            root.getString("contactSource"),
+                        Operation_code.GroupSetting.ordinal -> groupSetting(
+                            contact(root.getString("contactSource")),
                             root.getString("source")
                         )
                         /// 构建转发信息
-                        Operation_code.Buildforward.ordinal -> KBuildforward(
+                        Operation_code.Buildforward.ordinal -> buildforwardMsg(
                             root.getString("text"),
                             root.getLong("botid")
                         )
@@ -388,7 +304,7 @@ class CPP_lib (
                             root.toString()
                         )
                         /// 回复(引用并发送)
-                        Operation_code.SendWithQuote.ordinal -> KSendWithQuote(
+                        Operation_code.SendWithQuote.ordinal -> sendWithQuote(
                             root.getString("messageSource"),
                             root.getString("msg"),
                             root.getString("sign")
@@ -401,22 +317,29 @@ class CPP_lib (
                         /// 定时任务
                         Operation_code.Timer.ordinal -> scheduling(root.getLong("time"), root.getString("msg"))
                         /// 发送戳一戳
-                        Operation_code.Nudge.ordinal -> KNudge(root.getString("contactSource"))
+                        Operation_code.Nudge.ordinal -> sendNudge(
+                            contact(root.getString("contactSource"))
+                        )
                         /// 下一条信息
-                        Operation_code.NextMsg.ordinal -> KNextMsg(
-                            root.getString("contactSource"),
+                        Operation_code.NextMsg.ordinal -> nextMsg(
+                            contact(root.getString("contactSource")),
                             root.getLong("time"),
                             root.getBoolean("halt")
                         )
-                        Operation_code.ModifyAdmin.ordinal -> KModifyAdmin(
-                            root.getString("contactSource"),
+                        Operation_code.ModifyAdmin.ordinal -> modifyAdmin(
+                            contact(root.getString("contactSource")),
                             root.getBoolean("admin")
                         )
-                        Operation_code.MemberJoinRequest.ordinal-> KMemberJoinRequest(
+                        Operation_code.MemberJoinRequest.ordinal -> memberJoinRequest(
                             root.getString("source"),
                             root.getBoolean("sign"),
                             root.getLong("botid"),
                             root.getString("msg")
+                        )
+                        Operation_code.ImageUploaded.ordinal -> isUploaded(
+                            root.getString("md5"),
+                            root.getLong("size"),
+                            root.getLong("botid")
                         )
                         else -> "EA"
                     }
@@ -428,6 +351,7 @@ class CPP_lib (
                 }
             }
     }
+
     private external fun Verify(): String
     external fun Event(content: String): String
     external fun PluginDisable(): Void
