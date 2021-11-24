@@ -52,7 +52,7 @@ namespace MiraiCP {
             /// 查询文件信息
             RemoteFileInfo,
             /// 查询图片下载地址
-            QueryImgUrl,
+            QueryImgInfo,
             /// 禁言
             MuteM,
             /// 查询权限
@@ -86,7 +86,9 @@ namespace MiraiCP {
             /// 更改权限
             ModifyAdmin,
             /// 群成员申请入群
-            MemberJoinRequest
+            MemberJoinRequest,
+            /// 图片是否已经上传
+            ImageUploaded
         };
 
         /**

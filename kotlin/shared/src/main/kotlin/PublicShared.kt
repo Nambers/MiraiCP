@@ -44,6 +44,7 @@ import net.mamoe.mirai.event.nextEvent
 import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
+import net.mamoe.mirai.message.data.Image.Key.isUploaded
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
@@ -345,9 +346,13 @@ object PublicShared {
             }
         }
 
-    suspend fun QueryImg(id: String): String {
+    suspend fun queryImgInfo(type: Int, id: String): String {
         return try {
-            Image(id).queryUrl()
+            when (type) {
+                1 -> Image(id).queryUrl()
+                2 -> Image(id).md5.toString()
+                else -> throw IllegalStateException()//unreachable
+            }
         } catch (e: IllegalArgumentException) {
             "E1"
         }
@@ -780,6 +785,11 @@ object PublicShared {
                     it.reject(bot, msg)
                 "Y"
             }
+        }
+
+    suspend fun isUploaded(md5: String, size: Long, botid: Long): String =
+        withBot(botid) { bot ->
+            isUploaded(bot, md5.toByteArray(), size).toString()
         }
 
     fun onDisable() = cpp.forEach { it.PluginDisable() }
