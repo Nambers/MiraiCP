@@ -351,7 +351,7 @@ object PublicShared {
             val tmp = Image(id)
             gson.toJson(
                 Config.ImgInfo(
-                    tmp.md5.toString(),
+                    gson.toJson(tmp.md5),
                     tmp.size,
                     tmp.queryUrl()
                 )
@@ -792,7 +792,7 @@ object PublicShared {
 
     suspend fun isUploaded(md5: String, size: Long, botid: Long): String =
         withBot(botid) { bot ->
-            isUploaded(bot, md5.toByteArray(), size).toString()
+            isUploaded(bot, gson.fromJson(md5, ByteArray::class.java), size).toString()
         }
 
     fun onDisable() = cpp.forEach { it.PluginDisable() }

@@ -48,7 +48,7 @@ version = libs.versions.miraiCPVersion.get()
 dependencies {
     testImplementation(kotlin("test"))
     implementation(project(":shared"))
-    runtimeOnly(libs.mirai.core.self)
+    implementation(libs.mirai.core.self)
     implementation(libs.jansi)
     implementation(libs.jline)
     api("net.mamoe", "mirai-logging-log4j2", libs.versions.miraiVersion.get())
