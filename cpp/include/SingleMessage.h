@@ -172,10 +172,21 @@ namespace MiraiCP {
         size_t size;
         /// 可为空, 用`refreshInfo`获取
         std::optional<std::string> url;
-        /// 宽度, 默认0
+        /// 宽度, 默认0, 单位px
         int width;
-        /// 长度, 默认0
+        /// 长度, 默认0, 单位px
         int height;
+        /*!
+         * @brief 图片类型
+         *  - 0 png
+         *  - 1 bmp
+         *  - 2 jpg
+         *  - 3 gif
+         *  - 4 apng
+         *  - 5 unknown
+         *  默认 5
+         */
+        int imageType;
 
         /*!
          * @brief 图片是否已经上传(如果已经上传即表明可以直接用ImageId发送, 如果没有需要手动上传)
@@ -200,17 +211,19 @@ namespace MiraiCP {
         * @detail 图片miraiCode格式例子, `[mirai:image:{图片id}.jpg]`
         * 可以用这个正则表达式找出id `\\[mirai:image:(.*?)\\]`
         */
-        explicit Image(const std::string &imageId, size_t size = 0, int width = 0, int height = 0) : SingleMessage(Image::type(), imageId) {
+        explicit Image(const std::string &imageId, size_t size = 0, int width = 0, int height = 0, int type = 0) : SingleMessage(Image::type(), imageId) {
             this->id = imageId;
             this->size = size;
             this->width = width;
             this->height = height;
+            this->imageType = type;
         }
 
         explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 2) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
             this->id = sg.content;
             this->size = this->width = this->height = 0;
+            this->imageType = 5;
         }
 
         /// 刷新信息(获取图片下载Url,md5, size)
@@ -222,7 +235,7 @@ namespace MiraiCP {
         }
         nlohmann::json toJson() const override;
 
-        //nlohmann::json serializeToJson() const override;
+        static Image deserialize(const std::string &);
 
         bool operator==(const Image &i) const {
             return this->id == i.id;

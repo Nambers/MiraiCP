@@ -315,7 +315,18 @@ object PublicShared {
     //图片部分实现
     private suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String =
         try {
-            File(file).uploadAsImage(temp).imageId
+            val img = File(file).uploadAsImage(temp)
+            gson.toJson(
+                Config.ImgInfo(
+                    img.size,
+                    img.width,
+                    img.height,
+                    gson.toJson(img.md5),
+                    img.queryUrl(),
+                    img.imageId,
+                    img.imageType.ordinal
+                )
+            )
         } catch (e: OverFileSizeMaxException) {
             logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
             err1
@@ -356,9 +367,12 @@ object PublicShared {
             }.build()
             gson.toJson(
                 Config.ImgInfo(
-                    gson.toJson(tmp.md5),
-                    tmp.size,
-                    tmp.queryUrl()
+                    md5 = gson.toJson(tmp.md5),
+                    size = tmp.size,
+                    url = tmp.queryUrl(),
+                    width = tmp.width,
+                    height = tmp.height,
+                    type = tmp.imageType.ordinal
                 )
             )
         } catch (e: IllegalArgumentException) {
