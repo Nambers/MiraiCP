@@ -1,5 +1,15 @@
-# MiraiCP
+<div align="center">
+	
+# **MiraiCP**
+
+[API文档](https://eritque-arcus.tech/MiraiCP/) · [下载](https://github.com/Nambers/MiraiCP/releases) · [demo](https://github.com/Nambers/MiraiCP-template)
+
+	
 [![License](https://img.shields.io/github/license/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/blob/master/LICENSE)  [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP?include_prereleases)](https://github.com/Nambers/MiraiCP/releases/) [![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/commit/master)
+![image](https://user-images.githubusercontent.com/35139537/143440804-e7385a03-b3b6-4d0a-b4c0-2595ea4b35ba.png)
+	
+</div>
+
 
 >[中文](https://github.com/Nambers/MiraiCP/blob/master/README.md)
 >
@@ -28,24 +38,16 @@
 
 > **Tips~**
 > 如有意向一起开发本项目，请联系我邮箱(`1930893235@qq.com`) (￣▽￣)"
-# 使用声明
-
-0. MiraiCP是一个[Mirai](https://github.com/mamoe/mirai) 的C++语言的社区SDK，基于Mirai-console和Mirai-core插件模板开发
-
-1. 本项目仅供学习参考，禁止用于任何商业用途(根据Mirai的AGPLv3许可协议开源)。
-
-2. 本项目不含有任何旨在破坏用户计算机数据和获取用户隐私的恶意代码，不含有任何跟踪、监视用户计算机功能代码，不会收集任何用户个人信息，不会泄露用户隐私。
-
-3. 本项目不提供任何具体功能实现，仅仅只是对项目mirai-console和mirai-core(详见[mirai仓库](https://github.com/mamoe/mirai))的二次封装。
-
-4. 任何单位或个人认为本项目可能涉嫌侵权，应及时提出反馈，本项目将会第一时间对违规内容给予删除等相关处理。
 
 # 关于MiraiCP
+
+
+**[API文档(包含示例)](https://eritque-arcus.tech/MiraiCP/)** · [文档库](doc) · [demo](https://github.com/Nambers/MiraiCP-template)
 
 <details>
 <summary>支持的事件</summary>
 
-这些内容可以在[Config.kt](https://github.com/Nambers/MiraiCP/blob/master/loader/src/main/kotlin/Config.kt)看到
+这些内容可以在[Config.kt](https://github.com/Nambers/MiraiCP/blob/dev/kotlin/shared/src/main/kotlin/Config.kt#L180)看到
   
 | 事件名称     | 函数名称              |
 |-------------|-----------------------|
@@ -54,18 +56,17 @@
 | 私聊消息     | PrivateMessageEvent   |
 | 好友申请     | NewFriendRequestEvent |
 | 群聊邀请     | GroupInviteEvent      |
+| 新群成员申请 | MemberJoinRequestEvent |
 | 新群成员加入 | MemberJoinEvent       |
 | 群成员离开   | MemberLeaveEvent      |
+| 机器人加入   | BotJoinEvent          |
+| 机器人离开   | BotLeaveEvent         |
 | 消息撤回     | RecallEvent           |
 | 群临时会话   | GroupTempMessageEvent |
 | 定时事件执行 | SchedulingEvent       |
 | 戳一戳       | NugdeEvent           |
 
 </details>
-
-**[在线API文档(包含示例)](https://eritque-arcus.tech/MiraiCP/)**
-
-[文档库](doc)
 
 ## 特性
 - C++ 17
@@ -83,6 +84,18 @@
 | C++ in linux(gcc) | ![C++ Test](https://github.com/Nambers/MiraiCP/actions/workflows/cpp_linux.yml/badge.svg)|
 | C++ in windows(mingw&msvc) | ![C++ Test](https://github.com/Nambers/MiraiCP/actions/workflows/cpp_windows.yml/badge.svg)|
 | kotlin | ![kotlin Test](https://github.com/Nambers/MiraiCP/actions/workflows/gradle.yml/badge.svg)|
+
+# 使用声明
+
+0. MiraiCP是一个[Mirai](https://github.com/mamoe/mirai) 的C++语言的社区SDK，基于Mirai-console和Mirai-core插件模板开发
+
+1. 本项目仅供学习参考，禁止用于任何商业用途(根据Mirai的AGPLv3许可协议开源)。
+
+2. 本项目不含有任何旨在破坏用户计算机数据和获取用户隐私的恶意代码，不含有任何跟踪、监视用户计算机功能代码，不会收集任何用户个人信息，不会泄露用户隐私。
+
+3. 本项目不提供任何具体功能实现，仅仅只是对项目mirai-console和mirai-core(详见[mirai仓库](https://github.com/mamoe/mirai))的二次封装。
+
+4. 任何单位或个人认为本项目可能涉嫌侵权，应及时提出反馈，本项目将会第一时间对违规内容给予删除等相关处理。
 
 # 使用流程:
 
