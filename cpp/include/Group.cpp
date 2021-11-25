@@ -17,6 +17,7 @@
 #include "Group.h"
 
 namespace MiraiCP {
+    using json = nlohmann::json;
     std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList(JNIEnv *env) {
         json j;
         j["source"] = this->serializationToString();

@@ -29,7 +29,7 @@ namespace MiraiCP {
         /// @param miraicode 是否为miraicode格式
         /// @param env JNIEnv
         /// @return
-        static std::string send0(const std::string &content, json c, int retryTime, bool miraicode, JNIEnv *env,
+        static std::string send0(const std::string &content, nlohmann::json c, int retryTime, bool miraicode, JNIEnv *env,
                                  const std::string &errorInfo = "");
 
         /// @brief 取该联系人的一些信息

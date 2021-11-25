@@ -172,7 +172,7 @@ namespace MiraiCP {
 
         static void operation0(const std::string &source, QQID botid, bool accept,
                                JNIEnv *env = ThreadManager::getEnv()) {
-            json j;
+            nlohmann::json j;
             j["text"] = source;
             j["operate"] = accept;
             j["botid"] = botid;
@@ -496,7 +496,7 @@ namespace MiraiCP {
                      bool sign,
                      const std::string &msg = "",
                      JNIEnv *env = ThreadManager::getEnv()) const {
-            json j;
+            nlohmann::json j;
             j["source"] = s;
             j["botid"] = botid;
             j["sign"] = sign;

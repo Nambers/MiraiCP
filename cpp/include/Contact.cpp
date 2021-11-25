@@ -18,6 +18,7 @@
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {
+    using json = nlohmann::json;
     MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode, JNIEnv *env) const {
         if (msg.empty()) {
             MiraiCPThrow(IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg"));

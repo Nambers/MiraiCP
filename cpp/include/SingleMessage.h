@@ -43,6 +43,12 @@ namespace MiraiCP {
     public:
         virtual ~SingleMessage() = default;
         static std::map<int, std::string> messageType;
+        virtual nlohmann::json toJson() const {
+            nlohmann::json re;
+            re["key"] = "miraicode";
+            re["content"] = this->toMiraiCode();
+            return re;
+        }
 
         /// @brief 找对应类型的index key
         /// @param value 类型名
@@ -97,6 +103,7 @@ namespace MiraiCP {
         std::string toMiraiCode() const override {
             return content;
         }
+        nlohmann::json toJson() const override;
 
         explicit PlainText(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 0)
@@ -122,7 +129,7 @@ namespace MiraiCP {
     public:
         static int type() { return 1; }
         QQID target;
-
+        nlohmann::json toJson() const override;
         explicit At(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 1)
                 MiraiCPThrow(IllegalArgumentException(
@@ -148,6 +155,7 @@ namespace MiraiCP {
         std::string toMiraiCode() const override {
             return "[mirai:atall] ";
         }
+        nlohmann::json toJson() const override;
 
         AtAll() : SingleMessage(AtAll::type(), "", "") {}
     };
@@ -212,8 +220,9 @@ namespace MiraiCP {
         std::string toMiraiCode() const override {
             return "[mirai:image:" + this->id + "]";
         }
+        nlohmann::json toJson() const override;
 
-        nlohmann::json serialization() const;
+        //nlohmann::json serializeToJson() const override;
 
         bool operator==(const Image &i) const {
             return this->id == i.id;
@@ -293,7 +302,7 @@ namespace MiraiCP {
                 MiraiCPThrow(IllegalArgumentException(
                         "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp"));
         }
-
+        nlohmann::json toJson() const override;
         /// 返回miraicode
         std::string toMiraiCode() const override {
             return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
@@ -309,15 +318,18 @@ namespace MiraiCP {
     class ServiceMessage : public SingleMessage {
     public:
         static int type() { return 5; }
+        nlohmann::json toJson() const override;
         std::string toMiraiCode() const override {
             return "[mirai:service:" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
         }
+        int id;
 
         /// @brief ServiceMessage
         /// @param id 在xml内容前面的id (不包括逗号)
         /// @param a xml内容 (不需要事先转码到miraiCode)
         explicit ServiceMessage(int id, std::string a) : SingleMessage(ServiceMessage::type(), std::move(a),
-                                                                       ":" + std::to_string(id) + ',') {}
+                                                                       ":" + std::to_string(id) + ','),
+                                                         id(id) {}
 
         explicit ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 4)
@@ -332,7 +344,8 @@ namespace MiraiCP {
                                                                             a.cover + "\"/><title>" + a.title +
                                                                             "</title><summary>" + a.summary +
                                                                             "</summary></item><source/></msg>",
-                                                                    ":1,") {}
+                                                                    ":1,"),
+                                                      id(1) {}
 
         bool operator==(const ServiceMessage &s) const {
             return this->content == s.content;
@@ -515,6 +528,7 @@ namespace MiraiCP {
         static int type() { return 7; }
         int id;
 
+        nlohmann::json toJson() const override;
         std::string toMiraiCode() const override {
             return "[mirai:face:" + std::to_string(id) + "]";
         }
@@ -544,6 +558,7 @@ namespace MiraiCP {
     class UnSupportMessage : public SingleMessage {
     public:
         static int type() { return -1; }
+        nlohmann::json toJson() const override;
         std::string toMiraiCode() const override {
             return content;
         }

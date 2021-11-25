@@ -17,6 +17,7 @@
 #include "Friend.h"
 
 namespace MiraiCP {
+    using json = nlohmann::json;
     /*好友类实现*/
     Friend::Friend(QQID id, QQID botid, JNIEnv *env) : Contact() {
         this->_type = 1;
@@ -26,7 +27,7 @@ namespace MiraiCP {
     }
 
     void Friend::deleteFriend(JNIEnv *env) {
-        nlohmann::json j;
+        json j;
         j["source"] = this->serializationToString();
         j["quit"] = true;
         Config::koperation(Config::RefreshInfo, j, env);

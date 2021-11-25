@@ -18,7 +18,7 @@
 #include "Group.h"
 
 namespace MiraiCP {
-
+    using json = nlohmann::json;
     MessageSource MessageChain::quoteAndSend0(const std::string &msg, QQID groupid,
                                               JNIEnv *env) {
         json obj;

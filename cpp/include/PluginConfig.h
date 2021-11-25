@@ -20,7 +20,6 @@
 #include <json.hpp>
 
 namespace MiraiCP {
-    using json = nlohmann::json;
     class PluginConfig {
     public:
         /// @brief 插件id, 要与别人不一样否则报错无法加载(建议用类包格式，如: io.github.nambers)
@@ -49,7 +48,7 @@ namespace MiraiCP {
               description(std::move(description)),
               time(std::move(time)) {}
 
-        json serialize();
+        nlohmann::json serialize();
 
         std::string serialize2string() {
             return serialize().dump();

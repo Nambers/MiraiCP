@@ -17,6 +17,7 @@
 #include "Member.h"
 
 namespace MiraiCP {
+    using json = nlohmann::json;
     /*成员类实现*/
     Member::Member(QQID id, QQID groupid, QQID botid, JNIEnv *env)
         : Contact() {

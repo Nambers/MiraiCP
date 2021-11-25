@@ -99,13 +99,13 @@ namespace MiraiCP {
             return true;
         }
 
-        explicit OnlineForwardedMessage(json o, const std::string &rid, std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
+        explicit OnlineForwardedMessage(nlohmann::json o, const std::string &rid, std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
 
         /// 不支持直接发送OnlineForwardMessage, ForwardedMessage发送
         [[deprecated("use MiraiCP::ForwardedMessage to send")]] std::string toMiraiCode() const override {
             return "";
         }
-        static OnlineForwardedMessage deserializationFromMessageSourceJson(json j);
+        static OnlineForwardedMessage deserializationFromMessageSourceJson(nlohmann::json j);
     };
 } // namespace MiraiCP
 #endif //MIRAICP_PRO_FORWARDEDMESSAGE_H

@@ -17,6 +17,7 @@
 #include "ForwardedMessage.h"
 
 namespace MiraiCP {
+    using json = nlohmann::json;
     //发送这个聊天记录
     MessageSource ForwardedMessage::sendTo(Contact *c, JNIEnv *env) {
         json temp;

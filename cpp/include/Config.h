@@ -22,7 +22,6 @@
 #include <json.hpp>
 
 namespace MiraiCP {
-    using json = nlohmann::json;
     /// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
     /// @internal 一般为MiraiCP内部调用jni接口使用
     /// @class Config
