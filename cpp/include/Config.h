@@ -97,9 +97,8 @@ namespace MiraiCP {
          * @param data 传入数据
          * @return 返回数据
          */
-        static std::string
-        koperation(operation_set type, nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(),
-                   bool catchErr = true, const std::string &errorInfo = "");
+        static std::string koperation(operation_set type, const nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(),
+                                      bool catchErr = true, const std::string &errorInfo = "");
 
         static void construct(JNIEnv * = ThreadManager::getEnv());
 

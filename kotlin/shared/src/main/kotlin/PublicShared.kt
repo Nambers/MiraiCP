@@ -346,9 +346,14 @@ object PublicShared {
             }
         }
 
-    suspend fun queryImgInfo(id: String): String {
+    suspend fun queryImgInfo(id: String, size: Long?, width: Int?, height: Int?, type: Int?): String {
         return try {
-            val tmp = Image(id)
+            val tmp = Image.newBuilder(id).apply {
+                this.size = size ?: 0L
+                this.width = width ?: 0
+                this.height = height ?: 0
+                this.type = ImageType.UNKNOWN
+            }.build()
             gson.toJson(
                 Config.ImgInfo(
                     gson.toJson(tmp.md5),
@@ -797,7 +802,7 @@ object PublicShared {
 
     fun onDisable() = cpp.forEach { it.PluginDisable() }
 
-    @OptIn(MiraiExperimentalApi::class)
+    @MiraiExperimentalApi
     fun onEnable(eventChannel: EventChannel<Event>) {
         //配置文件目录 "${dataFolder.absolutePath}/"
         eventChannel.subscribeAlways<FriendMessageEvent> {

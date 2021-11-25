@@ -49,7 +49,7 @@ namespace MiraiCP {
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMsg0(const std::string &msg, int retryTime, bool miraicode = false,
-                               JNIEnv * = ThreadManager::getEnv());
+                               JNIEnv * = ThreadManager::getEnv()) const;
 
         template<class T>
         MessageSource send1(T msg, int retryTime, JNIEnv *env) {
@@ -160,16 +160,16 @@ namespace MiraiCP {
         QQID groupid() const { return this->_groupid; }
 
         /// 群名称，群成员群名片，或好友昵称
-        std::string nickOrNameCard() { return this->_nickOrNameCard; };
+        std::string nickOrNameCard() const { return this->_nickOrNameCard; };
 
         /// 头像url地址
-        std::string avatarUrl() { return this->_avatarUrl; };
+        std::string avatarUrl() const { return this->_avatarUrl; };
 
         /// 所属bot
         QQID botid() const { return this->_botid; };
 
         /// 序列化到json对象
-        nlohmann::json serialization() {
+        nlohmann::json serialization() const {
             nlohmann::json j;
             j["type"] = type();
             j["id"] = id();
@@ -181,7 +181,7 @@ namespace MiraiCP {
 
         /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
         /// @see Contact::fromString()
-        std::string serializationToString() {
+        std::string serializationToString() const {
             return this->serialization().dump();
         }
 
@@ -205,7 +205,7 @@ namespace MiraiCP {
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         /// @deprecated 用 sendMessage, since v2.8.1
         [[deprecated("Use sendMessage")]] MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
-                                                                      JNIEnv *env = ThreadManager::getEnv()) {
+                                                                      JNIEnv *env = ThreadManager::getEnv()) const {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 

@@ -86,7 +86,7 @@ namespace MiraiCP {
 
         /// 获取权限，会在构造时调用，请使用permission缓存变量
         /// @see Member::permission
-        unsigned int getPermission(JNIEnv * = ThreadManager::getEnv());
+        unsigned int getPermission(JNIEnv * = ThreadManager::getEnv()) const;
 
         /*!
          * 禁言当前对象，单位是秒，最少0秒最大30天，如果为0或者为负则unmute

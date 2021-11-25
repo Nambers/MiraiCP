@@ -20,6 +20,7 @@ package tech.eritquearcus.miraicp.shared
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.utils.MiraiLogger
+import org.json.JSONObject
 import java.io.File
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -180,3 +181,5 @@ internal inline fun Config.Contact.withMember(
     }
     return block(group, m)
 }
+
+internal fun <T> JSONObject.getOrNull(key:String):T? = if(this.has(key)) (this.get(key) as T) else null

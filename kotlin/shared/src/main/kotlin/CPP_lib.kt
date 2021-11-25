@@ -258,7 +258,13 @@ class CPP_lib(
                             root.getString("contactSource")
                         )
                         /// 查询图片下载地址
-                        Operation_code.QueryImgInfo.ordinal -> queryImgInfo(root.getString("id"))
+                        Operation_code.QueryImgInfo.ordinal -> queryImgInfo(
+                            root.getString("id"),
+                            root.getOrNull("size"),
+                            root.getOrNull("width"),
+                            root.getOrNull("height"),
+                            root.getOrNull("type")
+                        )
                         /// 禁言
                         Operation_code.MuteM.ordinal -> mute(
                             root.getInt("time"),
@@ -313,7 +319,7 @@ class CPP_lib(
                         /// 群公告操作
                         Operation_code.Announcement.ordinal -> KAnnouncement(
                             root.getString("identify"),
-                            if (root.has("source")) root.getString("source") else null
+                            root.getOrNull("source")
                         )
                         /// 定时任务
                         Operation_code.Timer.ordinal -> scheduling(root.getLong("time"), root.getString("msg"))
