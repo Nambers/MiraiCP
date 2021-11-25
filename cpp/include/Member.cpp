@@ -47,7 +47,7 @@ namespace MiraiCP {
         }
     }
 
-    unsigned int Member::getPermission(JNIEnv *env) {
+    unsigned int Member::getPermission(JNIEnv *env) const {
         if (isAnonymous) return 0;
         json j;
         j["contactSource"] = this->serializationToString();

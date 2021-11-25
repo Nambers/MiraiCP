@@ -40,7 +40,7 @@ namespace MiraiCP {
         ThreadManager::getEnv()->DeleteGlobalRef(Config::CPP_lib);
     }
 
-    std::string Config::koperation(operation_set type, json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
+    std::string Config::koperation(operation_set type, const json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
         json j;
         j["type"] = type;
         j["data"] = data;

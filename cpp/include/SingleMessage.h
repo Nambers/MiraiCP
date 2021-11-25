@@ -20,6 +20,7 @@
 #include "Exception.h"
 #include "MessageSource.h"
 #include <array>
+#include <json.hpp>
 #include <optional>
 
 namespace MiraiCP {
@@ -157,36 +158,52 @@ namespace MiraiCP {
         static int type() { return 3; }
         //图片id，样式:` {xxx}.xx `
         std::string id;
-        /// Nullable, use refreshInfo() refresh value
+        /// 可为空, 用`refreshInfo`获取
         std::optional<std::string> md5;
-        /// Nullable, use refreshInfo() refresh value
-        std::optional<size_t> size;
-        /// Nullable, use refreshInfo() refresh value
+        /// 可为0, 来源:用`refreshInfo`可能可以获取或者自己填充, 是isUploaded的必须条件, 默认0
+        size_t size;
+        /// 可为空, 用`refreshInfo`获取
         std::optional<std::string> url;
+        /// 宽度, 默认0
+        int width;
+        /// 长度, 默认0
+        int height;
 
         /*!
-         * @brief 图片是否已经上传
+         * @brief 图片是否已经上传(如果已经上传即表明可以直接用ImageId发送, 如果没有需要手动上传)
          * @param md5 在kotlin端会用.toByteArray()转换
-         * @param size 图片大小
+         * @param size 图片大小, 不能为0
          * @param botid 所属Botid
          * @return 是否上传
          */
-        static bool isUploaded(const std::string &md5, size_t size, QQID botid, JNIEnv * = ThreadManager::getEnv());
+        bool isUploaded(QQID botid) {
+            if (!this->md5.has_value()) this->refreshInfo();
+            return Image::isUploaded0(this->md5.value(), this->size, botid);
+        }
+
+        static bool isUploaded0(const std::string &md5, size_t size, QQID botid, JNIEnv * = ThreadManager::getEnv());
 
         /*!
-        * @brief 从图片id构造，适用于服务器上已经有的图片，即接收到的
+        * @brief 从图片builder构造，适用于服务器上已经有的图片，即接收到的
+        * @param imageId 图片id, 必须
+        * @param size isUploaded的必要条件, 单纯用ImageId可能取不到图片size, 需要自己上传
+        * @param width 宽度
+        * @param height 长度
         * @detail 图片miraiCode格式例子, `[mirai:image:{图片id}.jpg]`
         * 可以用这个正则表达式找出id `\\[mirai:image:(.*?)\\]`
         */
-        explicit Image(const std::string &imageId) : SingleMessage(Image::type(), imageId) {
+        explicit Image(const std::string &imageId, size_t size = 0, int width = 0, int height = 0) : SingleMessage(Image::type(), imageId) {
             this->id = imageId;
+            this->size = size;
+            this->width = width;
+            this->height = height;
         }
 
         explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
             if (sg.type != 2) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
             this->id = sg.content;
+            this->size = this->width = this->height = 0;
         }
-
 
         /// 刷新信息(获取图片下载Url,md5, size)
         void refreshInfo(JNIEnv *env = ThreadManager::getEnv());
@@ -195,6 +212,8 @@ namespace MiraiCP {
         std::string toMiraiCode() const override {
             return "[mirai:image:" + this->id + "]";
         }
+
+        nlohmann::json serialization() const;
 
         bool operator==(const Image &i) const {
             return this->id == i.id;
