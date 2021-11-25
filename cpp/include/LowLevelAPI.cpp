@@ -16,6 +16,7 @@
 #include "LowLevelAPI.h"
 #include "Exception.h"
 namespace MiraiCP {
+    using json = nlohmann::json;
     std::string LowLevelAPI::send0(const std::string &content, json c, int retryTime, bool miraicode, JNIEnv *env,
                                    const std::string &errorInfo) {
         nlohmann::json j;

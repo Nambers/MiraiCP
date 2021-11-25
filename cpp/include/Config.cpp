@@ -40,8 +40,8 @@ namespace MiraiCP {
         ThreadManager::getEnv()->DeleteGlobalRef(Config::CPP_lib);
     }
 
-    std::string Config::koperation(operation_set type, const json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
-        json j;
+    std::string Config::koperation(operation_set type, const nlohmann::json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
+        nlohmann::json j;
         j["type"] = type;
         j["data"] = data;
         std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(Config::CPP_lib,

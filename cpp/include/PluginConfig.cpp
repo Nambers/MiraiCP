@@ -17,6 +17,7 @@
 #include "PluginConfig.h"
 
 namespace MiraiCP {
+    using json = nlohmann::json;
     json PluginConfig::serialize() {
         json j;
         j["name"] = name;

@@ -20,6 +20,7 @@
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {
+    using json = nlohmann::json;
     void MessageSource::recall(JNIEnv *env) const {
         json j;
         j["source"] = this->serializeToString();

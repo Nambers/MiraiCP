@@ -64,7 +64,7 @@ namespace MiraiCP {
             bool showPopup;
 
             /// 序列化到文本
-            json serializeToJson();
+            nlohmann::json serializeToJson();
 
             explicit AnnouncementParams(bool send2New = false, bool requireConfirm = false, bool pinned = false,
                                         bool showEditCard = false, bool showPopup = false) : send2new(send2New),
@@ -102,7 +102,7 @@ namespace MiraiCP {
             void deleteThis();
 
             /// 反序列化
-            static OnlineAnnouncement deserializeFromJson(json);
+            static OnlineAnnouncement deserializeFromJson(nlohmann::json);
 
             OnlineAnnouncement(const std::string &content, AnnouncementParams &params,
                                QQID groupid, QQID senderid, QQID botid,

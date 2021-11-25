@@ -17,6 +17,7 @@
 #include "Event.h"
 
 namespace MiraiCP {
+    using json = nlohmann::json;
     Event Event::processor = Event();
 
     /// @deprecated use Event::prcessor, 使用单例模式, since v2.8.1

@@ -26,6 +26,7 @@
 * 参数:env 必备，job 必备
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
+using json = nlohmann::json;
 JNIEXPORT jstring
 Verify(JNIEnv *env, jobject) {
     using namespace MiraiCP;

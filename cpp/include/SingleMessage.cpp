@@ -19,6 +19,7 @@
 #include <json.hpp>
 
 namespace MiraiCP {
+    using json = nlohmann::json;
     // 静态成员
     std::map<int, std::string> SingleMessage::messageType = {
             {-5, "MarketFace"},
@@ -36,6 +37,57 @@ namespace MiraiCP {
             {7, "face"}};
 
     // 结束静态成员
+    nlohmann::json PlainText::toJson() const {
+        nlohmann::json j;
+        j["key"] = "plaintext";
+        j["content"] = content;
+        return j;
+    }
+    nlohmann::json At::toJson() const {
+        nlohmann::json j;
+        j["key"] = "at";
+        j["content"] = std::to_string(this->target);
+        return j;
+    }
+    nlohmann::json AtAll::toJson() const {
+        nlohmann::json j;
+        j["key"] = "atall";
+        return j;
+    }
+    nlohmann::json Image::toJson() const {
+        nlohmann::json j;
+        j["key"] = "image";
+        j["id"] = this->id;
+        j["size"] = this->size;
+        j["width"] = this->width;
+        j["height"] = this->height;
+        return j;
+    }
+    nlohmann::json LightApp::toJson() const {
+        nlohmann::json j;
+        j["key"] = "lightapp";
+        j["content"] = this->content;
+        return j;
+    }
+    nlohmann::json ServiceMessage::toJson() const {
+        nlohmann::json j;
+        j["key"] = "servicemessage";
+        j["content"] = this->content;
+        j["id"] = this->id;
+        return j;
+    }
+    nlohmann::json Face::toJson() const {
+        nlohmann::json j;
+        j["key"] = "face";
+        j["id"] = this->id;
+        return j;
+    }
+    nlohmann::json UnSupportMessage::toJson() const {
+        nlohmann::json j;
+        j["key"] = "unsupportmessage";
+        j["content"] = this->content;
+        return j;
+    }
 
     //远程文件(群文件)
     RemoteFile RemoteFile::deserializeFromString(const std::string &source) {
@@ -104,7 +156,7 @@ namespace MiraiCP {
 
     /*图片类实现*/
     void Image::refreshInfo(JNIEnv *env) {
-        std::string re = Config::koperation(Config::QueryImgInfo, this->serialization(), env);
+        std::string re = Config::koperation(Config::QueryImgInfo, this->toJson(), env);
         if (re == "E1")
             MiraiCPThrow(RemoteAssetException("图片id格式错误"));
         json j = json::parse(re);
@@ -121,14 +173,5 @@ namespace MiraiCP {
         j["botid"] = botid;
         std::string re = Config::koperation(Config::ImageUploaded, j, env);
         return re == "True";
-    }
-
-    json Image::serialization() const {
-        json j;
-        j["id"] = this->id;
-        j["size"] = this->size;
-        j["width"] = this->width;
-        j["height"] = this->height;
-        return j;
     }
 } // namespace MiraiCP

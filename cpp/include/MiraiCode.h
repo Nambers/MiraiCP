@@ -24,6 +24,7 @@ namespace MiraiCP {
     /// MiraiCode父类, 指可以被转换成miraicode的类型
     class MiraiCodeable {
     public:
+        /// 返回MiraiCode
         virtual std::string toMiraiCode() const = 0;
     };
 
