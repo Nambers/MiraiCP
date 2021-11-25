@@ -19,6 +19,8 @@
 package tech.eritquearcus.miraicp.loader.console
 
 import com.google.gson.Gson
+import kotlinx.coroutines.runBlocking
+import net.mamoe.mirai.Bot
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.login
 import tech.eritquearcus.miraicp.shared.PublicShared
@@ -92,6 +94,13 @@ object Command {
         when (order) {
             "exit" -> {
                 PublicShared.onDisable()
+                PublicShared.logger.info("Closing MiraiCP...")
+                Bot.instances.forEach {
+                    runBlocking {
+                        it.closeAndJoin()
+                    }
+                    PublicShared.logger.info("Bot ${it.id} closed")
+                }
                 exitProcess(0)
             }
             "help" -> printHelp()

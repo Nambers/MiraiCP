@@ -19,6 +19,7 @@
 package tech.eritquearcus.miraicp.loader.console
 
 import kotlinx.coroutines.*
+import net.mamoe.mirai.Bot
 import net.mamoe.mirai.utils.MiraiInternalApi
 import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
@@ -78,7 +79,12 @@ object Console {
                     PublicShared.logger.error(e)
                     return@launch
                 } catch (e: UserInterruptException) {
-                    exitProcess(1)
+                    PublicShared.logger.info("Closing MiraiCP...")
+                    Bot.instances.forEach {
+                        it.closeAndJoin()
+                        PublicShared.logger.info("Bot ${it.id} closed")
+                    }
+                    exitProcess(0)
                 }
                 if (re.isEmpty() || re.isBlank()) continue
                 Command.parse(re)
