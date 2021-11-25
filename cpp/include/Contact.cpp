@@ -47,7 +47,7 @@ namespace MiraiCP {
         std::string re = LowLevelAPI::uploadImg0(path, this->serializationToString(), env);
         if (re == "E2")
             MiraiCPThrow(UploadException("上传图片大小超过30MB,路径:" + path));
-        return Image(re);
+        return Image::deserialize(re);
     }
 
     Contact Contact::deserializationFromString(const std::string &source) {

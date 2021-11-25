@@ -131,9 +131,13 @@ object Config {
     )
 
     data class ImgInfo(
-        val md5: String,
         val size: Long,
-        val url: String
+        val width: Int,
+        val height: Int,
+        val md5: String? = null,
+        val url: String? = null,
+        val imageid: String? = null,
+        val type: Int? = null
     )
 
     data class Message(

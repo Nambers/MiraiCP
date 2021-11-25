@@ -57,10 +57,11 @@ namespace MiraiCP {
     nlohmann::json Image::toJson() const {
         nlohmann::json j;
         j["key"] = "image";
-        j["id"] = this->id;
+        j["imageid"] = this->id;
         j["size"] = this->size;
         j["width"] = this->width;
         j["height"] = this->height;
+        j["type"] = this->imageType;
         return j;
     }
     nlohmann::json LightApp::toJson() const {
@@ -163,6 +164,9 @@ namespace MiraiCP {
         this->url = j["url"];
         this->md5 = j["md5"];
         this->size = j["size"];
+        this->width = j["width"];
+        this->height = j["height"];
+        this->imageType = j["type"];
     }
 
     bool Image::isUploaded0(const std::string &md5, size_t size, QQID botid, JNIEnv *env) {
@@ -173,5 +177,14 @@ namespace MiraiCP {
         j["botid"] = botid;
         std::string re = Config::koperation(Config::ImageUploaded, j, env);
         return re == "True";
+    }
+
+    Image Image::deserialize(const std::string &str) {
+        json j = json::parse(str);
+        return Image(
+                j["imageid"],
+                j["size"],
+                j["width"],
+                j["height"]);
     }
 } // namespace MiraiCP
