@@ -25,7 +25,7 @@ namespace MiraiCP {
 
     MessageChain PrivateMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
         json j;
-        j["contactSource"] = this->sender.serializationToString();
+        j["contactSource"] = this->sender.toString();
         j["time"] = time;
         j["halt"] = halt;
         std::string r = Config::koperation(Config::NextMsg, j, env);
@@ -37,7 +37,7 @@ namespace MiraiCP {
 
     MessageChain GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
         json j;
-        j["contactSource"] = this->group.serializationToString();
+        j["contactSource"] = this->group.toString();
         j["time"] = time;
         j["halt"] = halt;
         std::string r = Config::koperation(Config::NextMsg, j, env);
@@ -49,7 +49,7 @@ namespace MiraiCP {
 
     MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) {
         json j;
-        j["contactSource"] = this->sender.serializationToString();
+        j["contactSource"] = this->sender.toString();
         j["time"] = time;
         j["halt"] = halt;
         std::string r = Config::koperation(Config::NextMsg, j, env);

@@ -46,7 +46,7 @@ namespace MiraiCP {
          */
         void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) {
             nlohmann::json j;
-            j["source"] = Contact(4, 0, 0, "", this->id).serializationToString();
+            j["source"] = Contact(4, 0, 0, "", this->id).toString();
             LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));
             this->_avatarUrl = tmp.avatarUrl;
             this->_nick = tmp.nickornamecard;

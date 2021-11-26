@@ -169,7 +169,7 @@ namespace MiraiCP {
         QQID botid() const { return this->_botid; };
 
         /// 序列化到json对象
-        nlohmann::json serialization() const {
+        nlohmann::json toJson() const {
             nlohmann::json j;
             j["type"] = type();
             j["id"] = id();
@@ -178,25 +178,33 @@ namespace MiraiCP {
             j["botid"] = botid();
             return j;
         }
+        /// @deprecated use toJson, since v2.8.1
+        [[deprecated("use toJson")]] nlohmann::json serialization() const {
+            return this->toJson();
+        }
 
         /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
         /// @see Contact::fromString()
-        std::string serializationToString() const {
-            return this->serialization().dump();
+        std::string toString() const {
+            return this->toJson().dump();
         }
-
-        /*!
-         * @brief 从json节点反序列化
-         * @param j json节点
-         * @return Contact
-         */
-        static Contact deserializationFromJson(nlohmann::json j);
+        /// @deprecated use toString, since v2.8.1
+        [[deprecated("use toString")]] std::string serializationToString() const {
+            return this->toString();
+        }
 
         /// 反序列化成bot，可以通过serializationToString序列化，利于保存
         /// @see Contact::serializationToString()
         /// @param source 序列化后的文本
         /// @throw APIException
-        static Contact deserializationFromString(const std::string &source);
+        static Contact deserialize(const std::string &source);
+        static Contact deserialize(nlohmann::json source);
+
+        /// @deprecated use deserialize, since v2.8.1
+        [[deprecated("use deserialize")]] static Contact deserializationFromString(const std::string &source) {
+            return Contact::deserialize(source);
+        }
+
 
         /// @brief 发送MiraiCode信息
         /// @param msg 发送的MiraiCode

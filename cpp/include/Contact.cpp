@@ -23,7 +23,7 @@ namespace MiraiCP {
         if (msg.empty()) {
             MiraiCPThrow(IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg"));
         }
-        std::string re = LowLevelAPI::send0(msg, this->serialization(), retryTime, miraicode, env,
+        std::string re = LowLevelAPI::send0(msg, this->toJson(), retryTime, miraicode, env,
                                             "reach a error area, Contact::SendMiraiCode");
         if (re == "ET")
             MiraiCPThrow(TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg"));
@@ -44,13 +44,14 @@ namespace MiraiCP {
     }
 
     Image Contact::uploadImg(const std::string &path, JNIEnv *env) {
-        std::string re = LowLevelAPI::uploadImg0(path, this->serializationToString(), env);
+        std::string re = LowLevelAPI::uploadImg0(path, this->toString(), env);
         if (re == "E2")
             MiraiCPThrow(UploadException("上传图片大小超过30MB,路径:" + path));
         return Image::deserialize(re);
     }
 
-    Contact Contact::deserializationFromString(const std::string &source) {
+
+    Contact Contact::deserialize(const std::string &source) {
         json j;
         try {
             j = json::parse(source);
@@ -59,10 +60,10 @@ namespace MiraiCP {
             Logger::logger.error(source);
             Logger::logger.error(e.what());
         }
-        return Contact::deserializationFromJson(j);
+        return Contact::deserialize(j);
     }
 
-    Contact Contact::deserializationFromJson(nlohmann::json j) {
+    Contact Contact::deserialize(nlohmann::json j) {
         return Contact(j["type"],
                        j["id"],
                        j["groupid"],
@@ -76,7 +77,7 @@ namespace MiraiCP {
         json source;
         source["path"] = path;
         j["source"] = source.dump();
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::Voice, j, env);
         if (re == "E1")
             MiraiCPThrow(UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在"));
