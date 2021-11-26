@@ -31,7 +31,7 @@ namespace MiraiCP {
     void Member::refreshInfo(JNIEnv *env) {
         if (isAnonymous)
             return;
-        std::string temp = LowLevelAPI::getInfoSource(this->serializationToString(), env);
+        std::string temp = LowLevelAPI::getInfoSource(this->toString(), env);
         if (temp == "E1")
             MiraiCPThrow(MemberException(1));
         if (temp == "E2")
@@ -51,7 +51,7 @@ namespace MiraiCP {
     unsigned int Member::getPermission(JNIEnv *env) const {
         if (isAnonymous) return 0;
         json j;
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::QueryM, j, env);
         return stoi(re);
     }
@@ -59,7 +59,7 @@ namespace MiraiCP {
     void Member::mute(int time, JNIEnv *env) {
         json j;
         j["time"] = time;
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::MuteM, j, env);
         if (re == "E3") {
             MiraiCPThrow(BotException());
@@ -72,7 +72,7 @@ namespace MiraiCP {
     void Member::kick(const std::string &reason, JNIEnv *env) {
         json j;
         j["message"] = reason;
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::KickM, j, env);
         if (re == "E3") {
             MiraiCPThrow(BotException());
@@ -83,7 +83,7 @@ namespace MiraiCP {
         if (isAnonymous) return;
         json j;
         j["admin"] = admin;
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::ModifyAdmin, j, env);
         if (re == "E1") {
             MiraiCPThrow(BotException());
@@ -93,7 +93,7 @@ namespace MiraiCP {
     void Member::sendNudge() {
         if (isAnonymous) return;
         json j;
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::SendNudge, j);
         if (re == "E1")
             MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));

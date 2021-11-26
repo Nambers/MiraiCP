@@ -28,13 +28,13 @@ namespace MiraiCP {
 
     void Friend::deleteFriend(JNIEnv *env) {
         json j;
-        j["source"] = this->serializationToString();
+        j["source"] = this->toString();
         j["quit"] = true;
         Config::koperation(Config::RefreshInfo, j, env);
     }
 
     void Friend::refreshInfo(JNIEnv *env) {
-        std::string temp = LowLevelAPI::getInfoSource(this->serializationToString(), env);
+        std::string temp = LowLevelAPI::getInfoSource(this->toString(), env);
         if (temp == "E1") {
             MiraiCPThrow(FriendException());
         }
@@ -45,7 +45,7 @@ namespace MiraiCP {
 
     void Friend::sendNudge() {
         json j;
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::SendNudge, j);
         if (re == "E1")
             MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));

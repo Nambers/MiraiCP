@@ -20,7 +20,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
     std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList(JNIEnv *env) {
         json j;
-        j["source"] = this->serializationToString();
+        j["source"] = this->toString();
         j["announcement"] = true;
         std::string re = Config::koperation(Config::RefreshInfo, j, env);
         std::vector<OnlineAnnouncement> oa;
@@ -90,7 +90,7 @@ namespace MiraiCP {
     }
     std::vector<unsigned long long> Group::getMemberList(JNIEnv *env) {
         nlohmann::json j;
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::QueryML, j, env);
         if (re == "E1") {
             MiraiCPThrow(GroupException());
@@ -105,12 +105,12 @@ namespace MiraiCP {
     }
     void Group::quit(JNIEnv *env) {
         nlohmann::json j;
-        j["source"] = this->serializationToString();
+        j["source"] = this->toString();
         j["quit"] = true;
         Config::koperation(Config::RefreshInfo, j, env);
     }
     void Group::refreshInfo(JNIEnv *env) {
-        std::string re = LowLevelAPI::getInfoSource(this->serializationToString(), env);
+        std::string re = LowLevelAPI::getInfoSource(this->toString(), env);
         LowLevelAPI::info tmp = LowLevelAPI::info0(re);
         this->_nickOrNameCard = tmp.nickornamecard;
         this->_avatarUrl = tmp.avatarUrl;
@@ -131,7 +131,7 @@ namespace MiraiCP {
         j["isAutoApproveEnabled"] = this->setting.isAutoApproveEnabled;
         j["isAnonymousChatEnabled"] = this->setting.isAnonymousChatEnabled;
         tmp["source"] = j.dump();
-        tmp["contactSource"] = this->serializationToString();
+        tmp["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::GroupSetting, tmp, env);
         if (re == "E1")
             MiraiCPThrow(BotException());
@@ -144,7 +144,7 @@ namespace MiraiCP {
         source["path"] = path;
         source["filepath"] = filepath;
         tmp["source"] = source.dump();
-        tmp["contactSource"] = this->serializationToString();
+        tmp["contactSource"] = this->toString();
         std::string callback = Config::koperation(Config::SendFile, tmp, env);
         if (callback == "E2") MiraiCPThrow(UploadException("找不到" + filepath + "位置:C-uploadfile"));
         if (callback == "E3")
@@ -161,7 +161,7 @@ namespace MiraiCP {
         tmp["id"] = id;
         tmp["path"] = path;
         j["source"] = tmp.dump();
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
         if (re == "E2") MiraiCPThrow(RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id));
         return RemoteFile::deserializeFromString(re);
@@ -172,7 +172,7 @@ namespace MiraiCP {
         json j;
         tmp["id"] = id;
         j["source"] = tmp.dump();
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
         if (re == "E1") MiraiCPThrow(RemoteAssetException("Get error: 文件路径不存在, id:" + id));
         return RemoteFile::deserializeFromString(re);
@@ -180,7 +180,7 @@ namespace MiraiCP {
 
     Member Group::getOwner(JNIEnv *env) {
         json j;
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::QueryOwner, j, env);
         return Member(stoi(re), this->id(), this->botid());
     }
@@ -191,7 +191,7 @@ namespace MiraiCP {
         temp["id"] = "-1";
         temp["path"] = path;
         j["source"] = temp.dump();
-        j["contactSource"] = this->serializationToString();
+        j["contactSource"] = this->toString();
         return Config::koperation(Config::RemoteFileInfo, j, env);
     }
 

@@ -96,8 +96,8 @@ Event(JNIEnv *env, jobject, jstring content) {
                 //GroupMessage
                 Event::processor.broadcast<GroupMessageEvent>(
                         GroupMessageEvent(j["group"]["botid"],
-                                          Group(Group::deserializationFromJson(j["group"])),
-                                          Member(Member::deserializationFromJson(j["member"])),
+                                          Group(Group::deserialize(j["group"])),
+                                          Member(Member::deserialize(j["member"])),
                                           MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>()))
                                                   .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
                 break;
@@ -106,7 +106,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                 //私聊消息
                 Event::processor.broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
-                                            Friend(Friend::deserializationFromJson(j["friend"])),
+                                            Friend(Friend::deserialize(j["friend"])),
                                             MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>()))
                                                     .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
                 break;
@@ -139,8 +139,8 @@ Event(JNIEnv *env, jobject, jstring content) {
                         MemberJoinEvent(
                                 j["group"]["botid"],
                                 j["jointype"],
-                                Member(Member::deserializationFromJson(j["member"])),
-                                Group(Group::deserializationFromJson(j["group"])),
+                                Member(Member::deserialize(j["member"])),
+                                Group(Group::deserialize(j["group"])),
                                 j["inviterid"]));
                 break;
             case 6:
@@ -149,7 +149,7 @@ Event(JNIEnv *env, jobject, jstring content) {
                         j["group"]["botid"],
                         j["leavetype"],
                         j["memberid"],
-                        Group(Group::deserializationFromJson(j["group"])),
+                        Group(Group::deserialize(j["group"])),
                         j["operatorid"]));
                 break;
             case 7:
@@ -167,14 +167,14 @@ Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
                         j["group"]["botid"],
                         j["etype"],
-                        Group(Group::deserializationFromJson(j["group"])),
+                        Group(Group::deserialize(j["group"])),
                         j["inviterid"]));
                 break;
             case 10:
                 Event::processor.broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
                         j["group"]["botid"],
-                        Group(Group::deserializationFromJson(j["group"])),
-                        Member(Member::deserializationFromJson(j["member"])),
+                        Group(Group::deserialize(j["group"])),
+                        Member(Member::deserialize(j["member"])),
                         MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>()))
                                 .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
@@ -185,8 +185,8 @@ Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast<TimeOutEvent>(TimeOutEvent(j["msg"]));
                 break;
             case 13:
-                Event::processor.broadcast<NudgeEvent>(NudgeEvent(Contact::deserializationFromJson(j["from"]),
-                                                                  Contact::deserializationFromJson(j["target"]),
+                Event::processor.broadcast<NudgeEvent>(NudgeEvent(Contact::deserialize(j["from"]),
+                                                                  Contact::deserialize(j["target"]),
                                                                   j["botid"]));
                 break;
             case 14:
@@ -195,12 +195,12 @@ Event(JNIEnv *env, jobject, jstring content) {
             case 15: {
                 std::optional<Group> a;
                 std::optional<Member> b;
-                Contact temp = Contact::deserializationFromJson(j["group"]);
+                Contact temp = Contact::deserialize(j["group"]);
                 if (temp.id() == 0)
                     a = std::nullopt;
                 else
                     a = Group(temp);
-                temp = Contact::deserializationFromJson(j["inviter"]);
+                temp = Contact::deserialize(j["inviter"]);
                 if (temp.id() == 0)
                     b = std::nullopt;
                 else
