@@ -169,22 +169,13 @@ namespace MiraiCP {
         this->imageType = j["type"];
     }
 
-    bool Image::isUploaded0(const std::string &md5, size_t size, QQID botid, JNIEnv *env) {
-        if (size == 0) MiraiCPThrow(IllegalArgumentException("size不能为0, 位置:Image::isUploaded"));
-        json j;
-        j["md5"] = md5;
-        j["size"] = size;
-        j["botid"] = botid;
-        std::string re = Config::koperation(Config::ImageUploaded, j, env);
-        return re == "True";
-    }
-
     Image Image::deserialize(const std::string &str) {
         json j = json::parse(str);
         return Image(
                 j["imageid"],
                 j["size"],
                 j["width"],
-                j["height"]);
+                j["height"],
+                j["type"]);
     }
 } // namespace MiraiCP

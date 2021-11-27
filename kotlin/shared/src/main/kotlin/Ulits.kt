@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2021. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -13,12 +13,15 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 package tech.eritquearcus.miraicp.shared
 
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.*
+import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.ImageType
 import net.mamoe.mirai.utils.MiraiLogger
 import org.json.JSONObject
 import java.io.File
@@ -182,4 +185,10 @@ internal inline fun Config.Contact.withMember(
     return block(group, m)
 }
 
-internal fun <T> JSONObject.getOrNull(key:String):T? = if(this.has(key)) (this.get(key) as T) else null
+internal fun <T> JSONObject.getOrNull(key: String): T? = if (this.has(key)) (this.get(key) as T) else null
+internal fun Config.ImgInfo.toImage(): Image = Image.newBuilder(this.imageid!!).apply {
+    this@apply.height = this@toImage.height
+    this@apply.width = this@toImage.width
+    this@apply.size = this@toImage.size
+    this@apply.type = ImageType.values()[this@toImage.type ?: ImageType.UNKNOWN.ordinal]
+}.build()

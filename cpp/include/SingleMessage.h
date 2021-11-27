@@ -17,6 +17,7 @@
 #ifndef MIRAICP_PRO_SINGLEMESSAGE_H
 #define MIRAICP_PRO_SINGLEMESSAGE_H
 
+#include "Config.h"
 #include "Exception.h"
 #include "MessageSource.h"
 #include <array>
@@ -195,12 +196,14 @@ namespace MiraiCP {
          * @param botid 所属Botid
          * @return 是否上传
          */
-        bool isUploaded(QQID botid) {
+        bool isUploaded(QQID botid, JNIEnv *env = ThreadManager::getEnv()) {
             if (!this->md5.has_value()) this->refreshInfo();
-            return Image::isUploaded0(this->md5.value(), this->size, botid);
+            if(this->size == 0) MiraiCPThrow(IllegalArgumentException("size不能为0"));
+            nlohmann::json tmp = this->toJson();
+            tmp["botid"] = botid;
+            std::string re = Config::koperation(Config::ImageUploaded, tmp, env);
+            return re == "true";
         }
-
-        static bool isUploaded0(const std::string &md5, size_t size, QQID botid, JNIEnv * = ThreadManager::getEnv());
 
         /*!
         * @brief 从图片builder构造，适用于服务器上已经有的图片，即接收到的
@@ -208,6 +211,7 @@ namespace MiraiCP {
         * @param size isUploaded的必要条件, 单纯用ImageId可能取不到图片size, 需要自己上传
         * @param width 宽度
         * @param height 长度
+        * @param type 图片类型
         * @detail 图片miraiCode格式例子, `[mirai:image:{图片id}.jpg]`
         * 可以用这个正则表达式找出id `\\[mirai:image:(.*?)\\]`
         */
