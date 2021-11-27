@@ -105,7 +105,6 @@ namespace MiraiCP {
 
     MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp, bool origin) {
         json j = tmp;
-        Logger::logger.info("ms: " + tmp.dump());
         if (origin)
             j = tmp["originalMessage"];
         MessageChain mc;

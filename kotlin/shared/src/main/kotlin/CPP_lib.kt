@@ -23,12 +23,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.utils.MiraiLogger
 import org.json.JSONObject
-import tech.eritquearcus.miraicp.shared.PublicShared.queryBFL
-import tech.eritquearcus.miraicp.shared.PublicShared.queryBGL
-import tech.eritquearcus.miraicp.shared.PublicShared.queryML
-import tech.eritquearcus.miraicp.shared.PublicShared.refreshInfo
-import tech.eritquearcus.miraicp.shared.PublicShared.sendMiraiCode
-import tech.eritquearcus.miraicp.shared.PublicShared.sendMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.accpetFriendRequest
 import tech.eritquearcus.miraicp.shared.PublicShared.accpetGroupInvite
 import tech.eritquearcus.miraicp.shared.PublicShared.basicSendLog
@@ -45,12 +39,18 @@ import tech.eritquearcus.miraicp.shared.PublicShared.modifyAdmin
 import tech.eritquearcus.miraicp.shared.PublicShared.mute
 import tech.eritquearcus.miraicp.shared.PublicShared.nextMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.publishOfflineAnnouncement
+import tech.eritquearcus.miraicp.shared.PublicShared.queryBFL
+import tech.eritquearcus.miraicp.shared.PublicShared.queryBGL
 import tech.eritquearcus.miraicp.shared.PublicShared.queryImgInfo
+import tech.eritquearcus.miraicp.shared.PublicShared.queryML
 import tech.eritquearcus.miraicp.shared.PublicShared.recallMsg
+import tech.eritquearcus.miraicp.shared.PublicShared.refreshInfo
 import tech.eritquearcus.miraicp.shared.PublicShared.remoteFileInfo
 import tech.eritquearcus.miraicp.shared.PublicShared.scheduling
 import tech.eritquearcus.miraicp.shared.PublicShared.sendError
 import tech.eritquearcus.miraicp.shared.PublicShared.sendFile
+import tech.eritquearcus.miraicp.shared.PublicShared.sendMiraiCode
+import tech.eritquearcus.miraicp.shared.PublicShared.sendMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.sendNudge
 import tech.eritquearcus.miraicp.shared.PublicShared.sendWarning
 import tech.eritquearcus.miraicp.shared.PublicShared.sendWithQuote
@@ -187,6 +187,11 @@ class CPP_lib(
                 }
             }
 
+        private suspend fun kQueryImgInfo(source: String): String =
+            gson.fromJson(source, Config.ImgInfo::class.java).let {
+                queryImgInfo(it.imageid!!, it.size, it.width, it.height, it.type)
+            }
+
         enum class Operation_code {
             Recall,
             Send,
@@ -258,13 +263,7 @@ class CPP_lib(
                             root.getString("contactSource")
                         )
                         /// 查询图片下载地址
-                        Operation_code.QueryImgInfo.ordinal -> queryImgInfo(
-                            root.getString("id"),
-                            root.getOrNull("size"),
-                            root.getOrNull("width"),
-                            root.getOrNull("height"),
-                            root.getOrNull("type")
-                        )
+                        Operation_code.QueryImgInfo.ordinal -> kQueryImgInfo(root.toString())
                         /// 禁言
                         Operation_code.MuteM.ordinal -> mute(
                             root.getInt("time"),
@@ -344,9 +343,10 @@ class CPP_lib(
                             root.getString("msg")
                         )
                         Operation_code.ImageUploaded.ordinal -> isUploaded(
-                            root.getString("md5"),
-                            root.getLong("size"),
-                            root.getLong("botid")
+                            gson.fromJson(
+                                root.toString(),
+                                Config.ImgInfo::class.java
+                            ), root.getLong("botid")
                         )
                         else -> "EA"
                     }

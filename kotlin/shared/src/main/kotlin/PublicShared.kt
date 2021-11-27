@@ -363,7 +363,7 @@ object PublicShared {
                 this.size = size ?: 0L
                 this.width = width ?: 0
                 this.height = height ?: 0
-                this.type = ImageType.UNKNOWN
+                this.type = ImageType.values()[type ?: ImageType.UNKNOWN.ordinal]
             }.build()
             gson.toJson(
                 Config.ImgInfo(
@@ -809,9 +809,9 @@ object PublicShared {
             }
         }
 
-    suspend fun isUploaded(md5: String, size: Long, botid: Long): String =
+    suspend fun isUploaded(img: Config.ImgInfo, botid: Long): String =
         withBot(botid) { bot ->
-            isUploaded(bot, gson.fromJson(md5, ByteArray::class.java), size).toString()
+            img.toImage().isUploaded(bot).toString()
         }
 
     fun onDisable() = cpp.forEach { it.PluginDisable() }
