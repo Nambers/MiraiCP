@@ -1,5 +1,6 @@
 # MiraiCP
-[![License](https://img.shields.io/github/license/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/blob/master/LICENSE)  [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP?include_prereleases)](https://github.com/Nambers/MiraiCP/releases/) [![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/commit/master)
+[![License](https://img.shields.io/github/license/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/blob/master/LICENSE) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FNambers%2FMiraiCP.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FNambers%2FMiraiCP?ref=badge_shield)
+ [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP?include_prereleases)](https://github.com/Nambers/MiraiCP/releases/) [![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/commit/master)
 
 >[中文](https://github.com/Nambers/MiraiCP/blob/master/README.md)
 >
@@ -230,3 +231,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Stargazers
 [![Stargazers repo roster for @Nambers/MiraiCP](https://reporoster.com/stars/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/stargazers)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FNambers%2FMiraiCP.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FNambers%2FMiraiCP?ref=badge_large)
