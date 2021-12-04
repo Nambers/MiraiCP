@@ -35,7 +35,8 @@ if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp")
     execute_process(COMMAND python buildScript/addinclude.py
             COMMAND python buildScript/third-party/config.py
             COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
-            COMMAND python buildScript/combineSource.py
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    execute_process(COMMAND python buildScript/combineSource.py
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 #----测试相关---
@@ -64,9 +65,9 @@ if (JNI_FOUND)
             )
     target_include_directories(MiraiCP_multi PUBLIC ${SOURCE_PATH})
     target_include_directories(MiraiCP_single PUBLIC ${SOURCE_PATH})
-else()
+else ()
     message(STATUS "Cannot find JNI")
-endif()
+endif ()
 target_sources(MiraiCP_single PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.cpp)
 
 add_custom_target(
