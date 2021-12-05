@@ -28,7 +28,7 @@ namespace MiraiCP {
     class Config {
     public:
         /// kt中JNI接口类
-        static jclass CPP_lib;
+        static jclass CPPLib;
         /// 调用mirai方法
         static jmethodID KOperation;
 
