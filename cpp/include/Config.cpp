@@ -19,7 +19,7 @@
 
 namespace MiraiCP {
     // 静态成员
-    jclass Config::CPP_lib = nullptr;
+    jclass Config::CPPLib = nullptr;
     jmethodID Config::KOperation = nullptr;
     // 结束静态成员
 
@@ -28,23 +28,23 @@ namespace MiraiCP {
     throw: InitxException 即找不到对应签名
     */
     void Config::construct(JNIEnv *env) {
-        Config::CPP_lib = reinterpret_cast<jclass>(env->NewGlobalRef(
-                env->FindClass("tech/eritquearcus/miraicp/shared/CPP_lib")));
-        if (Config::CPP_lib == nullptr) {
-            MiraiCPThrow(APIException("初始化错误，找不到CPP_lib类"));
+        Config::CPPLib = reinterpret_cast<jclass>(env->NewGlobalRef(
+                env->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
+        if (Config::CPPLib == nullptr) {
+            MiraiCPThrow(APIException("初始化错误，找不到CPPLib类"));
         }
-        Config::KOperation = env->GetStaticMethodID(CPP_lib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
+        Config::KOperation = env->GetStaticMethodID(CPPLib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
     }
 
     void Config::destruct() {
-        ThreadManager::getEnv()->DeleteGlobalRef(Config::CPP_lib);
+        ThreadManager::getEnv()->DeleteGlobalRef(Config::CPPLib);
     }
 
     std::string Config::koperation(operation_set type, const nlohmann::json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
         nlohmann::json j;
         j["type"] = type;
         j["data"] = data;
-        std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(Config::CPP_lib,
+        std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(Config::CPPLib,
                                                                                   Config::KOperation,
                                                                                   Tools::str2jstring(j.dump().c_str(), env)),
                                             env);

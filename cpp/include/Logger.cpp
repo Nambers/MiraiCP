@@ -30,7 +30,7 @@ namespace MiraiCP {
     throw: InitException 即找不到签名
     */
     void Logger_interface::init(JNIEnv *env) {
-        this->log = env->GetStaticMethodID(Config::CPP_lib, "KSendLog", "(Ljava/lang/String;I)V");
+        this->log = env->GetStaticMethodID(Config::CPPLib, "KSendLog", "(Ljava/lang/String;I)V");
     }
 
     void Logger_interface::registerHandle(Logger_interface::Action action) {
@@ -47,7 +47,7 @@ namespace MiraiCP {
         json j;
         j["id"] = -2;
         j["log"] = content;
-        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
+        env->CallStaticVoidMethod(Config::CPPLib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
     }
 
     void IdLogger::log0(const std::string &content, int level, JNIEnv *env) {
@@ -56,7 +56,7 @@ namespace MiraiCP {
         json j;
         j["id"] = id;
         j["log"] = content;
-        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
+        env->CallStaticVoidMethod(Config::CPPLib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
     }
 
     void PluginLogger::log0(const std::string &content, int level, JNIEnv *env) {
@@ -66,6 +66,6 @@ namespace MiraiCP {
         j["id"] = -1;
         j["name"] = CPPPlugin::plugin->config.id;
         j["log"] = content;
-        env->CallStaticVoidMethod(Config::CPP_lib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
+        env->CallStaticVoidMethod(Config::CPPLib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
     }
 } // namespace MiraiCP

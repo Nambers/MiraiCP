@@ -251,7 +251,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
     assert(env != nullptr);
     MiraiCP::ThreadManager::gvm = vm;
     // 注册native方法
-    if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPP_lib", method_table, 3)) {
+    if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", method_table, 3)) {
         return JNI_ERR;
     }
 
