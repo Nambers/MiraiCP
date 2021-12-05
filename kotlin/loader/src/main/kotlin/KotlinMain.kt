@@ -25,6 +25,7 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
+import tech.eritquearcus.miraicp.shared.BuiltInConstants
 import tech.eritquearcus.miraicp.shared.CPPConfig
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
@@ -51,7 +52,7 @@ object KotlinMain {
         PublicShared.cachePath.mkdir()
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
-        logger.info("⭐当前MiraiCP版本: $now_tag")
+        logger.info("⭐当前MiraiCP版本: $now_tag, 构建时间: ${BuiltInConstants.date}")
         c.apply {
             if (this.advanceConfig != null && this.advanceConfig!!.maxThread != null) {
                 if (this.advanceConfig!!.maxThread!! <= 0)

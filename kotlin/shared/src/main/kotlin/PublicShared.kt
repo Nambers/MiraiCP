@@ -68,10 +68,10 @@ object PublicShared {
         }
     }
     private var friend_cache = ArrayList<NormalMember>(0)
-    val cpp: ArrayList<CPP_lib> = arrayListOf()
+    val cpp: ArrayList<CPPLib> = arrayListOf()
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
-    const val now_tag = "v2.8.0"
+    const val now_tag = "v${BuiltInConstants.version}"
     val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
     var cachePath: File = File("")
