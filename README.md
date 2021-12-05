@@ -5,7 +5,7 @@
 [API文档](https://eritque-arcus.tech/MiraiCP/) · [下载](https://github.com/Nambers/MiraiCP/releases) · [demo](https://github.com/Nambers/MiraiCP-template)
 
 	
-[![License](https://img.shields.io/github/license/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/blob/master/LICENSE)  [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP?include_prereleases)](https://github.com/Nambers/MiraiCP/releases/) [![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/commit/master)
+[![License](https://img.shields.io/github/license/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/blob/master/LICENSE)  [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP?include_prereleases)](https://github.com/Nambers/MiraiCP/releases/) [![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP/dev)](https://github.com/Nambers/MiraiCP/commit/master)
 ![image](https://user-images.githubusercontent.com/35139537/143440804-e7385a03-b3b6-4d0a-b4c0-2595ea4b35ba.png)
 	
 </div>
