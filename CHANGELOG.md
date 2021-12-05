@@ -1,5 +1,15 @@
 # Change Log
 
+## v2.9.0-M1
+
++ 取消插件后缀检查
++ 使用mirai v2.9.0-M1
++ 支持`Image.isUploaded`
++ 优化`Image`的内部属性
++ 更新一些依赖
+
+> 该版本为预发行版, 可能包含一些问题
+
 ## v2.8.0
 
 + 优化 `SingleMessage` 设计
