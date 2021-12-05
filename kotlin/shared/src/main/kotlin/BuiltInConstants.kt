@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2021. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -13,9 +13,12 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-object V {
-    const val kotlinVersion = "1.5.30"
-    const val miraiVersion = "2.9.0-M1"
+package tech.eritquearcus.miraicp.shared
+
+object BuiltInConstants {
+    const val date = "Sun Dec 05 09:30:26 CST 2021"
+    const val version = "2.9.0-M1"
 }

@@ -42,7 +42,7 @@ private val cc by lazy {
 //    crossinline block: T.() -> R,
 //): R = runInterruptible(context = cc, block = { block() })
 
-fun ArrayList<CPP_lib>.event(content: String) {
+fun ArrayList<CPPLib>.event(content: String) {
     cc.submit {
         when {
             PublicShared.disablePlugins.isNotEmpty() -> {
@@ -60,9 +60,9 @@ fun ArrayList<CPP_lib>.event(content: String) {
 }
 
 // load native lib
-fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPP_lib {
+fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPPLib {
     this.copyTo(File.createTempFile(this.name, ".cache", PublicShared.cachePath), true).let {
-        return CPP_lib(it.absolutePath, d).apply {
+        return CPPLib(it.absolutePath, d).apply {
             PublicShared.logger.info("加载${it.absolutePath}成功")
             this.showInfo()
             if (!uncheck) PublicShared.cpp.firstOrNull { itt -> itt.config.id == this.config.id }.let check@{ c ->

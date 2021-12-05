@@ -19,7 +19,6 @@
 package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.Gson
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.utils.MiraiLogger
 import org.json.JSONObject
@@ -57,9 +56,9 @@ import tech.eritquearcus.miraicp.shared.PublicShared.sendWithQuote
 import tech.eritquearcus.miraicp.shared.PublicShared.uploadImg
 import tech.eritquearcus.miraicp.shared.PublicShared.uploadVoice
 
-class CPP_lib(
-    val dll_path: String,
-    val dependencies: List<String>?
+class CPPLib(
+    private val libPath: String,
+    private val dependencies: List<String>?
 ) {
     var config: PluginConfig
 
@@ -67,7 +66,7 @@ class CPP_lib(
         dependencies?.forEach {
             System.load(it)
         }
-        System.load(dll_path)
+        System.load(libPath)
         config = Gson().fromJson(Verify(), PluginConfig::class.java)
     }
 
@@ -75,7 +74,7 @@ class CPP_lib(
         logger.info("⭐已加载插件(${config.id}): ${config.name}")
         logger.info("⭐作者: ${config.author}")
         logger.info("⭐版本: ${config.version}")
-        logger.info("⭐本机地址: $dll_path")
+        logger.info("⭐本机地址: $libPath")
         if (dependencies != null) logger.info("⭐依赖dll: ${dependencies.joinToString(" ")}")
         if (config.description != "")
             logger.info("⭐描述: ${config.description}")
@@ -89,21 +88,9 @@ class CPP_lib(
     //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
     companion object {
         private fun contact(source: String): Config.Contact = gson.fromJson(source, Config.Contact::class.java)
-        var test: Boolean = false
         private suspend fun KSend(source: String, miraiCode: Boolean, retryTime: Int): String =
             run {
                 val tmp = gson.fromJson(source, Config.SendRequest::class.java)
-                if (test) {
-                    when (tmp.contact.type) {
-                        1 -> println("send [${Thread.currentThread().name}] Friend<MiraiCode: $miraiCode>: ${tmp.content}")
-                        2 -> println("send [${Thread.currentThread().name}] Group<MiraiCode: $miraiCode>: ${tmp.content}")
-                        3 -> println("send [${Thread.currentThread().name}] Member<MiraiCode: $miraiCode>: ${tmp.content}")
-                    }
-                    delay(171)
-                    return """
-                               {"kind":"GROUP","botId":692928873,"ids":[3926],"internalIds":[1921344034],"time":1629788808,"fromId":692928873,"targetId":788189105,"originalMessage":[{"type":"PlainText","content":"x"}]}
-                                            """.trimIndent()
-                }
                 return when (miraiCode) {
                     false -> sendMsg(tmp.content, tmp.contact, retryTime)
                     true -> sendMiraiCode(tmp.content, tmp.contact, retryTime)
@@ -113,14 +100,6 @@ class CPP_lib(
         @JvmStatic
         fun KSendLog(log: String, level: Int) {
             val j = JSONObject(log)
-            if (test) {
-                when (level) {
-                    0 -> println("I: ${j.getString("log")}")
-                    1 -> println("W: ${j.getString("log")}")
-                    2 -> println("E: ${j.getString("log")}")
-                }
-                return
-            }
             if (j.getLong("id") == -1L)
                 when (level) {
                     0 -> basicSendLog(j.getString("log"), j.getLong("id"), j.getString("name"))

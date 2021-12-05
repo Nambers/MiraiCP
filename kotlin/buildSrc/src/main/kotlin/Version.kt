@@ -16,20 +16,18 @@
  *
  */
 
-package tech.eritquearcus.miraicp.loader.friend
+object Version {
+    const val kotlin = "1.5.30"
+    const val `kotlinx-serialization-json` = "1.3.1"
+    const val `kotlinx-coroutines-core` = "1.5.2"
 
-import net.mamoe.mirai.Bot
-import org.junit.jupiter.api.Test
+    const val mirai = "2.9.0-M1"
+    const val miraiCP = "2.9.0-M1"
 
-fun friendMessage() {
-    val b = Bot.getInstance(1)
-    val f = b.getFriend(1930893235)!!
-    TODO("friend test")
-}
-
-class FriendMessage {
-    @Test
-    fun lotFriendMessage() {
-        TODO("friend test")
-    }
+    const val shadowJar = "7.1.0"
+    const val mavenCenterPublish = "0.7.1"
+    const val json = "20210307"
+    const val gson = "2.8.9"
+    const val jline = "3.21.0"
+    const val jansi = "2.4.0"
 }

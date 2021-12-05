@@ -32,26 +32,28 @@ tasks {
         kotlinOptions.jvmTarget = "1.8"
     }
     shadowJar{
+        dependsOn(getByPath(":fillingConstants"))
         archiveBaseName.set("MiraiCP-loader")
         archiveClassifier.set("")
-        archiveVersion.set(libs.versions.miraiCPVersion)
+        archiveVersion.set(Version.miraiCP)
         manifest {
             attributes["Description"] = "MiraiCP-Loader"
             attributes["Built-By"] = "Eritque arcus"
-            attributes["Implementation-Version"] = libs.versions.miraiCPVersion.get()
+            attributes["Implementation-Version"] = Version.miraiCP
             attributes["Created-By"] = "Gradle " + gradle.gradleVersion
-            attributes["Build-Kotlin"] = libs.versions.kotlinVersion.get()
+            attributes["Build-Kotlin"] = Version.kotlin
         }
     }
 }
-version = libs.versions.miraiCPVersion.get()
+version = Version.miraiCP
+description = "Loader version for MiraiCP"
 dependencies {
     testImplementation(kotlin("test"))
     implementation(project(":shared"))
-    implementation(libs.mirai.core.self)
-    implementation(libs.jansi)
-    implementation(libs.jline)
-    api("net.mamoe", "mirai-logging-log4j2", libs.versions.miraiVersion.get())
+    implementation("net.mamoe:mirai-core:${Version.mirai}")
+    implementation("org.fusesource.jansi:jansi:${Version.jansi}")
+    implementation("org.jline:jline:${Version.jline}")
+    api("net.mamoe", "mirai-logging-log4j2", Version.mirai)
 }
 tasks.test {
     useJUnitPlatform()

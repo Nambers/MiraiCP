@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2020 - 2021. Eritque arcus and contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or any later version(in your opinion).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 import kotlinx.serialization.decodeFromHexString
 
 /*
@@ -22,20 +40,22 @@ plugins {
     id("net.mamoe.maven-central-publish")
     `maven-publish`
 }
-version = libs.versions.miraiCPVersion.get()
+version = Version.miraiCP
+description = "Plugin version for MiraiCP"
 
 tasks {
     afterEvaluate {
         named<net.mamoe.mirai.console.gradle.BuildMiraiPluginTask>("buildPlugin") {
+            dependsOn(getByPath(":fillingConstants"))
             archiveBaseName.set("MiraiCP-plugin")
             archiveClassifier.set("")
-            archiveVersion.set(libs.versions.miraiCPVersion.get())
+            archiveVersion.set(Version.miraiCP)
             manifest {
                 attributes["Description"] = "MiraiCP-Plugin"
                 attributes["Built-By"] = "Eritque arcus"
-                attributes["Implementation-Version"] = libs.versions.miraiCPVersion.get()
+                attributes["Implementation-Version"] = Version.miraiCP
                 attributes["Created-By"] = "Gradle " + gradle.gradleVersion
-                attributes["Build-Kotlin"] = libs.versions.kotlinVersion.get()
+                attributes["Build-Kotlin"] = Version.kotlin
             }
         }
     }
@@ -60,7 +80,7 @@ mavenCentralPublish {
         artifact(tasks["buildPlugin"])
         this.pom {
             name.set("MiraiCP-plugin")
-            version = libs.versions.miraiCPVersion.get()
+            version = Version.miraiCP
         }
     }
 }
