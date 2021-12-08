@@ -9,6 +9,9 @@ on:
    pre:
     required: true
     description: pre-release
+   template:
+    required: false
+    description: just update template
 
 jobs:
   push-single-include:
@@ -48,8 +51,20 @@ jobs:
          FOLDER: ./template # The directory where your assets are generated
          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
          MESSAGE: ${{ github.event.inputs.v }} # The commit message
+     - name: Create tag
+       uses: actions/github-script@v3
+       with:
+         github-token: ${{ github.token }}
+         script: |
+           github.git.createRef({
+             owner: Nambers,
+             repo: MiraiCP-template,
+             ref: "refs/tags/${{ github.event.inputs.v }}",
+             sha: context.sha
+           })
     
-  tagged-release:
+  publish-release:
+    if: ${{ github.event.inputs.template }}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
