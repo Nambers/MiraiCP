@@ -47,12 +47,16 @@ tasks {
 }
 version = Version.miraiCP
 description = "Loader version for MiraiCP"
+configurations.all {
+    resolutionStrategy.force("org.apache.logging.log4j:log4j-core:2.15.0")
+    resolutionStrategy.force("org.apache.logging.log4j:log4j-core:2.15.0")
+}
 dependencies {
     testImplementation(kotlin("test"))
     implementation(project(":shared"))
-    implementation("net.mamoe:mirai-core:${Version.mirai}")
-    implementation("org.fusesource.jansi:jansi:${Version.jansi}")
-    implementation("org.jline:jline:${Version.jline}")
+    implementation("net.mamoe", "mirai-core", Version.mirai)
+    implementation("org.fusesource.jansi", "jansi", Version.jansi)
+    implementation("org.jline", "jline", Version.jline)
     api("net.mamoe", "mirai-logging-log4j2", Version.mirai)
 }
 tasks.test {
