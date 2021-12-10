@@ -22,7 +22,7 @@ object Version {
     const val `kotlinx-coroutines-core` = "1.5.2"
 
     const val mirai = "2.9.0-M1"
-    const val miraiCP = "2.9.0-M1"
+    const val miraiCP = "2.9.0-M2"
 
     const val shadowJar = "7.1.0"
     const val mavenCenterPublish = "0.7.1"
