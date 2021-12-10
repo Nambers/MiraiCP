@@ -1,6 +1,6 @@
 name: Bug Report
 description: File a bug report
-title: "[Gug]: "
+title: "[bug]: "
 labels: ["question"]
 body:
   - type: markdown
