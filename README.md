@@ -81,8 +81,7 @@
 ## test
 | CI Name | status |
 |:---:|:---|
-| C++ in linux(gcc) | ![C++ Test](https://github.com/Nambers/MiraiCP/actions/workflows/cpp_linux.yml/badge.svg)|
-| C++ in windows(mingw&msvc) | ![C++ Test](https://github.com/Nambers/MiraiCP/actions/workflows/cpp_windows.yml/badge.svg)|
+| C++ in windows(mingw&msvc) & linux(g++) | ![C++ Test](https://github.com/Nambers/MiraiCP/actions/workflows/cppBuilds.yml/badge.svg)|
 | kotlin | ![kotlin Test](https://github.com/Nambers/MiraiCP/actions/workflows/gradle.yml/badge.svg)|
 
 # 使用声明
