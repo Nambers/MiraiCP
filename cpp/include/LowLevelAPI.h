@@ -17,10 +17,17 @@
 #ifndef MIRAICP_PRO_LOWLEVELAPI_H
 #define MIRAICP_PRO_LOWLEVELAPI_H
 
-#include "Config.h"
+//#include "Config.h" // Delete these!
+#include <json.hpp>
+#include <string>
+
+// declare imcomplete type (JNIEnv is not in the namespace MiraiCP)
+struct JNIEnv_;
+typedef JNIEnv_ JNIEnv;
 
 namespace MiraiCP {
     /// 较底层api
+
     class LowLevelAPI {
     public:
         /// @brief 抽象封装底层发送信息接口
@@ -35,11 +42,9 @@ namespace MiraiCP {
         /// @brief 取该联系人的一些信息
         /// @param c 该联系人Contact->serializationToString()
         /// @return json格式字符串，待解析
-        static inline std::string getInfoSource(const std::string &c, JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["source"] = c;
-            return Config::koperation(Config::RefreshInfo, j, env);
-        }
+
+
+        static inline std::string getInfoSource(const std::string &, JNIEnv *);
 
         /*!
          * @brief 上传图片
@@ -48,12 +53,7 @@ namespace MiraiCP {
          * @param env JNIEnv
          * @return string 待解析json
          */
-        static inline std::string uploadImg0(const std::string &path, const std::string &c, JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["fileName"] = path;
-            j["source"] = c;
-            return Config::koperation(Config::UploadImg, j, env);
-        }
+        static inline std::string uploadImg0(const std::string &, const std::string &, JNIEnv *);
 
         /// 每个对象的必有信息
         struct info {
