@@ -78,3 +78,6 @@ add_custom_target(
         COMMAND python buildScript/combineSource.py
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+target_compile_options(MiraiCP_single PUBLIC -w)
+target_compile_options(MiraiCP_multi PUBLIC -w)
