@@ -15,6 +15,7 @@
 //
 
 #include "Event.h"
+#include "Config.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -22,6 +23,15 @@ namespace MiraiCP {
 
     /// @deprecated use Event::prcessor, 使用单例模式, since v2.8.1
     [[deprecated("Use Event::processor instead")]] Event *const procession = &Event::processor;
+
+    void GroupInviteEvent::operation0(const std::string &source, QQID botid, bool accept, JNIEnv *env) {
+        nlohmann::json j;
+        j["text"] = source;
+        j["operate"] = accept;
+        j["botid"] = botid;
+        std::string re = Config::koperation(Config::Gioperation, j, env);
+        if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
+    }
 
     MessageChain PrivateMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
         json j;
@@ -57,5 +67,22 @@ namespace MiraiCP {
             MiraiCPThrow(TimeOutException("取下一条信息超时"));
         json re = json::parse(r);
         return MessageChain::deserializationFromMessageSourceJson(json::parse(re["messageSource"].get<std::string>())).plus(MessageSource::deserializeFromString(re["messageSource"]));
+    }
+    void NewFriendRequestEvent::operation0(const std::string &source, QQID botid, bool accept, JNIEnv *env, bool ban) {
+        nlohmann::json j;
+        j["text"] = source;
+        j["operate"] = accept;
+        j["botid"] = botid;
+        j["ban"] = ban;
+        std::string re = Config::koperation(Config::Nfroperation, j, env);
+        if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
+    }
+    void MemberJoinRequestEvent::operate(const std::string &s, QQID botid, bool sign, const std::string &msg, JNIEnv *env) const {
+        nlohmann::json j;
+        j["source"] = s;
+        j["botid"] = botid;
+        j["sign"] = sign;
+        j["msg"] = msg;
+        Config::koperation(Config::MemberJoinRequest, j, env);
     }
 } // namespace MiraiCP

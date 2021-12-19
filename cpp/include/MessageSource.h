@@ -18,6 +18,8 @@
 #define MIRAICP_PRO_MESSAGESOURCE_H
 
 #include "MiraiCode.h"
+#include <jni.h>
+#include "ThreadManager.h"
 
 namespace MiraiCP {
     using QQID = unsigned long long;

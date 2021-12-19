@@ -16,9 +16,18 @@
 
 #include "ForwardedMessage.h"
 #include "Group.h"
+#include "Exception.h"
+#include "Tools.h"
+#include "Config.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
+    void MessageChain::Message::tempThrow(const std::string &x) const {
+        MiraiCPThrow(IllegalArgumentException(x));
+    }
+    std::string MessageChain::toMiraiCode() const {
+        return Tools::VectorToString(this->toMiraiCodeVector(), "");
+    }
     MessageSource MessageChain::quoteAndSend0(const std::string &msg, QQID groupid,
                                               JNIEnv *env) {
         json obj;

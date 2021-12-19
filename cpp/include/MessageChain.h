@@ -17,13 +17,13 @@
 #ifndef MIRAICP_PRO_MESSAGECHAIN_H
 #define MIRAICP_PRO_MESSAGECHAIN_H
 
-#include "Config.h"
+#include <json.hpp>
+#include <optional>
+#include <variant>
+
 #include "MessageSource.h"
 #include "MiraiCode.h"
 #include "SingleMessage.h"
-#include "json.hpp"
-#include <optional>
-#include <variant>
 
 namespace MiraiCP {
     /// 消息链, 一般由SingleMessage组成
@@ -32,6 +32,7 @@ namespace MiraiCP {
         class Message {
         private:
             std::shared_ptr<SingleMessage> content;
+            void tempThrow(const std::string &x) const;
 
         public:
             /// 代表的子类
@@ -59,7 +60,7 @@ namespace MiraiCP {
                 if (T::type() != this->type())
                     MiraiCPThrow(IllegalArgumentException("cannot convert from " + SingleMessage::messageType[this->type()] + " to " + SingleMessage::messageType[T::type()]));
                 T *re = static_cast<T *>(this->content.get());
-                if (re == nullptr) MiraiCPThrow(IllegalArgumentException("x"));
+                if (re == nullptr) tempThrow("x");
                 return *re;
             }
 
@@ -154,9 +155,7 @@ namespace MiraiCP {
             return -1;
         }
 
-        std::string toMiraiCode() const override {
-            return Tools::VectorToString(this->toMiraiCodeVector(), "");
-        }
+        std::string toMiraiCode() const override;
 
         std::vector<std::string> toMiraiCodeVector() const {
             std::vector<std::string> tmp;

@@ -16,9 +16,15 @@
 
 #include "Group.h"
 #include "LowLevelAPI.h"
+#include "Tools.h"
+#include "Exception.h"
+#include "Config.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
+    std::string Group::MemberListToString() {
+        return Tools::VectorToString(getMemberList());
+    }
     std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList(JNIEnv *env) {
         json j;
         j["source"] = this->toString();

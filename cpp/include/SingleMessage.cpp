@@ -14,9 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "SingleMessage.h"
-#include "Config.h"
 #include <json.hpp>
+
+#include "Config.h"
+#include "Exception.h"
+#include "Logger.h"
+#include "SingleMessage.h"
+#include "Tools.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -36,6 +40,10 @@ namespace MiraiCP {
             {6, "file"},
             {7, "face"}};
 
+    QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
+        if (m.type != -2) MiraiCPThrow(IllegalArgumentException("cannot convert type(" + std::to_string(m.type) + "to QuoteReply"));
+        source = MessageSource::deserializeFromString(m.content);
+    }
     // 结束静态成员
     nlohmann::json PlainText::toJson() const {
         nlohmann::json j;
@@ -43,11 +51,41 @@ namespace MiraiCP {
         j["content"] = content;
         return j;
     }
+    int SingleMessage::getKey(const std::string &value) {
+        for (const auto &a: messageType) {
+            if (Tools::iequal(a.second, value)) return a.first;
+        }
+        return -1;
+    }
+    std::string SingleMessage::toMiraiCode() const {
+        Logger::logger.info("base");
+        if (type > 0)
+            if (type == 1)
+                return "[mirai:at:" + content + "] ";
+            else if (type == 2)
+                return "[mirai:atall] ";
+            else
+                return "[mirai:" + messageType[type] + this->prefix + Tools::escapeToMiraiCode(content) + "]";
+        else
+            return content;
+    }
+    PlainText::PlainText(const SingleMessage &sg) : SingleMessage(sg) {
+        if (sg.type != 0)
+            MiraiCPThrow(IllegalArgumentException(
+                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText"));
+        this->content = sg.content;
+    }
     nlohmann::json At::toJson() const {
         nlohmann::json j;
         j["key"] = "at";
         j["content"] = std::to_string(this->target);
         return j;
+    }
+    At::At(const SingleMessage &sg) : SingleMessage(sg) {
+        if (sg.type != 1)
+            MiraiCPThrow(IllegalArgumentException(
+                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At"));
+        this->target = std::stol(sg.content);
     }
     nlohmann::json AtAll::toJson() const {
         nlohmann::json j;
@@ -64,11 +102,33 @@ namespace MiraiCP {
         j["type"] = this->imageType;
         return j;
     }
+    Image::Image(const SingleMessage &sg) : SingleMessage(sg) {
+        if (sg.type != 2) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
+        this->id = sg.content;
+        this->size = this->width = this->height = 0;
+        this->imageType = 5;
+    }
+    bool Image::isUploaded(QQID botid, JNIEnv *env) {
+        if (!this->md5.has_value()) this->refreshInfo();
+        if (this->size == 0) MiraiCPThrow(IllegalArgumentException("size不能为0"));
+        nlohmann::json tmp = this->toJson();
+        tmp["botid"] = botid;
+        std::string re = Config::koperation(Config::ImageUploaded, tmp, env);
+        return re == "true";
+    }
     nlohmann::json LightApp::toJson() const {
         nlohmann::json j;
         j["key"] = "lightapp";
         j["content"] = this->content;
         return j;
+    }
+    LightApp::LightApp(const SingleMessage &sg) : SingleMessage(sg) {
+        if (sg.type != 3)
+            MiraiCPThrow(IllegalArgumentException(
+                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp"));
+    }
+    std::string LightApp::toMiraiCode() const {
+        return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
     }
     nlohmann::json ServiceMessage::toJson() const {
         nlohmann::json j;
@@ -76,6 +136,14 @@ namespace MiraiCP {
         j["content"] = this->content;
         j["id"] = this->id;
         return j;
+    }
+    std::string ServiceMessage::toMiraiCode() const {
+        return "[mirai:service:" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
+    }
+    ServiceMessage::ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
+        if (sg.type != 4)
+            MiraiCPThrow(IllegalArgumentException(
+                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage"));
     }
     nlohmann::json Face::toJson() const {
         nlohmann::json j;
@@ -91,6 +159,26 @@ namespace MiraiCP {
     }
 
     //远程文件(群文件)
+    RemoteFile::RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, std::string p,
+                           struct Dinfo d, struct Finfo f) : SingleMessage(RemoteFile::type(), i + "," + std::to_string(ii) + "," +
+                                                                                                       Tools::escapeToMiraiCode(std::move(n)) +
+                                                                                                       "," +
+                                                                                                       std::to_string(s)),
+                                                             id(i),
+                                                             internalid(ii),
+                                                             name(std::move(n)),
+                                                             size(s),
+                                                             path(std::move(p)),
+                                                             dinfo(std::move(d)),
+                                                             finfo(f) {}
+    RemoteFile::RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s) : SingleMessage(6, i + "," + std::to_string(ii) + "," +
+                                                                                                                         Tools::escapeToMiraiCode(std::move(n)) +
+                                                                                                                         "," +
+                                                                                                                         std::to_string(s)),
+                                                                                                id(i),
+                                                                                                internalid(ii),
+                                                                                                name(std::move(n)),
+                                                                                                size(s) {}
     RemoteFile RemoteFile::deserializeFromString(const std::string &source) {
         json j;
         try {
@@ -130,6 +218,13 @@ namespace MiraiCP {
             Logger::logger.error(e.what());
             throw e;
         }
+    }
+    RemoteFile RemoteFile::plus(unsigned int ii) {
+        RemoteFile tmp(*this);
+        tmp.internalid = ii;
+        tmp.content = id + "," + std::to_string(ii) + "," + Tools::escapeToMiraiCode(std::move(name)) + "," +
+                      std::to_string(size);
+        return tmp;
     }
 
     std::string RemoteFile::serializeToString() {

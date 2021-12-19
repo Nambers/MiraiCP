@@ -17,14 +17,17 @@
 #ifndef MIRAICP_PRO_SINGLEMESSAGE_H
 #define MIRAICP_PRO_SINGLEMESSAGE_H
 
-#include "Config.h"
-#include "Exception.h"
-#include "MessageSource.h"
 #include <array>
 #include <json.hpp>
 #include <optional>
+#include <sstream>
+
+#include "MessageSource.h"
+#include "MiraiCode.h"
+#include "ThreadManager.h"
 
 namespace MiraiCP {
+    using QQID = unsigned long long;
     /// 用serviceMessage的分享信息
     struct URLSharer {
         /// 简介 没点进来看见的样子
@@ -54,12 +57,7 @@ namespace MiraiCP {
         /// @brief 找对应类型的index key
         /// @param value 类型名
         /// @return 如果没找到返回-1
-        static int getKey(const std::string &value) {
-            for (const auto &a: messageType) {
-                if (Tools::iequal(a.second, value)) return a.first;
-            }
-            return -1;
-        }
+        static int getKey(const std::string &value);
 
         /// MiraiCode类别
         /// @see SingleMessage::messageType
@@ -67,18 +65,7 @@ namespace MiraiCP {
         std::string content;
         std::string prefix;
 
-        std::string toMiraiCode() const override {
-            Logger::logger.info("base");
-            if (type > 0)
-                if (type == 1)
-                    return "[mirai:at:" + content + "] ";
-                else if (type == 2)
-                    return "[mirai:atall] ";
-                else
-                    return "[mirai:" + messageType[type] + this->prefix + Tools::escapeToMiraiCode(content) + "]";
-            else
-                return content;
-        }
+        std::string toMiraiCode() const override;
 
         bool operator==(const SingleMessage &m) const {
             return this->type == m.type && this->toMiraiCode() == m.toMiraiCode();
@@ -106,12 +93,7 @@ namespace MiraiCP {
         }
         nlohmann::json toJson() const override;
 
-        explicit PlainText(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 0)
-                MiraiCPThrow(IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText"));
-            this->content = sg.content;
-        }
+        explicit PlainText(const SingleMessage &sg);
 
         template<typename T>
         explicit PlainText(const T &a) : SingleMessage(PlainText::type(), ([&a]() -> std::string {
@@ -131,12 +113,7 @@ namespace MiraiCP {
         static int type() { return 1; }
         QQID target;
         nlohmann::json toJson() const override;
-        explicit At(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 1)
-                MiraiCPThrow(IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At"));
-            this->target = std::stol(sg.content);
-        }
+        explicit At(const SingleMessage &sg);
 
         explicit At(QQID a) : SingleMessage(At::type(), std::to_string(a)), target(a){};
 
@@ -196,14 +173,7 @@ namespace MiraiCP {
          * @param botid 所属Botid
          * @return 是否上传
          */
-        bool isUploaded(QQID botid, JNIEnv *env = ThreadManager::getEnv()) {
-            if (!this->md5.has_value()) this->refreshInfo();
-            if(this->size == 0) MiraiCPThrow(IllegalArgumentException("size不能为0"));
-            nlohmann::json tmp = this->toJson();
-            tmp["botid"] = botid;
-            std::string re = Config::koperation(Config::ImageUploaded, tmp, env);
-            return re == "true";
-        }
+        bool isUploaded(QQID botid, JNIEnv *env = ThreadManager::getEnv());
 
         /*!
         * @brief 从图片builder构造，适用于服务器上已经有的图片，即接收到的
@@ -223,12 +193,7 @@ namespace MiraiCP {
             this->imageType = type;
         }
 
-        explicit Image(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 2) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
-            this->id = sg.content;
-            this->size = this->width = this->height = 0;
-            this->imageType = 5;
-        }
+        explicit Image(const SingleMessage &sg);
 
         /// 刷新信息(获取图片下载Url,md5, size)
         void refreshInfo(JNIEnv *env = ThreadManager::getEnv());
@@ -314,16 +279,10 @@ namespace MiraiCP {
         /// @param content 构造文本
         explicit LightApp(std::string content) : SingleMessage(LightApp::type(), std::move(content)) {}
 
-        explicit LightApp(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 3)
-                MiraiCPThrow(IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp"));
-        }
+        explicit LightApp(const SingleMessage &sg);
         nlohmann::json toJson() const override;
         /// 返回miraicode
-        std::string toMiraiCode() const override {
-            return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
-        }
+        std::string toMiraiCode() const override;
 
         bool operator==(const LightApp &la) const {
             return this->content == la.content;
@@ -336,9 +295,7 @@ namespace MiraiCP {
     public:
         static int type() { return 5; }
         nlohmann::json toJson() const override;
-        std::string toMiraiCode() const override {
-            return "[mirai:service:" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
-        }
+        std::string toMiraiCode() const override;
         int id;
 
         /// @brief ServiceMessage
@@ -348,11 +305,7 @@ namespace MiraiCP {
                                                                        ":" + std::to_string(id) + ','),
                                                          id(id) {}
 
-        explicit ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
-            if (sg.type != 4)
-                MiraiCPThrow(IllegalArgumentException(
-                        "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage"));
-        }
+        explicit ServiceMessage(const SingleMessage &sg);
 
         explicit ServiceMessage(const URLSharer &a) : SingleMessage(5,
                                                                     "<?xml version=\"1.0\" encoding=\"utf-8\"?><msg templateID=\"12345\" action=\"web\" brief=\"" +
@@ -382,10 +335,7 @@ namespace MiraiCP {
         /// 引用信息的MessageSource
         MessageSource source;
 
-        explicit QuoteReply(const SingleMessage &m) : SingleMessage(m) {
-            if (m.type != -2) MiraiCPThrow(IllegalArgumentException("cannot convert type(" + std::to_string(m.type) + "to QuoteReply"));
-            source = MessageSource::deserializeFromString(m.content);
-        }
+        explicit QuoteReply(const SingleMessage &m);
 
         explicit QuoteReply(MessageSource source) : SingleMessage(QuoteReply::type(), source.serializeToString()), source(std::move(source)){};
 
@@ -477,13 +427,7 @@ namespace MiraiCP {
 
         std::string serializeToString();
 
-        RemoteFile plus(unsigned int ii) {
-            RemoteFile tmp(*this);
-            tmp.internalid = ii;
-            tmp.content = id + "," + std::to_string(ii) + "," + Tools::escapeToMiraiCode(std::move(name)) + "," +
-                          std::to_string(size);
-            return tmp;
-        }
+        RemoteFile plus(unsigned int ii);
 
         static RemoteFile deserializeFromString(const std::string &source);
 
@@ -497,18 +441,7 @@ namespace MiraiCP {
          * @param d dinfo
          * @param f finfo
          */
-        explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, std::string p,
-                            struct Dinfo d, struct Finfo f) : SingleMessage(RemoteFile::type(), i + "," + std::to_string(ii) + "," +
-                                                                                                        Tools::escapeToMiraiCode(std::move(n)) +
-                                                                                                        "," +
-                                                                                                        std::to_string(s)),
-                                                              id(i),
-                                                              internalid(ii),
-                                                              name(std::move(n)),
-                                                              size(s),
-                                                              path(std::move(p)),
-                                                              dinfo(std::move(d)),
-                                                              finfo(f){};
+        explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, std::string p, struct Dinfo d, struct Finfo f);
 
         /*!
          * @brief 构造远程(群)文件
@@ -520,14 +453,7 @@ namespace MiraiCP {
          * @param d dinfo
          * @param f finfo
          */
-        explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s) : SingleMessage(6, i + "," + std::to_string(ii) + "," +
-                                                                                                                          Tools::escapeToMiraiCode(std::move(n)) +
-                                                                                                                          "," +
-                                                                                                                          std::to_string(s)),
-                                                                                                 id(i),
-                                                                                                 internalid(ii),
-                                                                                                 name(std::move(n)),
-                                                                                                 size(s){};
+        explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s);
 
         /// 上传后会自动发送
         [[deprecated("Cannot send manually, use Group.sendFile")]] std::string toMiraiCode() const override {

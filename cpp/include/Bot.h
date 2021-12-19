@@ -44,13 +44,7 @@ namespace MiraiCP {
          * @brief 刷新bot信息
          * @param env
          */
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["source"] = Contact(4, 0, 0, "", this->id).toString();
-            LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));
-            this->_avatarUrl = tmp.avatarUrl;
-            this->_nick = tmp.nickornamecard;
-        }
+        void refreshInfo(JNIEnv *env = ThreadManager::getEnv());
 
         /// 用id构建机器人
         explicit Bot(QQID i) : id(i) {}
@@ -78,30 +72,16 @@ namespace MiraiCP {
         }
 
         /// 取好友列表
-        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["botid"] = this->id;
-            std::string temp = Config::koperation(Config::QueryBFL, j, env);
-            return Tools::StringToVector(temp);
-        }
+        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv());
 
         /// 好友列表string形式返回，利于保存
-        std::string FriendListToString() {
-            return Tools::VectorToString(getFriendList());
-        }
+        std::string FriendListToString();
 
         /// 取群列表
-        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["botid"] = this->id;
-            std::string temp = Config::koperation(Config::QueryBGL, j, env);
-            return Tools::StringToVector(temp);
-        }
+        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv());
 
         /// 群列表string形式返回，利于保存
-        std::string GroupListToString() {
-            return Tools::VectorToString(getGroupList());
-        }
+        std::string GroupListToString();
 
         bool operator==(const Contact &c) const {
             return this->id == c.id();

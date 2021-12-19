@@ -17,9 +17,12 @@
 #ifndef MIRAICP_PRO_LOGGER_H
 #define MIRAICP_PRO_LOGGER_H
 
-#include "MiraiCode.h"
 #include <functional>
 #include <sstream>
+#include <jni.h>
+
+#include "MiraiCode.h"
+#include "ThreadManager.h"
 
 namespace MiraiCP {
     using QQID = unsigned long long;

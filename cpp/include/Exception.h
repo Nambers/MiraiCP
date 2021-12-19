@@ -18,7 +18,6 @@
 #define MIRAICP_PRO_EXCEPTION_H
 
 #include "Logger.h"
-#include <string>
 
 namespace MiraiCP {
     /// @brief 总异常抽象类
