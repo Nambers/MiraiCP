@@ -15,6 +15,7 @@
 //
 
 #include "ForwardedMessage.h"
+#include "Config.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -29,7 +30,6 @@ namespace MiraiCP {
         temp["text"] = text.dump();
         temp["botid"] = c->botid();
         std::string re = Config::koperation(Config::Buildforward, temp, env);
-        //TODO:https://github.com/mamoe/mirai/issues/1371
         return MessageSource::deserializeFromString(re);
     }
 

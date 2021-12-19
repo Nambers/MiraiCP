@@ -16,10 +16,7 @@
 
 #ifndef MIRAICP_PRO_MIRAICODE_H
 #define MIRAICP_PRO_MIRAICODE_H
-
-#include "Tools.h"
 #include <string>
-
 namespace MiraiCP {
     /// MiraiCode父类, 指可以被转换成miraicode的类型
     class MiraiCodeable {
@@ -37,9 +34,7 @@ namespace MiraiCP {
 
     public:
         /// 输出当前内容, 会自动转码
-        std::string toString() {
-            return Tools::escapeFromMiraiCode(this->content);
-        }
+        std::string toString();
 
         /// 和toString作用一样, 不过不会自动转码
         std::string toMiraiCode() const override {
@@ -53,12 +48,7 @@ namespace MiraiCP {
 
         /// 从文本初始化一个miraicode字符串, 根据第二个参数决定是否转码, 默认不转码
         /// @attention 如果是传入文本MiraiCode，请勿转码，转码只是为了[mirai:xxx:<应该转码的部分>], 如果<应该转码>的部分里面含有'[]:,'内容，请调用Tools::escapeToMiraiCode转码
-        MiraiCode(const std::string &a, bool convert = false) { // NOLINT(google-explicit-constructor)
-            if (!convert)
-                content = a;
-            else
-                content = Tools::escapeToMiraiCode(a);
-        }
+        MiraiCode(const std::string &a, bool convert = false);
 
         MiraiCode operator+(MiraiCodeable *a) {
             return {content + a->toMiraiCode()};

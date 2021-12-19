@@ -18,7 +18,6 @@
 #define MIRAICP_PRO_FRIEND_H
 
 #include "Contact.h"
-#include "LowLevelAPI.h"
 
 namespace MiraiCP {
     /// 好友类声明

@@ -16,6 +16,7 @@
 
 #include "Config.h"
 #include "Exception.h"
+#include "Tools.h"
 
 namespace MiraiCP {
     // 静态成员

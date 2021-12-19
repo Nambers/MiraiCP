@@ -304,9 +304,7 @@ namespace MiraiCP {
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         /// @deprecated 用 sendMessage, since v2.8.1
         [[deprecated("Use sendMessage")]] MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3,
-                                                                JNIEnv *env = ThreadManager::getEnv()) {
-            return sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);
-        }
+                                                                JNIEnv *env = ThreadManager::getEnv());
 
         /*!
         * @brief上传本地图片，务必要用绝对路径
@@ -316,7 +314,7 @@ namespace MiraiCP {
         * -可能抛出UploadException异常代表路径无效或大小大于30MB
         * -可能抛出MemberException找不到群或群成员
         */
-        Image uploadImg(const std::string &path, JNIEnv * = ThreadManager::getEnv());
+        Image uploadImg(const std::string &path, JNIEnv * = ThreadManager::getEnv()) const;
 
         /// 刷新当前对象信息
         virtual void refreshInfo(JNIEnv *){};

@@ -163,9 +163,7 @@ namespace MiraiCP {
          * @note 格式:
          *  每个群成员id间用逗号分隔
         */
-        std::string MemberListToString() {
-            return Tools::VectorToString(getMemberList());
-        };
+        std::string MemberListToString();
 
         /// 取群主
         Member getOwner(JNIEnv * = ThreadManager::getEnv());

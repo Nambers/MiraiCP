@@ -17,10 +17,11 @@
 #ifndef MIRAICP_PRO_EVENT_H
 #define MIRAICP_PRO_EVENT_H
 
-#include <utility>
 
 #include "Bot.h"
 #include "Contact.h"
+#include "Logger.h"
+#include "Exception.h"
 
 namespace MiraiCP {
     /// Event 工厂
@@ -171,14 +172,7 @@ namespace MiraiCP {
         QQID groupid = 0;
 
         static void operation0(const std::string &source, QQID botid, bool accept,
-                               JNIEnv *env = ThreadManager::getEnv()) {
-            nlohmann::json j;
-            j["text"] = source;
-            j["operate"] = accept;
-            j["botid"] = botid;
-            std::string re = Config::koperation(Config::Gioperation, j, env);
-            if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
-        }
+                               JNIEnv *env = ThreadManager::getEnv());
 
         void reject(JNIEnv *env = ThreadManager::getEnv()) {
             GroupInviteEvent::operation0(this->source, this->bot.id, false, env);
@@ -223,15 +217,7 @@ namespace MiraiCP {
         /// @brief 接受好友申请
         /// @param source 事件序列化信息
         static void operation0(const std::string &source, QQID botid, bool accept,
-                               JNIEnv *env = ThreadManager::getEnv(), bool ban = false) {
-            nlohmann::json j;
-            j["text"] = source;
-            j["operate"] = accept;
-            j["botid"] = botid;
-            j["ban"] = ban;
-            std::string re = Config::koperation(Config::Nfroperation, j, env);
-            if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
-        }
+                               JNIEnv *env = ThreadManager::getEnv(), bool ban = false);
 
         /// @brief 拒绝好友申请
         void reject(bool ban = false, JNIEnv *env = ThreadManager::getEnv()) {
@@ -495,14 +481,7 @@ namespace MiraiCP {
                      QQID botid,
                      bool sign,
                      const std::string &msg = "",
-                     JNIEnv *env = ThreadManager::getEnv()) const {
-            nlohmann::json j;
-            j["source"] = s;
-            j["botid"] = botid;
-            j["sign"] = sign;
-            j["msg"] = msg;
-            Config::koperation(Config::MemberJoinRequest, j, env);
-        }
+                     JNIEnv *env = ThreadManager::getEnv()) const;
 
     public:
         /// 申请的群, 如果不存在就表明广播这个事件的时候机器人已经退出该群

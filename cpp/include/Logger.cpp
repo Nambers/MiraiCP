@@ -16,6 +16,7 @@
 
 #include "CPPPlugin.h"
 #include "Config.h"
+#include "Tools.h"
 namespace MiraiCP {
     using json = nlohmann::json;
     // 静态成员
