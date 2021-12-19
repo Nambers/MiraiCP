@@ -41,27 +41,34 @@ namespace MiraiCP {
     */
     class ThreadManager {
     public:
-
         /// @brief 每个线程实例.
         struct ThreadInfo {
             JNIEnv *e{};
             bool attach{};
         };
-        static std::map<std::string, ThreadInfo> threads; /// < 线程池(线程id:env).
-        static std::recursive_mutex mtx;                  ///< 线程池读写锁.
-    private:
-        static void newEnv(const char *threadName = nullptr); ///< 新建一个env，于getEnv中没取到env时调用.
-        /// 判断该线程id是否包含在线程池里
-        static bool included(const std::string &id);
-
-        ThreadManager() = default;
 
     public:
+        // 类静态成员
+        static std::map<std::string, ThreadInfo> threads; /// < 线程池(线程id:env).
+        static std::recursive_mutex mtx;                  ///< 线程池读写锁.
+
         /// @brief 全局JavaVM对象，用于多线程管理中新建线程的JNIEnv.
         static JavaVM *gvm;
         /// @brief JNI 版本.
         static long JNIVersion;
 
+    private:
+        ThreadManager() = default;
+
+    private:
+        // 私有静态方法
+        static void newEnv(const char *threadName = nullptr); ///< 新建一个env，于getEnv中没取到env时调用.
+        /// 判断该线程id是否包含在线程池里
+        static bool included(const std::string &id);
+
+
+    public:
+        // 静态方法
         /// 获取线程
         static ThreadInfo *getThread() {
             return &threads[getThreadId()];

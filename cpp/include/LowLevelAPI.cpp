@@ -14,7 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "LowLevelAPI.h"
+#include "Config.h"
 #include "Exception.h"
+
 namespace MiraiCP {
     using json = nlohmann::json;
     std::string LowLevelAPI::send0(const std::string &content, json c, int retryTime, bool miraicode, JNIEnv *env,
@@ -35,5 +37,17 @@ namespace MiraiCP {
         re.avatarUrl = j["avatarUrl"];
         re.nickornamecard = j["nickornamecard"];
         return re;
+    }
+
+    std::string LowLevelAPI::getInfoSource(const std::string &c, JNIEnv *env = ThreadManager::getEnv()) {
+        nlohmann::json j;
+        j["source"] = c;
+        return Config::koperation(Config::RefreshInfo, j, env);
+    }
+    std::string LowLevelAPI::uploadImg0(const std::string &path, const std::string &c, JNIEnv *env = ThreadManager::getEnv()) {
+        nlohmann::json j;
+        j["fileName"] = path;
+        j["source"] = c;
+        return Config::koperation(Config::UploadImg, j, env);
     }
 } // namespace MiraiCP

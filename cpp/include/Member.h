@@ -18,7 +18,6 @@
 #define MIRAICP_PRO_MEMBER_H
 
 #include "Contact.h"
-#include "LowLevelAPI.h"
 
 namespace MiraiCP {
     /*!

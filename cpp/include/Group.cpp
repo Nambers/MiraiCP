@@ -15,6 +15,7 @@
 //
 
 #include "Group.h"
+#include "LowLevelAPI.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
