@@ -1,4 +1,4 @@
-// Copyright (c) 2021. Eritque arcus and contributors.
+// Copyright (c) 2021-2021. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -12,10 +12,6 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
-//
-// Created by 19308 on 2021/12/20.
 //
 
 #ifndef MIRAICP_PRO_THREADENV_H

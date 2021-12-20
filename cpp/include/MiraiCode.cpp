@@ -1,4 +1,4 @@
-// Copyright (c) 2021. Eritque arcus and contributors.
+// Copyright (c) 2021-2021. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
