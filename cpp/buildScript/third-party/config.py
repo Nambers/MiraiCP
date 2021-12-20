@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
-Filename: MiraiCP/cpp/include/third-party/config.py
-Path: MiraiCP/cpp/include/third-party
+Filename: MiraiCP/cpp/buildScript/third-party/config.py
+Path: MiraiCP/cpp/buildScript/third-party
 Author: antares0982@gmail.com
 Copyright (c) 2021 Antares
 """
