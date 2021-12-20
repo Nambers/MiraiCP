@@ -30,7 +30,7 @@ set_target_properties(MiraiCP_multi PROPERTIES
         PREFIX lib
         OUTPUT_NAME MiraiCP)
 target_include_directories(MiraiCP_multi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp")
+if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp" OR NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.cpp")
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/)
     execute_process(COMMAND python buildScript/addinclude.py
             COMMAND python buildScript/third-party/config.py
@@ -71,13 +71,30 @@ endif ()
 target_sources(MiraiCP_single PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.cpp)
 
 add_custom_target(
-        generateSingleHeader
+        generateSingleHeaders
         COMMAND python buildScript/addinclude.py
         COMMAND python buildScript/third-party/config.py
         COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
         COMMAND python buildScript/combineSource.py
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
+if (WIN32)
+    # must use `\\`
+    add_custom_target(
+            deleteSingleHeaders
+            COMMAND del single_include\\MiraiCP\\MiraiCP.cpp
+            COMMAND del single_include\\MiraiCP\\MiraiCP.hpp
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+endif (WIN32)
+if (UNIX)
+    add_custom_target(
+            deleteSingleHeaders
+            COMMAND rm single_include/MiraiCP/MiraiCP.cpp
+            COMMAND rm single_include/MiraiCP/MiraiCP.hpp
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+endif (UNIX)
 
 target_compile_options(MiraiCP_single PUBLIC -w)
 target_compile_options(MiraiCP_multi PUBLIC -w)
