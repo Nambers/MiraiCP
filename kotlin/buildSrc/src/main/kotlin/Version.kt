@@ -17,15 +17,15 @@
  */
 
 object Version {
-    const val kotlin = "1.5.30"
+    const val kotlin = "1.5.32"
     const val `kotlinx-serialization-json` = "1.3.1"
-    const val `kotlinx-coroutines-core` = "1.5.2"
+    const val `kotlinx-coroutines-core` = "1.6.0-RC3"
 
     const val mirai = "2.9.0-RC2"
     const val miraiCP = "2.9.0-M2"
 
-    const val shadowJar = "7.1.0"
-    const val mavenCenterPublish = "0.7.1"
+    const val shadowJar = "7.1.1"
+    const val mavenCenterPublish = "1.0.0-dev-1"
     const val json = "20210307"
     const val gson = "2.8.9"
     const val jline = "3.21.0"

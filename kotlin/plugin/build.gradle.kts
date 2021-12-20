@@ -37,7 +37,7 @@ import kotlinx.serialization.decodeFromHexString
 
 plugins {
     id("net.mamoe.mirai-console")
-    id("net.mamoe.maven-central-publish")
+    id("me.him188.maven-central-publish")
     `maven-publish`
 }
 version = Version.miraiCP
@@ -64,7 +64,7 @@ mavenCentralPublish {
     credentials = rootProject.file("plugin\\c.txt").let {
         if (it.exists())
             kotlinx.serialization.protobuf.ProtoBuf.decodeFromHexString(
-                net.mamoe.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
+                me.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
                 rootProject.file("plugin\\c.txt").readText()
             )
         else
