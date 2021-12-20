@@ -17,11 +17,13 @@
 #ifndef MIRAICP_PRO_BOT_H
 #define MIRAICP_PRO_BOT_H
 
-#include "Friend.h"
-#include "Group.h"
+#include <vector>
 #include "ThreadManager.h"
 
 namespace MiraiCP {
+    class Friend;  // forward declination
+    class Group;   // forward declination
+    class Contact; // forward declination
     /// 当前bot账号信息
     class Bot {
     private:
@@ -50,14 +52,10 @@ namespace MiraiCP {
         explicit Bot(QQID i) : id(i) {}
 
         /// 取好友
-        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv()) const {
-            return Friend(i, this->id, env);
-        }
+        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv()) const;
 
         /// 取群聊
-        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv()) const {
-            return Group(groupid, this->id, env);
-        }
+        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv()) const;
 
         /// 昵称
         std::string nick() {
@@ -83,9 +81,7 @@ namespace MiraiCP {
         /// 群列表string形式返回，利于保存
         std::string GroupListToString();
 
-        bool operator==(const Contact &c) const {
-            return this->id == c.id();
-        }
+        bool operator==(const Contact &c) const;
 
         bool operator==(const Bot &b) const {
             return this->id == b.id;

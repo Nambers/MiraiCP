@@ -27,7 +27,6 @@
 #include "ThreadManager.h"
 
 namespace MiraiCP {
-    using QQID = unsigned long long;
     /// 用serviceMessage的分享信息
     struct URLSharer {
         /// 简介 没点进来看见的样子

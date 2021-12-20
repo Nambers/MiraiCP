@@ -17,8 +17,8 @@
 #ifndef MIRAICP_PRO_TOOLS_H
 #define MIRAICP_PRO_TOOLS_H
 
+#include <vector>
 #include "ThreadManager.h"
-#include <jni.h>
 
 namespace MiraiCP {
     /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem

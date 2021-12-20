@@ -21,7 +21,8 @@
 #include "Bot.h"
 #include "Contact.h"
 #include "Logger.h"
-#include "Exception.h"
+#include "Group.h"
+#include "Friend.h"
 
 namespace MiraiCP {
     /// Event 工厂
@@ -507,6 +508,7 @@ namespace MiraiCP {
         }
     };
 
+    class MiraiCPException; // forward declination
     /// @brief 异常抛出事件
     class MiraiCPExceptionEvent : public MiraiCPEvent {
     private:
