@@ -17,8 +17,8 @@
 #ifndef MIRAICP_PRO_CONFIG_H
 #define MIRAICP_PRO_CONFIG_H
 
-#include "ThreadManager.h"
 #include <json.hpp>
+#include "ThreadEnv.h"
 
 namespace MiraiCP {
     /// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
@@ -95,10 +95,10 @@ namespace MiraiCP {
          * @param data 传入数据
          * @return 返回数据
          */
-        static std::string koperation(operation_set type, const nlohmann::json &data, JNIEnv * = ThreadManager::getEnv(),
+        static std::string koperation(operation_set type, const nlohmann::json &data, JNIEnv * = getEnv(),
                                       bool catchErr = true, const std::string &errorInfo = "");
 
-        static void construct(JNIEnv * = ThreadManager::getEnv());
+        static void construct(JNIEnv * = getEnv());
 
         static void destruct();
     };

@@ -58,14 +58,14 @@ namespace MiraiCP {
         /// @brief 更改群成员权限
         /// @param admin 如果为true为更改到管理员
         /// @param env
-        void modifyAdmin(bool admin, JNIEnv *env = ThreadManager::getEnv());
+        void modifyAdmin(bool admin, JNIEnv *env = getEnv());
 
         /// @brief 构建群成员对象
         /// @param qqid 该成员q号
         /// @param groupid 所在群号
         /// @param botid 机器人id
         explicit Member(QQID qqid, QQID groupid, QQID botid,
-                        JNIEnv * = ThreadManager::getEnv());
+                        JNIEnv * = getEnv());
 
         explicit Member(Contact c) : Contact(std::move(c)) {
             this->isAnonymous = this->_anonymous;
@@ -76,33 +76,33 @@ namespace MiraiCP {
         bool isAnonymous = false;
 
         /// 重新获取(刷新)群成员信息
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override;
+        void refreshInfo(JNIEnv *env = getEnv()) override;
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv *env = ThreadManager::getEnv()) {
+        MessageSource sendVoice(const std::string &path, JNIEnv *env = getEnv()) {
             return Contact::sendVoice0(path, env);
         }
 
         /// 获取权限，会在构造时调用，请使用permission缓存变量
         /// @see Member::permission
-        unsigned int getPermission(JNIEnv * = ThreadManager::getEnv()) const;
+        unsigned int getPermission(JNIEnv * = getEnv()) const;
 
         /*!
          * 禁言当前对象，单位是秒，最少0秒最大30天，如果为0或者为负则unmute
          * @throws BotException, MuteException
         */
-        void mute(int time, JNIEnv * = ThreadManager::getEnv());
+        void mute(int time, JNIEnv * = getEnv());
 
         /// 取消禁言
         /// @throws BotException, MuteException
-        void unMute(JNIEnv *env = ThreadManager::getEnv()) {
+        void unMute(JNIEnv *env = getEnv()) {
             mute(0, env);
         }
 
         /*! 踢出这个群成员
         * @param reason - 原因
         */
-        void kick(const std::string &reason, JNIEnv * = ThreadManager::getEnv());
+        void kick(const std::string &reason, JNIEnv * = getEnv());
 
         /// At一个群成员
         At at() {

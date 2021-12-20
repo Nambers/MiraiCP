@@ -18,11 +18,13 @@
 #define MIRAICP_PRO_LOGGER_H
 
 #include <functional>
+#include <sstream>
 
 #include "MiraiCode.h"
-#include "ThreadManager.h"
+#include "ThreadEnv.h"
 
 namespace MiraiCP {
+    using QQID = unsigned long long;
     /*!
     * @class Logger
     * @brief 以MiraiCP的名义发送日志, 日志表现格式是: 2021-06-28 09:37:22 [log level]/MiraiCP: [log content], 为最底层的logger
@@ -88,24 +90,24 @@ namespace MiraiCP {
         Handler loggerhandler;
 
         // 初始化 获取methodid
-        void init(JNIEnv * = ThreadManager::getEnv());
+        void init(JNIEnv * = getEnv());
 
         ///发送普通(info级日志)
         template<class... T>
         void info(T... val) {
-            this->log0(p("", val...), 0, ThreadManager::getEnv());
+            this->log0(p("", val...), 0, getEnv());
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void warning(T... val) {
-            this->log0(p("", val...), 1, ThreadManager::getEnv());
+            this->log0(p("", val...), 1, getEnv());
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void error(T... val) {
-            this->log0(p("", val...), 2, ThreadManager::getEnv());
+            this->log0(p("", val...), 2, getEnv());
         }
 
         /// @brief 设置loggerhandler的action

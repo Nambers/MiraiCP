@@ -104,7 +104,7 @@ namespace MiraiCP {
          * @param halt 是否拦截该事件(不让这个消息被注册的其他监听器收到处理)
          * @return 消息链
          */
-        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
+        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv *env = getEnv());
 
         /*!
          * @brief 取群聊中同群成员的下一个消息(发送人和群与本事件一样)
@@ -112,7 +112,7 @@ namespace MiraiCP {
          * @param halt 是否拦截该事件(不让消息被注册的其他监听器收到处理)
          * @return 消息链
          */
-        MessageChain senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
+        MessageChain senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = getEnv());
 
         static eventTypes getEventType() {
             return eventTypes::GroupMessageEvent;
@@ -151,7 +151,7 @@ namespace MiraiCP {
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return 消息链
          */
-        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv *env = ThreadManager::getEnv());
+        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv *env = getEnv());
 
         static eventTypes getEventType() {
             return eventTypes::PrivateMessageEvent;
@@ -173,13 +173,13 @@ namespace MiraiCP {
         QQID groupid = 0;
 
         static void operation0(const std::string &source, QQID botid, bool accept,
-                               JNIEnv *env = ThreadManager::getEnv());
+                               JNIEnv *env = getEnv());
 
-        void reject(JNIEnv *env = ThreadManager::getEnv()) {
+        void reject(JNIEnv *env = getEnv()) {
             GroupInviteEvent::operation0(this->source, this->bot.id, false, env);
         }
 
-        void accept(JNIEnv *env = ThreadManager::getEnv()) {
+        void accept(JNIEnv *env = getEnv()) {
             GroupInviteEvent::operation0(this->source, this->bot.id, true, env);
         }
 
@@ -218,16 +218,16 @@ namespace MiraiCP {
         /// @brief 接受好友申请
         /// @param source 事件序列化信息
         static void operation0(const std::string &source, QQID botid, bool accept,
-                               JNIEnv *env = ThreadManager::getEnv(), bool ban = false);
+                               JNIEnv *env = getEnv(), bool ban = false);
 
         /// @brief 拒绝好友申请
-        void reject(bool ban = false, JNIEnv *env = ThreadManager::getEnv()) {
+        void reject(bool ban = false, JNIEnv *env = getEnv()) {
             NewFriendRequestEvent::operation0(this->source, this->bot.id, false, env);
         }
 
         /// @brief 接受申请
         /// @param ban - 是否加入黑名单
-        void accept(JNIEnv *env = ThreadManager::getEnv()) {
+        void accept(JNIEnv *env = getEnv()) {
             NewFriendRequestEvent::operation0(this->source, this->bot.id, true, env);
         }
 
@@ -482,7 +482,7 @@ namespace MiraiCP {
                      QQID botid,
                      bool sign,
                      const std::string &msg = "",
-                     JNIEnv *env = ThreadManager::getEnv()) const;
+                     JNIEnv *env = getEnv()) const;
 
     public:
         /// 申请的群, 如果不存在就表明广播这个事件的时候机器人已经退出该群

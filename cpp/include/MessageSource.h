@@ -18,9 +18,10 @@
 #define MIRAICP_PRO_MESSAGESOURCE_H
 
 #include "MiraiCode.h"
-#include "ThreadManager.h"
+#include "ThreadEnv.h"
 
 namespace MiraiCP {
+    using QQID = unsigned long long;
     /*! 消息源声明
      * @example 撤回信息
      * @code
@@ -49,7 +50,7 @@ namespace MiraiCP {
         */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
-                              JNIEnv *env = ThreadManager::getEnv()) const {
+                              JNIEnv *env = getEnv()) const {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
@@ -62,7 +63,7 @@ namespace MiraiCP {
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMsg(const std::string &c, QQID groupid = 0,
-                        JNIEnv * = ThreadManager::getEnv()) const;
+                        JNIEnv * = getEnv()) const;
 
         /**
          * @brief 回复(引用并发送)
@@ -73,7 +74,7 @@ namespace MiraiCP {
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
-                              JNIEnv * = ThreadManager::getEnv()) const;
+                              JNIEnv * = getEnv()) const;
 
         /*!
          * @brief 构建消息源
@@ -95,7 +96,7 @@ namespace MiraiCP {
         std::string serializeToString() const;
 
         /// @brief 撤回该信息
-        void recall(JNIEnv * = ThreadManager::getEnv()) const;
+        void recall(JNIEnv * = getEnv()) const;
 
         bool operator==(const MessageSource &ms) const {
             return this->ids == ms.ids && this->internalids == ms.internalids;

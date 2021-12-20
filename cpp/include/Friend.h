@@ -24,9 +24,9 @@ namespace MiraiCP {
     class Friend : public Contact {
     public:
         /// 删除好友(delete是C++关键字
-        void deleteFriend(JNIEnv *env = ThreadManager::getEnv());
+        void deleteFriend(JNIEnv *env = getEnv());
 
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv()) override;
+        void refreshInfo(JNIEnv *env = getEnv()) override;
 
         /*!
          * @brief 发送戳一戳
@@ -40,7 +40,7 @@ namespace MiraiCP {
          * @param friendid q号
          * @param botid 对应机器人id
          */
-        explicit Friend(QQID friendid, QQID botid, JNIEnv * = ThreadManager::getEnv());
+        explicit Friend(QQID friendid, QQID botid, JNIEnv * = getEnv());
 
         explicit Friend(Contact c) : Contact(std::move(c)) { refreshInfo(); };
     };

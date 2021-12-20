@@ -39,12 +39,12 @@ namespace MiraiCP {
         return re;
     }
 
-    std::string LowLevelAPI::getInfoSource(const std::string &c, JNIEnv *env = ThreadManager::getEnv()) {
+    std::string LowLevelAPI::getInfoSource(const std::string &c, JNIEnv *env = getEnv()) {
         nlohmann::json j;
         j["source"] = c;
         return Config::koperation(Config::RefreshInfo, j, env);
     }
-    std::string LowLevelAPI::uploadImg0(const std::string &path, const std::string &c, JNIEnv *env = ThreadManager::getEnv()) {
+    std::string LowLevelAPI::uploadImg0(const std::string &path, const std::string &c, JNIEnv *env = getEnv()) {
         nlohmann::json j;
         j["fileName"] = path;
         j["source"] = c;

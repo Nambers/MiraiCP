@@ -38,7 +38,7 @@ namespace MiraiCP {
     }
 
     void Config::destruct() {
-        ThreadManager::getEnv()->DeleteGlobalRef(Config::CPPLib);
+        getEnv()->DeleteGlobalRef(Config::CPPLib);
     }
 
     std::string Config::koperation(operation_set type, const nlohmann::json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {

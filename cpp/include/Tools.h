@@ -18,7 +18,9 @@
 #define MIRAICP_PRO_TOOLS_H
 
 #include <vector>
-#include "ThreadManager.h"
+#include <string>
+#include <sstream>
+#include "ThreadEnv.h"
 
 namespace MiraiCP {
     /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
@@ -33,7 +35,7 @@ namespace MiraiCP {
          * @param env 可选，JNIEnv
          * @return 内容转换成jstring类型
          */
-        static std::string jstring2str(jstring jstr, JNIEnv * = ThreadManager::getEnv());
+        static std::string jstring2str(jstring jstr, JNIEnv * = getEnv());
 
         /*!
          * @name str2jstring
@@ -43,7 +45,7 @@ namespace MiraiCP {
          * @param env 可选JNIEnv
          * @return 转换后jstring类型
          */
-        static jstring str2jstring(const char *stra, JNIEnv * = ThreadManager::getEnv());
+        static jstring str2jstring(const char *stra, JNIEnv * = getEnv());
 
         /*!
          * @brief 替换全部在一个字符串中.
