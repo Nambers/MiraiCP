@@ -508,7 +508,7 @@ namespace MiraiCP {
         }
     };
 
-    class MiraiCPException; // forward declination
+    class MiraiCPException; // forward declaration
     /// @brief 异常抛出事件
     class MiraiCPExceptionEvent : public MiraiCPEvent {
     private:

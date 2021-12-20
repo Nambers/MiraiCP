@@ -21,7 +21,7 @@
 #include "SingleMessage.h"
 
 namespace MiraiCP {
-    class MessageSource; // forward declination
+    class MessageSource; // forward declaration
     /// 消息链, 一般由SingleMessage组成
     class MessageChain : public MiraiCodeable {
     public:
