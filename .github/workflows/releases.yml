@@ -33,7 +33,7 @@ jobs:
        env: 
          cc: gcc
          cxx: g++
-       run: cd main && mkdir cpp/build && cd cpp/build && cmake .. && make generateSingleHeader
+       run: cd main && mkdir cpp/build && cd cpp/build && cmake .. && make generateSingleHeaders
      - name: replace single header(1/2)
        run: cat main/cpp/single_include/MiraiCP/MiraiCP.hpp > template/single_include/MiraiCP/MiraiCP.hpp
      - name: replace single header(2/2)
