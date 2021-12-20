@@ -25,7 +25,7 @@ jobs:
         cxx: g++
       run: mkdir cpp/build && cd cpp/build && cmake ..
     - name: build with gcc
-      run: cd cpp/build && make generateSingleHeader && make MiraiCP_single
+      run: cd cpp/build && make generateSingleHeaders && make MiraiCP_single
   windows-msvc-single:
     runs-on: windows-latest
     steps:
@@ -34,7 +34,7 @@ jobs:
     - name: configure
       run: mkdir cpp/build && cd cpp/build && cmake ..
     - name: build with msvc
-      run: cd ./cpp && cmake --build build --config Debug --target generateSingleHeader && cmake --build build --config Debug --target MiraiCP_single
+      run: cd ./cpp && cmake --build build --config Debug --target generateSingleHeaders && cmake --build build --config Debug --target MiraiCP_single
   windows-mingw:
     runs-on: windows-latest
     steps:
@@ -46,4 +46,4 @@ jobs:
         cxx: g++
       run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" ..
     - name: build with gcc
-      run: cd ./cpp && cmake --build build --config Debug --target generateSingleHeader && cmake --build build --config Debug --target MiraiCP_single
+      run: cd ./cpp && cmake --build build --config Debug --target generateSingleHeaders && cmake --build build --config Debug --target MiraiCP_single
