@@ -104,10 +104,10 @@ namespace MiraiCP {
         std::vector<Message> content;
 
         MessageSource quoteAndSend0(const std::string &msg, QQID groupid = -1,
-                                    JNIEnv *env = ThreadManager::getEnv());
+                                    JNIEnv *env = getEnv());
 
         template<class T>
-        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv()) {
+        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = getEnv()) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
             return this->quoteAndSend0(s.toMiraiCode(), groupid, env);
         }
@@ -291,7 +291,7 @@ namespace MiraiCP {
         /// @deprecated use Contact.quoteAndSend, since v2.8.1
         template<class T>
         [[deprecated("use Contact.quoteAndSend")]] MessageSource
-        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = ThreadManager::getEnv()) {
+        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = getEnv()) {
             return this->quoteAndSend1(s, groupid, env);
         }
 

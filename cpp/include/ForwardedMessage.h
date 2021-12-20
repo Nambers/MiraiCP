@@ -73,7 +73,7 @@ namespace MiraiCP {
         ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes);
 
         /// 发送给群或好友或群成员
-        MessageSource sendTo(Contact *c, JNIEnv * = ThreadManager::getEnv());
+        MessageSource sendTo(Contact *c, JNIEnv * = getEnv());
     };
 
     /// 接收到的转发消息, 发送用 MiraiCP::ForwardedMessage

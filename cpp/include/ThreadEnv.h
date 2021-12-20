@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2021. Eritque arcus and contributors.
+// Copyright (c) 2021. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -13,30 +13,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#ifndef MIRAICP_HPP_H
-#define MIRAICP_HPP_H
 
+//
+// Created by 19308 on 2021/12/20.
+//
 
-#include "Bot.h"
-#include "CPPPlugin.h"
-#include "Config.h"
-#include "Contact.h"
-#include "Event.h"
-#include "Exception.h"
-#include "ForwardedMessage.h"
-#include "Friend.h"
-#include "Group.h"
-#include "Logger.h"
-#include "LowLevelAPI.h"
-#include "Member.h"
-#include "MessageChain.h"
-#include "MessageSource.h"
-#include "MiraiCode.h"
-#include "PluginConfig.h"
-#include "SingleMessage.h"
-#include "ThreadEnv.h"
-#include "ThreadManager.h"
-#include "Tools.h"
-#include "utils.h"
-
-#endif //MIRAICP_HPP_H
+#ifndef MIRAICP_PRO_THREADENV_H
+#define MIRAICP_PRO_THREADENV_H
+#include <jni.h>
+namespace MiraiCP {
+    JNIEnv *getEnv();
+}
+#endif //MIRAICP_PRO_THREADENV_H

@@ -16,7 +16,8 @@
 
 #ifndef MIRAICP_PRO_EXCEPTION_H
 #define MIRAICP_PRO_EXCEPTION_H
-
+#define MiraiCPThrow(x) throw((x).append(__FILE__, __LINE__))
+#define ErrorHandle(x, y) ErrorHandle0(__FILE__, __LINE__, (x), (y))
 #include "Logger.h"
 
 namespace MiraiCP {

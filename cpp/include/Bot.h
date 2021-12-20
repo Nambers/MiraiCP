@@ -18,12 +18,14 @@
 #define MIRAICP_PRO_BOT_H
 
 #include <vector>
-#include "ThreadManager.h"
+#include <string>
+#include "ThreadEnv.h"
 
 namespace MiraiCP {
     class Friend;  // forward declaration
     class Group;   // forward declaration
     class Contact; // forward declaration
+    using QQID = unsigned long long;
     /// 当前bot账号信息
     class Bot {
     private:
@@ -46,16 +48,16 @@ namespace MiraiCP {
          * @brief 刷新bot信息
          * @param env
          */
-        void refreshInfo(JNIEnv *env = ThreadManager::getEnv());
+        void refreshInfo(JNIEnv *env = getEnv());
 
         /// 用id构建机器人
         explicit Bot(QQID i) : id(i) {}
 
         /// 取好友
-        Friend getFriend(QQID i, JNIEnv *env = ThreadManager::getEnv()) const;
+        Friend getFriend(QQID i, JNIEnv *env = getEnv()) const;
 
         /// 取群聊
-        Group getGroup(QQID groupid, JNIEnv *env = ThreadManager::getEnv()) const;
+        Group getGroup(QQID groupid, JNIEnv *env = getEnv()) const;
 
         /// 昵称
         std::string nick() {
@@ -70,13 +72,13 @@ namespace MiraiCP {
         }
 
         /// 取好友列表
-        std::vector<unsigned long long> getFriendList(JNIEnv *env = ThreadManager::getEnv());
+        std::vector<unsigned long long> getFriendList(JNIEnv *env = getEnv());
 
         /// 好友列表string形式返回，利于保存
         std::string FriendListToString();
 
         /// 取群列表
-        std::vector<unsigned long long> getGroupList(JNIEnv *env = ThreadManager::getEnv());
+        std::vector<unsigned long long> getGroupList(JNIEnv *env = getEnv());
 
         /// 群列表string形式返回，利于保存
         std::string GroupListToString();

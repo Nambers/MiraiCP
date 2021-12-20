@@ -16,12 +16,11 @@
 
 #ifndef MIRAICP_PRO_UTILS_H
 #define MIRAICP_PRO_UTILS_H
-#include "ThreadManager.h"
 #include "CPPPlugin.h"
 
 namespace MiraiCP {
     const std::string MiraiCPVersion = "v2.9.0-M2";
-    inline void schedule(long time, const std::string &msg, JNIEnv *env = ThreadManager::getEnv());
+    inline void schedule(long time, const std::string &msg, JNIEnv *env = getEnv());
     void enrollPlugin();
 
     inline void enrollPlugin0(CPPPlugin *p) {

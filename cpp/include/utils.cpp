@@ -19,6 +19,7 @@
 #include "Exception.h"
 #include "Tools.h"
 #include "Config.h"
+#include "ThreadManager.h"
 
 namespace MiraiCP {
     inline void schedule(long time, const std::string &msg, JNIEnv *env) {
