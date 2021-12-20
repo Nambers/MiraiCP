@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Filename: MiraiCP/cpp/include/addinclude.py
+Filename: MiraiCP/cpp/buildScript/addinclude.py
 Path: MiraiCP/cpp/include
 Author: antares0982@gmail.com
 Copyright (c) 2021 Antares
