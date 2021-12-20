@@ -21,9 +21,9 @@
 #include "ThreadManager.h"
 
 namespace MiraiCP {
-    class Friend;  // forward declination
-    class Group;   // forward declination
-    class Contact; // forward declination
+    class Friend;  // forward declaration
+    class Group;   // forward declaration
+    class Contact; // forward declaration
     /// 当前bot账号信息
     class Bot {
     private:
