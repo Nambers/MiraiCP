@@ -21,7 +21,7 @@ object Version {
     const val `kotlinx-serialization-json` = "1.3.1"
     const val `kotlinx-coroutines-core` = "1.5.2"
 
-    const val mirai = "2.9.0-M1"
+    const val mirai = "2.9.0-RC2"
     const val miraiCP = "2.9.0-M2"
 
     const val shadowJar = "7.1.0"
