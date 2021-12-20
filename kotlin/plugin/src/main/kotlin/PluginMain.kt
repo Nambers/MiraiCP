@@ -23,20 +23,23 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.BotOnlineEvent
+import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.console.registerCommands
 import tech.eritquearcus.miraicp.shared.*
+import tech.eritquearcus.miraicp.shared.BuiltInConstants.version
 import java.io.File
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
-        version = "2.8.0"
+        version = version
     ){
         author("Eritque arcus")
     }
 ) {
+    @OptIn(MiraiExperimentalApi::class)
     override fun onEnable() {
         registerCommands()
         val l = MiraiLogger.Factory.create(this::class, "MiraiCP")
@@ -85,9 +88,9 @@ object PluginMain : KotlinPlugin(
                 when {
                     !f.isFile || !f.exists() -> {
                         error(it + "不是一个有效的文件")
-                }
-                else -> {
-                    f.loadAsCPPLib(d)
+                    }
+                    else -> {
+                        f.loadAsCPPLib(d)
                     }
                 }
             }
