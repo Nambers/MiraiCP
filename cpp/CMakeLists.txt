@@ -30,22 +30,25 @@ set_target_properties(MiraiCP_multi PROPERTIES
         PREFIX lib
         OUTPUT_NAME MiraiCP)
 target_include_directories(MiraiCP_multi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_custom_target(
+        generateSingleHeaders
+        COMMAND python buildScript/addinclude.py
+        COMMAND python buildScript/third-party/config.py
+        COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
+        COMMAND python buildScript/combineSource.py
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
 if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp" OR NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.cpp")
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/)
-    execute_process(COMMAND python buildScript/addinclude.py
-            COMMAND python buildScript/third-party/config.py
-            COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    execute_process(COMMAND python buildScript/combineSource.py
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    FILE(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp" "")
+    FILE(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.cpp" "")
 endif ()
-#----测试相关---
 add_library(
         MiraiCP_single
         SHARED
         demo/test.cpp
         demo/test2.cpp
 )
+add_dependencies(MiraiCP_single generateSingleHeaders)
 set_target_properties(MiraiCP_single PROPERTIES
         PREFIX lib
         OUTPUT_NAME MiraiCP)
@@ -70,14 +73,6 @@ else ()
 endif ()
 target_sources(MiraiCP_single PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.cpp)
 
-add_custom_target(
-        generateSingleHeaders
-        COMMAND python buildScript/addinclude.py
-        COMMAND python buildScript/third-party/config.py
-        COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
-        COMMAND python buildScript/combineSource.py
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
 if (WIN32)
     # must use `\\`
     add_custom_target(
