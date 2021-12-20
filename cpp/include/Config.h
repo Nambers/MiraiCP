@@ -18,7 +18,6 @@
 #define MIRAICP_PRO_CONFIG_H
 
 #include "ThreadManager.h"
-#include <jni.h>
 #include <json.hpp>
 
 namespace MiraiCP {

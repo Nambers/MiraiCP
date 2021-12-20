@@ -17,15 +17,11 @@
 #ifndef MIRAICP_PRO_MESSAGECHAIN_H
 #define MIRAICP_PRO_MESSAGECHAIN_H
 
-#include <json.hpp>
-#include <optional>
-#include <variant>
-
-#include "MessageSource.h"
 #include "MiraiCode.h"
 #include "SingleMessage.h"
 
 namespace MiraiCP {
+    class MessageSource; // forward declination
     /// 消息链, 一般由SingleMessage组成
     class MessageChain : public MiraiCodeable {
     public:

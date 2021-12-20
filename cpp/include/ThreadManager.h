@@ -23,9 +23,9 @@
 #include <mutex>
 #include <sstream>
 #include <thread>
-#include <vector>
 
 namespace MiraiCP {
+    using QQID = unsigned long long;
     /*!
     * @class threadManager
     * @brief 多线程管理.

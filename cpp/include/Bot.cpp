@@ -17,8 +17,19 @@
 #include "Config.h"
 #include "LowLevelAPI.h"
 #include "Tools.h"
+#include "Group.h"
+#include "Friend.h"
 
 namespace MiraiCP {
+    Group Bot::getGroup(QQID groupid, JNIEnv *env) const {
+        return Group(groupid, this->id, env);
+    }
+    Friend Bot::getFriend(QQID i, JNIEnv *env) const {
+        return Friend(i, this->id, env);
+    }
+    bool Bot::operator==(const Contact &c) const {
+        return this->id == c.id();
+    }
     void Bot::refreshInfo(JNIEnv *env) {
         nlohmann::json j;
         j["source"] = Contact(4, 0, 0, "", this->id).toString();

@@ -18,8 +18,6 @@
 #define MIRAICP_PRO_CONTACT_H
 
 #include "MessageChain.h"
-#include "MessageSource.h"
-#include "SingleMessage.h"
 
 namespace MiraiCP {
     /*!

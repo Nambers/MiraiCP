@@ -16,6 +16,7 @@
 
 #include "Event.h"
 #include "Config.h"
+#include "Exception.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
