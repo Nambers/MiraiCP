@@ -14,9 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "Logger.h"
 #include "CPPPlugin.h"
 #include "Config.h"
+#include "MiraiCode.h"
 #include "Tools.h"
+
 namespace MiraiCP {
     using json = nlohmann::json;
     // 静态成员
@@ -34,12 +37,15 @@ namespace MiraiCP {
         this->log = env->GetStaticMethodID(Config::CPPLib, "KSendLog", "(Ljava/lang/String;I)V");
     }
 
-    void Logger_interface::registerHandle(Logger_interface::Action action) {
-        this->loggerhandler.action = std::move(action);
+    template<class... T>
+    std::string Logger_interface::p(std::string before, MiraiCodeable &val, T... val1) {
+        return p(before + val.toMiraiCode(), val1...);
     }
-
-    void Logger_interface::setHandleState(bool state) {
-        this->loggerhandler.enable = state;
+    template<class T, class... T1>
+    std::string Logger_interface::p(const std::string &before, T val, T1... val1) {
+        std::stringstream sstream;
+        sstream << val;
+        return p(before + sstream.str(), val1...);
     }
 
     void Logger::log0(const std::string &content, int level, JNIEnv *env) {

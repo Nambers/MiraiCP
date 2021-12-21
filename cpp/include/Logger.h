@@ -18,13 +18,15 @@
 #define MIRAICP_PRO_LOGGER_H
 
 #include <functional>
-#include <sstream>
-
-#include "MiraiCode.h"
+//#include <sstream>
 #include "ThreadEnv.h"
+#include <string>
 
 namespace MiraiCP {
     using QQID = unsigned long long;
+
+    class MiraiCodeable; // forward declaration
+
     /*!
     * @class Logger
     * @brief 以MiraiCP的名义发送日志, 日志表现格式是: 2021-06-28 09:37:22 [log level]/MiraiCP: [log content], 为最底层的logger
@@ -42,52 +44,53 @@ namespace MiraiCP {
     * @endcode
     */
     class Logger_interface {
-    private:
-        std::string p(const std::string &before) {
-            return before;
-        }
+        using string = std::string;
 
-        template<class T, class... T1>
-        std::string p(std::string before, T val, T1... val1) {
-            std::stringstream sstream;
-            sstream << val;
-            return p(before + sstream.str(), val1...);
-        }
-
-        template<class... T>
-        std::string p(std::string before, MiraiCodeable &val, T... val1) {
-            return p(before + val.toMiraiCode(), val1...);
-        }
-
-    protected:
-        /// @brief 日志底层实现封装
-        /// @param log 日志内容
-        /// @param level 日志等级
-        /// @param env jnienv
-        virtual void log0(const std::string &log, int level, JNIEnv *env) = 0;
-
-        jmethodID log = nullptr;
 
     public:
-        jmethodID getjmethod() {
-            return this->log;
-        }
-
         /// @brief 封装lambda类型
         /// @param string 日志内容
         /// @param 日志级别
         ///     - 0 info
         ///     - 1 warning
         ///     - 2 error
-        typedef std::function<void(std::string, int)> Action;
+        typedef std::function<void(string, int)> Action;
+
         /// @brief loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等
         struct Handler {
             /// @brief 是否启用
             bool enable = true;
             /// @brief 执行的操作，格式为lambda
-            Action action = [](const std::string &content, int level) {};
+            Action action = [](const string &content, int level) {};
         };
+
         Handler loggerhandler;
+
+    protected:
+        jmethodID log = nullptr;
+
+    private:
+        std::string p(const string &before) {
+            return before;
+        }
+
+        template<class T, class... T1>
+        string p(const string &before, T val, T1... val1);
+
+        template<class... T>
+        string p(string before, MiraiCodeable &val, T... val1);
+
+    protected:
+        /// @brief 日志底层实现封装
+        /// @param log 日志内容
+        /// @param level 日志等级
+        /// @param env jnienv
+        virtual void log0(const string &log, int level, JNIEnv *env) = 0;
+
+    public:
+        jmethodID getjmethod() {
+            return this->log;
+        }
 
         // 初始化 获取methodid
         void init(JNIEnv * = getEnv());
@@ -113,16 +116,23 @@ namespace MiraiCP {
         /// @brief 设置loggerhandler的action
         /// @param action 执行的操作
         /// @see Logger::handler
-        inline void registerHandle(Action action);
+        void registerHandle(Action action) {
+            this->loggerhandler.action = std::move(action);
+        }
 
         /// @brief 设置handler的启用状态
         /// @param state 状态，启用或者关闭
         /// @example 设置handler的启用状态
         /// @code Logger::logger.setHandleState(ture); @endcode
-        inline void setHandleState(bool state);
+        void setHandleState(bool state) {
+            this->loggerhandler.enable = state;
+        }
     };
 
     class Logger : public Logger_interface {
+    private:
+        Logger() = default;
+
     protected:
         /// @brief 日志底层实现封装
         /// @param content 日志内容
@@ -130,21 +140,19 @@ namespace MiraiCP {
         /// @param env jnienv
         void log0(const std::string &content, int level, JNIEnv *env) override;
 
-    private:
-        Logger() = default;
-
     public:
         static Logger logger;
     };
 
     /// 带id(一般为bot账号)的logger
     class IdLogger : public Logger_interface {
+    public:
+        QQID id;
+
     protected:
         void log0(const std::string &content, int level, JNIEnv *env) override;
 
     public:
-        QQID id;
-
         IdLogger(QQID id, Logger *l) : id(id) {
             this->loggerhandler = l->loggerhandler;
             this->log = l->getjmethod();

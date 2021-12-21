@@ -15,10 +15,11 @@
 //
 
 #include "Group.h"
-#include "LowLevelAPI.h"
-#include "Tools.h"
-#include "Exception.h"
 #include "Config.h"
+#include "Exception.h"
+#include "LowLevelAPI.h"
+#include "Member.h"
+#include "Tools.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -213,5 +214,8 @@ namespace MiraiCP {
             re.push_back(t);
         }
         return re;
+    }
+    Member Group::getMember(QQID memberid, JNIEnv *env) {
+        return Member(memberid, this->id(), this->groupid(), env);
     }
 } // namespace MiraiCP

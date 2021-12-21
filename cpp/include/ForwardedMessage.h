@@ -17,9 +17,15 @@
 #ifndef MIRAICP_PRO_FORWARDEDMESSAGE_H
 #define MIRAICP_PRO_FORWARDEDMESSAGE_H
 
-#include "Contact.h"
+#include "MessageChain.h"
+#include "ThreadEnv.h"
+#include "json.hpp"
+#include <string>
+
 
 namespace MiraiCP {
+    using QQID = unsigned long long;
+    class Contact;
     ///聊天记录里每个消息
     class ForwardedNode {
     public:
@@ -45,9 +51,7 @@ namespace MiraiCP {
         /// @param c - 发送者的contact指针
         /// @param message - 发送的信息
         /// @param t - 发送时间，时间戳格式
-        ForwardedNode(Contact *c, MessageChain message, int t) : id(c->id()), name(c->nickOrNameCard()),
-                                                                 message(std::move(message)),
-                                                                 time(t) {}
+        ForwardedNode(Contact *c, MessageChain message, int t);
     };
 
     /*!转发消息, 由ForwardNode组成

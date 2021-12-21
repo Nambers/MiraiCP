@@ -17,9 +17,13 @@
 #ifndef MIRAICP_PRO_GROUP_H
 #define MIRAICP_PRO_GROUP_H
 
-#include "Member.h"
+#include "Contact.h"
+#include "ThreadEnv.h"
+#include "json.hpp"
 
 namespace MiraiCP {
+    using QQID = unsigned long long;
+    class Member; // forward declaration
     /*!
      * @detail 群聊类声明
      * @brief
@@ -176,9 +180,7 @@ namespace MiraiCP {
         explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 取群成员
-        Member getMember(QQID memberid, JNIEnv *env = getEnv()) {
-            return Member(memberid, this->id(), this->groupid(), env);
-        }
+        Member getMember(QQID memberid, JNIEnv *env = getEnv());
 
         /// 取群公告列表
         std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env);
