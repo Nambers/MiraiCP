@@ -18,7 +18,9 @@
 #define MIRAICP_PRO_EXCEPTION_H
 #define MiraiCPThrow(x) throw((x).append(__FILE__, __LINE__))
 #define ErrorHandle(x, y) ErrorHandle0(__FILE__, __LINE__, (x), (y))
-#include "Logger.h"
+
+#include <exception>
+#include <string>
 
 namespace MiraiCP {
     /// @brief 总异常抽象类
@@ -34,7 +36,7 @@ namespace MiraiCP {
         std::string filename;
 
         //构造时传入类型字符串
-        explicit MiraiCPException(const std::string &&type, const std::string &description = "") : exceptionType(type) {
+        explicit MiraiCPException(const std::string &type, const std::string &description = "") : exceptionType(type) {
             if (description.empty())
                 this->re = type + ":MiraiCP异常";
             else
@@ -64,16 +66,10 @@ namespace MiraiCP {
         const char *what() const noexcept override { return re.c_str(); }
 
         /// basicRaise 基本抛出方法，子类重写该方法
-        virtual void basicRaise() const {
-            Logger::logger.error(this->what());
-        };
+        virtual void basicRaise() const ;
 
         /// 实际抛出方法
-        void raise() const {
-            this->basicRaise();
-            if (!filename.empty() && lineNum != 0)
-                Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
-        }
+        void raise() const;
     };
 
     /// 文件读取异常.
@@ -122,7 +118,7 @@ namespace MiraiCP {
         std::string description;
 
     public:
-        explicit BotException(std::string d = "没有权限执行该操作", const std::string &&type = "BotException")
+        explicit BotException(std::string d = "没有权限执行该操作", const std::string &type = "BotException")
             : MiraiCPException(std::move(type)) {
             this->description = std::move(d);
             this->re = type + this->description;
