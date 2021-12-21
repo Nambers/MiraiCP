@@ -17,6 +17,7 @@
 #include "Config.h"
 #include "Exception.h"
 #include "Tools.h"
+#include "ThreadManager.h"
 
 namespace MiraiCP::Config {
     jclass CPPLib = nullptr;
@@ -35,10 +36,11 @@ namespace MiraiCP::Config {
     }
 
     void destruct() {
-        getEnv()->DeleteGlobalRef(CPPLib);
+        ThreadManager::getEnv()->DeleteGlobalRef(CPPLib);
     }
 
     std::string koperation(operation_set type, const nlohmann::json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
+        if (env == nullptr) env = ThreadManager::getEnv();
         nlohmann::json j;
         j["type"] = type;
         j["data"] = data;

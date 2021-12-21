@@ -19,7 +19,7 @@
 
 #include <functional>
 #include <sstream>
-#include "ThreadEnv.h"
+#include <jni.h>
 #include "MiraiCode.h"
 
 namespace MiraiCP {
@@ -91,7 +91,7 @@ namespace MiraiCP {
         /// @param log 日志内容
         /// @param level 日志等级
         /// @param env jnienv
-        virtual void log0(const string &log, int level, JNIEnv *env) = 0;
+        virtual void log0(const string &log, int level, JNIEnv *env = nullptr) = 0;
 
     public:
         jmethodID getjmethod() {
@@ -99,24 +99,24 @@ namespace MiraiCP {
         }
 
         // 初始化 获取methodid
-        void init(JNIEnv * = getEnv());
+        void init(JNIEnv * = nullptr);
 
         ///发送普通(info级日志)
         template<class... T>
         void info(T... val) {
-            this->log0(p("", val...), 0, getEnv());
+            this->log0(p("", val...), 0);
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void warning(T... val) {
-            this->log0(p("", val...), 1, getEnv());
+            this->log0(p("", val...), 1);
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void error(T... val) {
-            this->log0(p("", val...), 2, getEnv());
+            this->log0(p("", val...), 2);
         }
 
         /// @brief 设置loggerhandler的action

@@ -34,7 +34,6 @@
 #include "MiraiCode.h"
 #include "PluginConfig.h"
 #include "SingleMessage.h"
-#include "ThreadEnv.h"
 #include "ThreadManager.h"
 #include "Tools.h"
 #include "utils.h"

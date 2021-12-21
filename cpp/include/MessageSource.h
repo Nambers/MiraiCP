@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_MESSAGESOURCE_H
 
 #include "MiraiCode.h"
-#include "ThreadEnv.h"
+#include <jni.h>
 
 namespace MiraiCP {
     using QQID = unsigned long long;
@@ -50,7 +50,7 @@ namespace MiraiCP {
         */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
-                              JNIEnv *env = getEnv()) const {
+                              JNIEnv *env = nullptr) const {
             return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
         }
 
@@ -63,7 +63,7 @@ namespace MiraiCP {
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMsg(const std::string &c, QQID groupid = 0,
-                        JNIEnv * = getEnv()) const;
+                        JNIEnv * = nullptr) const;
 
         /**
          * @brief 回复(引用并发送)
@@ -74,7 +74,7 @@ namespace MiraiCP {
          */
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
-                              JNIEnv * = getEnv()) const;
+                              JNIEnv * = nullptr) const;
 
         /*!
          * @brief 构建消息源
@@ -96,7 +96,7 @@ namespace MiraiCP {
         std::string serializeToString() const;
 
         /// @brief 撤回该信息
-        void recall(JNIEnv * = getEnv()) const;
+        void recall(JNIEnv * = nullptr) const;
 
         bool operator==(const MessageSource &ms) const {
             return this->ids == ms.ids && this->internalids == ms.internalids;

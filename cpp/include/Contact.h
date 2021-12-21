@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_CONTACT_H
 
 #include "MessageChain.h"
-#include "ThreadEnv.h"
+
 #include "json.hpp"
 #include <string>
 
@@ -52,7 +52,7 @@ namespace MiraiCP {
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMsg0(const std::string &msg, int retryTime, bool miraicode = false,
-                               JNIEnv * = getEnv()) const;
+                               JNIEnv * = nullptr) const;
 
         template<class T>
         MessageSource send1(T msg, int retryTime, JNIEnv *env) {
@@ -76,10 +76,10 @@ namespace MiraiCP {
             return sendMsg0(std::string(msg), retryTime, false, env);
         }
 
-        MessageSource quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = getEnv());
+        MessageSource quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = nullptr);
 
         template<class T>
-        MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = getEnv()) {
+        MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = nullptr) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
             return this->quoteAndSend0(s.toMiraiCode(), ms, env);
         }
@@ -102,7 +102,7 @@ namespace MiraiCP {
         bool _anonymous = false;
 
         /// 发送语音
-        MessageSource sendVoice0(const std::string &path, JNIEnv * = getEnv());
+        MessageSource sendVoice0(const std::string &path, JNIEnv * = nullptr);
 
     public:
         /*!
@@ -216,7 +216,7 @@ namespace MiraiCP {
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         /// @deprecated 用 sendMessage, since v2.8.1
         [[deprecated("Use sendMessage")]] MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
-                                                                      JNIEnv *env = getEnv()) const {
+                                                                      JNIEnv *env = nullptr) const {
             return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
         }
 
@@ -231,7 +231,7 @@ namespace MiraiCP {
          * @note 可以改MessageSource里的内容, 客户端在发送的时候并不会校验MessageSource的内容正确性(比如改originalMessage来改引用的文本的内容, 或者改id来定位到其他信息)
          */
         template<class T>
-        MessageSource quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = getEnv()) {
+        MessageSource quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = nullptr) {
             return this->quoteAndSend1(s, ms, env);
         }
         /*!
@@ -274,7 +274,7 @@ namespace MiraiCP {
         /// @param retryTime 重试次数
         /// @return MessageSource
         template<class T>
-        MessageSource sendMessage(T msg, int retryTime = 3, JNIEnv *env = getEnv()) {
+        MessageSource sendMessage(T msg, int retryTime = 3, JNIEnv *env = nullptr) {
             return this->send1(msg, retryTime, env);
         }
 
@@ -285,7 +285,7 @@ namespace MiraiCP {
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         /// @deprecated 用 sendMessage, since v2.8.1
         [[deprecated("Use sendMessage")]] MessageSource
-        sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = getEnv()) {
+        sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = nullptr) {
             return sendMsg0(msg, retryTime, false, env);
         }
 
@@ -296,7 +296,7 @@ namespace MiraiCP {
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         /// @deprecated 用 sendMessage, since v2.8.1
         [[deprecated("Use sendMessage")]] MessageSource
-        sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = getEnv()) {
+        sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = nullptr) {
             return sendMsg0(msg.toMiraiCode(), retryTime, false, env);
         }
 
@@ -307,7 +307,7 @@ namespace MiraiCP {
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         /// @deprecated 用 sendMessage, since v2.8.1
         [[deprecated("Use sendMessage")]] MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3,
-                                                                JNIEnv *env = getEnv());
+                                                                JNIEnv *env = nullptr);
 
         /*!
         * @brief上传本地图片，务必要用绝对路径
@@ -317,7 +317,7 @@ namespace MiraiCP {
         * -可能抛出UploadException异常代表路径无效或大小大于30MB
         * -可能抛出MemberException找不到群或群成员
         */
-        Image uploadImg(const std::string &path, JNIEnv * = getEnv()) const;
+        Image uploadImg(const std::string &path, JNIEnv * = nullptr) const;
 
         /// 刷新当前对象信息
         virtual void refreshInfo(JNIEnv *){};
