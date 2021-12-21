@@ -14,11 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "LowLevelAPI.h"
 #include "Contact.h"
-#include "Exception.h"
-#include "Tools.h"
 #include "Config.h"
+#include "Exception.h"
+#include "Logger.h"
+#include "LowLevelAPI.h"
+#include "Tools.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
