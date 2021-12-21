@@ -16,7 +16,7 @@
 
 #include "ForwardedMessage.h"
 #include "Config.h"
-
+#include "Contact.h"
 namespace MiraiCP {
     using json = nlohmann::json;
     //发送这个聊天记录
@@ -56,4 +56,7 @@ namespace MiraiCP {
             nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(a["messageChain"], false), a["time"]);
         return OnlineForwardedMessage(j[0]["origin"], j[0]["resourceId"], nodes);
     }
+    ForwardedNode::ForwardedNode(Contact *c, MessageChain message, int t) : id(c->id()), name(c->nickOrNameCard()),
+                                                                            message(std::move(message)),
+                                                                            time(t) {}
 } // namespace MiraiCP

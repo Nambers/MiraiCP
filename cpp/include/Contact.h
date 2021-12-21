@@ -18,8 +18,13 @@
 #define MIRAICP_PRO_CONTACT_H
 
 #include "MessageChain.h"
+#include "ThreadEnv.h"
+#include "json.hpp"
+#include <string>
 
 namespace MiraiCP {
+    using QQID = unsigned long long;
+
     /*!
     * @brief group, friend, member的父类
      * @example 发送信息

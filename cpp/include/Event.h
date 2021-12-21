@@ -17,12 +17,11 @@
 #ifndef MIRAICP_PRO_EVENT_H
 #define MIRAICP_PRO_EVENT_H
 
-
 #include "Bot.h"
-#include "Contact.h"
-#include "Logger.h"
-#include "Group.h"
 #include "Friend.h"
+#include "Group.h"
+#include "Logger.h"
+#include "Member.h"
 
 namespace MiraiCP {
     /// Event 工厂
