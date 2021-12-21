@@ -18,39 +18,35 @@
 #include "Exception.h"
 #include "Tools.h"
 
-namespace MiraiCP {
-    // 静态成员
-    jclass Config::CPPLib = nullptr;
-    jmethodID Config::KOperation = nullptr;
-    // 结束静态成员
-
+namespace MiraiCP::Config {
+    jclass CPPLib = nullptr;
+    jmethodID KOperation = nullptr;
     /*
     配置类实现
     throw: InitxException 即找不到对应签名
     */
-    void Config::construct(JNIEnv *env) {
-        Config::CPPLib = reinterpret_cast<jclass>(env->NewGlobalRef(
+    void construct(JNIEnv *env) {
+        CPPLib = reinterpret_cast<jclass>(env->NewGlobalRef(
                 env->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
-        if (Config::CPPLib == nullptr) {
+        if (CPPLib == nullptr) {
             MiraiCPThrow(APIException("初始化错误，找不到CPPLib类"));
         }
-        Config::KOperation = env->GetStaticMethodID(CPPLib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
+        KOperation = env->GetStaticMethodID(CPPLib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
     }
 
-    void Config::destruct() {
-        getEnv()->DeleteGlobalRef(Config::CPPLib);
+    void destruct() {
+        getEnv()->DeleteGlobalRef(CPPLib);
     }
 
-    std::string Config::koperation(operation_set type, const nlohmann::json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
+    std::string koperation(operation_set type, const nlohmann::json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
         nlohmann::json j;
         j["type"] = type;
         j["data"] = data;
-        std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(Config::CPPLib,
-                                                                                  Config::KOperation,
+        std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(CPPLib,
+                                                                                  KOperation,
                                                                                   Tools::str2jstring(j.dump().c_str(), env)),
                                             env);
         if (catchErr) ErrorHandle(re, errorInfo);
         return re;
     }
-
-} // namespace MiraiCP
+} // namespace MiraiCP::Config
