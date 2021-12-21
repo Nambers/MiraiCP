@@ -17,7 +17,7 @@
 #ifndef MIRAICP_PRO_TOOLS_H
 #define MIRAICP_PRO_TOOLS_H
 
-#include "ThreadEnv.h"
+#include <jni.h>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -34,7 +34,7 @@ namespace MiraiCP {
          * @param env 可选，JNIEnv
          * @return 内容转换成jstring类型
          */
-        std::string jstring2str(jstring jstr, JNIEnv * = getEnv());
+        std::string jstring2str(jstring jstr, JNIEnv * = nullptr);
         /*!
          * @name str2jstring
          * @brief string类型到jsting类型 UTF8 -> UTF16
@@ -43,7 +43,7 @@ namespace MiraiCP {
          * @param env 可选JNIEnv
          * @return 转换后jstring类型
          */
-        jstring str2jstring(const char *stra, JNIEnv * = getEnv());
+        jstring str2jstring(const char *stra, JNIEnv * = nullptr);
         /*!
          * @brief 替换全部在一个字符串中.
          * @param str 原字符串.

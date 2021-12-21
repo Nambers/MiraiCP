@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_GROUP_H
 
 #include "Contact.h"
-#include "ThreadEnv.h"
+
 #include "json.hpp"
 
 namespace MiraiCP {
@@ -156,11 +156,11 @@ namespace MiraiCP {
          * @details 从服务器拉去群设置用refreshInfo
          * @see Group::refreshInfo()
          */
-        void updateSetting(JNIEnv * = getEnv());
+        void updateSetting(JNIEnv * = nullptr);
 
         /// 取群成员列表
         /// @return vector<long>
-        std::vector<unsigned long long> getMemberList(JNIEnv *env = getEnv());
+        std::vector<unsigned long long> getMemberList(JNIEnv *env = nullptr);
 
         /*!
          * 以string格式取群成员列表
@@ -170,25 +170,25 @@ namespace MiraiCP {
         std::string MemberListToString();
 
         /// 取群主
-        Member getOwner(JNIEnv * = getEnv());
+        Member getOwner(JNIEnv * = nullptr);
 
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
         /// @param botid 机器人id
-        Group(QQID groupid, QQID botid, JNIEnv * = getEnv());
+        Group(QQID groupid, QQID botid, JNIEnv * = nullptr);
 
         explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 取群成员
-        Member getMember(QQID memberid, JNIEnv *env = getEnv());
+        Member getMember(QQID memberid, JNIEnv *env = nullptr);
 
         /// 取群公告列表
         std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env);
 
         /// 刷新群聊信息
-        void refreshInfo(JNIEnv *env = getEnv()) override;
+        void refreshInfo(JNIEnv *env = nullptr) override;
 
-        void quit(JNIEnv *env = getEnv());
+        void quit(JNIEnv *env = nullptr);
 
         /*!
         @brief 上传并发送远程(群)文件
@@ -197,10 +197,10 @@ namespace MiraiCP {
         @attention 路径分隔符是 `/`
         */
         RemoteFile sendFile(const std::string &path, const std::string &filepath,
-                            JNIEnv * = getEnv());
+                            JNIEnv * = nullptr);
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv *env = getEnv()) {
+        MessageSource sendVoice(const std::string &path, JNIEnv *env = nullptr) {
             return Contact::sendVoice0(path, env);
         }
 
@@ -212,7 +212,7 @@ namespace MiraiCP {
         @see RemoteFile
         */
         RemoteFile getFile(const std::string &path, const std::string &id = "",
-                           JNIEnv * = getEnv());
+                           JNIEnv * = nullptr);
 
         /*!
          * @brief 取文件信息(根据id)
@@ -220,9 +220,9 @@ namespace MiraiCP {
          * @return 文件
          * @detail 相当于从根目录开始遍历查找文件, 相当于getFile("/", id);
          */
-        RemoteFile getFileById(const std::string &id, JNIEnv * = getEnv());
+        RemoteFile getFileById(const std::string &id, JNIEnv * = nullptr);
 
-        RemoteFile getFileByFile(const RemoteFile &file, JNIEnv *env = getEnv()) {
+        RemoteFile getFileByFile(const RemoteFile &file, JNIEnv *env = nullptr) {
             return getFileById(file.id, env);
         }
 
@@ -240,11 +240,11 @@ namespace MiraiCP {
          * @return 返回值为一个vector容器, 每一项为short_info
         */
         std::vector<file_short_info>
-        getFileList(const std::string &path, JNIEnv * = getEnv());
+        getFileList(const std::string &path, JNIEnv * = nullptr);
 
         /// 取文件列表以字符串形式返回
         /// @param path 文件夹路径
-        std::string getFileListString(const std::string &path, JNIEnv * = getEnv());
+        std::string getFileListString(const std::string &path, JNIEnv * = nullptr);
     };
 } // namespace MiraiCP
 

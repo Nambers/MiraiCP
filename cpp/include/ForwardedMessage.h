@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_FORWARDEDMESSAGE_H
 
 #include "MessageChain.h"
-#include "ThreadEnv.h"
+
 #include "json.hpp"
 #include <string>
 
@@ -77,7 +77,7 @@ namespace MiraiCP {
         ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes);
 
         /// 发送给群或好友或群成员
-        MessageSource sendTo(Contact *c, JNIEnv * = getEnv());
+        MessageSource sendTo(Contact *c, JNIEnv * = nullptr);
     };
 
     /// 接收到的转发消息, 发送用 MiraiCP::ForwardedMessage

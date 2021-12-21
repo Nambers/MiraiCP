@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <string>
-#include "ThreadEnv.h"
+#include <jni.h>
 
 namespace MiraiCP {
     class Friend;  // forward declaration
@@ -48,16 +48,16 @@ namespace MiraiCP {
          * @brief 刷新bot信息
          * @param env
          */
-        void refreshInfo(JNIEnv *env = getEnv());
+        void refreshInfo(JNIEnv *env = nullptr);
 
         /// 用id构建机器人
         explicit Bot(QQID i) : id(i) {}
 
         /// 取好友
-        Friend getFriend(QQID i, JNIEnv *env = getEnv()) const;
+        Friend getFriend(QQID i, JNIEnv *env = nullptr) const;
 
         /// 取群聊
-        Group getGroup(QQID groupid, JNIEnv *env = getEnv()) const;
+        Group getGroup(QQID groupid, JNIEnv *env = nullptr) const;
 
         /// 昵称
         std::string nick() {
@@ -72,13 +72,13 @@ namespace MiraiCP {
         }
 
         /// 取好友列表
-        std::vector<unsigned long long> getFriendList(JNIEnv *env = getEnv());
+        std::vector<unsigned long long> getFriendList(JNIEnv *env = nullptr);
 
         /// 好友列表string形式返回，利于保存
         std::string FriendListToString();
 
         /// 取群列表
-        std::vector<unsigned long long> getGroupList(JNIEnv *env = getEnv());
+        std::vector<unsigned long long> getGroupList(JNIEnv *env = nullptr);
 
         /// 群列表string形式返回，利于保存
         std::string GroupListToString();
