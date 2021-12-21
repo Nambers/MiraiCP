@@ -37,16 +37,6 @@ namespace MiraiCP {
         this->log = env->GetStaticMethodID(Config::CPPLib, "KSendLog", "(Ljava/lang/String;I)V");
     }
 
-    template<class... T>
-    std::string Logger_interface::p(std::string before, MiraiCodeable &val, T... val1) {
-        return p(before + val.toMiraiCode(), val1...);
-    }
-    template<class T, class... T1>
-    std::string Logger_interface::p(const std::string &before, T val, T1... val1) {
-        std::stringstream sstream;
-        sstream << val;
-        return p(before + sstream.str(), val1...);
-    }
 
     void Logger::log0(const std::string &content, int level, JNIEnv *env) {
         if (this->loggerhandler.enable)

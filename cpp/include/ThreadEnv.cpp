@@ -18,6 +18,6 @@
 #include "ThreadManager.h"
 namespace MiraiCP {
     JNIEnv *getEnv() {
-        return getEnv();
+        return ThreadManager::getEnv();
     }
 } // namespace MiraiCP

@@ -18,9 +18,9 @@
 #define MIRAICP_PRO_LOGGER_H
 
 #include <functional>
-//#include <sstream>
+#include <sstream>
 #include "ThreadEnv.h"
-#include <string>
+#include "MiraiCode.h"
 
 namespace MiraiCP {
     using QQID = unsigned long long;
@@ -75,10 +75,16 @@ namespace MiraiCP {
         }
 
         template<class T, class... T1>
-        string p(const string &before, T val, T1... val1);
+        std::string p(std::string before, T val, T1... val1) {
+            std::stringstream sstream;
+            sstream << val;
+            return p(before + sstream.str(), val1...);
+        }
 
         template<class... T>
-        string p(string before, MiraiCodeable &val, T... val1);
+        std::string p(std::string before, MiraiCodeable &val, T... val1) {
+            return p(before + val.toMiraiCode(), val1...);
+        }
 
     protected:
         /// @brief 日志底层实现封装

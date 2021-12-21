@@ -19,9 +19,9 @@
 #include <regex>
 #include <utf8.h>
 
-namespace MiraiCP {
+namespace MiraiCP::Tools {
     /*工具类实现*/
-    std::string Tools::jstring2str(jstring jStr, JNIEnv *env) {
+    std::string jstring2str(jstring jStr, JNIEnv *env) {
         if (!jStr) {
             Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
             return "";
@@ -36,7 +36,7 @@ namespace MiraiCP {
         return x;
     }
 
-    jstring Tools::str2jstring(const char *stra, JNIEnv *env) {
+    jstring str2jstring(const char *stra, JNIEnv *env) {
         if (!stra) {
             Logger::logger.error("警告:C++部分传入空字符串，位置:Tools::str2jstring");
         }
@@ -49,7 +49,7 @@ namespace MiraiCP {
         }
         return env->NewString((jchar *) c, (jsize) utf16line.size());
     }
-    std::string Tools::replace(std::string str, const std::string &from, const std::string &to) {
+    std::string replace(std::string str, const std::string &from, const std::string &to) {
         size_t start_pos = 0;
         while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
             str.replace(start_pos, from.length(), to);
@@ -57,7 +57,7 @@ namespace MiraiCP {
         }
         return str;
     }
-    std::vector<unsigned long long> Tools::StringToVector(std::string temp) {
+    std::vector<unsigned long long> StringToVector(std::string temp) {
         std::vector<unsigned long long> result;
         temp.erase(temp.begin());
         temp.pop_back();
@@ -70,25 +70,21 @@ namespace MiraiCP {
         return result;
     }
 
-    std::string Tools::escapeFromMiraiCode(const std::string &s) {
+    std::string escapeFromMiraiCode(const std::string &s) {
         //[	\[
         //]	\]
         //:	\:
         //,	\,
         //\	\\ /
-        return Tools::replace(
-                Tools::replace(
-                        Tools::replace(
-                                Tools::replace(
-                                        Tools::replace(s,
+        return replace(replace(replace(replace(replace(s,
                                                        "\\\\", "\\"),
-                                        "\\,", ","),
-                                "\\:", ":"),
-                        "\\]", "]"),
-                "\\[", "[");
+                                               "\\,", ","),
+                                       "\\:", ":"),
+                               "\\]", "]"),
+                       "\\[", "[");
     }
 
-    std::string Tools::escapeToMiraiCode(const std::string &s) {
+    std::string escapeToMiraiCode(const std::string &s) {
         //[	\[
         //]	\]
         //:	\:
@@ -101,4 +97,12 @@ namespace MiraiCP {
                                "]", "\\]"),
                        "[", "\\[");
     }
-} // namespace MiraiCP
+    bool starts_with(const std::string &f, const std::string &s) { return f.rfind(s, 0) == 0; }
+    bool icompareChar(char &c1, char &c2) {
+        return c1 == c2 || std::toupper(c1) == std::toupper(c2);
+    }
+    bool iequal(std::string str1, std::string str2) {
+        return ((str1.size() == str2.size()) &&
+                std::equal(str1.begin(), str1.end(), str2.begin(), &icompareChar));
+    }
+} // namespace MiraiCP::Tools
