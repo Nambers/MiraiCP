@@ -179,7 +179,7 @@ mcl --update-package io.github.nambers:MiraiCP-plugin --channel nightly --type p
 ```json
 {
 	"pluginConfig":[{
-		"path":"\\cmake-build-debug\\MiraiCP.dll"
+		"path":".\\cmake-build-debug\\MiraiCP.dll"
 	}]
 }
 ```
