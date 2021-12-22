@@ -16,12 +16,14 @@
 
 #include "Tools.h"
 #include "Logger.h"
+#include "ThreadManager.h"
 #include <regex>
 #include <utf8.h>
 
 namespace MiraiCP::Tools {
     /*工具类实现*/
     std::string jstring2str(jstring jStr, JNIEnv *env) {
+        if (env == nullptr) env = ThreadManager::getEnv();
         if (!jStr) {
             Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
             return "";
@@ -37,6 +39,7 @@ namespace MiraiCP::Tools {
     }
 
     jstring str2jstring(const char *stra, JNIEnv *env) {
+        if (env == nullptr) env = ThreadManager::getEnv();
         if (!stra) {
             Logger::logger.error("警告:C++部分传入空字符串，位置:Tools::str2jstring");
         }
