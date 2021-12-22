@@ -77,7 +77,7 @@ namespace MiraiCP {
 
     /*!
      * @brief 群消息事件声明
-     * @example 取群聊下一条消息
+     * @example 取群聊下一条消息(check in version 2.9.0)
      * @code
      * auto tmp = e.nextMessage();
      * e.group.sendMessage(tmp);
@@ -120,7 +120,7 @@ namespace MiraiCP {
 
     /*!
      * @detail 私聊消息事件类声明
-     * @example 取好友下一条信息
+     * @example 取好友下一条信息(check in version 2.9.0)
      * @code
      * auto tmp = e.nextMessage();
      * e.sender.sendMessage(tmp);
