@@ -20,6 +20,7 @@
 #include <functional>
 #include <sstream>
 #include <jni.h>
+#include <json.hpp>
 #include "MiraiCode.h"
 
 namespace MiraiCP {
@@ -87,11 +88,12 @@ namespace MiraiCP {
         }
 
     protected:
+        void log0(const string &log, int level, nlohmann::json j, JNIEnv *env = nullptr);
         /// @brief 日志底层实现封装
         /// @param log 日志内容
         /// @param level 日志等级
         /// @param env jnienv
-        virtual void log0(const string &log, int level, JNIEnv *env = nullptr) = 0;
+        virtual void log1(const string &log, int level, JNIEnv *env = nullptr) = 0;
 
     public:
         jmethodID getjmethod() {
@@ -104,19 +106,19 @@ namespace MiraiCP {
         ///发送普通(info级日志)
         template<class... T>
         void info(T... val) {
-            this->log0(p("", val...), 0);
+            this->log1(p("", val...), 0);
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void warning(T... val) {
-            this->log0(p("", val...), 1);
+            this->log1(p("", val...), 1);
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void error(T... val) {
-            this->log0(p("", val...), 2);
+            this->log1(p("", val...), 2);
         }
 
         /// @brief 设置loggerhandler的action
@@ -144,7 +146,7 @@ namespace MiraiCP {
         /// @param content 日志内容
         /// @param level 日志等级
         /// @param env jnienv
-        void log0(const std::string &content, int level, JNIEnv *env) override;
+        void log1(const std::string &content, int level, JNIEnv *env) override;
 
     public:
         static Logger logger;
@@ -156,7 +158,7 @@ namespace MiraiCP {
         QQID id;
 
     protected:
-        void log0(const std::string &content, int level, JNIEnv *env) override;
+        void log1(const std::string &content, int level, JNIEnv *env) override;
 
     public:
         IdLogger(QQID id, Logger *l) : id(id) {
@@ -168,7 +170,7 @@ namespace MiraiCP {
     /// 插件logger
     class PluginLogger : public Logger_interface {
     protected:
-        void log0(const std::string &content, int level, JNIEnv *env) override;
+        void log1(const std::string &content, int level, JNIEnv *env) override;
 
     public:
         explicit PluginLogger(Logger *l) {

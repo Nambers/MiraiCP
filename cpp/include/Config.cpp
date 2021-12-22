@@ -27,6 +27,7 @@ namespace MiraiCP::Config {
     throw: InitxException 即找不到对应签名
     */
     void construct(JNIEnv *env) {
+        if (env == nullptr) env = ThreadManager::getEnv();
         CPPLib = reinterpret_cast<jclass>(env->NewGlobalRef(
                 env->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
         if (CPPLib == nullptr) {

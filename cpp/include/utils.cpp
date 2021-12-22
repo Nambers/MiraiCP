@@ -13,15 +13,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 #include "utils.h"
+#include "Config.h"
 #include "Event.h"
 #include "Exception.h"
-#include "Tools.h"
-#include "Config.h"
 #include "ThreadManager.h"
+#include "Tools.h"
 
 namespace MiraiCP {
+    // env nullable, handle in kOperation
     inline void schedule(long time, const std::string &msg, JNIEnv *env) {
         nlohmann::json j;
         j["time"] = time;
@@ -39,8 +39,8 @@ namespace MiraiCP {
 * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
 */
 using json = nlohmann::json;
-JNIEXPORT jstring
-Verify(JNIEnv *env, jobject) {
+// env != null, call from jni
+JNIEXPORT jstring Verify(JNIEnv *env, jobject) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
     MiraiCP::ThreadManager::JNIVersion = env->GetVersion();
@@ -64,9 +64,11 @@ Verify(JNIEnv *env, jobject) {
     //验证机制，返回当前SDK版本
 }
 
-/* 插件结束事件*/
-JNIEXPORT jobject
-PluginDisable(JNIEnv *env, jobject job) {
+/*
+ * 插件结束事件
+ * env != null, call from jni
+ */
+JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
     try {
@@ -79,17 +81,15 @@ PluginDisable(JNIEnv *env, jobject job) {
 }
 
 /*返回空值*/
-JNIEXPORT jstring
-
-returnNull() {
+JNIEXPORT jstring returnNull() {
     return MiraiCP::Tools::str2jstring("MIRAICP_NULL");
 }
 
 /*
 * 消息解析分流
+ * env != null, call from jni
 */
-JNIEXPORT jstring
-Event(JNIEnv *env, jobject, jstring content) {
+JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
     std::string tmp = Tools::jstring2str(content, env);
@@ -237,7 +237,7 @@ Event(JNIEnv *env, jobject, jstring content) {
     }
     return returnNull();
 }
-
+// env != null
 int registerMethods(JNIEnv *env, const char *className, JNINativeMethod *gMethods, int numMethods) {
     jclass clazz = env->FindClass(className);
     if (clazz == nullptr) {
@@ -266,7 +266,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
     if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", method_table, 3)) {
         return JNI_ERR;
     }
-
     return JNI_VERSION_1_6;
 }
 

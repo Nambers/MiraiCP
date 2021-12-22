@@ -28,7 +28,7 @@ namespace MiraiCP {
         class Message {
         private:
             std::shared_ptr<SingleMessage> content;
-            void tempThrow(const std::string &x) const;
+            inline void tempThrow(const std::string &x) const;
 
         public:
             /// 代表的子类
