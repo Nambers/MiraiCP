@@ -28,23 +28,24 @@ namespace MiraiCP {
     /*!
     * @brief group, friend, member的父类
      * @example 发送信息
-     * 以群聊信息为例
+     * 以群聊信息为例(check in version 2.9.0)
      * @code
+     * // update version 2.9.0
      * Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e){
      * // 发送MessageChain
      * e.group.sendMessage(e.message);
-     * // 发送SingleMessaeg
+     * // 发送SingleMessage
      * e.group.sendMessage(PlainText("a"));
-     * e.group.sendMessaeg(e.sender.at(), PlainText(""), Face(5)));
-     * }
+     * e.group.sendMessage(e.sender.at(), PlainText(""), Face(5));
+     * });
      * @endcode
      * @example 回复信息
      * 以群聊信息为例
-     * 和发送信息很像, 除了要多传入一个MessageSource
+     * 和发送信息很像, 除了要多传入一个MessageSource(check in version 2.9.0)
      * @code
      * Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e){
-     * e.group.quoteAndSend(e.message.source.value(), PlainText("a"));
-     * }
+     * e.group.quoteAndSendMessage(e.message.source.value(), PlainText("a"));
+     * });
      * @endcode
     */
     class Contact {

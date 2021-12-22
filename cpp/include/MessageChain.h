@@ -231,6 +231,11 @@ namespace MiraiCP {
             this->content.push_back(Message(msg));
         };
 
+        /// 一个重载, 相当于传入一个PlainText
+        explicit MessageChain(const std::string &msg) {
+            this->content.emplace_back(PlainText(msg));
+        }
+
         template<class T>
         [[nodiscard]] MessageChain plus(const T &a) const {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");

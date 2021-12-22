@@ -38,8 +38,9 @@ namespace MiraiCP {
 	* @code Logger::logger.warning(string) @endcode
 	* 发送错误级日志
 	* @code Logger::logger.error(string) @endcode
-    * @example 设置loggerhandler的action
-    * @code Logger::logger.registerHandle([](std::string content, int level){
+    * @example 设置loggerhandler的action(check in version 2.9.0)
+    * @code
+     * Logger::logger.registerHandle([](std::string content, int level){
     *     \\do some things
     * });
     * @endcode
@@ -130,7 +131,7 @@ namespace MiraiCP {
 
         /// @brief 设置handler的启用状态
         /// @param state 状态，启用或者关闭
-        /// @example 设置handler的启用状态
+        /// @example 设置handler的启用状态(check in version 2.9.0)
         /// @code Logger::logger.setHandleState(ture); @endcode
         void setHandleState(bool state) {
             this->loggerhandler.enable = state;

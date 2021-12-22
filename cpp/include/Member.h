@@ -22,28 +22,30 @@
 namespace MiraiCP {
     /*!
      * @brief 群成员类声明
-     * @example 在事件中构建Member对象
+     * @example 在事件中构建Member对象(check in version 2.9.0)
      * @code
-     *  Member(this.sender.id, this.group.id, this.bot.id)
+     *  Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
+     * Member a(e.sender.id(), e.group.id(), e.bot.id);
+     * });
      * @endcode
-     * @example 踢出群成员
+     * @example 踢出群成员(check in version 2.9.0)
      * @code
-     * Event::processor.registerEvent([](GroupMessageEvent e) {
+     * Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
         try {
-            Member m = Member(qqid, e.group.id(), e.bot.id());
-            m.Kick("this_is_reason");
-        }catch (BotException err) {
-           //权限不足
-           Logger::logger.error(err.what());
-        }catch (MemberException err) {
-           if (err.type == 1) {
-               //找不到群
-           }
-           if (err.type == 2) {
-               //找不到群成员
-           }
+            Member m = Member(<MemberId>, e.group.id(), e.bot.id);
+            m.kick("this_is_reason");
+        }catch (BotException& err) {
+            //权限不足
+            Logger::logger.error(err.what());
+        }catch (MemberException& err) {
+            if (err.type == 1) {
+                //找不到群
+            }
+            if (err.type == 2) {
+                //找不到群成员
+            }
         }
-       });
+        });
      * @endcode
      */
     class Member : public Contact {

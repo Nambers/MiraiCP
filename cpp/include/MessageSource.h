@@ -23,12 +23,12 @@
 namespace MiraiCP {
     using QQID = unsigned long long;
     /*! 消息源声明
-     * @example 撤回信息
+     * @example 撤回信息(check in version 2.9.0)
      * @code
-     * Event::processor.registerEvent([](GroupMessageEvent e) {
-           e.messageSource.recall();
-           e.group.SendMessage("hi").recall();
-       });
+     * Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
+        e.message.source.value().recall();
+        e.group.sendMessage("hi").recall();
+        });
      * @endcode
     */
     class MessageSource {
