@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2021. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -13,11 +13,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 package tech.eritquearcus.miraicp.shared
-
-import com.google.gson.annotations.SerializedName
 
 object Config {
     data class Contact(
@@ -35,25 +34,26 @@ object Config {
     )
 
     data class ForwardMessageJson(
-        @SerializedName("type") val type: Int,
-        @SerializedName("id") val id: Long,
-        @SerializedName("id2") val id2: Long,
-        @SerializedName("content") val content: Content
-    )
-
-    data class Content(
-        @SerializedName("type") val type: Int,
-        @SerializedName("id") val id: Long,
-        @SerializedName("id2") val id2: Long,
-        @SerializedName("value") val value: List<Value>
-    )
-
-    data class Value(
-        @SerializedName("name") val name: String,
-        @SerializedName("id") val id: Long,
-        @SerializedName("time") val time: Int,
-        @SerializedName("message") val message: String
-    )
+        val type: Int,
+        val id: Long,
+        val groupid: Long,
+        val content: Content
+    ) {
+        data class Content(
+            val type: Int,
+            val id: Long,
+            val groupid: Long,
+            val value: List<Value>
+        ) {
+            data class Value(
+                val isForwardedMessage: Boolean?,
+                val name: String,
+                val id: Long,
+                val time: Int,
+                val message: String
+            )
+        }
+    }
 
     // Announcement params
     data class AP(
