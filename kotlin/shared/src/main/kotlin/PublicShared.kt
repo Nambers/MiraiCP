@@ -580,12 +580,41 @@ object PublicShared {
             }
         }
 
+    @OptIn(MiraiExperimentalApi::class)
+    fun buildForwardMsg(text: String, bid: Long): ForwardMessage {
+        val bot = Bot.getInstanceOrNull(bid) ?: throw IllegalStateException("EB")
+        val t = Gson().fromJson(text, Config.ForwardMessageJson.Content::class.java)
+        val c: Contact = when (t.type) {
+            1 -> bot.getFriend(t.id) ?: let {
+                throw IllegalStateException("EF")
+            }
+            2 -> bot.getGroup(t.id) ?: let {
+                throw IllegalStateException("EG")
+            }
+            3 -> (bot.getGroup(t.id) ?: let {
+                throw IllegalStateException("EM")
+            })[t.groupid] ?: let {
+                throw IllegalStateException("EMM")
+            }
+            else -> throw IllegalStateException("EA")
+        }
+        val a = ForwardMessageBuilder(c)
+        t.value.forEach {
+            if (it.isForwardedMessage != true)
+                a.add(ForwardMessage.Node(it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)))
+            else {
+                a.add(ForwardMessage.Node(it.id, it.time, it.name, buildForwardMsg(it.message, bid)))
+            }
+        }
+        return a.build()
+    }
+
     //构建聊天记录
     @OptIn(MiraiExperimentalApi::class)
-    suspend fun buildforwardMsg(text: String, bid: Long): String =
+    suspend fun sendForwardMsg(text: String, bid: Long): String =
         withBot(bid) { bot ->
             val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
-            val c1: Contact = when (t.type) {
+            val c: Contact = when (t.type) {
                 1 -> bot.getFriend(t.id) ?: let {
                     return "EF"
                 }
@@ -594,30 +623,16 @@ object PublicShared {
                 }
                 3 -> (bot.getGroup(t.id) ?: let {
                     return "EM"
-                })[t.id2] ?: let {
+                })[t.groupid] ?: let {
                     return "EMM"
                 }
                 else -> return "EA"
             }
-            val c: Contact = when (t.content.type) {
-                1 -> bot.getFriend(t.content.id) ?: let {
-                    return "EF"
-                }
-                2 -> bot.getGroup(t.content.id) ?: let {
-                    return "EG"
-                }
-                3 -> (bot.getGroup(t.content.id) ?: let {
-                    return "EM"
-                })[t.content.id2] ?: let {
-                    return "EMM"
-                }
-                else -> return "EA"
-            }
-            val a = ForwardMessageBuilder(c)
-            t.content.value.forEach {
-                a.add(ForwardMessage.Node(it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)))
-            }
-            val re = a.build().sendTo(c1)
+            val re = try {
+                buildForwardMsg(gson.toJson(t.content), bid)
+            } catch (err: IllegalStateException) {
+                return err.message!!
+            }.sendTo(c)
             return json.encodeToString(MessageSource.Serializer, re.source)
         }
 

@@ -25,7 +25,6 @@ import org.json.JSONObject
 import tech.eritquearcus.miraicp.shared.PublicShared.accpetFriendRequest
 import tech.eritquearcus.miraicp.shared.PublicShared.accpetGroupInvite
 import tech.eritquearcus.miraicp.shared.PublicShared.basicSendLog
-import tech.eritquearcus.miraicp.shared.PublicShared.buildforwardMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.deleteOnlineAnnouncement
 import tech.eritquearcus.miraicp.shared.PublicShared.getowner
 import tech.eritquearcus.miraicp.shared.PublicShared.groupSetting
@@ -48,6 +47,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.remoteFileInfo
 import tech.eritquearcus.miraicp.shared.PublicShared.scheduling
 import tech.eritquearcus.miraicp.shared.PublicShared.sendError
 import tech.eritquearcus.miraicp.shared.PublicShared.sendFile
+import tech.eritquearcus.miraicp.shared.PublicShared.sendForwardMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.sendMiraiCode
 import tech.eritquearcus.miraicp.shared.PublicShared.sendMsg
 import tech.eritquearcus.miraicp.shared.PublicShared.sendNudge
@@ -276,7 +276,7 @@ class CPPLib(
                             root.getString("source")
                         )
                         /// 构建转发信息
-                        Operation_code.Buildforward.ordinal -> buildforwardMsg(
+                        Operation_code.Buildforward.ordinal -> sendForwardMsg(
                             root.getString("text"),
                             root.getLong("botid")
                         )

@@ -15,10 +15,30 @@
 //
 
 #include "ForwardedMessage.h"
+
 #include "Config.h"
 #include "Contact.h"
+#include <utility>
 namespace MiraiCP {
     using json = nlohmann::json;
+    json ForwardedMessage::nodesToJson() {
+        json value;
+        for (const ForwardedNode &node: nodes) {
+            json temp;
+            temp["id"] = node.id;
+            temp["time"] = node.time;
+            if (node.forwardedMsg != nullptr) {
+                temp["isForwardedMessage"] = true;
+                temp["message"] = node.forwardedMsg->nodesToJson().dump();
+            } else
+                temp["message"] = node.message.toMiraiCode();
+            temp["name"] = node.name;
+            value.push_back(temp);
+        }
+        json tmp = this->sendmsg;
+        tmp["value"] = value;
+        return tmp;
+    }
     //发送这个聊天记录
     MessageSource ForwardedMessage::sendTo(Contact *c, JNIEnv *env) {
         json temp;
@@ -26,28 +46,18 @@ namespace MiraiCP {
         text["id"] = c->id();
         text["groupid"] = c->groupid();
         text["type"] = c->type();
-        text["content"] = sendmsg;
+        text["content"] = this->nodesToJson();
         temp["text"] = text.dump();
         temp["botid"] = c->botid();
         std::string re = Config::koperation(Config::Buildforward, temp, env);
         return MessageSource::deserializeFromString(re);
     }
-
-    ForwardedMessage::ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes) {
+    ForwardedMessage::ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes) : ForwardedMessage(c, std::vector(nodes)) {}
+    ForwardedMessage::ForwardedMessage(Contact *c, std::vector<ForwardedNode> nodes) : nodes(std::move(nodes)) {
         json root;
-        json value;
         root["type"] = c->type();
         root["id"] = c->id();
-        root["id2"] = c->groupid();
-        for (const ForwardedNode &node: nodes) {
-            json temp;
-            temp["id"] = node.id;
-            temp["time"] = node.time;
-            temp["message"] = node.message.toMiraiCode();
-            temp["name"] = node.name;
-            value.push_back(temp);
-        }
-        root["value"] = value;
+        root["groupid"] = c->groupid();
         sendmsg = root;
     }
     OnlineForwardedMessage OnlineForwardedMessage::deserializationFromMessageSourceJson(json j) {
@@ -59,4 +69,19 @@ namespace MiraiCP {
     ForwardedNode::ForwardedNode(Contact *c, MessageChain message, int t) : id(c->id()), name(c->nickOrNameCard()),
                                                                             message(std::move(message)),
                                                                             time(t) {}
+    ForwardedNode::ForwardedNode(Contact *c, ForwardedMessage message, int t) : id(c->id()), name(c->nickOrNameCard()),
+                                                                                forwardedMsg(std::make_shared<ForwardedMessage>(message)),
+                                                                                time(t) {}
+    ForwardedNode::ForwardedNode(QQID id, const std::string &name, ForwardedMessage message, int t) : id(id), name(name), forwardedMsg(std::make_shared<ForwardedMessage>(message)), time(t) {}
+    bool OnlineForwardedMessage::operator==(const OnlineForwardedMessage &m) const {
+        if (this->nodelist.size() != m.nodelist.size())
+            return false;
+        for (int i = 0; i < this->nodelist.size(); i++)
+            if (this->nodelist[i].message != m[i].message)
+                return false;
+        return true;
+    }
+    ForwardedMessage OnlineForwardedMessage::toForwardedMessage(Contact *c) {
+        return {c, this->nodelist};
+    }
 } // namespace MiraiCP
