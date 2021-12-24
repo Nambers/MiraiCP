@@ -20,7 +20,6 @@ package tech.eritquearcus.miraicp.shared
 
 import com.google.gson.Gson
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
@@ -60,7 +59,7 @@ import kotlin.concurrent.schedule
 
 
 object PublicShared {
-    private val json by lazy {
+    internal val json by lazy {
         Json {
             Mirai
             serializersModule = MessageSerializers.serializersModule
@@ -160,63 +159,42 @@ object PublicShared {
 
     private suspend fun send0(message: Message, c: Config.Contact, retryTime: Int): String =
         withBot(c.botid) { AIbot ->
-            val r = when (c.type) {
-                1 -> {
-                    logger.info("Send message for(${c.id}) is $message")
-                    AIbot.getFriend(c.id) ?: let {
-                        logger.error("发送消息找不到好友，位置:K-Send()，id:${c.id}")
-                        return@withBot "EF"
-                    }
-                }
-                2 -> {
-                    logger.info("Send message for Group(${c.id}) is $message")
-                    AIbot.getGroup(c.id) ?: let {
-                        logger.error("发送群消息异常找不到群组，位置K-SendG，gid:${c.id}")
-                        return@withBot "EG"
-                    }
-                }
-                3 -> {
-                    logger.info("Send message for a member(${c.id}) is $message")
-                    for (a in friend_cache) {
-                        if (a.id == c.id && a.group.id == c.groupid) {
-                            return@withBot json.encodeToString(
-                                MessageSource.Serializer,
-                                a.sendMessage(message).source
-                            )
+            val r = kotlin.run {
+                when (c.type) {
+                    1 -> {
+                        logger.info("Send message for(${c.id}) is $message")
+                        AIbot.getFriend(c.id) ?: let {
+                            logger.error("发送消息找不到好友，位置:K-Send()，id:${c.id}")
+                            return@withBot "EF"
                         }
                     }
-                    val G = AIbot.getGroup(c.groupid) ?: let {
-                        logger.error("发送消息找不到群聊，位置K-Send()，id:${c.groupid}")
-                        return@withBot "EM"
+                    2 -> {
+                        logger.info("Send message for Group(${c.id}) is $message")
+                        AIbot.getGroup(c.id) ?: let {
+                            logger.error("发送群消息异常找不到群组，位置K-SendG，gid:${c.id}")
+                            return@withBot "EG"
+                        }
                     }
-                    G[c.id] ?: let {
-                        logger.error("发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupid}")
-                        return@withBot "EMM"
+                    3 -> {
+                        logger.info("Send message for a member(${c.id}) is $message")
+                        for (a in friend_cache) {
+                            if (a.id == c.id && a.group.id == c.groupid) {
+                                return@run a
+                            }
+                        }
+                        val g = AIbot.getGroup(c.groupid) ?: let {
+                            logger.error("发送消息找不到群聊，位置K-Send()，id:${c.groupid}")
+                            return@withBot "EM"
+                        }
+                        g[c.id] ?: let {
+                            logger.error("发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupid}")
+                            return@withBot "EMM"
+                        }
                     }
+                    else -> return@withBot "EA"
                 }
-                else -> return@withBot "EA"
             }
-            var s: OnlineMessageSource.Outgoing
-            var count = 0
-            while (true) {
-                try {
-                    s = r.sendMessage(message).source
-                } catch (e: TimeoutCancellationException) {
-                    count += 1
-                    logger.warning("给${r.id}发送:`$message`失败，正在重新尝试($count/${if (retryTime != -1) retryTime else "∞"}次)")
-                    if (retryTime != -1 && count >= retryTime)
-                        return@withBot "ET"
-                    delay(1000)
-                    continue
-                } catch (e: BotIsBeingMutedException) {
-                    return@withBot "EBM${e.botMuteRemaining}"
-                }
-                break
-            }
-            return@withBot json.encodeToString(
-                MessageSource.Serializer,
-                s
-            )
+            sendWithCatch { r.sendMessage(message).source }
         }
 
     suspend fun sendMsg(message: String, c: Config.Contact, retryTime: Int): String =
@@ -628,12 +606,14 @@ object PublicShared {
                 }
                 else -> return "EA"
             }
-            val re = try {
+            val tmp = try {
                 buildForwardMsg(gson.toJson(t.content), bid)
             } catch (err: IllegalStateException) {
-                return err.message!!
-            }.sendTo(c)
-            return json.encodeToString(MessageSource.Serializer, re.source)
+                return@withBot err.message!!
+            }
+            sendWithCatch {
+                tmp.sendTo(c).source
+            }
         }
 
     suspend fun accpetFriendRequest(info: String, botid: Long, accept: Boolean, ban: Boolean?): String =
@@ -701,7 +681,7 @@ object PublicShared {
                 return "EA"
             }
         }
-        return json.encodeToString(MessageSource.Serializer, c.sendMessage(source.quote() + message).source)
+        return sendWithCatch { c.sendMessage(source.quote() + message).source }
     }
 
     fun groupSetting(c: Config.Contact, source: String): String =
