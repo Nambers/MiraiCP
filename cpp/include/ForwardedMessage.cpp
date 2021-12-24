@@ -17,6 +17,7 @@
 #include "ForwardedMessage.h"
 
 #include "Config.h"
+#include "Exception.h"
 #include "Contact.h"
 #include <utility>
 namespace MiraiCP {
@@ -50,6 +51,7 @@ namespace MiraiCP {
         temp["text"] = text.dump();
         temp["botid"] = c->botid();
         std::string re = Config::koperation(Config::Buildforward, temp, env);
+        ErrorHandle(re, "");
         return MessageSource::deserializeFromString(re);
     }
     ForwardedMessage::ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes) : ForwardedMessage(c, std::vector(nodes)) {}

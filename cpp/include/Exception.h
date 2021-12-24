@@ -263,6 +263,19 @@ namespace MiraiCP {
         }
     };
 
+    /// 事件被取消, 一般出现在发送消息时在preSendMessageEvent取消的时候抛出
+    /// @see MiraiCPException
+    class EventCancelledException : public MiraiCPException {
+    private:
+        std::string description;
+
+    public:
+        explicit EventCancelledException(const std::string &msg) : MiraiCPException("EventCancelledException") {
+            description = msg;
+            re = this->exceptionType + msg;
+        }
+    };
+
     inline void ErrorHandle0(const std::string &name, int line, const std::string &re, const std::string &ErrorMsg = "") {
         if (re == "EF")
             throw FriendException().append(name, line);
@@ -276,6 +289,13 @@ namespace MiraiCP {
             throw BotException("找不到bot:" + re).append(name, line);
         if (re == "EA")
             throw APIException(ErrorMsg).append(name, line);
+        if (re == "EC")
+            throw EventCancelledException("发送信息被取消").append(name, line);
+        if (re == "ET")
+            throw TimeOutException("发送信息超时").append(name, line);
+        // equal to Tools::start_with
+        if (re.rfind("EBM", 0) == 0)
+            throw BotIsBeingMutedException(std::stoi(re.substr(3))).append(name, line);
     }
 } // namespace MiraiCP
 

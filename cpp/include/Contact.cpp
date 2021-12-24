@@ -32,10 +32,7 @@ namespace MiraiCP {
         }
         std::string re = LowLevelAPI::send0(msg, this->toJson(), retryTime, miraicode, env,
                                             "reach a error area, Contact::SendMiraiCode");
-        if (re == "ET")
-            MiraiCPThrow(TimeOutException("发送消息过于频繁导致的tx服务器未能即使响应, 位置: Contact::SendMsg"));
-        if (Tools::starts_with(re, "EBM"))
-            MiraiCPThrow(BotIsBeingMutedException(std::stoi(re.substr(3))));
+        ErrorHandle(re, "");
         return MessageSource::deserializeFromString(re);
     }
     MessageSource Contact::quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env) {
@@ -47,6 +44,7 @@ namespace MiraiCP {
         sign["groupid"] = this->groupid();
         obj["sign"] = sign.dump();
         std::string re = Config::koperation(Config::SendWithQuote, obj, env);
+        ErrorHandle(re, "");
         return MessageSource::deserializeFromString(re);
     }
 
