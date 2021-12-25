@@ -1036,21 +1036,12 @@ object PublicShared {
         }
 
         eventChannel.subscribeAlways<NudgeEvent> {
+            val f = this.from.toContact() ?: return@subscribeAlways
+            val t = this.target.toContact() ?: return@subscribeAlways
             cpp.event(
                 gson.toJson(
                     CPPEvent.NugdeEvent(
-                        if (this.subject.id == this.from.id)// if subject and from is same -> friend
-                            this.bot.getFriend(this.from.id)!!.toContact()
-                        else // not -> group
-                            this.bot.getGroup(this.subject.id)!![this.from.id]!!.toContact(),
-                        if (this.subject.id == this.from.id)
-                            if (this.target.id == this.bot.id)
-                                this.bot.asFriend.toContact()
-                            else
-                                this.bot.getFriend(this.target.id)!!.toContact()
-                        else
-                            this.bot.getGroup(this.subject.id)!![this.target.id]!!.toContact(),
-                        this.bot.id
+                        f, t, this.bot.id
                     )
                 )
             )
@@ -1077,15 +1068,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<MessagePreSendEvent> {
-            val t = when (this.target) {
-                is Group -> (this.target as Group).toContact()
-                is Friend -> (this.target as Friend).toContact()
-                is Member -> (this.target as Member).toContact()
-                else -> {
-                    logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:MessagePreSendEvent, info:${this.target.javaClass.name}")
-                    return@subscribeAlways
-                }
-            }
+            val t = this.target.toContact() ?: return@subscribeAlways
             cpp.event(
                 gson.toJson(
                     CPPEvent.MessagePreSendEvent(t, this.bot.id, this.message.toMessageChain().serializeToJsonString())
