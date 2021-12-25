@@ -220,6 +220,10 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requestData"]));
                 break;
             }
+            case 16: {
+                Event::processor.broadcast(MessagePreSendEvent(Contact::deserialize(j["target"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false), j["botid"]));
+                break;
+            }
             default:
                 MiraiCPThrow(APIException("Unreachable code"));
         }

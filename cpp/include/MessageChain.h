@@ -298,6 +298,9 @@ namespace MiraiCP {
         /// 从miraicode string构建MessageChain
         static MessageChain deserializationFromMiraiCode(const std::string &m);
 
+        static MessageChain deserializationFromMessageSourceJson(const std::string &msg, bool origin = true) {
+            return deserializationFromMessageSourceJson(nlohmann::json::parse(msg), origin);
+        }
         /// 从MessageSource json中构建MessageChain, 常用于Incoming message
         /// @attention 本方法并不会自动附加MessageSource到MessageChain, 需要用.plus方法自行附加
         static MessageChain deserializationFromMessageSourceJson(const nlohmann::json &j, bool origin = true);
