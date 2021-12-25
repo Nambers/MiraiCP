@@ -42,6 +42,7 @@ namespace MiraiCP {
         NudgeEvent,
         BotLeaveEvent,
         MemberJoinRequestEvent,
+        MessagePreSend,
         MiraiCPExceptionEvent,
         count, // 事件在此位置前定义，此时count为事件种类数
         error  // 出现问题时使用此enum
@@ -505,6 +506,22 @@ namespace MiraiCP {
         static eventTypes getEventType() {
             return eventTypes::MemberJoinRequestEvent;
         }
+    };
+
+    /*! 每条消息发送前的事件, 总是在消息实际上被发送和广播MessagePostSendEvent前广播
+     * @see MessagePostSendEvent
+     * @warning 在这个事件里小心使用sendMessage, 可能会触发无限递归 preSend -> sendMessage -> preSend -> ...
+     * */
+    class MessagePreSendEvent : public BotEvent {
+    public:
+        /// 发送目标
+        Contact target;
+        /// 消息
+        MessageChain message;
+        static eventTypes getEventType() {
+            return eventTypes::MessagePreSend;
+        }
+        explicit MessagePreSendEvent(Contact c, MessageChain mc, QQID botid) : BotEvent(botid), target(std::move(c)), message(std::move(mc)) {}
     };
 
     class MiraiCPException; // forward declaration

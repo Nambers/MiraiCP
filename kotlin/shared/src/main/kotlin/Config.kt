@@ -318,6 +318,12 @@ object CPPEvent {
         val requestData: String,
         val type: Int = 15
     )
+    data class MessagePreSendEvent(
+        val target: Config.Contact,
+        val botid: Long,
+        val message: String,
+        val type: Int = 16
+    )
 }
 
 data class PluginConfig(

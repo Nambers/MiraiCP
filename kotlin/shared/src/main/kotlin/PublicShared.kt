@@ -45,6 +45,7 @@ import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.isUploaded
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
+import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
@@ -1072,6 +1073,22 @@ object PublicShared {
                         this.invitor?.toContact() ?: emptyContact(this.bot.id),
                         gson.toJson(this.toRequestEventData())
                     )
+                )
+            )
+        }
+        eventChannel.subscribeAlways<MessagePreSendEvent> {
+            val t = when (this.target) {
+                is Group -> (this.target as Group).toContact()
+                is Friend -> (this.target as Friend).toContact()
+                is Member -> (this.target as Member).toContact()
+                else -> {
+                    logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:MessagePreSendEvent, info:${this.target.javaClass.name}")
+                    return@subscribeAlways
+                }
+            }
+            cpp.event(
+                gson.toJson(
+                    CPPEvent.MessagePreSendEvent(t, this.bot.id, this.message.toMessageChain().serializeToJsonString())
                 )
             )
         }
