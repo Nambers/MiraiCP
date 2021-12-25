@@ -82,9 +82,31 @@ fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPPLib {
 
 internal fun Group.toContact(): Config.Contact = Config.Contact(2, this.id, 0, this.name, this.bot.id)
 
-internal fun Member.toContact(): Config.Contact = Config.Contact(3, this.id, this.group.id, this.nameCardOrNick, this.bot.id)
+internal fun Member.toContact(): Config.Contact =
+    Config.Contact(3, this.id, this.group.id, this.nameCardOrNick, this.bot.id)
 
 internal fun Friend.toContact(): Config.Contact = Config.Contact(1, this.id, 0, this.nameCardOrNick, this.bot.id)
+
+internal fun Contact.toContact(): Config.Contact? =
+    when (this) {
+        is Group -> this.toContact()
+        is Friend -> this.toContact()
+        is Member -> this.toContact()
+        else -> {
+            PublicShared.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:Contact.toContact(), info:${this.javaClass.name}")
+            null
+        }
+    }
+
+internal fun ContactOrBot.toContact(): Config.Contact? =
+    when (this) {
+        is Contact -> this.toContact()
+        is Bot -> this.asFriend.toContact()
+        else -> {
+            PublicShared.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:ContactOrBot.toContact(), info:${this.javaClass.name}")
+            null
+        }
+    }
 
 internal fun emptyContact(botid: Long): Config.Contact = Config.Contact(0, 0, 0, "", botid)
 
