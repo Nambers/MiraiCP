@@ -565,10 +565,12 @@ namespace MiraiCP {
                 func(a);
             }
         };
-
         std::vector<std::vector<eventNode>> vec = std::vector<std::vector<eventNode>>(int(eventTypes::count));
 
     public:
+        const std::vector<std::vector<eventNode>> *const eventNodes() const {
+            return &vec;
+        }
         /// 事件监听操控, 可用于stop停止监听和resume继续监听
         class NodeHandle {
         private:
