@@ -18,8 +18,11 @@
 #define MIRAICP_PRO_COMMAND_H
 #include "Config.h"
 #include "Exception.h"
+#include "Logger.h"
 namespace MiraiCP {
     class MessageChain;
+    class Bot;
+    class Contact;
     class IRawCommand {
     public:
         struct Config {
@@ -37,7 +40,7 @@ namespace MiraiCP {
             explicit Config(const std::string &primaryName, const std::vector<std::string> &secondNames = std::vector<std::string>(), const std::string &usage = "null", const std::string &description = "null", bool override = false) : primaryName(primaryName), secondNames(secondNames), usage(usage), description(description), override(override) {}
         };
         virtual IRawCommand::Config config() = 0;
-        virtual void onCommand(const MessageChain &) = 0;
+        virtual void onCommand(std::optional<Contact>, const Bot&, const MessageChain &) = 0;
         IRawCommand() = default;
     };
     class CommandManager {
@@ -46,6 +49,7 @@ namespace MiraiCP {
         std::vector<std::shared_ptr<IRawCommand>> commandList;
 
     public:
+        std::shared_ptr<IRawCommand> operator[](int index){return commandList[index];}
         template<class T>
         bool registerCommand(T command) {
             static_assert(std::is_base_of_v<IRawCommand, T>, "只支持IRawCommand的派生类");
@@ -57,7 +61,8 @@ namespace MiraiCP {
             j["description"] = command.config().description;
             j["override"] = command.config().override;
             size_t before = commandList.size();
-            auto c = std::make_shared<IRawCommand>(command);
+            std::shared_ptr<IRawCommand> c;
+            c.reset(new T(command));
             commandList.push_back(c);
             size_t now = commandList.size();
             if (now - before == 1)
@@ -69,7 +74,9 @@ namespace MiraiCP {
                 else
                     MiraiCPThrow(IllegalArgumentException(""));
             }
-            std::string re = Config::koperation(Config::CommandReg, j);
+            nlohmann::json rej;
+            rej["command"] = j.dump();
+            std::string re = Config::koperation(Config::CommandReg, rej);
             return re == "true";
         }
         static CommandManager commandManager;

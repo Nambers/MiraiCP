@@ -31,6 +31,8 @@ namespace MiraiCP {
         return this->id == c.id();
     }
     void Bot::refreshInfo(JNIEnv *env) {
+        if(this->id == 0)
+            return;
         nlohmann::json j;
         j["source"] = Contact(4, 0, 0, "", this->id).toString();
         LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));

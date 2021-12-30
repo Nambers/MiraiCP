@@ -70,7 +70,7 @@ class CPPLib(
         val last = PublicShared.cpp.size
         PublicShared.cpp.add(this)
         val now = PublicShared.cpp.size
-        val precise = if(now - last == 1) (now - 1) else PublicShared.cpp.indexOf(this)
+        val precise = if (now - last == 1) (now - 1) else PublicShared.cpp.indexOf(this)
         config = Gson().fromJson(Verify(precise.toString()), PluginConfig::class.java)
     }
 
@@ -332,7 +332,14 @@ class CPPLib(
                                 Config.ImgInfo::class.java
                             ), root.getLong("botid")
                         )
-                        Operation_code.CommandReg.ordinal -> PublicShared.commandReg.register(gson.fromJson("", Command::class.java))
+                        Operation_code.CommandReg.ordinal -> {
+                            PublicShared.commandReg.register(
+                                gson.fromJson(
+                                    root.getString("command"),
+                                    Command::class.java
+                                )
+                            )
+                        }
                         else -> "EA"
                     }
                 } catch (e: Exception) {
@@ -344,7 +351,7 @@ class CPPLib(
             }
     }
 
-    private external fun Verify(pluginid:String): String
+    private external fun Verify(pluginid: String): String
     external fun Event(content: String): String
     external fun PluginDisable(): Void
 }
