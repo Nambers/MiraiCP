@@ -19,6 +19,7 @@
 #include "Config.h"
 #include "Exception.h"
 #include "Logger.h"
+#include <optional>
 namespace MiraiCP {
     class MessageChain;
     class Bot;
