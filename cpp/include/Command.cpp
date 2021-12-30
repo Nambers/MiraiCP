@@ -14,9 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "CPPPlugin.h"
-
+#include "Command.h"
 namespace MiraiCP {
-    PluginLogger *CPPPlugin::pluginLogger = nullptr;
-    CPPPlugin *CPPPlugin::plugin = nullptr;
-} // namespace MiraiCP
+    CommandManager CommandManager::commandManager = CommandManager();
+}

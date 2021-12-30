@@ -25,6 +25,7 @@ import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
+import tech.eritquearcus.miraicp.console.CommandHandlerImpl
 import tech.eritquearcus.miraicp.console.registerCommands
 import tech.eritquearcus.miraicp.shared.*
 import tech.eritquearcus.miraicp.shared.BuiltInConstants.version
@@ -100,6 +101,7 @@ object PluginMain : KotlinPlugin(
                 PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
             )
         }
+        PublicShared.commandReg = CommandHandlerImpl()
         PublicShared.onEnable(GlobalEventChannel.parentScope(this))
     }
 

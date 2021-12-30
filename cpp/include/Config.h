@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2021. Eritque arcus and contributors.
+// Copyright (c) 2020-2021. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,8 @@ namespace MiraiCP {
         extern jclass CPPLib;
         /// 调用mirai方法
         extern jmethodID KOperation;
+        /// 本插件id
+        extern int pluginId;
 
         /// 操作id
         enum operation_set {
@@ -85,7 +87,9 @@ namespace MiraiCP {
             /// 群成员申请入群
             MemberJoinRequest,
             /// 图片是否已经上传
-            ImageUploaded
+            ImageUploaded,
+            /// 注册指令
+            CommandReg
         };
 
         /**

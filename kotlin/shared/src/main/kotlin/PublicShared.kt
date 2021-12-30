@@ -76,6 +76,7 @@ object PublicShared {
     val disablePlugins = arrayListOf<String>()
     var cachePath: File = File("")
     var maxThread = Integer.MAX_VALUE
+    lateinit var commandReg: CommandHandler
 
     fun init(l: MiraiLogger) {
         logger = l

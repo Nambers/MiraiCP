@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2021. Eritque arcus and contributors.
+// Copyright (c) 2020-2021. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -22,6 +22,7 @@
 namespace MiraiCP::Config {
     jclass CPPLib = nullptr;
     jmethodID KOperation = nullptr;
+    int pluginId = -1;
     /*
     配置类实现
     throw: InitxException 即找不到对应签名

@@ -19,6 +19,7 @@
 
 #include "Bot.h"
 #include "CPPPlugin.h"
+#include "Command.h"
 #include "Config.h"
 #include "Contact.h"
 #include "Event.h"
