@@ -102,6 +102,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
         Logger::logger.error(e.what(), false);
         return returnNull();
     }
+    if (Event::processor.eventNodes()[j["type"].get<int>()].empty()) return returnNull();
     try {
         switch (j["type"].get<int>()) {
             case 1: {
