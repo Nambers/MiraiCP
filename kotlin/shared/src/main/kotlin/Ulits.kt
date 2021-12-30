@@ -75,19 +75,18 @@ fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPPLib {
                 "检测到列表已经有重复的${this.config.name}, 请检测配置文件中是否重复或提醒开发者改插件名称，但该插件还是会加载"
             )
             PublicShared.logger4plugins[this.config.id] = MiraiLogger.Factory.create(this::class, this.config.name)
-            PublicShared.cpp.add(this)
         }
     }
 }
 
-internal fun Group.toContact(): Config.Contact = Config.Contact(2, this.id, 0, this.name, this.bot.id)
+fun Group.toContact(): Config.Contact = Config.Contact(2, this.id, 0, this.name, this.bot.id)
 
-internal fun Member.toContact(): Config.Contact =
+fun Member.toContact(): Config.Contact =
     Config.Contact(3, this.id, this.group.id, this.nameCardOrNick, this.bot.id)
 
-internal fun Friend.toContact(): Config.Contact = Config.Contact(1, this.id, 0, this.nameCardOrNick, this.bot.id)
+fun Friend.toContact(): Config.Contact = Config.Contact(1, this.id, 0, this.nameCardOrNick, this.bot.id)
 
-internal fun Contact.toContact(): Config.Contact? =
+fun Contact.toContact(): Config.Contact? =
     when (this) {
         is Group -> this.toContact()
         is Friend -> this.toContact()
@@ -98,7 +97,7 @@ internal fun Contact.toContact(): Config.Contact? =
         }
     }
 
-internal fun ContactOrBot.toContact(): Config.Contact? =
+fun ContactOrBot.toContact(): Config.Contact? =
     when (this) {
         is Contact -> this.toContact()
         is Bot -> this.asFriend.toContact()

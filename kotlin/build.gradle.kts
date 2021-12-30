@@ -30,7 +30,8 @@ allprojects {
         mavenCentral()
         maven("https://maven.aliyun.com/repository/public") // 阿里云国内代理仓库
         gradlePluginPortal()
-        google()
+        // mirai snapshot
+        maven("https://repo.mirai.mamoe.net/snapshots")
     }
 }
 subprojects {

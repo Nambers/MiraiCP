@@ -324,6 +324,7 @@ object CPPEvent {
         val message: String,
         val type: Int = 16
     )
+    // type = 17, Command
 }
 
 data class PluginConfig(

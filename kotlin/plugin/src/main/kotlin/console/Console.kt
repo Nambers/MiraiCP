@@ -124,7 +124,6 @@ object ReLoadPlugin : SimpleCommand(
                     PublicShared.cpp.remove(it)
                     PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
                 }
-                PublicShared.cpp.add(p)
             }
         }
     }

@@ -18,7 +18,24 @@
 
 package tech.eritquearcus.miraicp.shared
 
-object BuiltInConstants {
-    const val date = "Thu Dec 30 15:25:05 GMT+08:00 2021"
-    const val version = "2.9.0-M2"
+interface CommandHandler {
+    fun register(c:Command): String
 }
+
+data class Command(
+    val primaryName: String,
+    val secondName: List<String>,
+    val description: String?,
+    val usage: String?,
+    val bindId: Int,
+    val pluginId: Int,
+    val override: Boolean
+)
+
+data class Command2C(
+    val contact: Config.Contact?,
+    val botid: Long,
+    val message: String,
+    val bindId: Int,
+    val type: Int = 17,
+)

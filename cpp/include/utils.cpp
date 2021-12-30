@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2021. Eritque arcus and contributors.
+// Copyright (c) 2020-2021. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -40,7 +40,7 @@ namespace MiraiCP {
 */
 using json = nlohmann::json;
 // env != null, call from jni
-JNIEXPORT jstring Verify(JNIEnv *env, jobject) {
+JNIEXPORT jstring Verify(JNIEnv *env, jobject, jstring id) {
     using namespace MiraiCP;
     ThreadManager::setEnv(env);
     MiraiCP::ThreadManager::JNIVersion = env->GetVersion();
@@ -60,6 +60,7 @@ JNIEXPORT jstring Verify(JNIEnv *env, jobject) {
     }
     json j = CPPPlugin::plugin->config.serialize();
     j["MiraiCPversion"] = MiraiCPVersion;
+    Config::pluginId = std::stoi(Tools::jstring2str(id));
     return Tools::str2jstring(j.dump().c_str());
     //验证机制，返回当前SDK版本
 }
@@ -256,7 +257,7 @@ int registerMethods(JNIEnv *env, const char *className, JNINativeMethod *gMethod
 }
 
 JNINativeMethod method_table[] = {
-        {(char *) "Verify", (char *) "()Ljava/lang/String;", (jstring *) Verify},
+        {(char *) "Verify", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) Verify},
         {(char *) "Event", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) Event},
         {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;", (jobject *) PluginDisable}};
 

@@ -22,3 +22,12 @@ include("plugin")
 include("loader")
 project(":plugin").name = "MiraiCP-plugin"
 project(":loader").name = "MiraiCP-loader"
+
+pluginManagement {
+    repositories {
+        maven("https://maven.aliyun.com/repository/gradle-plugin")
+        gradlePluginPortal()
+        // mirai snapshot
+        maven("https://repo.mirai.mamoe.net/snapshots")
+    }
+}
