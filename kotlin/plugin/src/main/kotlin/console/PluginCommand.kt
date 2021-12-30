@@ -25,27 +25,29 @@ import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import tech.eritquearcus.miraicp.PluginMain
 import tech.eritquearcus.miraicp.shared.*
-import kotlin.properties.Delegates
 
 class CommandHandlerImpl : CommandHandler {
     override fun register(c: Command): String {
         val a = object : RawCommand(
             PluginMain, c.primaryName, *c.secondName.toTypedArray(),
-            description = c.description?:"<no descriptions given>",
-            usage = c.usage?:"<no usages given>"
+            description = if (c.description == null || c.description == "null") "<no descriptions given>" else c.description!!,
+            usage = if (c.usage == null || c.usage == "null") "<no usages given>" else c.usage!!
         ) {
             var pluginId : Int = -1
             var bindId: Int = -1
             override suspend fun CommandSender.onCommand(args: MessageChain) {
-                PublicShared.cpp[pluginId] .Event(
-                    PublicShared.gson.toJson(
-                        Command2C(
-                            this.user?.toContact(),
-                            this.bot?.id ?: 0,
-                            args.serializeToJsonString(),
-                            bindId
-                        )
+                val tmp = PublicShared.gson.toJson(
+                    Command2C(
+                        this.user?.toContact(),
+                        this.bot?.id ?: 0,
+                        args.serializeToJsonString(),
+                        bindId
                     )
+                )
+                PublicShared.logger.info(tmp)
+                PublicShared.logger.info(pluginId.toString())
+                PublicShared.cpp[pluginId].Event(
+                    tmp
                 )
             }
         }

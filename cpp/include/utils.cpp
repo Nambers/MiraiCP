@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "utils.h"
+#include "Command.h"
 #include "Config.h"
 #include "Event.h"
 #include "Exception.h"
@@ -224,6 +225,12 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
             }
             case 16: {
                 Event::processor.broadcast(MessagePreSendEvent(Contact::deserialize(j["target"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false), j["botid"]));
+                break;
+            }
+            case 17: {
+                std::optional<Contact> c;
+                if (j.contains("contact")) c = Contact::deserialize(j["contact"]);
+                CommandManager::commandManager[j["bindId"]]->onCommand(c, Bot(j["botid"]), MessageChain::deserializationFromMessageSourceJson(j["message"]));
                 break;
             }
             default:

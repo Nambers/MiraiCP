@@ -52,6 +52,7 @@ object PluginMain : KotlinPlugin(
         PublicShared.cachePath.mkdir()
         l.info("⭐MiraiCP启动中⭐")
         l.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
+        PublicShared.commandReg = CommandHandlerImpl()
         Gson().fromJson(File("${dataFolder.absoluteFile}/miraicp.json").apply {
             if (!this.exists() || !this.isFile) {
                 l.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
@@ -101,7 +102,6 @@ object PluginMain : KotlinPlugin(
                 PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
             )
         }
-        PublicShared.commandReg = CommandHandlerImpl()
         PublicShared.onEnable(GlobalEventChannel.parentScope(this))
     }
 

@@ -22,7 +22,8 @@
 namespace MiraiCP::Config {
     jclass CPPLib = nullptr;
     jmethodID KOperation = nullptr;
-    int pluginId = -1;
+    // 不可以赋值, 不然会覆盖
+    int pluginId;
     /*
     配置类实现
     throw: InitxException 即找不到对应签名
