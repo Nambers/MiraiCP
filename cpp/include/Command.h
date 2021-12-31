@@ -20,6 +20,7 @@
 #include "Exception.h"
 #include "Logger.h"
 #include <optional>
+#include <utility>
 namespace MiraiCP {
     class MessageChain;
     class Bot;
@@ -38,7 +39,7 @@ namespace MiraiCP {
             std::string description;
             /// 覆盖已有命令
             bool override;
-            explicit Config(const std::string &primaryName, const std::vector<std::string> &secondNames = std::vector<std::string>(), const std::string &usage = "null", const std::string &description = "null", bool override = false) : primaryName(primaryName), secondNames(secondNames), usage(usage), description(description), override(override) {}
+            explicit Config(std::string primaryName, std::vector<std::string> secondNames = std::vector<std::string>(), const std::string &usage = "null", const std::string &description = "null", bool override = false) : primaryName(std::move(primaryName)), secondNames(std::move(secondNames)), usage(usage), description(description), override(override) {}
         };
         virtual IRawCommand::Config config() = 0;
         virtual void onCommand(std::optional<Contact>, const Bot&, const MessageChain &) = 0;

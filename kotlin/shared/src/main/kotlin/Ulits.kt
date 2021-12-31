@@ -66,12 +66,14 @@ fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPPLib {
         return CPPLib(it.absolutePath, d).apply {
             PublicShared.logger.info("加载${it.absolutePath}成功")
             this.showInfo()
-            if (!uncheck) PublicShared.cpp.firstOrNull { itt -> itt.config.id == this.config.id }.let check@{ c ->
-                if (c == null) return@check
-                PublicShared.logger.error("已加载id为${c.config.id}的插件, 放弃加载当前插件(位于:${this@loadAsCPPLib.absolutePath})")
-                return c
+            val checkRe = PublicShared.cpp.count { itt -> itt.config.id == this.config.id }
+            if (!uncheck) checkRe.let check@{ c ->
+                if (c == 1) return@check
+                val lib = PublicShared.cpp.first { itt -> itt.config.id == this.config.id }
+                PublicShared.logger.error("已加载id为${lib.config.id}的插件, 放弃加载当前插件(位于:${this@loadAsCPPLib.absolutePath})")
+                return lib
             }
-            if (PublicShared.cpp.firstOrNull { itt -> itt.config.name == this.config.name } != null) PublicShared.logger.warning(
+            if (checkRe != 1) PublicShared.logger.warning(
                 "检测到列表已经有重复的${this.config.name}, 请检测配置文件中是否重复或提醒开发者改插件名称，但该插件还是会加载"
             )
             PublicShared.logger4plugins[this.config.id] = MiraiLogger.Factory.create(this::class, this.config.name)
