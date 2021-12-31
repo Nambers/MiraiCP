@@ -23,6 +23,7 @@ import tech.eritquearcus.miraicp.shared.CommandHandler
 
 class LoaderCommandHandlerImpl : CommandHandler {
     override fun register(c: Command): String {
-        TODO("Not yet implemented")
+        //todo
+        return "false"
     }
 }

@@ -57,7 +57,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.uploadImg
 import tech.eritquearcus.miraicp.shared.PublicShared.uploadVoice
 
 class CPPLib(
-    private val libPath: String,
+    val libPath: String,
     private val dependencies: List<String>?
 ) {
     var config: PluginConfig

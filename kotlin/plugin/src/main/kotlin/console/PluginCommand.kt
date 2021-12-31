@@ -33,7 +33,7 @@ class CommandHandlerImpl : CommandHandler {
             description = if (c.description == null || c.description == "null") "<no descriptions given>" else c.description!!,
             usage = if (c.usage == null || c.usage == "null") "<no usages given>" else c.usage!!
         ) {
-            var pluginId : Int = -1
+            var pluginId: Int = -1
             var bindId: Int = -1
             override suspend fun CommandSender.onCommand(args: MessageChain) {
                 val tmp = PublicShared.gson.toJson(
@@ -44,11 +44,7 @@ class CommandHandlerImpl : CommandHandler {
                         bindId
                     )
                 )
-                PublicShared.logger.info(tmp)
-                PublicShared.logger.info(pluginId.toString())
-                PublicShared.cpp[pluginId].Event(
-                    tmp
-                )
+                PublicShared.cpp[pluginId].Event(tmp)
             }
         }
         a::pluginId.set(c.pluginId)

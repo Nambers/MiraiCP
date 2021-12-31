@@ -19,6 +19,6 @@
 package tech.eritquearcus.miraicp.shared
 
 object BuiltInConstants {
-    const val date = "Thu Dec 30 15:25:05 GMT+08:00 2021"
+    const val date = "Fri Dec 31 10:04:47 GMT+08:00 2021"
     const val version = "2.9.0-M2"
 }

@@ -104,9 +104,11 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
         Logger::logger.error(e.what(), false);
         return returnNull();
     }
-    if (Event::processor.eventNodes()[j["type"].get<int>()].empty()) return returnNull();
+    int type = j["type"].get<int>();
+    // type == 17 is command
+    if (type != 17 && Event::processor.eventNodes()[type].empty()) return returnNull();
     try {
-        switch (j["type"].get<int>()) {
+        switch (type) {
             case 1: {
                 //GroupMessage
                 Event::processor.broadcast<GroupMessageEvent>(
@@ -228,9 +230,10 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                 break;
             }
             case 17: {
-                std::optional<Contact> c;
+                // command
+                std::optional<Contact> c = std::nullopt;
                 if (j.contains("contact")) c = Contact::deserialize(j["contact"]);
-                CommandManager::commandManager[j["bindId"]]->onCommand(c, Bot(j["botid"]), MessageChain::deserializationFromMessageSourceJson(j["message"]));
+                CommandManager::commandManager[j["bindId"]]->onCommand(c, Bot(j["botid"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false));
                 break;
             }
             default:
