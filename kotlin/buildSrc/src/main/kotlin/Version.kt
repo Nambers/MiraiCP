@@ -19,7 +19,7 @@
 object Version {
     const val kotlin = "1.5.32"
     const val `kotlinx-serialization-json` = "1.3.1"
-    const val `kotlinx-coroutines-core` = "1.6.0-RC3"
+    const val `kotlinx-coroutines-core` = "1.6.0"
 
     const val mirai = "2.9.2"
     const val miraiCP = "2.9.0-M2"
