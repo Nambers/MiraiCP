@@ -25,6 +25,27 @@ namespace MiraiCP {
     class MessageChain;
     class Bot;
     class Contact;
+    /*!
+     * @brief 指令
+     * @example 注册一条指令
+     * @code
+     * class a: public IRawCommand{
+        public:
+            IRawCommand::Config config() override{
+                return IRawCommand::Config("test");
+            }
+            void onCommand(std::optional<Contact> c, const Bot& b, const MessageChain& a) override{
+                Logger::logger.info(a.toMiraiCode());
+            }
+            a() = default;
+        };
+     * @endcode
+     * 然后在`onEnable()`里
+     * @code
+     * CommandManager::commandManager.registerCommand(a());
+     * @endcode
+     * @attention loader端的命令只支持从console传入, plugin端是对接mirai的RawCommand
+     */
     class IRawCommand {
     public:
         struct Config {
@@ -39,10 +60,12 @@ namespace MiraiCP {
             std::string description;
             /// 覆盖已有命令
             bool override;
-            explicit Config(std::string primaryName, std::vector<std::string> secondNames = std::vector<std::string>(), const std::string &usage = "null", const std::string &description = "null", bool override = false) : primaryName(std::move(primaryName)), secondNames(std::move(secondNames)), usage(usage), description(description), override(override) {}
+            /// 前缀`/`可省略
+            bool preFixOption;
+            explicit Config(std::string primaryName, std::vector<std::string> secondNames = std::vector<std::string>(), std::string usage = "null", std::string description = "null", bool override = false, bool preFixOption = false) : primaryName(std::move(primaryName)), secondNames(std::move(secondNames)), usage(std::move(usage)), description(std::move(description)), override(override), preFixOption(preFixOption) {}
         };
         virtual IRawCommand::Config config() = 0;
-        virtual void onCommand(std::optional<Contact>, const Bot&, const MessageChain &) = 0;
+        virtual void onCommand(std::optional<Contact>, const Bot &, const MessageChain &) = 0;
         IRawCommand() = default;
     };
     class CommandManager {
@@ -51,7 +74,12 @@ namespace MiraiCP {
         std::vector<std::shared_ptr<IRawCommand>> commandList;
 
     public:
-        std::shared_ptr<IRawCommand> operator[](int index){return commandList[index];}
+        std::shared_ptr<IRawCommand> operator[](int index) { return commandList[index]; }
+        /*!
+         * @brief 注册一条指令
+         * @param command 指令
+         * @return 是否注册成功
+         */
         template<class T>
         bool registerCommand(T command) {
             static_assert(std::is_base_of_v<IRawCommand, T>, "只支持IRawCommand的派生类");
@@ -62,6 +90,7 @@ namespace MiraiCP {
             j["secondName"] = command.config().secondNames;
             j["description"] = command.config().description;
             j["override"] = command.config().override;
+            j["preFixOption"] = command.config().preFixOption;
             size_t before = commandList.size();
             std::shared_ptr<IRawCommand> c;
             c.reset(new T(command));
@@ -74,7 +103,7 @@ namespace MiraiCP {
                 if (i != commandList.end())
                     j["bindId"] = i - commandList.begin();
                 else
-                    MiraiCPThrow(IllegalArgumentException(""));
+                    MiraiCPThrow(IllegalArgumentException("找不到合适的bindId"));
             }
             nlohmann::json rej;
             rej["command"] = j.dump();

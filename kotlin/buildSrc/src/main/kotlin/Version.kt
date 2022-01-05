@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2021. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,7 @@ object Version {
     const val `kotlinx-serialization-json` = "1.3.1"
     const val `kotlinx-coroutines-core` = "1.6.0-RC3"
 
-    const val mirai = "2.10.0-RC-dev-1b7c1286"
+    const val mirai = "2.9.2"
     const val miraiCP = "2.9.0-M2"
 
     const val shadowJar = "7.1.1"

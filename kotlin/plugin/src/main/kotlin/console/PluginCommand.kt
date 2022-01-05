@@ -33,6 +33,9 @@ class CommandHandlerImpl : CommandHandler {
             description = if (c.description == null || c.description == "null") "<no descriptions given>" else c.description!!,
             usage = if (c.usage == null || c.usage == "null") "<no usages given>" else c.usage!!
         ) {
+            var preFixOption = false
+            override val prefixOptional: Boolean
+                get() = preFixOption
             var pluginId: Int = -1
             var bindId: Int = -1
             override suspend fun CommandSender.onCommand(args: MessageChain) {
@@ -47,6 +50,7 @@ class CommandHandlerImpl : CommandHandler {
                 PublicShared.cpp[pluginId].Event(tmp)
             }
         }
+        a::preFixOption.set(c.preFixOption)
         a::pluginId.set(c.pluginId)
         a::bindId.set(c.bindId)
         return CommandManager.registerCommand(a, c.override).toString()

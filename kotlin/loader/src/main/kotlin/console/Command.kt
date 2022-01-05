@@ -21,8 +21,12 @@ package tech.eritquearcus.miraicp.loader.console
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.Bot
+import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
+import net.mamoe.mirai.message.data.MessageChainBuilder
+import net.mamoe.mirai.message.data.PlainText
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.login
+import tech.eritquearcus.miraicp.shared.Command2C
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.loadAsCPPLib
 import java.io.File
@@ -32,20 +36,23 @@ import kotlin.system.exitProcess
 
 object Command {
     private const val ch = " "
+    internal val preCommand = mutableListOf<CommandBrief>()
+    internal val lastCommand = mutableListOf<CommandBrief>()
+    internal val message = mutableListOf(
+        "exit" to "退出",
+        "status" to "查看loader状态",
+        "login <qqid>" to "登录已经配置在配置文件的qq",
+        "accountList" to "简写aList, 查看配置文件里的qq",
+        "pluginList" to "简写pList, 输出全部插件信息",
+        "disablePluginList" to "简写dList, 输出全部被禁用的插件名称",
+        "disablePlugin <plugin id>" to "简写disable, 禁用插件, 后面跟插件的名字作为参数, 可用enablePlugin启用, 可能会对程序的速度造成一些影响",
+        "enablePlugin <plugin id>" to "简写enable, 启用插件, 后面跟插件的名字作为参数",
+        "loadPlugin <plugin path>" to "简写load, 加载某个插件, 后面跟插件的地址作为参数",
+        "removePlugin <plugin id>" to "简写rm, 移除插件但不会取消对dll文件的占用, 后面跟插件的名字作为参数",
+        "reloadPlugin <plugin path>" to "简写reload, 加载某个插件(位于<plugin path>), 如果已经加载则`removePlugin`那个插件, 如果未加载过则效果类似`load`"
+    )
+
     private fun printHelp() {
-        val message = listOf(
-            "exit" to "退出",
-            "status" to "查看loader状态",
-            "login <qqid>" to "登录已经配置在配置文件的qq",
-            "accountList" to "简写aList, 查看配置文件里的qq",
-            "pluginList" to "简写pList, 输出全部插件信息",
-            "disablePluginList" to "简写dList, 输出全部被禁用的插件名称",
-            "disablePlugin <plugin id>" to "简写disable, 禁用插件, 后面跟插件的名字作为参数, 可用enablePlugin启用, 可能会对程序的速度造成一些影响",
-            "enablePlugin <plugin id>" to "简写enable, 启用插件, 后面跟插件的名字作为参数",
-            "loadPlugin <plugin path>" to "简写load, 加载某个插件, 后面跟插件的地址作为参数",
-            "removePlugin <plugin id>" to "简写rm, 移除插件但不会取消对dll文件的占用, 后面跟插件的名字作为参数",
-            "reloadPlugin <plugin path>" to "简写reload, 加载某个插件(位于<plugin path>), 如果已经加载则`removePlugin`那个插件, 如果未加载过则效果类似`load`"
-        )
         val prefixPlaceholder = String(CharArray(
             message.maxOfOrNull { it.first.length }!! + 3
         ) { ' ' })
@@ -72,23 +79,20 @@ object Command {
 
     fun parse(order: String) {
         val re = order.split(ch)
+        if (re.isEmpty()) unknown(order)
+        if (preOneOrMoreParamOrder(re)) return
         when (re.size) {
-            0 -> unknown(order)
             1 -> pureOrder(re[0])
-            2 -> oneParamOrder(arrayOf(re[0], re[1]))
-            3 -> twoParamOrder(arrayOf(re[0], re[1], re[2]))
-            else -> unknown(order)
+            2 -> oneParamOrder(listOf(re[0], re[1]), re)
+            else -> lastOneOrMoreParamOrder(re)
         }
     }
 
-    private fun unknown(order: String) {
-        PublicShared.logger.error("未知命令: '$order', 输入 \"help\" 获取命令帮助")
-    }
+    private fun unknown(order: String) = PublicShared.logger.error("未知命令: '$order', 输入 \"help\" 获取命令帮助")
 
-    private fun error(order: String, reason: String){
-        PublicShared.logger.error("命令错误: '$order', $reason")
-    }
-    private fun info(msg:String) = println(msg)
+    private fun error(order: String, reason: String) = PublicShared.logger.error("命令错误: '$order', $reason")
+
+    private fun info(msg: String) = println(msg)
 
     private fun pureOrder(order: String) {
         when (order) {
@@ -108,27 +112,26 @@ object Command {
                 val s = Duration.between(Console.start, LocalDateTime.now()).seconds
                 println("该Loader已经持续运行 " + String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + " 啦")
             }
-            "accountList", "aList" -> KotlinMain.loginAccount.let { acs->
+            "accountList", "aList" -> KotlinMain.loginAccount.let { acs ->
                 val gson = Gson()
                 acs.forEach { println(gson.toJson(it)) }
             }
-            "pluginList", "pList" ->{
+            "pluginList", "pList" -> {
                 PublicShared.cpp.forEach {
                     it.showInfo()
                 }
             }
-            "disablePluginList", "dList"->{
+            "disablePluginList", "dList" -> {
                 PublicShared.disablePlugins.forEach {
                     println(it)
                 }
             }
-            else -> unknown(order)
+            else -> lastOneOrMoreParamOrder(listOf(order))
         }
     }
 
-    private fun login(id: Long) {
+    private fun login(id: Long) =
         KotlinMain.loginAccount.first { it.id == id && (it.logined == null || it.logined == false) }.login()
-    }
 
     private fun removePlugin(order: String, id: String) {
         try {
@@ -164,7 +167,7 @@ object Command {
 
     }
 
-    private fun oneParamOrder(order: Array<String>) {
+    private fun oneParamOrder(order: List<String>, re: List<String>) {
         when (order[0]) {
             "login" -> {
                 val id = try {
@@ -173,14 +176,14 @@ object Command {
                     error(order.joinToString(" "), order[1] + "不是有效的qq号")
                     return
                 }
-                try{
+                try {
                     login(id)
-                }catch(e:NoSuchElementException ){
+                } catch (e: NoSuchElementException) {
                     error(order.joinToString(" "), "config文件中没找到关于$id 的定义或该id已经通过自动登录登录")
                 }
                 KotlinMain.logined = true
             }
-            "loadPlugin", "load" ->{
+            "loadPlugin", "load" -> {
                 val f = File(order[1])
                 when {
                     !f.isFile || !f.exists() -> {
@@ -191,12 +194,12 @@ object Command {
                     }
                 }
             }
-            "disablePlugin", "disable" ->{
-                try{
+            "disablePlugin", "disable" -> {
+                try {
                     PublicShared.cpp.first { it.config.id == order[1] }
                     (!PublicShared.disablePlugins.contains(order[1])) && PublicShared.disablePlugins.add(order[1])
                     info("禁用${order[1]}成功")
-                }catch(e:NoSuchElementException){
+                } catch (e: NoSuchElementException) {
                     error(order.joinToString(" "), "找不到${order[1]}插件, 关闭失败")
                 }
             }
@@ -212,11 +215,36 @@ object Command {
             "reloadPlugin", "reload" -> {
                 reload(order.joinToString(" "), order[1])
             }
-            else -> unknown(order.joinToString(" "))
+            else -> lastOneOrMoreParamOrder(re)
         }
     }
 
-    private fun twoParamOrder(order: Array<String>){
-        unknown(order.joinToString(" "))
+    private fun List<CommandBrief>.matchCommand(order: List<String>): Boolean {
+        this.firstOrNull { pair ->
+            pair.name == order[0] || pair.sName.contains(order[0])
+        }?.let { it ->
+            val mc = MessageChainBuilder()
+            order.drop(0).forEach { mc.append(PlainText(it)) }
+            val tmp = PublicShared.gson.toJson(
+                Command2C(
+                    null,
+                    0,
+                    mc.build().serializeToJsonString(),
+                    it.bid
+                )
+            )
+            PublicShared.cpp[it.pid].Event(tmp)
+            return true
+        }
+        return false
+    }
+
+    private fun preOneOrMoreParamOrder(order: List<String>): Boolean {
+        return preCommand.matchCommand(order)
+    }
+
+    private fun lastOneOrMoreParamOrder(order: List<String>) {
+        if (!lastCommand.matchCommand(order))
+            unknown(order.joinToString(" "))
     }
 }

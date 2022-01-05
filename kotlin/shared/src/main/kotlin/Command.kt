@@ -23,13 +23,22 @@ interface CommandHandler {
 }
 
 data class Command(
+    // 主要指令名
     val primaryName: String,
+    // 次要指令名
     val secondName: List<String>,
+    // 描述
     val description: String?,
+    // 用法
     val usage: String?,
+    // cpp端对应的监听id
     val bindId: Int,
+    // kt端插件编号
     val pluginId: Int,
-    val override: Boolean
+    // 覆盖已有指令
+    val override: Boolean,
+    // 前缀`/`可选
+    val preFixOption: Boolean
 )
 
 data class Command2C(
