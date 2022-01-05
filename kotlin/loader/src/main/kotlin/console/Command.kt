@@ -224,7 +224,7 @@ object Command {
             pair.name == order[0] || pair.sName.contains(order[0])
         }?.let { it ->
             val mc = MessageChainBuilder()
-            order.drop(0).forEach { mc.append(PlainText(it)) }
+            order.drop(1).forEach { mc.append(PlainText(it)) }
             val tmp = PublicShared.gson.toJson(
                 Command2C(
                     null,
