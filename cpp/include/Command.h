@@ -20,13 +20,12 @@
 #include "Exception.h"
 #include "Logger.h"
 #include <optional>
-#include <utility>
 namespace MiraiCP {
     class MessageChain;
     class Bot;
     class Contact;
     /*!
-     * @brief 指令
+     * @brief 指令 Interface
      * @example 注册一条指令
      * @code
      * class a: public IRawCommand{
@@ -68,6 +67,7 @@ namespace MiraiCP {
         virtual void onCommand(std::optional<Contact>, const Bot &, const MessageChain &) = 0;
         IRawCommand() = default;
     };
+
     class CommandManager {
     private:
         CommandManager() = default;

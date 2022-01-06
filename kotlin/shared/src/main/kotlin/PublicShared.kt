@@ -89,31 +89,25 @@ object PublicShared {
                     1 -> {
                         nextEvent<FriendMessageEvent>(time, EventPriority.HIGHEST) {
                             if (it.sender.id == c.id && it.bot.id == c.botid) {
-                                if (halt)
-                                    it.intercept()
+                                if (halt) it.intercept()
                                 true
-                            } else
-                                false
+                            } else false
                         }.message
                     }
                     2 -> {
                         nextEvent<GroupMessageEvent>(time, EventPriority.HIGHEST) {
                             if (it.group.id == c.id && it.bot.id == c.botid) {
-                                if (halt)
-                                    it.intercept()
+                                if (halt) it.intercept()
                                 true
-                            } else
-                                false
+                            } else false
                         }.message
                     }
                     3 -> {
                         nextEvent<GroupMessageEvent>(time, EventPriority.HIGHEST) {
                             if (it.bot.id == c.botid && it.group.id == c.groupid && it.sender.id == c.id) {
-                                if (halt)
-                                    it.intercept()
+                                if (halt) it.intercept()
                                 true
-                            } else
-                                false
+                            } else false
                         }.message
                     }
                     else -> throw Exception() //unreachable
@@ -124,8 +118,7 @@ object PublicShared {
             gson.toJson(
                 Config.Message(
                     json.encodeToString(
-                        MessageSource.Serializer,
-                        e[MessageSource]!!
+                        MessageSource.Serializer, e[MessageSource]!!
                     )
                 )
             )
@@ -159,45 +152,44 @@ object PublicShared {
 
     //发送消息部分实现 MiraiCode
 
-    private suspend fun send0(message: Message, c: Config.Contact, retryTime: Int): String =
-        withBot(c.botid) { AIbot ->
-            val r = kotlin.run {
-                when (c.type) {
-                    1 -> {
-                        logger.info("Send message for(${c.id}) is $message")
-                        AIbot.getFriend(c.id) ?: let {
-                            logger.error("发送消息找不到好友，位置:K-Send()，id:${c.id}")
-                            return@withBot "EF"
-                        }
+    private suspend fun send0(message: Message, c: Config.Contact, retryTime: Int): String = withBot(c.botid) { AIbot ->
+        val r = kotlin.run {
+            when (c.type) {
+                1 -> {
+                    logger.info("Send message for(${c.id}) is $message")
+                    AIbot.getFriend(c.id) ?: let {
+                        logger.error("发送消息找不到好友，位置:K-Send()，id:${c.id}")
+                        return@withBot "EF"
                     }
-                    2 -> {
-                        logger.info("Send message for Group(${c.id}) is $message")
-                        AIbot.getGroup(c.id) ?: let {
-                            logger.error("发送群消息异常找不到群组，位置K-SendG，gid:${c.id}")
-                            return@withBot "EG"
-                        }
-                    }
-                    3 -> {
-                        logger.info("Send message for a member(${c.id}) is $message")
-                        for (a in friend_cache) {
-                            if (a.id == c.id && a.group.id == c.groupid) {
-                                return@run a
-                            }
-                        }
-                        val g = AIbot.getGroup(c.groupid) ?: let {
-                            logger.error("发送消息找不到群聊，位置K-Send()，id:${c.groupid}")
-                            return@withBot "EM"
-                        }
-                        g[c.id] ?: let {
-                            logger.error("发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupid}")
-                            return@withBot "EMM"
-                        }
-                    }
-                    else -> return@withBot "EA"
                 }
+                2 -> {
+                    logger.info("Send message for Group(${c.id}) is $message")
+                    AIbot.getGroup(c.id) ?: let {
+                        logger.error("发送群消息异常找不到群组，位置K-SendG，gid:${c.id}")
+                        return@withBot "EG"
+                    }
+                }
+                3 -> {
+                    logger.info("Send message for a member(${c.id}) is $message")
+                    for (a in friend_cache) {
+                        if (a.id == c.id && a.group.id == c.groupid) {
+                            return@run a
+                        }
+                    }
+                    val g = AIbot.getGroup(c.groupid) ?: let {
+                        logger.error("发送消息找不到群聊，位置K-Send()，id:${c.groupid}")
+                        return@withBot "EM"
+                    }
+                    g[c.id] ?: let {
+                        logger.error("发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupid}")
+                        return@withBot "EMM"
+                    }
+                }
+                else -> return@withBot "EA"
             }
-            sendWithCatch { r.sendMessage(message).source }
         }
+        sendWithCatch { r.sendMessage(message).source }
+    }
 
     suspend fun sendMsg(message: String, c: Config.Contact, retryTime: Int): String =
         send0(message.toPlainText().toMessageChain(), c, retryTime)
@@ -206,13 +198,6 @@ object PublicShared {
         send0(MiraiCode.deserializeMiraiCode(message), c, retryTime)
 
     private fun OnlineAnnouncement.toOnlineA(): Config.OnlineA {
-        val a = Config.AP(
-            this.parameters.sendToNewMember,
-            this.parameters.isPinned,
-            this.parameters.showEditCard,
-            this.parameters.showPopup,
-            this.parameters.requireConfirmation
-        )
         return Config.OnlineA(
             this.content,
             this.fid,
@@ -222,75 +207,76 @@ object PublicShared {
             this.group.id,
             this.bot.id,
             this.publicationTime,
-            a
+            Config.AP(
+                this.parameters.sendToNewMember,
+                this.parameters.isPinned,
+                this.parameters.showEditCard,
+                this.parameters.showPopup,
+                this.parameters.requireConfirmation
+            )
         )
     }
 
     @OptIn(MiraiExperimentalApi::class, LowLevelApi::class)
-    suspend fun refreshInfo(c: Config.Contact, quit: Boolean, annoucment: Boolean): String =
-        c.withBot { bot ->
-            when (c.type) {
-                1 -> c.withFriend(bot, "找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}") { f ->
-                    if (quit) {
-                        f.delete()
-                        return "done"
-                    }
-                    gson.toJson(Config.ContactInfo(f.nick, f.avatarUrl))
+    suspend fun refreshInfo(c: Config.Contact, quit: Boolean, annoucment: Boolean): String = c.withBot { bot ->
+        when (c.type) {
+            1 -> c.withFriend(bot, "找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}") { f ->
+                if (quit) {
+                    f.delete()
+                    return "done"
                 }
-                2 -> c.withGroup(bot, "取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}") { g ->
-                    if (annoucment)
-                        return gson.toJson(g.announcements.toList().map { it.toOnlineA() })
-                    if (quit) {
-                        g.quit()
-                        return "done"
-                    }
-                    gson.toJson(
-                        Config.ContactInfo(
-                            g.name, g.avatarUrl,
-                            Config.GroupSetting(
-                                g.name,
-                                g.settings.isMuteAll,
-                                g.settings.isAllowMemberInvite,
-                                g.settings.isAutoApproveEnabled,
-                                g.settings.isAnonymousChatEnabled
-                            )
+                gson.toJson(Config.ContactInfo(f.nick, f.avatarUrl))
+            }
+            2 -> c.withGroup(bot, "取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}") { g ->
+                if (annoucment) return gson.toJson(g.announcements.toList().map { it.toOnlineA() })
+                if (quit) {
+                    g.quit()
+                    return "done"
+                }
+                gson.toJson(
+                    Config.ContactInfo(
+                        g.name, g.avatarUrl, Config.GroupSetting(
+                            g.name,
+                            g.settings.isMuteAll,
+                            g.settings.isAllowMemberInvite,
+                            g.settings.isAutoApproveEnabled,
+                            g.settings.isAnonymousChatEnabled
                         )
                     )
-                }
-                3 -> friend_cache.firstOrNull { a ->
-                    a.id == c.id && a.group.id == c.groupid
-                }?.nameCardOrNick ?: let {
-                    c.withMember(
-                        bot, "取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}",
-                        "取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}"
-                    ) { _, m ->
-                        return gson.toJson(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
-                    }
-                }
-                4 -> gson.toJson(Config.ContactInfo(bot.nick, bot.avatarUrl))
-                else -> "EA"
+                )
             }
+            3 -> friend_cache.firstOrNull { a ->
+                a.id == c.id && a.group.id == c.groupid
+            }?.nameCardOrNick ?: let {
+                c.withMember(
+                    bot,
+                    "取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}",
+                    "取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}"
+                ) { _, m ->
+                    return gson.toJson(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
+                }
+            }
+            4 -> gson.toJson(Config.ContactInfo(bot.nick, bot.avatarUrl))
+            else -> "EA"
         }
+    }
 
     //取群成员列表
-    fun queryML(c: Config.Contact): String =
-        c.withBot { bot ->
-            c.withGroup(bot) { g ->
-                gson.toJson(g.members.map { it.id })
-            }
+    fun queryML(c: Config.Contact): String = c.withBot { bot ->
+        c.withGroup(bot) { g ->
+            gson.toJson(g.members.map { it.id })
         }
+    }
 
-    fun queryBFL(bid: Long): String =
-        withBot(bid) { bot ->
-            gson.toJson(bot.friends.map {
-                it.id
-            })
-        }
+    fun queryBFL(bid: Long): String = withBot(bid) { bot ->
+        gson.toJson(bot.friends.map {
+            it.id
+        })
+    }
 
-    fun queryBGL(bid: Long): String =
-        withBot(bid) { bot ->
-            gson.toJson(bot.groups.map { it.id })
-        }
+    fun queryBGL(bid: Long): String = withBot(bid) { bot ->
+        gson.toJson(bot.groups.map { it.id })
+    }
 
     //图片部分实现
     private suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String =
@@ -315,27 +301,26 @@ object PublicShared {
             err2
         }
 
-    suspend fun uploadImg(file: String, c: Config.Contact): String =
-        c.withBot { bot ->
-            when (c.type) {
-                1 -> c.withFriend(bot, "发送图片找不到对应好友,位置:K-uploadImgFriend(),id:${c.id}") { temp ->
-                    uploadImgAndId(file, temp)
-                }
-                2 -> c.withGroup(bot, "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.id}") { temp ->
-                    uploadImgAndId(file, temp)
-                }
-                3 -> c.withMember(
-                    bot,
-                    "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.groupid}",
-                    "发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:${c.id},群聊id:${c.groupid}"
-                ) { _, temp1 ->
-                    uploadImgAndId(file, temp1, "E3", "E4")
-                }
-                else -> {
-                    "EA"
-                }
+    suspend fun uploadImg(file: String, c: Config.Contact): String = c.withBot { bot ->
+        when (c.type) {
+            1 -> c.withFriend(bot, "发送图片找不到对应好友,位置:K-uploadImgFriend(),id:${c.id}") { temp ->
+                uploadImgAndId(file, temp)
+            }
+            2 -> c.withGroup(bot, "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.id}") { temp ->
+                uploadImgAndId(file, temp)
+            }
+            3 -> c.withMember(
+                bot,
+                "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.groupid}",
+                "发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:${c.id},群聊id:${c.groupid}"
+            ) { _, temp1 ->
+                uploadImgAndId(file, temp1, "E3", "E4")
+            }
+            else -> {
+                "EA"
             }
         }
+    }
 
     suspend fun queryImgInfo(id: String, size: Long?, width: Int?, height: Int?, type: Int?): String {
         return try {
@@ -376,50 +361,44 @@ object PublicShared {
     }
 
     //禁言
-    suspend fun mute(time: Int, c: Config.Contact): String =
-        c.withBot { bot ->
-            c.withMember(
-                bot,
-                "禁言找不到对应群组，位置K-mute()，gid:${c.groupid}",
-                "禁言找不到对应群成员，位置K-mute()，id:${c.id}, gid:${c.id}"
-            ) { _, member ->
-                try {
-                    if (time > 0)
-                        member.mute(time)
-                    else
-                        member.unmute()
-                } catch (e: PermissionDeniedException) {
-                    logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:${c.groupid}，目标成员id:${c.id}")
-                    return "E3"
-                } catch (e: IllegalStateException) {
-                    logger.error("执行禁言失败禁言时间超出0s~30d，位置:K-mute()，时间:$time")
-                    return "E4"
-                }
-                return "Y"
+    suspend fun mute(time: Int, c: Config.Contact): String = c.withBot { bot ->
+        c.withMember(
+            bot, "禁言找不到对应群组，位置K-mute()，gid:${c.groupid}", "禁言找不到对应群成员，位置K-mute()，id:${c.id}, gid:${c.id}"
+        ) { _, member ->
+            try {
+                if (time > 0) member.mute(time)
+                else member.unmute()
+            } catch (e: PermissionDeniedException) {
+                logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:${c.groupid}，目标成员id:${c.id}")
+                return "E3"
+            } catch (e: IllegalStateException) {
+                logger.error("执行禁言失败禁言时间超出0s~30d，位置:K-mute()，时间:$time")
+                return "E4"
             }
+            return "Y"
         }
+    }
 
-    suspend fun uploadVoice(path: String, c: Config.Contact): String =
-        c.withBot { bot ->
-            val file = File(path)
-            if (!file.exists() || !file.isFile || !(file.extension == "amr" || file.extension == "silk")) {
-                logger.error("上传的语言文件需为.amr / .silk文件, 位置: KUploadVoice")
-                return "E1"
-            }
-            val cc = when (c.type) {
-                1 -> bot.getFriend(c.id) ?: let { logger.error("上传语音找不到好友, id:${c.id}"); return "EF" }
-                2 -> bot.getGroup(c.id) ?: let { logger.error("上传语音找不到群聊, gid:${c.id}"); return "EG" }
-                else -> return "EA"
-            }
-            return file.toExternalResource().use {
-                try {
-                    json.encodeToString(MessageSource.Serializer, cc.uploadAudio(it).sendTo(cc).source)
-                } catch (e: OverFileSizeMaxException) {
-                    logger.error("上传语音失败, 文件应在大约1MB以内, 实际大小:${it.size}, 文件路径:${file.absolutePath}")
-                    "E2"
-                }
+    suspend fun uploadVoice(path: String, c: Config.Contact): String = c.withBot { bot ->
+        val file = File(path)
+        if (!file.exists() || !file.isFile || !(file.extension == "amr" || file.extension == "silk")) {
+            logger.error("上传的语言文件需为.amr / .silk文件, 位置: KUploadVoice")
+            return "E1"
+        }
+        val cc = when (c.type) {
+            1 -> bot.getFriend(c.id) ?: let { logger.error("上传语音找不到好友, id:${c.id}"); return "EF" }
+            2 -> bot.getGroup(c.id) ?: let { logger.error("上传语音找不到群聊, gid:${c.id}"); return "EG" }
+            else -> return "EA"
+        }
+        return file.toExternalResource().use {
+            try {
+                json.encodeToString(MessageSource.Serializer, cc.uploadAudio(it).sendTo(cc).source)
+            } catch (e: OverFileSizeMaxException) {
+                logger.error("上传语音失败, 文件应在大约1MB以内, 实际大小:${it.size}, 文件路径:${file.absolutePath}")
+                "E2"
             }
         }
+    }
 
     private suspend fun fileInfo0(temp: AbsoluteFile): String {
         return gson.toJson(
@@ -429,136 +408,115 @@ object PublicShared {
                 path = temp.absolutePath,
                 dinfo = Config.DInfo(temp.getUrl() ?: "null", temp.md5.toString(), temp.sha1.toString()),
                 finfo = Config.FInfo(
-                    temp.size,
-                    temp.uploaderId,
-                    temp.expiryTime,
-                    temp.uploadTime,
-                    temp.lastModifiedTime
+                    temp.size, temp.uploaderId, temp.expiryTime, temp.uploadTime, temp.lastModifiedTime
                 )
             )
         )
     }
 
-    suspend fun sendFile(path: String, file: String, c: Config.Contact): String =
-        c.withBot { bot ->
-            c.withGroup(bot, "找不到对应群组，位置K-uploadfile()，gid:${c.id}") { group ->
-                val f = File(file)
-                if (!f.exists() || !f.isFile) {
+    suspend fun sendFile(path: String, file: String, c: Config.Contact): String = c.withBot { bot ->
+        c.withGroup(bot, "找不到对应群组，位置K-uploadfile()，gid:${c.id}") { group ->
+            val f = File(file)
+            if (!f.exists() || !f.isFile) {
+                return "E2"
+            }
+            val tmp = try {
+                f.toExternalResource().use {
+                    group.files.root.uploadNewFile(path, it)
+                }
+            } catch (e: PermissionDeniedException) {
+                return "EB"
+            } catch (e: IllegalStateException) {
+                return "E3"
+            } catch (e: Exception) {
+                logger.error(e.message)
+                e.printStackTrace()
+                return "E3"
+            }
+            return fileInfo0(tmp)
+        }
+    }
+
+    private suspend fun remoteFileList(path: String, c: Config.Contact): String = c.withBot { bot ->
+        c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
+            var tmp = "["
+            group.files.root.resolveFiles(path).toList().forEach {
+                tmp += "[\"${it.absolutePath}\", \"${it.id}\"],"
+            }
+            tmp = tmp.substring(0, tmp.length - 1)
+            tmp += "]"
+            return tmp
+        }
+    }
+
+    private suspend fun remoteFileInfo0(path: String, c: Config.Contact): String = c.withBot { bot ->
+        c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}") { group ->
+            val tmp = try {
+                group.files.root.resolveFiles(path).first()
+            } catch (e: NoSuchElementException) {
+                logger.error("cannot find the file,位置:K-remoteFileinfo0, path: $path")
+                return "E2"
+            }
+            if (!tmp.isFile || !tmp.exists()) {
+                logger.error("cannot find the file,位置:K-remoteFileinfo0, path: $path")
+                return "E2"
+            }
+            return fileInfo0(tmp)
+        }
+    }
+
+    suspend fun remoteFileInfo(path: String, id: String, c: Config.Contact): String = c.withBot { bot ->
+        if (id == "") return remoteFileInfo0(path, c)
+        if (id == "-1") return remoteFileList(path, c)
+        c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
+            group.files.root.resolveFolder(path).let {
+                if (it == null) remoteFileInfo0(path, c)
+                else fileInfo0(it.resolveFileById(id) ?: let {
+                    logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id, path:$path")
                     return "E2"
-                }
-                val tmp =
-                    try {
-                        f.toExternalResource().use {
-                            group.files.root.uploadNewFile(path, it)
-                        }
-                    } catch (e: PermissionDeniedException) {
-                        return "EB"
-                    } catch (e: IllegalStateException) {
-                        return "E3"
-                    } catch (e: Exception) {
-                        logger.error(e.message)
-                        e.printStackTrace()
-                        return "E3"
-                    }
-                return fileInfo0(tmp)
+                })
             }
         }
+    }
 
-    private suspend fun remoteFileList(path: String, c: Config.Contact): String =
-        c.withBot { bot ->
-            c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
-                var tmp = "["
-                group.files.root.resolveFiles(path).toList().forEach {
-                    tmp += "[\"${it.absolutePath}\", \"${it.id}\"],"
-                }
-                tmp = tmp.substring(0, tmp.length - 1)
-                tmp += "]"
-                return tmp
+    suspend fun remoteFileInfo(id: String, c: Config.Contact): String = c.withBot { bot ->
+        c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
+            val tmp = group.files.root.resolveFileById(id) ?: let {
+                logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id")
+                return "E1"
             }
+            return fileInfo0(tmp)
         }
-
-    private suspend fun remoteFileInfo0(path: String, c: Config.Contact): String =
-        c.withBot { bot ->
-            c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}") { group ->
-                val tmp = try {
-                    group.files.root.resolveFiles(path).first()
-                } catch (e: NoSuchElementException) {
-                    logger.error("cannot find the file,位置:K-remoteFileinfo0, path: $path")
-                    return "E2"
-                }
-                if (!tmp.isFile || !tmp.exists()) {
-                    logger.error("cannot find the file,位置:K-remoteFileinfo0, path: $path")
-                    return "E2"
-                }
-                return fileInfo0(tmp)
-            }
-        }
-
-    suspend fun remoteFileInfo(path: String, id: String, c: Config.Contact): String =
-        c.withBot { bot ->
-            if (id == "")
-                return remoteFileInfo0(path, c)
-            if (id == "-1")
-                return remoteFileList(path, c)
-            c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
-                group.files.root.resolveFolder(path).let {
-                    if (it == null)
-                        remoteFileInfo0(path, c)
-                    else
-                        fileInfo0(it.resolveFileById(id) ?: let {
-                            logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id, path:$path")
-                            return "E2"
-                        })
-                }
-            }
-        }
-
-    suspend fun remoteFileInfo(id: String, c: Config.Contact): String =
-        c.withBot { bot ->
-            c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
-                val tmp = group.files.root.resolveFileById(id) ?: let {
-                    logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id")
-                    return "E1"
-                }
-                return fileInfo0(tmp)
-            }
-        }
+    }
 
     //查询权限
-    fun kqueryM(c: Config.Contact): String =
-        c.withBot { bot ->
-            c.withMember(
-                bot,
-                "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}",
-                "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.groupid}"
-            ) { _, member ->
-                return member.permission.level.toString()
-            }
+    fun kqueryM(c: Config.Contact): String = c.withBot { bot ->
+        c.withMember(
+            bot, "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}", "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.groupid}"
+        ) { _, member ->
+            return member.permission.level.toString()
         }
+    }
 
-    suspend fun kkick(message: String, c: Config.Contact): String =
-        c.withBot { bot ->
-            c.withMember(
-                bot,
-                "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}",
-                "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.id}"
-            ) { _, member ->
-                try {
-                    member.kick(message)
-                } catch (e: PermissionDeniedException) {
-                    return "E3"
-                }
-                return "Y"
+    suspend fun kkick(message: String, c: Config.Contact): String = c.withBot { bot ->
+        c.withMember(
+            bot, "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}", "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.id}"
+        ) { _, member ->
+            try {
+                member.kick(message)
+            } catch (e: PermissionDeniedException) {
+                return "E3"
             }
+            return "Y"
         }
+    }
 
     //取群主
-    fun getowner(c: Config.Contact): String =
-        c.withBot {
-            c.withGroup(it, "找不到群,位置:K-getowner,gid:${c.id}") { g ->
-                return g.owner.id.toString()
-            }
+    fun getowner(c: Config.Contact): String = c.withBot {
+        c.withGroup(it, "找不到群,位置:K-getowner,gid:${c.id}") { g ->
+            return g.owner.id.toString()
         }
+    }
 
     @OptIn(MiraiExperimentalApi::class)
     fun buildForwardMsg(text: String, bid: Long): ForwardMessage {
@@ -580,8 +538,11 @@ object PublicShared {
         }
         val a = ForwardMessageBuilder(c)
         t.value.forEach {
-            if (it.isForwardedMessage != true)
-                a.add(ForwardMessage.Node(it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)))
+            if (it.isForwardedMessage != true) a.add(
+                ForwardMessage.Node(
+                    it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)
+                )
+            )
             else {
                 a.add(ForwardMessage.Node(it.id, it.time, it.name, buildForwardMsg(it.message, bid)))
             }
@@ -591,58 +552,52 @@ object PublicShared {
 
     //构建聊天记录
     @OptIn(MiraiExperimentalApi::class)
-    suspend fun sendForwardMsg(text: String, bid: Long): String =
-        withBot(bid) { bot ->
-            val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
-            val c: Contact = when (t.type) {
-                1 -> bot.getFriend(t.id) ?: let {
-                    return "EF"
-                }
-                2 -> bot.getGroup(t.id) ?: let {
-                    return "EG"
-                }
-                3 -> (bot.getGroup(t.id) ?: let {
-                    return "EM"
-                })[t.groupid] ?: let {
-                    return "EMM"
-                }
-                else -> return "EA"
+    suspend fun sendForwardMsg(text: String, bid: Long): String = withBot(bid) { bot ->
+        val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
+        val c: Contact = when (t.type) {
+            1 -> bot.getFriend(t.id) ?: let {
+                return "EF"
             }
-            val tmp = try {
-                buildForwardMsg(gson.toJson(t.content), bid)
-            } catch (err: IllegalStateException) {
-                return@withBot err.message!!
+            2 -> bot.getGroup(t.id) ?: let {
+                return "EG"
             }
-            sendWithCatch {
-                tmp.sendTo(c).source
+            3 -> (bot.getGroup(t.id) ?: let {
+                return "EM"
+            })[t.groupid] ?: let {
+                return "EMM"
             }
+            else -> return "EA"
         }
+        val tmp = try {
+            buildForwardMsg(gson.toJson(t.content), bid)
+        } catch (err: IllegalStateException) {
+            return@withBot err.message!!
+        }
+        sendWithCatch {
+            tmp.sendTo(c).source
+        }
+    }
 
     suspend fun accpetFriendRequest(info: String, botid: Long, accept: Boolean, ban: Boolean?): String =
         withBot(botid) { bot ->
             try {
-                if (accept)
-                    gson.fromJson(info, RequestEventData.NewFriendRequest::class.java).accept(bot)
-                else
-                    gson.fromJson(info, RequestEventData.NewFriendRequest::class.java).reject(bot, ban ?: false)
+                if (accept) gson.fromJson(info, RequestEventData.NewFriendRequest::class.java).accept(bot)
+                else gson.fromJson(info, RequestEventData.NewFriendRequest::class.java).reject(bot, ban ?: false)
             } catch (e: IllegalStateException) {
                 return "E"
             }
             return "Y"
         }
 
-    suspend fun accpetGroupInvite(info: String, botid: Long, accept: Boolean): String =
-        withBot(botid) { bot ->
-            try {
-                if (accept)
-                    gson.fromJson(info, RequestEventData.BotInvitedJoinGroupRequest::class.java).accept(bot)
-                else
-                    gson.fromJson(info, RequestEventData.BotInvitedJoinGroupRequest::class.java).reject(bot)
-            } catch (e: IllegalStateException) {
-                return "E"
-            }
-            return "Y"
+    suspend fun accpetGroupInvite(info: String, botid: Long, accept: Boolean): String = withBot(botid) { bot ->
+        try {
+            if (accept) gson.fromJson(info, RequestEventData.BotInvitedJoinGroupRequest::class.java).accept(bot)
+            else gson.fromJson(info, RequestEventData.BotInvitedJoinGroupRequest::class.java).reject(bot)
+        } catch (e: IllegalStateException) {
+            return "E"
         }
+        return "Y"
+    }
 
     suspend fun sendWithQuote(messageSource: String, msg: String, sign: String): String {
         val source = json.decodeFromString(MessageSource.Serializer, messageSource)
@@ -686,36 +641,34 @@ object PublicShared {
         return sendWithCatch { c.sendMessage(source.quote() + message).source }
     }
 
-    fun groupSetting(c: Config.Contact, source: String): String =
-        c.withBot {
-            c.withGroup(it) { group ->
-                val root = gson.fromJson(source, Config.GroupSetting::class.java)
-                try {
-                    group.name = root.name
-                    group.settings.isMuteAll = root.isMuteAll
-                    group.settings.isAllowMemberInvite = root.isAllowMemberInvite
-                } catch (e: PermissionDeniedException) {
-                    return "E1"
-                }
-                return "Y"
+    fun groupSetting(c: Config.Contact, source: String): String = c.withBot {
+        c.withGroup(it) { group ->
+            val root = gson.fromJson(source, Config.GroupSetting::class.java)
+            try {
+                group.name = root.name
+                group.settings.isMuteAll = root.isMuteAll
+                group.settings.isAllowMemberInvite = root.isAllowMemberInvite
+            } catch (e: PermissionDeniedException) {
+                return "E1"
             }
+            return "Y"
         }
+    }
 
-    suspend fun deleteOnlineAnnouncement(a: Config.IdentifyA): String =
-        withBot(a.botid) { bot ->
-            withGroup(bot, a.groupid) { group ->
-                try {
-                    group.announcements.delete(a.fid!!).let {
-                        if (!it) return "E1"
-                    }
-                } catch (e: PermissionDeniedException) {
-                    return "E2"
-                } catch (e: IllegalStateException) {
-                    return "E3"
+    suspend fun deleteOnlineAnnouncement(a: Config.IdentifyA): String = withBot(a.botid) { bot ->
+        withGroup(bot, a.groupid) { group ->
+            try {
+                group.announcements.delete(a.fid!!).let {
+                    if (!it) return "E1"
                 }
-                return "Y"
+            } catch (e: PermissionDeniedException) {
+                return "E2"
+            } catch (e: IllegalStateException) {
+                return "E3"
             }
+            return "Y"
         }
+    }
 
     suspend fun publishOfflineAnnouncement(i: Config.IdentifyA, a: Config.BriefOfflineA): String =
         withBot(i.botid) { bot ->
@@ -727,8 +680,7 @@ object PublicShared {
                     showEditCard = a.params.showEditCard
                     showPopup = a.params.showPopup
                     requireConfirmation = a.params.requireConfirmation
-                }
-                ).let {
+                }).let {
                     return try {
                         gson.toJson(it.publishTo(g).toOnlineA())
                     } catch (e: PermissionDeniedException) {
@@ -740,76 +692,63 @@ object PublicShared {
 
     //定时任务
     fun scheduling(time: Long, msg: String): String {
-        Timer("Timer", false).schedule(time) {
-            runBlocking {
-                cpp.event(
-                    Gson().toJson(
-                        CPPEvent.TimeOutEvent(
-                            msg
-                        )
-                    )
-                )
-            }
+        Timer("Timer", true).schedule(time) {
+            cpp.event(CPPEvent.TimeOutEvent(msg))
         }
         return "Y"
     }
 
-    fun sendNudge(c: Config.Contact): String =
-        c.withBot { bot ->
-            return when (c.type) {
-                1 -> {
-                    c.withFriend(bot) { f ->
-                        try {
-                            f.nudge()
-                        } catch (e: UnsupportedOperationException) {
-                            logger.error("发送nudge必须使用phone协议，目前协议为:" + bot.configuration.protocol.name)
-                            return "E1"
-                        }
-                        "Y"
+    fun sendNudge(c: Config.Contact): String = c.withBot { bot ->
+        return when (c.type) {
+            1 -> {
+                c.withFriend(bot) { f ->
+                    try {
+                        f.nudge()
+                    } catch (e: UnsupportedOperationException) {
+                        logger.error("发送nudge必须使用ANDROID_PHONE协议，目前协议为:" + bot.configuration.protocol.name)
+                        return "E1"
                     }
+                    "Y"
                 }
-                2 -> {
-                    c.withMember(bot) { _, m ->
-                        try {
-                            m.nudge()
-                        } catch (e: UnsupportedOperationException) {
-                            logger.error("发送nudge必须使用phone协议，目前协议为:" + bot.configuration.protocol.name)
-                            return "E1"
-                        }
-                        "Y"
-                    }
-                }
-                else -> "EA"
             }
+            2 -> {
+                c.withMember(bot) { _, m ->
+                    try {
+                        m.nudge()
+                    } catch (e: UnsupportedOperationException) {
+                        logger.error("发送nudge必须使用ANDROID_PHONE协议，目前协议为:" + bot.configuration.protocol.name)
+                        return "E1"
+                    }
+                    "Y"
+                }
+            }
+            else -> "EA"
         }
+    }
 
-    suspend fun modifyAdmin(c: Config.Contact, b: Boolean): String =
-        c.withBot { bot ->
-            c.withMember(bot) { _, member ->
-                try {
-                    member.modifyAdmin(b)
-                } catch (e: PermissionDeniedException) {
-                    return "E1"
-                }
-                "Y"
+    suspend fun modifyAdmin(c: Config.Contact, b: Boolean): String = c.withBot { bot ->
+        c.withMember(bot) { _, member ->
+            try {
+                member.modifyAdmin(b)
+            } catch (e: PermissionDeniedException) {
+                return "E1"
             }
+            "Y"
         }
+    }
 
     suspend fun memberJoinRequest(source: String, b: Boolean, botid: Long, msg: String): String =
         withBot(botid) { bot ->
             return gson.fromJson(source, RequestEventData.MemberJoinRequest::class.java).let {
-                if (b)
-                    it.accept(bot)
-                else
-                    it.reject(bot, msg)
+                if (b) it.accept(bot)
+                else it.reject(bot, msg)
                 "Y"
             }
         }
 
-    suspend fun isUploaded(img: Config.ImgInfo, botid: Long): String =
-        withBot(botid) { bot ->
-            img.toImage().isUploaded(bot).toString()
-        }
+    suspend fun isUploaded(img: Config.ImgInfo, botid: Long): String = withBot(botid) { bot ->
+        img.toImage().isUploaded(bot).toString()
+    }
 
     fun onDisable() = cpp.forEach { it.PluginDisable() }
 
@@ -819,14 +758,9 @@ object PublicShared {
         eventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
             cpp.event(
-                gson.toJson(
-                    CPPEvent.PrivateMessage(
-                        this.sender.toContact(),
-                        this.message.serializeToMiraiCode(),
-                        json.encodeToString(
-                            MessageSource.Serializer,
-                            this.message[MessageSource]!!
-                        )
+                CPPEvent.PrivateMessage(
+                    this.sender.toContact(), this.message.serializeToMiraiCode(), json.encodeToString(
+                        MessageSource.Serializer, this.message[MessageSource]!!
                     )
                 )
             )
@@ -834,203 +768,158 @@ object PublicShared {
         eventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
             cpp.event(
-                gson.toJson(
-                    CPPEvent.GroupMessage(
-                        this.group.toContact(),
-                        Config.Contact(
-                            3,
-                            this.sender.id,
-                            this.group.id,
-                            this.senderName,
-                            this.bot.id,
-                            (this.sender is AnonymousMember)
-                        ),
-                        this.message.serializeToMiraiCode(),
-                        json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
-                    )
+                CPPEvent.GroupMessage(
+                    this.group.toContact(),
+                    Config.Contact(
+                        3, this.sender.id, this.group.id, this.senderName, this.bot.id, (this.sender is AnonymousMember)
+                    ),
+                    this.message.serializeToMiraiCode(),
+                    json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
                 )
             )
         }
         eventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
             cpp.event(
-                gson.toJson(
-                    CPPEvent.MemberLeave(
-                        this.group.toContact(),
-                        this.member.id,
-                        1,
-                        if (this.operator?.id == null) this.bot.id else this.operator!!.id
-                    )
+                CPPEvent.MemberLeave(
+                    this.group.toContact(),
+                    this.member.id,
+                    1,
+                    if (this.operator?.id == null) this.bot.id else this.operator!!.id
                 )
+
             )
             friend_cache.remove(this.member)
         }
         eventChannel.subscribeAlways<MemberLeaveEvent.Quit> {
             friend_cache.add(this.member)
             cpp.event(
-                gson.toJson(
-                    CPPEvent.MemberLeave(
-                        this.group.toContact(),
-                        this.member.id,
-                        2,
-                        this.member.id
-                    )
+                CPPEvent.MemberLeave(
+                    this.group.toContact(), this.member.id, 2, this.member.id
                 )
+
             )
             friend_cache.remove(this.member)
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Retrieve> {
             cpp.event(
-                gson.toJson(
-                    CPPEvent.MemberJoin(
-                        this.group.toContact(),
-                        Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
-                        3,
-                        this.member.id
-                    )
+                CPPEvent.MemberJoin(
+                    this.group.toContact(),
+                    Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
+                    3,
+                    this.member.id
                 )
+
             )
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Active> {
             cpp.event(
-                gson.toJson(
-                    CPPEvent.MemberJoin(
-                        this.group.toContact(),
-                        Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
-                        2,
-                        this.member.id
-                    )
+                CPPEvent.MemberJoin(
+                    this.group.toContact(),
+                    Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
+                    2,
+                    this.member.id
                 )
+
             )
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Invite> {
             cpp.event(
-                gson.toJson(
-                    CPPEvent.MemberJoin(
-                        this.group.toContact(),
-                        Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
-                        1,
-                        this.invitor.id
-                    )
+                CPPEvent.MemberJoin(
+                    this.group.toContact(),
+                    Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
+                    1,
+                    this.invitor.id
                 )
+
             )
         }
         eventChannel.subscribeAlways<NewFriendRequestEvent> {
             //自动同意好友申请
             cpp.event(
-                gson.toJson(
-                    CPPEvent.NewFriendRequest(
-                        CPPEvent.NewFriendRequest.NewFriendRequestSource(
-                            this.bot.id,
-                            this.eventId,
-                            this.message,
-                            this.fromId,
-                            this.fromGroupId,
-                            this.fromNick
-                        ),
-                        gson.toJson(this.toRequestEventData())
-                    )
+                CPPEvent.NewFriendRequest(
+                    CPPEvent.NewFriendRequest.NewFriendRequestSource(
+                        this.bot.id, this.eventId, this.message, this.fromId, this.fromGroupId, this.fromNick
+                    ), gson.toJson(this.toRequestEventData())
                 )
+
             )
 
         }
         eventChannel.subscribeAlways<MessageRecallEvent.FriendRecall> {
             cpp.event(
-                gson.toJson(
-                    CPPEvent.RecallEvent(
-                        1,
-                        this.authorId,
-                        this.operatorId,
-                        this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
-                        this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
-                        this.messageTime,
-                        0,
-                        this.bot.id
-                    )
+                CPPEvent.RecallEvent(
+                    1,
+                    this.authorId,
+                    this.operatorId,
+                    this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
+                    this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
+                    this.messageTime,
+                    0,
+                    this.bot.id
                 )
             )
-
         }
         eventChannel.subscribeAlways<MessageRecallEvent.GroupRecall> {
             cpp.event(
-                gson.toJson(
-                    CPPEvent.RecallEvent(
-                        2,
-                        this.authorId,
-                        this.operator!!.id,
-                        this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
-                        this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
-                        this.messageTime,
-                        this.group.id,
-                        this.bot.id
-                    )
+                CPPEvent.RecallEvent(
+                    2,
+                    this.authorId,
+                    this.operator!!.id,
+                    this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
+                    this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
+                    this.messageTime,
+                    this.group.id,
+                    this.bot.id
                 )
+
             )
 
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Invite> {
             cpp.event(
-                gson.toJson(
-                    CPPEvent.BotJoinGroup(
-                        1,
-                        this.group.toContact(),
-                        this.invitor.id
-                    )
+                CPPEvent.BotJoinGroup(
+                    1, this.group.toContact(), this.invitor.id
                 )
+
             )
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Active> {
             cpp.event(
-                gson.toJson(
-                    CPPEvent.BotJoinGroup(
-                        2,
-                        this.group.toContact(),
-                        0
-                    )
+                CPPEvent.BotJoinGroup(
+                    2, this.group.toContact(), 0
                 )
+
             )
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve> {
             cpp.event(
-                gson.toJson(
-                    CPPEvent.BotJoinGroup(
-                        3,
-                        this.group.toContact(),
-                        0
-                    )
+                CPPEvent.BotJoinGroup(
+                    3, this.group.toContact(), 0
                 )
+
             )
         }
         eventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
             cpp.event(
-                gson.toJson(
-                    CPPEvent.GroupInvite(
-                        CPPEvent.GroupInvite.GroupInviteSource(
-                            this.bot.id,
-                            this.eventId,
-                            this.invitorId,
-                            this.groupId,
-                            this.groupName,
-                            this.invitorNick
-                        ),
-                        gson.toJson(this.toRequestEventData())
-                    )
+                CPPEvent.GroupInvite(
+                    CPPEvent.GroupInvite.GroupInviteSource(
+                        this.bot.id, this.eventId, this.invitorId, this.groupId, this.groupName, this.invitorNick
+                    ), gson.toJson(this.toRequestEventData())
                 )
+
             )
         }
         eventChannel.subscribeAlways<GroupTempMessageEvent> {
             //群临时会话
             cpp.event(
-                gson.toJson(
-                    CPPEvent.GroupTempMessage(
-                        this.group.toContact(),
-                        this.sender.toContact(),
-                        this.message.serializeToMiraiCode(),
-                        json.encodeToString(
-                            MessageSource.Serializer,
-                            this.source
-                        )
+                CPPEvent.GroupTempMessage(
+                    this.group.toContact(),
+                    this.sender.toContact(),
+                    this.message.serializeToMiraiCode(),
+                    json.encodeToString(
+                        MessageSource.Serializer, this.source
                     )
                 )
             )
@@ -1040,40 +929,33 @@ object PublicShared {
             val f = this.from.toContact() ?: return@subscribeAlways
             val t = this.target.toContact() ?: return@subscribeAlways
             cpp.event(
-                gson.toJson(
-                    CPPEvent.NugdeEvent(
-                        f, t, this.bot.id
-                    )
+                CPPEvent.NugdeEvent(
+                    f, t, this.bot.id
                 )
+
             )
         }
         eventChannel.subscribeAlways<BotLeaveEvent> {
             cpp.event(
-                gson.toJson(
-                    CPPEvent.BotLeaveEvent(
-                        this.group.id,
-                        this.bot.id
-                    )
+                CPPEvent.BotLeaveEvent(
+                    this.group.id, this.bot.id
                 )
+
             )
         }
         eventChannel.subscribeAlways<MemberJoinRequestEvent> {
             cpp.event(
-                gson.toJson(
-                    CPPEvent.MemberJoinRequestEvent(
-                        this.group?.toContact() ?: emptyContact(this.bot.id),
-                        this.invitor?.toContact() ?: emptyContact(this.bot.id),
-                        gson.toJson(this.toRequestEventData())
-                    )
+                CPPEvent.MemberJoinRequestEvent(
+                    this.group?.toContact() ?: emptyContact(this.bot.id),
+                    this.invitor?.toContact() ?: emptyContact(this.bot.id),
+                    gson.toJson(this.toRequestEventData())
                 )
             )
         }
         eventChannel.subscribeAlways<MessagePreSendEvent> {
             val t = this.target.toContact() ?: return@subscribeAlways
             cpp.event(
-                gson.toJson(
-                    CPPEvent.MessagePreSendEvent(t, this.bot.id, this.message.toMessageChain().serializeToJsonString())
-                )
+                CPPEvent.MessagePreSendEvent(t, this.bot.id, this.message.toMessageChain().serializeToJsonString())
             )
         }
     }

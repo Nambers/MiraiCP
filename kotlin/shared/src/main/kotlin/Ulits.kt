@@ -43,7 +43,8 @@ private val cc by lazy {
 //    crossinline block: T.() -> R,
 //): R = runInterruptible(context = cc, block = { block() })
 
-fun ArrayList<CPPLib>.event(content: String) {
+fun ArrayList<CPPLib>.event(obj: Any) {
+    val content = if (obj is String) obj else PublicShared.gson.toJson(obj)
     cc.submit {
         when {
             PublicShared.disablePlugins.isNotEmpty() -> {
@@ -53,9 +54,7 @@ fun ArrayList<CPPLib>.event(content: String) {
                     it.Event(content)
                 }
             }
-            else -> {
-                this@event.forEach { it.Event(content) }
-            }
+            else -> this@event.forEach { it.Event(content) }
         }
     }
 }
@@ -73,9 +72,7 @@ fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPPLib {
                 PublicShared.logger.error("已加载id为${lib.config.id}的插件, 放弃加载当前插件(位于:${this@loadAsCPPLib.absolutePath})")
                 return lib
             }
-            if (checkRe != 1) PublicShared.logger.warning(
-                "检测到列表已经有重复的${this.config.name}, 请检测配置文件中是否重复或提醒开发者改插件名称，但该插件还是会加载"
-            )
+            if (checkRe != 1) PublicShared.logger.warning("检测到列表已经有重复的${this.config.name}, 请检测配置文件中是否重复或提醒开发者改插件名称，但该插件还是会加载")
             PublicShared.logger4plugins[this.config.id] = MiraiLogger.Factory.create(this::class, this.config.name)
         }
     }
@@ -83,31 +80,28 @@ fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPPLib {
 
 fun Group.toContact(): Config.Contact = Config.Contact(2, this.id, 0, this.name, this.bot.id)
 
-fun Member.toContact(): Config.Contact =
-    Config.Contact(3, this.id, this.group.id, this.nameCardOrNick, this.bot.id)
+fun Member.toContact(): Config.Contact = Config.Contact(3, this.id, this.group.id, this.nameCardOrNick, this.bot.id)
 
 fun Friend.toContact(): Config.Contact = Config.Contact(1, this.id, 0, this.nameCardOrNick, this.bot.id)
 
-fun Contact.toContact(): Config.Contact? =
-    when (this) {
-        is Group -> this.toContact()
-        is Friend -> this.toContact()
-        is Member -> this.toContact()
-        else -> {
-            PublicShared.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:Contact.toContact(), info:${this.javaClass.name}")
-            null
-        }
+fun Contact.toContact(): Config.Contact? = when (this) {
+    is Group -> this.toContact()
+    is Friend -> this.toContact()
+    is Member -> this.toContact()
+    else -> {
+        PublicShared.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:Contact.toContact(), info:${this.javaClass.name}")
+        null
     }
+}
 
-fun ContactOrBot.toContact(): Config.Contact? =
-    when (this) {
-        is Contact -> this.toContact()
-        is Bot -> this.asFriend.toContact()
-        else -> {
-            PublicShared.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:ContactOrBot.toContact(), info:${this.javaClass.name}")
-            null
-        }
+fun ContactOrBot.toContact(): Config.Contact? = when (this) {
+    is Contact -> this.toContact()
+    is Bot -> this.asFriend.toContact()
+    else -> {
+        PublicShared.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:ContactOrBot.toContact(), info:${this.javaClass.name}")
+        null
     }
+}
 
 internal fun emptyContact(botid: Long): Config.Contact = Config.Contact(0, 0, 0, "", botid)
 
@@ -204,8 +198,9 @@ internal fun Config.ImgInfo.toImage(): Image = Image.newBuilder(this.imageid!!).
     this@apply.size = this@toImage.size
     this@apply.type = ImageType.values()[this@toImage.type ?: ImageType.UNKNOWN.ordinal]
 }.build()
-internal inline fun sendWithCatch(block: ()->MessageSource):String{
-    val s= try {
+
+internal inline fun sendWithCatch(block: () -> MessageSource): String {
+    val s = try {
         block()
     } catch (e: TimeoutCancellationException) {
         return "ET"
