@@ -50,9 +50,8 @@ JNIEXPORT jstring Verify(JNIEnv *env, jobject, jstring id) {
         Config::construct();
         Logger::logger.init();
         enrollPlugin();
-        if (CPPPlugin::plugin == nullptr) {
-            Logger::logger.error("无插件实例加载");
-        } else {
+        if (CPPPlugin::plugin == nullptr) Logger::logger.error("无插件实例加载");
+        else {
             CPPPlugin::pluginLogger = new PluginLogger(&Logger::logger);
             CPPPlugin::plugin->onEnable();
         }
@@ -106,7 +105,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
     }
     int type = j["type"].get<int>();
     // type == 17 is command
-    if (type != 17 && Event::processor.eventNodes()[type].empty()) return returnNull();
+    if (type != 17 && Event::processor.eventNodes()[type - static_cast<int>(eventTypes::BotEvent)].empty()) return returnNull();
     try {
         switch (type) {
             case 1: {

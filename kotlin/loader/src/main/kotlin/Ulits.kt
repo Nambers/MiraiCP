@@ -23,8 +23,10 @@ import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.events.BotOnlineEvent
+import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.utils.BotConfiguration
+import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.shared.CPPConfig
 import tech.eritquearcus.miraicp.shared.CPPEvent
 import tech.eritquearcus.miraicp.shared.PublicShared
@@ -32,12 +34,10 @@ import tech.eritquearcus.miraicp.shared.event
 
 internal fun String.decodeHex(): ByteArray {
     check(length % 2 == 0) { "Must have an even length" }
-
-    return chunked(2)
-        .map { it.toInt(16).toByte() }
-        .toByteArray()
+    return chunked(2).map { it.toInt(16).toByte() }.toByteArray()
 }
 
+@OptIn(MiraiExperimentalApi::class)
 internal fun CPPConfig.loaderConfig.Account.login() {
     val it = this
     this.logined = true
@@ -86,10 +86,9 @@ internal fun CPPConfig.loaderConfig.Account.login() {
         b.login()
     }
     b.eventChannel.subscribeAlways<MessageEvent>(priority = EventPriority.HIGH) {
-        if (this.subject.id == this.sender.id)// friend
+        if (this is FriendMessageEvent)// friend
             PublicShared.logger.info("${this.sender.nameCardOrNick}(${this.sender.id}) -> ${this.message.contentToString()}")
-        else
-            PublicShared.logger.info("[${this.bot.getGroup(this.subject.id)!!.name}(${this.subject.id})] ${this.sender.nameCardOrNick}(${this.sender.id}) -> ${this.message.contentToString()}")
+        else PublicShared.logger.info("[${this.bot.getGroup(this.subject.id)!!.name}(${this.subject.id})] ${this.sender.nameCardOrNick}(${this.sender.id}) -> ${this.message.contentToString()}")
     }
     PublicShared.onEnable(b.eventChannel)
 }

@@ -39,6 +39,7 @@ object KotlinMain {
     val coroutineScope = CoroutineScope(job)
     lateinit var loginAccount: List<CPPConfig.loaderConfig.Account>
     var logined = false
+
     @OptIn(MiraiInternalApi::class)
     fun main(j: String) {
         job.start()
@@ -48,8 +49,7 @@ object KotlinMain {
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
         PublicShared.init(logger)
         PublicShared.cachePath = File("cache")
-        if (PublicShared.cachePath.exists())
-            PublicShared.cachePath.deleteRecursively()
+        if (PublicShared.cachePath.exists()) PublicShared.cachePath.deleteRecursively()
         PublicShared.cachePath.mkdir()
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
@@ -57,10 +57,8 @@ object KotlinMain {
         PublicShared.commandReg = LoaderCommandHandlerImpl()
         c.apply {
             if (this.advanceConfig != null && this.advanceConfig!!.maxThread != null) {
-                if (this.advanceConfig!!.maxThread!! <= 0)
-                    PublicShared.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
-                else
-                    PublicShared.maxThread = this.advanceConfig!!.maxThread!!
+                if (this.advanceConfig!!.maxThread!! <= 0) PublicShared.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
+                else PublicShared.maxThread = this.advanceConfig!!.maxThread!!
             }
         }.cppPaths.forEach {
             val d = it.dependencies?.filter { p ->
@@ -83,6 +81,7 @@ object KotlinMain {
         }
         logger.info("⭐已成功加载MiraiCP⭐")
         Console.listen()
+        // if not logged-in, wait user login in console
         while (!logined) {
         }
     }
@@ -90,13 +89,13 @@ object KotlinMain {
 
 @MiraiExperimentalApi
 @MiraiInternalApi
-fun main(args: Array<String>){
+fun main(args: Array<String>) {
     // config.json path
     val path = "config.json"
     var f = File(path)
-    when(args.size) {
+    when (args.size) {
         1 -> {
-            if(args[0] == "-g"){
+            if (args[0] == "-g") {
                 File("config.json").writeText(
                     """
                         {
@@ -146,7 +145,7 @@ fun main(args: Array<String>){
                 }
             }
         }
-        else->{
+        else -> {
             println("参数多余，参数仅为配置文件位置(可选, 默认位置为/config.json)")
         }
     }
