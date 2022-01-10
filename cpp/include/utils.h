@@ -19,7 +19,7 @@
 #include "CPPPlugin.h"
 
 namespace MiraiCP {
-    const std::string MiraiCPVersion = "v2.9.0-M2";
+    const std::string MiraiCPVersion = "v2.9.1";
     inline void schedule(long time, const std::string &msg, JNIEnv *env = nullptr);
     void enrollPlugin();
 
