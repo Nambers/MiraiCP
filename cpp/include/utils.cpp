@@ -232,7 +232,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                 // command
                 std::optional<Contact> c = std::nullopt;
                 if (j.contains("contact")) c = Contact::deserialize(j["contact"]);
-                CommandManager::commandManager[j["bindId"]]->onCommand(c, Bot(j["botid"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false));
+                CommandManager::commandManager[j["bindId"]]->onCommand(c, Bot(j["botid"]), MessageChain::deserializationFromMessageSourceJson((j.contains("message") ? j["message"].get<std::string>() : ""), false));
                 break;
             }
             default:

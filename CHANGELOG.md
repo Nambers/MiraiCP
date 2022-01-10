@@ -1,4 +1,11 @@
 # Change Log
+## v2.9.1
+
++ mirai版本更新到v2.9.2
++ 内部优化 #106
++ 支持转发转发信息
++ 支持MessagePreSendEvent(但是还不支持中断或更改发送)
++ 支持注册命令(loader只支持控制台命令, plugin是对接mirai的命令系统的rawCommand)
 
 ## v2.9.0-M2
 

@@ -118,6 +118,7 @@ namespace MiraiCP {
         if (origin)
             j = tmp["originalMessage"];
         MessageChain mc;
+        if (j.empty()) return mc;
         if (j[0]["type"] == "MessageOrigin") {
             mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(j));
             return mc;
