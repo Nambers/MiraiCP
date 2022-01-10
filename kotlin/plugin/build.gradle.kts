@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2021. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -45,6 +45,9 @@ description = "Plugin version for MiraiCP"
 
 tasks {
     afterEvaluate {
+        named<me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication>(me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication.TASK_NAME) {
+            dependsOn(getByPath(":fillingConstants"))
+        }
         named<net.mamoe.mirai.console.gradle.BuildMiraiPluginTask>("buildPlugin") {
             dependsOn(getByPath(":fillingConstants"))
             archiveBaseName.set("MiraiCP-plugin")
@@ -62,13 +65,11 @@ tasks {
 }
 mavenCentralPublish {
     credentials = rootProject.file("plugin\\c.txt").let {
-        if (it.exists())
-            kotlinx.serialization.protobuf.ProtoBuf.decodeFromHexString(
-                me.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
-                rootProject.file("plugin\\c.txt").readText()
-            )
-        else
-            null
+        if (it.exists()) kotlinx.serialization.protobuf.ProtoBuf.decodeFromHexString(
+            me.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
+            rootProject.file("plugin\\c.txt").readText()
+        )
+        else null
     }
     this.useCentralS01()
     singleDevGithubProject("Nambers", "MiraiCP", "Eritque arcus")
