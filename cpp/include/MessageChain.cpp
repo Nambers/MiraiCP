@@ -94,6 +94,9 @@ namespace MiraiCP {
                     case 7:
                         mc.add(Face(std::stoi(tmp.substr(i + 1, tmp.length() - i - 1))));
                         break;
+                    case 8:
+                        mc.add(FlashImage(tmp.substr(i + 1, tmp.length() - i - 1)));
+                        break;
                     default:
                         Logger::logger.error(
                                 "MiraiCP碰到了意料之中的错误(原因:部分SimpleMessage在MiraiCode解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: MiraiCode:" +
@@ -163,6 +166,9 @@ namespace MiraiCP {
                     break;
                 case 7:
                     mc.add(Face(node["id"]));
+                    break;
+                case 8:
+                    mc.add(FlashImage(node["imageId"]));
                     break;
                 default:
                     Logger::logger.error(

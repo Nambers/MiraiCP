@@ -38,7 +38,8 @@ namespace MiraiCP {
             {4, "app"},
             {5, "service"},
             {6, "file"},
-            {7, "face"}};
+            {7, "face"},
+            {8, "FlashImage"},};
 
     QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
         if (m.type != -2) MiraiCPThrow(IllegalArgumentException("cannot convert type(" + std::to_string(m.type) + "to QuoteReply"));
@@ -103,7 +104,7 @@ namespace MiraiCP {
         return j;
     }
     Image::Image(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != 2) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
+        if (sg.type != 3) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
         this->id = sg.content;
         this->size = this->width = this->height = 0;
         this->imageType = 5;
@@ -115,6 +116,22 @@ namespace MiraiCP {
         tmp["botid"] = botid;
         std::string re = Config::koperation(Config::ImageUploaded, tmp, env);
         return re == "true";
+    }
+    nlohmann::json FlashImage::toJson() const {
+        nlohmann::json j;
+        j["key"] = "Flashimage";
+        j["imageid"] = this->id;
+        j["size"] = this->size;
+        j["width"] = this->width;
+        j["height"] = this->height;
+        j["type"] = this->imageType;
+        return j;
+    }
+    FlashImage::FlashImage(const SingleMessage& sg) : Image(sg) {
+        if (sg.type != 8) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是FlashImage类型"));
+        this->id = sg.content;
+        this->size = this->width = this->height = 0;
+        this->imageType = 5;
     }
     nlohmann::json LightApp::toJson() const {
         nlohmann::json j;
@@ -272,5 +289,14 @@ namespace MiraiCP {
                 j["width"],
                 j["height"],
                 j["type"]);
+    }
+    FlashImage FlashImage::deserialize(const std::string& str) {
+        json j = json::parse(str);
+        return FlashImage(
+            j["imageid"],
+            j["size"],
+            j["width"],
+            j["height"],
+            j["type"]);
     }
 } // namespace MiraiCP
