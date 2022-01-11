@@ -1,5 +1,5 @@
 name: Bug Report
-description: File a bug report
+description: 错误报告
 title: "[bug]: "
 labels: ["t:question"]
 body:
@@ -39,5 +39,6 @@ body:
       options:
         - Loader
         - Plugin
+        - Both
     validations:
       required: true
