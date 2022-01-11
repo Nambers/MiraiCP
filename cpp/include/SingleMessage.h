@@ -230,6 +230,7 @@ namespace MiraiCP {
         bool operator==(const FlashImage& i) const {
             return this->id == i.id;
         }
+        Image TransferToImg() { return *this; }
     };
 
     /*!
