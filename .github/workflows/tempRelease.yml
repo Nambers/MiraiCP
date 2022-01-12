@@ -61,10 +61,15 @@ jobs:
       run:  cd ./main/kotlin/ && ./gradlew MiraiCP-loader:shadowJar --warning-mode all --info --stacktrace
     - name: Build plugin
       run:  cd ./main/kotlin/ && ./gradlew MiraiCP-plugin:buildPlugin --warning-mode all --info --stacktrace
-    - name: pack
-      run:  zip -r ./main/cpp/MiraiCP_CPP.zip ./main/cpp
+    - name: configure
+      env: 
+        cc: gcc
+        cxx: g++
+      run: mkdir ./main/cpp/build && cd ./main/cpp/build && cmake ..
+    - name: build with gcc
+      run: cd ./main/cpp/build && make generateSingleHeaders
     - name: moveCPP
-      run: rm -rf ./tr/${{ github.event.inputs.v }} && mkdir ./tr/${{ github.event.inputs.v }} && mv ./main/cpp/MiraiCP_CPP.zip ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/include/miraiCP.hpp" ./tr/${{ github.event.inputs.v }}
+      run: rm -rf ./tr/${{ github.event.inputs.v }} && mkdir ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/single_include/MiraiCP/MiraiCP.hpp" ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/single_include/MiraiCP/MiraiCP.cpp" ./tr/${{ github.event.inputs.v }}
     - name: moveKt
       run: ls -1 ./main/kotlin/loader/build/libs/MiraiCP-loader-*.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} && ls -1 ./main/kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} 
     #name: print
