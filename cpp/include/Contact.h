@@ -319,6 +319,7 @@ namespace MiraiCP {
         * -可能抛出MemberException找不到群或群成员
         */
         Image uploadImg(const std::string &path, JNIEnv * = nullptr) const;
+        FlashImage uploadFlashImg(const std::string &path, JNIEnv * = nullptr) const;
 
         /// 刷新当前对象信息
         virtual void refreshInfo(JNIEnv *){};

@@ -209,6 +209,34 @@ namespace MiraiCP {
         }
     };
 
+    /// 闪照, 和Image属性类似
+    class FlashImage : public Image {
+    public:
+        static int type() { return 8; }
+        std::string toMiraiCode() const override {
+            return "[mirai:flash:" + this->id + "]";
+        }
+
+        explicit FlashImage(const std::string &imageId, size_t size = 0, int width = 0, int height = 0, int type = 0) : Image(imageId, size, width, height, type) {
+            this->SingleMessage::type = 8;
+        }
+
+        explicit FlashImage(const SingleMessage &sg) : Image(sg) {}
+
+        explicit FlashImage(const Image &img) : Image(img) {}
+
+        nlohmann::json toJson() const override;
+
+        static FlashImage deserialize(const std::string &);
+
+        bool operator==(const FlashImage &i) const {
+            return this->id == i.id;
+        }
+
+        /// 转换到普通图片
+        Image toImage() { return Image(id, size, width, height, imageType); }
+    };
+
     /*!
     * @brief 小程序卡片
     * @see LightAppStyle1, LightAppStyle2, LightAppStyle3
