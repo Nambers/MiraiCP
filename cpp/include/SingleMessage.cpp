@@ -104,7 +104,7 @@ namespace MiraiCP {
         return j;
     }
     Image::Image(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != 3) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
+        if (sg.type != 3 && sg.type != 8) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
         this->id = sg.content;
         this->size = this->width = this->height = 0;
         this->imageType = 5;
@@ -126,12 +126,6 @@ namespace MiraiCP {
         j["height"] = this->height;
         j["type"] = this->imageType;
         return j;
-    }
-    FlashImage::FlashImage(const SingleMessage& sg) : Image(sg) {
-        if (sg.type != 8) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是FlashImage类型"));
-        this->id = sg.content;
-        this->size = this->width = this->height = 0;
-        this->imageType = 5;
     }
     nlohmann::json LightApp::toJson() const {
         nlohmann::json j;
@@ -293,10 +287,10 @@ namespace MiraiCP {
     FlashImage FlashImage::deserialize(const std::string& str) {
         json j = json::parse(str);
         return FlashImage(
-            j["imageid"],
-            j["size"],
-            j["width"],
-            j["height"],
-            j["type"]);
+                j["imageid"],
+                j["size"],
+                j["width"],
+                j["height"],
+                j["type"]);
     }
 } // namespace MiraiCP
