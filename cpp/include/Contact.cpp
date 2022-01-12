@@ -55,6 +55,12 @@ namespace MiraiCP {
         return Image::deserialize(re);
     }
 
+    FlashImage Contact::uploadFlashImg(const std::string& path, JNIEnv* env) const {
+        std::string re = LowLevelAPI::uploadImg0(path, this->toString(), env);
+        if (re == "E2")
+            MiraiCPThrow(UploadException("上传图片大小超过30MB,路径:" + path));
+        return FlashImage::deserialize(re);
+    }
 
     Contact Contact::deserialize(const std::string &source) {
         json j;
