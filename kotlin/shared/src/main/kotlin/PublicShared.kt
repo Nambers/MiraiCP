@@ -705,7 +705,7 @@ object PublicShared {
                     try {
                         f.nudge()
                     } catch (e: UnsupportedOperationException) {
-                        logger.error("发送nudge必须使用ANDROID_PHONE协议，目前协议为:" + bot.configuration.protocol.name)
+                        logger.error("发送nudge必须使用ANDROID_PHONE/ipad协议，目前协议为:" + bot.configuration.protocol.name)
                         return "E1"
                     }
                     "Y"
@@ -716,7 +716,7 @@ object PublicShared {
                     try {
                         m.nudge()
                     } catch (e: UnsupportedOperationException) {
-                        logger.error("发送nudge必须使用ANDROID_PHONE协议，目前协议为:" + bot.configuration.protocol.name)
+                        logger.error("发送nudge必须使用ANDROID_PHONE/ipad协议，目前协议为:" + bot.configuration.protocol.name)
                         return "E1"
                     }
                     "Y"
