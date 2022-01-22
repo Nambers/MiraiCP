@@ -51,6 +51,6 @@ namespace MiraiCP {
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::SendNudge, j);
         if (re == "E1")
-            MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));
+            MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone/ipad"));
     }
 } // namespace MiraiCP
