@@ -53,28 +53,4 @@ namespace MiraiCP {
             MiraiCPThrow(IllegalArgumentException(std::string("消息源序列化出错，格式不符合(MessageSource::deserializeFromString), ") + e.what()));
         }
     }
-
-    MessageSource MessageSource::quoteAndSendMiraiCode(const std::string &content, QQID groupid, JNIEnv *env) const {
-        json obj;
-        json sign;
-        obj["messageSource"] = this->serializeToString();
-        obj["msg"] = content;
-        sign["MiraiCode"] = true;
-        sign["groupid"] = groupid;
-        obj["sign"] = sign.dump();
-        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
-        return MessageSource::deserializeFromString(re);
-    }
-
-    MessageSource MessageSource::quoteAndSendMsg(const std::string &content, QQID groupid, JNIEnv *env) const {
-        json obj;
-        json sign;
-        obj["messageSource"] = this->serializeToString();
-        obj["msg"] = content;
-        sign["MiraiCode"] = false;
-        sign["groupid"] = groupid;
-        obj["sign"] = sign.dump();
-        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
-        return MessageSource::deserializeFromString(re);
-    }
 } // namespace MiraiCP

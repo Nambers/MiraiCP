@@ -25,8 +25,6 @@ namespace MiraiCP {
     using json = nlohmann::json;
     // 静态成员
     Logger Logger::logger = Logger();
-    /// @deprecated use Logger::logger, 用单例模式, since v2.8.1
-    [[deprecated("Use Logger::logger instead")]] Logger *const logger = &Logger::logger;
 
     // 结束静态成员
 

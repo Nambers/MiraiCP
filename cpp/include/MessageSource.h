@@ -42,39 +42,20 @@ namespace MiraiCP {
 
         MessageSource() = default;
 
-        /**
-         * @brief 回复(引用并发送miraicode)
-         * @param msg - MiraiCodeable类型指针 - 内容
-         * @see MessageSource::quoteAndSendMiraiCode
-         * @deprecated 用Contact.quoteAndSendMessage, since v2.8.1
-        */
+        /// @deprecated 用Contact.quoteAndSendMessage, since v2.8.1
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
-                              JNIEnv *env = nullptr) const {
-            return quoteAndSendMiraiCode(msg->toMiraiCode(), groupid, env);
-        }
+                              JNIEnv *env = nullptr) const = delete;
 
-        /**
-         * @brief 回复(引用并发送)
-         * @param c 引用后发送的内容, 为纯文本
-         * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
-         * @return MessageSource
-         * @deprecated use Contact.quoteAndSendMessage, since v2.8.1
-         */
+        /// @deprecated use Contact.quoteAndSendMessage, since v2.8.1
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMsg(const std::string &c, QQID groupid = 0,
-                        JNIEnv * = nullptr) const;
+                        JNIEnv * = nullptr) const = delete;
 
-        /**
-         * @brief 回复(引用并发送)
-         * @param c 引用后发送的内容, 为MiraiCode形式
-         * @param groupid 如果为发送给群成员需把该群成员的groupid传入以帮助获取到该成员
-         * @return MessageSource
-         * @deprecated use Contact.quoteAndSendMessage, since v2.8.1
-         */
+        /// @deprecated use Contact.quoteAndSendMessage, since v2.8.1
         [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
         quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
-                              JNIEnv * = nullptr) const;
+                              JNIEnv * = nullptr) const = delete;
 
         /*!
          * @brief 构建消息源

@@ -22,9 +22,6 @@ namespace MiraiCP {
     using json = nlohmann::json;
     Event Event::processor = Event();
 
-    /// @deprecated use Event::prcessor, 使用单例模式, since v2.8.1
-    [[deprecated("Use Event::processor instead")]] Event *const procession = &Event::processor;
-
     void GroupInviteEvent::operation0(const std::string &source, QQID botid, bool accept, JNIEnv *env) {
         nlohmann::json j;
         j["text"] = source;
