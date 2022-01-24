@@ -39,10 +39,11 @@ internal fun String.decodeHex(): ByteArray {
 
 @OptIn(MiraiExperimentalApi::class)
 internal fun CPPConfig.loaderConfig.Account.login() {
-    val it = this
     this.logined = true
-    val p = when (it.protocol?.uppercase()) {
+    val p = when (this.protocol?.uppercase()) {
         "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
+        "IPAD" -> BotConfiguration.MiraiProtocol.IPAD
+        "MACOS" -> BotConfiguration.MiraiProtocol.MACOS
         "WATCH" -> BotConfiguration.MiraiProtocol.ANDROID_WATCH
         "PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
         null -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
@@ -51,7 +52,7 @@ internal fun CPPConfig.loaderConfig.Account.login() {
             BotConfiguration.MiraiProtocol.ANDROID_PHONE
         }
     }
-    val h = when (it.heatBeat?.uppercase()) {
+    val h = when (this.heatBeat?.uppercase()) {
         "STAT_HB" -> BotConfiguration.HeartbeatStrategy.STAT_HB
         "REGISTER" -> BotConfiguration.HeartbeatStrategy.REGISTER
         "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
@@ -61,17 +62,17 @@ internal fun CPPConfig.loaderConfig.Account.login() {
             BotConfiguration.HeartbeatStrategy.STAT_HB
         }
     }
-    PublicShared.logger.info("登录bot:${it.id}")
+    PublicShared.logger.info("登录bot:${this.id}")
     PublicShared.logger.info("协议:${p.name}")
     PublicShared.logger.info("心跳策略:${h.name}")
-    val b = if (it.md5 == null || !it.md5!!) {
-        BotFactory.newBot(it.id, it.passwords) {
+    val b = if (this.md5 == null || !this.md5!!) {
+        BotFactory.newBot(this.id, this.passwords) {
             fileBasedDeviceInfo()
             this.protocol = p
             this.heartbeatStrategy = h
         }
     } else {
-        BotFactory.newBot(it.id, it.passwords.decodeHex()) {
+        BotFactory.newBot(this.id, this.passwords.decodeHex()) {
             fileBasedDeviceInfo()
             this.protocol = p
             this.heartbeatStrategy = h

@@ -21,16 +21,6 @@
 #include "ThreadManager.h"
 #include "Tools.h"
 
-namespace MiraiCP {
-    // env nullable, handle in kOperation
-    inline void schedule(long time, const std::string &msg, JNIEnv *env) {
-        nlohmann::json j;
-        j["time"] = time;
-        j["msg"] = msg;
-        Config::koperation(Config::TimeOut, j, env);
-    }
-} // namespace MiraiCP
-
 // 开始对接JNI接口代码
 
 /*
