@@ -17,6 +17,7 @@
 #ifndef MIRAICP_PRO_UTILS_H
 #define MIRAICP_PRO_UTILS_H
 #include "CPPPlugin.h"
+#include "Config.h"
 
 namespace MiraiCP {
     const std::string MiraiCPVersion = "v2.9.1";
@@ -38,7 +39,12 @@ namespace MiraiCP {
         });
      * @code
      */
-    inline void schedule(long time, const std::string &msg, JNIEnv *env = nullptr);
+    inline void schedule(long time, const std::string &msg, JNIEnv *env = nullptr) {
+        nlohmann::json j;
+        j["time"] = time;
+        j["msg"] = msg;
+        Config::koperation(Config::TimeOut, j, env);
+    }
     void enrollPlugin();
 
     inline void enrollPlugin0(CPPPlugin *p) {

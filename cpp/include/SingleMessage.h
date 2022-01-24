@@ -169,7 +169,7 @@ namespace MiraiCP {
          * @param md5 在kotlin端会用.toByteArray()转换
          * @param size 图片大小, 不能为0
          * @param botid 所属Botid
-         * @return 是否上传
+         * @return 是否已上传
          */
         bool isUploaded(QQID botid, JNIEnv *env = nullptr);
 
@@ -183,7 +183,7 @@ namespace MiraiCP {
         * @detail 图片miraiCode格式例子, `[mirai:image:{图片id}.jpg]`
         * 可以用这个正则表达式找出id `\\[mirai:image:(.*?)\\]`
         */
-        explicit Image(const std::string &imageId, size_t size = 0, int width = 0, int height = 0, int type = 0) : SingleMessage(Image::type(), imageId) {
+        explicit Image(const std::string &imageId, size_t size = 0, int width = 0, int height = 0, int type = 5) : SingleMessage(Image::type(), imageId) {
             this->id = imageId;
             this->size = size;
             this->width = width;

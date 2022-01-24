@@ -23,9 +23,6 @@
 
 namespace MiraiCP {
     using json = nlohmann::json;
-    [[deprecated("Use sendMessage")]] MessageSource Contact::sendMsg(std::vector<std::string> msg, int retryTime, JNIEnv *env) {
-        return sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);
-    }
     MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode, JNIEnv *env) const {
         if (msg.empty()) {
             MiraiCPThrow(IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg"));
