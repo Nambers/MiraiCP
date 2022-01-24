@@ -288,12 +288,10 @@ namespace MiraiCP {
         /// - std::string / const char* 相当于传入PlainText(str)
         /// - SingleMessage的各种派生类
         /// - MessageChain
-        /// @deprecated use Contact.quoteAndSend, since v2.8.1
+        /// @deprecated use Contact.quoteAndSend or `this->quoteAndSend1(s, groupid, env)`, since v2.8.1
         template<class T>
         [[deprecated("use Contact.quoteAndSend")]] MessageSource
-        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = nullptr) {
-            return this->quoteAndSend1(s, groupid, env);
-        }
+        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = nullptr) = delete;
 
         /// 从miraicode string构建MessageChain
         static MessageChain deserializationFromMiraiCode(const std::string &m);

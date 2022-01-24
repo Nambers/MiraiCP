@@ -182,20 +182,16 @@ namespace MiraiCP {
             j["botid"] = botid();
             return j;
         }
-        /// @deprecated use toJson, since v2.8.1
-        [[deprecated("use toJson")]] nlohmann::json serialization() const {
-            return this->toJson();
-        }
+        /// @deprecated since v2.8.1, use `this->toJson()`
+        [[deprecated("use toJson")]] nlohmann::json serialization() const = delete;
 
         /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
         /// @see Contact::fromString()
         std::string toString() const {
             return this->toJson().dump();
         }
-        /// @deprecated use toString, since v2.8.1
-        [[deprecated("use toString")]] std::string serializationToString() const {
-            return this->toString();
-        }
+        /// @deprecated since v2.8.1, use `this->toString()`
+        [[deprecated("use toString")]] std::string serializationToString() const = delete;
 
         /// 反序列化成bot，可以通过serializationToString序列化，利于保存
         /// @see Contact::serializationToString()
@@ -204,22 +200,12 @@ namespace MiraiCP {
         static Contact deserialize(const std::string &source);
         static Contact deserialize(nlohmann::json source);
 
-        /// @deprecated use deserialize, since v2.8.1
-        [[deprecated("use deserialize")]] static Contact deserializationFromString(const std::string &source) {
-            return Contact::deserialize(source);
-        }
+        /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
+        [[deprecated("use deserialize")]] static Contact deserializationFromString(const std::string &source) = delete;
 
-
-        /// @brief 发送MiraiCode信息
-        /// @param msg 发送的MiraiCode
-        /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
-        /// @return MessageSource
-        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        /// @deprecated 用 sendMessage, since v2.8.1
+        /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, true, env)`
         [[deprecated("Use sendMessage")]] MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
-                                                                      JNIEnv *env = nullptr) const {
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
-        }
+                                                                      JNIEnv *env = nullptr) const = delete;
 
         /*!
          * @brief 回复并发送
@@ -279,36 +265,14 @@ namespace MiraiCP {
             return this->send1(msg, retryTime, env);
         }
 
-        /// @brief 发送纯文本信息
-        /// @param msg 发送的信息
-        /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
-        /// @return MessageSource
-        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        /// @deprecated 用 sendMessage, since v2.8.1
-        [[deprecated("Use sendMessage")]] MessageSource
-        sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = nullptr) {
-            return sendMsg0(msg, retryTime, false, env);
-        }
+        /// @deprecated since v2.8.1, use `sendMessage(msg)` or `sendMsg0(msg, retryTime, false, env)`
+        [[deprecated("Use sendMessage")]] MessageSource sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
 
-        /// @brief 以纯文本发送MiraiCode信息
-        /// @param msg 发送的信息
-        /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
-        /// @return MessageSource
-        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        /// @deprecated 用 sendMessage, since v2.8.1
-        [[deprecated("Use sendMessage")]] MessageSource
-        sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = nullptr) {
-            return sendMsg0(msg.toMiraiCode(), retryTime, false, env);
-        }
+        /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, false, env);`
+        [[deprecated("Use sendMessage")]] MessageSource sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
 
-        /// @brief 发送纯文本信息
-        /// @param msg 发送的信息
-        /// @param retryTime 当服务器无应答(通常由于发送消息频率太快导致)时的重试次数，每次重试相隔1s，-1为无限制，如果在重试次数用完后还是没能成功发送就会抛出TimeOutException
-        /// @return MessageSource
-        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        /// @deprecated 用 sendMessage, since v2.8.1
-        [[deprecated("Use sendMessage")]] MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3,
-                                                                JNIEnv *env = nullptr);
+        /// @deprecated since v2.8.1, use `sendMessage(Tools::VectorToString(std::move(msg)))` or `sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);`
+        [[deprecated("Use sendMessage")]] MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
 
         /*!
         * @brief上传本地图片，务必要用绝对路径
