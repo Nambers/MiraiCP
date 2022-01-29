@@ -49,7 +49,7 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 {
 	"id": <qq id>,
 	"passwords": "<32位md5 密码 大小写都可以>",
-  "md5": true
+  	"md5": true
   }
 ```
 除了基本的 `id` 和 `passwords` 之外，`autoLogin` 配置项也需特别注意
@@ -59,7 +59,7 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 {
 	"id":,
 	"passwords": "",
-  "autoLogin": true
+  	"autoLogin": true
   }
 ```
 模板代码见[config.kt#L151](https://github.com/Nambers/MiraiCP/blob/master/kotlin/shared/src/main/kotlin/Config.kt#L151)
@@ -67,7 +67,7 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 ##### 进阶账号配置
 所有的可选账号配置:
 - `heatBeat` 账号心跳策略, 可选: STAT_HB/REGISTER/NONE (默认为state_hb), 详细查看[mirai文档](https://github.com/mamoe/mirai/blob/dev/docs/Bots.md#%E5%88%87%E6%8D%A2%E5%BF%83%E8%B7%B3%E7%AD%96%E7%95%A5)
-- `protocol` 登录协议选择, 可选: pad/phone/watch (默认为phone), 详细查看[mirai文档](https://github.com/mamoe/mirai/blob/dev/docs/Bots.md#%E5%88%87%E6%8D%A2%E7%99%BB%E5%BD%95%E5%8D%8F%E8%AE%AE)
+- `protocol` 登录协议选择, 可选: pad/phone/watch/ipad (默认为phone), 详细查看[mirai文档](https://github.com/mamoe/mirai/blob/dev/docs/Bots.md#%E5%88%87%E6%8D%A2%E7%99%BB%E5%BD%95%E5%8D%8F%E8%AE%AE)
 
 ### 1.2 cppPaths
 `cppPaths` 该元素类型为列表, 里面包含你全部要加载的插件(会自动在启动时加载全部), 如:
