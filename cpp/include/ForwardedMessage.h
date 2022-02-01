@@ -80,7 +80,7 @@ namespace MiraiCP {
         */
         ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes);
         ForwardedMessage(Contact *c, std::vector<ForwardedNode> nodes);
-        ForwardedNode operator[](int index) { nodes[index]; }
+        ForwardedNode operator[](int index) { return nodes[index]; }
         ForwardedMessage plus(const ForwardedNode &a) {
             ForwardedMessage tmp(*this);
             tmp.nodes.push_back(a);
