@@ -25,27 +25,27 @@
 
 namespace MiraiCP {
     /// Event 工厂
-    enum class eventTypes {
-        MiraiCPEvent, // 默认从0开始编号
-        BotEvent,
-        GroupMessageEvent,
-        PrivateMessageEvent,
-        GroupInviteEvent,
-        NewFriendRequestEvent,
-        MemberJoinEvent,
-        MemberLeaveEvent,
-        RecallEvent,
-        BotJoinGroupEvent,
-        GroupTempMessageEvent,
-        TimeOutEvent,
-        BotOnlineEvent,
-        NudgeEvent,
-        BotLeaveEvent,
-        MemberJoinRequestEvent,
-        MessagePreSend,
-        MiraiCPExceptionEvent,
-        count, // 事件在此位置前定义，此时count为事件种类数
-        error  // 出现问题时使用此enum
+    enum struct eventTypes {
+        BotEvent,               // 0
+        GroupMessageEvent,      // 1
+        PrivateMessageEvent,    // 2
+        GroupInviteEvent,       // 3
+        NewFriendRequestEvent,  // 4
+        MemberJoinEvent,        // 5
+        MemberLeaveEvent,       // 6
+        RecallEvent,            // 7
+        BotJoinGroupEvent,      // 8
+        GroupTempMessageEvent,  // 9
+        TimeOutEvent,           // 10
+        BotOnlineEvent,         // 11
+        NudgeEvent,             // 12
+        BotLeaveEvent,          // 13
+        MemberJoinRequestEvent, // 14
+        MessagePreSend,         // 15
+        MiraiCPExceptionEvent,  // 16
+        count,                  // 事件在此位置前定义，此时count为事件种类数
+        error,                  // 出现问题时使用此enum
+        MiraiCPEvent            // 基类，最好不要用到
     };
 
     /// Event 基类
