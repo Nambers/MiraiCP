@@ -648,11 +648,9 @@ namespace MiraiCP {
         NodeHandle registerEvent(std::function<void(T)> a) {
             static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<void(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
-                Logger::logger.info(std::to_string(int((p)->getEventType())));
                 a(*dynamic_cast<T *>(p));
             };
             eventNode t(tmp);
-            Logger::logger.info("registered: " + std::to_string(id<T>()));
             vec[id<T>()].emplace_back(t);
             return NodeHandle(&t.enable);
         }
