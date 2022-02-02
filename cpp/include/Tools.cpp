@@ -108,4 +108,8 @@ namespace MiraiCP::Tools {
         return ((str1.size() == str2.size()) &&
                 std::equal(str1.begin(), str1.end(), str2.begin(), &icompareChar));
     }
+    std::vector<std::string> split(const std::string &text, const std::string &delim) {
+        std::regex ws_re(delim + "+");
+        return {std::sregex_token_iterator(text.begin(), text.end(), ws_re, -1), std::sregex_token_iterator()};
+    }
 } // namespace MiraiCP::Tools

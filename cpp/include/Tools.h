@@ -83,6 +83,8 @@ namespace MiraiCP {
         bool icompareChar(char &c1, char &c2);
         /// case insensitive string compare from https://thispointer.com/c-case-insensitive-string-comparison-using-stl-c11-boost-library/
         bool iequal(std::string str1, std::string str2);
+        /// from https://www.zhihu.com/question/36642771, delim is regex(ignore last `+`)
+        std::vector<std::string> split(const std::string &text, const std::string &delim);
     }; // namespace Tools
 } // namespace MiraiCP
 
