@@ -95,7 +95,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
     }
     int type = j["type"].get<int>();
     // type == 17 is command
-    if (type != 17 && Event::processor.eventNodes()[type].empty()) return returnNull();
+    if (type != 17 && Event::processor.noEegistered(type)) return returnNull();
     try {
         switch (type) {
             case 1: {
