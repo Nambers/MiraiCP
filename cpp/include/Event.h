@@ -23,6 +23,9 @@
 #include "Logger.h"
 #include "Member.h"
 
+#define EVENT_TYPE_FUNC_GEN \
+    eventTypes getEventType() const override { return this->get_event_type(); }
+
 namespace MiraiCP {
     /// Event 工厂
     enum struct eventTypes {
@@ -48,16 +51,28 @@ namespace MiraiCP {
         error                   // 出现问题时使用此enum
     };
 
+
     /// Event 接口
     class MiraiCPEvent {
+    public:
+        static eventTypes get_event_type() { return eventTypes::error; }
+
     public:
         MiraiCPEvent() = default;
 
         virtual ~MiraiCPEvent() = default;
+
+        virtual eventTypes getEventType() const { return this->get_event_type(); }
     };
 
     /// 所以事件处理timeoutevent都是机器人事件，指都有机器人实例
     class BotEvent : public MiraiCPEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::BotEvent;
+        }
+
     public:
         /// 该事件接受的机器人
         Bot bot;
@@ -66,10 +81,6 @@ namespace MiraiCP {
         IdLogger botlogger;
 
         explicit BotEvent(QQID botid) : bot(botid), botlogger(botid, &Logger::logger) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::BotEvent;
-        }
     };
 
     /*!
@@ -82,6 +93,12 @@ namespace MiraiCP {
      */
 
     class GroupMessageEvent : public BotEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::GroupMessageEvent;
+        }
+
     public:
         ///来源群
         Group group;
@@ -109,10 +126,6 @@ namespace MiraiCP {
          * @return 消息链
          */
         MessageChain senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = nullptr);
-
-        static eventTypes getEventType() {
-            return eventTypes::GroupMessageEvent;
-        }
     };
 
     /*!
@@ -124,6 +137,12 @@ namespace MiraiCP {
      * @endcode
      */
     class PrivateMessageEvent : public BotEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::PrivateMessageEvent;
+        }
+
     public:
         /// 发起人
         Friend sender;
@@ -148,14 +167,16 @@ namespace MiraiCP {
          * @return 消息链
          */
         MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv *env = nullptr);
-
-        static eventTypes getEventType() {
-            return eventTypes::PrivateMessageEvent;
-        }
     };
 
     /// 群聊邀请事件类声明
     class GroupInviteEvent : public BotEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::GroupInviteEvent;
+        }
+
     public:
         /// 事件序列化文本
         std::string source;
@@ -192,14 +213,16 @@ namespace MiraiCP {
                          QQID inviterid, const std::string &groupName, QQID groupid)
             : BotEvent(botid), source(source), inviterNick(inviterNick), inviterid(inviterid), groupName(groupName),
               groupid(groupid) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::GroupInviteEvent;
-        }
     };
 
     /// 好友申请事件声明
     class NewFriendRequestEvent : public BotEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::NewFriendRequestEvent;
+        }
+
     public:
         /// @brief 序列化的事件信息
         std::string source;
@@ -242,14 +265,16 @@ namespace MiraiCP {
                               const std::string &message)
             : BotEvent(botid), source(source), fromid(fromid), fromgroupid(fromgroupid), nick(nick),
               message(message) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::NewFriendRequestEvent;
-        }
     };
 
     /// 新群成员加入
     class MemberJoinEvent : public BotEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::MemberJoinEvent;
+        }
+
     public:
         /*!
         * @brief 事件类型
@@ -277,14 +302,16 @@ namespace MiraiCP {
                         QQID inviterid) : BotEvent(botid), type(type), member(member),
                                           group(group),
                                           inviterid(inviterid) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::MemberJoinEvent;
-        }
     };
 
     /// 群成员离开
     class MemberLeaveEvent : public BotEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::MemberLeaveEvent;
+        }
+
     public:
         /*!
         * @brief 事件类型
@@ -312,14 +339,16 @@ namespace MiraiCP {
                          QQID operaterid) : BotEvent(botid), type(type), memberid(memberid),
                                             group(std::move(group)),
                                             operaterid(operaterid) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::MemberLeaveEvent;
-        }
     };
 
     /// 撤回信息
     class RecallEvent : public BotEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::RecallEvent;
+        }
+
     public:
         /// 为1时是好友私聊中撤回，为2时为群聊内撤回
         int type = 0;
@@ -353,14 +382,16 @@ namespace MiraiCP {
                                     operatorid(operatorid), ids(std::move(ids)),
                                     internalids(std::move(internalids)),
                                     groupid(groupid) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::RecallEvent;
-        }
     };
 
     /// 机器人进入某群
     class BotJoinGroupEvent : public BotEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::BotJoinGroupEvent;
+        }
+
     public:
         /// 1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
         int type;
@@ -379,14 +410,16 @@ namespace MiraiCP {
         BotJoinGroupEvent(QQID botid, int type, Group group,
                           QQID inviter)
             : BotEvent(botid), type(type), group(std::move(group)), inviterid(inviter) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::BotJoinGroupEvent;
-        }
     };
 
     /// 群临时会话
     class GroupTempMessageEvent : public BotEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::GroupTempMessageEvent;
+        }
+
     public:
         /// 来源群
         Group group;
@@ -408,38 +441,44 @@ namespace MiraiCP {
                                                       group(std::move(group)),
                                                       sender(std::move(sender)),
                                                       message(std::move(message)) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::GroupTempMessageEvent;
-        }
     };
 
     /// 定时任务结束
     class TimeOutEvent : public MiraiCPEvent {
     public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::TimeOutEvent;
+        }
+
+    public:
         /// 事件所附信息
         std::string msg;
 
         explicit TimeOutEvent(std::string msg) : msg(std::move(msg)) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::TimeOutEvent;
-        }
     };
 
 
     /// 机器人上线事件
     class BotOnlineEvent : public BotEvent {
     public:
-        explicit BotOnlineEvent(QQID botid) : BotEvent(botid) {}
-
-        static eventTypes getEventType() {
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
             return eventTypes::BotOnlineEvent;
         }
+
+    public:
+        explicit BotOnlineEvent(QQID botid) : BotEvent(botid) {}
     };
 
     /// 戳一戳事件
     class NudgeEvent : public BotEvent {
+    public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::NudgeEvent;
+        }
+
     public:
         /// 谁发送的
         Contact from;
@@ -447,10 +486,6 @@ namespace MiraiCP {
 
         NudgeEvent(Contact c, Contact target, QQID botid) : BotEvent(botid), from(std::move(c)),
                                                             target(std::move(target)) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::NudgeEvent;
-        }
     };
 
     /// 机器人退群事件
@@ -458,15 +493,17 @@ namespace MiraiCP {
     /// 目前mirai的botLeave事件还不稳定暂时不支持类型
     class BotLeaveEvent : public BotEvent {
     public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::BotLeaveEvent;
+        }
+
+    public:
         /// 退出的群
         /// @attension 收到这个事件时已经退出该群, 可能取不到相关信息
         QQID groupid;
 
         BotLeaveEvent(QQID g, QQID botid) : BotEvent(botid), groupid(g) {}
-
-        static eventTypes getEventType() {
-            return eventTypes::BotLeaveEvent;
-        }
     };
 
     /// 申请加群事件, bot需为管理员或者群主
@@ -474,6 +511,7 @@ namespace MiraiCP {
     private:
         std::string source;
 
+    private:
         void operate(const std::string &s,
                      QQID botid,
                      bool sign,
@@ -481,11 +519,17 @@ namespace MiraiCP {
                      JNIEnv *env = nullptr) const;
 
     public:
+        static eventTypes get_event_type() {
+            return eventTypes::MemberJoinRequestEvent;
+        }
+
+    public:
         /// 申请的群, 如果不存在就表明广播这个事件的时候机器人已经退出该群
         std::optional<Group> group;
         /// 邀请人, 如果不存在表明这个邀请人退出了群或没有邀请人为主动进群
         std::optional<Member> inviter;
 
+    public:
         MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, const std::string &source)
             : BotEvent(botid), group(std::move(g)), inviter(std::move(i)), source(source){};
 
@@ -498,10 +542,6 @@ namespace MiraiCP {
         void reject(const std::string &msg) {
             operate(this->source, this->bot.id, false, msg);
         }
-
-        static eventTypes getEventType() {
-            return eventTypes::MemberJoinRequestEvent;
-        }
     };
 
     /*! 每条消息发送前的事件, 总是在消息实际上被发送和广播MessagePostSendEvent前广播
@@ -510,13 +550,17 @@ namespace MiraiCP {
      * */
     class MessagePreSendEvent : public BotEvent {
     public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::MessagePreSend;
+        }
+
+    public:
         /// 发送目标
         Contact target;
         /// 消息
         MessageChain message;
-        static eventTypes getEventType() {
-            return eventTypes::MessagePreSend;
-        }
+
         explicit MessagePreSendEvent(Contact c, MessageChain mc, QQID botid) : BotEvent(botid), target(std::move(c)), message(std::move(mc)) {}
     };
 
@@ -527,6 +571,12 @@ namespace MiraiCP {
         MiraiCPException *exceptionPtr;
 
     public:
+        EVENT_TYPE_FUNC_GEN
+        static eventTypes get_event_type() {
+            return eventTypes::MiraiCPExceptionEvent;
+        }
+
+    public:
         explicit MiraiCPExceptionEvent(MiraiCPException *err) {
             exceptionPtr = err;
         }
@@ -534,22 +584,10 @@ namespace MiraiCP {
         MiraiCPException &getException() {
             return *exceptionPtr;
         }
-
-        static eventTypes getEventType() {
-            return eventTypes::MiraiCPExceptionEvent;
-        }
     };
 
     class Event {
     private:
-        template<typename T>
-        eventTypes id() const {
-            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播继承MiraiCPEvent的事件");
-            return T::getEventType();
-        }
-
-        Event() = default;
-
         class eventNode {
         public:
             bool enable = true;
@@ -561,12 +599,20 @@ namespace MiraiCP {
                 func(a);
             }
         };
-        std::vector<std::vector<eventNode>> vec = std::vector<std::vector<eventNode>>(int(eventTypes::count));
+
+        using eventNodeTable = std::vector<std::vector<eventNode>>;
+        eventNodeTable vec;
+
+    private:
+        template<typename T>
+        int id() const {
+            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播继承MiraiCPEvent的事件");
+            return int(T::get_event_type());
+        }
+
+        Event() : vec(int(eventTypes::count)){};
 
     public:
-        const std::vector<std::vector<eventNode>> *const eventNodes() const {
-            return &vec;
-        }
         /// 事件监听操控, 可用于stop停止监听和resume继续监听
         class NodeHandle {
         private:
@@ -578,15 +624,21 @@ namespace MiraiCP {
             void resume() { *enable = true; }
         };
 
+    public:
         // singleton mode
         static Event processor;
+
+    public:
+        bool noEegistered(int index) {
+            return vec[index].empty();
+        }
 
         /// 广播一个事件, 必须为MiraiCPEvent的派生类
         template<typename T>
         void broadcast(T &&val) {
             static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播MiraiCPEvent的派生类");
             MiraiCPEvent *p = &val;
-            for (auto &a: vec[int(id<T>())]) {
+            for (auto &a: vec[id<T>()]) {
                 a.run(p);
             }
         }
@@ -596,13 +648,17 @@ namespace MiraiCP {
         NodeHandle registerEvent(std::function<void(T)> a) {
             static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<void(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
+                Logger::logger.info(std::to_string(int((p)->getEventType())));
                 a(*dynamic_cast<T *>(p));
             };
             eventNode t(tmp);
-            vec[int(id<T>())].emplace_back(t);
+            Logger::logger.info("registered: " + std::to_string(id<T>()));
+            vec[id<T>()].emplace_back(t);
             return NodeHandle(&t.enable);
         }
     };
 } // namespace MiraiCP
+
+#undef EVENT_TYPE_FUNC_GEN
 
 #endif //MIRAICP_PRO_EVENT_H
