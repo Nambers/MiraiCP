@@ -43,19 +43,15 @@ namespace MiraiCP {
         MemberJoinRequestEvent, // 14
         MessagePreSend,         // 15
         MiraiCPExceptionEvent,  // 16
+        Command,                // 17
         count,                  // 事件在此位置前定义，此时count为事件种类数
-        error,                  // 出现问题时使用此enum
-        MiraiCPEvent            // 基类，最好不要用到
+        error                   // 出现问题时使用此enum
     };
 
-    /// Event 基类
+    /// Event 接口
     class MiraiCPEvent {
     public:
         MiraiCPEvent() = default;
-
-        static eventTypes getEventType() {
-            return eventTypes::MiraiCPEvent;
-        }
 
         virtual ~MiraiCPEvent() = default;
     };
