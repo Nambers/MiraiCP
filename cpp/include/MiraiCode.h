@@ -16,7 +16,9 @@
 
 #ifndef MIRAICP_PRO_MIRAICODE_H
 #define MIRAICP_PRO_MIRAICODE_H
+
 #include <string>
+
 namespace MiraiCP {
     /// MiraiCode父类, 指可以被转换成miraicode的类型
     class MiraiCodeable {

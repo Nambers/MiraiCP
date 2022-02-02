@@ -17,7 +17,7 @@
 #ifndef MIRAICP_PRO_MESSAGECHAIN_H
 #define MIRAICP_PRO_MESSAGECHAIN_H
 
-#include "MiraiCode.h"
+#include "Exception.h"
 #include "SingleMessage.h"
 
 namespace MiraiCP {
