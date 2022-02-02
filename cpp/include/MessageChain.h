@@ -28,7 +28,6 @@ namespace MiraiCP {
         class Message {
         private:
             std::shared_ptr<SingleMessage> content;
-            inline void tempThrow(const std::string &x) const;
 
         public:
             /// 代表的子类
@@ -56,7 +55,8 @@ namespace MiraiCP {
                 if (T::type() != this->type())
                     MiraiCPThrow(IllegalArgumentException("cannot convert from " + SingleMessage::messageType[this->type()] + " to " + SingleMessage::messageType[T::type()]));
                 T *re = static_cast<T *>(this->content.get());
-                if (re == nullptr) tempThrow("x");
+                if (re == nullptr)
+                    MiraiCPThrow(IllegalArgumentException("cannot convert from " + SingleMessage::messageType[this->type()] + " to " + SingleMessage::messageType[T::type()]));
                 return *re;
             }
 

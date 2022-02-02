@@ -60,7 +60,7 @@ namespace MiraiCP {
         return -1;
     }
     std::string SingleMessage::toMiraiCode() const {
-        Logger::logger.info("base");
+        // Logger::logger.info("base");
         if (type > 0)
             if (type == 1)
                 return "[mirai:at:" + content + "] ";
