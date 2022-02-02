@@ -169,14 +169,14 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                         j["internalids"],
                         j["groupid"]));
                 break;
-            case 9:
+            case 8:
                 Event::processor.broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
                         j["group"]["botid"],
                         j["etype"],
                         Group(Group::deserialize(j["group"])),
                         j["inviterid"]));
                 break;
-            case 10:
+            case 9:
                 Event::processor.broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
                         j["group"]["botid"],
                         Group(Group::deserialize(j["group"])),
@@ -184,21 +184,21 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                         MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>()))
                                 .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
+            case 10:
+                Event::processor.broadcast(TimeOutEvent(j["msg"]));
+                break;
             case 11:
-                Event::processor.broadcast<BotOnlineEvent>(BotOnlineEvent(j["botid"]));
+                Event::processor.broadcast(BotOnlineEvent(j["botid"]));
                 break;
             case 12:
-                Event::processor.broadcast<TimeOutEvent>(TimeOutEvent(j["msg"]));
+                Event::processor.broadcast(NudgeEvent(Contact::deserialize(j["from"]),
+                                                      Contact::deserialize(j["target"]),
+                                                      j["botid"]));
                 break;
             case 13:
-                Event::processor.broadcast<NudgeEvent>(NudgeEvent(Contact::deserialize(j["from"]),
-                                                                  Contact::deserialize(j["target"]),
-                                                                  j["botid"]));
-                break;
-            case 14:
                 Event::processor.broadcast(BotLeaveEvent(j["groupid"], j["botid"]));
                 break;
-            case 15: {
+            case 14: {
                 std::optional<Group> a;
                 std::optional<Member> b;
                 Contact temp = Contact::deserialize(j["group"]);
@@ -214,10 +214,10 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requestData"]));
                 break;
             }
-            case 16: {
+            case 15: {
                 Event::processor.broadcast(MessagePreSendEvent(Contact::deserialize(j["target"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false), j["botid"]));
                 break;
-            }
+            } // case 16, MiraiCPException
             case 17: {
                 // command
                 std::optional<Contact> c = std::nullopt;

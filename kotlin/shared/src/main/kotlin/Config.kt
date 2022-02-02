@@ -279,7 +279,7 @@ object CPPEvent {
         val etype: Int,
         val group: Config.Contact,
         val inviterid: Long,
-        val type: Int = 9
+        val type: Int = 8
     )
 
     data class GroupTempMessage(
@@ -287,6 +287,11 @@ object CPPEvent {
         val member: Config.Contact,
         val message: String,
         val source: String,
+        val type: Int = 9
+    )
+
+    data class TimeOutEvent(
+        val msg: String,
         val type: Int = 10
     )
 
@@ -295,35 +300,31 @@ object CPPEvent {
         val type: Int = 11
     )
 
-    data class TimeOutEvent(
-        val msg: String,
-        val type: Int = 12
-    )
-
     data class NugdeEvent(
         val from: Config.Contact,
         val target: Config.Contact,
         val botid: Long,
-        val type: Int = 13
+        val type: Int = 12
     )
     data class BotLeaveEvent(
         val groupid: Long,
         val botid: Long,
         //val leavetype: Int TODO(见Mirai源码, 目前BotLeave还不稳定)
-        val type : Int = 14
+        val type : Int = 13
     )
     data class MemberJoinRequestEvent(
         val group: Config.Contact,
         val inviter: Config.Contact,
         val requestData: String,
-        val type: Int = 15
+        val type: Int = 14
     )
     data class MessagePreSendEvent(
         val target: Config.Contact,
         val botid: Long,
         val message: String,
-        val type: Int = 16
+        val type: Int = 15
     )
+    // type = 16, ExceptionEvent
     // type = 17, Command
 }
 
