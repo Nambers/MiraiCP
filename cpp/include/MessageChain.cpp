@@ -23,9 +23,6 @@
 
 namespace MiraiCP {
     using json = nlohmann::json;
-    void MessageChain::Message::tempThrow(const std::string &x) const {
-        MiraiCPThrow(IllegalArgumentException(x));
-    }
     std::string MessageChain::toMiraiCode() const {
         return Tools::VectorToString(this->toMiraiCodeVector(), "");
     }
