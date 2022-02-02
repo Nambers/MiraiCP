@@ -39,7 +39,8 @@ namespace MiraiCP {
             {5, "service"},
             {6, "file"},
             {7, "face"},
-            {8, "FlashImage"},};
+            {8, "FlashImage"},
+            {9, "MusicShare"}};
 
     QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
         if (m.type != -2) MiraiCPThrow(IllegalArgumentException("cannot convert type(" + std::to_string(m.type) + "to QuoteReply"));

@@ -97,6 +97,12 @@ namespace MiraiCP {
                     case 8:
                         mc.add(FlashImage(tmp.substr(i + 1, tmp.length() - i - 1)));
                         break;
+                    case 9: {
+                        //[mirai:musicshare:name,title,summary,jUrl,pUrl,mUrl,brief]
+                        auto temp = Tools::split(tmp.substr(i + 1, tmp.length() - i - 1), ",");
+                        mc.add(MusicShare(temp[0], temp[1], temp[2], temp[3], temp[4], temp[5], temp[6]));
+                        break;
+                    }
                     default:
                         Logger::logger.error(
                                 "MiraiCP碰到了意料之中的错误(原因:部分SimpleMessage在MiraiCode解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: MiraiCode:" +
@@ -123,6 +129,10 @@ namespace MiraiCP {
         MessageChain mc;
         if (j.empty()) return mc;
         if (j[0]["type"] == "MessageOrigin") {
+            if (j[0]["kind"] == "MUSIC_SHARE") {
+                mc.add(MusicShare(j[1]["kind"], j[1]["title"], j[1]["summary"], j[1]["jumpUrl"], j[1]["pictureUrl"], j[1]["musicUrl"], j[1]["brief"]));
+                return mc;
+            }
             mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(j));
             return mc;
         }

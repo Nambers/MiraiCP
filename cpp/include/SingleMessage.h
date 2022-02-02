@@ -508,11 +508,34 @@ namespace MiraiCP {
             return this->id == f.id;
         }
     };
+    /// 一些可以被mirai识别的音乐卡片, 如果不能被mirai识别, 那应该被表现成lightApp类型(可能收费/vip歌曲用lightApp, 免费用MusicShare)
+    class MusicShare : public SingleMessage {
+    public:
+        static int type() { return 9; }
+        /// 应用名称, 如NeteaseCloudMusic
+        std::string appName;
+        /// 歌名
+        std::string title;
+        /// 卡片第二行的文字内容
+        std::string summary;
+        /// 点击跳转到的链接
+        std::string jumpUrl;
+        /// 图片链接
+        std::string picUrl;
+        /// 音乐文件链接
+        std::string musicUrl;
+        /// 简介, 点进聊天节目前显示的小文字, 一般是`分享`
+        std::string brief;
+        std::string toMiraiCode() const override {
+            return "[mirai:musicshare:" + appName + "," + title + "," + summary + "," + jumpUrl + "," + picUrl + "," + musicUrl + "," + brief + "]";
+        }
+        MusicShare(const std::string &appName, const std::string &title, const std::string &summary, const std::string &jumpUrl, const std::string &picUrl, const std::string &musicUrl, const std::string &brief) : SingleMessage(MusicShare::type(), ""), appName(appName), title(title), summary(summary), jumpUrl(jumpUrl), picUrl(picUrl), musicUrl(musicUrl), brief(brief) {}
+    };
     class MarketFace : public SingleMessage {
     public:
         static int type() { return -5; }
         /// 目前无法直接发送MarketFace, 可以转发
-        [[deprecated("暂不支持直接发送")]] std::string toMiraiCode() {
+        [[deprecated("暂不支持直接发送")]] std::string toMiraiCode() const override {
             return "";
         }
         std::array<uint8_t, 16> faceId;
