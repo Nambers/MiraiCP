@@ -10,11 +10,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 声明C++项目
 project(MiraiCP_pro LANGUAGES CXX)
 
-execute_process(
+if(WIN32)
+    execute_process(
         COMMAND python buildScript/addinclude.py
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
+    )
+endif (WIN32)
+if (UNIX)
+    execute_process(
+        COMMAND python3 buildScript/addinclude.py
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+endif (UNIX)
 # 构建动态链接库, 第一行是target name不能改, 第二行是表明为动态链接库，也不用改，demo/demo.cpp是处理的cpp，可以改名字，然后要添加你依赖的文件进去。
 file(GLOB MIRAI_CPP_PATH ./include/*.cpp)
 add_library(
@@ -30,6 +37,8 @@ set_target_properties(MiraiCP_multi PROPERTIES
         PREFIX lib
         OUTPUT_NAME MiraiCP)
 target_include_directories(MiraiCP_multi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+if(WIN32)
 add_custom_target(
         generateSingleHeaders
         COMMAND python buildScript/addinclude.py
@@ -38,6 +47,18 @@ add_custom_target(
         COMMAND python buildScript/combineSource.py
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
+endif (WIN32)
+if (UNIX)
+add_custom_target(
+        generateSingleHeaders
+        COMMAND python3 buildScript/addinclude.py
+        COMMAND python3 buildScript/third-party/config.py
+        COMMAND python3 buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
+        COMMAND python3 buildScript/combineSource.py
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+endif (UNIX)
+
 if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp" OR NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.cpp")
     FILE(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.hpp" "")
     FILE(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP/MiraiCP.cpp" "")

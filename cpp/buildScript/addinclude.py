@@ -22,6 +22,7 @@ Copyright (c) 2021 Antares
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import io
 import os
 
 ss = """// Copyright (c) 2021-2021. Eritque arcus and contributors.
@@ -48,11 +49,11 @@ fnames.sort()
 
 for filename in fnames:
     if filename.endswith('.h'):
-        ss += f"#include \"{filename}\"\n"
+        ss += "#include \"{}\"\n".format(filename)
 
 ss += "\n#endif //MIRAICP_HPP_H"
 
-with open('include/MiraiCP.hpp', 'w', encoding='utf-8') as f:
+with io.open('include/MiraiCP.hpp', 'w', encoding='utf-8') as f:
     f.write(ss)
 
 print("header file generated successfully")
