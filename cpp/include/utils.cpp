@@ -94,11 +94,11 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
         return returnNull();
     }
     int type = j["type"].get<int>();
-    // type == 17 is command
-    if (type != 17 && Event::processor.noRegistered(type)) return returnNull();
+
+    if (eventTypes(type) != eventTypes::Command && Event::processor.noRegistered(type)) return returnNull();
     try {
-        switch (type) {
-            case 1: {
+        switch (eventTypes(type)) {
+            case eventTypes::GroupMessageEvent: {
                 //GroupMessage
                 Event::processor.broadcast<GroupMessageEvent>(
                         GroupMessageEvent(j["group"]["botid"],
@@ -108,7 +108,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                                                   .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
                 break;
             }
-            case 2: {
+            case eventTypes::PrivateMessageEvent: {
                 //私聊消息
                 Event::processor.broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
@@ -117,7 +117,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                                                     .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
                 break;
             }
-            case 3:
+            case eventTypes::GroupInviteEvent:
                 //群聊邀请
                 Event::processor.broadcast<GroupInviteEvent>(
                         GroupInviteEvent(
@@ -128,7 +128,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                                 j["source"]["groupname"],
                                 j["source"]["groupid"]));
                 break;
-            case 4:
+            case eventTypes::NewFriendRequestEvent:
                 //好友
                 Event::processor.broadcast<NewFriendRequestEvent>(
                         NewFriendRequestEvent(
@@ -139,7 +139,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                                 j["source"]["fromnick"],
                                 j["source"]["message"]));
                 break;
-            case 5:
+            case eventTypes::MemberJoinEvent:
                 //新成员加入
                 Event::processor.broadcast<MemberJoinEvent>(
                         MemberJoinEvent(
@@ -149,7 +149,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                                 Group(Group::deserialize(j["group"])),
                                 j["inviterid"]));
                 break;
-            case 6:
+            case eventTypes::MemberLeaveEvent:
                 //群成员退出
                 Event::processor.broadcast<MemberLeaveEvent>(MemberLeaveEvent(
                         j["group"]["botid"],
@@ -158,7 +158,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                         Group(Group::deserialize(j["group"])),
                         j["operatorid"]));
                 break;
-            case 7:
+            case eventTypes::RecallEvent:
                 Event::processor.broadcast<RecallEvent>(RecallEvent(
                         j["botid"],
                         j["etype"],
@@ -169,14 +169,14 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                         j["internalids"],
                         j["groupid"]));
                 break;
-            case 8:
+            case eventTypes::BotJoinGroupEvent:
                 Event::processor.broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
                         j["group"]["botid"],
                         j["etype"],
                         Group(Group::deserialize(j["group"])),
                         j["inviterid"]));
                 break;
-            case 9:
+            case eventTypes::GroupTempMessageEvent:
                 Event::processor.broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
                         j["group"]["botid"],
                         Group(Group::deserialize(j["group"])),
@@ -184,21 +184,21 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                         MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>()))
                                 .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
-            case 10:
+            case eventTypes::TimeOutEvent:
                 Event::processor.broadcast(TimeOutEvent(j["msg"]));
                 break;
-            case 11:
+            case eventTypes::BotOnlineEvent:
                 Event::processor.broadcast(BotOnlineEvent(j["botid"]));
                 break;
-            case 12:
+            case eventTypes::NudgeEvent:
                 Event::processor.broadcast(NudgeEvent(Contact::deserialize(j["from"]),
                                                       Contact::deserialize(j["target"]),
                                                       j["botid"]));
                 break;
-            case 13:
+            case eventTypes::BotLeaveEvent:
                 Event::processor.broadcast(BotLeaveEvent(j["groupid"], j["botid"]));
                 break;
-            case 14: {
+            case eventTypes::MemberJoinRequestEvent: {
                 std::optional<Group> a;
                 std::optional<Member> b;
                 Contact temp = Contact::deserialize(j["group"]);
@@ -214,11 +214,11 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                 Event::processor.broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requestData"]));
                 break;
             }
-            case 15: {
+            case eventTypes::MessagePreSendEvent: {
                 Event::processor.broadcast(MessagePreSendEvent(Contact::deserialize(j["target"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false), j["botid"]));
                 break;
-            } // case 16, MiraiCPException
-            case 17: {
+            }
+            case eventTypes::Command: {
                 // command
                 std::optional<Contact> c = std::nullopt;
                 if (j.contains("contact")) c = Contact::deserialize(j["contact"]);

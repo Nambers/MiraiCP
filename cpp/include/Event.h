@@ -44,7 +44,7 @@ namespace MiraiCP {
         NudgeEvent,             // 12
         BotLeaveEvent,          // 13
         MemberJoinRequestEvent, // 14
-        MessagePreSend,         // 15
+        MessagePreSendEvent,    // 15
         MiraiCPExceptionEvent,  // 16
         Command,                // 17
         count,                  // 事件在此位置前定义，此时count为事件种类数
@@ -552,7 +552,7 @@ namespace MiraiCP {
     public:
         EVENT_TYPE_FUNC_GEN
         static eventTypes get_event_type() {
-            return eventTypes::MessagePreSend;
+            return eventTypes::MessagePreSendEvent;
         }
 
     public:
