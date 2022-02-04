@@ -20,7 +20,7 @@
 #include "Config.h"
 
 namespace MiraiCP {
-    const std::string MiraiCPVersion = "v2.9.1";
+    const std::string MiraiCPVersion = "v2.10.0";
     /*!
      * @brief 定时任务, 在一定时间后广播**一次**TimeOutEvent
      * @param time 在多少毫秒后执行

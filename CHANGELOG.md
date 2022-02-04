@@ -1,4 +1,11 @@
 # Change Log
+## v2.10.0
+
++ 支持 `MusicShare`
++ 支持 `FlashImage`
++ 修复 `Event` 类中的问题, 删除自 `v2.8.1` deprecated 的方法
++ 更新 mirai 版本到 2.10.0
+
 ## v2.9.1
 
 + mirai版本更新到v2.9.2
