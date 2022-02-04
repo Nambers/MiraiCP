@@ -629,7 +629,7 @@ namespace MiraiCP {
         static Event processor;
 
     public:
-        bool noEegistered(int index) {
+        bool noRegistered(int index) {
             return vec[index].empty();
         }
 
