@@ -52,7 +52,7 @@ namespace MiraiCP {
          * @return 返回替换后的字符串.
          * @note 来源:https://stackoverflow.com/a/24315631/14646226
          */
-        std::string replace(std::string str, const std::string &from, const std::string &to);
+        std::string replace(std::string str, std::string_view from, std::string_view to);
         /// @brief long long 类型的vector格式化输出
         /// @param a vector
         /// @return string
@@ -78,11 +78,11 @@ namespace MiraiCP {
         /// @brief 转义miraicode格式
         std::string escapeToMiraiCode(const std::string &s);
         /// starts_with, from <https://stackoverflow.com/questions/1878001/how-do-i-check-if-a-c-stdstring-starts-with-a-certain-string-and-convert-a>
-        bool starts_with(const std::string &f, const std::string &s);
+        bool starts_with(std::string_view f, std::string_view s);
         /// compare char with case-insensitive
-        bool icompareChar(char &c1, char &c2);
+        bool icompareChar(const char &c1, const char &c2);
         /// case insensitive string compare from https://thispointer.com/c-case-insensitive-string-comparison-using-stl-c11-boost-library/
-        bool iequal(std::string str1, std::string str2);
+        bool iequal(std::string_view str1, std::string_view str2);
         /// from https://www.zhihu.com/question/36642771, delim is regex(ignore last `+`)
         std::vector<std::string> split(const std::string &text, const std::string &delim);
     }; // namespace Tools

@@ -37,7 +37,7 @@ internal fun String.decodeHex(): ByteArray {
     return chunked(2).map { it.toInt(16).toByte() }.toByteArray()
 }
 
-@OptIn(MiraiExperimentalApi::class)
+@MiraiExperimentalApi
 internal fun CPPConfig.loaderConfig.Account.login() {
     this.logined = true
     val p = when (this.protocol?.uppercase()) {
@@ -48,7 +48,7 @@ internal fun CPPConfig.loaderConfig.Account.login() {
         "PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
         null -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
         else -> {
-            PublicShared.logger.warning("Warning: 登录协议无效, 应为PAD/WATCH/PHONE其中一个,使用默认的PHONE进行登录")
+            PublicShared.logger.warning("Warning: 登录协议无效, 应为PAD/WATCH/PHONE/IPAD/MACOS其中一个,使用默认的PHONE进行登录")
             BotConfiguration.MiraiProtocol.ANDROID_PHONE
         }
     }
@@ -58,7 +58,7 @@ internal fun CPPConfig.loaderConfig.Account.login() {
         "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
         null -> BotConfiguration.HeartbeatStrategy.STAT_HB
         else -> {
-            PublicShared.logger.warning("Warning: 心跳策略无效, 应为\"STAT_HB\"\\\"REGISTER\"\\\"None\"其中一个，使用默认的STAT_HB登录")
+            PublicShared.logger.warning("Warning: 心跳策略无效, 应为STAT_HB/REGISTER/None其中一个，使用默认的STAT_HB登录")
             BotConfiguration.HeartbeatStrategy.STAT_HB
         }
     }

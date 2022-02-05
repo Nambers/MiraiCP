@@ -40,7 +40,6 @@ object KotlinMain {
     lateinit var loginAccount: List<CPPConfig.loaderConfig.Account>
     var logined = false
 
-    @OptIn(MiraiInternalApi::class)
     fun main(j: String) {
         job.start()
         val c = Gson().fromJson(j, CPPConfig.loaderConfig::class.java)
@@ -87,8 +86,6 @@ object KotlinMain {
     }
 }
 
-@MiraiExperimentalApi
-@MiraiInternalApi
 fun main(args: Array<String>) {
     // config.json path
     val path = "config.json"
