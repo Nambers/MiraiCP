@@ -52,7 +52,7 @@ namespace MiraiCP::Tools {
         }
         return env->NewString((jchar *) c, (jsize) utf16line.size());
     }
-    std::string replace(std::string str, const std::string &from, const std::string &to) {
+    std::string replace(std::string str, std::string_view from, std::string_view to) {
         size_t start_pos = 0;
         while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
             str.replace(start_pos, from.length(), to);
@@ -100,11 +100,11 @@ namespace MiraiCP::Tools {
                                "]", "\\]"),
                        "[", "\\[");
     }
-    bool starts_with(const std::string &f, const std::string &s) { return f.rfind(s, 0) == 0; }
-    bool icompareChar(char &c1, char &c2) {
+    bool starts_with(std::string_view f, std::string_view s) { return f.rfind(s, 0) == 0; }
+    bool icompareChar(const char &c1, const char &c2) {
         return c1 == c2 || std::toupper(c1) == std::toupper(c2);
     }
-    bool iequal(std::string str1, std::string str2) {
+    bool iequal(std::string_view str1, std::string_view str2) {
         return ((str1.size() == str2.size()) &&
                 std::equal(str1.begin(), str1.end(), str2.begin(), &icompareChar));
     }

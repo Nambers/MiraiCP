@@ -18,9 +18,6 @@
 
 package tech.eritquearcus.miraicp.loader
 
-import net.mamoe.mirai.utils.MiraiInternalApi
-
-@OptIn(MiraiInternalApi::class, net.mamoe.mirai.utils.MiraiExperimentalApi::class)
 fun main() {
     main(emptyArray())
 }
