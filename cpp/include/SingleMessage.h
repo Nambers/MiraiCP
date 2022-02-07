@@ -545,13 +545,14 @@ namespace MiraiCP {
             return this->faceId == mf.faceId;
         }
     };
-    /// @brief 目前不支持的消息类型
+    /// @brief 目前不支持的消息类型, 不支持发送
     class UnSupportMessage : public SingleMessage {
     public:
         static int type() { return -1; }
         nlohmann::json toJson() const override;
-        std::string toMiraiCode() const override {
-            return content;
+        /// 不支持发送
+        [[deprecated("不支持直接发送UnSupportMessage")]] std::string toMiraiCode() const override {
+            return "";
         }
 
         explicit UnSupportMessage(const SingleMessage &s) : SingleMessage(s){};
