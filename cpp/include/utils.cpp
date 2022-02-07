@@ -230,7 +230,8 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
         }
     } catch (json::type_error &e) {
         Logger::logger.error("json格式化异常,位置C-Handle");
-        Logger::logger.error(e.what(), false);
+        Logger::logger.error(e.what());
+        Logger::logger.error("info:", tmp);
         return Tools::str2jstring("ERROR");
     } catch (const MiraiCPException &e) {
         e.raise();
@@ -238,6 +239,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
     } catch (const std::exception &e) {
         // 这里如果不catch全部exception就会带崩jvm
         Logger::logger.error(e.what());
+        Logger::logger.error("info:", tmp);
         return Tools::str2jstring("ERROR");
     }
     return returnNull();

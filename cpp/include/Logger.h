@@ -72,20 +72,25 @@ namespace MiraiCP {
         jmethodID log = nullptr;
 
     private:
-        std::string p(const string &before) {
-            return before;
+        std::string p() {
+            return "";
         }
 
         template<class T, class... T1>
-        std::string p(std::string before, T val, T1... val1) {
+        std::string p(T val, T1... val1) {
             std::stringstream sstream;
             sstream << val;
-            return p(before + sstream.str(), val1...);
+            return sstream.str() + p(val1...);
         }
 
         template<class... T>
-        std::string p(std::string before, MiraiCodeable &val, T... val1) {
-            return p(before + val.toMiraiCode(), val1...);
+        std::string p(std::string a, T... val1) {
+            return a + p(val1...);
+        }
+
+        template<class... T>
+        std::string p(MiraiCodeable &val, T... val1) {
+            return val.toMiraiCode() + p(val1...);
         }
 
     protected:
@@ -107,19 +112,19 @@ namespace MiraiCP {
         ///发送普通(info级日志)
         template<class... T>
         void info(T... val) {
-            this->log1(p("", val...), 0);
+            this->log1(p(val...), 0);
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void warning(T... val) {
-            this->log1(p("", val...), 1);
+            this->log1(p(val...), 1);
         }
 
-        ///发送警告(warning级日志)
+        ///发送错误(error级日志)
         template<class... T>
         void error(T... val) {
-            this->log1(p("", val...), 2);
+            this->log1(p(val...), 2);
         }
 
         /// @brief 设置loggerhandler的action
