@@ -56,7 +56,7 @@ namespace MiraiCP {
      *   @endcode
      */
     class Group : public Contact {
-    public:
+    public: // member classes and structs
         /// 群公告参数
         class AnnouncementParams {
         public:
@@ -110,7 +110,7 @@ namespace MiraiCP {
             void deleteThis();
 
             /// 反序列化
-            static OnlineAnnouncement deserializeFromJson(nlohmann::json);
+            static OnlineAnnouncement deserializeFromJson(const nlohmann::json&);
 
             OnlineAnnouncement(const std::string &content, AnnouncementParams &params,
                                QQID groupid, QQID senderid, QQID botid,
@@ -152,9 +152,31 @@ namespace MiraiCP {
             /// 允许匿名聊天
             bool isAnonymousChatEnabled{};
         };
+
+        /// 群文件的简短描述
+        struct file_short_info {
+            // 路径带文件名
+            std::string path;
+            // 唯一id
+            std::string id;
+        };
+
+
+    public: // attrs
         /// 群设置
         GroupSetting setting;
 
+
+    public: // constructors
+        ///  @brief 构建以群号构建群对象
+        /// @param groupid 群号
+        /// @param botid 机器人id
+        Group(QQID groupid, QQID botid, JNIEnv * = nullptr);
+
+        explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); }
+
+
+    public: // methods
         /**
          * @brief 更新群设置, 即覆盖服务器上的群设置
          * @details 从服务器拉去群设置用refreshInfo
@@ -176,12 +198,6 @@ namespace MiraiCP {
         /// 取群主
         Member getOwner(JNIEnv * = nullptr);
 
-        ///  @brief 构建以群号构建群对象
-        /// @param groupid 群号
-        /// @param botid 机器人id
-        Group(QQID groupid, QQID botid, JNIEnv * = nullptr);
-
-        explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); };
 
         /// 取群成员
         Member getMember(QQID memberid, JNIEnv *env = nullptr);
@@ -230,14 +246,6 @@ namespace MiraiCP {
             return getFileById(file.id, env);
         }
 
-        /// 群文件的简短描述
-        struct file_short_info {
-            // 路径带文件名
-            std::string path;
-            // 唯一id
-            std::string id;
-        };
-
         /*!
          * 获取path路径下全部文件信息
          * @param path - 远程路径
@@ -249,6 +257,10 @@ namespace MiraiCP {
         /// 取文件列表以字符串形式返回
         /// @param path 文件夹路径
         std::string getFileListString(const std::string &path, JNIEnv * = nullptr);
+
+
+    private: // should not use
+        void sendNudge() override { MiraiCPThrow(APIException("Group对象中非法调用函数sendNudge")); }
     };
 } // namespace MiraiCP
 

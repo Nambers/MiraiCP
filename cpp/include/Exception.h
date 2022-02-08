@@ -61,7 +61,7 @@ namespace MiraiCP {
             lineNum = line;
             filename = std::move(name);
             // destroy this object immediately, to call the destructor of `ExceptionBroadcasting`
-            ExceptionBroadcasting(this);
+            ExceptionBroadcasting(this); // NOLINT(bugprone-throw-keyword-missing)
             return *this;
         }
 
