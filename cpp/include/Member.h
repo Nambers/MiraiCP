@@ -117,7 +117,7 @@ namespace MiraiCP {
          * @warning 发送戳一戳的前提是登录该bot的协议是android_phone/ipad, 否则抛出IllegalStateException
          * @throw MiraiCP::BotException, MiraiCP::IllegalStateException
          */
-        void sendNudge();
+        void sendNudge() override;
     };
 } // namespace MiraiCP
 

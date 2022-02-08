@@ -78,7 +78,7 @@ namespace MiraiCP {
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
     }
 
-    Group::OnlineAnnouncement Group::OnlineAnnouncement::deserializeFromJson(json j) {
+    Group::OnlineAnnouncement Group::OnlineAnnouncement::deserializeFromJson(const json &j) {
         Group::AnnouncementParams ap(
                 j["params"]["sendToNewMember"],
                 j["params"]["requireConfirmation"],
@@ -96,6 +96,7 @@ namespace MiraiCP {
                 j["confirmationNum"],
                 j["imageid"]);
     }
+
     std::vector<unsigned long long> Group::getMemberList(JNIEnv *env) {
         nlohmann::json j;
         j["contactSource"] = this->toString();
@@ -105,23 +106,26 @@ namespace MiraiCP {
         }
         return Tools::StringToVector(re);
     }
+
     Group::Group(QQID groupid, QQID botid, JNIEnv *env) : Contact() {
         this->_type = 2;
         this->_id = groupid;
         this->_botid = botid;
         refreshInfo(env);
     }
+
     void Group::quit(JNIEnv *env) {
         nlohmann::json j;
         j["source"] = this->toString();
         j["quit"] = true;
         Config::koperation(Config::RefreshInfo, j, env);
     }
+
     void Group::refreshInfo(JNIEnv *env) {
         std::string re = LowLevelAPI::getInfoSource(this->toString(), env);
         LowLevelAPI::info tmp = LowLevelAPI::info0(re);
-        this->_nickOrNameCard = tmp.nickornamecard;
-        this->_avatarUrl = tmp.avatarUrl;
+        this->_nickOrNameCard = std::move(tmp.nickornamecard);
+        this->_avatarUrl = std::move(tmp.avatarUrl);
         nlohmann::json j = nlohmann::json::parse(re)["setting"];
         this->setting.name = j["name"];
         this->setting.isMuteAll = j["isMuteAll"];
@@ -215,6 +219,7 @@ namespace MiraiCP {
         }
         return re;
     }
+
     Member Group::getMember(QQID memberid, JNIEnv *env) {
         return Member(memberid, this->id(), this->groupid(), env);
     }

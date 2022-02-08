@@ -49,51 +49,7 @@ namespace MiraiCP {
      * @endcode
     */
     class Contact {
-    private:
-        /// 发送纯文本信息
-        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsg0(const std::string &msg, int retryTime, bool miraicode = false,
-                               JNIEnv * = nullptr) const;
-
-        template<class T>
-        MessageSource send1(T msg, int retryTime, JNIEnv *env) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
-        }
-
-        MessageSource send1(MessageChain msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
-        }
-
-        MessageSource send1(MiraiCode msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
-        }
-
-        MessageSource send1(std::string msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(msg, retryTime, false, env);
-        }
-
-        MessageSource send1(const char *msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(std::string(msg), retryTime, false, env);
-        }
-
-        MessageSource quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = nullptr);
-
-        template<class T>
-        MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = nullptr) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return this->quoteAndSend0(s.toMiraiCode(), ms, env);
-        }
-
-        MessageSource quoteAndSend1(std::string s, MessageSource ms, JNIEnv *env) {
-            return this->quoteAndSend0(s, ms, env);
-        }
-
-        MessageSource quoteAndSend1(MessageChain mc, MessageSource ms, JNIEnv *env) {
-            return this->quoteAndSend0(mc.toMiraiCode(), ms, env);
-        }
-
-    protected:
+    protected: // attrs
         int _type = 0;
         QQID _id;
         QQID _groupid;
@@ -102,10 +58,13 @@ namespace MiraiCP {
         QQID _botid;
         bool _anonymous = false;
 
+    protected:
         /// 发送语音
         MessageSource sendVoice0(const std::string &path, JNIEnv * = nullptr);
 
     public:
+        // constructors
+
         /*!
          * @brief 无参初始化Contact类型
          * @internal 一般在MiraiCp内部构造
@@ -117,11 +76,6 @@ namespace MiraiCP {
             this->_nickOrNameCard = "";
             this->_botid = 0;
         }
-
-        bool operator==(const Contact &c) const {
-            return this->id() == c.id();
-        }
-
 
         /*!
          * @brief 构造contact类型
@@ -143,6 +97,16 @@ namespace MiraiCP {
             this->_botid = botid;
             this->_anonymous = anonymous;
         };
+
+        //        Contact(Contact &&c) : _type(c._type), _id(c._id), _groupid(c._groupid), _botid(c._botid), _anonymous(c._anonymous), _nickOrNameCard(std::move(c._nickOrNameCard)), _avatarUrl(std::move(c._avatarUrl)) {
+        //        }
+
+        // destructor
+        virtual ~Contact() = default;
+
+        bool operator==(const Contact &c) const {
+            return this->id() == c.id();
+        }
 
         /// @brief 当前对象类型
         ///     - 1 Friend 好友
@@ -172,6 +136,15 @@ namespace MiraiCP {
         /// 所属bot
         QQID botid() const { return this->_botid; };
 
+        /*!
+         * @brief 发送戳一戳
+         * @warning 仅限Friend, Member类调用
+         * @see MiraiCP::Friend::sendNudge, MiraiCP::Member::sendNudge
+         * @throw MiraiCP::BotException, MiraiCP::IllegalStateException
+         */
+        virtual void sendNudge(){};
+
+    public: // serialization
         /// 序列化到json对象
         nlohmann::json toJson() const {
             nlohmann::json j;
@@ -200,6 +173,7 @@ namespace MiraiCP {
         static Contact deserialize(const std::string &source);
         static Contact deserialize(nlohmann::json source);
 
+    public:
         /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
         [[deprecated("use deserialize")]] static Contact deserializationFromString(const std::string &source) = delete;
 
@@ -287,6 +261,50 @@ namespace MiraiCP {
 
         /// 刷新当前对象信息
         virtual void refreshInfo(JNIEnv *){};
+
+    private: // private methods
+        /// 发送纯文本信息
+        /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
+        MessageSource sendMsg0(const std::string &msg, int retryTime, bool miraicode = false,
+                               JNIEnv * = nullptr) const;
+
+        template<class T>
+        MessageSource send1(T msg, int retryTime, JNIEnv *env) {
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        }
+
+        MessageSource send1(MessageChain msg, int retryTime, JNIEnv *env) {
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        }
+
+        MessageSource send1(MiraiCode msg, int retryTime, JNIEnv *env) {
+            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        }
+
+        MessageSource send1(std::string msg, int retryTime, JNIEnv *env) {
+            return sendMsg0(msg, retryTime, false, env);
+        }
+
+        MessageSource send1(const char *msg, int retryTime, JNIEnv *env) {
+            return sendMsg0(std::string(msg), retryTime, false, env);
+        }
+
+        MessageSource quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = nullptr);
+
+        template<class T>
+        MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = nullptr) {
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+            return this->quoteAndSend0(s.toMiraiCode(), ms, env);
+        }
+
+        MessageSource quoteAndSend1(std::string s, MessageSource ms, JNIEnv *env) {
+            return this->quoteAndSend0(s, ms, env);
+        }
+
+        MessageSource quoteAndSend1(MessageChain mc, MessageSource ms, JNIEnv *env) {
+            return this->quoteAndSend0(mc.toMiraiCode(), ms, env);
+        }
     };
 
 
