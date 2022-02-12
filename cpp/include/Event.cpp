@@ -31,7 +31,7 @@ namespace MiraiCP {
         if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
     }
 
-    MessageChain PrivateMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
+    MessageChain PrivateMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) const {
         json j;
         j["contactSource"] = this->sender.toString();
         j["time"] = time;
@@ -43,7 +43,7 @@ namespace MiraiCP {
         return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
-    MessageChain GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) {
+    MessageChain GroupMessageEvent::nextMessage(long time, bool halt, JNIEnv *env) const {
         json j;
         j["contactSource"] = this->group.toString();
         j["time"] = time;
@@ -55,7 +55,7 @@ namespace MiraiCP {
         return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
-    MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) {
+    MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt, JNIEnv *env) const {
         json j;
         j["contactSource"] = this->sender.toString();
         j["time"] = time;
@@ -66,6 +66,7 @@ namespace MiraiCP {
         json re = json::parse(r);
         return MessageChain::deserializationFromMessageSourceJson(json::parse(re["messageSource"].get<std::string>())).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
+
     void NewFriendRequestEvent::operation0(const std::string &source, QQID botid, bool accept, JNIEnv *env, bool ban) {
         nlohmann::json j;
         j["text"] = source;
@@ -75,6 +76,7 @@ namespace MiraiCP {
         std::string re = Config::koperation(Config::Nfroperation, j, env);
         if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
     }
+
     void MemberJoinRequestEvent::operate(const std::string &s, QQID botid, bool sign, const std::string &msg, JNIEnv *env) const {
         nlohmann::json j;
         j["source"] = s;

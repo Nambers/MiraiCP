@@ -15,23 +15,26 @@
 //
 #include "Bot.h"
 #include "Config.h"
+#include "Friend.h"
+#include "Group.h"
 #include "LowLevelAPI.h"
 #include "Tools.h"
-#include "Group.h"
-#include "Friend.h"
 
 namespace MiraiCP {
     Group Bot::getGroup(QQID groupid, JNIEnv *env) const {
         return Group(groupid, this->id, env);
     }
+
     Friend Bot::getFriend(QQID i, JNIEnv *env) const {
         return Friend(i, this->id, env);
     }
+
     bool Bot::operator==(const Contact &c) const {
         return this->id == c.id();
     }
+
     void Bot::refreshInfo(JNIEnv *env) {
-        if(this->id == 0)
+        if (this->id == 0)
             return;
         nlohmann::json j;
         j["source"] = Contact(4, 0, 0, "", this->id).toString();
@@ -39,22 +42,26 @@ namespace MiraiCP {
         this->_avatarUrl = tmp.avatarUrl;
         this->_nick = tmp.nickornamecard;
     }
-    std::vector<unsigned long long> Bot::getFriendList(JNIEnv *env) {
+
+    std::vector<unsigned long long> Bot::getFriendList(JNIEnv *env) const {
         nlohmann::json j;
         j["botid"] = this->id;
         std::string temp = Config::koperation(Config::QueryBFL, j, env);
         return Tools::StringToVector(temp);
     }
+
     std::string Bot::FriendListToString() {
         return Tools::VectorToString(getFriendList());
     }
-    std::vector<unsigned long long> Bot::getGroupList(JNIEnv *env) {
+
+    std::vector<unsigned long long> Bot::getGroupList(JNIEnv *env) const {
         nlohmann::json j;
         j["botid"] = this->id;
         std::string temp = Config::koperation(Config::QueryBGL, j, env);
         return Tools::StringToVector(temp);
     }
-    std::string Bot::GroupListToString() {
+
+    std::string Bot::GroupListToString() const {
         return Tools::VectorToString(getGroupList());
     }
 } // namespace MiraiCP

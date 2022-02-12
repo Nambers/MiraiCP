@@ -17,15 +17,16 @@
 #ifndef MIRAICP_PRO_BOT_H
 #define MIRAICP_PRO_BOT_H
 
-#include <vector>
-#include <string>
 #include <jni.h>
+#include <string>
+#include <vector>
 
 namespace MiraiCP {
     class Friend;  // forward declaration
     class Group;   // forward declaration
     class Contact; // forward declaration
     using QQID = unsigned long long;
+
     /// 当前bot账号信息
     class Bot {
     private:
@@ -33,6 +34,11 @@ namespace MiraiCP {
         std::string _nick;
         std::string _avatarUrl;
 
+    public:
+        /// 该botid
+        QQID id;
+
+    private:
         void check() {
             if (!this->inited) {
                 refreshInfo();
@@ -41,9 +47,6 @@ namespace MiraiCP {
         }
 
     public:
-        /// 该botid
-        QQID id;
-
         /*!
          * @brief 刷新bot信息
          * @param env
@@ -72,16 +75,16 @@ namespace MiraiCP {
         }
 
         /// 取好友列表
-        std::vector<unsigned long long> getFriendList(JNIEnv *env = nullptr);
+        std::vector<unsigned long long> getFriendList(JNIEnv *env = nullptr) const;
 
         /// 好友列表string形式返回，利于保存
         std::string FriendListToString();
 
         /// 取群列表
-        std::vector<unsigned long long> getGroupList(JNIEnv *env = nullptr);
+        std::vector<unsigned long long> getGroupList(JNIEnv *env = nullptr) const;
 
         /// 群列表string形式返回，利于保存
-        std::string GroupListToString();
+        std::string GroupListToString() const;
 
         bool operator==(const Contact &c) const;
 
