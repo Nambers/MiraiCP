@@ -16,7 +16,8 @@
 
 #ifndef MIRAICP_PRO_EXCEPTION_H
 #define MIRAICP_PRO_EXCEPTION_H
-#define MiraiCPThrow(x) throw((x).append(__FILE__, __LINE__))
+#define MiraiCPThrow(x) throw(x).append(__FILE__, __LINE__)
+#define MiraiCPThrow0(className, msg) throw className(msg, __FILE__, __LINE__)
 #define ErrorHandle(x, y) ErrorHandle0(__FILE__, __LINE__, (x), (y))
 
 #include <exception>
@@ -32,22 +33,9 @@ namespace MiraiCP {
         string re;
 
     public:
-        /// 异常的类型
-        virtual string exceptionType() const { return "MiraiCPException"; }
-
-    public:
         int lineNum = 0;
         string filename;
-
-        //构造时传入类型字符串
-        explicit MiraiCPException(std::string description = "") {
-            if (description.empty())
-                this->re = MiraiCPException::exceptionType() + ":MiraiCP异常";
-            else
-                this->re = MiraiCPException::exceptionType() + ":" + std::move(description);
-        }
-
-
+        virtual ~MiraiCPException(){};
         /// @brief 异常事件广播
         class ExceptionBroadcasting {
         public:
@@ -55,16 +43,6 @@ namespace MiraiCP {
             explicit ExceptionBroadcasting(MiraiCPException *ex) : e(ex) {}
             ~ExceptionBroadcasting();
         };
-
-        /// 报错位置信息, 由MiraiThrow宏传递
-        MiraiCPException append(string name, int line) {
-            lineNum = line;
-            filename = std::move(name);
-            // destroy this object immediately, to call the destructor of `ExceptionBroadcasting`
-            ExceptionBroadcasting(this); // NOLINT(bugprone-throw-keyword-missing)
-            return *this;
-        }
-
         /// 异常信息
         const char *what() const noexcept override { return re.c_str(); }
 
@@ -75,9 +53,39 @@ namespace MiraiCP {
         void raise() const;
     };
 
+    template<class T>
+    class MiraiCPBaseException : public MiraiCPException {
+        using string = std::string;
+
+    public:
+        /// 异常的类型
+        virtual string exceptionType() const { return "MiraiCPException"; }
+
+    public:
+        virtual ~MiraiCPBaseException(){};
+
+        //构造时传入类型字符串
+        explicit MiraiCPBaseException(std::string description = "") {
+            static_assert(std::is_base_of_v<MiraiCPBaseException, T>);
+            if (description.empty())
+                this->re = exceptionType() + ":MiraiCP异常";
+            else
+                this->re = exceptionType() + ":" + std::move(description);
+        }
+
+        /// 报错位置信息, 由MiraiThrow宏传递
+        T &append(std::string_view name, int line) {
+            lineNum = line;
+            filename = name;
+            // destroy this object immediately, to call the destructor of `ExceptionBroadcasting`
+            ExceptionBroadcasting(this); // NOLINT(bugprone-throw-keyword-missing)
+            return *static_cast<T *>(this);
+        }
+    };
+
     /// 文件读取异常.
     /// @see MiraiCPException
-    class UploadException : public MiraiCPException {
+    class UploadException : public MiraiCPBaseException<UploadException> {
     private:
         std::string description;
 
@@ -92,13 +100,13 @@ namespace MiraiCP {
 
     /// 通常为Mirai返回
     /// @see MiraiCPException
-    class IllegalStateException : public MiraiCPException {
+    class IllegalStateException : public MiraiCPBaseException<IllegalStateException> {
     private:
         std::string description;
 
 
     public:
-        explicit IllegalStateException(const std::string &text) : MiraiCPException("IllegalStateException") {
+        explicit IllegalStateException(const std::string &text) : MiraiCPBaseException("IllegalStateException") {
             this->description = "状态异常:" + text;
             this->re = IllegalStateException::exceptionType() + this->description;
         }
@@ -108,7 +116,7 @@ namespace MiraiCP {
 
     /// 内部异常, 通常为json读写问题
     /// @see MiraiCPException
-    class APIException : public MiraiCPException {
+    class APIException : public MiraiCPBaseException<APIException> {
     private:
         std::string description;
 
@@ -124,7 +132,7 @@ namespace MiraiCP {
 
     /// 机器人操作异常
     /// @see MiraiCPException
-    class BotException : public MiraiCPException {
+    class BotException : public MiraiCPBaseException<BotException> {
     private:
         std::string description;
 
@@ -155,7 +163,7 @@ namespace MiraiCP {
 
     /// 禁言异常
     /// @see MiraiCPException
-    class MuteException : public MiraiCPException {
+    class MuteException : public MiraiCPBaseException<MuteException> {
     private:
         std::string description;
 
@@ -174,7 +182,7 @@ namespace MiraiCP {
 
     /// 获取群成员错误
     /// @see MiraiCPException
-    class MemberException : public MiraiCPException {
+    class MemberException : public MiraiCPBaseException<MemberException> {
     private:
         std::string description;
 
@@ -206,7 +214,7 @@ namespace MiraiCP {
 
     /// 获取群成员错误
     /// @see MiraiCPException
-    class FriendException : public MiraiCPException {
+    class FriendException : public MiraiCPBaseException<FriendException> {
     private:
         std::string description;
 
@@ -215,7 +223,7 @@ namespace MiraiCP {
         /*
         *   找不到好友
         */
-        FriendException() : MiraiCPException("FriendException") {
+        FriendException() : MiraiCPBaseException("FriendException") {
             this->description = "找不到好友";
             this->re = FriendException::exceptionType() + this->description;
         }
@@ -225,7 +233,7 @@ namespace MiraiCP {
 
     /// 获取群错误
     /// @see MiraiCPException
-    class GroupException : public MiraiCPException {
+    class GroupException : public MiraiCPBaseException<GroupException> {
     private:
         std::string description;
 
@@ -241,7 +249,7 @@ namespace MiraiCP {
 
     /// 撤回异常
     /// @see MiraiCPException
-    class RecallException : public MiraiCPException {
+    class RecallException : public MiraiCPBaseException<RecallException> {
     private:
         std::string description;
 
@@ -257,7 +265,7 @@ namespace MiraiCP {
 
     /// 远程资源出现问题
     /// @see MiraiCPException
-    class RemoteAssetException : public MiraiCPException {
+    class RemoteAssetException : public MiraiCPBaseException<RemoteAssetException> {
     private:
         std::string description;
 
@@ -272,7 +280,7 @@ namespace MiraiCP {
 
     /// 参数错误
     /// @see MiraiCPException
-    class IllegalArgumentException : public MiraiCPException {
+    class IllegalArgumentException : public MiraiCPBaseException<IllegalArgumentException> {
     private:
         std::string description;
 
@@ -288,7 +296,7 @@ namespace MiraiCP {
 
     /// 超时
     /// @see MiraiCPException
-    class TimeOutException : public MiraiCPException {
+    class TimeOutException : public MiraiCPBaseException<TimeOutException> {
     private:
         std::string description;
 
@@ -298,13 +306,18 @@ namespace MiraiCP {
             this->description = std::move(e);
             this->re = TimeOutException::exceptionType() + this->description;
         }
+        explicit TimeOutException(std::string e, const std::string &name, int line) {
+            this->description = std::move(e);
+            this->re = TimeOutException::exceptionType() + this->description;
+            this->append(name, line);
+        }
 
         std::string exceptionType() const override { return "TimeOutException"; }
     };
 
     /// 事件被取消, 一般出现在发送消息时在preSendMessageEvent取消的时候抛出
     /// @see MiraiCPException
-    class EventCancelledException : public MiraiCPException {
+    class EventCancelledException : public MiraiCPBaseException<EventCancelledException> {
     private:
         std::string description;
 
