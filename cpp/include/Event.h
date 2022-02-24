@@ -588,15 +588,15 @@ namespace MiraiCP {
         explicit MessagePreSendEvent(Contact c, MessageChain mc, QQID botid) : BotEvent(botid), target(std::move(c)), message(std::move(mc)) {}
     };
 
-    class MiraiCPException; // forward declaration
+    class MiraiCPExceptionBase; // forward declaration
 
     /// @brief 异常抛出事件
     class MiraiCPExceptionEvent : public MiraiCPEvent {
     private:
-        MiraiCPException *exceptionPtr;
+        MiraiCPExceptionBase *exceptionPtr;
 
     public:
-        explicit MiraiCPExceptionEvent(MiraiCPException *err) {
+        explicit MiraiCPExceptionEvent(MiraiCPExceptionBase *err) {
             exceptionPtr = err;
         }
 
@@ -608,7 +608,7 @@ namespace MiraiCP {
 
         eventTypes getEventType() const override { return this->get_event_type(); }
 
-        MiraiCPException &getException() {
+        MiraiCPExceptionBase &getException() {
             return *exceptionPtr;
         }
     };

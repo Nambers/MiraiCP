@@ -45,7 +45,7 @@ JNIEXPORT jstring Verify(JNIEnv *env, jobject, jstring id) {
             CPPPlugin::pluginLogger = new PluginLogger(&Logger::logger);
             CPPPlugin::plugin->onEnable();
         }
-    } catch (const MiraiCPException &e) {
+    } catch (const MiraiCPExceptionBase &e) {
         e.raise();
     }
     json j = CPPPlugin::plugin->config.serialize();
@@ -64,7 +64,7 @@ JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job) {
     ThreadManager::setEnv(env);
     try {
         CPPPlugin::plugin->onDisable();
-    } catch (const MiraiCPException &e) {
+    } catch (const MiraiCPExceptionBase &e) {
         e.raise();
     }
     CPPPlugin::plugin = nullptr;
@@ -233,7 +233,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
         Logger::logger.error(e.what());
         Logger::logger.error("info:", tmp);
         return Tools::str2jstring("ERROR");
-    } catch (const MiraiCPException &e) {
+    } catch (const MiraiCPExceptionBase &e) {
         e.raise();
         return Tools::str2jstring("ERROR");
     } catch (const std::exception &e) {

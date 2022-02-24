@@ -20,16 +20,16 @@
 namespace MiraiCP {
     class Event;
 
-    MiraiCPException::ExceptionBroadcasting::~ExceptionBroadcasting() {
+    MiraiCPExceptionBase::ExceptionBroadcasting::~ExceptionBroadcasting() {
         Event::processor.broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(e));
     }
-    // 在 MiraiCPException 被构造之后执行，实现于析构函数
+    // 在 MiraiCPExceptionBase 被构造之后执行，实现于析构函数
 
-    void MiraiCPException::basicRaise() const {
+    void MiraiCPExceptionBase::basicRaise() const {
         Logger::logger.error(this->what());
     }
-    
-    void MiraiCPException::raise() const {
+
+    void MiraiCPExceptionBase::raise() const {
         this->basicRaise();
         if (!filename.empty() && lineNum != 0)
             Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
