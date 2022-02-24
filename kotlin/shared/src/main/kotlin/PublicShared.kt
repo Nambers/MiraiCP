@@ -39,7 +39,6 @@ import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.events.*
-import net.mamoe.mirai.event.nextEvent
 import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
@@ -86,29 +85,14 @@ object PublicShared {
         return runBlocking {
             val e = try {
                 when (c.type) {
-                    1 -> {
-                        nextEvent<FriendMessageEvent>(time, EventPriority.HIGHEST) {
-                            if (it.sender.id == c.id && it.bot.id == c.botid) {
-                                if (halt) it.intercept()
-                                true
-                            } else false
-                        }.message
+                    1 -> nextMessage<FriendMessageEvent>(time, halt, EventPriority.HIGHEST) {
+                        it.sender.id == c.id && it.bot.id == c.botid
                     }
-                    2 -> {
-                        nextEvent<GroupMessageEvent>(time, EventPriority.HIGHEST) {
-                            if (it.group.id == c.id && it.bot.id == c.botid) {
-                                if (halt) it.intercept()
-                                true
-                            } else false
-                        }.message
+                    2 -> nextMessage<GroupMessageEvent>(time, halt, EventPriority.HIGHEST) {
+                        it.group.id == c.id && it.bot.id == c.botid
                     }
-                    3 -> {
-                        nextEvent<GroupMessageEvent>(time, EventPriority.HIGHEST) {
-                            if (it.bot.id == c.botid && it.group.id == c.groupid && it.sender.id == c.id) {
-                                if (halt) it.intercept()
-                                true
-                            } else false
-                        }.message
+                    3 -> nextMessage<GroupMessageEvent>(time, halt, EventPriority.HIGHEST) {
+                        it.bot.id == c.botid && it.group.id == c.groupid && it.sender.id == c.id
                     }
                     else -> throw Exception() //unreachable
                 }

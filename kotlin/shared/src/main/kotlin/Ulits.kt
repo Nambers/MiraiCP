@@ -19,11 +19,17 @@
 package tech.eritquearcus.miraicp.shared
 
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.withTimeout
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.*
+import net.mamoe.mirai.event.EventPriority
+import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.EventCancelledException
+import net.mamoe.mirai.event.events.MessageEvent
+import net.mamoe.mirai.event.nextEvent
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.ImageType
+import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.MessageSource
 import net.mamoe.mirai.utils.MiraiLogger
 import org.json.JSONObject
@@ -210,4 +216,22 @@ internal inline fun sendWithCatch(block: () -> MessageSource): String {
         return "EC"
     }
     return PublicShared.json.encodeToString(MessageSource.Serializer, s)
+}
+
+internal suspend inline fun <reified E : MessageEvent> nextMessage(
+    time: Long,
+    halt: Boolean,
+    p: EventPriority = EventPriority.HIGHEST,
+    crossinline filter: (E) -> Boolean
+): MessageChain {
+    val exec = suspend {
+        GlobalEventChannel.nextEvent<E>(p) {
+            if (filter(it)) {
+                if (halt) it.intercept()
+                true
+            } else false
+        }
+    }
+    return if (time != -1L) withTimeout(time) { exec() }.message
+    else exec().message
 }

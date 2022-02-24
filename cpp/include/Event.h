@@ -127,7 +127,7 @@ namespace MiraiCP {
 
         /*!
          * @brief 取群聊下一个消息(群聊与本事件一样)
-         * @param time 超时时间限制
+         * @param time 超时时间限制, 单位为ms, 超时后抛出TimeOutException
          * @param halt 是否拦截该事件(不让这个消息被注册的其他监听器收到处理)
          * @return 消息链
          */
@@ -135,7 +135,7 @@ namespace MiraiCP {
 
         /*!
          * @brief 取群聊中同群成员的下一个消息(发送人和群与本事件一样)
-         * @param time 超时时间限制
+         * @param time 超时时间限制, 单位为ms, 超时后抛出TimeOutException
          * @param halt 是否拦截该事件(不让消息被注册的其他监听器收到处理)
          * @return 消息链
          */
@@ -176,7 +176,7 @@ namespace MiraiCP {
         /*!
          * @brief 取下一个消息(发送人和接收人和本事件一样)
          * @warning 如果两次发送信息间隔过短可能会漏过信息
-         * @param time 超时时间限制
+         * @param time 超时时间限制, 单位为ms, 超时后抛出TimeOutException
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return 消息链
          */
