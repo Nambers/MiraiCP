@@ -222,8 +222,6 @@ github issue: [miraicp issue](https://github.com/Nambers/MiraiCP/issues)
 
 qq群: 1044565129
 
-邮件: ch.iu.20@foxmail.com
-
 # TODO
 查看[本项目的milestones里程碑](https://github.com/Nambers/MiraiCP/milestones)
 
