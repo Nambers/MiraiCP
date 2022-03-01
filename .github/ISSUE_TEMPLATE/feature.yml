@@ -1,6 +1,5 @@
 name: feature request
 description: 申请新特性
-title: "[Feature]: "
 labels: ["t:enhancement"]
 
 body:
