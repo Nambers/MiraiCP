@@ -43,7 +43,7 @@ namespace MiraiCP {
         this->_nick = tmp.nickornamecard;
     }
 
-    std::vector<unsigned long long> Bot::getFriendList(JNIEnv *env) const {
+    std::vector<QQID> Bot::getFriendList(JNIEnv *env) const {
         nlohmann::json j;
         j["botid"] = this->id;
         std::string temp = Config::koperation(Config::QueryBFL, j, env);
@@ -54,7 +54,7 @@ namespace MiraiCP {
         return Tools::VectorToString(getFriendList());
     }
 
-    std::vector<unsigned long long> Bot::getGroupList(JNIEnv *env) const {
+    std::vector<QQID> Bot::getGroupList(JNIEnv *env) const {
         nlohmann::json j;
         j["botid"] = this->id;
         std::string temp = Config::koperation(Config::QueryBGL, j, env);

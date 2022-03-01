@@ -75,13 +75,13 @@ namespace MiraiCP {
         }
 
         /// 取好友列表
-        std::vector<unsigned long long> getFriendList(JNIEnv *env = nullptr) const;
+        std::vector<QQID> getFriendList(JNIEnv *env = nullptr) const;
 
         /// 好友列表string形式返回，利于保存
         std::string FriendListToString();
 
         /// 取群列表
-        std::vector<unsigned long long> getGroupList(JNIEnv *env = nullptr) const;
+        std::vector<QQID> getGroupList(JNIEnv *env = nullptr) const;
 
         /// 群列表string形式返回，利于保存
         std::string GroupListToString() const;

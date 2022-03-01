@@ -16,7 +16,7 @@
 
 #ifndef MIRAICP_PRO_EXCEPTION_H
 #define MIRAICP_PRO_EXCEPTION_H
-#define MiraiCPThrow(x) throw((x).append(__FILE__, __LINE__))
+#define MiraiCPThrow(x) throw x.append(__FILE__, __LINE__)
 #define ErrorHandle(x, y) ErrorHandle0(__FILE__, __LINE__, (x), (y))
 
 #include <exception>
@@ -107,13 +107,11 @@ namespace MiraiCP {
     private:
         std::string description;
 
-
     public:
         explicit UploadException(const std::string &text) {
             this->description = "上传(图片/文件)异常" + text;
             this->re = this->exceptionType() + this->description;
         }
-
 
         static std::string exceptionType() { return "UploadException"; }
     };
@@ -155,7 +153,6 @@ namespace MiraiCP {
     class BotException : public MiraiCPExceptionCRTP<BotException> {
     private:
         std::string description;
-
 
     public:
         explicit BotException(std::string d = "没有权限执行该操作") {

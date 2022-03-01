@@ -87,10 +87,11 @@ namespace MiraiCP {
         j["source"] = source.dump();
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::Voice, j, env);
-        if (re == "E1")
+        if (re == "E1") {
             MiraiCPThrow(UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在"));
-        else if (re == "E2")
+        } else if (re == "E2") {
             MiraiCPThrow(UploadException("上传语音文件大小超过服务器限制，一般限制在1MB上下"));
+        }
         return MessageSource::deserializeFromString(re);
     }
 } // namespace MiraiCP

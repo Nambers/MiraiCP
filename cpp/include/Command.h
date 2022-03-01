@@ -46,26 +46,41 @@ namespace MiraiCP {
      * @attention loader端的命令只支持从console传入, plugin端是对接mirai的RawCommand
      */
     class IRawCommand {
+        using string = std::string;
+
     public:
         struct Config {
         public:
             /// 指令名不能为空
-            std::string primaryName;
+            string primaryName;
             /// 可以为空
-            std::vector<std::string> secondNames;
+            std::vector<string> secondNames;
             /// 用法
-            std::string usage;
+            string usage;
             /// 描述
-            std::string description;
+            string description;
             /// 覆盖已有命令
             bool override;
             /// 前缀`/`可省略
             bool preFixOption;
-            explicit Config(std::string primaryName, std::vector<std::string> secondNames = std::vector<std::string>(), std::string usage = "null", std::string description = "null", bool override = false, bool preFixOption = false) : primaryName(std::move(primaryName)), secondNames(std::move(secondNames)), usage(std::move(usage)), description(std::move(description)), override(override), preFixOption(preFixOption) {}
+            explicit Config(string primaryName,
+                            std::vector<string> secondNames = std::vector<std::string>(),
+                            string usage = "null",
+                            string description = "null",
+                            bool override = false,
+                            bool preFixOption = false)
+                : primaryName(std::move(primaryName)),
+                  secondNames(std::move(secondNames)),
+                  usage(std::move(usage)),
+                  description(std::move(description)),
+                  override(override),
+                  preFixOption(preFixOption) {}
         };
+
         virtual IRawCommand::Config config() = 0;
         virtual void onCommand(std::optional<Contact>, const Bot &, const MessageChain &) = 0;
         IRawCommand() = default;
+        virtual ~IRawCommand() = default;
     };
 
     class CommandManager {
@@ -74,7 +89,8 @@ namespace MiraiCP {
         std::vector<std::shared_ptr<IRawCommand>> commandList;
 
     public:
-        std::shared_ptr<IRawCommand> operator[](int index) { return commandList[index]; }
+        std::shared_ptr<IRawCommand> operator[](const int &index) { return commandList[index]; }
+
         /*!
          * @brief 注册一条指令
          * @param command 指令
