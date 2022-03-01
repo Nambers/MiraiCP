@@ -25,7 +25,7 @@ namespace MiraiCP {
     void GroupInviteEvent::operation0(const std::string &source, QQID botid, bool accept, JNIEnv *env) {
         nlohmann::json j;
         j["text"] = source;
-        j["operate"] = accept;
+        j["accept"] = accept;
         j["botid"] = botid;
         std::string re = Config::koperation(Config::Gioperation, j, env);
         if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
@@ -70,7 +70,7 @@ namespace MiraiCP {
     void NewFriendRequestEvent::operation0(const std::string &source, QQID botid, bool accept, JNIEnv *env, bool ban) {
         nlohmann::json j;
         j["text"] = source;
-        j["operate"] = accept;
+        j["accept"] = accept;
         j["botid"] = botid;
         j["ban"] = ban;
         std::string re = Config::koperation(Config::Nfroperation, j, env);
