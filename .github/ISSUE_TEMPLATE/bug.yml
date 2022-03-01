@@ -1,14 +1,13 @@
 name: Bug Report
-description: 错误报告
-title: "[bug]: "
+description: 提交一份错误报告
 labels: ["t:question"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thank for bug report!
+        Thank for reporting!
         在提交前请确保做完以下的检查:
-        - 没有相同类型issue
+        - 没有相同内容/类型issue
         - 已经更新到最新版
         - By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/Nambers/MiraiCP/blob/main/CODE_OF_CONDUCT.md)
   - type: textarea
