@@ -25,7 +25,7 @@
 namespace MiraiCP {
     using json = nlohmann::json;
     // 静态成员
-    std::map<int, std::string> SingleMessage::messageType = {
+    std::unordered_map<int, std::string> SingleMessage::messageType{
             {-5, "MarketFace"},
             {-4, "OnlineForwardedMessage"},
             {-3, "OnlineAudio"},
@@ -285,7 +285,7 @@ namespace MiraiCP {
                 j["height"],
                 j["type"]);
     }
-    FlashImage FlashImage::deserialize(const std::string& str) {
+    FlashImage FlashImage::deserialize(const std::string &str) {
         json j = json::parse(str);
         return FlashImage(
                 j["imageid"],

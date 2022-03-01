@@ -43,7 +43,8 @@ namespace MiraiCP {
     class SingleMessage : public MiraiCodeable {
     public:
         virtual ~SingleMessage() = default;
-        static std::map<int, std::string> messageType;
+        static std::unordered_map<int, std::string> messageType;
+
         virtual nlohmann::json toJson() const {
             nlohmann::json re;
             re["key"] = "miraicode";
