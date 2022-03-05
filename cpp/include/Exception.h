@@ -19,6 +19,16 @@
 #define MiraiCPThrow(x) throw x.append(__FILE__, __LINE__)
 #define ErrorHandle(x, y) ErrorHandle0(__FILE__, __LINE__, (x), (y))
 
+#if defined(_MSC_VER)
+#define ShouldNotUse(msg) _Pragma("warning(error:4996)") [[deprecated(msg)]] _Pragma("warning(warning:4996)")
+#else
+#if defined(__GNUC__)
+#define ShouldNotUse(msg) [[deprecated(msg)]] __attribute__((error(msg)))
+#else
+#define ShouldNotUse(msg)
+#endif
+#endif
+
 #include <exception>
 #include <string>
 

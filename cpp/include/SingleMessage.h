@@ -352,12 +352,10 @@ namespace MiraiCP {
     class QuoteReply : public SingleMessage {
     public:
         static int type() { return -2; }
-
-        /// 不可直接发送, 发送引用信息用MessageChain.quoteAndSendMessage
-        [[deprecated("cannot use, use MessageChain.quote")]] std::string toMiraiCode() const override {
+        // 不可直接发送, 发送引用信息用MessageChain.quoteAndSendMessage
+        ShouldNotUse("don't have MiraiCode, use MessageChain.quote instead") std::string toMiraiCode() const override {
             return "";
         }
-
         /// 引用信息的MessageSource
         MessageSource source;
 
