@@ -33,7 +33,7 @@
 #include <string>
 
 namespace MiraiCP {
-    /// @brief 总异常抽象类，不要直接抛出该类，不知道抛出什么的时候请抛出 MiraiCPException
+    /// @brief 总异常抽象类，用于一般捕获，不要直接抛出该类，不知道抛出什么的时候请抛出 MiraiCPException
     /// @interface MiraiCPExceptionBase
     class MiraiCPExceptionBase : public ::std::exception {
     public:
@@ -59,7 +59,7 @@ namespace MiraiCP {
         public:
             MiraiCPExceptionBase *e;
             explicit ExceptionBroadcasting(MiraiCPExceptionBase *ex) : e(ex) {}
-            ~ExceptionBroadcasting();
+            virtual ~ExceptionBroadcasting();
         };
 
         /// 异常信息
@@ -82,7 +82,8 @@ namespace MiraiCP {
         static string exceptionType() { return "MiraiCPException"; }
     };
 
-
+    /// @brief 总异常CRTP抽象类，不要直接抛出该类，不知道抛出什么的时候请抛出 MiraiCPException
+    /// @interface MiraiCPExceptionCRTP
     template<class T>
     class MiraiCPExceptionCRTP : public MiraiCPExceptionBase {
     public:
@@ -100,15 +101,11 @@ namespace MiraiCP {
         string getExceptionType() override { return T::exceptionType(); }
 
         /// 报错位置信息, 由MiraiThrow宏传递
-        virtual T &append(string name, int line) {
-            lineNum = line;
-            filename = std::move(name);
-            // destroy this object immediately, to call the destructor of `ExceptionBroadcasting`
-            ExceptionBroadcasting(this); // NOLINT(bugprone-throw-keyword-missing,bugprone-unused-raii)
-            return *static_cast<T *>(this);
-        }
+        virtual T &append(string name, int line);
     };
 
+    /// @brief 通用MiraiCP异常
+    /// @see MiraiCPExceptionBase
     typedef MiraiCPExceptionCRTP<MiraiCPExceptionBase> MiraiCPException;
 
     /// 文件读取异常.

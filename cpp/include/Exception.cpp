@@ -16,6 +16,7 @@
 
 #include "Exception.h"
 #include "Event.h"
+#include "Tools.h"
 
 namespace MiraiCP {
     class Event;
@@ -33,5 +34,18 @@ namespace MiraiCP {
         this->basicRaise();
         if (!filename.empty() && lineNum != 0)
             Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
+    }
+
+    template<class T>
+    T &MiraiCPExceptionCRTP<T>::append(std::string name, int line) {
+        lineNum = line;
+        filename = std::move(name);
+        // destroy this object immediately, to call the destructor of `ExceptionBroadcasting`
+        // static_cast<void>(ExceptionBroadcasting(this));
+        auto f = [&](){
+            Event::processor.broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(this));
+        };
+        Tools::MiraiCPDefer<void> x(f);
+        return *static_cast<T *>(this);
     }
 } // namespace MiraiCP
