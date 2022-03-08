@@ -88,7 +88,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
     try {
         j = json::parse(tmp);
     } catch (json::parse_error &e) {
-        APIException("格式化json错误").raise();
+        APIException("格式化json错误", MIRAICP_EXCEPTION_WHERE).raise();
         Logger::logger.error("For debug:" + j.dump());
         Logger::logger.error(e.what(), false);
         return returnNull();
@@ -226,7 +226,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                 break;
             }
             default:
-                MiraiCPThrow(APIException("Unreachable code"));
+                throw APIException("Unreachable code", MIRAICP_EXCEPTION_WHERE);
         }
     } catch (json::type_error &e) {
         Logger::logger.error("json格式化异常,位置C-Handle");

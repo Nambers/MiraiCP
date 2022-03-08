@@ -46,11 +46,11 @@ namespace MiraiCP {
         j["identify"] = i.dump();
         std::string re = Config::koperation(Config::Announcement, j);
         if (re == "E1")
-            MiraiCPThrow(IllegalArgumentException("无法根据fid找到群公告(群公告不存在)"));
+            throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)", MIRAICP_EXCEPTION_WHERE);
         if (re == "E2")
-            MiraiCPThrow(BotException());
+            throw BotException(MIRAICP_EXCEPTION_WHERE);
         if (re == "E3")
-            MiraiCPThrow(IllegalStateException("群公告状态异常"));
+            throw IllegalStateException("群公告状态异常", MIRAICP_EXCEPTION_WHERE);
     }
 
     json Group::AnnouncementParams::serializeToJson() {
@@ -74,7 +74,7 @@ namespace MiraiCP {
         j["source"] = s.dump();
         std::string re = Config::koperation(Config::Announcement, j);
         if (re == "E1")
-            MiraiCPThrow(BotException());
+            throw BotException(MIRAICP_EXCEPTION_WHERE);
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
     }
 
@@ -102,7 +102,7 @@ namespace MiraiCP {
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::QueryML, j, env);
         if (re == "E1") {
-            MiraiCPThrow(GroupException());
+            throw GroupException(MIRAICP_EXCEPTION_WHERE);
         }
         return Tools::StringToVector(re);
     }
@@ -146,7 +146,7 @@ namespace MiraiCP {
         tmp["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::GroupSetting, tmp, env);
         if (re == "E1")
-            MiraiCPThrow(BotException());
+            throw BotException(MIRAICP_EXCEPTION_WHERE);
         refreshInfo(env);
     }
 
@@ -158,9 +158,9 @@ namespace MiraiCP {
         tmp["source"] = source.dump();
         tmp["contactSource"] = this->toString();
         std::string callback = Config::koperation(Config::SendFile, tmp, env);
-        if (callback == "E2") MiraiCPThrow(UploadException("找不到" + filepath + "位置:C-uploadfile"));
+        if (callback == "E2") throw UploadException("找不到" + filepath + "位置:C-uploadfile", MIRAICP_EXCEPTION_WHERE);
         if (callback == "E3")
-            MiraiCPThrow(UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path));
+            throw UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path, MIRAICP_EXCEPTION_WHERE);
         return RemoteFile::deserializeFromString(callback);
     }
 
@@ -175,7 +175,7 @@ namespace MiraiCP {
         j["source"] = tmp.dump();
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
-        if (re == "E2") MiraiCPThrow(RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id));
+        if (re == "E2") throw RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id, MIRAICP_EXCEPTION_WHERE);
         return RemoteFile::deserializeFromString(re);
     }
 
@@ -186,7 +186,7 @@ namespace MiraiCP {
         j["source"] = tmp.dump();
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::RemoteFileInfo, j, env);
-        if (re == "E1") MiraiCPThrow(RemoteAssetException("Get error: 文件路径不存在, id:" + id));
+        if (re == "E1") throw RemoteAssetException("Get error: 文件路径不存在, id:" + id, MIRAICP_EXCEPTION_WHERE);
         return RemoteFile::deserializeFromString(re);
     }
 

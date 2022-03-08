@@ -15,9 +15,9 @@
 //
 
 #include "Friend.h"
-#include "LowLevelAPI.h"
-#include "Exception.h"
 #include "Config.h"
+#include "Exception.h"
+#include "LowLevelAPI.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -39,7 +39,7 @@ namespace MiraiCP {
     void Friend::refreshInfo(JNIEnv *env) {
         std::string temp = LowLevelAPI::getInfoSource(this->toString(), env);
         if (temp == "E1") {
-            MiraiCPThrow(FriendException());
+            throw FriendException(MIRAICP_EXCEPTION_WHERE);
         }
         LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
         this->_nickOrNameCard = tmp.nickornamecard;
@@ -51,6 +51,6 @@ namespace MiraiCP {
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::SendNudge, j);
         if (re == "E1")
-            MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone/ipad"));
+            throw IllegalStateException("发送戳一戳失败，登录协议不为phone/ipad", MIRAICP_EXCEPTION_WHERE);
     }
 } // namespace MiraiCP

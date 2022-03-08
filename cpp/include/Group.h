@@ -110,7 +110,7 @@ namespace MiraiCP {
             void deleteThis();
 
             /// 反序列化
-            static OnlineAnnouncement deserializeFromJson(const nlohmann::json&);
+            static OnlineAnnouncement deserializeFromJson(const nlohmann::json &);
 
             OnlineAnnouncement(const std::string &content, AnnouncementParams &params,
                                QQID groupid, QQID senderid, QQID botid,
@@ -260,7 +260,7 @@ namespace MiraiCP {
 
 
     private: // should not use
-        void sendNudge() override { MiraiCPThrow(APIException("Group对象中非法调用函数sendNudge")); }
+        void sendNudge() override { throw APIException("Group对象中非法调用函数sendNudge", MIRAICP_EXCEPTION_WHERE); }
     };
 } // namespace MiraiCP
 

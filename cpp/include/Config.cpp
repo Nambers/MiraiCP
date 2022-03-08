@@ -16,8 +16,8 @@
 
 #include "Config.h"
 #include "Exception.h"
-#include "Tools.h"
 #include "ThreadManager.h"
+#include "Tools.h"
 
 namespace MiraiCP::Config {
     jclass CPPLib = nullptr;
@@ -33,7 +33,7 @@ namespace MiraiCP::Config {
         CPPLib = reinterpret_cast<jclass>(env->NewGlobalRef(
                 env->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
         if (CPPLib == nullptr) {
-            MiraiCPThrow(APIException("初始化错误，找不到CPPLib类"));
+            throw APIException("初始化错误，找不到CPPLib类", MIRAICP_EXCEPTION_WHERE);
         }
         KOperation = env->GetStaticMethodID(CPPLib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
     }

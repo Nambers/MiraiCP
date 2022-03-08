@@ -119,7 +119,7 @@ namespace MiraiCP {
                 if (i != commandList.end())
                     j["bindId"] = i - commandList.begin();
                 else
-                    MiraiCPThrow(IllegalArgumentException("找不到合适的bindId"));
+                    throw IllegalArgumentException("找不到合适的bindId", MIRAICP_EXCEPTION_WHERE);
             }
             nlohmann::json rej;
             rej["command"] = j.dump();
