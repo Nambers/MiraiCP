@@ -43,7 +43,7 @@ namespace MiraiCP {
             {9, "MusicShare"}};
 
     QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
-        if (m.type != -2) MiraiCPThrow(IllegalArgumentException("cannot convert type(" + std::to_string(m.type) + "to QuoteReply"));
+        if (m.type != -2) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.type) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
         source = MessageSource::deserializeFromString(m.content);
     }
     // 结束静态成员
@@ -73,8 +73,8 @@ namespace MiraiCP {
     }
     PlainText::PlainText(const SingleMessage &sg) : SingleMessage(sg) {
         if (sg.type != 0)
-            MiraiCPThrow(IllegalArgumentException(
-                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText"));
+            throw IllegalArgumentException(
+                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText", MIRAICP_EXCEPTION_WHERE);
         this->content = sg.content;
     }
     nlohmann::json At::toJson() const {
@@ -85,8 +85,8 @@ namespace MiraiCP {
     }
     At::At(const SingleMessage &sg) : SingleMessage(sg) {
         if (sg.type != 1)
-            MiraiCPThrow(IllegalArgumentException(
-                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At"));
+            throw IllegalArgumentException(
+                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At", MIRAICP_EXCEPTION_WHERE);
         this->target = std::stol(sg.content);
     }
     nlohmann::json AtAll::toJson() const {
@@ -105,14 +105,14 @@ namespace MiraiCP {
         return j;
     }
     Image::Image(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != 3 && sg.type != 8) MiraiCPThrow(IllegalArgumentException("传入的SingleMessage应该是Image类型"));
+        if (sg.type != 3 && sg.type != 8) throw IllegalArgumentException("传入的SingleMessage应该是Image类型", MIRAICP_EXCEPTION_WHERE);
         this->id = sg.content;
         this->size = this->width = this->height = 0;
         this->imageType = 5;
     }
     bool Image::isUploaded(QQID botid, JNIEnv *env) {
         if (!this->md5.has_value()) this->refreshInfo();
-        if (this->size == 0) MiraiCPThrow(IllegalArgumentException("size不能为0"));
+        if (this->size == 0) throw IllegalArgumentException("size不能为0", MIRAICP_EXCEPTION_WHERE);
         nlohmann::json tmp = this->toJson();
         tmp["botid"] = botid;
         std::string re = Config::koperation(Config::ImageUploaded, tmp, env);
@@ -136,8 +136,8 @@ namespace MiraiCP {
     }
     LightApp::LightApp(const SingleMessage &sg) : SingleMessage(sg) {
         if (sg.type != 3)
-            MiraiCPThrow(IllegalArgumentException(
-                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp"));
+            throw IllegalArgumentException(
+                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp", MIRAICP_EXCEPTION_WHERE);
     }
     std::string LightApp::toMiraiCode() const {
         return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
@@ -154,8 +154,8 @@ namespace MiraiCP {
     }
     ServiceMessage::ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
         if (sg.type != 4)
-            MiraiCPThrow(IllegalArgumentException(
-                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage"));
+            throw IllegalArgumentException(
+                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage", MIRAICP_EXCEPTION_WHERE);
     }
     nlohmann::json Face::toJson() const {
         nlohmann::json j;
@@ -266,7 +266,7 @@ namespace MiraiCP {
     void Image::refreshInfo(JNIEnv *env) {
         std::string re = Config::koperation(Config::QueryImgInfo, this->toJson(), env);
         if (re == "E1")
-            MiraiCPThrow(RemoteAssetException("图片id格式错误"));
+            throw RemoteAssetException("图片id格式错误", MIRAICP_EXCEPTION_WHERE);
         json j = json::parse(re);
         this->url = j["url"];
         this->md5 = j["md5"];

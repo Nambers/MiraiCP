@@ -38,7 +38,7 @@ namespace MiraiCP {
         j["halt"] = halt;
         std::string r = Config::koperation(Config::NextMsg, j, env);
         if (r == "E1")
-            MiraiCPThrow(TimeOutException("取下一条信息超时"));
+            throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
         return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
@@ -50,7 +50,7 @@ namespace MiraiCP {
         j["halt"] = halt;
         std::string r = Config::koperation(Config::NextMsg, j, env);
         if (r == "E1")
-            MiraiCPThrow(TimeOutException("取下一条信息超时"));
+            throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
         return MessageChain::deserializationFromMiraiCode(re["message"]).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
@@ -62,7 +62,7 @@ namespace MiraiCP {
         j["halt"] = halt;
         std::string r = Config::koperation(Config::NextMsg, j, env);
         if (r == "E1")
-            MiraiCPThrow(TimeOutException("取下一条信息超时"));
+            throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
         return MessageChain::deserializationFromMessageSourceJson(json::parse(re["messageSource"].get<std::string>())).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }

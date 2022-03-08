@@ -25,7 +25,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
     MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode, JNIEnv *env) const {
         if (msg.empty()) {
-            MiraiCPThrow(IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg"));
+            throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
         }
         std::string re = LowLevelAPI::send0(msg, this->toJson(), retryTime, miraicode, env,
                                             "reach a error area, Contact::SendMiraiCode");
@@ -48,14 +48,14 @@ namespace MiraiCP {
     Image Contact::uploadImg(const std::string &path, JNIEnv *env) const {
         std::string re = LowLevelAPI::uploadImg0(path, this->toString(), env);
         if (re == "E2")
-            MiraiCPThrow(UploadException("上传图片大小超过30MB,路径:" + path));
+            throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
         return Image::deserialize(re);
     }
 
     FlashImage Contact::uploadFlashImg(const std::string &path, JNIEnv *env) const {
         std::string re = LowLevelAPI::uploadImg0(path, this->toString(), env);
         if (re == "E2")
-            MiraiCPThrow(UploadException("上传图片大小超过30MB,路径:" + path));
+            throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
         return FlashImage::deserialize(re);
     }
 
@@ -88,9 +88,9 @@ namespace MiraiCP {
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::Voice, j, env);
         if (re == "E1") {
-            MiraiCPThrow(UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在"));
+            throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在", MIRAICP_EXCEPTION_WHERE);
         } else if (re == "E2") {
-            MiraiCPThrow(UploadException("上传语音文件大小超过服务器限制，一般限制在1MB上下"));
+            throw UploadException("上传语音文件大小超过服务器限制，一般限制在1MB上下", MIRAICP_EXCEPTION_WHERE);
         }
         return MessageSource::deserializeFromString(re);
     }

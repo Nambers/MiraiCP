@@ -15,9 +15,9 @@
 //
 
 #include "Member.h"
-#include "LowLevelAPI.h"
-#include "Exception.h"
 #include "Config.h"
+#include "Exception.h"
+#include "LowLevelAPI.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -36,18 +36,18 @@ namespace MiraiCP {
             return;
         std::string temp = LowLevelAPI::getInfoSource(this->toString(), env);
         if (temp == "E1")
-            MiraiCPThrow(MemberException(1));
+            throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
         if (temp == "E2")
-            MiraiCPThrow(MemberException(2));
+            throw MemberException(2, MIRAICP_EXCEPTION_WHERE);
         LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
         this->_nickOrNameCard = tmp.nickornamecard;
         this->_avatarUrl = tmp.avatarUrl;
         this->permission = getPermission();
         if (temp == "E1") {
-            MiraiCPThrow(MemberException(1));
+            throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
         }
         if (temp == "E2") {
-            MiraiCPThrow(MemberException(2));
+            throw MemberException(2, MIRAICP_EXCEPTION_WHERE);
         }
     }
 
@@ -65,10 +65,10 @@ namespace MiraiCP {
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::MuteM, j, env);
         if (re == "E3") {
-            MiraiCPThrow(BotException());
+            throw BotException(MIRAICP_EXCEPTION_WHERE);
         }
         if (re == "E4") {
-            MiraiCPThrow(MuteException());
+            throw MuteException(MIRAICP_EXCEPTION_WHERE);
         }
     }
 
@@ -78,7 +78,7 @@ namespace MiraiCP {
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::KickM, j, env);
         if (re == "E3") {
-            MiraiCPThrow(BotException());
+            throw BotException(MIRAICP_EXCEPTION_WHERE);
         }
     }
 
@@ -89,7 +89,7 @@ namespace MiraiCP {
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::ModifyAdmin, j, env);
         if (re == "E1") {
-            MiraiCPThrow(BotException());
+            throw BotException(MIRAICP_EXCEPTION_WHERE);
         }
     }
 
@@ -99,7 +99,7 @@ namespace MiraiCP {
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::SendNudge, j);
         if (re == "E1")
-            MiraiCPThrow(IllegalStateException("发送戳一戳失败，登录协议不为phone"));
+            throw IllegalStateException("发送戳一戳失败，登录协议不为phone", MIRAICP_EXCEPTION_WHERE);
     }
 
 } // namespace MiraiCP

@@ -27,8 +27,8 @@ namespace MiraiCP {
         j["source"] = this->serializeToString();
         std::string re = Config::koperation(Config::Recall, j, env);
         if (re == "Y") return;
-        if (re == "E1") MiraiCPThrow(BotException());
-        if (re == "E2") MiraiCPThrow(RecallException());
+        if (re == "E1") throw BotException(MIRAICP_EXCEPTION_WHERE);
+        if (re == "E2") throw RecallException(MIRAICP_EXCEPTION_WHERE);
     }
 
     MessageSource::MessageSource(std::string ids,
@@ -50,7 +50,7 @@ namespace MiraiCP {
             Logger::logger.error("消息源序列化出错，格式不符合(MessageSource::deserializeFromString)");
             Logger::logger.error(source);
             Logger::logger.error(e.what());
-            MiraiCPThrow(IllegalArgumentException(std::string("消息源序列化出错，格式不符合(MessageSource::deserializeFromString), ") + e.what()));
+            throw IllegalArgumentException(std::string("消息源序列化出错，格式不符合(MessageSource::deserializeFromString), ") + e.what(), MIRAICP_EXCEPTION_WHERE);
         }
     }
 } // namespace MiraiCP
