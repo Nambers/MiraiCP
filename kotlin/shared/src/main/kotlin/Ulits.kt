@@ -104,7 +104,7 @@ fun ContactOrBot.toContact(): Config.Contact? = when (this) {
     is Contact -> this.toContact()
     is Bot -> this.asFriend.toContact()
     else -> {
-        PublicShared.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:ContactOrBot.toContact(), info:${this.javaClass.name}")
+        PublicShared.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和本信息以修复此问题, 位置:ContactOrBot.toContact(), info:${this.javaClass.name}")
         null
     }
 }

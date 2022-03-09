@@ -69,7 +69,9 @@ namespace MiraiCP {
         explicit Member(QQID qqid, QQID groupid, QQID botid,
                         JNIEnv * = nullptr);
 
-        explicit Member(Contact c) : Contact(std::move(c)) {
+        explicit Member(const Contact &c) : Contact(c) {
+            if (c.type() != 3)
+                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 3(member)", MIRAICP_EXCEPTION_WHERE);
             this->isAnonymous = this->_anonymous;
             refreshInfo();
         };

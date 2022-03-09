@@ -303,6 +303,7 @@ object CPPEvent {
     data class NugdeEvent(
         val from: Config.Contact,
         val target: Config.Contact,
+        val subject: Config.Contact,
         val botid: Long,
         val type: Int = 12
     )

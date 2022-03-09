@@ -260,7 +260,13 @@ namespace MiraiCP {
         FlashImage uploadFlashImg(const std::string &path, JNIEnv * = nullptr) const;
 
         /// 刷新当前对象信息
-        virtual void refreshInfo(JNIEnv *){};
+        virtual void refreshInfo(JNIEnv *) { throw APIException("MiraiCP遇到内部问题, 位置:Contact::refreshInfo", MIRAICP_EXCEPTION_WHERE); };
+
+        template<class T>
+        T to() {
+            static_assert(std::is_base_of_v<Contact, T>);
+            return T(this);
+        }
 
     private: // private methods
         /// 发送纯文本信息
@@ -306,8 +312,6 @@ namespace MiraiCP {
             return this->quoteAndSend0(mc.toMiraiCode(), ms, env);
         }
     };
-
-
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_CONTACT_H

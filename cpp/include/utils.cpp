@@ -193,6 +193,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
             case eventTypes::NudgeEvent:
                 Event::processor.broadcast(NudgeEvent(Contact::deserialize(j["from"]),
                                                       Contact::deserialize(j["target"]),
+                                                      Contact::deserialize(j["subject"]),
                                                       j["botid"]));
                 break;
             case eventTypes::BotLeaveEvent:
