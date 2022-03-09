@@ -464,7 +464,9 @@ namespace MiraiCP {
         explicit BotOnlineEvent(QQID botid) : BotEvent(botid) {}
     };
 
-    /// 戳一戳事件
+    /*! 戳一戳事件
+    /* @warning nudgeEvent事件也会被bot自己发的Nudge触发, 可能会造成无限循环
+     */
     class NudgeEvent : public BotEvent<NudgeEvent> {
     public:
         static eventTypes get_event_type() {

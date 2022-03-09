@@ -682,12 +682,12 @@ object PublicShared {
         return "Y"
     }
 
-    fun sendNudge(c: Config.Contact): String = c.withBot { bot ->
+    suspend fun sendNudge(c: Config.Contact): String = c.withBot { bot ->
         return when (c.type) {
             1 -> {
                 c.withFriend(bot) { f ->
                     try {
-                        f.nudge()
+                        f.nudge().sendTo(f)
                     } catch (e: UnsupportedOperationException) {
                         logger.error("发送nudge必须使用ANDROID_PHONE/ipad协议，目前协议为:" + bot.configuration.protocol.name)
                         return "E1"
@@ -696,9 +696,9 @@ object PublicShared {
                 }
             }
             3 -> {
-                c.withMember(bot) { _, m ->
+                c.withMember(bot) { g, m ->
                     try {
-                        m.nudge()
+                        m.nudge().sendTo(g)
                     } catch (e: UnsupportedOperationException) {
                         logger.error("发送nudge必须使用ANDROID_PHONE/ipad协议，目前协议为:" + bot.configuration.protocol.name)
                         return "E1"
