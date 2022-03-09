@@ -695,7 +695,7 @@ object PublicShared {
                     "Y"
                 }
             }
-            2 -> {
+            3 -> {
                 c.withMember(bot) { _, m ->
                     try {
                         m.nudge()

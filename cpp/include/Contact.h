@@ -136,14 +136,6 @@ namespace MiraiCP {
         /// 所属bot
         QQID botid() const { return this->_botid; };
 
-        /*!
-         * @brief 发送戳一戳
-         * @warning 仅限Friend, Member类调用
-         * @see MiraiCP::Friend::sendNudge, MiraiCP::Member::sendNudge
-         * @throw MiraiCP::BotException, MiraiCP::IllegalStateException
-         */
-        virtual void sendNudge(){};
-
     public: // serialization
         /// 序列化到json对象
         nlohmann::json toJson() const {
@@ -249,7 +241,7 @@ namespace MiraiCP {
         [[deprecated("Use sendMessage")]] MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
 
         /*!
-        * @brief上传本地图片，务必要用绝对路径
+        * @brief 上传本地图片，务必要用绝对路径
         * 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
         * @attention 最大支持图片大小为30MB
         * @throws
@@ -259,13 +251,10 @@ namespace MiraiCP {
         Image uploadImg(const std::string &path, JNIEnv * = nullptr) const;
         FlashImage uploadFlashImg(const std::string &path, JNIEnv * = nullptr) const;
 
-        /// 刷新当前对象信息
-        virtual void refreshInfo(JNIEnv *) { throw APIException("MiraiCP遇到内部问题, 位置:Contact::refreshInfo", MIRAICP_EXCEPTION_WHERE); };
-
         template<class T>
         T to() {
             static_assert(std::is_base_of_v<Contact, T>);
-            return T(this);
+            return T(*this);
         }
 
     private: // private methods
@@ -311,6 +300,17 @@ namespace MiraiCP {
         MessageSource quoteAndSend1(MessageChain mc, MessageSource ms, JNIEnv *env) {
             return this->quoteAndSend0(mc.toMiraiCode(), ms, env);
         }
+    };
+
+    class INudgeSupport{
+    public:
+        /*!
+         * @brief 发送戳一戳
+         * @warning 仅限Friend, Member类调用
+         * @see MiraiCP::Friend::sendNudge, MiraiCP::Member::sendNudge
+         * @throw MiraiCP::BotException, MiraiCP::IllegalStateException
+         */
+        virtual void sendNudge() = 0;
     };
 } // namespace MiraiCP
 

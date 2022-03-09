@@ -48,7 +48,7 @@ tasks {
         named<me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication>(me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication.TASK_NAME) {
             dependsOn(getByPath(":fillingConstants"))
         }
-        named<net.mamoe.mirai.console.gradle.BuildMiraiPluginTask>("buildPlugin") {
+        named<net.mamoe.mirai.console.gradle.BuildMiraiPluginV2>("buildPlugin") {
             dependsOn(getByPath(":fillingConstants"))
             archiveBaseName.set("MiraiCP-plugin")
             archiveClassifier.set("")

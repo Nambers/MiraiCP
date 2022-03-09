@@ -210,7 +210,7 @@ namespace MiraiCP {
         std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env);
 
         /// 刷新群聊信息
-        void refreshInfo(JNIEnv *env = nullptr) override;
+        void refreshInfo(JNIEnv *env = nullptr);
 
         void quit(JNIEnv *env = nullptr);
 
@@ -261,10 +261,6 @@ namespace MiraiCP {
         /// 取文件列表以字符串形式返回
         /// @param path 文件夹路径
         std::string getFileListString(const std::string &path, JNIEnv * = nullptr);
-
-
-    private: // should not use
-        void sendNudge() override { throw APIException("Group对象中非法调用函数sendNudge", MIRAICP_EXCEPTION_WHERE); }
     };
 } // namespace MiraiCP
 

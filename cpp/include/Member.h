@@ -48,7 +48,7 @@ namespace MiraiCP {
         });
      * @endcode
      */
-    class Member : public Contact {
+    class Member : public Contact, INudgeSupport {
     public:
         /// @brief 权限等级
         ///     - OWNER群主 为 2
@@ -80,7 +80,7 @@ namespace MiraiCP {
         bool isAnonymous = false;
 
         /// 重新获取(刷新)群成员信息
-        void refreshInfo(JNIEnv *env = nullptr) override;
+        void refreshInfo(JNIEnv *env = nullptr);
 
         /// 发送语音
         MessageSource sendVoice(const std::string &path, JNIEnv *env = nullptr) {
