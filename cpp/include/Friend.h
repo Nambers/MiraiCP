@@ -42,7 +42,11 @@ namespace MiraiCP {
          */
         explicit Friend(QQID friendid, QQID botid, JNIEnv * = nullptr);
 
-        explicit Friend(Contact c) : Contact(std::move(c)) { refreshInfo(); };
+        explicit Friend(const Contact &c) : Contact(c) {
+            if (c.type() != 1)
+                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 1(friend)", MIRAICP_EXCEPTION_WHERE);
+            refreshInfo();
+        };
     };
 } // namespace MiraiCP
 

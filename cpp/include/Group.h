@@ -173,7 +173,11 @@ namespace MiraiCP {
         /// @param botid 机器人id
         Group(QQID groupid, QQID botid, JNIEnv * = nullptr);
 
-        explicit Group(Contact c) : Contact(std::move(c)) { refreshInfo(); }
+        explicit Group(const Contact &c) : Contact(c) {
+            if (c.type() != 2)
+                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 2(group)", MIRAICP_EXCEPTION_WHERE);
+            refreshInfo();
+        }
 
 
     public: // methods

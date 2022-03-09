@@ -472,12 +472,15 @@ namespace MiraiCP {
         }
 
     public:
-        /// 谁发送的
+        ///发送人
         Contact from;
+        /// 目标
         Contact target;
+        /// 发送的环境, 可能为Group / Friend
+        Contact subject;
 
-        NudgeEvent(Contact c, Contact target, QQID botid) : BotEvent(botid), from(std::move(c)),
-                                                            target(std::move(target)) {}
+        NudgeEvent(const Contact &c, const Contact &target, const Contact &subject, QQID botid) : BotEvent(botid), from(c),
+                                                                                                  target(target), subject(subject) {}
     };
 
     /// 机器人退群事件

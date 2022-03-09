@@ -910,11 +910,12 @@ object PublicShared {
         }
 
         eventChannel.subscribeAlways<NudgeEvent> {
-            val f = this.from.toContact() ?: return@subscribeAlways
-            val t = this.target.toContact() ?: return@subscribeAlways
             cpp.event(
                 CPPEvent.NugdeEvent(
-                    f, t, this.bot.id
+                    this.from.toContact() ?: return@subscribeAlways,
+                    this.target.toContact() ?: return@subscribeAlways,
+                    this.subject.toContact() ?: return@subscribeAlways,
+                    this.bot.id
                 )
 
             )
