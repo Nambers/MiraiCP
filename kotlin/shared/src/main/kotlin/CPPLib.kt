@@ -57,7 +57,9 @@ import tech.eritquearcus.miraicp.shared.PublicShared.uploadImg
 import tech.eritquearcus.miraicp.shared.PublicShared.uploadVoice
 
 class CPPLib(
+    // 本地地址
     val libPath: String,
+    // 依赖dll地址, 为了解决数据库依赖之类的
     private val dependencies: List<String>?
 ) {
     var config: PluginConfig
@@ -101,6 +103,7 @@ class CPPLib(
                 }
             }
 
+        // 日志发送接口
         @JvmStatic
         fun KSendLog(log: String, level: Int) {
             val j = JSONObject(log)
@@ -206,6 +209,7 @@ class CPPLib(
             CommandReg
         }
 
+        // 通用接口
         @JvmStatic
         fun KOperation(content: String): String =
             runBlocking {
