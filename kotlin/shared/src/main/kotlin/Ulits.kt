@@ -38,6 +38,7 @@ import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
+// 执行线程池, 以免阻塞mirai协程的线程池
 private val queue = SynchronousQueue<Runnable>()
 private val cc by lazy {
     ThreadPoolExecutor(
@@ -49,6 +50,7 @@ private val cc by lazy {
 //    crossinline block: T.() -> R,
 //): R = runInterruptible(context = cc, block = { block() })
 
+// 广播事件到cpp
 fun ArrayList<CPPLib>.event(obj: Any) {
     val content = if (obj is String) obj else PublicShared.gson.toJson(obj)
     cc.submit {
@@ -65,7 +67,7 @@ fun ArrayList<CPPLib>.event(obj: Any) {
     }
 }
 
-// load native lib
+// load native lib from File
 fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPPLib {
     this.copyTo(File.createTempFile(this.name, ".cache", PublicShared.cachePath), true).let { tempFile ->
         return CPPLib(tempFile.absolutePath, d).apply {
@@ -101,6 +103,7 @@ fun Contact.toContact(): Config.Contact? = when (this) {
     }
 }
 
+// convert mirai Contact type to MiraiCP contact
 fun ContactOrBot.toContact(): Config.Contact? = when (this) {
     is Contact -> this.toContact()
     is Bot -> this.asFriend.toContact()
@@ -199,6 +202,8 @@ internal inline fun Config.Contact.withMember(
 }
 
 internal fun <T> JSONObject.getOrNull(key: String): T? = if (this.has(key)) (this.get(key) as T) else null
+
+// MiraiCP image info to mirai image
 internal fun Config.ImgInfo.toImage(): Image = Image.newBuilder(this.imageid!!).apply {
     this@apply.height = this@toImage.height
     this@apply.width = this@toImage.width
