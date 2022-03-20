@@ -79,7 +79,7 @@ namespace MiraiCP {
         virtual string getExceptionType() = 0;
 
         // 每个子类需要单独实现该静态方法
-        /// 返回异常的类型
+        /// 返回异常的类型，该静态方法无法正确实现多态，请使用 getExceptionType
         /// @see getExceptionType
         static string exceptionType() { return "MiraiCPException"; }
     };

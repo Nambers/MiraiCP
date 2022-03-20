@@ -23,6 +23,7 @@
 #include <sstream>
 
 #include "MessageSource.h"
+#include "MiraiCode.h"
 
 namespace MiraiCP {
     /// 用serviceMessage的分享信息

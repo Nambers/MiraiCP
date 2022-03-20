@@ -17,10 +17,11 @@
 #ifndef MIRAICP_PRO_MESSAGESOURCE_H
 #define MIRAICP_PRO_MESSAGESOURCE_H
 
-#include "MiraiCode.h"
+#include <string>
 #include <jni.h>
 
 namespace MiraiCP {
+    class MiraiCodeable; // forward declaration
     using QQID = unsigned long long;
     /*! 消息源声明
      * @example 撤回信息(check in version 2.9.0)
