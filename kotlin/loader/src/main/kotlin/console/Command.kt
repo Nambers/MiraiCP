@@ -148,23 +148,20 @@ object Command {
     }
 
     private fun reload(order: String, path: String) {
-        File(path).let { plugin ->
-            when {
-                (!plugin.isFile || !plugin.exists()) -> error(order, "插件(${path})不存在")
-                (plugin.extension != "dll" && plugin.extension != "so") -> error(order, "插件(${path})不是dll或so文件")
-                else -> {
-                    val p = plugin.loadAsCPPLib(emptyList(), true)
-                    PublicShared.cpp.filter { it.config.id == p.config.id }.apply {
-                        if (this.isEmpty())
-                            PublicShared.logger.warning("重载未找到id为(${p.config.id}), 但会继续执行, 效果类似`load`")
-                    }.forEach {
-                        PublicShared.cpp.remove(it)
-                        PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
-                    }
-                }
-            }
+        val file = File(path)
+        if (!file.isFile || !file.exists()) {
+            error(order, "插件(${path})不存在")
+            return
         }
-
+        val plugin = file.loadAsCPPLib(emptyList(), true)
+        PublicShared.cpp.filter { it.config.id == plugin.config.id }.apply {
+            if (this.size != 2)
+                PublicShared.logger.warning("重载未找到id为(${plugin.config.id}), 但会继续执行, 效果类似`load`")
+        }.forEach {
+            if (it.libPath == plugin.libPath) return
+            PublicShared.cpp.remove(it)
+            PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
+        }
     }
 
     private fun oneParamOrder(order: List<String>, re: List<String>) {

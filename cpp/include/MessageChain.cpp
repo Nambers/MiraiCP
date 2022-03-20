@@ -178,7 +178,7 @@ namespace MiraiCP {
                     mc.add(FlashImage(node["imageId"]));
                     break;
                 default:
-                    Logger::logger.error(
+                    Logger::logger.warning(
                             "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在MessageSource解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: MessageSource:" +
                             j.dump());
                     mc.add(UnSupportMessage(node.dump()));

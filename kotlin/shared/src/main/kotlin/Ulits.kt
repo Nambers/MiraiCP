@@ -67,18 +67,19 @@ fun ArrayList<CPPLib>.event(obj: Any) {
 
 // load native lib
 fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPPLib {
-    this.copyTo(File.createTempFile(this.name, ".cache", PublicShared.cachePath), true).let {
-        return CPPLib(it.absolutePath, d).apply {
-            PublicShared.logger.info("加载${it.absolutePath}成功")
+    this.copyTo(File.createTempFile(this.name, ".cache", PublicShared.cachePath), true).let { tempFile ->
+        return CPPLib(tempFile.absolutePath, d).apply {
+            PublicShared.logger.info("加载${tempFile.absolutePath}成功")
             this.showInfo()
-            val checkRe = PublicShared.cpp.count { itt -> itt.config.id == this.config.id }
-            if (!uncheck) checkRe.let check@{ c ->
-                if (c == 1) return@check
-                val lib = PublicShared.cpp.first { itt -> itt.config.id == this.config.id }
-                PublicShared.logger.error("已加载id为${lib.config.id}的插件, 放弃加载当前插件(位于:${this@loadAsCPPLib.absolutePath})")
-                return lib
+            if (!uncheck) {
+                if (PublicShared.cpp.count { it.config.id == this.config.id } > 1) {
+                    val lib = PublicShared.cpp.first { it.config.id == this.config.id }
+                    PublicShared.logger.error("已加载id为${lib.config.id}的插件, 放弃加载当前插件(位于:${this@loadAsCPPLib.absolutePath})")
+                    return lib
+                }
+                if (PublicShared.cpp.count { it.config.name == this.config.name } > 1)
+                    PublicShared.logger.warning("检测到列表已经有重复的插件名称(${this.config.name}), 请检测配置文件中是否重复或提醒开发者改插件名称，但该插件还是会加载")
             }
-            if (checkRe != 1) PublicShared.logger.warning("检测到列表已经有重复的${this.config.name}, 请检测配置文件中是否重复或提醒开发者改插件名称，但该插件还是会加载")
             PublicShared.logger4plugins[this.config.id] = MiraiLogger.Factory.create(this::class, this.config.name)
         }
     }
