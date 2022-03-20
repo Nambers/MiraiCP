@@ -18,7 +18,6 @@
 #include "Config.h"
 #include "Exception.h"
 #include "Logger.h"
-#include "LowLevelAPI.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
