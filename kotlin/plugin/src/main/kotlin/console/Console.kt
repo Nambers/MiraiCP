@@ -111,20 +111,19 @@ object ReLoadPlugin : SimpleCommand(
 ) {
     @Handler
     suspend fun ConsoleCommandSender.reload(path: String) {
-        val plugin = File(path)
-        when {
-            (!plugin.isFile || !plugin.exists()) -> sendMessage("插件(${path})不存在")
-            (plugin.extension != "dll" && plugin.extension != "so") -> sendMessage("插件(${path})不是dll或so文件")
-            else -> {
-                val p = plugin.loadAsCPPLib(emptyList(), true)
-                PublicShared.cpp.filter { it.config.id == p.config.id }.apply {
-                    if (this.isEmpty())
-                        sendMessage("重载未找到id为(${p.config.id}), 但会继续执行, 效果类似`load`")
-                }.forEach {
-                    PublicShared.cpp.remove(it)
-                    PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
-                }
-            }
+        val file = File(path)
+        if (!file.isFile || !file.exists()) {
+            sendMessage("Err:${file.absolutePath} 不是一个有效的文件")
+            return
+        }
+        val plugin = file.loadAsCPPLib(emptyList(), true)
+        PublicShared.cpp.filter { it.config.id == plugin.config.id }.apply {
+            if (this.size != 2)
+                sendMessage("Warning:重载未找到id为(${plugin.config.id}), 但会继续执行, 效果类似`load`")
+        }.forEach {
+            if (it.libPath == plugin.libPath) return
+            PublicShared.cpp.remove(it)
+            PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
         }
     }
 }
