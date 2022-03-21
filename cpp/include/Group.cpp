@@ -47,8 +47,6 @@ namespace MiraiCP {
         std::string re = Config::koperation(Config::Announcement, j);
         if (re == "E1")
             throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)", MIRAICP_EXCEPTION_WHERE);
-        if (re == "E2")
-            throw BotException(MIRAICP_EXCEPTION_WHERE);
         if (re == "E3")
             throw IllegalStateException("群公告状态异常", MIRAICP_EXCEPTION_WHERE);
     }
@@ -73,8 +71,6 @@ namespace MiraiCP {
         s["params"] = this->params.serializeToJson();
         j["source"] = s.dump();
         std::string re = Config::koperation(Config::Announcement, j);
-        if (re == "E1")
-            throw BotException(MIRAICP_EXCEPTION_WHERE);
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
     }
 
@@ -145,8 +141,6 @@ namespace MiraiCP {
         tmp["source"] = j.dump();
         tmp["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::GroupSetting, tmp, env);
-        if (re == "E1")
-            throw BotException(MIRAICP_EXCEPTION_WHERE);
         refreshInfo(env);
     }
 

@@ -336,7 +336,7 @@ object PublicShared {
             source.recall()
         } catch (e: PermissionDeniedException) {
             logger.error("机器人无权限撤回")
-            return "E1"
+            return "EP"
         } catch (e: IllegalStateException) {
             logger.error("该消息已被撤回")
             return "E2"
@@ -354,7 +354,7 @@ object PublicShared {
                 else member.unmute()
             } catch (e: PermissionDeniedException) {
                 logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:${c.groupid}，目标成员id:${c.id}")
-                return "E3"
+                return "EP"
             } catch (e: IllegalStateException) {
                 logger.error("执行禁言失败禁言时间超出0s~30d，位置:K-mute()，时间:$time")
                 return "E4"
@@ -409,7 +409,7 @@ object PublicShared {
                     group.files.root.uploadNewFile(path, it)
                 }
             } catch (e: PermissionDeniedException) {
-                return "EB"
+                return "EP"
             } catch (e: IllegalStateException) {
                 return "E3"
             } catch (e: Exception) {
@@ -489,7 +489,7 @@ object PublicShared {
             try {
                 member.kick(message)
             } catch (e: PermissionDeniedException) {
-                return "E3"
+                return "EP"
             }
             return "Y"
         }
@@ -633,7 +633,7 @@ object PublicShared {
                 group.settings.isMuteAll = root.isMuteAll
                 group.settings.isAllowMemberInvite = root.isAllowMemberInvite
             } catch (e: PermissionDeniedException) {
-                return "E1"
+                return "EP"
             }
             return "Y"
         }
@@ -646,7 +646,7 @@ object PublicShared {
                     if (!it) return "E1"
                 }
             } catch (e: PermissionDeniedException) {
-                return "E2"
+                return "EP"
             } catch (e: IllegalStateException) {
                 return "E3"
             }
@@ -668,7 +668,7 @@ object PublicShared {
                     return try {
                         gson.toJson(it.publishTo(g).toOnlineA())
                     } catch (e: PermissionDeniedException) {
-                        "E1"
+                        "EP"
                     }
                 }
             }
@@ -715,7 +715,7 @@ object PublicShared {
             try {
                 member.modifyAdmin(b)
             } catch (e: PermissionDeniedException) {
-                return "E1"
+                return "EP"
             }
             "Y"
         }
@@ -732,6 +732,15 @@ object PublicShared {
 
     suspend fun isUploaded(img: Config.ImgInfo, botid: Long): String = withBot(botid) { bot ->
         img.toImage().isUploaded(bot).toString()
+    }
+
+    fun changeNameCard(c: Config.Contact, name: String): String = c.withMiraiMember { _, _, normalMember ->
+        try {
+            normalMember.nameCard = name
+        } catch (_: PermissionDeniedException) {
+            return@withMiraiMember "EP"
+        }
+        "s"
     }
 
     fun onDisable() = cpp.forEach { it.PluginDisable() }

@@ -26,7 +26,6 @@ namespace MiraiCP {
         j["source"] = this->serializeToString();
         std::string re = Config::koperation(Config::Recall, j, env);
         if (re == "Y") return;
-        if (re == "E1") throw BotException(MIRAICP_EXCEPTION_WHERE);
         if (re == "E2") throw RecallException(MIRAICP_EXCEPTION_WHERE);
     }
 

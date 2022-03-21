@@ -201,6 +201,10 @@ internal inline fun Config.Contact.withMember(
     return block(group, m)
 }
 
+fun Config.Contact.withMiraiMember(block: (Bot, Group, NormalMember) -> String): String = withBot { bot ->
+    return withMember(bot) { g, m -> block(bot, g, m) }
+}
+
 internal fun <T> JSONObject.getOrNull(key: String): T? = if (this.has(key)) (this.get(key) as T) else null
 
 // MiraiCP image info to mirai image

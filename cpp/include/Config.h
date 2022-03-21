@@ -89,7 +89,9 @@ namespace MiraiCP {
             /// 图片是否已经上传
             ImageUploaded,
             /// 注册指令
-            CommandReg
+            CommandReg,
+            /// 改名称
+            ChangeNameCard,
         };
 
         /**
