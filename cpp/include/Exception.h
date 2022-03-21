@@ -322,6 +322,8 @@ namespace MiraiCP {
             throw EventCancelledException("发送信息被取消", name, line);
         if (re == "ET")
             throw TimeOutException("发送信息超时", name, line);
+        if (re == "EP")
+            throw BotException(name, line);
         // equal to Tools::start_with
         if (re.rfind("EBM", 0) == 0)
             throw BotIsBeingMutedException(std::stoi(re.substr(3)), name, line);

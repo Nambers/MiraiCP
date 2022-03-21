@@ -114,6 +114,10 @@ namespace MiraiCP {
             return At(this->id());
         }
 
+        /// 更改群名片
+        /// @throw MiraiCP::BotException 如果没权限时
+        void changeNameCard(std::string_view newName, JNIEnv* = nullptr);
+
         /*!
          * @brief 发送戳一戳
          * @warning 发送戳一戳的前提是登录该bot的协议是android_phone/ipad, 否则抛出IllegalStateException

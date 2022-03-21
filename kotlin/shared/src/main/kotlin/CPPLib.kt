@@ -206,7 +206,8 @@ class CPPLib(
             ModifyAdmin,
             MemberJoinRequest,
             ImageUploaded,
-            CommandReg
+            CommandReg,
+            ChangeNameCard
         }
 
         // 通用接口
@@ -342,6 +343,12 @@ class CPPLib(
                                     root.getString("command"),
                                     Command::class.java
                                 )
+                            )
+                        }
+                        Operation_code.ChangeNameCard.ordinal -> {
+                            PublicShared.changeNameCard(
+                                contact(root.getString("contactSource")),
+                                root.getString("newName")
                             )
                         }
                         else -> "EA"

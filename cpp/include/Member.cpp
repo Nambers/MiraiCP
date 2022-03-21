@@ -64,22 +64,15 @@ namespace MiraiCP {
         j["time"] = time;
         j["contactSource"] = this->toString();
         std::string re = Config::koperation(Config::MuteM, j, env);
-        if (re == "E3") {
-            throw BotException(MIRAICP_EXCEPTION_WHERE);
-        }
-        if (re == "E4") {
+        if (re == "E4")
             throw MuteException(MIRAICP_EXCEPTION_WHERE);
-        }
     }
 
     void Member::kick(const std::string &reason, JNIEnv *env) {
         json j;
         j["message"] = reason;
         j["contactSource"] = this->toString();
-        std::string re = Config::koperation(Config::KickM, j, env);
-        if (re == "E3") {
-            throw BotException(MIRAICP_EXCEPTION_WHERE);
-        }
+        Config::koperation(Config::KickM, j, env);
     }
 
     void Member::modifyAdmin(bool admin, JNIEnv *env) {
@@ -87,10 +80,17 @@ namespace MiraiCP {
         json j;
         j["admin"] = admin;
         j["contactSource"] = this->toString();
-        std::string re = Config::koperation(Config::ModifyAdmin, j, env);
-        if (re == "E1") {
-            throw BotException(MIRAICP_EXCEPTION_WHERE);
-        }
+        Config::koperation(Config::ModifyAdmin, j, env);
+        refreshInfo(env);
+    }
+
+    void Member::changeNameCard(std::string_view newName, JNIEnv* env) {
+        if (isAnonymous) return;
+        json j;
+        j["contactSource"] = this->toString();
+        j["newName"] = newName;
+        Config::koperation(Config::ChangeNameCard, j, env);
+        refreshInfo(env);
     }
 
     void Member::sendNudge() {
