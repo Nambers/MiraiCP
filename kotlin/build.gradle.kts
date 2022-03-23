@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2021. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -62,6 +62,10 @@ tasks {
                             .replace(
                                 Regex("""val version = "(.*)""""),
                                 "val version = \"${Version.miraiCP}\""
+                            )
+                            .replace(
+                                Regex("""val miraiVersion = "(.*)""""),
+                                "val miraiVersion = \"${Version.mirai}\""
                             )
                     )
                 }

@@ -36,7 +36,7 @@ object PluginMain : KotlinPlugin(
         id = "tech.eritquearcus.miraiCP",
         name = "miraiCP",
         version = version
-    ){
+    ) {
         author("Eritque arcus")
     }
 ) {
@@ -51,7 +51,8 @@ object PluginMain : KotlinPlugin(
         }
         PublicShared.cachePath.mkdir()
         l.info("⭐MiraiCP启动中⭐")
-        l.info("本项目github存储库:https://github.com/Nambers/MiraiCP")
+        l.info("⭐github地址:https://github.com/Nambers/MiraiCP")
+        l.info("⭐MiraiCP版本: $version, 构建时间: ${BuiltInConstants.date}")
         PublicShared.commandReg = CommandHandlerImpl()
         Gson().fromJson(File("${dataFolder.absoluteFile}/miraicp.json").apply {
             if (!this.exists() || !this.isFile) {
@@ -80,21 +81,19 @@ object PluginMain : KotlinPlugin(
                 }
             }
             .pluginConfig.forEach { i ->
-                val it = i.path
                 val d = i.dependencies?.filter { p ->
-                    File(p).let { f ->
-                        f.isFile && f.exists() && (f.extension == "dll" || f.extension == "lib" || f.extension == "so")
-                    }
+                    File(p).let { f -> f.isFile && f.exists() }
                 }
-                val f = File(it)
-                when {
-                    !f.isFile || !f.exists() -> {
-                        error(it + "不是一个有效的文件")
-                    }
-                    else -> {
-                        f.loadAsCPPLib(d)
-                    }
-                }
+                val f = File(i.path)
+                val files = (if (f.isAbsolute)
+                    listOf(f)
+                else
+                    listOf(f, dataFolder.resolve(f), configFolder.resolve(f)))
+                val re = files.firstOrNull { it.isFile && it.exists() }
+                if (re == null) {
+                    l.error(files.joinToString("/") { it.absolutePath } + " 不是一个有效的文件")
+                } else
+                    re.loadAsCPPLib(d)
             }
         logger.info("⭐已成功启动MiraiCP⭐")
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {

@@ -71,7 +71,7 @@ fun ArrayList<CPPLib>.event(obj: Any) {
 fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPPLib {
     this.copyTo(File.createTempFile(this.name, ".cache", PublicShared.cachePath), true).let { tempFile ->
         return CPPLib(tempFile.absolutePath, d).apply {
-            PublicShared.logger.info("加载${tempFile.absolutePath}成功")
+            PublicShared.logger.info("⭐加载${tempFile.absolutePath}成功")
             this.showInfo()
             if (!uncheck) {
                 if (PublicShared.cpp.count { it.config.id == this.config.id } > 1) {

@@ -21,8 +21,6 @@ package tech.eritquearcus.miraicp.loader
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
@@ -52,7 +50,7 @@ object KotlinMain {
         PublicShared.cachePath.mkdir()
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
-        logger.info("⭐当前MiraiCP版本: $now_tag, 构建时间: ${BuiltInConstants.date}")
+        logger.info("⭐当前MiraiCP版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
         PublicShared.commandReg = LoaderCommandHandlerImpl()
         c.apply {
             if (this.advanceConfig != null && this.advanceConfig!!.maxThread != null) {
@@ -65,7 +63,7 @@ object KotlinMain {
             }
             val f = File(it.path)
             if (!f.exists() || !f.isFile) {
-                logger.error("Error: dll文件${it.path} 不存在, 请检查config.json配置")
+                logger.error("Error: dll文件 ${f.absolutePath} 不存在, 请检查config.json配置")
                 return@forEach
             }
             f.loadAsCPPLib(d)
