@@ -215,6 +215,10 @@ namespace MiraiCP {
     }
 
     Member Group::getMember(QQID memberid, JNIEnv *env) {
-        return Member(memberid, this->id(), this->groupid(), env);
+        return Member(memberid, this->id(), this->botid(), env);
+    }
+
+    Member Group::operator[](QQID a) {
+        return getMember(a);
     }
 } // namespace MiraiCP

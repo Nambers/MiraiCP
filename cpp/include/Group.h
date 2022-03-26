@@ -206,6 +206,8 @@ namespace MiraiCP {
         /// 取群成员
         Member getMember(QQID memberid, JNIEnv *env = nullptr);
 
+        Member operator[](QQID id);
+
         /// 取群公告列表
         std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env);
 
