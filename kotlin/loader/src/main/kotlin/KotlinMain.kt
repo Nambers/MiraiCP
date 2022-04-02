@@ -36,7 +36,7 @@ object KotlinMain {
     private val job = Job()
     val coroutineScope = CoroutineScope(job)
     lateinit var loginAccount: List<CPPConfig.loaderConfig.Account>
-    var logined = false
+    var alive = true
 
     fun main(j: String) {
         job.start()
@@ -74,12 +74,12 @@ object KotlinMain {
         }
         c.accounts?.filter { it.autoLogin == true }?.forEach {
             it.login()
-            logined = true
+            // logined = true
         }
         logger.info("⭐已成功加载MiraiCP⭐")
         Console.listen()
         // if not logged-in, wait user login in console
-        while (!logined) {
+        while (alive) {
         }
     }
 }
