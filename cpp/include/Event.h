@@ -507,12 +507,16 @@ namespace MiraiCP {
     private:
         std::string source;
 
-    private:
-        void operate(const std::string &s,
+    public:
+        /**
+         * @brief 底层通过MemberJoinRequest
+         * @param s 序列化后的文本
+         */
+        static void operate(std::string_view s,
                      QQID botid,
                      bool sign,
                      const std::string &msg = "",
-                     JNIEnv *env = nullptr) const;
+                     JNIEnv *env = nullptr) ;
 
     public:
         static eventTypes get_event_type() {
@@ -524,10 +528,12 @@ namespace MiraiCP {
         std::optional<Group> group;
         /// 邀请人, 如果不存在表明这个邀请人退出了群或没有邀请人为主动进群
         std::optional<Member> inviter;
+        /// 申请人id
+        QQID requesterId;
 
     public:
-        MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, std::string source)
-            : BotEvent(botid), group(std::move(g)), inviter(std::move(i)), source(std::move(source)){};
+        MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, QQID requesterId, std::string source)
+            : BotEvent(botid), group(std::move(g)), inviter(std::move(i)), source(std::move(source)), requesterId(requesterId){};
 
         /// 通过
         void accept() {

@@ -77,7 +77,7 @@ namespace MiraiCP {
         if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
     }
 
-    void MemberJoinRequestEvent::operate(const std::string &s, QQID botid, bool sign, const std::string &msg, JNIEnv *env) const {
+    void MemberJoinRequestEvent::operate(std::string_view s, QQID botid, bool sign, const std::string &msg, JNIEnv *env) {
         nlohmann::json j;
         j["source"] = s;
         j["botid"] = botid;

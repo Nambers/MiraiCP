@@ -316,6 +316,7 @@ object CPPEvent {
     data class MemberJoinRequestEvent(
         val group: Config.Contact,
         val inviter: Config.Contact,
+        val requester: Long,
         val requestData: String,
         val type: Int = 14
     )
