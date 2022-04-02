@@ -105,6 +105,7 @@ object Command {
                     }
                     PublicShared.logger.info("Bot ${it.id} closed")
                 }
+                KotlinMain.alive = false
                 exitProcess(0)
             }
             "help" -> printHelp()
@@ -178,7 +179,6 @@ object Command {
                 } catch (e: NoSuchElementException) {
                     error(order.joinToString(" "), "config文件中没找到关于$id 的定义或该id已经通过自动登录登录")
                 }
-                KotlinMain.logined = true
             }
             "loadPlugin", "load" -> {
                 val f = File(order[1])
