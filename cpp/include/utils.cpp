@@ -212,7 +212,7 @@ JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
                     b = std::nullopt;
                 else
                     b = Member(temp);
-                Event::processor.broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requestData"]));
+                Event::processor.broadcast(MemberJoinRequestEvent(a, b, temp.botid(),j["requester"], j["requestData"]));
                 break;
             }
             case eventTypes::MessagePreSendEvent: {

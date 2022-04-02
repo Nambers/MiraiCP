@@ -942,6 +942,7 @@ object PublicShared {
                 CPPEvent.MemberJoinRequestEvent(
                     this.group?.toContact() ?: emptyContact(this.bot.id),
                     this.invitor?.toContact() ?: emptyContact(this.bot.id),
+                    this.fromId,
                     gson.toJson(this.toRequestEventData())
                 )
             )
