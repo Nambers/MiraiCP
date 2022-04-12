@@ -38,7 +38,7 @@ internal fun String.decodeHex(): ByteArray {
 }
 
 @MiraiExperimentalApi
-internal fun CPPConfig.loaderConfig.Account.login() {
+fun CPPConfig.loaderConfig.Account.login() {
     this.logined = true
     val p = when (this.protocol?.uppercase()) {
         "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD

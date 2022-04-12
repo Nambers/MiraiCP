@@ -32,6 +32,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.gson
 import tech.eritquearcus.miraicp.shared.PublicShared.isUploaded
 import tech.eritquearcus.miraicp.shared.PublicShared.kkick
 import tech.eritquearcus.miraicp.shared.PublicShared.kqueryM
+import tech.eritquearcus.miraicp.shared.PublicShared.logger
 import tech.eritquearcus.miraicp.shared.PublicShared.memberJoinRequest
 import tech.eritquearcus.miraicp.shared.PublicShared.modifyAdmin
 import tech.eritquearcus.miraicp.shared.PublicShared.mute
@@ -58,22 +59,30 @@ import tech.eritquearcus.miraicp.shared.PublicShared.uploadVoice
 
 class CPPLib(
     // 本地地址
-    val libPath: String,
+    val libPath: String?,
     // 依赖dll地址, 为了解决数据库依赖之类的
-    private val dependencies: List<String>?
+    private val dependencies: List<String>?,
+    // 只在libPath == null下生效
+    callback: () -> Unit = {}
 ) {
     var config: PluginConfig
 
     init {
-        dependencies?.forEach {
-            System.load(it)
+        config = if (libPath == null) {
+            PublicShared.cpp.add(this)
+            callback()
+            Gson().fromJson(Verify("0"), PluginConfig::class.java)
+        } else {
+            dependencies?.forEach {
+                System.load(it)
+            }
+            System.load(libPath)
+            val last = PublicShared.cpp.size
+            PublicShared.cpp.add(this)
+            val now = PublicShared.cpp.size
+            val precise = if (now - last == 1) (now - 1) else PublicShared.cpp.indexOf(this)
+            Gson().fromJson(Verify(precise.toString()), PluginConfig::class.java)
         }
-        System.load(libPath)
-        val last = PublicShared.cpp.size
-        PublicShared.cpp.add(this)
-        val now = PublicShared.cpp.size
-        val precise = if (now - last == 1) (now - 1) else PublicShared.cpp.indexOf(this)
-        config = Gson().fromJson(Verify(precise.toString()), PluginConfig::class.java)
     }
 
     fun showInfo(logger: MiraiLogger = PublicShared.logger, version: String = PublicShared.now_tag) {
@@ -362,7 +371,7 @@ class CPPLib(
             }
     }
 
-    private external fun Verify(pluginid: String): String
+    external fun Verify(pluginid: String): String
     external fun Event(content: String): String
     external fun PluginDisable(): Void
 }

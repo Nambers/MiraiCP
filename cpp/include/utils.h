@@ -18,7 +18,6 @@
 #define MIRAICP_PRO_UTILS_H
 #include "CPPPlugin.h"
 #include "Config.h"
-
 namespace MiraiCP {
     const std::string MiraiCPVersion = "v2.11.0-M1";
     /*!
@@ -50,6 +49,14 @@ namespace MiraiCP {
     inline void enrollPlugin0(CPPPlugin *p) {
         CPPPlugin::plugin = p;
     }
+    namespace JNIApi {
+        // todo 暴露了一些接口
+        JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content);
+        JNIEXPORT jstring returnNull();
+        JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job);
+        JNIEXPORT jstring Verify(JNIEnv *env, jobject, jstring id);
+        int registerMethods(JNIEnv *env, const char *className, JNINativeMethod *gMethods, int numMethods);
+    } // namespace JNIApi
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_UTILS_H
