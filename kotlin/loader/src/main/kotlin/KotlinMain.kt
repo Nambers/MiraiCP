@@ -33,7 +33,7 @@ import java.io.File
 import kotlin.system.exitProcess
 
 object KotlinMain {
-    private val job = Job()
+    val job = Job()
     val coroutineScope = CoroutineScope(job)
     lateinit var loginAccount: List<CPPConfig.loaderConfig.Account>
     var alive = true

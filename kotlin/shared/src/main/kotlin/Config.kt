@@ -166,10 +166,10 @@ object CPPConfig {
         val advanceConfig: AdvanceConfig?
     ) {
         data class Account(
-            val heatBeat: String?,
             val id: Long,
             val passwords: String,
             val protocol: String?,
+            val heatBeat: String?,
             val md5: Boolean?,
             val autoLogin: Boolean?,
             var logined: Boolean?
