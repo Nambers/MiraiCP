@@ -18,7 +18,12 @@
 
 package tech.eritquearcus.miraicp.core
 
+import kotlinx.coroutines.launch
+import net.mamoe.mirai.Bot
+import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.Mirai
+import net.mamoe.mirai.network.LoginFailedException
+import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.console.Console
@@ -34,13 +39,20 @@ object Core {
     fun main(args: Array<String>) {
         println("请勿直接打开miraicp-core组件, 请使用loader组件")
     }
+
+    @OptIn(MiraiExperimentalApi::class)
     @JvmStatic
-    fun login(source: String){
-        gson.fromJson(source, CPPConfig.loaderConfig.Account::class.java).login()
+    fun login(source: String): String {
+        try {
+            gson.fromJson(source, CPPConfig.loaderConfig.Account::class.java).login()
+        } catch (e: LoginFailedException) {
+            return e.message?:"unknown reason"
+        }
+        return "200"
     }
+
     @JvmStatic
     fun load() {
-        println("load")
         KotlinMain.job.start()
         Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
@@ -51,14 +63,18 @@ object Core {
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
         logger.info("⭐当前MiraiCP版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
+        KotlinMain.loginAccount = emptyList()
         PublicShared.commandReg = LoaderCommandHandlerImpl()
-        CPPLib(null, null){
+        CPPLib(null, null) {
             enroll()
         }
         logger.info("⭐已成功加载MiraiCP⭐")
         Console.listen()
-        while (KotlinMain.alive) {
+        KotlinMain.coroutineScope.launch {
+            while (true) {
+            }
         }
     }
+
     private external fun enroll(): Void
 }

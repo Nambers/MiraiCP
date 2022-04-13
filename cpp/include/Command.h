@@ -89,7 +89,7 @@ namespace MiraiCP {
         std::vector<std::shared_ptr<IRawCommand>> commandList;
 
     public:
-        std::shared_ptr<IRawCommand> operator[](const int &index) { return commandList[index]; }
+        std::shared_ptr<IRawCommand> &operator[](const int &index) { return commandList[index]; }
 
         /*!
          * @brief 注册一条指令

@@ -16,7 +16,6 @@
 
 #ifndef MIRAICP_PRO_CORE_H
 #define MIRAICP_PRO_CORE_H
-#include <optional>
 #include <string>
 // todo 是否多余依赖
 #include "Bot.h"
@@ -36,6 +35,16 @@ namespace MiraiCP::Core {
      */
     void exitCore();
     // todo test login
-    std::optional<Bot> login(QQID id, std::string_view password, bool md5 = false, std::string_view protocol = "PAD", std::string_view heartBeat = "STAT_HB", JNIEnv * = nullptr);
+    /*!
+     * @brief 登录一个机器人账号
+     * @param id QQID
+     * @param password 密码, 可为明文/md5
+     * @param md5 密码是否为md5
+     * @param protocol 登录协议, PAD/IPAD/MACOS/WATCH/PHONE, 默认为 `PAD`
+     * @param heartBeat 心跳协议, STAT_HB/REGISTER/NONE, 默认为 `STAT_HB`
+     * @throw BotException 登录出现异常时抛出
+     * @return 登录后的bot
+     */
+    Bot login(QQID id, std::string_view password, bool md5 = false, std::string_view protocol = "PAD", std::string_view heartBeat = "STAT_HB", JNIEnv * = nullptr);
 } // namespace MiraiCP::Core
 #endif //MIRAICP_PRO_CORE_H
