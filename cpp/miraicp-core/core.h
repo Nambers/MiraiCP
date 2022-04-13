@@ -34,7 +34,6 @@ namespace MiraiCP::Core {
      * @brief 结束时释放占用的空间
      */
     void exitCore();
-    // todo test login
     /*!
      * @brief 登录一个机器人账号
      * @param id QQID

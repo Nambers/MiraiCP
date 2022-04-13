@@ -61,9 +61,10 @@ namespace MiraiCP::Core {
                std::cout << "Error creating VM. Exiting...n";
                return 1;
             }
-            只需要额外link jvm.lib, 但是出现了问题就是他不会自己找到jvm.dll
+            只需要额外link jvm.lib, 但是出现了问题就是他不会自己找到jvm.dll, 使用这套方法就不用区分linux和win
          */
         //加载JVM动态库
+        // todo linux load
         jvmLib = ::LoadLibraryA(jvmPath);
         if (jvmLib == nullptr) {
             // 加载JVM动态库错误
