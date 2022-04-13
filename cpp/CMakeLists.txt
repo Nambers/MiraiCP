@@ -94,6 +94,10 @@ target_include_directories(MiraiCP_core PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         )
+if (UNIX)
+    target_link_directories(MiraiCP_core PUBLIC ${JAVA_INCLUDE_PATH}/../lib)
+    target_compile_options(MiraiCP_core PUBLIC -ljvm)
+endif (UNIX)
 # -- end --
 
 # -- delete outdated single headers task --

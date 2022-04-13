@@ -25,6 +25,7 @@ void freeLibrary(void *pointer) {
 #else
 #include <dlfcn.h>
 void freeLibrary(void *pointer) {
+    //todo free
 }
 #endif
 typedef jint(JNICALL *JNICREATEPROC)(JavaVM **, void **, void *);
@@ -54,17 +55,9 @@ namespace MiraiCP::Core {
         vmInitArgs.nOptions = 2;
         // 忽略无法识别jvm的情况
         vmInitArgs.ignoreUnrecognized = JNI_TRUE;
-        /*
-         * todo 可以用下面的代码替换
-         long flag = JNI_CreateJavaVM(&MiraiCP::ThreadManager::gvm, (void **)&env, &vmInitArgs);
-            if (flag == JNI_ERR) {
-               std::cout << "Error creating VM. Exiting...n";
-               return 1;
-            }
-            只需要额外link jvm.lib, 但是出现了问题就是他不会自己找到jvm.dll, 使用这套方法就不用区分linux和win
-         */
         //加载JVM动态库
-        // todo linux load
+        JNIEnv *env = nullptr;
+#ifdef _WIN32
         jvmLib = ::LoadLibraryA(jvmPath);
         if (jvmLib == nullptr) {
             // 加载JVM动态库错误
@@ -73,17 +66,23 @@ namespace MiraiCP::Core {
         //获取JVM函数地址
         JNICREATEPROC jvmProcAddress = (JNICREATEPROC) GetProcAddress((HINSTANCE) jvmLib, "JNI_CreateJavaVM");
         if (jvmLib == nullptr) {
-            FreeLibrary((HINSTANCE) jvmLib);
+            freeLibrary(jvmLib);
             // 加载JVM动态库错误
             return 2;
         }
-        JNIEnv *env = nullptr;
         jint jvmProc = (jvmProcAddress) (&MiraiCP::ThreadManager::gvm, (void **) &env, &vmInitArgs);
         if (jvmProc < 0 || MiraiCP::ThreadManager::gvm == nullptr || env == nullptr) {
-            FreeLibrary((HINSTANCE) jvmLib);
+            freeLibrary(jvmLib);
             // 创建JVM错误
             return 3;
         }
+#else
+        long flag = JNI_CreateJavaVM(&MiraiCP::ThreadManager::gvm, (void **) &env, &vmInitArgs);
+        if (flag == JNI_ERR) {
+            // Error creating VM. Exiting...
+            return 3;
+        }
+#endif
         //加载启动类
         coreClaz = env->FindClass("tech/eritquearcus/miraicp/core/Core");
         if (env->ExceptionCheck() == JNI_TRUE || coreClaz == nullptr) {
