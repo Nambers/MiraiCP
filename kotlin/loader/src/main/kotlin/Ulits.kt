@@ -25,6 +25,7 @@ import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
+import net.mamoe.mirai.network.LoginFailedException
 import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.shared.CPPConfig
@@ -37,6 +38,9 @@ internal fun String.decodeHex(): ByteArray {
     return chunked(2).map { it.toInt(16).toByte() }.toByteArray()
 }
 
+/**
+ * @throws LoginFailedException 正常登录失败时抛出
+ */
 @MiraiExperimentalApi
 fun CPPConfig.loaderConfig.Account.login() {
     this.logined = true

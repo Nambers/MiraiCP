@@ -17,10 +17,15 @@
 #include <MiraiCP.hpp>
 #include <jni.h>
 #ifdef _WIN32
+#include <iostream>
 #include <windows.h>
+void freeLibrary(void *pointer) {
+    ::FreeLibrary((HINSTANCE) pointer);
+}
 #else
-// todo 测试linux
 #include <dlfcn.h>
+void freeLibrary(void *pointer) {
+}
 #endif
 typedef jint(JNICALL *JNICREATEPROC)(JavaVM **, void **, void *);
 namespace MiraiCP::Core {
@@ -49,6 +54,15 @@ namespace MiraiCP::Core {
         vmInitArgs.nOptions = 2;
         // 忽略无法识别jvm的情况
         vmInitArgs.ignoreUnrecognized = JNI_TRUE;
+        /*
+         * todo 可以用下面的代码替换
+         long flag = JNI_CreateJavaVM(&MiraiCP::ThreadManager::gvm, (void **)&env, &vmInitArgs);
+            if (flag == JNI_ERR) {
+               std::cout << "Error creating VM. Exiting...n";
+               return 1;
+            }
+            只需要额外link jvm.lib, 但是出现了问题就是他不会自己找到jvm.dll
+         */
         //加载JVM动态库
         jvmLib = ::LoadLibraryA(jvmPath);
         if (jvmLib == nullptr) {
@@ -74,7 +88,7 @@ namespace MiraiCP::Core {
         if (env->ExceptionCheck() == JNI_TRUE || coreClaz == nullptr) {
             env->ExceptionDescribe();
             env->ExceptionClear();
-            FreeLibrary((HINSTANCE) jvmLib);
+            freeLibrary(jvmLib);
             // 加载启动类失败
             return 4;
         }
@@ -83,7 +97,7 @@ namespace MiraiCP::Core {
         if (env->ExceptionCheck() == JNI_TRUE || methodID == nullptr) {
             env->ExceptionDescribe();
             env->ExceptionClear();
-            FreeLibrary((HINSTANCE) jvmLib);
+            freeLibrary(jvmLib);
             // 加载启动方法失败
             return 5;
         }
@@ -96,20 +110,22 @@ namespace MiraiCP::Core {
     void exitCore() {
         //jvm释放
         MiraiCP::ThreadManager::gvm->DestroyJavaVM();
-        FreeLibrary((HINSTANCE) jvmLib);
+        freeLibrary(jvmLib);
     }
 
-    std::optional<Bot> login(QQID id, std::string_view password, bool md5, std::string_view protocol, std::string_view heartBeat, JNIEnv *env) {
+    Bot login(QQID id, std::string_view password, bool md5, std::string_view protocol, std::string_view heartBeat, JNIEnv *env) {
         nlohmann::json tmp;
         tmp["id"] = id;
-        tmp["password"] = password;
+        tmp["passwords"] = password;
         tmp["md5"] = md5;
         tmp["protocol"] = protocol;
         tmp["heartBeat"] = heartBeat;
         if (env == nullptr)
             env = MiraiCP::ThreadManager::getEnv();
-        static jmethodID loginMethodId = env->GetStaticMethodID(coreClaz, "login", "(Ljava/lang/String;)V");
-        env->CallStaticVoidMethod(coreClaz, loginMethodId, MiraiCP::Tools::str2jstring(tmp.dump().c_str(), env));
+        jmethodID loginMethodId = env->GetStaticMethodID(coreClaz, "login", "(Ljava/lang/String;)Ljava/lang/String;");
+        std::string re = MiraiCP::Tools::jstring2str((jstring) env->CallStaticObjectMethod(coreClaz, loginMethodId, MiraiCP::Tools::str2jstring(tmp.dump().c_str(), env)));
+        if (re != "200")
+            throw BotException("登录异常:" + re, MIRAICP_EXCEPTION_WHERE);
         return Bot(id);
     }
 } // namespace MiraiCP::Core
