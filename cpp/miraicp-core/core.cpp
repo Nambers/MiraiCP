@@ -17,7 +17,6 @@
 #include <MiraiCP.hpp>
 #include <jni.h>
 #ifdef _WIN32
-#include <iostream>
 #include <windows.h>
 void freeLibrary(void *pointer) {
     ::FreeLibrary((HINSTANCE) pointer);
@@ -129,3 +128,4 @@ namespace MiraiCP::Core {
         return Bot(id);
     }
 } // namespace MiraiCP::Core
+void MiraiCP::enrollPlugin() {}

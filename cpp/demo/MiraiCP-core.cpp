@@ -14,8 +14,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "miraicp-core/core.h"
+#include "MiraiCP.hpp"
 using namespace MiraiCP;
+
 int main() {
     Core::loadCore(R"(D:\jdk\jdk-17.0.1\bin\server\jvm.dll)", R"(D:\Git\mirai\MiraiCP\kotlin\core\build\libs\MiraiCP-core-2.11.0-M1-all.jar)");
-    return 0;
+    Bot tmp = Core::login(1, "1", true);
+    Logger::logger.info("aa");
+    try {
+        Logger::logger.info(tmp.nick());
+    } catch (std::exception &e) {
+        Logger::logger.error(e.what());
+    }
+    bool alive = true;
+    Event::processor.registerEvent<GroupMessageEvent>([&alive](GroupMessageEvent a) {
+        Logger::logger.info("b");
+        auto b = Group(a.group.id(), a.group.botid());
+        Logger::logger.info("c");
+        auto c = b[a.sender.id()];
+        Logger::logger.info("d");
+        c.changeNameCard(a.message.toMiraiCode());
+        alive = false;
+    });
+    while (alive) {};
+    Core::exitCore();
 }

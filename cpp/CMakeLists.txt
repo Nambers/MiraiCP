@@ -83,7 +83,6 @@ target_compile_options(MiraiCP_single PUBLIC -w)
 
 # -- MiraiCP core --
 add_executable(MiraiCP_core
-        demo/test.cpp
         demo/MiraiCP-core.cpp
         miraicp-core/core.cpp
         ${MIRAI_CPP_PATH}

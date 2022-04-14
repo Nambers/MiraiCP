@@ -41,15 +41,15 @@ namespace MiraiCP::JNIApi {
             Config::construct();
             Logger::logger.init();
             enrollPlugin();
-            if (CPPPlugin::plugin == nullptr) Logger::logger.error("无插件实例加载");
-            else {
+            // plugin == nullptr 无插件实例加载
+            if (CPPPlugin::plugin != nullptr) {
                 CPPPlugin::pluginLogger = new PluginLogger(&Logger::logger);
                 CPPPlugin::plugin->onEnable();
             }
         } catch (const MiraiCPExceptionBase &e) {
             e.raise();
         }
-        json j = CPPPlugin::plugin->config.serialize();
+        json j = (CPPPlugin::plugin != nullptr) ? CPPPlugin::plugin->config.serialize() : json::parse("{}");
         j["MiraiCPversion"] = MiraiCPVersion;
         Config::pluginId = std::stoi(Tools::jstring2str(id));
         return Tools::str2jstring(j.dump().c_str());
