@@ -71,7 +71,8 @@ class CPPLib(
         config = if (libPath == null) {
             PublicShared.cpp.add(this)
             callback()
-            Gson().fromJson(Verify("0"), PluginConfig::class.java)
+            Verify("0")
+            PluginConfig("MiraiCP-core", "", "launch by MiraiCP-core", "MiraiCP-core", "", "", "")
         } else {
             dependencies?.forEach {
                 System.load(it)
