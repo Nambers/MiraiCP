@@ -24,7 +24,7 @@ endif (UNIX)
 
 # -- jni required --
 set(JAVA_AWT_LIBRARY NotNeeded)
-set(JAVA_JVM_LIBRARY NotNeeded)
+#set(JAVA_JVM_LIBRARY NotNeeded)
 set(JAVA_AWT_INCLUDE_PATH NotNeeded)
 find_package(JNI REQUIRED)
 if (JNI_FOUND)
@@ -94,8 +94,7 @@ target_include_directories(MiraiCP_core PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         )
 if (UNIX)
-    target_link_directories(MiraiCP_core PUBLIC ${JAVA_INCLUDE_PATH}/../lib)
-    target_compile_options(MiraiCP_core PUBLIC -ljvm)
+    target_link_libraries(MiraiCP_core ${JAVA_JVM_LIBRARY})
 endif (UNIX)
 # -- end --
 
