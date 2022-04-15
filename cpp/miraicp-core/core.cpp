@@ -43,9 +43,18 @@ namespace MiraiCP::Core {
     int loadCore(const char *jvmPath, const std::string &corePath) {
         //java虚拟机启动时接收的参数
         JavaVMOption vmOption[2];
-        // todo 自定义参数
+
         vmOption[0].optionString = (char *) "-Xmx2048M";
-        vmOption[1].optionString = (char *) ("-Djava.class.path=.\\;" + corePath + ";").c_str();
+#ifdef _WIN32
+        std::string tmp = "-Djava.class.path=.\\;" + corePath + ";";
+#else
+        std::string tmp = "-Djava.class.path=./:" + corePath;
+#endif
+        vmOption[1].optionString = (char *) tmp.c_str();
+
+        // for debugging, add "-verbose:jni"
+        // note: change length of vmOption to 3
+        // vmOption[2].optionString = (char *) "-verbose:jni";
 
         JavaVMInitArgs vmInitArgs;
         vmInitArgs.version = JNI_VERSION_1_8;
@@ -53,7 +62,9 @@ namespace MiraiCP::Core {
         // 参数数
         vmInitArgs.nOptions = 2;
         // 忽略无法识别jvm的情况
-        vmInitArgs.ignoreUnrecognized = JNI_TRUE;
+        // vmInitArgs.ignoreUnrecognized = JNI_TRUE;
+        // 不忽略
+        vmInitArgs.ignoreUnrecognized = JNI_FALSE;
         //加载JVM动态库
         JNIEnv *env = nullptr;
 #ifdef _WIN32
@@ -77,7 +88,7 @@ namespace MiraiCP::Core {
         }
 #else
         long flag = JNI_CreateJavaVM(&MiraiCP::ThreadManager::gvm, (void **) &env, &vmInitArgs);
-        if (flag == JNI_ERR) {
+        if (flag != 0) {
             // Error creating VM. Exiting...
             return 3;
         }

@@ -52,7 +52,7 @@ add_library(
 )
 set_target_properties(MiraiCP_multi PROPERTIES
         PREFIX lib
-        OUTPUT_NAME MiraiCP)
+        OUTPUT_NAME MiraiCP_multi)
 target_include_directories(MiraiCP_multi PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${SOURCE_PATH})
@@ -74,7 +74,7 @@ add_library(
 add_dependencies(MiraiCP_single generateSingleHeaders)
 set_target_properties(MiraiCP_single PROPERTIES
         PREFIX lib
-        OUTPUT_NAME MiraiCP)
+        OUTPUT_NAME MiraiCP_single)
 target_include_directories(MiraiCP_single PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP
         ${SOURCE_PATH})
