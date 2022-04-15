@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  ubuntu-mingw:
+  ubuntu-mingw-single:
     runs-on: ubuntu-latest
     steps:
     - name: checkout  
@@ -35,7 +35,7 @@ jobs:
       run: mkdir cpp/build && cd cpp/build && cmake ..
     - name: build with msvc
       run: cd ./cpp && cmake --build build --config Debug --target generateSingleHeaders && cmake --build build --config Debug --target MiraiCP_single
-  windows-mingw:
+  windows-mingw-single:
     runs-on: windows-latest
     steps:
     - name: checkout  
@@ -47,3 +47,15 @@ jobs:
       run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" ..
     - name: build with gcc
       run: cd ./cpp && cmake --build build --config Debug --target generateSingleHeaders && cmake --build build --config Debug --target MiraiCP_single
+  unbuntu-mingw-core:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout  
+      uses: actions/checkout@v2
+    - name: configure
+      env: 
+        cc: gcc
+        cxx: g++
+      run: mkdir cpp/build && cd cpp/build && cmake ..
+    - name: build with gcc
+      run: cd cpp/build && make MiraiCP_core
