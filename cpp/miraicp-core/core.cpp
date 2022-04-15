@@ -22,9 +22,8 @@ void freeLibrary(void *pointer) {
     ::FreeLibrary((HINSTANCE) pointer);
 }
 #else
-#include <dlfcn.h>
 void freeLibrary(void *pointer) {
-    //todo free
+    MiraiCP::ThreadManager::gvm->DestroyJavaVM();
 }
 #endif
 typedef jint(JNICALL *JNICREATEPROC)(JavaVM **, void **, void *);
@@ -40,7 +39,7 @@ namespace MiraiCP::Core {
         MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", tmp, 3);
         return MiraiCP::Tools::str2jstring("MIRAICP_NULL", env);
     }
-    int loadCore(const char *jvmPath, const std::string &corePath) {
+    int loadCore(const std::string &corePath) {
         //java虚拟机启动时接收的参数
         JavaVMOption vmOption[2];
 
@@ -68,7 +67,7 @@ namespace MiraiCP::Core {
         //加载JVM动态库
         JNIEnv *env = nullptr;
 #ifdef _WIN32
-        jvmLib = ::LoadLibraryA(jvmPath);
+        jvmLib = ::LoadLibraryA(_JVM_DLL_PATH);
         if (jvmLib == nullptr) {
             // 加载JVM动态库错误
             return 1;
@@ -90,6 +89,7 @@ namespace MiraiCP::Core {
         long flag = JNI_CreateJavaVM(&MiraiCP::ThreadManager::gvm, (void **) &env, &vmInitArgs);
         if (flag != 0) {
             // Error creating VM. Exiting...
+            freeLibrary(nullptr);
             return 3;
         }
 #endif
