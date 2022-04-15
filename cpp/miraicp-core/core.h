@@ -25,11 +25,10 @@ namespace MiraiCP::Core {
     extern void *jvmLib;
     /*!
      * @brief 加载MiraiCP核心
-     * @param jvmPath jvm.dll 地址
      * @param corePath MiraiCP-core jar 地址
      * @return 如果返回 > 0 就是出现错误, 错误原因到实现里定位
      */
-    int loadCore(const char *jvmPath, const std::string &corePath);
+    int loadCore(const std::string &corePath);
     /*!
      * @brief 结束时释放占用的空间
      */
