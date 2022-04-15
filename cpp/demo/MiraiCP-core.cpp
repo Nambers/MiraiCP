@@ -18,16 +18,20 @@
 using namespace MiraiCP;
 
 int main() {
-    Core::loadCore(R"(D:\jdk\jdk-17.0.1\bin\server\jvm.dll)", R"(D:\Git\mirai\MiraiCP\kotlin\core\build\libs\MiraiCP-core-2.11.0-M1-all.jar)");
-    Bot tmp = Core::login(1, "1", true);
+#ifdef _WIN32
+    Core::loadCore(R"(D:\Git\mirai\MiraiCP\kotlin\core\build\libs\MiraiCP-core-2.11.0-M1-all.jar)");
+#else
+    Core::loadCore("/mnt/d/git/mirai/miraicp/kotlin/core/build/libs/MiraiCP-core-2.11.0-M1-all.jar");
+#endif
+    Bot tmp = Core::login(11, "aa", true);
     Logger::logger.info("aa");
     try {
         Logger::logger.info(tmp.nick());
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         Logger::logger.error(e.what());
     }
     bool alive = true;
-    Event::processor.registerEvent<GroupMessageEvent>([&alive](GroupMessageEvent a) {
+    Event::processor.registerEvent<GroupMessageEvent>([&alive](GroupMessageEvent a){
         Logger::logger.info("b");
         auto b = Group(a.group.id(), a.group.botid());
         Logger::logger.info("c");
@@ -36,6 +40,6 @@ int main() {
         c.changeNameCard(a.message.toMiraiCode());
         alive = false;
     });
-    while (alive) {};
+    while (alive){};
     Core::exitCore();
 }
