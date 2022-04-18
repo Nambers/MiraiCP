@@ -16,9 +16,9 @@
 
 #ifndef MIRAICP_PRO_CORE_H
 #define MIRAICP_PRO_CORE_H
+#include "MiraiCP.hpp"
+#include <jni.h>
 #include <string>
-// todo 是否多余依赖
-#include "Bot.h"
 namespace MiraiCP::Core {
     using QQID = unsigned long long;
     extern jclass coreClaz;
