@@ -33,6 +33,14 @@ allprojects {
         // mirai snapshot
         maven("https://repo.mirai.mamoe.net/snapshots")
     }
+    tasks {
+        withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            kotlinOptions {
+                freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+                kotlinOptions.jvmTarget = "1.8"
+            }
+        }
+    }
 }
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")

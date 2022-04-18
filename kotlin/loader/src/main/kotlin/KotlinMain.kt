@@ -21,6 +21,7 @@ package tech.eritquearcus.miraicp.loader
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
@@ -38,6 +39,7 @@ object KotlinMain {
     lateinit var loginAccount: List<CPPConfig.loaderConfig.Account>
     var alive = true
 
+    @OptIn(MiraiExperimentalApi::class)
     fun main(j: String) {
         job.start()
         val c = Gson().fromJson(j, CPPConfig.loaderConfig::class.java)

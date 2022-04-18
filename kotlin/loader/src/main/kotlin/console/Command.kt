@@ -24,6 +24,7 @@ import net.mamoe.mirai.Bot
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import net.mamoe.mirai.message.data.PlainText
+import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.login
 import tech.eritquearcus.miraicp.shared.Command2C
@@ -131,6 +132,7 @@ object Command {
         }
     }
 
+    @OptIn(MiraiExperimentalApi::class)
     private fun login(id: Long) =
         KotlinMain.loginAccount.first { it.id == id && (it.logined == null || it.logined == false) }.login()
 
