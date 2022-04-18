@@ -23,12 +23,9 @@
   * [1 配置环境](#1-配置环境)
   * [2 注意事项](#2-注意事项)
   * [3 使用方法:](#3-使用方法)
-    * [3\.1 如何使用MiraiCP SDK?](#31-如何使用miraicp-sdk)
-      * [3\.1\.1 在demo里写](#311-在demo里写)
-      * [3\.1\.2 在代码中加入MiraiCP sdk依赖](#312-在代码中加入miraicp-sdk依赖)
-    * [3\.2 启动SDK](#32-启动sdk)
-      * [3\.2\.1 使用loader直接使用](#321-使用loader直接使用)
-      * [3\.2\.2 使用plugin作为mcl的插件使用](#322-使用plugin作为mcl的插件使用)
+    * [3\.1 在mcl启动](#31-在mcl启动)
+    * [3\.2 直接使用 jar 启动](#32-直接使用-jar-启动)
+    * [3\.3 直接在 C++ 里启动](#33-直接在-C-里启动)
 * [更新方式](#更新方式)
 * [交流方式](#交流方式)
 * [TODO](#todo)
@@ -113,106 +110,65 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 ## 3 使用方法:
 
-### 3.1 如何使用MiraiCP SDK?
-#### 3.1.1 在demo里写
-从[MiraiCP-template](https://github.com/Nambers/MiraiCP-template) 中下载模板并解压
-在main.cpp中编写代码
-#### 3.1.2 在代码中加入MiraiCP sdk依赖
-从[MiraiCP-template](https://github.com/Nambers/MiraiCP-template) 中下载Single_include文件夹
-1. 在你的`CMakeLists.txt`里引入JNI文件和`single_include`下的文件
-```
-set(JAVA_AWT_LIBRARY NotNeeded)
-set(JAVA_JVM_LIBRARY NotNeeded)
-set(JAVA_AWT_INCLUDE_PATH NotNeeded)
-find_package(JNI REQUIRED)
-target_include_directories(<Target name> public 
-            ${CMAKE_CURRENT_SOURCE_DIR}/single_include/3rd_include
-            ${CMAKE_CURRENT_SOURCE_DIR}/single_include/3rd_include/utf8
-            ${CMAKE_CURRENT_SOURCE_DIR}/single_include/3rd_include/utf8/utf8
-            ${CMAKE_CURRENT_SOURCE_DIR}/single_include/MiraiCP
-            ${JAVA_INCLUDE_PATH}/
-            ${JAVA_INCLUDE_PATH2}/)
-```
-其中, `<target name>`是你构建的动态链接库的target
+### 3.1 在mcl启动
+0. 确保本地有 jdk 环境
+1. 从[MiraiCP-template](https://github.com/Nambers/MiraiCP-template) 中下载模板
+2. 在`main.cpp`中编写, 并编译出 `.dll`/`.so`
+3. 在 mcl 目录下输入 `mcl --update-package io.github.nambers:MiraiCP-plugin --channel nightly --type plugin` 让 mcl 自动下载, 或者从本项目 `release` 中下载最新的 `MiraiCP-plugin-<version>.mirai.jar` 放置到 mcl 下的 plugin 文件夹
+4. 在 mcl 下的 `data/tech.eritquearcus.miraicp` 里更改配置文件,
+    大概长这样:
+    ```json
+    {
+        "pluginConfig":[{
+            "path":"\\cmake-build-debug\\MiraiCP.dll"
+        }]
+    }
+    ```
+    详细配置见 [doc](doc/config.md#2-plugin-%E7%AB%AF)
 
-2. 在你的target里包含 `single_include/MiraiCP/MiraiCP.cpp`
+### 3.2 直接使用 jar 启动
+0. 确保本地有 jdk 环境
+1. 从[MiraiCP-template](https://github.com/Nambers/MiraiCP-template) 中下载模板
+2. 在`main.cpp`中编写, 并编译出 `.dll`/`.so`
+3. 在本项目 `release` 中下载最新的 `MiraiCP-loader-<version>.jar`
+4. 在该 jar 同目录下创建 `config.json` 作为配置文件
+5. 编写json:
+    ```json
+    {
+      "accounts": [{
+        "id": qqid,
+        "passwords": "passwords密码",
+        "protocol":  "pad",
+        "heatBeat": "STAT_HB",
+        "md5": false,
+        "autoLogin": true
+      }],
+      "cppPaths": [
+      {"path": "dll路径"}
+      ]
+    }
+    ```
+    详细见[config.md文档](doc/config.md#1-loader-%E7%AB%AF)
+5. 使用 `java -jar MiraiCP-loader-<version>.jar` 启动
 
-4. 在你需要使用miraiCP sdk的文件`#include "MiraiCP.hpp"` 和 `using namespace MiraiCP;` 即可
-### 3.2 启动SDK
-#### 3.2.1 使用loader直接使用
-适用于只在机器人上使用MiraiCP SDK插件
-
-0. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP-loader-*.jar(*号为版本)
-
-1. 在同目录下创建config.json作为配置文件
-
-2. 编写json:
-```json
-{
-  "accounts": [{
-    "id": qqid,
-    "passwords": "passwords密码",
-    "protocol":  "pad",
-    "heatBeat": "STAT_HB",
-    "md5": false,
-    "autoLogin": true
-  }],
-  "cppPaths": [
-  {"path": "dll路径"}
-  ]
-}
-```
-详细见[config.md文档](doc/config.md#1-loader-%E7%AB%AF)
-
-
-3. 使用java -jar MiraiCP-loader-*.jar 启动loader(*号为版本)
-
-#### 3.2.2 使用plugin作为mcl的插件使用
-本种方法适用于还需要加载别的mirai-console插件
-
-##### 3.2.2.1 使用mcl自动下载
-在mcl同级目录输入
-```
-mcl --update-package io.github.nambers:MiraiCP-plugin --channel nightly --type plugin
-```
-安装, 然后在mcl的路径下的data\miraiCP\路径中创建miraicp.json里填写配置, 如
-```json
-{
-	"pluginConfig":[{
-		"path":".\\cmake-build-debug\\MiraiCP.dll"
-	}]
-}
-```
-详细见[config.md文档](https://github.com/Nambers/MiraiCP/blob/master/doc/config.md#2-plugin-%E7%AB%AF)
-##### 3.2.2.2 手动下载
-
-0. 首先下载启动器(mcl), 下载地址 -> [官方](https://github.com/iTXTech/mirai-console-loader/)
-
-1. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载MiraiCP-plugin-*.mirai.jar(*号为版本)
-
-2. 把该mirai.jar放到mcl的plugin路径下(如果没有plugin路径需要启动一次mcl)
-
-3. 在mcl的路径下的data\miraiCP\路径中创建miraicp.json里填写配置, 如
-```json
-{
-	"pluginConfig":[{
-		"path":"\\cmake-build-debug\\MiraiCP.dll"
-	}]
-}
-```
-详细见[config.md文档](https://github.com/Nambers/MiraiCP/blob/master/doc/config.md#2-plugin-%E7%AB%AF)
-
-4. 启动mcl
+### 3.3 直接在 C++ 里启动
+0. 确保本地有 jdk 环境
+1. 从[MiraiCP-core-demo](https://github.com/Nambers/MiraiCP-core-demo) 中下载模板
+2. 从本项目 release 中下载 `MiraiCP-core-<version>.jar`, 放置到一个你知道的目录
+3. 在`main.cpp`中编写, 并把上面 jar 的目录写入(`load`方法内)
+4. 直接运行 `main` 方法
 
 
 **如果有其他问题，欢迎提交issue和提交PR贡献**
 
 # 更新方式
-0. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载loader或plugin的jar文件
+## 直接拉取
+可直接在模板`clone`下来的文件夹中`git stash`, `git fetch`, `git pull`, `git stash pop` 直接从上游拉取代码, 然后再在本项目的`release`中下载最新对应的jar组件替换
 
-1. 从[MiraiCP-template](https://github.com/Nambers/MiraiCP-template/)下载并替换single_include/MiraiCP下全部文件(就MiraiCP.hpp和MiraiCP.cpp)
+## 手动替换
+0. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载loader/plugin/core的jar文件并替换
 
-2. 替换你的loader或plugin jar包
+1. 从各自的模板项目中下载 `MiraiCP.hpp`, `MiraiCP.cpp`, 以及如果是`MiraiCP-core`项目的`core.h`, `core.cpp`, 替换原本的文件
 
 # 交流方式
 
@@ -227,7 +183,7 @@ qq群: 1044565129
 
 # 许可
 ```
-Copyright (C) 2020-2021 Eritque arcus and contributors.
+Copyright (C) 2020-2022 Eritque arcus and contributors.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
