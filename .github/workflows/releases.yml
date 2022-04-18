@@ -11,7 +11,7 @@ on:
     description: pre-release
 
 jobs:
-  push-single-include:
+  push-single-include-2-template:
     runs-on: ubuntu-latest
     steps:
      - name: checkout
@@ -48,6 +48,48 @@ jobs:
          FOLDER: ./template # The directory where your assets are generated
          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
          MESSAGE: ${{ github.event.inputs.v }} # The commit message
+
+  push-single-include-2-coreDemo:
+    runs-on: ubuntu-latest
+    steps:
+     - name: checkout
+       uses: actions/checkout@v2
+       with:
+        ref: dev
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+        fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+        path: main
+     - name: checkout
+       uses: actions/checkout@v2
+       with:
+        path: template
+        repository: Nambers/MiraiCP-core-demo
+        ref: main
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+        fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+     - name: generate single headers
+       env: 
+         cc: gcc
+         cxx: g++
+       run: cd main && mkdir cpp/build && cd cpp/build && cmake .. && make generateSingleHeaders
+     - name: replace single header(1/4)
+       run: cat main/cpp/single_include/MiraiCP/MiraiCP.hpp > template/MiraiCP/MiraiCP.hpp
+     - name: replace single header(2/4)
+       run: cat main/cpp/single_include/MiraiCP/MiraiCP.cpp > template/MiraiCP/MiraiCP.cpp
+     - name: replace single header(3/4)
+       run: cat main/cpp/miraicp-core/core.h > template/single_include/MiraiCP/core.h
+     - name: replace single header(4/4)
+       run: cat main/cpp/miraicp-core/core.cpp > template/single_include/MiraiCP/core.cpp
+     - name: mv
+       run: mv ./template/.git ./.git
+     - name: Push
+       uses: s0/git-publish-subdir-action@develop 
+       env:
+         REPO: git@github.com:Nambers/MiraiCP-core-demo.git
+         BRANCH: main # The branch name where you want to push the assets
+         FOLDER: ./template # The directory where your assets are generated
+         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+         MESSAGE: ${{ github.event.inputs.v }} # The commit message     
     
   publish-release:
     runs-on: ubuntu-latest
@@ -68,6 +110,8 @@ jobs:
       run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:shadowJar --warning-mode all --info --stacktrace
     - name: Build plugin
       run:  cd ./kotlin/ && ./gradlew MiraiCP-plugin:buildPlugin --warning-mode all --info --stacktrace
+    - name: Build core
+      run:  cd ./kotlin/ && ./gradlew MiraiCP-core:shadowJar --warning-mode all --info --stacktrace
     - name: get change log
       run: "grep -n -i \"## v\" CHANGELOG.md | head -n2 | cut -d: -f1 >> line.tmp"
     - name: get change log2
@@ -77,7 +121,7 @@ jobs:
     - name: Create Release
       uses: ncipollo/release-action@v1.8.6
       with:
-          artifacts: ./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/libs/MiraiCP-plugin-*.mirai.jar
+          artifacts: ./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/libs/MiraiCP-plugin-*.mirai.jar,./kotlin/core/build/libs/MiraiCP-core-*.jar
           bodyfile: release.log
           tag: ${{ github.event.inputs.v }}
           token: ${{ secrets.GITHUB_TOKEN }}
