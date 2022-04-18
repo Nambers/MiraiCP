@@ -45,8 +45,8 @@ object Core {
     fun login(source: String): String {
         try {
             gson.fromJson(source, CPPConfig.loaderConfig.Account::class.java).login()
-        } catch (e: LoginFailedException) {
-            return e.message?:"unknown reason"
+        } catch (e: Exception) {
+            return if (e.message.isNullOrBlank()) "unknown reason" else e.message!!
         }
         return "200"
     }
