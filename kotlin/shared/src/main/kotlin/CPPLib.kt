@@ -32,7 +32,6 @@ import tech.eritquearcus.miraicp.shared.PublicShared.gson
 import tech.eritquearcus.miraicp.shared.PublicShared.isUploaded
 import tech.eritquearcus.miraicp.shared.PublicShared.kkick
 import tech.eritquearcus.miraicp.shared.PublicShared.kqueryM
-import tech.eritquearcus.miraicp.shared.PublicShared.logger
 import tech.eritquearcus.miraicp.shared.PublicShared.memberJoinRequest
 import tech.eritquearcus.miraicp.shared.PublicShared.modifyAdmin
 import tech.eritquearcus.miraicp.shared.PublicShared.mute
@@ -104,12 +103,12 @@ class CPPLib(
     //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
     companion object {
         private fun contact(source: String): Config.Contact = gson.fromJson(source, Config.Contact::class.java)
-        private suspend fun KSend(source: String, miraiCode: Boolean, retryTime: Int): String =
+        private suspend fun KSend(source: String, miraiCode: Boolean): String =
             run {
                 val tmp = gson.fromJson(source, Config.SendRequest::class.java)
                 return when (miraiCode) {
-                    false -> sendMsg(tmp.content, tmp.contact, retryTime)
-                    true -> sendMiraiCode(tmp.content, tmp.contact, retryTime)
+                    false -> sendMsg(tmp.content, tmp.contact)
+                    true -> sendMiraiCode(tmp.content, tmp.contact)
                 }
             }
 
@@ -233,8 +232,7 @@ class CPPLib(
                         /// 发送信息
                         Operation_code.Send.ordinal -> KSend(
                             root.getString("source"),
-                            root.getBoolean("miraiCode"),
-                            root.getInt("retryTime")
+                            root.getBoolean("miraiCode")
                         )
                         /// 查询信息接口
                         Operation_code.RefreshInfo.ordinal -> refreshInfo(

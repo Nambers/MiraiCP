@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.Bot
-import net.mamoe.mirai.LowLevelApi
 import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.contact.announcement.OfflineAnnouncement
@@ -136,7 +135,7 @@ object PublicShared {
 
     //发送消息部分实现 MiraiCode
 
-    private suspend fun send0(message: Message, c: Config.Contact, retryTime: Int): String = withBot(c.botid) { AIbot ->
+    private suspend fun send0(message: Message, c: Config.Contact): String = withBot(c.botid) { AIbot ->
         val r = kotlin.run {
             when (c.type) {
                 1 -> {
@@ -175,11 +174,11 @@ object PublicShared {
         sendWithCatch { r.sendMessage(message).source }
     }
 
-    suspend fun sendMsg(message: String, c: Config.Contact, retryTime: Int): String =
-        send0(message.toPlainText().toMessageChain(), c, retryTime)
+    suspend fun sendMsg(message: String, c: Config.Contact): String =
+        send0(message.toPlainText().toMessageChain(), c)
 
-    suspend fun sendMiraiCode(message: String, c: Config.Contact, retryTime: Int): String =
-        send0(MiraiCode.deserializeMiraiCode(message), c, retryTime)
+    suspend fun sendMiraiCode(message: String, c: Config.Contact): String =
+        send0(MiraiCode.deserializeMiraiCode(message), c)
 
     private fun OnlineAnnouncement.toOnlineA(): Config.OnlineA {
         return Config.OnlineA(
@@ -201,7 +200,7 @@ object PublicShared {
         )
     }
 
-    @OptIn(MiraiExperimentalApi::class, LowLevelApi::class)
+    @OptIn(MiraiExperimentalApi::class)
     suspend fun refreshInfo(c: Config.Contact, quit: Boolean, annoucment: Boolean): String = c.withBot { bot ->
         when (c.type) {
             1 -> c.withFriend(bot, "找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}") { f ->
@@ -535,7 +534,6 @@ object PublicShared {
     }
 
     //构建聊天记录
-    @OptIn(MiraiExperimentalApi::class)
     suspend fun sendForwardMsg(text: String, bid: Long): String = withBot(bid) { bot ->
         val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
         val c: Contact = when (t.type) {
