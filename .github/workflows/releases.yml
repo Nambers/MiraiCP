@@ -77,9 +77,9 @@ jobs:
      - name: replace single header(2/4)
        run: cat main/cpp/single_include/MiraiCP/MiraiCP.cpp > template/MiraiCP/MiraiCP.cpp
      - name: replace single header(3/4)
-       run: cat main/cpp/miraicp-core/core.h > template/single_include/MiraiCP/core.h
+       run: cat main/cpp/miraicp-core/core.h > template/MiraiCP/core.h
      - name: replace single header(4/4)
-       run: cat main/cpp/miraicp-core/core.cpp > template/single_include/MiraiCP/core.cpp
+       run: cat main/cpp/miraicp-core/core.cpp > template/MiraiCP/core.cpp
      - name: mv
        run: mv ./template/.git ./.git
      - name: Push
