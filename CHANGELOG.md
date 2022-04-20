@@ -1,4 +1,9 @@
 # Change Log
+## v2.11.0-M2
++ 新增 MiraiCP-core 组件设计, 使得可以直接在 C++ 中启动
++ 修复 memberJoinRequestEvent 没有申请人id
++ 修复 loader 断开连接后不重连问题
+
 ## v2.11.0-M1
 + 内部结构优化
 + 修复一些错误码错误
