@@ -205,6 +205,7 @@ fun Config.Contact.withMiraiMember(block: (Bot, Group, NormalMember) -> String):
     return withMember(bot) { g, m -> block(bot, g, m) }
 }
 
+@Suppress("UNCHECKED_CAST")
 internal fun <T> JSONObject.getOrNull(key: String): T? = if (this.has(key)) (this.get(key) as T) else null
 
 // MiraiCP image info to mirai image
