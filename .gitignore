@@ -1,26 +1,2 @@
-cpp/build/
-cpp/single_include/MiraiCP/*
-.idea/
-.vs/
-x64/
-cache/
-selenium/
-cmake-build-debug/
-cpp/out/
-CMakeFiles/
-!kotlin/gradle/wrapper/gradle-wrapper.jar
+.idea
 
-*.obj
-*.gch
-*.pch
-*.ipch
-*.so
-*.dylib
-*.dll
-*.exe
-*.out
-*.class
-*.log
-*.tlog
-*.jar
-hs_err_pid*

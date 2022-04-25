@@ -1,0 +1,10 @@
+.idea
+build
+single_include/MiraiCP/**
+.vs
+x64
+cache
+selenium
+cmake-build-debug
+out
+CMakeFiles
