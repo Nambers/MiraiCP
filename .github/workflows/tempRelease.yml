@@ -57,6 +57,8 @@ jobs:
         distribution: 'adopt'
     - name: chmod -R 777 *
       run: chmod -R 777 *
+    - name: gradlew build
+      run: cd ./main/kotlin/ && ./gradlew build
     - name: Build loader
       run:  cd ./main/kotlin/ && ./gradlew MiraiCP-loader:shadowJar --warning-mode all --info --stacktrace
     - name: Build plugin
