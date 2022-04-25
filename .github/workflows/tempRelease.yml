@@ -59,12 +59,12 @@ jobs:
       run: chmod -R 777 *
     - name: gradlew build
       run: cd ./main/kotlin/ && ./gradlew build
-    - name: Build loader
-      run:  cd ./main/kotlin/ && ./gradlew MiraiCP-loader:shadowJar --warning-mode all --info --stacktrace
     - name: Build plugin
       run:  cd ./main/kotlin/ && ./gradlew MiraiCP-plugin:buildPlugin --warning-mode all --info --stacktrace
     - name: Build core
       run:  cd ./main/kotlin/ && ./gradlew MiraiCP-core:shadowJar --warning-mode all --info --stacktrace
+    - name: Build loader
+      run:  cd ./main/kotlin/ && ./gradlew MiraiCP-loader:shadowJar --warning-mode all --info --stacktrace
     - name: configure
       env: 
         cc: gcc

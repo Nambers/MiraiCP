@@ -1,4 +1,7 @@
 # Change Log
+## v2.11.0-M3
++ 修复 v2.11.0-M2 loader jar文件上传不完整
+
 ## v2.11.0-M2
 + 新增 MiraiCP-core 组件设计, 使得可以直接在 C++ 中启动
 + 修复 memberJoinRequestEvent 没有申请人id
