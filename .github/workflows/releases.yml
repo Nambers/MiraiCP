@@ -106,12 +106,12 @@ jobs:
       with:
         java-version: '15'
         distribution: 'adopt'
-    - name: Build loader
-      run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:shadowJar --warning-mode all --info --stacktrace
     - name: Build plugin
       run:  cd ./kotlin/ && ./gradlew MiraiCP-plugin:buildPlugin --warning-mode all --info --stacktrace
     - name: Build core
       run:  cd ./kotlin/ && ./gradlew MiraiCP-core:shadowJar --warning-mode all --info --stacktrace
+    - name: Build loader
+      run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:shadowJar --warning-mode all --info --stacktrace
     - name: get change log
       run: "grep -n -i \"## v\" CHANGELOG.md | head -n2 | cut -d: -f1 >> line.tmp"
     - name: get change log2
