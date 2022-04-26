@@ -513,10 +513,10 @@ namespace MiraiCP {
          * @param s 序列化后的文本
          */
         static void operate(std::string_view s,
-                     QQID botid,
-                     bool sign,
-                     const std::string &msg = "",
-                     JNIEnv *env = nullptr) ;
+                            QQID botid,
+                            bool sign,
+                            const std::string &msg = "",
+                            JNIEnv *env = nullptr);
 
     public:
         static eventTypes get_event_type() {
@@ -590,32 +590,19 @@ namespace MiraiCP {
     };
 
     class Event {
-    private:
+    private: // typedefs
         class eventNode {
         public:
             bool enable = true;
-            std::function<void(MiraiCPEvent *)> func;
+            std::function<bool(MiraiCPEvent *)> func;
 
-            explicit eventNode(std::function<void(MiraiCPEvent *)> f) : func(std::move(f)) {}
+            explicit eventNode(std::function<bool(MiraiCPEvent *)> f) : func(std::move(f)) {}
 
-            void run(MiraiCPEvent *a) const {
-                func(a);
+            bool run(MiraiCPEvent *a) const {
+                return func(a);
             }
         };
 
-        using eventNodeTable = std::vector<std::vector<eventNode>>;
-        eventNodeTable vec;
-
-    private:
-        template<typename T>
-        int id() const {
-            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播继承MiraiCPEvent的事件");
-            return int(T::get_event_type());
-        }
-
-        Event() : vec(int(eventTypes::count)){};
-
-    public:
         /// 事件监听操控, 可用于stop停止监听和resume继续监听
         class NodeHandle {
         private:
@@ -627,13 +614,29 @@ namespace MiraiCP {
             void resume() { *enable = true; }
         };
 
-    public:
-        // singleton mode
+        using priority_level = unsigned char;
+        using event_vector = std::vector<eventNode>;
+        using eventNodeTable = std::vector<std::map<priority_level, event_vector>>;
+
+    private: // member
+        eventNodeTable _all_events_;
+
+    private:
+        Event() : _all_events_(int(eventTypes::count)){};
+
+    public: // singleton mode
         static Event processor;
+
+    private:
+        template<typename T>
+        int id() const {
+            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播继承MiraiCPEvent的事件");
+            return int(T::get_event_type());
+        }
 
     public:
         bool noRegistered(int index) {
-            return vec[index].empty();
+            return _all_events_[index].empty();
         }
 
         /// 广播一个事件, 必须为MiraiCPEvent的派生类
@@ -641,20 +644,46 @@ namespace MiraiCP {
         void broadcast(T &&val) {
             static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播MiraiCPEvent的派生类");
             MiraiCPEvent *p = &val;
-            for (auto &a: vec[id<T>()]) {
-                a.run(p);
+            for (auto &&[k, v]: _all_events_[id<T>()]) {
+                for (auto &&a: v) {
+                    if (a.run(p)) return;
+                }
             }
         }
 
-        /// 注册一个事件
+        /**
+         * @brief 注册一个事件的回调
+         * @param T 事件类型
+         * @param callback 要注册的回调函数，忽略返回值
+         * @param priority_level 优先级，范围：0-255，越低的优先级越先执行，默认100
+         */
         template<typename T>
-        NodeHandle registerEvent(std::function<void(T)> a) {
+        NodeHandle registerEvent(std::function<void(T)> callback, priority_level level = 100) {
             static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持注册MiraiCPEvent的派生类事件");
-            std::function<void(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
-                a(*dynamic_cast<T *>(p));
+            std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
+                callback(*dynamic_cast<T *>(p));
+                return false;
             };
             eventNode t(tmp);
-            vec[id<T>()].emplace_back(t);
+            _all_events_[id<T>()][level].emplace_back(t);
+            return NodeHandle(&t.enable);
+        }
+
+        /**
+         * @brief 注册一个可以阻塞后续回调函数的回调。
+         * 回调返回true时，将会忽略所有优先级低于当前回调，以及注册顺序晚于当前回调且优先级等于当前回调的所有其他回调函数
+         * @param T 事件类型
+         * @param callback 要注册的回调函数，必须返回bool值
+         * @param priority_level 优先级，范围：0-255，越低的优先级越先执行，默认100
+         */
+        template<typename T>
+        NodeHandle registerBlockingEvent(std::function<bool(T)> callback, priority_level level = 100) {
+            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持注册MiraiCPEvent的派生类事件");
+            std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
+                return callback(*dynamic_cast<T *>(p));
+            };
+            eventNode t(tmp);
+            _all_events_[id<T>()][level].emplace_back(t);
             return NodeHandle(&t.enable);
         }
     };
