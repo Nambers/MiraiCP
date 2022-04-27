@@ -61,6 +61,7 @@ namespace MiraiCP::JNIApi {
  * env != null, call from jni
  */
     JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job) {
+        if (CPPPlugin::plugin == nullptr) return job;
         using namespace MiraiCP;
         ThreadManager::setEnv(env);
         try {
