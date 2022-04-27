@@ -19,17 +19,16 @@
 package tech.eritquearcus.miraicp.core
 
 import kotlinx.coroutines.launch
-import net.mamoe.mirai.Bot
-import net.mamoe.mirai.BotFactory
-import net.mamoe.mirai.Mirai
-import net.mamoe.mirai.network.LoginFailedException
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
 import tech.eritquearcus.miraicp.loader.login
-import tech.eritquearcus.miraicp.shared.*
+import tech.eritquearcus.miraicp.shared.BuiltInConstants
+import tech.eritquearcus.miraicp.shared.CPPConfig
+import tech.eritquearcus.miraicp.shared.CPPLib
+import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicShared.gson
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
 import java.io.File
@@ -46,6 +45,7 @@ object Core {
         try {
             gson.fromJson(source, CPPConfig.loaderConfig.Account::class.java).login()
         } catch (e: Exception) {
+            PublicShared.logger.error("登录失败, 原因: " + e.message + " cause: " + e.cause)
             return if (e.message.isNullOrBlank()) "unknown reason" else e.message!!
         }
         return "200"
