@@ -25,6 +25,12 @@
 namespace MiraiCP {
     using QQID = unsigned long long;
 
+    enum contactType {
+        MIRAI_CONTACT = 0,
+        MIRAI_FRIEND = 1,
+        MIRAI_GROUP = 2,
+        MIRAI_MEMBER = 3,
+    };
     /*!
     * @brief group, friend, member的父类
      * @example 发送信息
@@ -50,7 +56,7 @@ namespace MiraiCP {
     */
     class Contact {
     protected: // attrs
-        int _type = 0;
+        contactType _type;
         QQID _id;
         QQID _groupid;
         std::string _nickOrNameCard;
@@ -70,7 +76,7 @@ namespace MiraiCP {
          * @internal 一般在MiraiCp内部构造
          */
         Contact() {
-            this->_type = 0;
+            this->_type = MIRAI_CONTACT;
             this->_id = 0;
             this->_groupid = 0;
             this->_nickOrNameCard = "";
@@ -90,7 +96,7 @@ namespace MiraiCP {
          * @param botid 对应的botid
          */
         explicit Contact(int type, QQID id, QQID gid, const std::string &name, QQID botid, bool anonymous = false) {
-            this->_type = type;
+            this->_type = MIRAI_CONTACT;
             this->_id = id;
             this->_groupid = gid;
             this->_nickOrNameCard = name;
@@ -109,10 +115,11 @@ namespace MiraiCP {
         }
 
         /// @brief 当前对象类型
+        /// @see contactType
         ///     - 1 Friend 好友
         ///     - 2 Group 群聊
         ///     - 3 Member 群成员
-        int type() const { return this->_type; }
+        contactType type() const { return this->_type; }
 
         /// @brief id在全部情况存在
         ///     - 当当前type为1(Friend)时，为好友id
@@ -302,7 +309,7 @@ namespace MiraiCP {
         }
     };
 
-    class INudgeSupport{
+    class INudgeSupport {
     public:
         /*!
          * @brief 发送戳一戳

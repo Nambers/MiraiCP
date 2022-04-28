@@ -104,7 +104,7 @@ namespace MiraiCP {
     }
 
     Group::Group(QQID groupid, QQID botid, JNIEnv *env) : Contact() {
-        this->_type = 2;
+        this->_type = MIRAI_GROUP;
         this->_id = groupid;
         this->_botid = botid;
         refreshInfo(env);
