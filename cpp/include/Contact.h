@@ -30,6 +30,7 @@ namespace MiraiCP {
         MIRAI_FRIEND = 1,
         MIRAI_GROUP = 2,
         MIRAI_MEMBER = 3,
+        MIRAI_OTHERTYPE = 4,
     };
     /*!
     * @brief group, friend, member的父类
@@ -96,7 +97,7 @@ namespace MiraiCP {
          * @param botid 对应的botid
          */
         explicit Contact(int type, QQID id, QQID gid, const std::string &name, QQID botid, bool anonymous = false) {
-            this->_type = MIRAI_CONTACT;
+            this->_type = static_cast<contactType>(type);
             this->_id = id;
             this->_groupid = gid;
             this->_nickOrNameCard = name;
