@@ -24,7 +24,7 @@ namespace MiraiCP {
     /*成员类实现*/
     Member::Member(QQID id, QQID groupid, QQID botid, JNIEnv *env)
         : Contact() {
-        this->_type = 3;
+        this->_type = MIRAI_MEMBER;
         this->_id = id;
         this->_groupid = groupid;
         this->_botid = botid;
