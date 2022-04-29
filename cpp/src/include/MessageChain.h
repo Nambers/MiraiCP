@@ -105,7 +105,7 @@ namespace MiraiCP {
         template<class T>
         explicit MessageChain(const T &msg) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage子类");
-            this->_messages.push_back(Message(msg));
+            this->_messages.emplace_back(msg);
         };
 
     public:
@@ -132,7 +132,7 @@ namespace MiraiCP {
         template<class T>
         void add(const T &a) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只接受SingleMessage的子类");
-            this->_messages.push_back(Message(a));
+            this->_messages.emplace_back(a);
         }
 
         void add(const MessageSource &val) {
@@ -271,19 +271,19 @@ namespace MiraiCP {
         template<class T1, class... T2>
         void p(std::vector<Message> *v, T1 h, T2... args) {
             static_assert(std::is_base_of_v<SingleMessage, T1>, "只支持SingleMessage子类");
-            v->push_back(Message(h));
+            v->emplace_back(h);
             p(v, args...);
         }
 
         template<class... T2>
         void p(std::vector<Message> *v, std::string h, T2... args) {
-            v->push_back(Message(PlainText(h)));
+            v->emplace_back(PlainText(h));
             p(v, args...);
         }
 
         template<class... T2>
         void p(std::vector<Message> *v, const char *h, T2... args) {
-            v->push_back(Message(PlainText(h)));
+            v->emplace_back(PlainText(h));
             p(v, args...);
         }
 
