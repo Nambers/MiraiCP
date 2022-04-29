@@ -38,6 +38,21 @@ namespace MiraiCP {
                 static_assert(std::is_base_of_v<SingleMessage, U>, "只支持SingleMessage的子类");
                 content.reset(new U(std::forward<T>(a)));
             }
+            /*template<class T>
+            explicit Message(const T &a) {
+                static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
+                content.reset(new T(std::forward<T>(a)));
+            }*/
+
+            // using a forward reference constructor may hide the copy and move constructors
+            Message(const Message &o) : content(new SingleMessage(*o.content)) {}
+
+            Message(Message &&o) noexcept : content(std::move(o.content)) {}
+
+            Message &operator=(const Message &o) {
+                if (this != &o) content.reset(new SingleMessage(*o.content));
+                return *this;
+            }
 
             explicit Message(std::shared_ptr<SingleMessage> a) {
                 content = std::move(a);
