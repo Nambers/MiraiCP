@@ -5,7 +5,7 @@ Path: MiraiCP/cpp/buildScript/third-party
 Author: antares0982@gmail.com
 Copyright (c) 2021 Antares
 """
-# workpath: MiraiCP/cpp
+# workpath: MiraiCP/cpp/src
 import json
 import os
 
@@ -25,7 +25,9 @@ for filename in fnames:
         d['sources'].append("include/" + filename)
         msg += filename + "\n"
 
-with open('buildScript/third-party/config.json', 'w', encoding='utf-8') as f:
+dirpath = os.path.dirname(os.path.abspath(__file__))
+
+with open(os.path.join(dirpath, "config.json"), 'w', encoding='utf-8') as f:
     json.dump(d, f, ensure_ascii=False, indent=4)
 
 print(msg)

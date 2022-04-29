@@ -11,13 +11,13 @@ set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
 # -- automatic add include --
 if (WIN32)
     execute_process(
-            COMMAND python buildScript/addinclude.py
+            COMMAND python ../buildScript/addinclude.py
             WORKING_DIRECTORY ${SRC_PATH}
     )
 endif (WIN32)
 if (UNIX)
     execute_process(
-            COMMAND python3 buildScript/addinclude.py
+            COMMAND python3 ../buildScript/addinclude.py
             WORKING_DIRECTORY ${SRC_PATH}
     )
 endif (UNIX)
@@ -52,8 +52,8 @@ file(GLOB MIRAICP_CPP_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/include/*.cpp)
 add_library(
         MiraiCP_multi
         SHARED
-        ${SRC_PATH}/demo/test.cpp
-        ${SRC_PATH}/demo/test2.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/demo/test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/demo/test2.cpp
         ${MIRAICP_CPP_PATH}
 )
 set_target_properties(MiraiCP_multi PROPERTIES
@@ -74,8 +74,8 @@ endif ()
 add_library(
         MiraiCP_single
         SHARED
-        ${SRC_PATH}/demo/test.cpp
-        ${SRC_PATH}/demo/test2.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/demo/test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/demo/test2.cpp
         ${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp
 )
 add_dependencies(MiraiCP_single generateSingleHeaders)
@@ -91,7 +91,7 @@ target_compile_options(MiraiCP_single PUBLIC -w)
 
 # -- MiraiCP core --
 add_executable(MiraiCP_core
-        ${SRC_PATH}/demo/MiraiCP-core.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/demo/MiraiCP-core.cpp
         ${SRC_PATH}/miraicp-core/core.cpp
         ${MIRAICP_CPP_PATH}
         )
@@ -130,20 +130,20 @@ endif (UNIX)
 if (WIN32)
     add_custom_target(
             generateSingleHeaders
-            COMMAND python buildScript/addinclude.py
-            COMMAND python buildScript/third-party/config.py
-            COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
-            COMMAND python buildScript/combineSource.py
+            COMMAND python ../buildScript/addinclude.py
+            COMMAND python ../buildScript/third-party/config.py
+            COMMAND python ../buildScript/third-party/amalgamate.py -c ../buildScript/third-party/config.json -p ../buildScript/third-party/prologue -s . --verbose=yes
+            COMMAND python ../buildScript/combineSource.py
             WORKING_DIRECTORY ${SRC_PATH}
     )
 endif (WIN32)
 if (UNIX)
     add_custom_target(
             generateSingleHeaders
-            COMMAND python3 buildScript/addinclude.py
-            COMMAND python3 buildScript/third-party/config.py
-            COMMAND python3 buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
-            COMMAND python3 buildScript/combineSource.py
+            COMMAND python3 ../buildScript/addinclude.py
+            COMMAND python3 ../buildScript/third-party/config.py
+            COMMAND python3 ../buildScript/third-party/amalgamate.py -c ../buildScript/third-party/config.json -p ../buildScript/third-party/prologue -s . --verbose=yes
+            COMMAND python3 ../buildScript/combineSource.py
             WORKING_DIRECTORY ${SRC_PATH}
     )
 endif (UNIX)
