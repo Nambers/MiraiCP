@@ -35,9 +35,9 @@ jobs:
          cxx: g++
        run: cd main && mkdir cpp/build && cd cpp/build && cmake .. && make generateSingleHeaders
      - name: replace single header(1/2)
-       run: cat main/cpp/single_include/MiraiCP/MiraiCP.hpp > template/single_include/MiraiCP/MiraiCP.hpp
+       run: cat main/cpp/src/single_include/MiraiCP/MiraiCP.hpp > template/single_include/MiraiCP/MiraiCP.hpp
      - name: replace single header(2/2)
-       run: cat main/cpp/single_include/MiraiCP/MiraiCP.cpp > template/single_include/MiraiCP/MiraiCP.cpp
+       run: cat main/cpp/src/single_include/MiraiCP/MiraiCP.cpp > template/single_include/MiraiCP/MiraiCP.cpp
      - name: mv
        run: mv ./template/.git ./.git
      - name: Push
@@ -73,13 +73,13 @@ jobs:
          cxx: g++
        run: cd main && mkdir cpp/build && cd cpp/build && cmake .. && make generateSingleHeaders
      - name: replace single header(1/4)
-       run: cat main/cpp/single_include/MiraiCP/MiraiCP.hpp > template/MiraiCP/MiraiCP.hpp
+       run: cat main/cpp/src/single_include/MiraiCP/MiraiCP.hpp > template/MiraiCP/MiraiCP.hpp
      - name: replace single header(2/4)
-       run: cat main/cpp/single_include/MiraiCP/MiraiCP.cpp > template/MiraiCP/MiraiCP.cpp
+       run: cat main/cpp/src/single_include/MiraiCP/MiraiCP.cpp > template/MiraiCP/MiraiCP.cpp
      - name: replace single header(3/4)
-       run: cat main/cpp/miraicp-core/core.h > template/MiraiCP/core.h
+       run: cat main/cpp/src/miraicp-core/core.h > template/MiraiCP/core.h
      - name: replace single header(4/4)
-       run: cat main/cpp/miraicp-core/core.cpp > template/MiraiCP/core.cpp
+       run: cat main/cpp/src/miraicp-core/core.cpp > template/MiraiCP/core.cpp
      - name: mv
        run: mv ./template/.git ./.git
      - name: Push
