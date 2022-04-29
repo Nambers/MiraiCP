@@ -23,7 +23,6 @@
 #include <string>
 
 namespace MiraiCP {
-    using QQID = unsigned long long;
 
     enum contactType {
         MIRAI_CONTACT = 0,
@@ -97,6 +96,7 @@ namespace MiraiCP {
          * @param botid 对应的botid
          */
         explicit Contact(int type, QQID id, QQID gid, const std::string &name, QQID botid, bool anonymous = false) {
+            if(type < 0 || type > 4) throw APIException("Contact::type incorrect", MIRAICP_EXCEPTION_WHERE);
             this->_type = static_cast<contactType>(type);
             this->_id = id;
             this->_groupid = gid;
@@ -156,7 +156,7 @@ namespace MiraiCP {
             return j;
         }
         /// @deprecated since v2.8.1, use `this->toJson()`
-        [[deprecated("use toJson")]] nlohmann::json serialization() const = delete;
+        ShouldNotUse("use toJson") nlohmann::json serialization() const = delete;
 
         /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
         /// @see Contact::fromString()
@@ -164,7 +164,7 @@ namespace MiraiCP {
             return this->toJson().dump();
         }
         /// @deprecated since v2.8.1, use `this->toString()`
-        [[deprecated("use toString")]] std::string serializationToString() const = delete;
+        ShouldNotUse("use toString") std::string serializationToString() const = delete;
 
         /// 反序列化成bot，可以通过serializationToString序列化，利于保存
         /// @see Contact::serializationToString()
@@ -175,10 +175,10 @@ namespace MiraiCP {
 
     public:
         /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
-        [[deprecated("use deserialize")]] static Contact deserializationFromString(const std::string &source) = delete;
+        ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, true, env)`
-        [[deprecated("Use sendMessage")]] MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
+        ShouldNotUse("Use sendMessage") MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
                                                                       JNIEnv *env = nullptr) const = delete;
 
         /*!
@@ -240,13 +240,13 @@ namespace MiraiCP {
         }
 
         /// @deprecated since v2.8.1, use `sendMessage(msg)` or `sendMsg0(msg, retryTime, false, env)`
-        [[deprecated("Use sendMessage")]] MessageSource sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage") MessageSource sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, false, env);`
-        [[deprecated("Use sendMessage")]] MessageSource sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage") MessageSource sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(Tools::VectorToString(std::move(msg)))` or `sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);`
-        [[deprecated("Use sendMessage")]] MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage") MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
 
         /*!
         * @brief 上传本地图片，务必要用绝对路径

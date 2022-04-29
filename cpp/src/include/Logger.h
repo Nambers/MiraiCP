@@ -22,9 +22,9 @@
 #include <jni.h>
 #include <json.hpp>
 #include "MiraiCode.h"
+#include "def.h"
 
 namespace MiraiCP {
-    using QQID = unsigned long long;
 
     class MiraiCodeable; // forward declaration
 

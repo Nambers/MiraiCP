@@ -387,7 +387,7 @@ namespace MiraiCP {
         std::array<uint8_t, 16> md5;
 
         /// 不支持直接发送, 用Contact.sendAudio
-        [[deprecated("cannot use, use Contact.sendAudio")]] std::string toMiraiCode() const override {
+        ShouldNotUse("cannot use, use Contact.sendAudio") std::string toMiraiCode() const override {
             return "";
         }
 
@@ -481,7 +481,7 @@ namespace MiraiCP {
         explicit RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s);
 
         /// 上传后会自动发送
-        [[deprecated("Cannot send manually, use Group.sendFile")]] std::string toMiraiCode() const override {
+        ShouldNotUse("Cannot send manually, use Group.sendFile") std::string toMiraiCode() const override {
             return "";
         }
 
@@ -534,7 +534,7 @@ namespace MiraiCP {
     public:
         static int type() { return -5; }
         /// 目前无法直接发送MarketFace, 可以转发
-        [[deprecated("暂不支持直接发送")]] std::string toMiraiCode() const override {
+        ShouldNotUse("暂不支持直接发送") std::string toMiraiCode() const override {
             return "";
         }
         std::array<uint8_t, 16> faceId;
@@ -551,7 +551,7 @@ namespace MiraiCP {
         static int type() { return -1; }
         nlohmann::json toJson() const override;
         /// 不支持发送
-        [[deprecated("不支持直接发送UnSupportMessage")]] std::string toMiraiCode() const override {
+        ShouldNotUse("不支持直接发送UnSupportMessage") std::string toMiraiCode() const override {
             return "";
         }
 

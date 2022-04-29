@@ -19,10 +19,10 @@
 
 #include <string>
 #include <jni.h>
+#include "def.h"
 
 namespace MiraiCP {
     class MiraiCodeable; // forward declaration
-    using QQID = unsigned long long;
     /*! 消息源声明
      * @example 撤回信息(check in version 2.9.0)
      * @code
@@ -44,17 +44,17 @@ namespace MiraiCP {
         MessageSource() = default;
 
         /// @deprecated 用Contact.quoteAndSendMessage, since v2.8.1
-        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
+        ShouldNotUse("Use Contact.quoteAndSendMessage") MessageSource
         quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
                               JNIEnv *env = nullptr) const = delete;
 
         /// @deprecated use Contact.quoteAndSendMessage, since v2.8.1
-        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
+        ShouldNotUse("Use Contact.quoteAndSendMessage") MessageSource
         quoteAndSendMsg(const std::string &c, QQID groupid = 0,
                         JNIEnv * = nullptr) const = delete;
 
         /// @deprecated use Contact.quoteAndSendMessage, since v2.8.1
-        [[deprecated("Use Contact.quoteAndSendMessage")]] MessageSource
+        ShouldNotUse("Use Contact.quoteAndSendMessage") MessageSource
         quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
                               JNIEnv * = nullptr) const = delete;
 

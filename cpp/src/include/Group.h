@@ -22,7 +22,6 @@
 #include "json.hpp"
 
 namespace MiraiCP {
-    using QQID = unsigned long long;
     class Member; // forward declaration
     /*!
      * @detail 群聊类声明

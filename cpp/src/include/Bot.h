@@ -20,12 +20,12 @@
 #include <jni.h>
 #include <string>
 #include <vector>
+#include "def.h"
 
 namespace MiraiCP {
     class Friend;  // forward declaration
     class Group;   // forward declaration
     class Contact; // forward declaration
-    using QQID = unsigned long long;
 
     /// 当前bot账号信息
     class Bot {

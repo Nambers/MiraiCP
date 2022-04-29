@@ -6,14 +6,19 @@ class Main : public CPPPlugin {
 public:
     // 配置插件信息
     Main() : CPPPlugin(PluginConfig(
-                     "tech.eritquearcus.miraicp",
+                     "id",
                      "test",
                      "v1.0",
-                     "Eritque arcus")) {}
+                     "a")) {}
     void onEnable() override {
         // 监听
-        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
-            Logger::logger.info(e.group.uploadImg("C:/Users/19308/desktop/6019893df194b1a92220efa4836d6cc.png").isUploaded(e.bot.id));
+        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent a){
+            Logger::logger.info("b");
+            auto b = Group(a.group.id(), a.group.botid());
+            Logger::logger.info("c");
+            auto c = b[a.sender.id()];
+            Logger::logger.info("d");
+            c.changeNameCard(a.message.toMiraiCode());
         });
     }
 
@@ -26,5 +31,3 @@ public:
 void MiraiCP::enrollPlugin() {
     MiraiCP::enrollPlugin0(new Main());
 }
-
-
