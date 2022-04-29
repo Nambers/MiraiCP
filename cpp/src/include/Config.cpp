@@ -18,6 +18,7 @@
 #include "Exception.h"
 #include "ThreadManager.h"
 #include "Tools.h"
+#include "def.h"
 
 namespace MiraiCP::Config {
     jclass CPPLib = nullptr;

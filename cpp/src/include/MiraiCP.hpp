@@ -37,6 +37,7 @@
 #include "SingleMessage.h"
 #include "ThreadManager.h"
 #include "Tools.h"
+#include "def.h"
 #include "utils.h"
 
 #endif //MIRAICP_HPP_H

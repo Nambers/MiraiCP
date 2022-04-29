@@ -22,6 +22,7 @@
         "include/SingleMessage.h",
         "include/ThreadManager.h",
         "include/Tools.h",
+        "include/def.h",
         "include/utils.h"
     ],
     "include_paths": [

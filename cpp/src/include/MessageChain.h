@@ -290,7 +290,7 @@ namespace MiraiCP {
         /// - MessageChain
         /// @deprecated use Contact.quoteAndSend or `this->quoteAndSend1(s, groupid, env)`, since v2.8.1
         template<class T>
-        [[deprecated("use Contact.quoteAndSend")]] MessageSource
+        ShouldNotUse("use Contact.quoteAndSend") MessageSource
         quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = nullptr) = delete;
 
         /// 从miraicode string构建MessageChain

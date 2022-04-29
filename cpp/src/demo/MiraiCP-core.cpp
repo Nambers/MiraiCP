@@ -14,16 +14,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "miraicp-core/core.h"
-#include "MiraiCP.hpp"
 using namespace MiraiCP;
 
 int main() {
 #ifdef _WIN32
-    Core::loadCore(R"(D:\Git\mirai\MiraiCP\kotlin\core\build\libs\MiraiCP-core-2.11.0-M1-all.jar)");
+    Core::loadCore(R"(jar)");
 #else
-    Core::loadCore("/mnt/d/git/mirai/miraicp/kotlin/core/build/libs/MiraiCP-core-2.11.0-M1-all.jar");
+    Core::loadCore("/mnt/d/git/mirai/miraicp/kotlin/core/build/libs/MiraiCP-core-2.11.0-M3.jar");
 #endif
-    Bot tmp = Core::login(11, "aa", true);
+    Bot tmp(0);
+    tmp = Core::login(111, "pwd", true);
     Logger::logger.info("aa");
     try {
         Logger::logger.info(tmp.nick());
@@ -31,14 +31,8 @@ int main() {
         Logger::logger.error(e.what());
     }
     bool alive = true;
-    Event::processor.registerEvent<GroupMessageEvent>([&alive](GroupMessageEvent a){
-        Logger::logger.info("b");
-        auto b = Group(a.group.id(), a.group.botid());
-        Logger::logger.info("c");
-        auto c = b[a.sender.id()];
-        Logger::logger.info("d");
-        c.changeNameCard(a.message.toMiraiCode());
-        alive = false;
+    Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent a){
+        Logger::logger.info("pl=100");
     });
     while (alive){};
     Core::exitCore();

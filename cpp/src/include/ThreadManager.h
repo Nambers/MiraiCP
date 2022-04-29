@@ -23,7 +23,6 @@
 #include <thread>
 
 namespace MiraiCP {
-    using QQID = unsigned long long;
     /*!
     * @class threadManager
     * @brief 多线程管理.
