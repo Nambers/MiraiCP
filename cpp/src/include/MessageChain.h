@@ -22,9 +22,10 @@
 
 namespace MiraiCP {
     class MessageSource; // forward declaration
+
     /// 消息链, 一般由SingleMessage组成
     class MessageChain : public MiraiCodeable {
-    public:
+    public: // typedefs
         class Message {
         private:
             std::shared_ptr<SingleMessage> content;
@@ -74,137 +75,11 @@ namespace MiraiCP {
         };
 
     private:
-        void p(std::vector<Message> *) {}
-
-        template<class T1, class... T2>
-        void p(std::vector<Message> *v, T1 h, T2... args) {
-            static_assert(std::is_base_of_v<SingleMessage, T1>, "只支持SingleMessage子类");
-            v->push_back(Message(h));
-            p(v, args...);
-        }
-
-        template<class... T2>
-        void p(std::vector<Message> *v, std::string h, T2... args) {
-            v->push_back(Message(PlainText(h)));
-            p(v, args...);
-        }
-
-        template<class... T2>
-        void p(std::vector<Message> *v, const char *h, T2... args) {
-            v->push_back(Message(PlainText(h)));
-            p(v, args...);
-        }
-
-        template<class... T>
-        void p(std::vector<Message> *v, MessageChain mc, T... args) {
-            v->insert(v->end(), mc.content.begin(), mc.content.end());
-            p(v, args...);
-        }
-
         std::vector<Message> content;
-
-        MessageSource quoteAndSend0(const std::string &msg, QQID groupid = -1,
-                                    JNIEnv *env = nullptr);
-
-        template<class T>
-        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = nullptr) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return this->quoteAndSend0(s.toMiraiCode(), groupid, env);
-        }
-
-        MessageSource quoteAndSend1(std::string s, QQID groupid, JNIEnv *env) {
-            return this->quoteAndSend0(s, groupid, env);
-        }
-
-        MessageSource quoteAndSend1(MessageChain mc, QQID groupid, JNIEnv *env) {
-            return this->quoteAndSend0(mc.toMiraiCode(), groupid, env);
-        }
-
-    public:
-        size_t size() {
-            return this->content.size();
-        }
-
-        const std::vector<Message> &vector() {
-            return this->content;
-        }
-
         /// 如果由MiraiCP构造(incoming)就会存在，否则则不存在
         std::optional<MessageSource> source = std::nullopt;
 
-        /// @brief 找到miraiCode结尾的`]`
-        /// @param s 文本
-        /// @param start 开始位置
-        /// @return 如果不存在返回-1, 存在则返回index
-        static size_t findEnd(const std::string &s, size_t start) {
-            size_t pos = start;
-            while (pos < s.length()) {
-                switch (s[pos]) {
-                    case '\\':
-                        pos += 2;
-                        continue;
-                    case ']':
-                        return pos;
-                }
-                pos++;
-            }
-            return -1;
-        }
-
-        std::string toMiraiCode() const override;
-
-        std::vector<std::string> toMiraiCodeVector() const {
-            std::vector<std::string> tmp;
-            for (const Message &a: this->content)
-                tmp.emplace_back(a.toMiraiCode());
-            return tmp;
-        }
-
-        /// @brief 添加元素
-        /// @tparam T 任意的SingleMessage的子类
-        /// @param a 添加的值
-        template<class T>
-        void add(const T &a) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只接受SingleMessage的子类");
-            this->content.push_back(Message(a));
-        }
-
-        void add(const MessageSource &val) {
-            this->source = val;
-        }
-
-        /// 筛选出某种特点type的信息
-        template<class T>
-        std::vector<T> filter(int type) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
-            std::vector<T> re;
-            for (auto a: this->content) {
-                if (a.type() == type)
-                    re.push_back(std::static_pointer_cast<T>(a));
-            }
-            return re;
-        }
-
-        /// 自定义筛选器
-        template<class T>
-        std::vector<T> filter(const std::function<bool(Message)> &func) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
-            std::vector<T> re;
-            for (auto a: this->content) {
-                if (func(a))
-                    re.push_back(std::static_pointer_cast<T>(a));
-            }
-            return re;
-        }
-
-        /// 找出第一个指定的type的信息
-        template<class T>
-        T first(int type) {
-            for (auto a: this->content)
-                if (a.type() == type)
-                    return std::static_pointer_cast<T>(a);
-        }
-
+    public:
         /// incoming构造器
         template<class... T>
         explicit MessageChain(MessageSource ms, T... args) : source(std::move(ms)) {
@@ -230,6 +105,70 @@ namespace MiraiCP {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage子类");
             this->content.push_back(Message(msg));
         };
+
+    public:
+        size_t size() {
+            return this->content.size();
+        }
+
+        const std::vector<Message> &vector() {
+            return this->content;
+        }
+
+        std::string toMiraiCode() const override;
+
+        std::vector<std::string> toMiraiCodeVector() const {
+            std::vector<std::string> tmp;
+            for (const Message &a: this->content)
+                tmp.emplace_back(a.toMiraiCode());
+            return tmp;
+        }
+
+        /// @brief 添加元素
+        /// @tparam T 任意的SingleMessage的子类
+        /// @param a 添加的值
+        template<class T>
+        void add(const T &a) {
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只接受SingleMessage的子类");
+            this->content.push_back(Message(a));
+        }
+
+        void add(const MessageSource &val) {
+            this->source = val;
+        }
+
+        /// 筛选出某种类型的消息
+        template<class T>
+        std::vector<T> filter() {
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
+            std::vector<T> re;
+            for (auto &&a: this->content) {
+                if (a.type() == T::type())
+                    re.push_back(a.get<T>());
+            }
+            return re;
+        }
+
+        /// 自定义筛选器
+        template<class T>
+        std::vector<T> filter(const std::function<bool(Message)> &func) {
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
+            std::vector<T> re;
+            for (auto &&a: this->content) {
+                if (func(a))
+                    re.push_back(a.get<T>());
+            }
+            return re;
+        }
+
+        /// 找出第一个指定的type的信息
+        template<class T>
+        T first() {
+            for (auto &&a: this->content)
+                if (a.type() == T::type())
+                    return a.get<T>();
+        }
+
 
         template<class T>
         [[nodiscard]] MessageChain plus(const T &a) const {
@@ -291,7 +230,27 @@ namespace MiraiCP {
         /// @deprecated use Contact.quoteAndSend or `this->quoteAndSend1(s, groupid, env)`, since v2.8.1
         template<class T>
         ShouldNotUse("use Contact.quoteAndSend") MessageSource
-        quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = nullptr) = delete;
+                quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = nullptr) = delete;
+
+    public: // static functions
+        /// @brief 找到miraiCode结尾的`]`
+        /// @param s 文本
+        /// @param start 开始位置
+        /// @return 如果不存在返回-1, 存在则返回index
+        static size_t findEnd(const std::string &s, size_t start) {
+            size_t pos = start;
+            while (pos < s.length()) {
+                switch (s[pos]) {
+                    case '\\':
+                        pos += 2;
+                        continue;
+                    case ']':
+                        return pos;
+                }
+                pos++;
+            }
+            return -1;
+        }
 
         /// 从miraicode string构建MessageChain
         static MessageChain deserializationFromMiraiCode(const std::string &m);
@@ -302,6 +261,51 @@ namespace MiraiCP {
         /// 从MessageSource json中构建MessageChain, 常用于Incoming message
         /// @attention 本方法并不会自动附加MessageSource到MessageChain, 需要用.plus方法自行附加
         static MessageChain deserializationFromMessageSourceJson(const nlohmann::json &j, bool origin = true);
+
+    private: // private methods
+        void p(std::vector<Message> *) {}
+
+        template<class T1, class... T2>
+        void p(std::vector<Message> *v, T1 h, T2... args) {
+            static_assert(std::is_base_of_v<SingleMessage, T1>, "只支持SingleMessage子类");
+            v->push_back(Message(h));
+            p(v, args...);
+        }
+
+        template<class... T2>
+        void p(std::vector<Message> *v, std::string h, T2... args) {
+            v->push_back(Message(PlainText(h)));
+            p(v, args...);
+        }
+
+        template<class... T2>
+        void p(std::vector<Message> *v, const char *h, T2... args) {
+            v->push_back(Message(PlainText(h)));
+            p(v, args...);
+        }
+
+        template<class... T>
+        void p(std::vector<Message> *v, MessageChain mc, T... args) {
+            v->insert(v->end(), mc.content.begin(), mc.content.end());
+            p(v, args...);
+        }
+
+        MessageSource quoteAndSend0(const std::string &msg, QQID groupid = -1,
+                                    JNIEnv *env = nullptr);
+
+        template<class T>
+        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = nullptr) {
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+            return this->quoteAndSend0(s.toMiraiCode(), groupid, env);
+        }
+
+        MessageSource quoteAndSend1(std::string s, QQID groupid, JNIEnv *env) {
+            return this->quoteAndSend0(s, groupid, env);
+        }
+
+        MessageSource quoteAndSend1(MessageChain mc, QQID groupid, JNIEnv *env) {
+            return this->quoteAndSend0(mc.toMiraiCode(), groupid, env);
+        }
     };
 } // namespace MiraiCP
 
