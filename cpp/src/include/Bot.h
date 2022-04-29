@@ -20,7 +20,7 @@
 #include <jni.h>
 #include <string>
 #include <vector>
-#include "def.h"
+#include "MiraiDefs.h"
 
 namespace MiraiCP {
     class Friend;  // forward declaration

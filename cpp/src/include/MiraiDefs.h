@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MIRAICP_PRO_DEF_H
-#define MIRAICP_PRO_DEF_H
+#ifndef MIRAICP_PRO_MIRAIDEFS_H
+#define MIRAICP_PRO_MIRAIDEFS_H
 
 // #define MiraiCPThrow(x) throw x.append(__FILE__, __LINE__)
 #define ErrorHandle(x, y) ErrorHandle0(__FILE__, __LINE__, (x), (y))
@@ -34,4 +34,4 @@ namespace MiraiCP{
     const std::string MiraiCPVersion = "v2.11.0-M3";
 }
 
-#endif //MIRAICP_PRO_DEF_H
+#endif //MIRAICP_PRO_MIRAIDEFS_H
