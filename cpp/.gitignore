@@ -1,10 +1,10 @@
-.idea
-build
-single_include/MiraiCP/**
+.idea/
+build/
+src/single_include/MiraiCP/**
 .vs
 x64
 cache
 selenium
-cmake-build-debug
+cmake-build-debug/
 out
 CMakeFiles
