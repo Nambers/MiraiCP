@@ -22,7 +22,7 @@
 #include <jni.h>
 #include <json.hpp>
 #include "MiraiCode.h"
-#include "def.h"
+#include "MiraiDefs.h"
 
 namespace MiraiCP {
 

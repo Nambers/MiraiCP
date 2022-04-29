@@ -16,7 +16,7 @@
 #include "LowLevelAPI.h"
 #include "Config.h"
 #include "Exception.h"
-#include "def.h"
+#include "MiraiDefs.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;

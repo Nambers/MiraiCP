@@ -19,7 +19,7 @@
 
 #include <string>
 #include <jni.h>
-#include "def.h"
+#include "MiraiDefs.h"
 
 namespace MiraiCP {
     class MiraiCodeable; // forward declaration

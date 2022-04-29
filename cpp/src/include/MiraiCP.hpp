@@ -33,11 +33,11 @@
 #include "MessageChain.h"
 #include "MessageSource.h"
 #include "MiraiCode.h"
+#include "MiraiDefs.h"
 #include "PluginConfig.h"
 #include "SingleMessage.h"
 #include "ThreadManager.h"
 #include "Tools.h"
-#include "def.h"
 #include "utils.h"
 
 #endif //MIRAICP_HPP_H
