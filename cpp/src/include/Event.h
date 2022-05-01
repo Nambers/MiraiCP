@@ -581,29 +581,41 @@ namespace MiraiCP {
         }
     };
 
+    /// 事件监听操控, 可用于stop停止监听和resume继续监听
+    class NodeHandle {
+    private:
+        bool _enable;
+
+    public:
+        explicit NodeHandle(bool a) : _enable(a) {}
+        bool isEnable() const { return _enable; }
+        void stop() { _enable = false; }
+        void resume() { _enable = true; }
+    };
+
     class Event {
     private: // typedefs
         class eventNode {
+        private:
+            /// 回调的handle，用于管理
+            std::shared_ptr<NodeHandle> _handle;
+
         public:
-            bool enable = true;
             std::function<bool(MiraiCPEvent *)> func;
 
-            explicit eventNode(std::function<bool(MiraiCPEvent *)> f) : func(std::move(f)) {}
+            explicit eventNode(std::function<bool(MiraiCPEvent *)> f) : _handle(new NodeHandle(true)), func(std::move(f)) {}
 
-            bool run(MiraiCPEvent *a) const {
-                return func(a);
-            }
-        };
-
-        /// 事件监听操控, 可用于stop停止监听和resume继续监听
-        class NodeHandle {
-        private:
-            bool enable;
+            eventNode(eventNode &&_o) noexcept : _handle(std::move(_o._handle)), func(std::move(_o.func)) {}
 
         public:
-            explicit NodeHandle(bool a) { enable = a; }
-            void stop() { enable = false; }
-            void resume() { enable = true; }
+            /// 返回true代表block之后的回调
+            bool run(MiraiCPEvent *a) const {
+                return _handle->isEnable() && func(a);
+            }
+
+            std::shared_ptr<NodeHandle> getHandle() {
+                return _handle;
+            }
         };
 
         using priority_level = unsigned char;
@@ -650,13 +662,17 @@ namespace MiraiCP {
          * @param priority_level 优先级，范围：0-255，越低的优先级越先执行，默认100
          */
         template<typename EventClass>
-        static void registerEvent(std::function<void(EventClass)> callback, priority_level level = 100) {
+        static std::shared_ptr<NodeHandle> registerEvent(std::function<void(EventClass)> callback, priority_level level = 100) {
             static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
                 callback(*dynamic_cast<EventClass *>(p));
                 return false;
             };
-            processor._all_events_[id<EventClass>()][level].emplace_back(tmp);
+            auto t = eventNode(tmp);
+            auto ans = t.getHandle();
+            // 先获得shared_ptr才可以emplace_back
+            processor._all_events_[id<EventClass>()][level].emplace_back(std::move(t));
+            return ans;
         }
 
         /**
@@ -667,12 +683,16 @@ namespace MiraiCP {
          * @param priority_level 优先级，范围：0-255，越低的优先级越先执行，默认100
          */
         template<typename EventClass>
-        static void registerBlockingEvent(std::function<bool(EventClass)> callback, priority_level level = 100) {
+        static std::shared_ptr<NodeHandle> registerBlockingEvent(std::function<bool(EventClass)> callback, priority_level level = 100) {
             static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
                 return callback(*dynamic_cast<EventClass *>(p));
             };
-            processor._all_events_[id<EventClass>()][level].emplace_back(tmp);
+            auto t = eventNode(tmp);
+            auto ans = t.getHandle();
+            // 先获得shared_ptr才可以emplace_back
+            processor._all_events_[id<EventClass>()][level].emplace_back(std::move(t));
+            return ans;
         }
     };
 } // namespace MiraiCP
