@@ -24,7 +24,7 @@ public:
                      "v1.0",
                      "a")) {}
     void onEnable() override {
-        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
+        Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
             // 一起传递过去的自定义信息
             nlohmann::json j;
             j["type"] = 1;

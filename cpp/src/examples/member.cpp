@@ -24,7 +24,7 @@ public:
                      "v1.0",
                      "a")) {}
     void onEnable() override {
-        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
+        Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
             // 从id构造群成员
             Member a(e.sender.id(), e.group.id(), e.bot.id);
             // 踢出群成员

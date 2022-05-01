@@ -25,7 +25,7 @@ public:
                      "v1.0",
                      "a")) {}
     void onEnable() override {
-        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
+        Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
             // 从文本构造
             //风格1，适合文字展示，不能交互,无大图
             //图标地址，应该是要qq的服务器里有的图片，也就是说先上传(发送)图片然后取下载链接
