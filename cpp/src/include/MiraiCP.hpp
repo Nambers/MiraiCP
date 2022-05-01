@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2021. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -39,5 +39,27 @@
 #include "ThreadManager.h"
 #include "Tools.h"
 #include "utils.h"
-
+/*!
+ * 所有加进doxygen doc的example
+ * @example command.cpp
+ * 监听指令
+ * @example forwardedMessage.cpp
+ * 构造转发信息
+ * @example group.cpp
+ * 群操作
+ * @example lightApp.cpp
+ * 构建并发送lightApp
+ * @example logger.cpp
+ * 自定义logger handle以及启用禁用logger
+ * @example member.cpp
+ * 群成员操作
+ * @example message.cpp
+ * 消息操作
+ * @example nextMessage.cpp
+ * 取下一条消息
+ * @example schedule.cpp
+ * 定时事件
+ * @example thread.cpp
+ * 多线程
+ */
 #endif //MIRAICP_HPP_H

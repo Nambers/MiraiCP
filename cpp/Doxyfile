@@ -261,8 +261,7 @@ TAB_SIZE               = 4
 # with the commands \{ and \} for these it is advised to use the version @{ and
 # @} or use a double escape (\\{ and \\})
 
-ALIASES                = 
-ALIASES += includeEg{3}="<div id=\"dynsection-\1\" onclick=\"return toggleVisibility(this)\" class=\"dynheader closed\" style=\"cursor:pointer;\"><img id=\"dynsection-\1-trigger\" src=\"closed.png\" alt=\"+\">\3例子:</div><div id=\"dynsection-\1-content\" class=\"dynsummary\" style=\"display: none;\">\include \2 </div>"
+ALIASES                = "includeEg{3}=<div id=\"dynsection-\1\" onclick=\"return toggleVisibility(this)\" class=\"dynheader closed\" style=\"cursor:pointer;\"><img id=\"dynsection-\1-trigger\" src=\"closed.png\" alt=\"+\">\3例子:</div><div id=\"dynsection-\1-content\" class=\"dynsummary\" style=\"display: none;\">\include \2 </div>"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
@@ -903,7 +902,8 @@ INPUT_ENCODING         = UTF-8
 # *.vhdl, *.ucf, *.qsf and *.ice.
 
 FILE_PATTERNS          = *.h \
-                         *.cpp
+                         *.cpp \
+                         *.hpp
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
