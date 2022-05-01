@@ -26,23 +26,7 @@ namespace MiraiCP {
     class Contact;
     /*!
      * @brief 指令 Interface
-     * @example 注册一条指令
-     * @code
-     * class a: public IRawCommand{
-        public:
-            IRawCommand::Config config() override{
-                return IRawCommand::Config("test");
-            }
-            void onCommand(std::optional<Contact> c, const Bot& b, const MessageChain& a) override{
-                Logger::logger.info(a.toMiraiCode());
-            }
-            a() = default;
-        };
-     * @endcode
-     * 然后在`onEnable()`里
-     * @code
-     * CommandManager::commandManager.registerCommand(a());
-     * @endcode
+     * @includeEg{1001, command.cpp, 新建自定义命令}
      * @attention loader端的命令只支持从console传入, plugin端是对接mirai的RawCommand
      */
     class IRawCommand {

@@ -22,31 +22,7 @@
 namespace MiraiCP {
     /*!
      * @brief 群成员类声明
-     * @example 在事件中构建Member对象(check in version 2.9.0)
-     * @code
-     *  Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
-     * Member a(e.sender.id(), e.group.id(), e.bot.id);
-     * });
-     * @endcode
-     * @example 踢出群成员(check in version 2.9.0)
-     * @code
-     * Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
-        try {
-            Member m = Member(<MemberId>, e.group.id(), e.bot.id);
-            m.kick("this_is_reason");
-        }catch (BotException& err) {
-            //权限不足
-            Logger::logger.error(err.what());
-        }catch (MemberException& err) {
-            if (err.type == 1) {
-                //找不到群
-            }
-            if (err.type == 2) {
-                //找不到群成员
-            }
-        }
-        });
-     * @endcode
+     * @includeEg{1013, member.cpp, 群成员操作}
      */
     class Member : public Contact, INudgeSupport {
     public:
@@ -110,7 +86,6 @@ namespace MiraiCP {
 
         /// At一个群成员
         At at() {
-            /*返回at这个人的miraicode*/
             return At(this->id());
         }
 

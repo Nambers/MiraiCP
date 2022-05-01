@@ -24,13 +24,7 @@
 namespace MiraiCP {
     class MiraiCodeable; // forward declaration
     /*! 消息源声明
-     * @example 撤回信息(check in version 2.9.0)
-     * @code
-     * Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
-        e.message.source.value().recall();
-        e.group.sendMessage("hi").recall();
-        });
-     * @endcode
+     * @includeEg{1014, message.cpp, 回复信息}
     */
     class MessageSource {
     public:

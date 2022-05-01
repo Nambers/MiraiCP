@@ -26,14 +26,7 @@ namespace MiraiCP {
     /*!
     * @class threadManager
     * @brief 多线程管理.
-    * @example 多线程管理
-     * @code
-     * void func(){
-     *      //do some things
-     *      // 一个完整的线程应该在结束时调用detach来释放env的空间
-     *      ThreadManager::detch();
-     * }
-     * @endcode
+    * @includeEg{1016, thread.cpp, 多线程}
     */
     class ThreadManager {
     public:
