@@ -24,7 +24,7 @@ public:
                      "v1.0",
                      "a")) {}
     void onEnable() override {
-        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
+        Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
             ForwardedMessage(&e.group,
                              {ForwardedNode(12, "", MessageChain(PlainText("")), 1),
                               ForwardedNode(11, "", MessageChain(e.sender.at(), "aaa"), 1)})

@@ -24,7 +24,7 @@ public:
                      "v1.0",
                      "a")) {}
     void onEnable() override {
-        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
+        Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
             // 用 id 构建群对象
             Group a(e.group.id(), e.bot.id);
             // 发送D:\\ValveUnhandledExceptionFilter.txt本地文件到qq群的 /test.txt 路径

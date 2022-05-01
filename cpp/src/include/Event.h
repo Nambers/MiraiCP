@@ -25,7 +25,7 @@
 
 namespace MiraiCP {
     /// Event 工厂
-    enum struct eventTypes {
+    enum struct eventTypes : int {
         BaseEvent [[maybe_unused]], // 0
         GroupMessageEvent,          // 1
         PrivateMessageEvent,        // 2
@@ -598,12 +598,12 @@ namespace MiraiCP {
         /// 事件监听操控, 可用于stop停止监听和resume继续监听
         class NodeHandle {
         private:
-            bool *enable;
+            bool enable;
 
         public:
-            explicit NodeHandle(bool *a) { this->enable = a; }
-            void stop() { *enable = false; }
-            void resume() { *enable = true; }
+            explicit NodeHandle(bool a) { enable = a; }
+            void stop() { enable = false; }
+            void resume() { enable = true; }
         };
 
         using priority_level = unsigned char;
@@ -620,23 +620,23 @@ namespace MiraiCP {
         static Event processor;
 
     private:
-        template<typename T>
-        int id() const {
-            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播继承MiraiCPEvent的事件");
-            return int(T::get_event_type());
+        template<typename EventClass>
+        constexpr static int id() {
+            static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持广播继承MiraiCPEvent的事件");
+            return static_cast<int>(EventClass::get_event_type());
         }
 
     public:
-        bool noRegistered(int index) {
-            return _all_events_[index].empty();
+        static bool noRegistered(int index) {
+            return processor._all_events_[index].empty();
         }
 
         /// 广播一个事件, 必须为MiraiCPEvent的派生类
-        template<typename T>
-        void broadcast(T &&val) {
-            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持广播MiraiCPEvent的派生类");
+        template<typename EventClass>
+        static void broadcast(EventClass &&val) {
+            static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持广播MiraiCPEvent的派生类");
             MiraiCPEvent *p = &val;
-            for (auto &&[k, v]: _all_events_[id<T>()]) {
+            for (auto &&[k, v]: processor._all_events_[id<EventClass>()]) {
                 for (auto &&a: v) {
                     if (a.run(p)) return;
                 }
@@ -649,16 +649,14 @@ namespace MiraiCP {
          * @param callback 要注册的回调函数，忽略返回值
          * @param priority_level 优先级，范围：0-255，越低的优先级越先执行，默认100
          */
-        template<typename T>
-        NodeHandle registerEvent(std::function<void(T)> callback, priority_level level = 100) {
-            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持注册MiraiCPEvent的派生类事件");
+        template<typename EventClass>
+        static void registerEvent(std::function<void(EventClass)> callback, priority_level level = 100) {
+            static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
-                callback(*dynamic_cast<T *>(p));
+                callback(*dynamic_cast<EventClass *>(p));
                 return false;
             };
-            eventNode t(tmp);
-            _all_events_[id<T>()][level].emplace_back(t);
-            return NodeHandle(&t.enable);
+            processor._all_events_[id<EventClass>()][level].emplace_back(tmp);
         }
 
         /**
@@ -668,15 +666,13 @@ namespace MiraiCP {
          * @param callback 要注册的回调函数，必须返回bool值
          * @param priority_level 优先级，范围：0-255，越低的优先级越先执行，默认100
          */
-        template<typename T>
-        NodeHandle registerBlockingEvent(std::function<bool(T)> callback, priority_level level = 100) {
-            static_assert(std::is_base_of_v<MiraiCPEvent, T>, "只支持注册MiraiCPEvent的派生类事件");
+        template<typename EventClass>
+        static void registerBlockingEvent(std::function<bool(EventClass)> callback, priority_level level = 100) {
+            static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
-                return callback(*dynamic_cast<T *>(p));
+                return callback(*dynamic_cast<EventClass *>(p));
             };
-            eventNode t(tmp);
-            _all_events_[id<T>()][level].emplace_back(t);
-            return NodeHandle(&t.enable);
+            processor._all_events_[id<EventClass>()][level].emplace_back(tmp);
         }
     };
 } // namespace MiraiCP

@@ -24,11 +24,11 @@ public:
                      "v1.0",
                      "a")) {}
     void onEnable() override {
-        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
+        Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
             auto tmp = e.nextMessage();
             e.group.sendMessage(tmp);
         });
-        Event::processor.registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) -> {
+        Event::registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) -> {
             auto tmp = e.nextMessage();
         });
     }

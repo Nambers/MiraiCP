@@ -24,7 +24,7 @@ public:
                      "v1.0",
                      "a")) {}
     void onEnable() override {
-        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
+        Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
             // 发送MessageChain
             e.group.sendMessage(e.message);
             // 发送SingleMessage

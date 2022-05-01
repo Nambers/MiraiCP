@@ -31,7 +31,7 @@ public:
                      "v1.0",
                      "a")) {}
     void onEnable() override {
-        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
+        Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
             std::thread(func).detach();
         });
     }
