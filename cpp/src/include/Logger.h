@@ -31,19 +31,13 @@ namespace MiraiCP {
     /*!
     * @class Logger
     * @brief 以MiraiCP的名义发送日志, 日志表现格式是: 2021-06-28 09:37:22 [log level]/MiraiCP: [log content], 为最底层的logger
-    * @example 发送日志
 	* 发送消息级日志
 	* @code Logger::logger.info(string) @endcode
 	* 发送警告级日志
 	* @code Logger::logger.warning(string) @endcode
 	* 发送错误级日志
 	* @code Logger::logger.error(string) @endcode
-    * @example 设置loggerhandler的action(check in version 2.9.0)
-    * @code
-     * Logger::logger.registerHandle([](std::string content, int level){
-    *     \\do some things
-    * });
-    * @endcode
+    * @includeEg{1011, logger.cpp, 自定义日志handle}
     */
     class Logger_interface {
         using string = std::string;
@@ -136,8 +130,7 @@ namespace MiraiCP {
 
         /// @brief 设置handler的启用状态
         /// @param state 状态，启用或者关闭
-        /// @example 设置handler的启用状态(check in version 2.9.0)
-        /// @code Logger::logger.setHandleState(ture); @endcode
+        /// @includeEg{1012, logger.cpp, 启用或关闭日志}
         void setHandleState(bool state) {
             this->loggerhandler.enable = state;
         }

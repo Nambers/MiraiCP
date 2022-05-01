@@ -80,11 +80,7 @@ namespace MiraiCP {
 
     /*!
      * @brief 群消息事件声明
-     * @example 取群聊下一条消息(check in version 2.9.0)
-     * @code
-     * auto tmp = e.nextMessage();
-     * e.group.sendMessage(tmp);
-     * @endcode
+     * @includeEg{1003, group.cpp, 取群聊下一条消息}
      */
     class GroupMessageEvent : public BotEvent<GroupMessageEvent> {
     public:
@@ -123,11 +119,7 @@ namespace MiraiCP {
 
     /*!
      * @detail 私聊消息事件类声明
-     * @example 取好友下一条信息(check in version 2.9.0)
-     * @code
-     * auto tmp = e.nextMessage();
-     * e.sender.sendMessage(tmp);
-     * @endcode
+     * @includeEg{1004, group.cpp, 取好友下一条信息}
      */
     class PrivateMessageEvent : public BotEvent<PrivateMessageEvent> {
     public:

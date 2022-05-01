@@ -59,13 +59,7 @@ namespace MiraiCP {
 
     /*!转发消息, 由ForwardNode组成
      * @see class ForwardedNode
-     *@example 构建聊天记录(check in version 2.9.0)
-     * @code
-     * ForwardedMessage(&e.group,
-     *                   {ForwardedNode(1930893235, "", MessageChain(PlainText("")), 1),
-     *                    ForwardedNode(1930893235, "", MessageChain(e.sender.at(), "aaa"), 1)})
-     *          .sendTo(&e.group);
-     * @endcode
+     * @includeEg{1005, forwardMessage.cpp, 构建聊天记录}
      */
     class ForwardedMessage {
     private:

@@ -94,10 +94,12 @@ namespace MiraiCP {
 
     private:
         std::vector<Message> _messages;
+        std::vector<Message> content;
+
+    public:
         /// 如果由MiraiCP构造(incoming)就会存在，否则则不存在
         std::optional<MessageSource> source = std::nullopt;
 
-    public:
         /// incoming构造器
         template<class... T>
         explicit MessageChain(MessageSource ms, T... args) : source(std::move(ms)) {

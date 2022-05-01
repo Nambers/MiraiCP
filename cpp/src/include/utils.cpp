@@ -23,14 +23,13 @@
 
 // 开始对接JNI接口代码
 
-/*
-* 名称:Java_com_example_plugin_CPP_1lib_Verify
-* 作用:判断是否连接上本插件，勿改
-* 参数:env 必备，job 必备
-* 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
-*/
 using json = nlohmann::json;
 namespace MiraiCP::JNIApi {
+    /*
+    * 作用:判断是否连接上本插件，勿改
+    * 参数:env 必备，job 必备
+    * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
+    */
     // env != null, call from jni
     JNIEXPORT jstring Verify(JNIEnv *env, jobject, jstring id) {
         using namespace MiraiCP;
@@ -57,9 +56,9 @@ namespace MiraiCP::JNIApi {
     }
 
     /*
- * 插件结束事件
- * env != null, call from jni
- */
+     * 插件结束事件
+     * env != null, call from jni
+     */
     JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job) {
         if (CPPPlugin::plugin == nullptr) return job;
         using namespace MiraiCP;
@@ -79,9 +78,9 @@ namespace MiraiCP::JNIApi {
     }
 
     /*
-* 消息解析分流
- * env != null, call from jni
-*/
+    * 消息解析分流
+     * env != null, call from jni
+    */
     JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
         using namespace MiraiCP;
         ThreadManager::setEnv(env);

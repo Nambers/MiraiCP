@@ -25,34 +25,6 @@ namespace MiraiCP {
     class Member; // forward declaration
     /*!
      * @detail 群聊类声明
-     * @brief
-     * @example 在事件中构建Group对象(check in version 2.9.0)
-     * @code
-     * Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
-     *   Group a(e.group.id(), e.bot.id);
-     *  });
-     * @endcode
-     * @example 上传并发送远程(群)文件(check in version 2.9.0)
-     *  @code
-     *   Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
-     *      // 发送D:\\ValveUnhandledExceptionFilter.txt本地文件到qq群的 /test.txt 路径
-     *      RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
-     *   });
-     *   @endcode
-     *   @example 取群文件信息
-     *   @code
-     *   //根据qq群远程路径(不带文件名)和文件id, 文件id可以在上传返回的RemoteFile类型中获得, 会在子目录中查找如果当前目录未找到
-     *   //根据qq群远程路径(带文件名)找, 不过由于qq群文件允许同名文件这一特性, 返回的文件为群文件中同名文件中随机一个(不可靠)
-     *   Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
-     *      e.group.SendMsg(e.group.getFile("/", id).name());
-     *      e.group.SendMsg(e.group.getFile("/test.txt").name());
-     *      e.group.SendMsg(e.group.getFileListString("/"));
-     *      });
-     *   @endcode
-     *   @example 取string格式群文件列表(check in version 2.9.0)
-     *   @code
-     *   e.group.getFileListString("/");
-     *   @endcode
      */
     class Group : public Contact {
     public: // member classes and structs
@@ -170,6 +142,7 @@ namespace MiraiCP {
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
         /// @param botid 机器人id
+        /// @includeEg{1007, group.cpp, 从群号构建群对象}
         Group(QQID groupid, QQID botid, JNIEnv * = nullptr);
 
         explicit Group(const Contact &c) : Contact(c) {
@@ -220,6 +193,7 @@ namespace MiraiCP {
         @param path-群文件路径(带文件名),根目录为/
         @param filepath-本地文件路径
         @attention 路径分隔符是 `/`
+        @includeEg{1008, group.cpp, 发送群文件}
         */
         RemoteFile sendFile(const std::string &path, const std::string &filepath,
                             JNIEnv * = nullptr);
@@ -235,6 +209,7 @@ namespace MiraiCP {
         @param id-文件id,可空，空则为用路径查找(此时路径要带文件名)
         @attention 因为群文件允许重名文件存在的特性，如果没有id该查找并不可靠，只能返回重名文件中的其中一个文件
         @see RemoteFile
+        @includeEg{1009, group.cpp, 获取群文件}
         */
         RemoteFile getFile(const std::string &path, const std::string &id = "",
                            JNIEnv * = nullptr);
@@ -255,9 +230,9 @@ namespace MiraiCP {
          * 获取path路径下全部文件信息
          * @param path - 远程路径
          * @return 返回值为一个vector容器, 每一项为short_info
+         * @includeEg{1010, group.cpp, 获取群文件列表}
         */
-        std::vector<file_short_info>
-        getFileList(const std::string &path, JNIEnv * = nullptr);
+        std::vector<file_short_info> getFileList(const std::string &path, JNIEnv * = nullptr);
 
         /// 取文件列表以字符串形式返回
         /// @param path 文件夹路径
