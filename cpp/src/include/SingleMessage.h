@@ -43,37 +43,16 @@ namespace MiraiCP {
     /// MessageChain的组成部分
     class SingleMessage : public MiraiCodeable {
     public:
-        virtual ~SingleMessage() = default;
-        static std::unordered_map<int, std::string> messageType;
-
-        virtual nlohmann::json toJson() const {
-            nlohmann::json re;
-            re["key"] = "miraicode";
-            re["content"] = this->toMiraiCode();
-            return re;
-        }
-
-        /// @brief 找对应类型的index key
-        /// @param value 类型名
-        /// @return 如果没找到返回-1
-        static int getKey(const std::string &value);
-
         /// MiraiCode类别
         /// @see SingleMessage::messageType
         int type;
         std::string content;
         std::string prefix;
 
-        std::string toMiraiCode() const override;
+    public:
+        static std::unordered_map<int, std::string> messageType;
 
-        bool operator==(const SingleMessage &m) const {
-            return this->type == m.type && this->toMiraiCode() == m.toMiraiCode();
-        }
-
-        bool operator==(SingleMessage *m) const {
-            return this->type == m->type && this->toMiraiCode() == m->toMiraiCode();
-        }
-
+    public:
         /// @brief 构建单条
         /// @param type 消息类型 @see messageType
         /// @param content 内容
@@ -81,17 +60,38 @@ namespace MiraiCP {
         SingleMessage(int type, std::string content, std::string prefix = ":") : type(type),
                                                                                  content(std::move(content)),
                                                                                  prefix(std::move(prefix)) {}
+
+        virtual ~SingleMessage() = default;
+
+    public:
+        /// @brief 找对应类型的index key
+        /// @param value 类型名
+        /// @return 如果没找到返回-1
+        static int getKey(const std::string &value);
+
+    public:
+        virtual nlohmann::json toJson() const {
+            nlohmann::json re;
+            re["key"] = "miraicode";
+            re["content"] = this->toMiraiCode();
+            return re;
+        }
+
+        std::string toMiraiCode() const override;
+
+    public:
+        bool operator==(const SingleMessage &m) const {
+            return this->type == m.type && this->toMiraiCode() == m.toMiraiCode();
+        }
+
+        bool operator==(SingleMessage *m) const {
+            return this->type == m->type && this->toMiraiCode() == m->toMiraiCode();
+        }
     };
 
     /// 纯文本信息
     class PlainText : public SingleMessage {
     public:
-        static int type() { return 0; }
-        std::string toMiraiCode() const override {
-            return content;
-        }
-        nlohmann::json toJson() const override;
-
         explicit PlainText(const SingleMessage &sg);
 
         template<typename T>
@@ -100,6 +100,20 @@ namespace MiraiCP {
                                                            sst << a;
                                                            return sst.str();
                                                        })()) {}
+
+        PlainText(PlainText &&_o) noexcept : SingleMessage(PlainText::type(), std::move(_o.content)) {}
+
+        PlainText(const PlainText &_o) : SingleMessage(PlainText::type(), _o.content) {}
+
+    public:
+        static int type() { return 0; }
+
+    public:
+        std::string toMiraiCode() const override {
+            return content;
+        }
+
+        nlohmann::json toJson() const override;
 
         bool operator==(const PlainText &p) const {
             return this->content == p.content;
