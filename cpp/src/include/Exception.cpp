@@ -29,6 +29,6 @@ namespace MiraiCP {
     }
 
     void MiraiCPExceptionBase::exception_broadcast() {
-        Event::processor.broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(this));
+        Event::broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(this));
     }
 } // namespace MiraiCP
