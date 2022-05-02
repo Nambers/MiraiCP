@@ -230,13 +230,15 @@ object PublicShared {
             }
             3 -> friend_cache.firstOrNull { a ->
                 a.id == c.id && a.group.id == c.groupid
-            }?.nameCardOrNick ?: let {
+            }?.let{
+                gson.toJson(Config.ContactInfo(it.nameCardOrNick, it.avatarUrl))
+            } ?: let {
                 c.withMember(
                     bot,
                     "取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}",
                     "取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}"
                 ) { _, m ->
-                    return gson.toJson(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
+                    gson.toJson(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
                 }
             }
             4 -> gson.toJson(Config.ContactInfo(bot.nick, bot.avatarUrl))
