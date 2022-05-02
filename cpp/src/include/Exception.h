@@ -40,7 +40,7 @@ namespace MiraiCP {
 
     protected:
         /// 受保护构造函数，供子类调用
-        MiraiCPExceptionBase(string _filename, int _lineNum) : filename(std::move(_filename)), lineNum(_lineNum) {}
+        MiraiCPExceptionBase(string info, string _filename, int _lineNum) : re(std::move(info)), filename(std::move(_filename)), lineNum(_lineNum) {}
 
     public:
         ~MiraiCPExceptionBase() override = default;
@@ -52,6 +52,9 @@ namespace MiraiCP {
     public:
         /// 异常信息
         const char *what() const noexcept override { return re.c_str(); }
+
+        /// 返回std::string的异常信息
+        string getError() { return re; }
 
         /// 实际抛出方法
         void raise() const;
@@ -70,25 +73,20 @@ namespace MiraiCP {
         static string exceptionType() { return "MiraiCPException"; }
     };
 
-    /// @brief 总异常CRTP抽象类，不要直接抛出该类，不知道抛出什么的时候请抛出 MiraiCPException
+    /// @brief 总异常CRTP抽象类，不要直接抛出该类，不知道抛出什么的时候请抛出 MiraiCPException。
+    /// 该类是用于继承的基类，需要新的异常类型时，继承该类并以子类作为模板参数。
+    /// 子类需要实现的方法：
+    /// 1. 构造函数，要求必须委托MiraiCPExceptionCRTP构造，其他成员需要在MiraiCPException构造前完成构造。
+    /// 2. `static std::string exceptionType()` 返回一个字符串表示异常类型。
+    /// 继承该类后异常类能正确实现多态。
     /// @interface MiraiCPExceptionCRTP
     /// @note 请勿给该类增加新的属性。如果要增加属性应在 MiraiCPExceptionBase 中增加
     template<class T>
     class MiraiCPExceptionCRTP : public MiraiCPExceptionBase {
-    protected:
-        /// 委托构造函数
-        MiraiCPExceptionCRTP(string _filename, int _lineNum) : MiraiCPExceptionBase(std::move(_filename), _lineNum) {
-            exception_broadcast();
-        }
-
     public:
-        // 构造时传入类型字符串
-        // 最好不要调用该构造函数
-        explicit MiraiCPExceptionCRTP(const string &description, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            if (description.empty())
-                this->re = T::exceptionType() + ":MiraiCP异常";
-            else
-                this->re = T::exceptionType() + ":" + description;
+        /// 委托构造函数
+        explicit MiraiCPExceptionCRTP(std::string _re, string _filename, int _lineNum) : MiraiCPExceptionBase(std::move(_re), std::move(_filename), _lineNum) {
+            exception_broadcast();
         }
 
     public:
@@ -105,9 +103,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class UploadException : public MiraiCPExceptionCRTP<UploadException> {
     public:
-        explicit UploadException(const std::string &text, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = "上传(图片/文件)异常" + text;
-        }
+        explicit UploadException(const std::string &text, string _filename, int _lineNum) : MiraiCPExceptionCRTP("上传(图片/文件)异常" + text, std::move(_filename), _lineNum) {}
 
         static std::string exceptionType() { return "UploadException"; }
     };
@@ -116,9 +112,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class IllegalStateException : public MiraiCPExceptionCRTP<IllegalStateException> {
     public:
-        explicit IllegalStateException(const std::string &text, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = "状态异常:" + text;
-        }
+        explicit IllegalStateException(const std::string &text, string _filename, int _lineNum) : MiraiCPExceptionCRTP("状态异常:" + text, std::move(_filename), _lineNum) {}
 
         static std::string exceptionType() { return "IllegalStateException"; }
     };
@@ -127,9 +121,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class APIException : public MiraiCPExceptionCRTP<APIException> {
     public:
-        explicit APIException(const std::string &text, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = "MiraiCP内部无法预料的错误:" + text;
-        }
+        explicit APIException(const std::string &text, string _filename, int _lineNum) : MiraiCPExceptionCRTP("MiraiCP内部无法预料的错误:" + text, std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "APIException"; }
     };
@@ -138,13 +130,9 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class BotException : public MiraiCPExceptionCRTP<BotException> {
     public:
-        explicit BotException(string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            re = "没有权限执行该操作";
-        }
+        explicit BotException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("没有权限执行该操作", std::move(_filename), _lineNum) {}
 
-        explicit BotException(string d, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            re = std::move(d);
-        }
+        explicit BotException(const string &d, string _filename, int _lineNum) : MiraiCPExceptionCRTP(d, std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "BotException"; }
     };
@@ -156,10 +144,7 @@ namespace MiraiCP {
         int timeRemain;
 
     public:
-        explicit BotIsBeingMutedException(int t, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = "发送信息失败, bot已被禁言, 剩余时间" + std::to_string(t);
-            timeRemain = t;
-        }
+        explicit BotIsBeingMutedException(int t, string _filename, int _lineNum) : timeRemain(t), MiraiCPExceptionCRTP("发送信息失败, bot已被禁言, 剩余时间" + std::to_string(t), std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "BotIsBeingMutedException"; }
     };
@@ -171,9 +156,7 @@ namespace MiraiCP {
         /*
         *	 禁言时间超出0s~30d
         */
-        MuteException(string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = "禁言时长不在0s~30d中间";
-        }
+        MuteException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("禁言时长不在0s~30d中间", std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "MuteException"; }
     };
@@ -193,20 +176,19 @@ namespace MiraiCP {
         *   "1" - 找不到群
         *	"2" - 找不到群成员
         */
-        explicit MemberException(int _type, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            type = MemberExceptionType(_type);
-            switch (type) {
-                case NoSuchGroup:
-                    this->re = "找不到群";
-                    break;
-                case NoSuchMember:
-                    this->re = "找不到群成员";
-                    break;
-                default:
-                    break;
-            }
-            this->re = "";
-        }
+        explicit MemberException(int _type, string _filename, int _lineNum) : MiraiCPExceptionCRTP(
+                                                                                      [&]() -> string {
+                                                                                          type = MemberExceptionType(_type);
+                                                                                          switch (type) {
+                                                                                              case NoSuchGroup:
+                                                                                                  return "找不到群";
+                                                                                              case NoSuchMember:
+                                                                                                  return "找不到群成员";
+                                                                                              default:
+                                                                                                  return "";
+                                                                                          }
+                                                                                      }(),
+                                                                                      std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "MemberException"; }
     };
@@ -218,9 +200,7 @@ namespace MiraiCP {
         /*
         *   找不到好友
         */
-        FriendException(string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = "找不到好友";
-        }
+        FriendException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("找不到好友", std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "FriendException"; }
     };
@@ -229,9 +209,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class GroupException : public MiraiCPExceptionCRTP<GroupException> {
     public:
-        GroupException(string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = "C++:找不到群";
-        }
+        GroupException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("找不到群", std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "GroupException"; }
     };
@@ -240,9 +218,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class RecallException : public MiraiCPExceptionCRTP<RecallException> {
     public:
-        RecallException(string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = "该消息已经被撤回";
-        }
+        RecallException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("该消息已经被撤回", std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "RecallException"; }
     };
@@ -251,9 +227,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class RemoteAssetException : public MiraiCPExceptionCRTP<RemoteAssetException> {
     public:
-        explicit RemoteAssetException(string e, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = std::move(e);
-        }
+        explicit RemoteAssetException(const string &e, string _filename, int _lineNum) : MiraiCPExceptionCRTP(e, std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "RemoteAssetException"; }
     };
@@ -262,8 +236,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class IllegalArgumentException : public MiraiCPExceptionCRTP<IllegalArgumentException> {
     public:
-        explicit IllegalArgumentException(string e, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = std::move(e);
+        explicit IllegalArgumentException(const string &e, string _filename, int _lineNum) : MiraiCPExceptionCRTP(e, std::move(_filename), _lineNum) {
         }
 
         static string exceptionType() { return "IllegalArgumentException"; }
@@ -273,9 +246,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class TimeOutException : public MiraiCPExceptionCRTP<TimeOutException> {
     public:
-        explicit TimeOutException(std::string e, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            this->re = std::move(e);
-        }
+        explicit TimeOutException(const std::string &e, string _filename, int _lineNum) : MiraiCPExceptionCRTP(e, std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "TimeOutException"; }
     };
@@ -284,9 +255,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class EventCancelledException : public MiraiCPExceptionCRTP<EventCancelledException> {
     public:
-        explicit EventCancelledException(const string &msg, string _filename, int _lineNum) : MiraiCPExceptionCRTP(std::move(_filename), _lineNum) {
-            re = msg;
-        }
+        explicit EventCancelledException(const string &msg, string _filename, int _lineNum) : MiraiCPExceptionCRTP(msg, std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "EventCancelledException"; }
     };
