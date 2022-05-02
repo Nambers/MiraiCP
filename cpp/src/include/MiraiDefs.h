@@ -29,9 +29,12 @@
 #define ShouldNotUse(msg)
 #endif // ShouldNotUse
 #endif
-namespace MiraiCP{
+
+#include <string>
+
+namespace MiraiCP {
     using QQID = unsigned long long;
     const std::string MiraiCPVersion = "v2.11.0-M3";
-}
+} // namespace MiraiCP
 
 #endif //MIRAICP_PRO_MIRAIDEFS_H
