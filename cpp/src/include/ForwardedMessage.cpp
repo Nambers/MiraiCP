@@ -15,31 +15,33 @@
 //
 
 #include "ForwardedMessage.h"
-
 #include "Config.h"
-#include "Exception.h"
 #include "Contact.h"
+#include "Exception.h"
 #include <utility>
+
 namespace MiraiCP {
     using json = nlohmann::json;
+
     json ForwardedMessage::nodesToJson() {
         json value;
         for (const ForwardedNode &node: nodes) {
             json temp;
             temp["id"] = node.id;
             temp["time"] = node.time;
-            if (node.forwardedMsg != nullptr) {
+            if (node.isForwarded()) {
                 temp["isForwardedMessage"] = true;
-                temp["message"] = node.forwardedMsg->nodesToJson().dump();
+                temp["message"] = std::get<std::shared_ptr<ForwardedMessage>>(node.message)->nodesToJson().dump();
             } else
-                temp["message"] = node.message.toMiraiCode();
+                temp["message"] = std::get<MessageChain>(node.message).toMiraiCode();
             temp["name"] = node.name;
-            value.push_back(temp);
+            value.emplace_back(std::move(temp));
         }
         json tmp = this->sendmsg;
-        tmp["value"] = value;
+        tmp["value"] = std::move(value);
         return tmp;
     }
+
     //发送这个聊天记录
     MessageSource ForwardedMessage::sendTo(Contact *c, JNIEnv *env) {
         json temp;
@@ -54,27 +56,38 @@ namespace MiraiCP {
         ErrorHandle(re, "");
         return MessageSource::deserializeFromString(re);
     }
+
     ForwardedMessage::ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes) : ForwardedMessage(c, std::vector(nodes)) {}
+
     ForwardedMessage::ForwardedMessage(Contact *c, std::vector<ForwardedNode> nodes) : nodes(std::move(nodes)) {
+        if (nullptr == c) throw IllegalArgumentException("Forwarded Message构造函数接收到空指针作为参数", MIRAICP_EXCEPTION_WHERE);
         json root;
         root["type"] = c->type();
         root["id"] = c->id();
         root["groupid"] = c->groupid();
-        sendmsg = root;
+        sendmsg = std::move(root);
     }
+
     OnlineForwardedMessage OnlineForwardedMessage::deserializationFromMessageSourceJson(json j) {
         std::vector<ForwardedNode> nodes;
         for (json a: j[1]["nodeList"])
             nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(a["messageChain"], false), a["time"]);
         return OnlineForwardedMessage(j[0]["origin"], j[0]["resourceId"], nodes);
     }
+
+    ForwardedNode::ForwardedNode(Contact *c, ForwardedMessage _message, int t)
+        : id(c->id()), name(c->nickOrNameCard()),
+          message(std::make_shared<ForwardedMessage>(std::move(_message))),
+          time(t), isForwardedMessage(true) {}
+
+    /*
     ForwardedNode::ForwardedNode(Contact *c, MessageChain message, int t) : id(c->id()), name(c->nickOrNameCard()),
                                                                             message(std::move(message)),
                                                                             time(t) {}
-    ForwardedNode::ForwardedNode(Contact *c, ForwardedMessage message, int t) : id(c->id()), name(c->nickOrNameCard()),
-                                                                                forwardedMsg(std::make_shared<ForwardedMessage>(message)),
-                                                                                time(t) {}
-    ForwardedNode::ForwardedNode(QQID id, const std::string &name, ForwardedMessage message, int t) : id(id), name(name), forwardedMsg(std::make_shared<ForwardedMessage>(message)), time(t) {}
+
+    ForwardedNode::ForwardedNode(QQID id, std::string name, ForwardedMessage &message, int t) : id(id), name(std::move(name)), forwardedMsg(&message), time(t) {}
+    */
+
     bool OnlineForwardedMessage::operator==(const OnlineForwardedMessage &m) const {
         if (this->nodelist.size() != m.nodelist.size())
             return false;
@@ -83,6 +96,7 @@ namespace MiraiCP {
                 return false;
         return true;
     }
+
     ForwardedMessage OnlineForwardedMessage::toForwardedMessage(Contact *c) {
         return {c, this->nodelist};
     }

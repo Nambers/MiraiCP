@@ -82,6 +82,9 @@ namespace MiraiCP {
         std::optional<MessageSource> source = std::nullopt;
 
     public:
+        MessageChain(const MessageChain &_o) = default;
+        MessageChain(MessageChain &&_o) = default;
+
         /// incoming构造器
         template<class... T>
         explicit MessageChain(MessageSource ms, T... args) : source(std::move(ms)) {
@@ -278,7 +281,7 @@ namespace MiraiCP {
         }
 
         template<class... T2>
-        void constructMessages(std::string h, T2... args) {
+        void constructMessages(const std::string &h, T2... args) {
             _messages.emplace_back(PlainText(h));
             constructMessages(args...);
         }
