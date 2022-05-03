@@ -26,7 +26,7 @@ namespace MiraiCP {
     class Contact;
     /*!
      * @brief 指令 Interface
-     * @includeEg{1001, command.cpp, 新建自定义命令}
+     * @doxygenEg{1001, command.cpp, 新建自定义命令}
      * @attention loader端的命令只支持从console传入, plugin端是对接mirai的RawCommand
      */
     class IRawCommand {

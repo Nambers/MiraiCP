@@ -37,7 +37,7 @@ namespace MiraiCP {
 	* @code Logger::logger.warning(string) @endcode
 	* 发送错误级日志
 	* @code Logger::logger.error(string) @endcode
-    * @includeEg{1011, logger.cpp, 自定义日志handle}
+    * @doxygenEg{1011, logger.cpp, 自定义日志handle}
     */
     class Logger_interface {
         using string = std::string;
@@ -130,7 +130,7 @@ namespace MiraiCP {
 
         /// @brief 设置handler的启用状态
         /// @param state 状态，启用或者关闭
-        /// @includeEg{1012, logger.cpp, 启用或关闭日志}
+        /// @doxygenEg{1012, logger.cpp, 启用或关闭日志}
         void setHandleState(bool state) {
             this->loggerhandler.enable = state;
         }

@@ -33,7 +33,7 @@ namespace MiraiCP {
     };
     /*!
     * @brief group, friend, member的父类
-    * @includeEg{1002, message.cpp, 发送以及回复群消息}
+    * @doxygenEg{1002, message.cpp, 发送以及回复群消息}
     */
     class Contact {
     protected: // attrs
