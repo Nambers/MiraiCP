@@ -22,7 +22,7 @@
 namespace MiraiCP {
     /*!
      * @brief 群成员类声明
-     * @includeEg{1013, member.cpp, 群成员操作}
+     * @doxygenEg{1013, member.cpp, 群成员操作}
      */
     class Member : public Contact, INudgeSupport {
     public:

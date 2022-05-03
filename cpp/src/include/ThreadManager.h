@@ -26,7 +26,7 @@ namespace MiraiCP {
     /*!
     * @class threadManager
     * @brief 多线程管理.
-    * @includeEg{1016, thread.cpp, 多线程}
+    * @doxygenEg{1016, thread.cpp, 多线程}
     */
     class ThreadManager {
     public:

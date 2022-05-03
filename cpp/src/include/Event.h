@@ -80,7 +80,7 @@ namespace MiraiCP {
 
     /*!
      * @brief 群消息事件声明
-     * @includeEg{1003, group.cpp, 取群聊下一条消息}
+     * @doxygenEg{1003, group.cpp, 取群聊下一条消息}
      */
     class GroupMessageEvent : public BotEvent<GroupMessageEvent> {
     public:
@@ -119,7 +119,7 @@ namespace MiraiCP {
 
     /*!
      * @detail 私聊消息事件类声明
-     * @includeEg{1004, group.cpp, 取好友下一条信息}
+     * @doxygenEg{1004, group.cpp, 取好友下一条信息}
      */
     class PrivateMessageEvent : public BotEvent<PrivateMessageEvent> {
     public:
@@ -660,6 +660,7 @@ namespace MiraiCP {
          * @param T 事件类型
          * @param callback 要注册的回调函数，忽略返回值
          * @param priority_level 优先级，范围：0-255，越低的优先级越先执行，默认100
+         * @doxygenEg{1018, callbackHandle.cpp, NodeHandle使用}
          */
         template<typename EventClass>
         static std::shared_ptr<NodeHandle> registerEvent(std::function<void(EventClass)> callback, priority_level level = 100) {
@@ -681,6 +682,7 @@ namespace MiraiCP {
          * @param T 事件类型
          * @param callback 要注册的回调函数，必须返回bool值
          * @param priority_level 优先级，范围：0-255，越低的优先级越先执行，默认100
+         * @doxygenEg{1019, callbackHandle.cpp, NodeHandle使用}
          */
         template<typename EventClass>
         static std::shared_ptr<NodeHandle> registerBlockingEvent(std::function<bool(EventClass)> callback, priority_level level = 100) {

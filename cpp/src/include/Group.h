@@ -142,7 +142,7 @@ namespace MiraiCP {
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
         /// @param botid 机器人id
-        /// @includeEg{1007, group.cpp, 从群号构建群对象}
+        /// @doxygenEg{1007, group.cpp, 从群号构建群对象}
         Group(QQID groupid, QQID botid, JNIEnv * = nullptr);
 
         explicit Group(const Contact &c) : Contact(c) {
@@ -193,7 +193,7 @@ namespace MiraiCP {
         @param path-群文件路径(带文件名),根目录为/
         @param filepath-本地文件路径
         @attention 路径分隔符是 `/`
-        @includeEg{1008, group.cpp, 发送群文件}
+        @doxygenEg{1008, group.cpp, 发送群文件}
         */
         RemoteFile sendFile(const std::string &path, const std::string &filepath,
                             JNIEnv * = nullptr);
@@ -209,7 +209,7 @@ namespace MiraiCP {
         @param id-文件id,可空，空则为用路径查找(此时路径要带文件名)
         @attention 因为群文件允许重名文件存在的特性，如果没有id该查找并不可靠，只能返回重名文件中的其中一个文件
         @see RemoteFile
-        @includeEg{1009, group.cpp, 获取群文件}
+        @doxygenEg{1009, group.cpp, 获取群文件}
         */
         RemoteFile getFile(const std::string &path, const std::string &id = "",
                            JNIEnv * = nullptr);
@@ -230,7 +230,7 @@ namespace MiraiCP {
          * 获取path路径下全部文件信息
          * @param path - 远程路径
          * @return 返回值为一个vector容器, 每一项为short_info
-         * @includeEg{1010, group.cpp, 获取群文件列表}
+         * @doxygenEg{1010, group.cpp, 获取群文件列表}
         */
         std::vector<file_short_info> getFileList(const std::string &path, JNIEnv * = nullptr);
 

@@ -59,7 +59,7 @@ namespace MiraiCP {
 
     /*!转发消息, 由ForwardNode组成
      * @see class ForwardedNode
-     * @includeEg{1005, forwardMessage.cpp, 构建聊天记录}
+     * @doxygenEg{1005, forwardMessage.cpp, 构建聊天记录}
      */
     class ForwardedMessage {
     private:

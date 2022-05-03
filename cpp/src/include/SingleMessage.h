@@ -255,7 +255,7 @@ namespace MiraiCP {
     /*!
     * @brief 小程序卡片
     * @attention 自带的模板不稳定，可能发出现没有效果
-    * @includeEg{1015, lightApp.cpp, 从文本构建LightApp}
+    * @doxygenEg{1015, lightApp.cpp, 从文本构建LightApp}
     */
     class LightApp : public SingleMessage {
     public:

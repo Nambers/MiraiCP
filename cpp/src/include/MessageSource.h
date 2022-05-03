@@ -24,7 +24,7 @@
 namespace MiraiCP {
     class MiraiCodeable; // forward declaration
     /*! 消息源声明
-     * @includeEg{1014, message.cpp, 回复信息}
+     * @doxygenEg{1014, message.cpp, 回复信息}
     */
     class MessageSource {
     public:
