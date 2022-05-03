@@ -21,7 +21,8 @@
 
 #include <json.hpp>
 #include <string>
-
+#include <utility>
+#include <variant>
 
 namespace MiraiCP {
     class Contact;
@@ -34,27 +35,37 @@ namespace MiraiCP {
         ///发送者昵称
         std::string name;
         ///发送信息
-        MessageChain message;
-        std::shared_ptr<ForwardedMessage> forwardedMsg;
+        std::variant<MessageChain, std::shared_ptr<ForwardedMessage>> message;
         ///发送时间(时间戳)
         int time = 0;
 
+    private:
+        bool isForwardedMessage;
+
+    public:
         /// @brief 聊天记录里的每条信息
         /// @param id - 发送者id
         /// @param name - 发送者昵称
         /// @param message - 发送的信息
         /// @param time - 发送时间，以时间戳记
-        ForwardedNode(QQID id, const std::string &name, MessageChain message,
+        ForwardedNode(QQID id, std::string name, MessageChain message,
                       int time)
-            : id(id), name(name), message(std::move(message)), time(time) {}
+            : id(id), name(std::move(name)), message(std::move(message)), time(time), isForwardedMessage(false) {}
 
         /// @brief 构造聊天记录里每条信息
         /// @param c - 发送者的contact指针
         /// @param message - 发送的信息
         /// @param t - 发送时间，时间戳格式
-        ForwardedNode(Contact *c, MessageChain message, int t);
         ForwardedNode(Contact *c, ForwardedMessage message, int t);
-        ForwardedNode(QQID id, const std::string &name, ForwardedMessage message, int t);
+        // TODO(antares): 该构造函数没有被调用，检查ForwardedMessage中如何构造node
+
+        /*
+        ForwardedNode(Contact *c, MessageChain message, int t);
+
+        ForwardedNode(QQID id, std::string name, ForwardedMessage &message, int t);
+        */
+    public:
+        bool isForwarded() const { return isForwardedMessage; }
     };
 
     /*!转发消息, 由ForwardNode组成
@@ -68,50 +79,74 @@ namespace MiraiCP {
 
     public:
         std::vector<ForwardedNode> nodes;
+
+    public:
         /*!
         *@brief 构建一条聊天记录
         *@details 第一个参数是聊天记录发生的地方, 然后是每条信息
         */
         ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes);
+
         ForwardedMessage(Contact *c, std::vector<ForwardedNode> nodes);
-        ForwardedNode &operator[](int index) { return nodes[index]; }
+
+    public:
+        void add(const ForwardedNode &a) { this->nodes.push_back(a); }
+
+        /// 发送给群或好友或群成员
+        MessageSource sendTo(Contact *c, JNIEnv * = nullptr);
+
+        nlohmann::json nodesToJson();
+
         ForwardedMessage plus(const ForwardedNode &a) {
             ForwardedMessage tmp(*this);
             tmp.nodes.push_back(a);
             return tmp;
         }
+
+    public:
+        ForwardedNode &operator[](int index) { return nodes[index]; }
+
+        const ForwardedNode &operator[](int index) const { return nodes[index]; }
+
         ForwardedMessage operator+(const ForwardedNode &a) { return this->plus(a); }
-        void add(const ForwardedNode &a) { this->nodes.push_back(a); }
-        /// 发送给群或好友或群成员
-        MessageSource sendTo(Contact *c, JNIEnv * = nullptr);
-        nlohmann::json nodesToJson();
     };
 
     /// 接收到的转发消息, 发送用 MiraiCP::ForwardedMessage
     class OnlineForwardedMessage : public SingleMessage {
     public:
-        static int type() { return -4; }
         /// 里面每条信息
         std::vector<ForwardedNode> nodelist;
         /// 用展示出来ServiceMessage
         ServiceMessage origin;
         std::string resourceId;
 
-        ForwardedNode operator[](int i) const {
-            return this->nodelist[i];
-        }
+    public:
+        explicit OnlineForwardedMessage(nlohmann::json o, const std::string &rid, std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
 
-        bool operator==(const OnlineForwardedMessage &m) const;
+    public:
         /// 转ForwardedMessage
         /// @param c 发生的环境, 比如群聊或者好友
         ForwardedMessage toForwardedMessage(Contact *c);
-
-        explicit OnlineForwardedMessage(nlohmann::json o, const std::string &rid, std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
 
         /// 不支持直接发送OnlineForwardMessage, ForwardedMessage发送
         ShouldNotUse("use MiraiCP::ForwardedMessage to send") std::string toMiraiCode() const override {
             return "";
         }
+
+    public:
+        ForwardedNode &operator[](int i) {
+            return nodelist[i];
+        }
+
+        const ForwardedNode &operator[](int i) const {
+            return nodelist[i];
+        }
+
+        bool operator==(const OnlineForwardedMessage &m) const;
+
+    public:
+        static int type() { return -4; }
+
         static OnlineForwardedMessage deserializationFromMessageSourceJson(nlohmann::json j);
     };
 } // namespace MiraiCP
