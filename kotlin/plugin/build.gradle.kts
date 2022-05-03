@@ -79,6 +79,7 @@ mavenCentralPublish {
         artifactId = "MiraiCP-plugin"
         description = "C++ SDK of Mirai"
         artifact(tasks["buildPlugin"])
+        artifact(tasks["buildPluginLegacy"])
         this.pom {
             name.set("MiraiCP-plugin")
             version = Version.miraiCP
