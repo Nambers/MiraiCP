@@ -45,16 +45,12 @@ namespace MiraiCP {
     public:
         ~MiraiCPExceptionBase() override = default;
 
-    protected:
-        /// @brief 异常事件广播
-        void exception_broadcast();
-
     public:
         /// 异常信息
         const char *what() const noexcept override { return re.c_str(); }
 
         /// 返回std::string的异常信息
-        string getError() { return re; }
+        string getError() const { return re; }
 
         /// 实际抛出方法
         void raise() const;
@@ -65,7 +61,7 @@ namespace MiraiCP {
 
         // CRTP实现一次，调用静态的exceptionType
         /// 获取异常类型，通用接口
-        virtual string getExceptionType() = 0;
+        virtual string getExceptionType() const = 0;
 
         // 每个子类需要单独实现该静态方法
         /// 返回异常的类型，该静态方法无法正确实现多态，请使用 getExceptionType
@@ -86,12 +82,11 @@ namespace MiraiCP {
     public:
         /// 委托构造函数
         explicit MiraiCPExceptionCRTP(std::string _re, string _filename, int _lineNum) : MiraiCPExceptionBase(std::move(_re), std::move(_filename), _lineNum) {
-            exception_broadcast();
         }
 
     public:
         // CRTP类型获取实现
-        string getExceptionType() override { return T::exceptionType(); }
+        string getExceptionType() const override { return T::exceptionType(); }
     };
 
     /// @brief 通用MiraiCP异常

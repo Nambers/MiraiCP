@@ -40,7 +40,7 @@ namespace MiraiCP {
 
     void ThreadManager::newEnv(const char *threadName) {
         JNIEnv *env = nullptr;
-        JavaVMAttachArgs args{JNIVersion,
+        JavaVMAttachArgs args{static_cast<int>(JNIVersion),
                               const_cast<char *>(threadName),
                               nullptr};
         gvm->AttachCurrentThread((void **) &env, &args);
