@@ -96,12 +96,12 @@ namespace MiraiCP::JNIApi {
         }
         int type = j["type"].get<int>();
 
-        if (eventTypes(type) != eventTypes::Command && Event::processor.noRegistered(type)) return returnNull();
+        if (eventTypes(type) != eventTypes::Command && Event::noRegistered(type)) return returnNull();
         try {
             switch (eventTypes(type)) {
                 case eventTypes::GroupMessageEvent: {
                     //GroupMessage
-                    Event::processor.broadcast<GroupMessageEvent>(
+                    Event::broadcast<GroupMessageEvent>(
                             GroupMessageEvent(j["group"]["botid"],
                                               Group(Group::deserialize(j["group"])),
                                               Member(Member::deserialize(j["member"])),
@@ -111,7 +111,7 @@ namespace MiraiCP::JNIApi {
                 }
                 case eventTypes::PrivateMessageEvent: {
                     //私聊消息
-                    Event::processor.broadcast<PrivateMessageEvent>(
+                    Event::broadcast<PrivateMessageEvent>(
                             PrivateMessageEvent(j["friend"]["botid"],
                                                 Friend(Friend::deserialize(j["friend"])),
                                                 MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>()))
@@ -120,7 +120,7 @@ namespace MiraiCP::JNIApi {
                 }
                 case eventTypes::GroupInviteEvent:
                     //群聊邀请
-                    Event::processor.broadcast<GroupInviteEvent>(
+                    Event::broadcast<GroupInviteEvent>(
                             GroupInviteEvent(
                                     j["source"]["botid"],
                                     j["request"],
@@ -131,7 +131,7 @@ namespace MiraiCP::JNIApi {
                     break;
                 case eventTypes::NewFriendRequestEvent:
                     //好友
-                    Event::processor.broadcast<NewFriendRequestEvent>(
+                    Event::broadcast<NewFriendRequestEvent>(
                             NewFriendRequestEvent(
                                     j["source"]["botid"],
                                     j["request"],
@@ -142,7 +142,7 @@ namespace MiraiCP::JNIApi {
                     break;
                 case eventTypes::MemberJoinEvent:
                     //新成员加入
-                    Event::processor.broadcast<MemberJoinEvent>(
+                    Event::broadcast<MemberJoinEvent>(
                             MemberJoinEvent(
                                     j["group"]["botid"],
                                     j["jointype"],
@@ -152,7 +152,7 @@ namespace MiraiCP::JNIApi {
                     break;
                 case eventTypes::MemberLeaveEvent:
                     //群成员退出
-                    Event::processor.broadcast<MemberLeaveEvent>(MemberLeaveEvent(
+                    Event::broadcast<MemberLeaveEvent>(MemberLeaveEvent(
                             j["group"]["botid"],
                             j["leavetype"],
                             j["memberid"],
@@ -160,7 +160,7 @@ namespace MiraiCP::JNIApi {
                             j["operatorid"]));
                     break;
                 case eventTypes::RecallEvent:
-                    Event::processor.broadcast<RecallEvent>(RecallEvent(
+                    Event::broadcast<RecallEvent>(RecallEvent(
                             j["botid"],
                             j["etype"],
                             j["time"],
@@ -171,14 +171,14 @@ namespace MiraiCP::JNIApi {
                             j["groupid"]));
                     break;
                 case eventTypes::BotJoinGroupEvent:
-                    Event::processor.broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
+                    Event::broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
                             j["group"]["botid"],
                             j["etype"],
                             Group(Group::deserialize(j["group"])),
                             j["inviterid"]));
                     break;
                 case eventTypes::GroupTempMessageEvent:
-                    Event::processor.broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
+                    Event::broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
                             j["group"]["botid"],
                             Group(Group::deserialize(j["group"])),
                             Member(Member::deserialize(j["member"])),
@@ -186,19 +186,19 @@ namespace MiraiCP::JNIApi {
                                     .plus(MessageSource::deserializeFromString(j["source"]))));
                     break;
                 case eventTypes::TimeOutEvent:
-                    Event::processor.broadcast(TimeOutEvent(j["msg"]));
+                    Event::broadcast(TimeOutEvent(j["msg"]));
                     break;
                 case eventTypes::BotOnlineEvent:
-                    Event::processor.broadcast(BotOnlineEvent(j["botid"]));
+                    Event::broadcast(BotOnlineEvent(j["botid"]));
                     break;
                 case eventTypes::NudgeEvent:
-                    Event::processor.broadcast(NudgeEvent(Contact::deserialize(j["from"]),
-                                                          Contact::deserialize(j["target"]),
-                                                          Contact::deserialize(j["subject"]),
-                                                          j["botid"]));
+                    Event::broadcast(NudgeEvent(Contact::deserialize(j["from"]),
+                                                Contact::deserialize(j["target"]),
+                                                Contact::deserialize(j["subject"]),
+                                                j["botid"]));
                     break;
                 case eventTypes::BotLeaveEvent:
-                    Event::processor.broadcast(BotLeaveEvent(j["groupid"], j["botid"]));
+                    Event::broadcast(BotLeaveEvent(j["groupid"], j["botid"]));
                     break;
                 case eventTypes::MemberJoinRequestEvent: {
                     std::optional<Group> a;
@@ -213,11 +213,11 @@ namespace MiraiCP::JNIApi {
                         b = std::nullopt;
                     else
                         b = Member(temp);
-                    Event::processor.broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requester"], j["requestData"]));
+                    Event::broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requester"], j["requestData"]));
                     break;
                 }
                 case eventTypes::MessagePreSendEvent: {
-                    Event::processor.broadcast(MessagePreSendEvent(Contact::deserialize(j["target"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false), j["botid"]));
+                    Event::broadcast(MessagePreSendEvent(Contact::deserialize(j["target"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false), j["botid"]));
                     break;
                 }
                 case eventTypes::Command: {
@@ -235,7 +235,8 @@ namespace MiraiCP::JNIApi {
             Logger::logger.error(e.what());
             Logger::logger.error("info:", tmp);
             return Tools::str2jstring("ERROR");
-        } catch (const MiraiCPExceptionBase &e) {
+        } catch (MiraiCPExceptionBase &e) {
+            Event::broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(&e));
             e.raise();
             return Tools::str2jstring("ERROR");
         } catch (const std::exception &e) {

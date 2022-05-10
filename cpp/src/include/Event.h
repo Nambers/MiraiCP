@@ -649,7 +649,7 @@ namespace MiraiCP {
 
         eventTypes getEventType() const override { return this->get_event_type(); }
 
-        MiraiCPExceptionBase *getException() {
+        const MiraiCPExceptionBase *getException() const {
             return exceptionPtr;
         }
     };
