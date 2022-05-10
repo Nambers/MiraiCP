@@ -78,11 +78,24 @@ namespace MiraiCP {
         explicit BotEvent(QQID botid) : bot(botid), botlogger(botid, &Logger::logger) {}
     };
 
+    /// MessageEvent类型的抽象接口，用于Message类型多态实现
+    class MessageEvent {
+    public:
+        /// 获取当前聊天，可能是群，私聊，或群临时回话
+        virtual Contact *chat() = 0;
+        /// 获取当前聊天，可能是群，私聊，或群临时回话
+        virtual Contact *from() = 0;
+        virtual MessageChain *getMessageChain() = 0;
+        virtual const Contact *chat() const = 0;
+        virtual const Contact *from() const = 0;
+        virtual const MessageChain *getMessageChain() const = 0;
+    };
+
     /*!
      * @brief 群消息事件声明
      * @doxygenEg{1003, group.cpp, 取群聊下一条消息}
      */
-    class GroupMessageEvent : public BotEvent<GroupMessageEvent> {
+    class GroupMessageEvent : public BotEvent<GroupMessageEvent>, public MessageEvent {
     public:
         static eventTypes get_event_type() {
             return eventTypes::GroupMessageEvent;
@@ -115,13 +128,33 @@ namespace MiraiCP {
          * @return 消息链
          */
         MessageChain senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = nullptr) const;
+
+    public:
+        Contact *chat() override {
+            return &group;
+        }
+        const Contact *chat() const override {
+            return &group;
+        }
+        Contact *from() override {
+            return &sender;
+        }
+        const Contact *from() const override {
+            return &sender;
+        }
+        MessageChain *getMessageChain() override {
+            return &message;
+        }
+        const MessageChain *getMessageChain() const override {
+            return &message;
+        }
     };
 
     /*!
      * @detail 私聊消息事件类声明
      * @doxygenEg{1004, group.cpp, 取好友下一条信息}
      */
-    class PrivateMessageEvent : public BotEvent<PrivateMessageEvent> {
+    class PrivateMessageEvent : public BotEvent<PrivateMessageEvent>, public MessageEvent {
     public:
         static eventTypes get_event_type() {
             return eventTypes::PrivateMessageEvent;
@@ -151,6 +184,26 @@ namespace MiraiCP {
          * @return 消息链
          */
         MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv *env = nullptr) const;
+
+    public:
+        Contact *chat() override {
+            return &sender;
+        }
+        const Contact *chat() const override {
+            return &sender;
+        }
+        Contact *from() override {
+            return &sender;
+        }
+        const Contact *from() const override {
+            return &sender;
+        }
+        MessageChain *getMessageChain() override {
+            return &message;
+        }
+        const MessageChain *getMessageChain() const override {
+            return &message;
+        }
     };
 
     /// 群聊邀请事件类声明
@@ -398,7 +451,7 @@ namespace MiraiCP {
     };
 
     /// 群临时会话
-    class GroupTempMessageEvent : public BotEvent<GroupTempMessageEvent> {
+    class GroupTempMessageEvent : public BotEvent<GroupTempMessageEvent>, public MessageEvent {
     public:
         static eventTypes get_event_type() {
             return eventTypes::GroupTempMessageEvent;
@@ -425,6 +478,26 @@ namespace MiraiCP {
                                                       group(std::move(group)),
                                                       sender(std::move(sender)),
                                                       message(std::move(message)) {}
+
+    public:
+        Contact *chat() override {
+            return &sender;
+        }
+        const Contact *chat() const override {
+            return &sender;
+        }
+        Contact *from() override {
+            return &sender;
+        }
+        const Contact *from() const override {
+            return &sender;
+        }
+        MessageChain *getMessageChain() override {
+            return &message;
+        }
+        const MessageChain *getMessageChain() const override {
+            return &message;
+        }
     };
 
     /// 定时任务结束
