@@ -14,26 +14,46 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "miraicp-core/core.h"
+#include <iostream>
+
 using namespace MiraiCP;
 
+bool alive = true;
+
 int main() {
+    {
 #ifdef _WIN32
-    Core::loadCore(R"(jar)");
+        int sig = Core::loadCore(R"(C:\path\to\MiraiCP-core-<version>.jar)");
 #else
-    Core::loadCore("/mnt/d/git/mirai/miraicp/kotlin/core/build/libs/MiraiCP-core-2.11.0-M3.jar");
+        int sig = Core::loadCore("/path/to/MiraiCP-core-<version>.jar");
 #endif
-    Bot tmp(0);
-    tmp = Core::login(111, "pwd", true);
-    Logger::logger.info("aa");
+        if (sig != 0) exit(sig);
+    }
+
+    // begin MiraiCP code
+    Bot tmp(123456789);
+
+    try {
+        // PAD/WATCH/PHONE/IPAD/MACOS
+        tmp = Core::login(123456789, "password", false, "PHONE");
+    } catch (...) {
+        std::cerr << "Login failed\n";
+        exit(1);
+    }
+
     try {
         Logger::logger.info(tmp.nick());
-    } catch (std::exception& e) {
+    } catch (std::exception &e) {
         Logger::logger.error(e.what());
     }
-    bool alive = true;
-    Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent a){
-        Logger::logger.info("pl=100");
+
+    Event::registerEvent<PrivateMessageEvent>([&](const PrivateMessageEvent &a) {
+        alive = false;
+        Logger::logger.info("program end");
     });
-    while (alive){};
+
+    while (alive)
+        ;
+
     Core::exitCore();
 }

@@ -13,9 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 #include "core.h"
 #include <MiraiCP.hpp>
+#include <csignal>
+#include <iostream>
 #include <jni.h>
+
 #ifdef _WIN32
 #include <windows.h>
 void freeLibrary(void *pointer) {
@@ -26,7 +30,9 @@ void freeLibrary(void *pointer) {
     MiraiCP::ThreadManager::gvm->DestroyJavaVM();
 }
 #endif
+
 typedef jint(JNICALL *JNICREATEPROC)(JavaVM **, void **, void *);
+
 namespace MiraiCP::Core {
     void *jvmLib;
     jclass coreClaz;
@@ -39,7 +45,13 @@ namespace MiraiCP::Core {
         MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", tmp, 3);
         return MiraiCP::Tools::str2jstring("MIRAICP_NULL", env);
     }
+
     int loadCore(const std::string &corePath) {
+        if (access(corePath.c_str(), F_OK) != 0) {
+            std::cerr << "Error: failed to load core, please check core path.\n";
+            return -1;
+        }
+
         //java虚拟机启动时接收的参数
         JavaVMOption vmOption[2];
 
