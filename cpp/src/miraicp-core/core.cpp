@@ -16,7 +16,6 @@
 
 #include "core.h"
 #include <MiraiCP.hpp>
-#include <csignal>
 #include <iostream>
 #include <jni.h>
 
@@ -27,6 +26,7 @@ void freeLibrary(void *pointer) {
     ::FreeLibrary((HINSTANCE) pointer);
 }
 #else
+#include <unistd.h>
 void freeLibrary(void *pointer) {
     MiraiCP::ThreadManager::gvm->DestroyJavaVM();
 }
