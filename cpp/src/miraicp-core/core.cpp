@@ -21,6 +21,7 @@
 #include <jni.h>
 
 #ifdef _WIN32
+#include <io.h>
 #include <windows.h>
 void freeLibrary(void *pointer) {
     ::FreeLibrary((HINSTANCE) pointer);
@@ -47,7 +48,11 @@ namespace MiraiCP::Core {
     }
 
     int loadCore(const std::string &corePath) {
+#ifdef _WIN32
+        if (_access(corePath.c_str(), 0) != 0) {
+#else
         if (access(corePath.c_str(), F_OK) != 0) {
+#endif
             std::cerr << "Error: failed to load core, please check core path.\n";
             return -1;
         }
