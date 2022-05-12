@@ -57,7 +57,6 @@ namespace MiraiCP {
         /// @param message - 发送的信息
         /// @param t - 发送时间，时间戳格式
         ForwardedNode(Contact *c, ForwardedMessage message, int t);
-        // TODO(antares): 该构造函数没有被调用，检查ForwardedMessage中如何构造node
 
         /*
         ForwardedNode(Contact *c, MessageChain message, int t);
@@ -118,10 +117,11 @@ namespace MiraiCP {
         std::vector<ForwardedNode> nodelist;
         /// 用展示出来ServiceMessage
         ServiceMessage origin;
-        std::string resourceId;
+        /// unknown 用途, 有一些情况下没有
+        std::optional<std::string> resourceId;
 
     public:
-        explicit OnlineForwardedMessage(nlohmann::json o, const std::string &rid, std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), resourceId(rid), origin(ServiceMessage(o["serviceId"], o["content"])) {}
+        explicit OnlineForwardedMessage(nlohmann::json o, std::optional<std::string> rid, std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), resourceId(std::move(rid)), origin(ServiceMessage(o["serviceId"], o["content"])) {}
 
     public:
         /// 转ForwardedMessage
