@@ -19,8 +19,6 @@
 
 #include "Exception.h"
 #include "SingleMessage.h"
-#include <type_traits>
-#include <utility>
 
 namespace MiraiCP {
     class MessageSource; // forward declaration

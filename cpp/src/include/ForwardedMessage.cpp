@@ -17,8 +17,6 @@
 #include "ForwardedMessage.h"
 #include "Config.h"
 #include "Contact.h"
-#include "Exception.h"
-#include "Logger.h"
 #include <utility>
 
 namespace MiraiCP {
@@ -32,7 +30,6 @@ namespace MiraiCP {
             temp["time"] = node.time;
             if (node.isForwarded()) {
                 temp["isForwardedMessage"] = true;
-                // TODO(antares): dump() or not dump() in a recursive call chain
                 temp["message"] = std::get<std::shared_ptr<ForwardedMessage>>(node.message)->nodesToJson().dump();
             } else
                 temp["message"] = std::get<MessageChain>(node.message).toMiraiCode();
@@ -51,7 +48,6 @@ namespace MiraiCP {
         text["id"] = c->id();
         text["groupid"] = c->groupid();
         text["type"] = c->type();
-        // TODO(antares): dump() or not dump() here
         text["content"] = this->nodesToJson();
         temp["text"] = text.dump();
         temp["botid"] = c->botid();
@@ -64,21 +60,30 @@ namespace MiraiCP {
 
     ForwardedMessage::ForwardedMessage(Contact *c, std::vector<ForwardedNode> nodes) : nodes(std::move(nodes)) {
         if (nullptr == c) {
-            sendmsg["type"] = 0;
-            sendmsg["id"] = 0;
-            sendmsg["groupid"] = 0;
-            return;
-        } // 表示不需要type, id, groupid
+            throw IllegalArgumentException("构造Forwarded Message不接受空指针", MIRAICP_EXCEPTION_WHERE);
+        }
         sendmsg["type"] = c->type();
         sendmsg["id"] = c->id();
         sendmsg["groupid"] = c->groupid();
     }
 
+    ForwardedMessage::ForwardedMessage(int chattype, QQID id, QQID groupid, std::vector<ForwardedNode> nodes) : nodes(std::move(nodes)) {
+        sendmsg["type"] = chattype;
+        sendmsg["id"] = id;
+        sendmsg["groupid"] = groupid;
+    }
+
     ForwardedMessage ForwardedMessage::deserializationFromMessageSourceJson(const json &j) {
         std::vector<ForwardedNode> nodes;
 
+        // TODO(antares): do we really need a useless "anysend" in forwardedNode?
+        //  This won't work if the qqid is not a friend of bot.
+        //  Please check code in kotlin part.
+        QQID anysend = 0;
+
         try {
             for (auto &&a: j) {
+                if (!anysend) anysend = a["senderId"];
                 if (a["messageChain"][0].contains("kind") && a["messageChain"][0]["kind"] == "FORWARD") {
                     nodes.emplace_back(a["senderId"], a["senderName"], ForwardedMessage::deserializationFromMessageSourceJson(a["messageChain"][1]["nodeList"]), a["time"]);
                 } else {
@@ -89,8 +94,9 @@ namespace MiraiCP {
             throw APIException("ForwardedMessage格式化异常", MIRAICP_EXCEPTION_WHERE);
         }
 
-        return {nullptr, std::move(nodes)};
+        return {1, anysend, 0, std::move(nodes)};
     }
+
 
     OnlineForwardedMessage OnlineForwardedMessage::deserializationFromMessageSourceJson(const json &j) {
         std::vector<ForwardedNode> nodes;

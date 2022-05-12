@@ -18,15 +18,13 @@
 #define MIRAICP_PRO_FORWARDEDMESSAGE_H
 
 #include "MessageChain.h"
-
-#include <json.hpp>
-#include <string>
-#include <utility>
+#include "MiraiDefs.h"
 #include <variant>
 
 namespace MiraiCP {
     class Contact;
     class ForwardedMessage;
+
     ///聊天记录里每个消息
     class ForwardedNode {
     public:
@@ -87,6 +85,8 @@ namespace MiraiCP {
         ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes);
 
         ForwardedMessage(Contact *c, std::vector<ForwardedNode> nodes);
+
+        ForwardedMessage(int chattype, QQID id, QQID groupid, std::vector<ForwardedNode> nodes);
 
     public:
         void add(const ForwardedNode &a) { this->nodes.push_back(a); }
