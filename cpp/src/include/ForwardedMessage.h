@@ -56,7 +56,7 @@ namespace MiraiCP {
         /// @param c - 发送者的contact指针
         /// @param message - 发送的信息
         /// @param t - 发送时间，时间戳格式
-        ForwardedNode(Contact *c, ForwardedMessage message, int t);
+        ForwardedNode(QQID id, std::string name, ForwardedMessage message, int t);
 
         /*
         ForwardedNode(Contact *c, MessageChain message, int t);
@@ -108,6 +108,9 @@ namespace MiraiCP {
         const ForwardedNode &operator[](int index) const { return nodes[index]; }
 
         ForwardedMessage operator+(const ForwardedNode &a) { return this->plus(a); }
+
+    public:
+        static ForwardedMessage deserializationFromMessageSourceJson(const nlohmann::json &j);
     };
 
     /// 接收到的转发消息, 发送用 MiraiCP::ForwardedMessage
@@ -117,11 +120,11 @@ namespace MiraiCP {
         std::vector<ForwardedNode> nodelist;
         /// 用展示出来ServiceMessage
         ServiceMessage origin;
-        /// unknown 用途, 有一些情况下没有
-        std::optional<std::string> resourceId;
+        // unknown 用途, 有一些情况下没有
+        // std::optional<std::string> resourceId;
 
     public:
-        explicit OnlineForwardedMessage(nlohmann::json o, std::optional<std::string> rid, std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), resourceId(std::move(rid)), origin(ServiceMessage(o["serviceId"], o["content"])) {}
+        explicit OnlineForwardedMessage(nlohmann::json o, /*std::optional<std::string> rid,*/ std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), /*resourceId(std::move(rid)),*/ origin(ServiceMessage(o["serviceId"], o["content"])) {}
 
     public:
         /// 转ForwardedMessage
@@ -147,7 +150,7 @@ namespace MiraiCP {
     public:
         static int type() { return -4; }
 
-        static OnlineForwardedMessage deserializationFromMessageSourceJson(nlohmann::json j);
+        static OnlineForwardedMessage deserializationFromMessageSourceJson(const nlohmann::json &j);
     };
 } // namespace MiraiCP
 #endif //MIRAICP_PRO_FORWARDEDMESSAGE_H

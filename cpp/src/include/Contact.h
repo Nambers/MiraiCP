@@ -77,7 +77,7 @@ namespace MiraiCP {
          * @param botid 对应的botid
          */
         explicit Contact(int type, QQID id, QQID gid, const std::string &name, QQID botid, bool anonymous = false) {
-            if(type < 0 || type > 4) throw APIException("Contact::type incorrect", MIRAICP_EXCEPTION_WHERE);
+            if (type < 0 || type > 4) throw APIException("Contact::type incorrect", MIRAICP_EXCEPTION_WHERE);
             this->_type = static_cast<contactType>(type);
             this->_id = id;
             this->_groupid = gid;
@@ -160,7 +160,7 @@ namespace MiraiCP {
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, true, env)`
         ShouldNotUse("Use sendMessage") MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
-                                                                      JNIEnv *env = nullptr) const = delete;
+                                                                    JNIEnv *env = nullptr) const = delete;
 
         /*!
          * @brief 回复并发送
