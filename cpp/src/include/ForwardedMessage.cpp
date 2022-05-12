@@ -72,7 +72,10 @@ namespace MiraiCP {
         std::vector<ForwardedNode> nodes;
         for (json a: j[1]["nodeList"])
             nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(a["messageChain"], false), a["time"]);
-        return OnlineForwardedMessage(j[0]["origin"], j[0]["resourceId"], nodes);
+        if (j[0].contains("resourceId") && !j[0]["resourceId"].is_null())
+            return OnlineForwardedMessage(j[0]["origin"], j[0]["resourceId"], nodes);
+        else
+            return OnlineForwardedMessage(j[0]["origin"], std::nullopt, nodes);
     }
 
     ForwardedNode::ForwardedNode(Contact *c, ForwardedMessage _message, int t)
@@ -97,7 +100,17 @@ namespace MiraiCP {
         return true;
     }
 
-    ForwardedMessage OnlineForwardedMessage::toForwardedMessage(Contact *c) {
-        return {c, this->nodelist};
+    ForwardedMessage OnlineForwardedMessage::toForwardedMessage(Contact *contact) {
+        // todo 发出不显示
+        std::vector<ForwardedNode> nodes;
+        for (auto a: this->nodelist) {
+            auto b = std::get<MessageChain>(a.message);
+            if (b[0].type() == OnlineForwardedMessage::type()) {
+                auto c = b[0].get<OnlineForwardedMessage>();
+                nodes.emplace_back(contact, c.toForwardedMessage(contact), a.time);
+            } else
+                nodes.emplace_back(a);
+        }
+        return {contact, this->nodelist};
     }
 } // namespace MiraiCP
