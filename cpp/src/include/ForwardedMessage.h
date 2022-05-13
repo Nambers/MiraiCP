@@ -27,15 +27,24 @@ namespace MiraiCP {
     class ForwardedMessage;
 
     class ForwardedMessageDisplayStrategy {
+        using string = std::string;
+
     public:
-        std::string title = "群聊的聊天记录";
-        std::string brief = "[聊天记录]";
-        std::string source = "聊天记录";
-        std::string summary = "查看1条转发信息";
-        std::vector<std::string> preview{"Name: message"};
+        string title = "群聊的聊天记录";
+        string brief = "[聊天记录]";
+        string source = "聊天记录";
+        string summary = "查看1条转发信息";
+        std::vector<string> preview{"Name: message"};
+
+    public:
         static std::optional<ForwardedMessageDisplayStrategy> defaultStrategy() { return std::nullopt; }
+
+    public:
         ForwardedMessageDisplayStrategy() = default;
-        ForwardedMessageDisplayStrategy(const std::string &title, const std::string &brief, const std::string &source, const std::string &summary, const std::vector<std::string> &preview) : title(title), brief(brief), source(source), summary(summary), preview(preview) {}
+
+        ForwardedMessageDisplayStrategy(std::string title, std::string brief, std::string source, std::string summary, std::vector<std::string> preview) : title(std::move(title)), brief(std::move(brief)), source(std::move(source)), summary(std::move(summary)), preview(std::move(preview)) {}
+
+    public:
         nlohmann::json toJson() {
             nlohmann::json j;
             j["title"] = title;
