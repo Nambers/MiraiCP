@@ -18,6 +18,9 @@
 
 package tech.eritquearcus.miraicp.shared
 
+import net.mamoe.mirai.message.data.ForwardMessage
+import net.mamoe.mirai.message.data.RawForwardMessage
+
 object Config {
     data class Contact(
         val type: Int,
@@ -29,20 +32,13 @@ object Config {
     )
 
     data class SendRequest(
-        val contact: Contact,
-        val content: String
+        val contact: Contact, val content: String
     )
 
     data class ForwardMessageJson(
-        val type: Int,
-        val id: Long,
-        val groupid: Long,
-        val content: Content
+        val type: Int, val id: Long, val groupid: Long, val display: ForwardedMessageDisplay?, val content: Content
     ) {
         data class Content(
-            val type: Int,
-            val id: Long,
-            val groupid: Long,
             val value: List<Value>
         ) {
             data class Value(
@@ -50,7 +46,8 @@ object Config {
                 val name: String,
                 val id: Long,
                 val time: Int,
-                val message: String
+                val message: String,
+                val display: ForwardedMessageDisplay?
             )
         }
     }
@@ -82,15 +79,11 @@ object Config {
 
     // Announcement identify
     data class IdentifyA(
-        val botid: Long,
-        val groupid: Long,
-        val type: Int,
-        val fid: String?
+        val botid: Long, val groupid: Long, val type: Int, val fid: String?
     )
 
     data class BriefOfflineA(
-        val content: String,
-        val params: AP
+        val content: String, val params: AP
     )
 
     data class GroupSetting(
@@ -108,9 +101,7 @@ object Config {
     )
 
     data class DInfo(
-        val url: String,
-        val md5: String,
-        val sha1: String
+        val url: String, val md5: String, val sha1: String
     )
 
     data class FInfo(
@@ -143,12 +134,23 @@ object Config {
     data class Message(
         val messageSource: String
     )
+
+    data class ForwardedMessageDisplay(
+        val brief: String, val preview: List<String>, val source: String, val summary: String, val title: String
+    )
+}
+
+class DisplayS(private val s: Config.ForwardedMessageDisplay) : ForwardMessage.DisplayStrategy {
+    override fun generateBrief(forward: RawForwardMessage): String = s.brief
+    override fun generatePreview(forward: RawForwardMessage): List<String> = s.preview
+    override fun generateSource(forward: RawForwardMessage): String = s.source
+    override fun generateSummary(forward: RawForwardMessage): String = s.summary
+    override fun generateTitle(forward: RawForwardMessage): String = s.title
 }
 
 object CPPConfig {
     data class cppPath(
-        val path: String,
-        val dependencies: List<String>?
+        val path: String, val dependencies: List<String>?
     )
 
     data class AdvanceConfig(
@@ -156,14 +158,11 @@ object CPPConfig {
     )
 
     data class pluginConfig(
-        val pluginConfig: List<cppPath>,
-        val advanceConfig: AdvanceConfig?
+        val pluginConfig: List<cppPath>, val advanceConfig: AdvanceConfig?
     )
 
     data class loaderConfig(
-        val accounts: List<Account>?,
-        val cppPaths: List<cppPath>,
-        val advanceConfig: AdvanceConfig?
+        val accounts: List<Account>?, val cppPaths: List<cppPath>, val advanceConfig: AdvanceConfig?
     ) {
         data class Account(
             val id: Long,
@@ -188,16 +187,11 @@ object CPPEvent {
     )
 
     data class PrivateMessage(
-        val friend: Config.Contact,
-        val message: String,
-        val source: String,
-        val type: Int = 2
+        val friend: Config.Contact, val message: String, val source: String, val type: Int = 2
     )
 
     data class GroupInvite(
-        val source: GroupInviteSource,
-        val request: String,
-        val type: Int = 3
+        val source: GroupInviteSource, val request: String, val type: Int = 3
     ) {
         //群邀请
         data class GroupInviteSource(
@@ -211,17 +205,12 @@ object CPPEvent {
     }
 
     data class Request(
-        val text: String,
-        val accept: Boolean,
-        val botid: Long,
-        val ban: Boolean?
+        val text: String, val accept: Boolean, val botid: Long, val ban: Boolean?
     )
 
     //好友邀请
     data class NewFriendRequest(
-        val source: NewFriendRequestSource,
-        val request: String,
-        val type: Int = 4
+        val source: NewFriendRequestSource, val request: String, val type: Int = 4
     ) {
         data class NewFriendRequestSource(
             val botid: Long,
@@ -235,8 +224,7 @@ object CPPEvent {
 
     //群成员加入
     data class MemberJoin(
-        val group: Config.Contact,
-        val member: Config.Contact,
+        val group: Config.Contact, val member: Config.Contact,
         /*
     invite - 1
     active - 2
@@ -244,22 +232,19 @@ object CPPEvent {
      */
         val jointype: Int,
         //如果没有则为member.id
-        val inviterid: Long = 0,
-        val type: Int = 5
+        val inviterid: Long = 0, val type: Int = 5
     )
 
     //群成员退出
     data class MemberLeave(
-        val group: Config.Contact,
-        val memberid: Long,
+        val group: Config.Contact, val memberid: Long,
         /*
     kick - 1
     quit - 2
      */
         val leavetype: Int,
         //如果没有则为memberid
-        val operatorid: Long = 0,
-        val type: Int = 6
+        val operatorid: Long = 0, val type: Int = 6
     )
 
     //撤回
@@ -276,10 +261,7 @@ object CPPEvent {
     )
 
     data class BotJoinGroup(
-        val etype: Int,
-        val group: Config.Contact,
-        val inviterid: Long,
-        val type: Int = 8
+        val etype: Int, val group: Config.Contact, val inviterid: Long, val type: Int = 8
     )
 
     data class GroupTempMessage(
@@ -291,13 +273,11 @@ object CPPEvent {
     )
 
     data class TimeOutEvent(
-        val msg: String,
-        val type: Int = 10
+        val msg: String, val type: Int = 10
     )
 
     data class BotOnline(
-        val botid: Long,
-        val type: Int = 11
+        val botid: Long, val type: Int = 11
     )
 
     data class NugdeEvent(
@@ -307,12 +287,13 @@ object CPPEvent {
         val botid: Long,
         val type: Int = 12
     )
+
     data class BotLeaveEvent(
-        val groupid: Long,
-        val botid: Long,
+        val groupid: Long, val botid: Long,
         //val leavetype: Int TODO(见Mirai源码, 目前BotLeave还不稳定)
-        val type : Int = 13
+        val type: Int = 13
     )
+
     data class MemberJoinRequestEvent(
         val group: Config.Contact,
         val inviter: Config.Contact,
@@ -320,11 +301,9 @@ object CPPEvent {
         val requestData: String,
         val type: Int = 14
     )
+
     data class MessagePreSendEvent(
-        val target: Config.Contact,
-        val botid: Long,
-        val message: String,
-        val type: Int = 15
+        val target: Config.Contact, val botid: Long, val message: String, val type: Int = 15
     )
     // type = 16, ExceptionEvent
     // type = 17, Command

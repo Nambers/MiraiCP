@@ -31,6 +31,8 @@ namespace MiraiCP {
             if (node.isForwarded()) {
                 temp["isForwardedMessage"] = true;
                 temp["message"] = std::get<std::shared_ptr<ForwardedMessage>>(node.message)->nodesToJson().dump();
+                if (display.has_value())
+                    temp["display"] = display->toJson();
             } else
                 temp["message"] = std::get<MessageChain>(node.message).toMiraiCode();
             temp["name"] = node.name;
@@ -51,41 +53,19 @@ namespace MiraiCP {
         text["content"] = this->nodesToJson();
         temp["text"] = text.dump();
         temp["botid"] = c->botid();
+        if (display.has_value())
+            temp["display"] = display->toJson();
         std::string re = Config::koperation(Config::Buildforward, temp, env);
         ErrorHandle(re, "");
         return MessageSource::deserializeFromString(re);
     }
 
-    ForwardedMessage::ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes) : ForwardedMessage(c, std::vector(nodes)) {}
-
-    ForwardedMessage::ForwardedMessage(Contact *c, std::vector<ForwardedNode> nodes) : nodes(std::move(nodes)) {
-        if (nullptr == c) {
-            throw IllegalArgumentException("构造Forwarded Message不接受空指针", MIRAICP_EXCEPTION_WHERE);
-        }
-        sendmsg["type"] = c->type();
-        sendmsg["id"] = c->id();
-        sendmsg["groupid"] = c->groupid();
-    }
-
-    ForwardedMessage::ForwardedMessage(int chattype, QQID id, QQID groupid, std::vector<ForwardedNode> nodes) : nodes(std::move(nodes)) {
-        sendmsg["type"] = chattype;
-        sendmsg["id"] = id;
-        sendmsg["groupid"] = groupid;
-    }
-
     ForwardedMessage ForwardedMessage::deserializationFromMessageSourceJson(const json &j) {
         std::vector<ForwardedNode> nodes;
-
-        // TODO(antares): do we really need a useless "anysend" in forwardedNode?
-        //  This won't work if the qqid is not a friend of bot.
-        //  Please check code in kotlin part.
-        QQID anysend = 0;
-
         try {
             for (auto &&a: j) {
-                if (!anysend) anysend = a["senderId"];
                 if (a["messageChain"][0].contains("kind") && a["messageChain"][0]["kind"] == "FORWARD") {
-                    nodes.emplace_back(a["senderId"], a["senderName"], ForwardedMessage::deserializationFromMessageSourceJson(a["messageChain"][1]["nodeList"]), a["time"]);
+                    nodes.emplace_back(a["senderId"], a["senderName"], ForwardedMessage::deserializationFromMessageSourceJson(a["messageChain"][1]["nodeList"]), a["time"], ForwardedMessageDisplayStrategy::defaultStrategy());
                 } else {
                     nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(a["messageChain"], false), a["time"]);
                 }
@@ -94,7 +74,7 @@ namespace MiraiCP {
             throw APIException("ForwardedMessage格式化异常", MIRAICP_EXCEPTION_WHERE);
         }
 
-        return {1, anysend, 0, std::move(nodes)};
+        return {std::move(nodes), ForwardedMessageDisplayStrategy::defaultStrategy()};
     }
 
 
@@ -104,7 +84,7 @@ namespace MiraiCP {
         try {
             for (auto &&a: j[1]["nodeList"]) {
                 if (a["messageChain"][0].contains("kind") && a["messageChain"][0]["kind"] == "FORWARD") {
-                    nodes.emplace_back(a["senderId"], a["senderName"], ForwardedMessage::deserializationFromMessageSourceJson(a["messageChain"][1]["nodeList"]), a["time"]);
+                    nodes.emplace_back(a["senderId"], a["senderName"], ForwardedMessage::deserializationFromMessageSourceJson(a["messageChain"][1]["nodeList"]), a["time"], ForwardedMessageDisplayStrategy::defaultStrategy());
                 } else {
                     nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(a["messageChain"], false), a["time"]);
                 }
@@ -120,10 +100,10 @@ namespace MiraiCP {
         // return OnlineForwardedMessage(j[0]["origin"], std::nullopt, std::move(nodes));
     }
 
-    ForwardedNode::ForwardedNode(QQID id, std::string name, ForwardedMessage _message, int t)
+    ForwardedNode::ForwardedNode(QQID id, std::string name, ForwardedMessage _message, int t, std::optional<ForwardedMessageDisplayStrategy> display)
         : id(id), name(std::move(name)),
           message(std::make_shared<ForwardedMessage>(std::move(_message))),
-          time(t), isForwardedMessage(true) {}
+          time(t), isForwardedMessage(true), display(std::move(display)) {}
 
     /*
     ForwardedNode::ForwardedNode(Contact *c, MessageChain message, int t) : id(c->id()), name(c->nickOrNameCard()),
@@ -147,15 +127,7 @@ namespace MiraiCP {
         //        return true;
     }
 
-    ForwardedMessage OnlineForwardedMessage::toForwardedMessage(Contact *contact) {
-        //        for (auto &&a: this->nodelist) {
-        //            auto b = std::get<MessageChain>(a.message);
-        //            if (b[0].type() == OnlineForwardedMessage::type()) {
-        //                auto c = b[0].get<OnlineForwardedMessage>();
-        //                nodes.emplace_back(contact->id(), contact->nickOrNameCard(), c.toForwardedMessage(contact), a.time);
-        //            } else
-        //                nodes.emplace_back(a);
-        //        }
-        return {contact, this->nodelist};
+    ForwardedMessage OnlineForwardedMessage::toForwardedMessage(std::optional<ForwardedMessageDisplayStrategy> display) const {
+        return {this->nodelist, std::move(display)};
     }
 } // namespace MiraiCP

@@ -19,11 +19,33 @@
 
 #include "MessageChain.h"
 #include "MiraiDefs.h"
+#include <utility>
 #include <variant>
 
 namespace MiraiCP {
     class Contact;
     class ForwardedMessage;
+
+    class ForwardedMessageDisplayStrategy {
+    public:
+        std::string title = "群聊的聊天记录";
+        std::string brief = "[聊天记录]";
+        std::string source = "聊天记录";
+        std::string summary = "查看1条转发信息";
+        std::vector<std::string> preview{"Name: message"};
+        static std::optional<ForwardedMessageDisplayStrategy> defaultStrategy() { return std::nullopt; }
+        ForwardedMessageDisplayStrategy() = default;
+        ForwardedMessageDisplayStrategy(const std::string &title, const std::string &brief, const std::string &source, const std::string &summary, const std::vector<std::string> &preview) : title(title), brief(brief), source(source), summary(summary), preview(preview) {}
+        nlohmann::json toJson() {
+            nlohmann::json j;
+            j["title"] = title;
+            j["brief"] = brief;
+            j["source"] = source;
+            j["summary"] = summary;
+            j["preview"] = preview;
+            return j;
+        }
+    };
 
     ///聊天记录里每个消息
     class ForwardedNode {
@@ -39,6 +61,7 @@ namespace MiraiCP {
 
     private:
         bool isForwardedMessage;
+        std::optional<ForwardedMessageDisplayStrategy> display = std::nullopt;
 
     public:
         /// @brief 聊天记录里的每条信息
@@ -54,7 +77,7 @@ namespace MiraiCP {
         /// @param c - 发送者的contact指针
         /// @param message - 发送的信息
         /// @param t - 发送时间，时间戳格式
-        ForwardedNode(QQID id, std::string name, ForwardedMessage message, int t);
+        ForwardedNode(QQID id, std::string name, ForwardedMessage message, int t, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy());
 
         /*
         ForwardedNode(Contact *c, MessageChain message, int t);
@@ -76,17 +99,16 @@ namespace MiraiCP {
 
     public:
         std::vector<ForwardedNode> nodes;
+        std::optional<ForwardedMessageDisplayStrategy> display = std::nullopt;
 
     public:
         /*!
         *@brief 构建一条聊天记录
         *@details 第一个参数是聊天记录发生的地方, 然后是每条信息
         */
-        ForwardedMessage(Contact *c, std::initializer_list<ForwardedNode> nodes);
+        ForwardedMessage(std::initializer_list<ForwardedNode> nodes, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy()) : ForwardedMessage(std::vector(nodes), std::move(display)) {}
 
-        ForwardedMessage(Contact *c, std::vector<ForwardedNode> nodes);
-
-        ForwardedMessage(int chattype, QQID id, QQID groupid, std::vector<ForwardedNode> nodes);
+        ForwardedMessage(std::vector<ForwardedNode> nodes, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy()) : nodes(std::move(nodes)), display(std::move(display)) {}
 
     public:
         void add(const ForwardedNode &a) { this->nodes.push_back(a); }
@@ -129,7 +151,7 @@ namespace MiraiCP {
     public:
         /// 转ForwardedMessage
         /// @param c 发生的环境, 比如群聊或者好友
-        ForwardedMessage toForwardedMessage(Contact *c);
+        ForwardedMessage toForwardedMessage(std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy()) const;
 
         /// 不支持直接发送OnlineForwardMessage, ForwardedMessage发送
         ShouldNotUse("use MiraiCP::ForwardedMessage to send") std::string toMiraiCode() const override {
