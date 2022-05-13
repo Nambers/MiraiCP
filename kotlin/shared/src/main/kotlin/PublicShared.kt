@@ -174,8 +174,7 @@ object PublicShared {
         sendWithCatch { r.sendMessage(message).source }
     }
 
-    suspend fun sendMsg(message: String, c: Config.Contact): String =
-        send0(message.toPlainText().toMessageChain(), c)
+    suspend fun sendMsg(message: String, c: Config.Contact): String = send0(message.toPlainText().toMessageChain(), c)
 
     suspend fun sendMiraiCode(message: String, c: Config.Contact): String =
         send0(MiraiCode.deserializeMiraiCode(message), c)
@@ -230,7 +229,7 @@ object PublicShared {
             }
             3 -> friend_cache.firstOrNull { a ->
                 a.id == c.id && a.group.id == c.groupid
-            }?.let{
+            }?.let {
                 gson.toJson(Config.ContactInfo(it.nameCardOrNick, it.avatarUrl))
             } ?: let {
                 c.withMember(
@@ -503,25 +502,9 @@ object PublicShared {
         }
     }
 
-    @OptIn(MiraiExperimentalApi::class)
-    fun buildForwardMsg(text: String, bid: Long): ForwardMessage {
-        val bot = Bot.getInstanceOrNull(bid) ?: throw IllegalStateException("EB")
+    private fun buildForwardMsg(text: String, bid: Long, display: Config.ForwardedMessageDisplay?): ForwardMessage {
         val t = Gson().fromJson(text, Config.ForwardMessageJson.Content::class.java)
-        val c: Contact = when (t.type) {
-            1 -> bot.getFriend(t.id) ?: let {
-                throw IllegalStateException("EF")
-            }
-            2 -> bot.getGroup(t.id) ?: let {
-                throw IllegalStateException("EG")
-            }
-            3 -> (bot.getGroup(t.id) ?: let {
-                throw IllegalStateException("EM")
-            })[t.groupid] ?: let {
-                throw IllegalStateException("EMM")
-            }
-            else -> throw IllegalStateException("EA")
-        }
-        val a = ForwardMessageBuilder(c)
+        val a = mutableListOf<ForwardMessage.Node>()
         t.value.forEach {
             if (it.isForwardedMessage != true) a.add(
                 ForwardMessage.Node(
@@ -529,10 +512,10 @@ object PublicShared {
                 )
             )
             else {
-                a.add(ForwardMessage.Node(it.id, it.time, it.name, buildForwardMsg(it.message, bid)))
+                a.add(ForwardMessage.Node(it.id, it.time, it.name, buildForwardMsg(it.message, bid, it.display)))
             }
         }
-        return a.build()
+        return RawForwardMessage(a).render(if (display != null) DisplayS(display) else ForwardMessage.DisplayStrategy.Default)
     }
 
     //构建聊天记录
@@ -553,7 +536,7 @@ object PublicShared {
             else -> return "EA"
         }
         val tmp = try {
-            buildForwardMsg(gson.toJson(t.content), bid)
+            buildForwardMsg(gson.toJson(t.content), bid, t.display)
         } catch (err: IllegalStateException) {
             return@withBot err.message!!
         }
