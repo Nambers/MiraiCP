@@ -16,8 +16,8 @@
 
 #ifndef MIRAICP_PRO_LOWLEVELAPI_H
 #define MIRAICP_PRO_LOWLEVELAPI_H
-#include <json.hpp>
 #include <jni.h>
+#include <json.hpp>
 
 namespace MiraiCP {
     /// 较底层api
@@ -35,8 +35,6 @@ namespace MiraiCP {
         /// @brief 取该联系人的一些信息
         /// @param c 该联系人Contact->serializationToString()
         /// @return json格式字符串，待解析
-
-
         static std::string getInfoSource(const std::string &, JNIEnv *);
 
         /*!

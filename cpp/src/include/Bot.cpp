@@ -22,7 +22,7 @@
 
 namespace MiraiCP {
     Group Bot::getGroup(QQID groupid, JNIEnv *env) const {
-        return Group(groupid, this->id, env);
+        return {groupid, this->id, env};
     }
 
     Friend Bot::getFriend(QQID i, JNIEnv *env) const {
@@ -47,7 +47,7 @@ namespace MiraiCP {
         nlohmann::json j;
         j["botid"] = this->id;
         std::string temp = Config::koperation(Config::QueryBFL, j, env);
-        return Tools::StringToVector(temp);
+        return Tools::StringToVector(std::move(temp));
     }
 
     std::string Bot::FriendListToString() {
@@ -58,7 +58,7 @@ namespace MiraiCP {
         nlohmann::json j;
         j["botid"] = this->id;
         std::string temp = Config::koperation(Config::QueryBGL, j, env);
-        return Tools::StringToVector(temp);
+        return Tools::StringToVector(std::move(temp));
     }
 
     std::string Bot::GroupListToString() const {
