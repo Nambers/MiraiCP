@@ -17,6 +17,7 @@
 #ifndef MIRAICP_PRO_TOOLS_H
 #define MIRAICP_PRO_TOOLS_H
 
+#include "MiraiDefs.h"
 #include <functional>
 #include <jni.h>
 #include <sstream>
@@ -76,7 +77,7 @@ namespace MiraiCP {
         /// @param a vector
         /// @return string
         template<typename T>
-        std::string VectorToString(std::vector<T> a, const std::string &separator = ",") {
+        std::string VectorToString(const std::vector<T> &a, const std::string &separator = ",") {
             std::stringstream ss;
             for (size_t i = 0; i < a.size(); ++i) {
                 if (i != 0)
@@ -89,7 +90,7 @@ namespace MiraiCP {
         /// @brief 从string格式化到vector
         /// @param temp string
         /// @return vector
-        std::vector<unsigned long long> StringToVector(std::string temp);
+        std::vector<QQID> StringToVector(std::string temp);
         /// @brief 从miraicode转义到正常
         /// @param s 经过miraicode转义的字符串
         /// @return 原字符串

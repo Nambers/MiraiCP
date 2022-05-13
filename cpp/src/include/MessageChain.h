@@ -23,56 +23,58 @@
 namespace MiraiCP {
     class MessageSource; // forward declaration
 
-    class Message : public std::shared_ptr<SingleMessage> {
-    private:
-        // std::shared_ptr<SingleMessage> content;
+    namespace internal {
+        class Message : public std::shared_ptr<SingleMessage> {
+        private:
+            // std::shared_ptr<SingleMessage> content;
 
-    public: // constructor
-        template<class T>
-        explicit Message(const T &_singleMessage) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
-            reset(new T(_singleMessage));
-        }
+        public: // constructor
+            template<class T>
+            explicit Message(const T &_singleMessage) {
+                static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
+                reset(new T(_singleMessage));
+            }
 
-        explicit Message(std::shared_ptr<SingleMessage> msgptr) : std::shared_ptr<SingleMessage>(std::move(msgptr)) {}
+            explicit Message(std::shared_ptr<SingleMessage> msgptr) : std::shared_ptr<SingleMessage>(std::move(msgptr)) {}
 
-    public:
-        /// 代表的子类
-        /// @see MessageChain::messageType
-        int type() const {
-            return (*this)->type;
+        public:
+            /// 代表的子类
+            /// @see MessageChain::messageType
+            int type() const {
+                return (*this)->type;
+            };
+
+            /// 取指定类型
+            /// @throw IllegalArgumentException
+            template<class T>
+            T get() const {
+                static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+                if (T::type() != this->type())
+                    throw IllegalArgumentException("cannot convert from " + SingleMessage::messageType[this->type()] + " to " + SingleMessage::messageType[T::type()], MIRAICP_EXCEPTION_WHERE);
+                T *re = static_cast<T *>(std::shared_ptr<SingleMessage>::get());
+                if (re == nullptr)
+                    throw IllegalArgumentException("cannot convert from " + SingleMessage::messageType[this->type()] + " to " + SingleMessage::messageType[T::type()], MIRAICP_EXCEPTION_WHERE);
+                return *re;
+            }
+
+            std::string toMiraiCode() const {
+                return (*this)->toMiraiCode();
+            }
+
+            bool operator==(const Message &m) const {
+                return (*this)->type == m->type && (*this)->toMiraiCode() == m->toMiraiCode();
+            }
+
+            bool operator!=(const Message &m) const {
+                return (*this)->type != m->type || (*this)->toMiraiCode() != m->toMiraiCode();
+            }
         };
-
-        /// 取指定类型
-        /// @throw IllegalArgumentException
-        template<class T>
-        T get() const {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            if (T::type() != this->type())
-                throw IllegalArgumentException("cannot convert from " + SingleMessage::messageType[this->type()] + " to " + SingleMessage::messageType[T::type()], MIRAICP_EXCEPTION_WHERE);
-            T *re = static_cast<T *>(std::shared_ptr<SingleMessage>::get());
-            if (re == nullptr)
-                throw IllegalArgumentException("cannot convert from " + SingleMessage::messageType[this->type()] + " to " + SingleMessage::messageType[T::type()], MIRAICP_EXCEPTION_WHERE);
-            return *re;
-        }
-
-        std::string toMiraiCode() const {
-            return (*this)->toMiraiCode();
-        }
-
-        bool operator==(const Message &m) const {
-            return (*this)->type == m->type && (*this)->toMiraiCode() == m->toMiraiCode();
-        }
-
-        bool operator!=(const Message &m) const {
-            return (*this)->type != m->type || (*this)->toMiraiCode() != m->toMiraiCode();
-        }
-    };
+    } // namespace internal
 
     /// 消息链, 一般由SingleMessage组成
-    class MessageChain : public std::vector<Message>, public MiraiCodeable {
+    class MessageChain : public std::vector<internal::Message>, public MiraiCodeable {
     public: // typedefs
-        using Message = MiraiCP::Message;
+        using Message = internal::Message;
 
     public:
         /// 如果由MiraiCP构造(incoming)就会存在，否则则不存在

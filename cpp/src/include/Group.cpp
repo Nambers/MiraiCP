@@ -100,7 +100,7 @@ namespace MiraiCP {
         if (re == "E1") {
             throw GroupException(MIRAICP_EXCEPTION_WHERE);
         }
-        return Tools::StringToVector(re);
+        return Tools::StringToVector(std::move(re));
     }
 
     Group::Group(QQID groupid, QQID botid, JNIEnv *env) : Contact() {

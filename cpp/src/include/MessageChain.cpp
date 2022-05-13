@@ -54,7 +54,7 @@ namespace MiraiCP {
                 size_t back = MessageChain::findEnd(m, pos);
                 if (back == -1) throw IllegalStateException("", MIRAICP_EXCEPTION_WHERE);
                 std::string tmp = m.substr(pos, back - pos);
-                tmp = Tools::replace(tmp, "[mirai:", "");
+                tmp = Tools::replace(std::move(tmp), "[mirai:", "");
                 size_t i = tmp.find(':'); // first :
                 int t = SingleMessage::getKey(tmp.substr(0, i));
                 switch (t) {
