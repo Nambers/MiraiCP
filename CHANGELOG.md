@@ -1,5 +1,19 @@
 # Change Log
+## v2.11.0-M4
+
+* 新增`registerBlockingEvent`，可以用于阻塞后续回调函数；`registerEvent`可以设定优先级
+* 修复`MessageChain::filter`
+* `Event`类使用单例模式，现在可以直接用`Event::registerEvent`，不需要经过`Event::processor`
+* 修复`NodeHandle`，`registerEvent`返回的handle可以正确控制回调是否执行
+* 修复`nextMessage`
+* 新增`MessageEvent`，提供了一组`Friend`，`Member`，`Group`的接口
+* `exceptionEvent`现在只会在MiraiCP异常没有被捕获时才会广播
+* 修复`ForwardedMessage`
+* 新增`ForwardedMessageDisplayStrategy`，转发的消息可以自定义格式（测试中）
+* `messageChain`现在继承了`std::vector<Message>`；`vector<Message>::vector()`函数deprecated；现在可以将`messageChain`看作`std::vector<Message>`使用
+
 ## v2.11.0-M3
+
 + 修复 v2.11.0-M2 loader jar文件上传不完整
 
 ## v2.11.0-M2
