@@ -23,7 +23,7 @@ namespace MiraiCP {
     /// 好友类声明
     class Friend : public Contact, INudgeSupport {
     public:
-        /// 删除好友(delete是C++关键字
+        /// 删除好友(delete是C++关键字)
         void deleteFriend(JNIEnv *env = nullptr);
 
         void refreshInfo(JNIEnv *env = nullptr);

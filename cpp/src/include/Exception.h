@@ -32,11 +32,11 @@ namespace MiraiCP {
         string re;
 
     public:
-        /// @brief 发生异常的行号
-        int lineNum = 0;
-
         /// @brief 发生异常的文件名
         string filename;
+        
+        /// @brief 发生异常的行号
+        int lineNum = 0;
 
     protected:
         /// 受保护构造函数，供子类调用

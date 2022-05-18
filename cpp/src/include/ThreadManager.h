@@ -55,7 +55,6 @@ namespace MiraiCP {
         /// 判断该线程id是否包含在线程池里
         static bool included(const std::string &id);
 
-
     public:
         // 静态方法
         /// 获取线程
@@ -73,7 +72,6 @@ namespace MiraiCP {
 
         /// @brief 设置env给当前线程.
         static void setEnv(JNIEnv *e);
-
 
         /*!
          * 	@brief 结束当前线程的env，也就是释放当前线程缓存的env.
