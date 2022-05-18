@@ -28,14 +28,13 @@ namespace MiraiCP {
     // 结束静态成员
 
     void ThreadManager::setEnv(JNIEnv *e) {
-        mtx.lock();
+        std::lock_guard lk(mtx);
         if (!ThreadManager::included(ThreadManager::getThreadId())) {
             ThreadInfo tmp{e, false};
             ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
         } else {
             ThreadManager::threads[ThreadManager::getThreadId()].e = e;
         }
-        mtx.unlock();
     }
 
     void ThreadManager::newEnv(const char *threadName) {
@@ -50,14 +49,13 @@ namespace MiraiCP {
     };
 
     void ThreadManager::detach() {
-        mtx.lock();
+        std::lock_guard lk(mtx);
         if (ThreadManager::included(ThreadManager::getThreadId())) {
             bool att = ThreadManager::threads[ThreadManager::getThreadId()].attach;
             ThreadManager::threads.erase(ThreadManager::getThreadId());
             if (att)
                 gvm->DetachCurrentThread();
         }
-        mtx.unlock();
     }
 
     bool ThreadManager::included(const std::string &id) {
@@ -67,12 +65,14 @@ namespace MiraiCP {
     }
 
     JNIEnv *ThreadManager::getEnv() {
-        mtx.lock();
-        if (!ThreadManager::included(getThreadId())) {
-            ThreadManager::newEnv();
+        JNIEnv *tmp;
+        {
+            std::lock_guard lk(mtx);
+            if (!ThreadManager::included(getThreadId())) {
+                ThreadManager::newEnv();
+            }
+            tmp = ThreadManager::threads[ThreadManager::getThreadId()].e;
         }
-        JNIEnv *tmp = ThreadManager::threads[ThreadManager::getThreadId()].e;
-        mtx.unlock();
         return tmp;
     }
 } // namespace MiraiCP
