@@ -1,16 +1,20 @@
 # Change Log
-## v2.11.0-M4
+## v2.11.0-RC
 
-* 新增`registerBlockingEvent`，可以用于阻塞后续回调函数；`registerEvent`可以设定优先级
-* 修复`MessageChain::filter`
-* `Event`类使用单例模式，现在可以直接用`Event::registerEvent`，不需要经过`Event::processor`
-* 修复`NodeHandle`，`registerEvent`返回的handle可以正确控制回调是否执行
-* 修复`nextMessage`
-* 新增`MessageEvent`，提供了一组`Friend`，`Member`，`Group`的接口
-* `exceptionEvent`现在只会在MiraiCP异常没有被捕获时才会广播
-* 修复`ForwardedMessage`
-* 新增`ForwardedMessageDisplayStrategy`，转发的消息可以自定义格式（测试中）
-* `messageChain`现在继承了`std::vector<Message>`；`vector<Message>::vector()`函数deprecated；现在可以将`messageChain`看作`std::vector<Message>`使用
++ 新增`registerBlockingEvent`，可以用于阻塞后续回调函数；`registerEvent`可以设定优先级
++ 修复`disbale`在`plugin == null`的时候的问题
++ 提升一部分`deprecated` warning 级方法到 error 级
++ 修复`MessageChain::filter`的一些问题
++ `Event`类使用单例模式，现在可以直接用`Event::registerEvent`, 不需要经过`Event::processor`
++ 修复`NodeHandle`, `registerEvent`返回的handle可以正确控制回调是否启用
++ 修复`nextMessage`的一些问题
++ 新增`MessageEvent`, 提供了一组`Friend`, `Member`, `Group`的接口
++ `exceptionEvent`现在只会在MiraiCP异常没有被捕获时才会广播
++ 重构`ForwardedMessage`
+    + 修复`ForwardedMessage`的一些问题
+    + 新增`ForwardedMessageDisplayStrategy`, 转发的消息可以自定义格式, 见[mirai 文档](https://github.com/mamoe/mirai/blob/dev/mirai-core-api/src/commonMain/kotlin/message/data/ForwardMessage.kt#:~:text=*%20%23%23-,%E6%98%BE%E7%A4%BA%E6%96%B9%E6%A1%88,-*)
+    + `messageChain`现在继承了`std::vector<Message>`并弃用`vector<Message>::vector()`;现在可以将`messageChain`看作`std::vector<Message>`使用
++ 升级mirai版本到v2.11.0-RC
 
 ## v2.11.0-M3
 
