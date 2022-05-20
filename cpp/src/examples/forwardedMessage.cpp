@@ -25,10 +25,29 @@ public:
                      "a")) {}
     void onEnable() override {
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
-            ForwardedMessage(&e.group,
-                             {ForwardedNode(12, "", MessageChain(PlainText("")), 1),
-                              ForwardedNode(11, "", MessageChain(e.sender.at(), "aaa"), 1)})
+            auto style1 = ForwardedMessageDisplayStrategy();
+            style1.summary = "Summarya";
+            style1.preview.emplace_back("preview1");
+            style1.source = "SourceA";
+            style1.brief = "BriefA";
+            e.group.sendMessage("Origin:");
+            ForwardedMessage(
+                    {ForwardedNode(12, "a", MessageChain(PlainText("test")), 1),
+                     ForwardedNode(12, "b", ForwardedMessage({ForwardedNode(12, "a", MessageChain(PlainText("test")), 1)}), 1)},
+                    ForwardedMessageDisplayStrategy::defaultStrategy())
                     .sendTo(&e.group);
+
+            if (e.message[0].type() == OnlineForwardedMessage::type())
+                e.message[0].get<OnlineForwardedMessage>().toForwardedMessage(ForwardedMessageDisplayStrategy::defaultStrategy()).sendTo(&e.group);
+            e.group.sendMessage("style1");
+            ForwardedMessage(
+                    {ForwardedNode(12, "a", MessageChain(PlainText("test")), 1),
+                     ForwardedNode(12, "b", ForwardedMessage({ForwardedNode(12, "a", MessageChain(PlainText("test")), 1)}), 1)},
+                    style1)
+                    .sendTo(&e.group);
+
+            if (e.message[0].type() == OnlineForwardedMessage::type())
+                e.message[0].get<OnlineForwardedMessage>().toForwardedMessage(style1).sendTo(&e.group);
         });
     }
 };
