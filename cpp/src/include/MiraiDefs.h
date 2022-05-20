@@ -34,7 +34,7 @@
 
 namespace MiraiCP {
     using QQID = unsigned long long;
-    const std::string MiraiCPVersion = "v2.11.0-M3";
+    const std::string MiraiCPVersion = "v2.11.0";
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_MIRAIDEFS_H
