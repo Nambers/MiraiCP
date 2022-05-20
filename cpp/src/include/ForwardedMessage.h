@@ -26,6 +26,7 @@ namespace MiraiCP {
     class Contact;
     class ForwardedMessage;
 
+    /// 转发信息显示策略, 目前好像只在转发信息内的转发信息生效
     class ForwardedMessageDisplayStrategy {
         using string = std::string;
 
@@ -57,6 +58,7 @@ namespace MiraiCP {
     };
 
     ///聊天记录里每个消息
+    /// todo 传入头像
     class ForwardedNode {
     public:
         ///发送者id
@@ -107,7 +109,9 @@ namespace MiraiCP {
         nlohmann::json sendmsg;
 
     public:
+        /// 每条信息
         std::vector<ForwardedNode> nodes;
+        /// 显示策略
         std::optional<ForwardedMessageDisplayStrategy> display = std::nullopt;
 
     public:
