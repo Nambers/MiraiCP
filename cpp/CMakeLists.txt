@@ -106,6 +106,21 @@ if (UNIX)
 endif (UNIX)
 # -- end --
 
+# -- MiraiCP libloader --
+add_library(MiraiCP_libloader
+        SHARED
+        ${SRC_PATH}/libloader/loaderMain.cpp
+        )
+target_include_directories(MiraiCP_libloader PUBLIC
+        ${SOURCE_PATH}
+        ${SRC_PATH}/include
+        ${SRC_PATH}
+        )
+if (UNIX)
+    target_link_libraries(MiraiCP_libloader ${JAVA_JVM_LIBRARY} dl)
+endif (UNIX)
+# -- end --
+
 # -- delete outdated single headers task --
 if (WIN32)
     # must use `\\`
