@@ -1,6 +1,5 @@
 # Change Log
-## v2.11.0-RC
-
+## v2.11.0
 + 新增`registerBlockingEvent`，可以用于阻塞后续回调函数；`registerEvent`可以设定优先级
 + 修复`disbale`在`plugin == null`的时候的问题
 + 提升一部分`deprecated` warning 级方法到 error 级
@@ -13,7 +12,7 @@
 + 重构`ForwardedMessage`
     + 修复`ForwardedMessage`的一些问题
     + 新增`ForwardedMessageDisplayStrategy`, 转发的消息可以自定义格式, 见[mirai 文档](https://github.com/mamoe/mirai/blob/dev/mirai-core-api/src/commonMain/kotlin/message/data/ForwardMessage.kt#:~:text=*%20%23%23-,%E6%98%BE%E7%A4%BA%E6%96%B9%E6%A1%88,-*)
-    + `messageChain`现在继承了`std::vector<Message>`并弃用`vector<Message>::vector()`;现在可以将`messageChain`看作`std::vector<Message>`使用
++ `messageChain`现在继承了`std::vector<Message>`并弃用`vector<Message>::vector()`;现在可以将`messageChain`看作`std::vector<Message>`使用
 + 升级mirai版本到v2.11.0-RC
 
 ## v2.11.0-M3
