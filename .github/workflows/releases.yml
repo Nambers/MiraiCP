@@ -121,7 +121,7 @@ jobs:
     - name: Create Release
       uses: ncipollo/release-action@v1.8.6
       with:
-          artifacts: ./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/libs/MiraiCP-plugin-*.mirai2.jar,./kotlin/core/build/libs/MiraiCP-core-*.jar
+          artifacts: ./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai2.jar,./kotlin/core/build/libs/MiraiCP-core-*.jar
           bodyfile: release.log
           tag: ${{ github.event.inputs.v }}
           token: ${{ secrets.GITHUB_TOKEN }}
