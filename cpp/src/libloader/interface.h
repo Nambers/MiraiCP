@@ -8,7 +8,6 @@
 #include <jni.h>
 
 
-
 // EXPORT functions
 JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content);
 

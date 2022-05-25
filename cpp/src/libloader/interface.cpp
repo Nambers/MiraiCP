@@ -7,20 +7,25 @@
 #include "json.hpp"
 #include <exception>
 
+
 namespace LibLoader {
-    jstring enrollAllPlugin(jstring);
+    void registerAllPlugin(jstring);
+    jstring activateAllPlugins();
 }
+
 
 jstring Verify(JNIEnv *env, jobject, jstring _cfgPath) {
     using json = nlohmann::json;
-    JNIEnvs::libLoaderEnv = env;
+    JNIEnvs::setLoaderEnv(env);
     JNIEnvs::JNIVersion = env->GetVersion();
-    jstring ans;
+    jstring ans = nullptr;
     try {
         //初始化日志模块
         JNIEnvs::initializeMiraiCPLoader();
 
-        ans = LibLoader::enrollAllPlugin(_cfgPath);
+        LibLoader::registerAllPlugin(_cfgPath);
+
+        ans = LibLoader::activateAllPlugins();
         // plugin == nullptr 无插件实例加载
         //        if (CPPPlugin::plugin != nullptr) {
         //            CPPPlugin::pluginLogger = new PluginLogger(&Logger::logger);
@@ -33,4 +38,16 @@ jstring Verify(JNIEnv *env, jobject, jstring _cfgPath) {
     // j["MiraiCPversion"] = MiraiCPVersion;
     // Config::pluginId = std::stoi(Tools::jstring2str(id));
     return ans;
+}
+
+int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *gMethods, int numMethods) {
+    jclass clazz = env->FindClass(className);
+    if (clazz == nullptr) {
+        return JNI_FALSE;
+    }
+    //注册native方法
+    if (env->RegisterNatives(clazz, gMethods, numMethods) < 0) {
+        return JNI_FALSE;
+    }
+    return JNI_TRUE;
 }

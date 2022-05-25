@@ -16,12 +16,15 @@ void LoaderLogger::init() {
 void LoaderLogger::info(string t) {
     // to be implemented
 }
+
 void LoaderLogger::warning(string t) {
     // to be implemented
 }
+
 void LoaderLogger::error(string t) {
     // to be implemented
 }
+
 void LoaderLogger::call_logger(LoaderLogger::string) {
     // to be implemented
 }

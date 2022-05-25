@@ -6,6 +6,7 @@
 #define MIRAICP_PRO_LOADERTOOLS_H
 
 #include <jni.h>
+#include <json.hpp>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -13,10 +14,11 @@
 #include <vector>
 
 namespace LibLoader {
+    std::vector<std::string> collect_plugins(const std::string &cfgPath, nlohmann::json j);
+
     std::string jstring2str(jstring jStr);
 
-    void enrollAllPlugin(jstring _cfgPath);
-
+    // multi thread controller
     class MiraiCPThreadsController {
         std::vector<std::unique_ptr<std::thread>> thread_ptr;
         std::recursive_mutex _mtx;
@@ -40,8 +42,5 @@ namespace LibLoader {
         }
     };
 } // namespace LibLoader
-namespace LoaderJNIApi {
 
-
-} // namespace LoaderJNIApi
 #endif //MIRAICP_PRO_LOADERTOOLS_H

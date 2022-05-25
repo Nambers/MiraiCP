@@ -9,6 +9,22 @@
 #include <utf8.h>
 
 namespace LibLoader {
+    std::vector<std::string> collect_plugins(const std::string &cfgPath, nlohmann::json j) {
+        std::vector<std::string> paths;
+        try {
+            auto &_paths = j["pluginpaths"];
+            if (!_paths.is_array()) {
+                throw std::exception();
+            }
+            for (auto &&v: _paths) {
+                paths.emplace_back(v);
+            }
+        } catch (...) {
+            std::cerr << "failed to load json: " << cfgPath << std::endl; // todo(antares): change this to logger.error()
+            exit(1);
+        }
+    }
+
     std::string jstring2str(jstring jStr) {
         if (JNIEnvs::libLoaderEnv == nullptr) {
             std::cerr << "Env pointer not set" << std::endl;
@@ -24,6 +40,8 @@ namespace LibLoader {
         utf8::utf16to8(s.begin(), s.end(), std::back_inserter(x));
         return x;
     }
+
+
 
     void MiraiCPThreadsController::end_all_thread() {
         // to be implemented

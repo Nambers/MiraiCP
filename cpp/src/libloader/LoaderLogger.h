@@ -4,12 +4,16 @@
 
 #ifndef MIRAICP_PRO_LOADERLOGGER_H
 #define MIRAICP_PRO_LOADERLOGGER_H
+
+
 #include <jni.h>
 #include <string>
 
-// do not use any static object in this class!
+
 class LoaderLogger {
     using string = std::string;
+
+private:
     jmethodID log = nullptr;
 
 public:

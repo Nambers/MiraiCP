@@ -6,10 +6,14 @@
 #include "LoaderLogger.h"
 namespace JNIEnvs {
     // globals
-    JNIEnv *libLoaderEnv = nullptr;
-    long JNIVersion;
-    jclass Class_cpplib;
-    JavaVM *gvm;
+    JNIEnv *const libLoaderEnv = nullptr;
+    long JNIVersion = 0;
+    jclass Class_cpplib = nullptr;
+    JavaVM *gvm = nullptr;
+
+    void setLoaderEnv(JNIEnv *env) {
+        const_cast<JNIEnv *&>(libLoaderEnv) = env;
+    }
 
     // functions
     void loadConfigClass() {
