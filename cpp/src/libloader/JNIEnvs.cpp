@@ -4,18 +4,25 @@
 
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
+namespace JNIEnvs {
+    // globals
+    JNIEnv *libLoaderEnv = nullptr;
+    long JNIVersion;
+    jclass Class_cpplib;
+    JavaVM *gvm;
 
-void JNIEnvs::loadConfigClass() {
-    Class_cpplib = reinterpret_cast<jclass>(libLoaderEnv->NewGlobalRef(
-            libLoaderEnv->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
-}
+    // functions
+    void loadConfigClass() {
+        Class_cpplib = reinterpret_cast<jclass>(libLoaderEnv->NewGlobalRef(
+                libLoaderEnv->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
+    }
 
-void JNIEnvs::loggerInit() {
-    logger.init();
-}
+    void loggerInit() {
+        logger.init();
+    }
 
-void JNIEnvs::initializeMiraiCPLoader() {
-    loadConfigClass();
-    loggerInit();
-}
-
+    void initializeMiraiCPLoader() {
+        loadConfigClass();
+        loggerInit();
+    }
+} // namespace JNIEnvs
