@@ -107,9 +107,10 @@ endif (UNIX)
 # -- end --
 
 # -- MiraiCP libloader --
+file(GLOB LOADER_PATH ${SRC_PATH}/libloader/*.cpp)
 add_library(MiraiCP_libloader
         SHARED
-        ${SRC_PATH}/libloader/loaderMain.cpp
+        ${LOADER_PATH}
         )
 target_include_directories(MiraiCP_libloader PUBLIC
         ${SOURCE_PATH}
