@@ -108,17 +108,17 @@ endif (UNIX)
 
 # -- MiraiCP libloader --
 file(GLOB LOADER_PATH ${SRC_PATH}/libloader/*.cpp)
-add_library(MiraiCP_libloader
+add_library(loader
         SHARED
         ${LOADER_PATH}
         )
-target_include_directories(MiraiCP_libloader PUBLIC
+target_include_directories(loader PUBLIC
         ${SOURCE_PATH}
         ${SRC_PATH}/include
         ${SRC_PATH}
         )
 if (UNIX)
-    target_link_libraries(MiraiCP_libloader ${JAVA_JVM_LIBRARY} dl)
+    target_link_libraries(loader ${JAVA_JVM_LIBRARY} dl)
 endif (UNIX)
 # -- end --
 

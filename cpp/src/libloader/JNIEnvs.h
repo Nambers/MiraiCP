@@ -13,13 +13,15 @@ class LoaderLogger;
 namespace JNIEnvs {
     // declarations
     extern JNIEnv *const libLoaderEnv;
-    extern long JNIVersion;
+    extern const long JNIVersion;
     extern jclass Class_cpplib;
     extern JavaVM *gvm;
     extern LoaderLogger logger;
 
     // functions
     void setLoaderEnv(JNIEnv *env);
+
+    void setJNIVersion();
 
     void loadConfigClass();
 

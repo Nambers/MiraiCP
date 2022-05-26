@@ -20,14 +20,16 @@ namespace LibLoader {
                 paths.emplace_back(v);
             }
         } catch (...) {
-            std::cerr << "failed to load json: " << cfgPath << std::endl; // todo(antares): change this to logger.error()
-            exit(1);
+            JNIEnvs::logger.error("failed to load json: " + cfgPath);
+            return {};
         }
+        return paths;
     }
 
     std::string jstring2str(jstring jStr) {
         if (JNIEnvs::libLoaderEnv == nullptr) {
-            std::cerr << "Env pointer not set" << std::endl;
+            JNIEnvs::logger.error("Env pointer not set");
+            return "";
         }
         if (!jStr) {
             return "";
@@ -41,9 +43,20 @@ namespace LibLoader {
         return x;
     }
 
-
-
-    void MiraiCPThreadsController::end_all_thread() {
-        // to be implemented
+    jstring str2jstring(const char *cstr) {
+        if (JNIEnvs::libLoaderEnv == nullptr) {
+            JNIEnvs::logger.error("Env pointer not set");
+        }
+        if (!cstr) {
+            JNIEnvs::logger.warning("警告:str2jstring传入空字符串");
+        }
+        std::string str(cstr);
+        std::vector<unsigned short> utf16line;
+        utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
+        auto *c = new jchar[utf16line.size()];
+        for (int i = 0; i < utf16line.size(); i++) {
+            c[i] = utf16line[i];
+        }
+        return JNIEnvs::libLoaderEnv->NewString((jchar *) c, (jsize) utf16line.size());
     }
 } // namespace LibLoader

@@ -25,6 +25,6 @@ void LoaderLogger::error(string t) {
     // to be implemented
 }
 
-void LoaderLogger::call_logger(LoaderLogger::string) {
+void LoaderLogger::call_logger(string) {
     // to be implemented
 }

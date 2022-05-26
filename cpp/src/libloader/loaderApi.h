@@ -2,14 +2,14 @@
 // Created by antares on 5/25/22.
 //
 
-#ifndef MIRAICP_PRO_LIBINTERFACE_H
-#define MIRAICP_PRO_LIBINTERFACE_H
+#ifndef MIRAICP_PRO_LOADERAPI_H
+#define MIRAICP_PRO_LOADERAPI_H
 
 
 #include <string>
 #include <vector>
 
-
+// the API defs to be exposed
 namespace LibLoader {
     std::vector<std::string> _showAllPluginName();
 
@@ -21,7 +21,7 @@ namespace LibLoader {
 
     void _disableAllPlugins();
 
-    void _loadNewPlugin(const std::string &);
+    void _loadNewPlugin(const std::string &, bool);
 
     struct interface_funcs {
         decltype(&_showAllPluginName) showAllPluginName;
@@ -33,6 +33,7 @@ namespace LibLoader {
     };
 
     constexpr inline interface_funcs collect_interface_functions() {
+        static_assert(sizeof(interface_funcs) == sizeof(void *) * 6);
         return {
                 _showAllPluginName,
                 _enablePluginByName,
@@ -45,4 +46,4 @@ namespace LibLoader {
 } // namespace LibLoader
 
 
-#endif //MIRAICP_PRO_LIBINTERFACE_H
+#endif //MIRAICP_PRO_LOADERAPI_H

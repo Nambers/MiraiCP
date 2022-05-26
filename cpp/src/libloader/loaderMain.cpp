@@ -1,0 +1,292 @@
+//
+// Created by antares on 5/20/22.
+//
+
+#include "JNIEnvs.h"
+#include "LoaderLogger.h"
+#include "ThreadController.h"
+#include "commonTypes.h"
+#include "ktInterface.h"
+#include "json.hpp"
+#include "loaderApi.h"
+#include "loaderTools.h"
+#include <fstream>
+#include <future>
+#include <iostream>
+
+#define FUNC_ENTRANCE "enrollPlugin"
+#define FUNC_EVENT "eventHandle"
+#define FUNC_EXIT "onDisable"
+
+#if _WIN32 || WIN32
+
+#else
+#include <dlfcn.h>
+#endif
+
+namespace LibLoader {
+    inline nlohmann::json readJsonFile(const std::string &path) {
+        nlohmann::json j;
+        {
+            std::ifstream i;
+            i.open(path.c_str(), std::ios::in);
+            i >> j;
+            i.close();
+        }
+        return j;
+    }
+
+    /////////////////
+    // dlopen or sth like dlopen on Windows
+    inline void *libOpen(const std::string &path) {
+#if _WIN32 || WIN32
+        return nullptr;
+#else
+        return dlopen(path.c_str(), RTLD_LAZY);
+#endif
+    }
+
+    inline void *libSymbolLookup(void *handle, const char *symbol) {
+#if _WIN32 || WIN32
+        return nullptr;
+#else
+        return dlsym(handle, symbol);
+#endif
+    }
+
+    inline int libClose(void *handle) {
+#if _WIN32 || WIN32
+        return 0;
+#else
+        return dlclose(handle);
+#endif
+    }
+    /////////////////
+
+    namespace LoaderGlobals {
+        static PluginList plugin_list;
+        constexpr static interface_funcs interfaces = collect_interface_functions();
+
+        static std::recursive_mutex _mtx;
+    } // namespace LoaderGlobals
+
+    // api
+    void disable_plugin(MiraiCPPluginConfig &plugin) {
+        if (!plugin.handle) {
+            JNIEnvs::logger.warning("plugin " + plugin.path + " is already disabled");
+            return;
+        }
+
+        auto disable_func = (plugin_func_ptr) libSymbolLookup(plugin.handle, FUNC_EXIT);
+        ThreadController::getController().callThreadEnd(plugin.path, disable_func);
+        libClose(plugin.handle);
+        plugin.handle = nullptr;
+    }
+
+    void enable_plugin(MiraiCPPluginConfig &plugin) {
+        if (plugin.handle) {
+            JNIEnvs::logger.warning("plugin " + plugin.path + " is already disabled");
+            return;
+        }
+        plugin.handle = libOpen(plugin.path);
+        auto func = (plugin_entrance_func_ptr) libSymbolLookup(plugin.handle, FUNC_ENTRANCE);
+        ThreadController::getController().addThread(plugin.path, [&]() {
+            func(LoaderGlobals::interfaces); // discard return value
+        });
+    }
+
+    // test symbol existance (not calling them)
+    bool testSymbolExistance(void *handle, const std::string &path) {
+        // using static keyword; don't capture any data
+        static auto errorMsg = [](const std::string &path) {
+            JNIEnvs::logger.error("failed to find symbol in plugin " + path);
+            JNIEnvs::logger.error(dlerror());
+            return false;
+        };
+
+        auto func_addr = libSymbolLookup(handle, FUNC_ENTRANCE);
+        if (!func_addr) return errorMsg(path);
+
+        func_addr = libSymbolLookup(handle, FUNC_EVENT);
+        if (!func_addr) return errorMsg(path);
+
+        func_addr = libSymbolLookup(handle, FUNC_EXIT);
+        if (!func_addr) return errorMsg(path);
+
+        return true;
+    }
+
+    // 仅加载并测试所有plugin的符号是否存在
+    void loadsAll(const std::vector<std::string> &paths) {
+        for (auto &&path: paths) {
+            void *handle = libOpen(path);
+            if (!handle) {
+                JNIEnvs::logger.error("failed to load plugin at " + path);
+                JNIEnvs::logger.error(dlerror());
+                continue;
+            }
+
+            // test symbol existance
+            bool normal = testSymbolExistance(handle, path);
+            if (!normal) {
+                libClose(handle);
+                continue;
+            }
+
+            MiraiCPPluginConfig cfg{handle, path};
+            std::lock_guard lk(LoaderGlobals::_mtx);
+            LoaderGlobals::plugin_list[path] = std::move(cfg);
+        }
+    }
+
+    void loadNewPluginByPath(const std::string &_path, bool activateNow) {
+        void *handle = libOpen(_path);
+        if (handle != nullptr) {
+            JNIEnvs::logger.error("failed to load new plugin: " + _path);
+            JNIEnvs::logger.error(dlerror());
+            return;
+        }
+
+        if (!testSymbolExistance(handle, _path)) {
+            libClose(handle);
+            return;
+        }
+
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        LoaderGlobals::plugin_list[_path] = {handle, _path};
+    }
+
+    void enableAll() {
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        for (auto &&[k, v]: LoaderGlobals::plugin_list) {
+            enable_plugin(v);
+        }
+    }
+
+    void disableAll() {
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        for (auto &&[k, v]: LoaderGlobals::plugin_list) {
+            disable_plugin(v);
+        }
+    }
+
+    void reloadAllPlugin(jstring _cfgPath) {
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        disableAll();
+        LoaderGlobals::plugin_list.clear();
+
+        std::string cfgPath = jstring2str(_cfgPath);
+    }
+
+    /// the entrance to load all plugins
+    void registerAllPlugin(jstring _cfgPath) {
+        if (!LoaderGlobals::plugin_list.empty()) {
+            JNIEnvs::logger.warning("Plugin is already loaded");
+            return;
+        }
+
+        std::string cfgPath = jstring2str(_cfgPath);
+
+        nlohmann::json j = readJsonFile(cfgPath);
+
+        auto paths = collect_plugins(cfgPath, std::move(j));
+
+        if (paths.empty()) {
+            JNIEnvs::logger.warning("no plugin to load");
+            return;
+        }
+
+        loadsAll(paths);
+    }
+
+    std::string activateAllPlugins() {
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        auto len = LoaderGlobals::plugin_list.size();
+        std::unique_ptr<std::promise<std::string>[]> promiselist(new std::promise<std::string>[len]);
+        std::unique_ptr<std::future<std::string>[]> futurelist(new std::future<std::string>[len]);
+
+        int i = 0;
+        for (auto &&[k, v]: LoaderGlobals::plugin_list) {
+            auto &pr = promiselist[i];
+            auto &fu = futurelist[i];
+            fu = pr.get_future();
+
+            auto entrance = (plugin_entrance_func_ptr) libSymbolLookup(v.handle, FUNC_ENTRANCE);
+
+            ThreadController::getController().addThread(k, [&]() {
+                pr.set_value(entrance(LoaderGlobals::interfaces));
+            });
+            ++i;
+        }
+
+        std::string ans;
+        for (i = 0; i < len; ++i) {
+            ans += futurelist[i].get();
+            ans.push_back('\n');
+        }
+
+        return ans;
+    }
+
+    /// interfaces for plugins
+    std::vector<std::string> _showAllPluginName() {
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        std::vector<std::string> ans;
+        for (auto &&[k, v]: LoaderGlobals::plugin_list) {
+            ans.emplace_back(k);
+        }
+        return ans;
+    }
+
+    void _enablePluginByName(const std::string &name) {
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        auto it = LoaderGlobals::plugin_list.find(name);
+        if (it == LoaderGlobals::plugin_list.end()) {
+            JNIEnvs::logger.error(name + "尚未加载");
+            return;
+        }
+        enable_plugin(it->second);
+    }
+
+    void _disablePluginByName(const std::string &name) {
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        auto it = LoaderGlobals::plugin_list.find(name);
+        if (it == LoaderGlobals::plugin_list.end()) {
+            JNIEnvs::logger.error(name + "尚未加载");
+            return;
+        }
+        disable_plugin(it->second);
+    }
+
+    void _enableAllPlugins() {
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        enableAll();
+    }
+
+    void _disableAllPlugins() {
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        disableAll();
+    }
+
+    void _loadNewPlugin(const std::string &path, bool activateNow) {
+        std::lock_guard lk(LoaderGlobals::_mtx);
+        loadNewPluginByPath(path, activateNow);
+    }
+
+} // namespace LibLoader
+
+
+// register
+extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
+    JNIEnv *env = nullptr;
+    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR;
+    }
+    assert(env != nullptr);
+    JNIEnvs::gvm = vm;
+    // 注册native方法
+    if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", method_table, 3)) {
+        return JNI_ERR;
+    }
+    return JNI_VERSION_1_6;
+}

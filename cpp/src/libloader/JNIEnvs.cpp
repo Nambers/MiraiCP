@@ -7,12 +7,16 @@
 namespace JNIEnvs {
     // globals
     JNIEnv *const libLoaderEnv = nullptr;
-    long JNIVersion = 0;
+    const long JNIVersion = 0;
     jclass Class_cpplib = nullptr;
     JavaVM *gvm = nullptr;
 
     void setLoaderEnv(JNIEnv *env) {
         const_cast<JNIEnv *&>(libLoaderEnv) = env;
+    }
+
+    void setJNIVersion() {
+        const_cast<long &>(JNIEnvs::JNIVersion) = libLoaderEnv->GetVersion();
     }
 
     // functions

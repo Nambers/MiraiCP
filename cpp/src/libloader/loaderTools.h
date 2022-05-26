@@ -18,29 +18,9 @@ namespace LibLoader {
 
     std::string jstring2str(jstring jStr);
 
-    // multi thread controller
-    class MiraiCPThreadsController {
-        std::vector<std::unique_ptr<std::thread>> thread_ptr;
-        std::recursive_mutex _mtx;
+    jstring str2jstring(const char *cstr);
 
-    private:
-        MiraiCPThreadsController() = default;
 
-        ~MiraiCPThreadsController() {
-            end_all_thread();
-        }
-
-    private:
-        static MiraiCPThreadsController _threadController;
-
-    public:
-        void end_all_thread();
-
-    public:
-        static MiraiCPThreadsController &getController() {
-            return _threadController;
-        }
-    };
 } // namespace LibLoader
 
 #endif //MIRAICP_PRO_LOADERTOOLS_H
