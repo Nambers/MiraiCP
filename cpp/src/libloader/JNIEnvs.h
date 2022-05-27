@@ -7,15 +7,16 @@
 
 #include <jni.h>
 
+
 class LoaderLogger;
 
 
 namespace JNIEnvs {
     // declarations
-    extern JNIEnv *const libLoaderEnv;
-    extern const long JNIVersion;
-    extern jclass Class_cpplib;
-    extern JavaVM *gvm;
+    extern JNIEnv *const volatile libLoaderEnv;
+    extern volatile const long JNIVersion;
+    extern jclass volatile Class_cpplib;
+    extern JavaVM *volatile gvm;
     extern LoaderLogger logger;
 
     // functions

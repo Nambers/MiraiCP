@@ -2,14 +2,17 @@
 // Created by antares on 5/25/22.
 //
 
+
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
+
+
 namespace JNIEnvs {
     // globals
-    JNIEnv *const libLoaderEnv = nullptr;
-    const long JNIVersion = 0;
-    jclass Class_cpplib = nullptr;
-    JavaVM *gvm = nullptr;
+    JNIEnv *const volatile libLoaderEnv = nullptr;
+    volatile const long JNIVersion = 0;
+    volatile jclass Class_cpplib = nullptr;
+    JavaVM *volatile gvm = nullptr;
 
     void setLoaderEnv(JNIEnv *env) {
         const_cast<JNIEnv *&>(libLoaderEnv) = env;

@@ -6,70 +6,46 @@
 #include "LoaderLogger.h"
 #include "ThreadController.h"
 #include "commonTypes.h"
-#include "ktInterface.h"
 #include "json.hpp"
+#include "ktInterface.h"
+#include "libOpen.h"
 #include "loaderApi.h"
 #include "loaderTools.h"
-#include <fstream>
 #include <future>
-#include <iostream>
+
 
 #define FUNC_ENTRANCE "enrollPlugin"
 #define FUNC_EVENT "eventHandle"
 #define FUNC_EXIT "onDisable"
 
-#if _WIN32 || WIN32
-
-#else
-#include <dlfcn.h>
-#endif
 
 namespace LibLoader {
-    inline nlohmann::json readJsonFile(const std::string &path) {
-        nlohmann::json j;
-        {
-            std::ifstream i;
-            i.open(path.c_str(), std::ios::in);
-            i >> j;
-            i.close();
-        }
-        return j;
-    }
-
-    /////////////////
-    // dlopen or sth like dlopen on Windows
-    inline void *libOpen(const std::string &path) {
-#if _WIN32 || WIN32
-        return nullptr;
-#else
-        return dlopen(path.c_str(), RTLD_LAZY);
-#endif
-    }
-
-    inline void *libSymbolLookup(void *handle, const char *symbol) {
-#if _WIN32 || WIN32
-        return nullptr;
-#else
-        return dlsym(handle, symbol);
-#endif
-    }
-
-    inline int libClose(void *handle) {
-#if _WIN32 || WIN32
-        return 0;
-#else
-        return dlclose(handle);
-#endif
-    }
-    /////////////////
 
     namespace LoaderGlobals {
+        static std::recursive_mutex pluginlist_mtx;
         static PluginList plugin_list;
         constexpr static interface_funcs interfaces = collect_interface_functions();
 
-        static std::recursive_mutex _mtx;
+        enum LOADER_TASKS {
+            ADD_THREAD,
+            END_THREAD,
+            ENABLE_ALL,
+            DISABLE_ALL,
+            LOAD_NEW_ACTIVATENOW,
+            LOAD_NEW_DONTACTIVATE,
+            TASK_TYPES_COUNT,
+        };
+
+        typedef std::pair<LOADER_TASKS, std::string> loadertask;
+        static std::queue<loadertask> loader_thread_task_queue;
+        static std::recursive_mutex task_mtx;
+
     } // namespace LoaderGlobals
 
+    const volatile bool loader_exit = false; // use const_cast to modify this
+    std::thread loaderThread;
+
+    ////////////////////////////////////
     // api
     void disable_plugin(MiraiCPPluginConfig &plugin) {
         if (!plugin.handle) {
@@ -134,7 +110,7 @@ namespace LibLoader {
             }
 
             MiraiCPPluginConfig cfg{handle, path};
-            std::lock_guard lk(LoaderGlobals::_mtx);
+            std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
             LoaderGlobals::plugin_list[path] = std::move(cfg);
         }
     }
@@ -152,33 +128,33 @@ namespace LibLoader {
             return;
         }
 
-        std::lock_guard lk(LoaderGlobals::_mtx);
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         LoaderGlobals::plugin_list[_path] = {handle, _path};
     }
 
     void enableAll() {
-        std::lock_guard lk(LoaderGlobals::_mtx);
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         for (auto &&[k, v]: LoaderGlobals::plugin_list) {
             enable_plugin(v);
         }
     }
 
     void disableAll() {
-        std::lock_guard lk(LoaderGlobals::_mtx);
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         for (auto &&[k, v]: LoaderGlobals::plugin_list) {
             disable_plugin(v);
         }
     }
 
     void reloadAllPlugin(jstring _cfgPath) {
-        std::lock_guard lk(LoaderGlobals::_mtx);
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         disableAll();
         LoaderGlobals::plugin_list.clear();
 
         std::string cfgPath = jstring2str(_cfgPath);
     }
 
-    /// the entrance to load all plugins
+    /// the entrance to load all plugins (not activate)
     void registerAllPlugin(jstring _cfgPath) {
         if (!LoaderGlobals::plugin_list.empty()) {
             JNIEnvs::logger.warning("Plugin is already loaded");
@@ -199,8 +175,10 @@ namespace LibLoader {
         loadsAll(paths);
     }
 
+    /// activate all loaded plugins
+    // todo(antares): logger指针也要传递给插件
     std::string activateAllPlugins() {
-        std::lock_guard lk(LoaderGlobals::_mtx);
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         auto len = LoaderGlobals::plugin_list.size();
         std::unique_ptr<std::promise<std::string>[]> promiselist(new std::promise<std::string>[len]);
         std::unique_ptr<std::future<std::string>[]> futurelist(new std::future<std::string>[len]);
@@ -228,9 +206,11 @@ namespace LibLoader {
         return ans;
     }
 
+    ////////////////////////////////////
+
     /// interfaces for plugins
     std::vector<std::string> _showAllPluginName() {
-        std::lock_guard lk(LoaderGlobals::_mtx);
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         std::vector<std::string> ans;
         for (auto &&[k, v]: LoaderGlobals::plugin_list) {
             ans.emplace_back(k);
@@ -239,7 +219,36 @@ namespace LibLoader {
     }
 
     void _enablePluginByName(const std::string &name) {
-        std::lock_guard lk(LoaderGlobals::_mtx);
+        std::lock_guard lk(LoaderGlobals::task_mtx);
+        LoaderGlobals::loader_thread_task_queue.push(std::make_pair(LoaderGlobals::ADD_THREAD, name));
+    }
+
+    void _disablePluginByName(const std::string &name) {
+        std::lock_guard lk(LoaderGlobals::task_mtx);
+        LoaderGlobals::loader_thread_task_queue.push(std::make_pair(LoaderGlobals::END_THREAD, name));
+    }
+
+    void _enableAllPlugins() {
+        std::lock_guard lk(LoaderGlobals::task_mtx);
+        LoaderGlobals::loader_thread_task_queue.push(std::make_pair(LoaderGlobals::ENABLE_ALL, ""));
+    }
+
+    void _disableAllPlugins() {
+        std::lock_guard lk(LoaderGlobals::task_mtx);
+        LoaderGlobals::loader_thread_task_queue.push(std::make_pair(LoaderGlobals::DISABLE_ALL, ""));
+    }
+
+    void _loadNewPlugin(const std::string &path, bool activateNow) {
+        std::lock_guard lk(LoaderGlobals::task_mtx);
+        if (activateNow)
+            LoaderGlobals::loader_thread_task_queue.push(std::make_pair(LoaderGlobals::LOAD_NEW_ACTIVATENOW, path));
+        else
+            LoaderGlobals::loader_thread_task_queue.push(std::make_pair(LoaderGlobals::LOAD_NEW_DONTACTIVATE, path));
+    }
+
+    ////////////////////////////////////
+    void loader_enablePluginByName(const std::string &name) {
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         auto it = LoaderGlobals::plugin_list.find(name);
         if (it == LoaderGlobals::plugin_list.end()) {
             JNIEnvs::logger.error(name + "尚未加载");
@@ -248,8 +257,8 @@ namespace LibLoader {
         enable_plugin(it->second);
     }
 
-    void _disablePluginByName(const std::string &name) {
-        std::lock_guard lk(LoaderGlobals::_mtx);
+    void loader_disablePluginByName(const std::string &name) {
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         auto it = LoaderGlobals::plugin_list.find(name);
         if (it == LoaderGlobals::plugin_list.end()) {
             JNIEnvs::logger.error(name + "尚未加载");
@@ -258,21 +267,65 @@ namespace LibLoader {
         disable_plugin(it->second);
     }
 
-    void _enableAllPlugins() {
-        std::lock_guard lk(LoaderGlobals::_mtx);
+    void loader_enableAllPlugins() {
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         enableAll();
     }
 
-    void _disableAllPlugins() {
-        std::lock_guard lk(LoaderGlobals::_mtx);
+    void loader_disableAllPlugins() {
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         disableAll();
     }
 
-    void _loadNewPlugin(const std::string &path, bool activateNow) {
-        std::lock_guard lk(LoaderGlobals::_mtx);
+    void loader_loadNewPlugin(const std::string &path, bool activateNow) {
+        std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         loadNewPluginByPath(path, activateNow);
     }
+    ////////////////////////////////////
 
+    void loaderMain(std::promise<std::string> _promise) {
+        using loadertask = LoaderGlobals::loadertask;
+        _promise.set_value(activateAllPlugins());
+
+        while (!loader_exit) {
+            if (LoaderGlobals::loader_thread_task_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            else {
+                loadertask task;
+                {
+                    std::lock_guard lk(LoaderGlobals::task_mtx);
+                    task = std::move(LoaderGlobals::loader_thread_task_queue.front());
+                    LoaderGlobals::loader_thread_task_queue.pop();
+                }
+
+                switch (task.first) {
+                    case LoaderGlobals::ADD_THREAD:
+                        loader_enablePluginByName(task.second);
+                        break;
+                    case LoaderGlobals::END_THREAD:
+                        loader_disablePluginByName(task.second);
+                        break;
+                    case LoaderGlobals::ENABLE_ALL:
+                        loader_enableAllPlugins();
+                        break;
+                    case LoaderGlobals::DISABLE_ALL:
+                        loader_disableAllPlugins();
+                        break;
+                    case LoaderGlobals::LOAD_NEW_ACTIVATENOW:
+                        loader_loadNewPlugin(task.second, true);
+                        break;
+                    case LoaderGlobals::LOAD_NEW_DONTACTIVATE:
+                        loader_loadNewPlugin(task.second, false);
+                        break;
+                    default:
+                        throw std::exception();
+                }
+            }
+        }
+    }
+
+    void loaderExit() {
+        const_cast<bool &>(loader_exit) = true;
+    }
 } // namespace LibLoader
 
 

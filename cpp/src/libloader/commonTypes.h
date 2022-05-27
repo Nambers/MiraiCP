@@ -4,6 +4,8 @@
 
 #ifndef MIRAICP_PRO_COMMONTYPES_H
 #define MIRAICP_PRO_COMMONTYPES_H
+// don't create cpp for this header
+
 
 #include "loaderApi.h"
 #include <unordered_map>
