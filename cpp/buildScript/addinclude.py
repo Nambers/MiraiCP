@@ -1,10 +1,4 @@
 #!/usr/bin/python3
-"""
-Filename: MiraiCP/cpp/buildScript/addinclude.py
-Path: MiraiCP/cpp/include
-Author: antares0982@gmail.com
-Copyright (c) 2021 Antares
-"""
 
 #  Copyright (c) 2021. Eritque arcus and contributors.
 #
@@ -51,9 +45,16 @@ for filename in fnames:
     if filename.endswith('.h'):
         ss += "#include \"{}\"\n".format(filename)
 
+fnames = os.listdir('common')
+fnames.sort()
+
+for filename in fnames:
+    if filename.endswith('.h'):
+        ss += "#include \"../common/{}\"\n".format(filename)
+
 ss += "\n#endif //MIRAICP_HPP_H"
 
-with io.open('include/MiraiCP.hpp', 'w', encoding='utf-8') as f:
+with open('include/MiraiCP.hpp', 'w', encoding='utf-8') as f:
     f.write(ss)
 
 print("header file generated successfully")

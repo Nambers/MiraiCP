@@ -8,6 +8,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(MiraiCP_pro LANGUAGES CXX)
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+file(GLOB MIRAICP_CPP_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/include/*.cpp)
+file(GLOB MIRAICP_COMMON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/common/*.cpp)
+file(GLOB LOADER_PATH ${SRC_PATH}/libloader/*.cpp)
+
 # -- automatic add include --
 if (WIN32)
     execute_process(
@@ -47,20 +51,22 @@ else (WIN32)
 endif (WIN32)
 # -- end --
 
+
 # -- miraicp multi --
-file(GLOB MIRAICP_CPP_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/include/*.cpp)
 add_library(
         MiraiCP_multi
         SHARED
         ${CMAKE_CURRENT_SOURCE_DIR}/demo/test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/demo/test2.cpp
         ${MIRAICP_CPP_PATH}
+        ${MIRAICP_COMMON_PATH}
 )
 set_target_properties(MiraiCP_multi PROPERTIES
         PREFIX lib
         OUTPUT_NAME MiraiCP_multi)
 target_include_directories(MiraiCP_multi PUBLIC
         ${SRC_PATH}/include
+        ${SRC_PATH}/common
         ${SOURCE_PATH}
         )
 target_compile_options(MiraiCP_multi PUBLIC -w)
@@ -94,11 +100,13 @@ add_executable(MiraiCP_core
         ${CMAKE_CURRENT_SOURCE_DIR}/demo/MiraiCP-core.cpp
         ${SRC_PATH}/miraicp-core/core.cpp
         ${MIRAICP_CPP_PATH}
+        ${MIRAICP_COMMON_PATH}
         )
 target_include_directories(MiraiCP_core PUBLIC
         ${SOURCE_PATH}
         ${SRC_PATH}/miraicp-core
         ${SRC_PATH}/include
+        ${SRC_PATH}/common
         ${SRC_PATH}
         )
 if (UNIX)
@@ -107,14 +115,15 @@ endif (UNIX)
 # -- end --
 
 # -- MiraiCP libloader --
-file(GLOB LOADER_PATH ${SRC_PATH}/libloader/*.cpp)
 add_library(loader
         SHARED
         ${LOADER_PATH}
+        ${MIRAICP_COMMON_PATH}
         )
 target_include_directories(loader PUBLIC
         ${SOURCE_PATH}
         ${SRC_PATH}/include
+        ${SRC_PATH}/common
         ${SRC_PATH}
         )
 if (UNIX)
