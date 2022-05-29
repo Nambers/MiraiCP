@@ -14,13 +14,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+
 #ifndef MIRAICP_PRO_THREADMANAGER_H
 #define MIRAICP_PRO_THREADMANAGER_H
+
+
 #include <jni.h>
-#include <map>
 #include <mutex>
 #include <sstream>
 #include <thread>
+#include <unordered_map>
+
 
 namespace MiraiCP {
     /*!
@@ -29,6 +33,8 @@ namespace MiraiCP {
     * @doxygenEg{1016, thread.cpp, 多线程}
     */
     class ThreadManager {
+        typedef std::thread::id threadid;
+
     public:
         /// @brief 每个线程实例.
         struct ThreadInfo {
@@ -36,11 +42,12 @@ namespace MiraiCP {
             bool attach{};
         };
 
-    public:
+    private:
         // 类静态成员
-        static std::map<std::string, ThreadInfo> threads; /// < 线程池(线程id:env).
-        static std::recursive_mutex mtx;                  ///< 线程池读写锁.
+        static std::unordered_map<threadid, ThreadInfo> threads; /// < 线程池(线程id:env).
+        static std::recursive_mutex mtx;                         ///< 线程池读写锁.
 
+    public:
         /// @brief 全局JavaVM对象，用于多线程管理中新建线程的JNIEnv.
         static JavaVM *gvm;
         /// @brief JNI 版本.
@@ -50,26 +57,13 @@ namespace MiraiCP {
         ThreadManager() = default;
 
     private:
-        // 私有静态方法
         static void newEnv(const char *threadName = nullptr); ///< 新建一个env，于getEnv中没取到env时调用.
         /// 判断该线程id是否包含在线程池里
-        static bool included(const std::string &id);
+        static bool included(const threadid &id) { return threads.count(id) != 0; }
+        /// @brief 获取线程id.
+        static threadid getThreadId() { return std::this_thread::get_id(); }
 
     public:
-        // 静态方法
-        /// 获取线程
-        static ThreadInfo *getThread() {
-            return &threads[getThreadId()];
-        }
-
-        /// @brief 获取线程id.
-        static std::string getThreadId() {
-            auto myid = std::this_thread::get_id();
-            std::stringstream ss;
-            ss << myid;
-            return ss.str();
-        }
-
         /// @brief 设置env给当前线程.
         static void setEnv(JNIEnv *e);
 

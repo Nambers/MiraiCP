@@ -15,25 +15,22 @@
 //
 
 #include "ThreadManager.h"
-#include "Logger.h"
+
 
 namespace MiraiCP {
-    // 静态成员
-
-    std::map<std::string, ThreadManager::ThreadInfo> ThreadManager::threads = std::map<std::string, ThreadInfo>();
-    std::recursive_mutex ThreadManager::mtx = std::recursive_mutex();
+    std::unordered_map<ThreadManager::threadid, ThreadManager::ThreadInfo> ThreadManager::threads;
+    std::recursive_mutex ThreadManager::mtx;
     JavaVM *ThreadManager::gvm = nullptr;
     long ThreadManager::JNIVersion = 0;
 
-    // 结束静态成员
 
     void ThreadManager::setEnv(JNIEnv *e) {
         std::lock_guard lk(mtx);
-        if (!ThreadManager::included(ThreadManager::getThreadId())) {
+        if (!included(getThreadId())) {
             ThreadInfo tmp{e, false};
-            ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
+            threads.insert(std::make_pair(getThreadId(), tmp));
         } else {
-            ThreadManager::threads[ThreadManager::getThreadId()].e = e;
+            threads[getThreadId()].e = e;
         }
     }
 
@@ -44,34 +41,27 @@ namespace MiraiCP {
                               nullptr};
         gvm->AttachCurrentThread((void **) &env, &args);
         ThreadInfo tmp{env, true};
-        ThreadManager::threads.insert(std::pair<std::string, ThreadInfo>(ThreadManager::getThreadId(), tmp));
-        Logger::logger.info("refresh env");
-    };
+        threads.insert(std::make_pair(getThreadId(), tmp));
+    }
 
     void ThreadManager::detach() {
         std::lock_guard lk(mtx);
-        if (ThreadManager::included(ThreadManager::getThreadId())) {
-            bool att = ThreadManager::threads[ThreadManager::getThreadId()].attach;
-            ThreadManager::threads.erase(ThreadManager::getThreadId());
+        if (included(getThreadId())) {
+            bool att = threads[getThreadId()].attach;
+            threads.erase(getThreadId());
             if (att)
                 gvm->DetachCurrentThread();
         }
-    }
-
-    bool ThreadManager::included(const std::string &id) {
-        if (ThreadManager::threads.empty() || ThreadManager::threads.count(id) == 0)
-            return false;
-        return true;
     }
 
     JNIEnv *ThreadManager::getEnv() {
         JNIEnv *tmp;
         {
             std::lock_guard lk(mtx);
-            if (!ThreadManager::included(getThreadId())) {
-                ThreadManager::newEnv();
+            if (!included(getThreadId())) {
+                newEnv();
             }
-            tmp = ThreadManager::threads[ThreadManager::getThreadId()].e;
+            tmp = threads[getThreadId()].e;
         }
         return tmp;
     }
