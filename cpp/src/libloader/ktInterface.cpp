@@ -5,11 +5,11 @@
 
 #include "ktInterface.h"
 #include "JNIEnvs.h"
+#include "ThreadManager.h"
 #include "json.hpp"
 #include "loaderTools.h"
 #include <exception>
 #include <future>
-
 
 namespace LibLoader {
     void registerAllPlugin(jstring);
@@ -23,10 +23,9 @@ namespace LibLoader {
 /// 实际初始化函数
 /// 1. 设置全局变量
 /// 2. 开启loader线程并获取插件入口函数的返回值
-jstring Verify(JNIEnv *env, jobject, jstring _cfgPath) {
+jstring Verify(JNIEnv *env, jstring _version, jstring _cfgPath) {
     using json = nlohmann::json;
 
-    JNIEnvs::setLoaderEnv(env);
     JNIEnvs::setJNIVersion();
 
     std::string ans;
@@ -63,4 +62,19 @@ int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *g
         return JNI_FALSE;
     }
     return JNI_TRUE;
+}
+
+// register
+extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
+    JNIEnv *env = nullptr;
+    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR;
+    }
+    assert(env != nullptr);
+    MiraiCP::ThreadManager::gvm = vm;
+    // 注册native方法
+    if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", method_table, 3)) {
+        return JNI_ERR;
+    }
+    return JNI_VERSION_1_6;
 }

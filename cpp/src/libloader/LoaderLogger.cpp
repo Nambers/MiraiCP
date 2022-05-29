@@ -10,7 +10,7 @@ namespace JNIEnvs {
 }
 
 void LoaderLogger::init() {
-    log = JNIEnvs::libLoaderEnv->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");
+    log = JNIEnvs::getEnv()->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");
 }
 
 void LoaderLogger::info(string t) {

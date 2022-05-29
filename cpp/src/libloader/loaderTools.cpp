@@ -27,14 +27,10 @@ namespace LibLoader {
     }
 
     std::string jstring2str(jstring jStr) {
-        if (JNIEnvs::libLoaderEnv == nullptr) {
-            JNIEnvs::logger.error("Env pointer not set");
-            return "";
-        }
         if (!jStr) {
             return "";
         }
-        std::u16string s = reinterpret_cast<const char16_t *>(JNIEnvs::libLoaderEnv->GetStringChars(jStr, nullptr));
+        std::u16string s = reinterpret_cast<const char16_t *>(JNIEnvs::getEnv()->GetStringChars(jStr, nullptr));
         if (s.length() == 0) {
             return "";
         }
@@ -44,9 +40,6 @@ namespace LibLoader {
     }
 
     jstring str2jstring(const char *cstr) {
-        if (JNIEnvs::libLoaderEnv == nullptr) {
-            JNIEnvs::logger.error("Env pointer not set");
-        }
         if (!cstr) {
             JNIEnvs::logger.warning("警告:str2jstring传入空字符串");
         }
@@ -57,6 +50,6 @@ namespace LibLoader {
         for (int i = 0; i < utf16line.size(); i++) {
             c[i] = utf16line[i];
         }
-        return JNIEnvs::libLoaderEnv->NewString((jchar *) c, (jsize) utf16line.size());
+        return JNIEnvs::getEnv()->NewString((jchar *) c, (jsize) utf16line.size());
     }
 } // namespace LibLoader

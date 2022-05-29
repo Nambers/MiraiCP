@@ -329,17 +329,4 @@ namespace LibLoader {
 } // namespace LibLoader
 
 
-// register
-extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
-    JNIEnv *env = nullptr;
-    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-        return JNI_ERR;
-    }
-    assert(env != nullptr);
-    JNIEnvs::gvm = vm;
-    // 注册native方法
-    if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", method_table, 3)) {
-        return JNI_ERR;
-    }
-    return JNI_VERSION_1_6;
-}
+

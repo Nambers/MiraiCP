@@ -27,6 +27,7 @@
         "include/Tools.h",
         "include/utils.h",
         "common/ThreadManager.h",
+        "common/commonTypes.h",
         "common/loaderApi.h"
     ]
 }

@@ -39,6 +39,7 @@
 #include "Tools.h"
 #include "utils.h"
 #include "../common/ThreadManager.h"
+#include "../common/commonTypes.h"
 #include "../common/loaderApi.h"
 
 #endif //MIRAICP_HPP_H

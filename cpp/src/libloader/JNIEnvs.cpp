@@ -5,6 +5,7 @@
 
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
+#include "ThreadManager.h"
 
 
 namespace JNIEnvs {
@@ -14,18 +15,15 @@ namespace JNIEnvs {
     volatile jclass Class_cpplib = nullptr;
     JavaVM *volatile gvm = nullptr;
 
-    void setLoaderEnv(JNIEnv *env) {
-        const_cast<JNIEnv *&>(libLoaderEnv) = env;
-    }
-
     void setJNIVersion() {
-        const_cast<long &>(JNIEnvs::JNIVersion) = libLoaderEnv->GetVersion();
+        const_cast<long &>(JNIEnvs::JNIVersion) = getEnv()->GetVersion();
     }
 
     // functions
     void loadConfigClass() {
-        Class_cpplib = reinterpret_cast<jclass>(libLoaderEnv->NewGlobalRef(
-                libLoaderEnv->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
+        auto env = getEnv();
+        Class_cpplib = reinterpret_cast<jclass>(env->NewGlobalRef(
+                env->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
     }
 
     void loggerInit() {
@@ -35,5 +33,9 @@ namespace JNIEnvs {
     void initializeMiraiCPLoader() {
         loadConfigClass();
         loggerInit();
+    }
+
+    JNIEnv *getEnv() {
+        return MiraiCP::ThreadManager::getEnv();
     }
 } // namespace JNIEnvs
