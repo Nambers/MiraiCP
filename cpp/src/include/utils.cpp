@@ -18,7 +18,7 @@
 #include "Config.h"
 #include "Event.h"
 #include "Exception.h"
-#include "ThreadManager.h"
+#include "JNIEnvManager.h"
 #include "Tools.h"
 
 // 开始对接JNI接口代码
@@ -33,8 +33,8 @@ namespace MiraiCP::JNIApi {
     // env != null, call from jni
     JNIEXPORT jstring Verify(JNIEnv *env, jobject, jstring id) {
         using namespace MiraiCP;
-        ThreadManager::setEnv(env);
-        MiraiCP::ThreadManager::JNIVersion = env->GetVersion();
+        JNIEnvManager::setEnv(env);
+        JNIEnvManager::JNIVersion = env->GetVersion();
         try {
             //初始化日志模块
             Config::construct();
@@ -62,7 +62,7 @@ namespace MiraiCP::JNIApi {
     JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job) {
         if (CPPPlugin::plugin == nullptr) return job;
         using namespace MiraiCP;
-        ThreadManager::setEnv(env);
+        JNIEnvManager::setEnv(env);
         try {
             CPPPlugin::plugin->onDisable();
         } catch (const MiraiCPExceptionBase &e) {
@@ -83,7 +83,7 @@ namespace MiraiCP::JNIApi {
     */
     JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
         using namespace MiraiCP;
-        ThreadManager::setEnv(env);
+        JNIEnvManager::setEnv(env);
         std::string tmp = Tools::jstring2str(content, env);
         json j;
         try {
@@ -270,7 +270,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
         return JNI_ERR;
     }
     assert(env != nullptr);
-    MiraiCP::ThreadManager::gvm = vm;
+    JNIEnvManager::gvm = vm;
     // 注册native方法
     if (!MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", MiraiCP::JNIApi::method_table, 3)) {
         return JNI_ERR;

@@ -19,7 +19,7 @@
 #include "Config.h"
 #include "MiraiCode.h"
 #include "Tools.h"
-#include "ThreadManager.h"
+#include "JNIEnvManager.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -33,13 +33,13 @@ namespace MiraiCP {
     throw: InitException 即找不到签名
     */
     void Logger_interface::init(JNIEnv *env) {
-        if (env == nullptr) env = ThreadManager::getEnv();
+        if (env == nullptr) env = JNIEnvManager::getEnv();
         this->log = env->GetStaticMethodID(Config::CPPLib, "KSendLog", "(Ljava/lang/String;I)V");
     }
 
 
     void Logger_interface::log0(const std::string &content, int level, json j, JNIEnv *env) {
-        if (env == nullptr) env = ThreadManager::getEnv();
+        if (env == nullptr) env = JNIEnvManager::getEnv();
         if (this->loggerhandler.enable)
             this->loggerhandler.action(content, level);
         env->CallStaticVoidMethod(Config::CPPLib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);

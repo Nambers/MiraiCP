@@ -5,7 +5,7 @@
 
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
-#include "ThreadManager.h"
+#include "JNIEnvManager.h"
 
 
 namespace JNIEnvs {
@@ -36,6 +36,6 @@ namespace JNIEnvs {
     }
 
     JNIEnv *getEnv() {
-        return MiraiCP::ThreadManager::getEnv();
+        return JNIEnvManager::getEnv();
     }
 } // namespace JNIEnvs

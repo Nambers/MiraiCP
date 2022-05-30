@@ -5,7 +5,7 @@
 
 #include "ktInterface.h"
 #include "JNIEnvs.h"
-#include "ThreadManager.h"
+#include "JNIEnvManager.h"
 #include "json.hpp"
 #include "loaderTools.h"
 #include <exception>
@@ -71,7 +71,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
         return JNI_ERR;
     }
     assert(env != nullptr);
-    MiraiCP::ThreadManager::gvm = vm;
+    JNIEnvManager::gvm = vm;
     // 注册native方法
     if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", method_table, 3)) {
         return JNI_ERR;

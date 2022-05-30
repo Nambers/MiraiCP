@@ -28,7 +28,7 @@ void freeLibrary(void *pointer) {
 #else
 #include <unistd.h>
 void freeLibrary(void *pointer) {
-    MiraiCP::ThreadManager::gvm->DestroyJavaVM();
+    JNIEnvManager::gvm->DestroyJavaVM();
 }
 #endif
 
@@ -96,14 +96,14 @@ namespace MiraiCP::Core {
             // 加载JVM动态库错误
             return 2;
         }
-        jint jvmProc = (jvmProcAddress) (&MiraiCP::ThreadManager::gvm, (void **) &env, &vmInitArgs);
-        if (jvmProc < 0 || MiraiCP::ThreadManager::gvm == nullptr || env == nullptr) {
+        jint jvmProc = (jvmProcAddress) (&MiraiCP::JNIEnvManager::gvm, (void **) &env, &vmInitArgs);
+        if (jvmProc < 0 || MiraiCP::JNIEnvManager::gvm == nullptr || env == nullptr) {
             freeLibrary(jvmLib);
             // 创建JVM错误
             return 3;
         }
 #else
-        long flag = JNI_CreateJavaVM(&MiraiCP::ThreadManager::gvm, (void **) &env, &vmInitArgs);
+        long flag = JNI_CreateJavaVM(&JNIEnvManager::gvm, (void **) &env, &vmInitArgs);
         if (flag != 0) {
             // Error creating VM. Exiting...
             freeLibrary(nullptr);
@@ -136,7 +136,7 @@ namespace MiraiCP::Core {
 
     void exitCore() {
         //jvm释放
-        MiraiCP::ThreadManager::gvm->DestroyJavaVM();
+        JNIEnvManager::gvm->DestroyJavaVM();
         freeLibrary(jvmLib);
     }
 
@@ -148,7 +148,7 @@ namespace MiraiCP::Core {
         tmp["protocol"] = protocol;
         tmp["heartBeat"] = heartBeat;
         if (env == nullptr)
-            env = MiraiCP::ThreadManager::getEnv();
+            env = JNIEnvManager::getEnv();
         jmethodID loginMethodId = env->GetStaticMethodID(coreClaz, "login", "(Ljava/lang/String;)Ljava/lang/String;");
         std::string re = MiraiCP::Tools::jstring2str((jstring) env->CallStaticObjectMethod(coreClaz, loginMethodId, MiraiCP::Tools::str2jstring(tmp.dump().c_str(), env)));
         if (re != "200")
