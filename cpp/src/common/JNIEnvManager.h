@@ -82,7 +82,7 @@ public:
 
 
 namespace MiraiCP {
-    [[deprecated("ThreadManager更名为JNIEnvManager，并且从MiraiCP命名空间中移除；请使用JNIEnvManager")]] typedef JNIEnvManager ThreadManager;
+    [[deprecated("ThreadManager更名为JNIEnvManager，并且从MiraiCP命名空间中移出；请使用JNIEnvManager")]] typedef JNIEnvManager ThreadManager;
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_JNIENVMANAGER_H
