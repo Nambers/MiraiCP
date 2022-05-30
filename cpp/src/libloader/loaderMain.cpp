@@ -8,7 +8,6 @@
 #include "ThreadController.h"
 #include "commonTypes.h"
 #include "json.hpp"
-#include "ktInterface.h"
 #include "libOpen.h"
 #include "loaderApi.h"
 #include "loaderTools.h"
@@ -282,6 +281,8 @@ namespace LibLoader {
         activateAllPlugins();
 
         while (!is_loader_exited()) mainloop();
+
+        shutdownLoader();
     }
 
     void LoaderMain::mainloop() {
@@ -319,5 +320,9 @@ namespace LibLoader {
                     throw std::exception();
             }
         }
+    }
+
+    void LoaderMain::shutdownLoader() {
+        loader_disableAllPlugins();
     }
 } // namespace LibLoader

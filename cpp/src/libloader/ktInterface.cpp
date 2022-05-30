@@ -47,6 +47,11 @@ jobject Event(JNIEnv *env, jobject, jstring content) {
     return nullptr; // todo (Antares): to be implemented
 }
 
+jobject PluginDisable(JNIEnv *env, jobject) {
+    LibLoader::LoaderMain::loaderExit();
+    LibLoader::loaderThread.join();
+}
+
 int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *gMethods, int numMethods) {
     jclass clazz = env->FindClass(className);
     if (clazz == nullptr) {

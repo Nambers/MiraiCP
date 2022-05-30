@@ -13,6 +13,9 @@ namespace LibLoader {
         static bool is_loader_exited() { return loader_exit; }
 
         static void mainloop();
+
+        static void shutdownLoader();
+
     public:
         static void loaderExit() {
             loader_exit = true;
