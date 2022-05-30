@@ -12,10 +12,7 @@ class LoaderLogger;
 
 
 namespace JNIEnvs {
-    // declarations
-    extern volatile const long JNIVersion;
     extern jclass volatile Class_cpplib;
-    extern JavaVM *volatile gvm;
     extern LoaderLogger logger;
 
     // functions

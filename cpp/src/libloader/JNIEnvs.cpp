@@ -4,19 +4,16 @@
 
 
 #include "JNIEnvs.h"
-#include "LoaderLogger.h"
 #include "JNIEnvManager.h"
+#include "LoaderLogger.h"
 
 
 namespace JNIEnvs {
     // globals
-    JNIEnv *const volatile libLoaderEnv = nullptr;
-    volatile const long JNIVersion = 0;
     volatile jclass Class_cpplib = nullptr;
-    JavaVM *volatile gvm = nullptr;
 
     void setJNIVersion() {
-        const_cast<long &>(JNIEnvs::JNIVersion) = getEnv()->GetVersion();
+        JNIEnvManager::JNIVersion = getEnv()->GetVersion();
     }
 
     // functions

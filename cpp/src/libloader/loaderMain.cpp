@@ -42,7 +42,7 @@ namespace LibLoader {
 
     } // namespace LoaderGlobals
 
-    const volatile bool loader_exit = false; // use const_cast to modify this
+    bool loader_exit = false;
     std::thread loaderThread;
 
     ////////////////////////////////////
@@ -287,7 +287,7 @@ namespace LibLoader {
         using loadertask = LoaderGlobals::loadertask;
         _promise.set_value(activateAllPlugins());
 
-        while (!loader_exit) {
+        while (!is_loader_exited()) {
             if (LoaderGlobals::loader_thread_task_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(10));
             else {
                 loadertask task;
@@ -326,7 +326,8 @@ namespace LibLoader {
     void loaderExit() {
         const_cast<bool &>(loader_exit) = true;
     }
+
+    bool is_loader_exited() {
+        return loader_exit;
+    }
 } // namespace LibLoader
-
-
-

@@ -4,8 +4,8 @@
 
 
 #include "ktInterface.h"
-#include "JNIEnvs.h"
 #include "JNIEnvManager.h"
+#include "JNIEnvs.h"
 #include "json.hpp"
 #include "loaderTools.h"
 #include <exception>
@@ -16,8 +16,6 @@ namespace LibLoader {
     std::string activateAllPlugins();
     extern std::thread loaderThread;
     void loaderMain(std::promise<std::string> _promise);
-    extern const volatile bool loader_exit;
-    void loaderExit();
 } // namespace LibLoader
 
 /// 实际初始化函数
