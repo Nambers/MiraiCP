@@ -27,7 +27,7 @@ namespace LibLoader {
 
         public:
             threadWorker() = default;
-            // no copy; only on heap
+            // DO NOT copy (to avoid wild pointers)!
             threadWorker(threadWorker &&) = delete;
             threadWorker(const threadWorker &) = delete;
 
