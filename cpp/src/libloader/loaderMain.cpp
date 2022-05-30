@@ -3,6 +3,7 @@
 //
 
 #include "loaderMain.h"
+#include "JNIEnvManager.h"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "ThreadController.h"
@@ -41,6 +42,10 @@ namespace LibLoader {
 
     } // namespace LoaderGlobals
 
+    inline void callEntranceFunc(plugin_entrance_func_ptr func) {
+        func(LoaderGlobals::interfaces, JNIEnvManager::gvm);
+    }
+
     ////////////////////////////////////
     // api
     void disable_plugin(MiraiCPPluginConfig &plugin) {
@@ -63,7 +68,7 @@ namespace LibLoader {
         plugin.handle = libOpen(plugin.path);
         auto func = (plugin_entrance_func_ptr) libSymbolLookup(plugin.handle, FUNC_ENTRANCE);
         ThreadController::getController().addThread(plugin.path, [&]() {
-            func(LoaderGlobals::interfaces); // discard return value
+            callEntranceFunc(func); // discard return value
         });
     }
 
@@ -90,6 +95,8 @@ namespace LibLoader {
     // 仅加载并测试所有plugin的符号是否存在
     void loadsAll(const std::vector<std::string> &paths) {
         for (auto &&path: paths) {
+            auto timestamp = std::chrono::system_clock::now();
+
             void *handle = libOpen(path);
             if (!handle) {
                 JNIEnvs::logger.error("failed to load plugin at " + path);
@@ -102,6 +109,11 @@ namespace LibLoader {
                 libClose(handle);
                 continue;
             }
+
+            auto timestamp2 = std::chrono::system_clock::now();
+
+            auto timedelta = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp2 - timestamp).count();
+            JNIEnvs::logger.info("loaded plugin " + path + " in " + std::to_string(timedelta) + "ms");
 
             MiraiCPPluginConfig cfg{handle, path};
             std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
@@ -170,11 +182,11 @@ namespace LibLoader {
 
     /// activate all loaded plugins
     // todo(antares): logger指针也要传递给插件
-    std::string activateAllPlugins() {
+    void activateAllPlugins() {
         std::lock_guard lk(LoaderGlobals::pluginlist_mtx);
         auto len = LoaderGlobals::plugin_list.size();
-        std::unique_ptr<std::promise<std::string>[]> promiselist(new std::promise<std::string>[len]);
-        std::unique_ptr<std::future<std::string>[]> futurelist(new std::future<std::string>[len]);
+        std::unique_ptr<std::promise<void>[]> promiselist(new std::promise<void>[len]);
+        std::unique_ptr<std::future<void>[]> futurelist(new std::future<void>[len]);
 
         int i = 0;
         for (auto &&[k, v]: LoaderGlobals::plugin_list) {
@@ -185,18 +197,15 @@ namespace LibLoader {
             auto entrance = (plugin_entrance_func_ptr) libSymbolLookup(v.handle, FUNC_ENTRANCE);
 
             ThreadController::getController().addThread(k, [&]() {
-                pr.set_value(entrance(LoaderGlobals::interfaces));
+                callEntranceFunc(entrance);
+                pr.set_value();
             });
             ++i;
         }
 
-        std::string ans;
         for (i = 0; i < len; ++i) {
-            ans += futurelist[i].get();
-            ans.push_back('\n');
+            futurelist[i].get();
         }
-
-        return ans;
     }
 
     ////////////////////////////////////

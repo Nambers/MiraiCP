@@ -8,6 +8,7 @@
 
 
 #include "loaderApi.h"
+#include <jni.h>
 #include <unordered_map>
 
 
@@ -15,7 +16,7 @@ namespace LibLoader {
     struct MiraiCPPluginConfig;
     typedef std::unordered_map<std::string, MiraiCPPluginConfig> PluginList;
     typedef void *plugin_handle;
-    typedef std::string (*plugin_entrance_func_ptr)(const interface_funcs &);
+    typedef void (*plugin_entrance_func_ptr)(const interface_funcs &, JavaVM *);
     typedef void (*plugin_func_ptr)();
 
     // implement MiraiCPPluginConfig

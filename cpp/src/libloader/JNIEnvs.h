@@ -22,8 +22,6 @@ namespace JNIEnvs {
 
     void loadConfigClass();
 
-    void loggerInit();
-
     void initializeMiraiCPLoader();
 } // namespace JNIEnvs
 

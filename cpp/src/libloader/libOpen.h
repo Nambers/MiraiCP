@@ -38,6 +38,5 @@ namespace LibLoader {
         return dlclose(handle);
 #endif
     }
-    /////////////////
 } // namespace LibLoader
 #endif //MIRAICP_PRO_LIBOPEN_H

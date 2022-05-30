@@ -19,17 +19,12 @@ namespace JNIEnvs {
     // functions
     void loadConfigClass() {
         auto env = getEnv();
-        Class_cpplib = reinterpret_cast<jclass>(env->NewGlobalRef(
-                env->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
-    }
-
-    void loggerInit() {
-        logger.init();
+        Class_cpplib = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
     }
 
     void initializeMiraiCPLoader() {
         loadConfigClass();
-        loggerInit();
+        logger.init();
     }
 
     JNIEnv *getEnv() {

@@ -24,6 +24,8 @@ namespace LibLoader {
 jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
     using json = nlohmann::json;
 
+    assert(JNIEnvManager::gvm != nullptr);
+
     JNIEnvs::setJNIVersion();
 
     std::string ans;

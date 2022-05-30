@@ -14,16 +14,16 @@ class LoaderLogger {
     using string = std::string;
 
 private:
-    jmethodID log = nullptr;
+    jmethodID logMethod = nullptr;
 
 public:
     void init();
-    void info(string);
-    void warning(string);
-    void error(string);
+    void info(const string &);
+    void warning(const string &);
+    void error(const string &);
 
 private:
-    void call_logger(string);
+    void call_logger(string content, string name, int id, int level);
 };
 
 
