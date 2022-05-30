@@ -14,13 +14,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include <MiraiCP.hpp>
+#include <iostream>
 #include <thread>
+
+
 using namespace MiraiCP;
 
 void func() {
-    //do some things
+    std::cout << "hello world" << std::endl;
     // 一个完整的线程应该在结束时调用detach来释放env的空间
-    ThreadManager::detach();
+    JNIEnvManager::detach();
 }
 
 class Main : public CPPPlugin {
