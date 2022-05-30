@@ -50,6 +50,7 @@ jobject Event(JNIEnv *env, jobject, jstring content) {
 jobject PluginDisable(JNIEnv *env, jobject) {
     LibLoader::LoaderMain::loaderExit();
     LibLoader::loaderThread.join();
+    return nullptr;
 }
 
 int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *gMethods, int numMethods) {
