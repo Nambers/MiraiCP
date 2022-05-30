@@ -7,15 +7,15 @@
 #include "JNIEnvManager.h"
 #include "JNIEnvs.h"
 #include "json.hpp"
-#include "loaderTools.h"
+#include "loaderMain.h"
 #include <exception>
 #include <future>
+
 
 namespace LibLoader {
     void registerAllPlugin(jstring);
     std::string activateAllPlugins();
-    extern std::thread loaderThread;
-    void loaderMain(std::promise<std::string> _promise);
+    std::thread loaderThread;
 } // namespace LibLoader
 
 /// 实际初始化函数
@@ -36,10 +36,7 @@ jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
 
         // 激活插件。创建loader thread。
         // loader thread中创建多线程加载所有插件，调用入口函数
-        std::promise<std::string> pr;
-        std::future<std::string> fu = pr.get_future();
-        LibLoader::loaderThread = std::thread(LibLoader::loaderMain, std::move(pr));
-        fu.get();
+        LibLoader::loaderThread = std::thread(LibLoader::LoaderMain::loaderMain);
     } catch (std::exception &e) {
     }
 
