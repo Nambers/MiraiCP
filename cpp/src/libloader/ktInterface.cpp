@@ -21,7 +21,7 @@ namespace LibLoader {
 /// 实际初始化函数
 /// 1. 设置全局变量
 /// 2. 开启loader线程并获取插件入口函数的返回值
-jstring Verify(JNIEnv *env, jstring _version, jstring _cfgPath) {
+jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
     using json = nlohmann::json;
 
     JNIEnvs::setJNIVersion();
@@ -39,14 +39,14 @@ jstring Verify(JNIEnv *env, jstring _version, jstring _cfgPath) {
         std::promise<std::string> pr;
         std::future<std::string> fu = pr.get_future();
         LibLoader::loaderThread = std::thread(LibLoader::loaderMain, std::move(pr));
-        ans = fu.get();
+        fu.get();
     } catch (std::exception &e) {
     }
 
-    return LibLoader::str2jstring(ans.c_str());
+    return nullptr;
 }
 
-jstring Event(JNIEnv *env, jobject, jstring content) {
+jobject Event(JNIEnv *env, jobject, jstring content) {
     return nullptr; // todo (Antares): to be implemented
 }
 

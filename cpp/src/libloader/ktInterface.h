@@ -9,11 +9,11 @@
 
 
 // EXPORT functions
-JNIEXPORT jobject Verify(JNIEnv *env, jobject, jstring id, jstring);
+JNIEXPORT jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath);
 
 JNIEXPORT jobject Event(JNIEnv *env, jobject, jstring content);
 
-JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job);
+JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject);
 
 int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *gMethods, int numMethods);
 
