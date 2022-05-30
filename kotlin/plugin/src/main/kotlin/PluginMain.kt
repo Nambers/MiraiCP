@@ -80,24 +80,25 @@ object PluginMain : KotlinPlugin(
                         PublicShared.maxThread = this.advanceConfig!!.maxThread!!
                 }
             }
-            .pluginConfig.forEach { i ->
-                val d = i.dependencies?.filter { p ->
-                    File(p).let { f -> f.isFile && f.exists() }
-                }
-                val f = File(i.path)
-                val files = (if (f.isAbsolute)
-                    listOf(f)
-                else
-                    listOf(f, dataFolder.resolve(f), configFolder.resolve(f)))
-                val re = files.firstOrNull { it.isFile && it.exists() }
-                if (re == null) {
-                    l.error(files.joinToString("/") { it.absolutePath } + " 不是一个有效的文件")
-                } else
-                    re.loadAsCPPLib(d)
-            }
+        CPPLib.init(getLibLoader(), "${dataFolder.absoluteFile}/miraicp.json")
+//            .pluginConfig.forEach { i ->
+//                val d = i.dependencies?.filter { p ->
+//                    File(p).let { f -> f.isFile && f.exists() }
+//                }
+//                val f = File(i.path)
+//                val files = (if (f.isAbsolute)
+//                    listOf(f)
+//                else
+//                    listOf(f, dataFolder.resolve(f), configFolder.resolve(f)))
+//                val re = files.firstOrNull { it.isFile && it.exists() }
+//                if (re == null) {
+//                    l.error(files.joinToString("/") { it.absolutePath } + " 不是一个有效的文件")
+//                } else
+//                    re.loadAsCPPLib(d)
+//            }
         logger.info("⭐已成功启动MiraiCP⭐")
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
-            PublicShared.cpp.event(
+            event(
                 PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
             )
         }

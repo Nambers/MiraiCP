@@ -65,7 +65,7 @@ object Core {
         logger.info("⭐当前MiraiCP版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
         KotlinMain.loginAccount = emptyList()
         PublicShared.commandReg = LoaderCommandHandlerImpl()
-        CPPLib(null, null) {
+        CPPLib.init(null) {
             enroll()
         }
         logger.info("⭐已成功加载MiraiCP⭐")

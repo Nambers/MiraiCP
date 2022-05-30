@@ -307,6 +307,12 @@ object CPPEvent {
     )
     // type = 16, ExceptionEvent
     // type = 17, Command
+
+    data class LibLoaderEvent(
+        val name: String,
+        val content: String? = null,
+        val type: Int = 1000
+    )
 }
 
 data class PluginConfig(

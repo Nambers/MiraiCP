@@ -83,7 +83,7 @@ fun CPPConfig.loaderConfig.Account.login() {
         }
     }
     b.eventChannel.subscribeAlways<BotOnlineEvent> {
-        PublicShared.cpp.event(
+        event(
             PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
         )
     }
