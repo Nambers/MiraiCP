@@ -17,39 +17,26 @@
 #include "JNIEnvManager.h"
 
 
-std::unordered_map<JNIEnvManager::threadid, JNIEnvManager::ThreadInfo> JNIEnvManager::threads;
+std::unordered_map<JNIEnvManager::threadid, JNIEnvManager::ThreadInfo> JNIEnvManager::threadJNIEnvs;
 std::recursive_mutex JNIEnvManager::mtx;
 JavaVM *JNIEnvManager::gvm = nullptr;
 long JNIEnvManager::JNIVersion = 0;
 
 
-void JNIEnvManager::setEnv(JNIEnv *e) {
-    std::lock_guard lk(mtx);
-    if (!included(getThreadId())) {
-        ThreadInfo tmp{e, false};
-        threads.insert(std::make_pair(getThreadId(), tmp));
-    } else {
-        threads[getThreadId()].e = e;
-    }
-}
-
-void JNIEnvManager::newEnv(const char *threadName) {
+JNIEnv *JNIEnvManager::newEnv() {
     JNIEnv *env = nullptr;
     JavaVMAttachArgs args{static_cast<int>(JNIVersion),
-                          const_cast<char *>(threadName),
+                          nullptr,
                           nullptr};
     gvm->AttachCurrentThread((void **) &env, &args);
-    ThreadInfo tmp{env, true};
-    threads.insert(std::make_pair(getThreadId(), tmp));
+    return env;
 }
 
-void JNIEnvManager::detach() {
+void JNIEnvManager::setEnv(JNIEnv *e) {
     std::lock_guard lk(mtx);
-    if (included(getThreadId())) {
-        bool att = threads[getThreadId()].attach;
-        threads.erase(getThreadId());
-        if (att)
-            gvm->DetachCurrentThread();
+    auto pr = threadJNIEnvs.insert(std::make_pair(getThreadId(), ThreadInfo{e, false}));
+    if (!pr.second) {
+        pr.first->second.e = e;
     }
 }
 
@@ -57,10 +44,28 @@ JNIEnv *JNIEnvManager::getEnv() {
     JNIEnv *tmp;
     {
         std::lock_guard lk(mtx);
-        if (!included(getThreadId())) {
-            newEnv();
+        auto pr = threadJNIEnvs.insert(std::make_pair(getThreadId(), ThreadInfo{nullptr, true}));
+        if (pr.second) {
+            pr.first->second.e = newEnv();
         }
-        tmp = threads[getThreadId()].e;
+        tmp = pr.first->second.e;
     }
     return tmp;
+}
+
+void JNIEnvManager::detach() {
+    std::lock_guard lk(mtx);
+    auto it = threadJNIEnvs.find(getThreadId());
+    if (it != threadJNIEnvs.end()) {
+        if (it->second.attach) gvm->DetachCurrentThread();
+        threadJNIEnvs.erase(it);
+    }
+}
+
+void JNIEnvManager::detachAll() {
+    std::lock_guard lk(mtx);
+    for (auto &&[k, v]: threadJNIEnvs) {
+        if (v.attach) gvm->DetachCurrentThread();
+    }
+    threadJNIEnvs.clear();
 }

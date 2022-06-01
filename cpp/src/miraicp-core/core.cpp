@@ -28,7 +28,7 @@ void freeLibrary(void *pointer) {
 #else
 #include <unistd.h>
 void freeLibrary(void *pointer) {
-    JNIEnvManager::gvm->DestroyJavaVM();
+    JNIEnvManager::getGvm()->DestroyJavaVM();
 }
 #endif
 
@@ -103,7 +103,7 @@ namespace MiraiCP::Core {
             return 3;
         }
 #else
-        long flag = JNI_CreateJavaVM(&JNIEnvManager::gvm, (void **) &env, &vmInitArgs);
+        long flag = JNI_CreateJavaVM(&JNIEnvManager::getGvm(), (void **) &env, &vmInitArgs);
         if (flag != 0) {
             // Error creating VM. Exiting...
             freeLibrary(nullptr);
@@ -136,7 +136,7 @@ namespace MiraiCP::Core {
 
     void exitCore() {
         //jvm释放
-        JNIEnvManager::gvm->DestroyJavaVM();
+        JNIEnvManager::getGvm()->DestroyJavaVM();
         freeLibrary(jvmLib);
     }
 

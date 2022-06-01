@@ -4,9 +4,9 @@
 
 
 #include "ThreadController.h"
+#include "JNIEnvManager.h"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
-
 
 namespace LibLoader {
     // threadWorker
@@ -41,6 +41,10 @@ namespace LibLoader {
             job_queue.pop();
             _do_job(job);
         }
+
+        // clean up
+        // try to detach this thread from JVM
+        JNIEnvManager::detach();
     }
 
     // ThreadController methods

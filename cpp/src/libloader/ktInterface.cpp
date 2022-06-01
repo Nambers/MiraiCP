@@ -24,7 +24,7 @@ namespace LibLoader {
 jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
     using json = nlohmann::json;
 
-    assert(JNIEnvManager::gvm != nullptr);
+    assert(JNIEnvManager::getGvm() != nullptr);
 
     JNIEnvs::setJNIVersion();
 
@@ -74,7 +74,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
         return JNI_ERR;
     }
     assert(env != nullptr);
-    JNIEnvManager::gvm = vm;
+    JNIEnvManager::setGvm(vm);
     // 注册native方法
     if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", method_table, 3)) {
         return JNI_ERR;

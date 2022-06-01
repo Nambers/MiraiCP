@@ -43,12 +43,10 @@ public:
 
 private:
     // 类静态成员
-    static std::unordered_map<threadid, ThreadInfo> threads; /// < 线程池(线程id:env).
+    static std::unordered_map<threadid, ThreadInfo> threadJNIEnvs; /// < 线程池(线程id:env).
     static std::recursive_mutex mtx;                         ///< 线程池读写锁.
-
+    static JavaVM *gvm;                                      ///< 全局JavaVM对象，用于多线程管理中新建线程的JNIEnv.
 public:
-    /// @brief 全局JavaVM对象，用于多线程管理中新建线程的JNIEnv.
-    static JavaVM *gvm;
     /// @brief JNI 版本.
     static long JNIVersion;
 
@@ -56,13 +54,14 @@ private:
     JNIEnvManager() = default;
 
 private:
-    static void newEnv(const char *threadName = nullptr); ///< 新建一个env，于getEnv中没取到env时调用.
-    /// 判断该线程id是否包含在线程池里
-    static bool included(const threadid &id) { return threads.count(id) != 0; }
+    static JNIEnv *newEnv(); ///< 新建一个env，于getEnv中没取到env时调用.
     /// @brief 获取线程id.
     static threadid getThreadId() { return std::this_thread::get_id(); }
 
 public:
+    static void setGvm(JavaVM *_gvm) { gvm = _gvm; }
+
+    static JavaVM *&getGvm() { return gvm; }
     /// @brief 设置env给当前线程.
     static void setEnv(JNIEnv *e);
 
@@ -71,6 +70,10 @@ public:
          *  @note 不过继续调用getEnv()将再次获取，所以本方法调用后线程也可以通过getEnv重新获取一个env，本方法的作用就是在结束后释放空间
          */
     static void detach();
+
+    /// @brief detach所有线程的env
+    /// @note 一般在程序完全退出前使用
+    static void detachAll();
 
     /// @brief 取env,如果不存在重新获取
     /// @internal 一般为`miraicp`内部调用jni接口时调用

@@ -43,7 +43,7 @@ namespace LibLoader {
     } // namespace LoaderGlobals
 
     inline void callEntranceFunc(plugin_entrance_func_ptr func) {
-        func(LoaderGlobals::interfaces, JNIEnvManager::gvm);
+        func(LoaderGlobals::interfaces, JNIEnvManager::getGvm());
     }
 
     ////////////////////////////////////
@@ -246,6 +246,10 @@ namespace LibLoader {
             LoaderGlobals::loader_thread_task_queue.push(std::make_pair(LoaderGlobals::LOAD_NEW_ACTIVATENOW, path));
         else
             LoaderGlobals::loader_thread_task_queue.push(std::make_pair(LoaderGlobals::LOAD_NEW_DONTACTIVATE, path));
+    }
+
+    JNIEnv *_getEnv() {
+        return JNIEnvManager::getEnv();
     }
 
     ////////////////////////////////////
