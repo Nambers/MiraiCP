@@ -34,11 +34,11 @@
 #include "MessageSource.h"
 #include "MiraiCode.h"
 #include "MiraiDefs.h"
-#include "PluginConfig.h"
 #include "SingleMessage.h"
 #include "Tools.h"
 #include "utils.h"
 #include "../common/JNIEnvManager.h"
+#include "../common/PluginConfig.h"
 #include "../common/commonTypes.h"
 #include "../common/loaderApi.h"
 

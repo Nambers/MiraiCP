@@ -12,15 +12,15 @@ import os
 d = dict()
 d['project'] = "Mirai C++ SDK"
 d['target'] = "single_include/MiraiCP/MiraiCP.hpp"
-d['include_paths'] = ["include"]
 
+includePath = list()
 namelist = list()
 
 msg: str = "Files to be added:\n"
 
 
 def add_directory(dname: str) -> None:
-    global msg
+    global msg, includePath
     fnames = os.listdir(dname)
     fnames.sort()
 
@@ -29,11 +29,14 @@ def add_directory(dname: str) -> None:
             namelist.append(f"{dname}/" + filename)
             msg += filename + "\n"
 
+    includePath.append(dname)
 
-add_directory("include")
+
 add_directory("common")
+add_directory("include")
 
 d['sources'] = namelist
+d['include_paths'] = includePath
 
 dirpath = os.path.dirname(os.path.abspath(__file__))
 

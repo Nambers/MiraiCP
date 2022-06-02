@@ -2,9 +2,9 @@
 // Created by antares on 5/27/22.
 //
 
+
 #ifndef MIRAICP_PRO_LIBOPEN_H
 #define MIRAICP_PRO_LIBOPEN_H
-
 
 
 #if _WIN32 || WIN32
@@ -13,30 +13,31 @@
 #include <dlfcn.h>
 #endif
 
+
+#if _WIN32 || WIN32
+// todo(Antares): implement windows dlopen
+#define OPEN_LIBRARY(path)
+#define CLOSE_LIBRARY(handle)
+#define GET_SYMBOL(handle, symbol)
+#else
+#define OPEN_LIBRARY(path) dlopen(path.c_str(), RTLD_LAZY)
+#define CLOSE_LIBRARY(handle) dlclose(handle)
+#define GET_SYMBOL(handle, symbol) dlsym(handle, symbol)
+#endif
+
+
 namespace LibLoader {
     // dlopen or sth like dlopen on Windows
     inline void *libOpen(const std::string &path) {
-#if _WIN32 || WIN32
-        return nullptr;
-#else
-        return dlopen(path.c_str(), RTLD_LAZY);
-#endif
+        return OPEN_LIBRARY(path);
     }
 
     inline void *libSymbolLookup(void *handle, const char *symbol) {
-#if _WIN32 || WIN32
-        return nullptr;
-#else
-        return dlsym(handle, symbol);
-#endif
+        return GET_SYMBOL(handle, symbol);
     }
 
     inline int libClose(void *handle) {
-#if _WIN32 || WIN32
-        return 0;
-#else
-        return dlclose(handle);
-#endif
+        return CLOSE_LIBRARY(handle);
     }
 } // namespace LibLoader
 #endif //MIRAICP_PRO_LIBOPEN_H

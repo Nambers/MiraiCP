@@ -2,14 +2,17 @@
 // Created by antares on 5/25/22.
 //
 
+
 #include "LoaderLogger.h"
 #include "JNIEnvs.h"
 #include "json.hpp"
 #include "loaderTools.h"
 
+
 namespace JNIEnvs {
     LoaderLogger logger;
 }
+
 
 void LoaderLogger::init() {
     logMethod = JNIEnvs::getEnv()->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");

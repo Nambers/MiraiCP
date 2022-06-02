@@ -14,7 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+
 #include "PluginConfig.h"
+
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -27,5 +29,9 @@ namespace MiraiCP {
         j["time"] = time;
         j["id"] = id;
         return j;
+    }
+
+    std::string PluginConfig::serialize2string() {
+        return serialize().dump();
     }
 } // namespace MiraiCP

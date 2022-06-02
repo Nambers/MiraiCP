@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+// todo(Antares): 迁移到libloader
 
 #ifndef MIRAICP_PRO_JNIENVMANAGER_H
 #define MIRAICP_PRO_JNIENVMANAGER_H
@@ -44,8 +45,8 @@ public:
 private:
     // 类静态成员
     static std::unordered_map<threadid, ThreadInfo> threadJNIEnvs; /// < 线程池(线程id:env).
-    static std::recursive_mutex mtx;                         ///< 线程池读写锁.
-    static JavaVM *gvm;                                      ///< 全局JavaVM对象，用于多线程管理中新建线程的JNIEnv.
+    static std::recursive_mutex mtx;                               ///< 线程池读写锁.
+    static JavaVM *gvm;                                            ///< 全局JavaVM对象，用于多线程管理中新建线程的JNIEnv.
 public:
     /// @brief JNI 版本.
     static long JNIVersion;

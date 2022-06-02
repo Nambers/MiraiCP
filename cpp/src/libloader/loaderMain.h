@@ -10,16 +10,15 @@ namespace LibLoader {
     class LoaderMain {
         volatile static bool loader_exit;
 
-        static bool is_loader_exited() { return loader_exit; }
-
+    private:
         static void mainloop();
 
         static void shutdownLoader();
 
     public:
-        static void loaderExit() {
-            loader_exit = true;
-        }
+        static bool is_loader_exited() { return loader_exit; }
+
+        static void loaderExit() { loader_exit = true; }
 
         static void loaderMain();
     };

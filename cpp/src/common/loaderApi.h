@@ -4,7 +4,6 @@
 
 #ifndef MIRAICP_PRO_LOADERAPI_H
 #define MIRAICP_PRO_LOADERAPI_H
-// don't create cpp for this header
 
 
 #include <jni.h>
@@ -38,6 +37,7 @@ namespace LibLoader {
         decltype(&_getEnv) getEnv;
     };
 
+    // DON'T CALL THIS in MiraiCP plugins!!!
     constexpr inline interface_funcs collect_interface_functions() {
         static_assert(sizeof(interface_funcs) == sizeof(void *) * 7);
         return {
