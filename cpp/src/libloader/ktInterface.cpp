@@ -8,6 +8,7 @@
 #include "JNIEnvs.h"
 #include "json.hpp"
 #include "loaderMain.h"
+#include "loaderTools.h"
 #include <exception>
 #include <future>
 
@@ -17,6 +18,17 @@ namespace LibLoader {
     std::string activateAllPlugins();
     std::thread loaderThread;
 } // namespace LibLoader
+
+void builtInCommand(const std::string &cmd) {
+    nlohmann::json j = nlohmann::json::parse(cmd);
+    // todo 解析内建指令
+}
+
+std::vector<void*> getEntrances(JNIEnv* env){
+    //todo for antares, 获取插件全部Event指针
+    // env可能用的上，如果用不上就去掉
+    return {};
+}
 
 /// 实际初始化函数
 /// 1. 设置全局变量
@@ -46,7 +58,17 @@ jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
 }
 
 jobject Event(JNIEnv *env, jobject, jstring content) {
-    return nullptr; // todo (Antares): to be implemented
+    std::string str = LibLoader::jstring2str(content);
+    if(str.find("\"id\":1001") != std::string::npos) {
+        builtInCommand(str);
+        return nullptr;
+    }
+    for(auto a : getEntrances(env)){
+        // a(str);
+        // 解析交给MiraiCP吧
+        // 异常也应该在MiraiCP中捕获
+    }
+    return nullptr;
 }
 
 jobject PluginDisable(JNIEnv *env, jobject) {
