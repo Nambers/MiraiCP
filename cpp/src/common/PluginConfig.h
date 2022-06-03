@@ -40,13 +40,14 @@ namespace MiraiCP {
                      std::string name,
                      std::string version,
                      std::string author,
-                     std::string description = "")
+                     std::string description = "",
+                     std::string time = __DATE__)
             : id(std::move(id)),
               name(std::move(name)),
               version(std::move(version)),
               author(std::move(author)),
               description(std::move(description)),
-              time(__DATE__) {}
+              time(std::move(time)) {}
 
         nlohmann::json serialize();
 
