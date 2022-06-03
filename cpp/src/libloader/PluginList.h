@@ -50,7 +50,6 @@ namespace LibLoader {
 
     // todo(Antares): 重构下列接口，可能的话尽量避免调用
     void reloadAllPlugin(jstring _cfgPath);
-    void addPlugin(MiraiCPPluginConfig cfg);
     void enableAll();
     void disableAll();
 } // namespace LibLoader

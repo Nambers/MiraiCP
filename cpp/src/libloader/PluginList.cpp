@@ -17,6 +17,7 @@
 #include "PluginList.h"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
+#include "PluginConfig.h"
 #include "ThreadController.h"
 #include "libOpen.h"
 #include "loaderTools.h"
@@ -24,9 +25,8 @@
 #include <mutex>
 #include <string>
 
-
 namespace LibLoader {
-    // todo(Antares): 文件过于复杂，需要重构。以及插件使用id索引
+    // todo(Antares): 文件过于复杂，需要重构。需要隔离所有复杂函数中对plugin_list的直接访问，改用一些inline函数获取信息；以及插件使用插件id索引！
 
     static PluginList plugin_list;
     static std::recursive_mutex pluginlist_mtx;
@@ -34,6 +34,16 @@ namespace LibLoader {
 
     inline void callEntranceFunc(plugin_entrance_func_ptr func) {
         func(interfaces);
+    }
+
+    inline void addPlugin(MiraiCPPluginConfig cfg) {
+        std::lock_guard lk(pluginlist_mtx);
+        auto cfgptr = (MiraiCP::PluginConfig *) libSymbolLookup(cfg.handle, STRINGIFY(PLUGIN_INFO));
+        if (cfgptr == nullptr) {
+            JNIEnvs::logger.error("Runtime Error: plugin config does not exist, did you forget to check symbol existance?");
+            return;
+        }
+        plugin_list.insert(std::make_pair(cfgptr->id, std::move(cfg)));
     }
 
     // test symbol existance and return the event func addr. return nullptr if fails. (not calling them)
@@ -143,10 +153,17 @@ namespace LibLoader {
             return;
         }
 
-        std::lock_guard lk(pluginlist_mtx);
-        plugin_list[_path] = {_path, handle, eventFuncAddr};
+        addPlugin({_path, handle, eventFuncAddr});
     }
 
+    void reloadAllPlugin(jstring _cfgPath) {
+        std::lock_guard lk(pluginlist_mtx);
+        disableAll();
+        plugin_list.clear();
+
+        std::string cfgPath = jstring2str(_cfgPath);
+        // todo(antares): this function is not finished
+    }
 
     /// the entrance to load all plugins (not activate)
     void registerAllPlugin(jstring _cfgPath) {
@@ -199,19 +216,6 @@ namespace LibLoader {
 
     ////////////////////////////////////
 
-    void reloadAllPlugin(jstring _cfgPath) {
-        std::lock_guard lk(pluginlist_mtx);
-        disableAll();
-        plugin_list.clear();
-
-        std::string cfgPath = jstring2str(_cfgPath);
-    }
-
-    void addPlugin(MiraiCPPluginConfig cfg) {
-        std::lock_guard lk(pluginlist_mtx);
-        // todo
-        plugin_list.insert(std::make_pair(cfg.path, cfg));
-    }
 
     void loader_enablePluginByName(const std::string &name) {
         std::lock_guard lk(pluginlist_mtx);
