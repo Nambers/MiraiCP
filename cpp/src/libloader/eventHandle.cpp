@@ -15,11 +15,42 @@
 //
 
 #include "eventHandle.h"
+#include "PluginList.h"
 #include <json.hpp>
 
+std::string get_or_empty(nlohmann::json j, const std::string &key) {
+    if (j.contains(key)) {
+        return j[key];
+    }
+    return "";
+}
+
+std::unordered_map<std::string, std::function<void(const std::string &)>> actions = {
+        {"EnablePlugin", [](const std::string &name) {
+             LibLoader::loader_enablePluginByName(name);
+         }},
+        {"DisablePlugin", [](const std::string &name) {
+             LibLoader::loader_disablePluginByName(name);
+         }},
+        {"DisablePluginList", [](const std::string &name) {
+             // todo DisablePluginList
+         }},
+        {"EnablePluginList", [](const std::string &name) {
+             // todo EnablePluginList
+         }},
+        {"ReloadPlugin", [](const std::string &name) {
+             // todo ReloadPlugin
+         }},
+        {"LoadPlugin", [](const std::string &name) {
+             // todo LoadPlugin
+         }},
+        {"PluginList", [](const std::string &name) {
+             // todo PluginList
+         }},
+};
 
 void builtInCommand(const std::string &cmd) {
     using nlohmann::json;
     json j = json::parse(cmd);
-    // todo 解析内建指令
+    actions[j["name"]](get_or_empty(j, "content"));
 }

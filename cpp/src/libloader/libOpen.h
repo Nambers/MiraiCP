@@ -28,6 +28,7 @@
 
 #if _WIN32 || _WIN64
 // https://docs.microsoft.com/zh-cn/windows/win32/dlls/using-run-time-dynamic-linking
+// 以及可能需要GetModuleHandle
 #define OPEN_LIBRARY(path) LoadLibrary(TEXT(path.c_str()))
 #define CLOSE_LIBRARY(handle) FreeLibrary((HMODULE) handle)
 #define GET_SYMBOL(handle, symbol) GetProcAddress((HINSTANCE) handle, symbol)
