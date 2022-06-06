@@ -25,11 +25,6 @@
 // 字符串宏
 #define STRINGIFY(A) __STRINGIFY(A)
 #define __STRINGIFY(A) #A
-// todo(Antares): 将这部分宏放到公共头文件中
-#define FUNC_ENTRANCE enrollPlugin
-#define FUNC_EVENT eventHandle
-#define FUNC_EXIT onDisable
-#define PLUGIN_INFO MiraiCPPluginInfo
 
 
 namespace LibLoader {
