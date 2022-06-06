@@ -14,9 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+
 #include "eventHandle.h"
+#include "JNIEnvs.h"
+#include "LoaderLogger.h"
 #include "PluginList.h"
 #include <json.hpp>
+
 
 std::string get_or_empty(nlohmann::json j, const std::string &key) {
     if (j.contains(key)) {
@@ -25,7 +29,7 @@ std::string get_or_empty(nlohmann::json j, const std::string &key) {
     return "";
 }
 
-std::unordered_map<std::string, std::function<void(const std::string &)>> actions = {
+const static std::unordered_map<std::string, std::function<void(const std::string &)>> actions = {
         {"EnablePlugin", [](const std::string &name) {
              LibLoader::loader_enablePluginByName(name);
          }},
@@ -49,8 +53,14 @@ std::unordered_map<std::string, std::function<void(const std::string &)>> action
          }},
 };
 
+
 void builtInCommand(const std::string &cmd) {
     using nlohmann::json;
     json j = json::parse(cmd);
-    actions[j["name"]](get_or_empty(j, "content"));
+    auto it = actions.find(j["name"]);
+    if (it == actions.end()) {
+        JNIEnvs::logger.error("builtInCommand: unknown command: " + j["name"].get<std::string>());
+        return;
+    }
+    it->second(get_or_empty(j, "content"));
 }
