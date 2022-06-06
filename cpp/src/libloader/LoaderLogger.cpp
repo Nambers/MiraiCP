@@ -29,25 +29,23 @@ void LoaderLogger::init() {
     logMethod = JNIEnvs::getEnv()->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");
 }
 
-// todo (Antares): to be implemented
-void LoaderLogger::info(const string &) {
-    // to be implemented
+void LoaderLogger::info(const string &msg) {
+    call_logger(msg, "", -2, 0);
 }
 
-void LoaderLogger::warning(const string &) {
-    // to be implemented
+void LoaderLogger::warning(const string &msg) {
+    call_logger(msg, "", -2, 1);
 }
 
-void LoaderLogger::error(const string &) {
-    // to be implemented
+void LoaderLogger::error(const string &msg) {
+    call_logger(msg, "", -2, 2);
 }
 
-void LoaderLogger::call_logger(string content, string name, int id, int level) {
-    nlohmann::json j;
-    j["log"] = std::move(content);
-    j["id"] = id;
+void LoaderLogger::call_logger(const string &content, string name, int id, int level) {
+    nlohmann::json j = {
+            {"id", id},
+            {"log", content}};
     if (!name.empty()) j["name"] = std::move(name);
     auto s = j.dump();
-
     JNIEnvs::getEnv()->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, LibLoader::str2jstring(s.c_str()), static_cast<jint>(level));
 }

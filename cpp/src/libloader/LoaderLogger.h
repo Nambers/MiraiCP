@@ -35,7 +35,7 @@ public:
     void error(const string &);
 
 private:
-    void call_logger(string content, string name, int id, int level);
+    void call_logger(const string &content, string name, int id, int level);
 };
 
 
