@@ -18,18 +18,19 @@
 #define MIRAICP_PRO_LIBOPEN_H
 
 
-#if _WIN32 || WIN32
-
+#if _WIN32 || _WIN64
+#include <cstdio>
+#include <windows.h>
 #else
 #include <dlfcn.h>
 #endif
 
 
-#if _WIN32 || WIN32
-// todo(Antares): implement windows dlopen
-#define OPEN_LIBRARY(path)
-#define CLOSE_LIBRARY(handle)
-#define GET_SYMBOL(handle, symbol)
+#if _WIN32 || _WIN64
+// https://docs.microsoft.com/zh-cn/windows/win32/dlls/using-run-time-dynamic-linking
+#define OPEN_LIBRARY(path) LoadLibrary(TEXT(path.c_str()))
+#define CLOSE_LIBRARY(handle) FreeLibrary((HMODULE) handle)
+#define GET_SYMBOL(handle, symbol) GetProcAddress((HINSTANCE) handle, symbol)
 #else
 #define OPEN_LIBRARY(path) dlopen(path.c_str(), RTLD_LAZY)
 #define CLOSE_LIBRARY(handle) dlclose(handle)
@@ -44,7 +45,7 @@ namespace LibLoader {
     }
 
     inline void *libSymbolLookup(void *handle, const char *symbol) {
-        return GET_SYMBOL(handle, symbol);
+        return (void *) GET_SYMBOL(handle, symbol);
     }
 
     inline int libClose(void *handle) {
