@@ -24,9 +24,8 @@
 class LoaderLogger;
 
 
-namespace JNIEnvs {
+namespace LibLoader::JNIEnvs {
     extern jclass volatile Class_cpplib;
-    extern LoaderLogger logger;
 
     // functions
     JNIEnv *getEnv();

@@ -34,7 +34,7 @@ namespace LibLoader {
                 paths.emplace_back(v);
             }
         } catch (...) {
-            JNIEnvs::logger.error("failed to load json: " + cfgPath);
+            logger.error("failed to load json: " + cfgPath);
             return {};
         }
         return paths;
@@ -55,7 +55,7 @@ namespace LibLoader {
 
     jstring str2jstring(const char *cstr) {
         if (!cstr) {
-            JNIEnvs::logger.warning("警告:str2jstring传入空字符串");
+            logger.warning("警告:str2jstring传入空字符串");
         }
         std::string str(cstr);
         std::vector<unsigned short> utf16line;

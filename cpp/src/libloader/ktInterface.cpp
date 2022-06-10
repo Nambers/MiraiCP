@@ -30,7 +30,9 @@ namespace LibLoader {
     void registerAllPlugin(jstring);
     std::string activateAllPlugins();
     std::thread loaderThread;
-    std::vector<plugin_func_ptr> getEntrances(JNIEnv *env);
+    std::vector<plugin_func_ptr> getEntrances(JNIEnv *env) {
+        return {};
+    }
 } // namespace LibLoader
 
 
@@ -42,12 +44,12 @@ jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
 
     assert(JNIEnvManager::getGvm() != nullptr);
 
-    JNIEnvs::setJNIVersion();
+    LibLoader::JNIEnvs::setJNIVersion();
 
     std::string ans;
     try {
         //初始化日志模块
-        JNIEnvs::initializeMiraiCPLoader();
+        LibLoader::JNIEnvs::initializeMiraiCPLoader();
 
         // 测试有效的插件
         LibLoader::registerAllPlugin(_cfgPath);
@@ -64,7 +66,7 @@ jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
 jobject Event(JNIEnv *env, jobject, jstring content) {
     std::string str = LibLoader::jstring2str(content);
     if (str.find("\"id\":1001") != std::string::npos) {
-        builtInCommand(str);
+        LibLoader::builtInCommand(str);
         return nullptr;
     }
 

@@ -20,17 +20,21 @@
 #include "PluginConfig.h"
 #include "ThreadController.h"
 #include "libOpen.h"
+#include "loaderApi.h"
 #include "loaderTools.h"
 #include <future>
 #include <mutex>
 #include <string>
 
 namespace LibLoader {
+    using LoaderApi::libClose;
+    using LoaderApi::libOpen;
+    using LoaderApi::libSymbolLookup;
     // todo(Antares): 文件过于复杂，需要重构。需要隔离所有复杂函数中对plugin_list的直接访问，改用一些inline函数获取信息；以及插件使用插件id索引！
 
     static PluginList plugin_list;
     static std::recursive_mutex pluginlist_mtx;
-    constexpr static interface_funcs interfaces = collect_interface_functions();
+    constexpr static LoaderApi::interface_funcs interfaces = LoaderApi::collect_interface_functions();
 
     inline void callEntranceFunc(plugin_entrance_func_ptr func) {
         func(interfaces);
@@ -40,7 +44,7 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         auto cfgptr = (MiraiCP::PluginConfig *) libSymbolLookup(cfg.handle, STRINGIFY(PLUGIN_INFO));
         if (cfgptr == nullptr) {
-            JNIEnvs::logger.error("Runtime Error: plugin config does not exist, did you forget to check symbol existance?");
+            logger.error("Runtime Error: plugin config does not exist, did you forget to check symbol existance?");
             return;
         }
         plugin_list.insert(std::make_pair(cfgptr->id, std::move(cfg)));
@@ -50,7 +54,7 @@ namespace LibLoader {
     plugin_func_ptr testSymbolExistance(void *handle, const std::string &path) {
         // using static keyword; don't capture any data
         static auto errorMsg = [](const std::string &path) {
-            JNIEnvs::logger.error("failed to find symbol in plugin " + path);
+            logger.error("failed to find symbol in plugin " + path);
             return nullptr;
         };
 
@@ -74,7 +78,7 @@ namespace LibLoader {
     // api
     void disable_plugin(MiraiCPPluginConfig &plugin) {
         if (!plugin.handle) {
-            JNIEnvs::logger.warning("plugin " + plugin.path + " is already disabled");
+            logger.warning("plugin " + plugin.path + " is already disabled");
             return;
         }
 
@@ -86,20 +90,20 @@ namespace LibLoader {
 
     void enable_plugin(MiraiCPPluginConfig &plugin) {
         if (plugin.handle) {
-            JNIEnvs::logger.warning("plugin " + plugin.path + " is already disabled");
+            logger.warning("plugin " + plugin.path + " is already disabled");
             return;
         }
 
         plugin.handle = libOpen(plugin.path);
 
         if (nullptr == plugin.handle) {
-            JNIEnvs::logger.error("failed to load plugin " + plugin.path);
+            logger.error("failed to load plugin " + plugin.path);
             return;
         }
 
         auto event_func = testSymbolExistance(plugin.handle, plugin.path);
         if (nullptr == event_func) {
-            JNIEnvs::logger.error("failed to read symbol in plugin " + plugin.path);
+            logger.error("failed to read symbol in plugin " + plugin.path);
             libClose(plugin.handle);
             plugin.handle = nullptr;
             return;
@@ -120,7 +124,7 @@ namespace LibLoader {
 
             void *handle = libOpen(path);
             if (!handle) {
-                JNIEnvs::logger.error("failed to load plugin at " + path);
+                logger.error("failed to load plugin at " + path);
                 continue;
             }
 
@@ -134,7 +138,7 @@ namespace LibLoader {
             auto timestamp2 = std::chrono::system_clock::now();
 
             auto timedelta = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp2 - timestamp).count();
-            JNIEnvs::logger.info("loaded plugin " + path + " in " + std::to_string(timedelta) + "ms");
+            logger.info("loaded plugin " + path + " in " + std::to_string(timedelta) + "ms");
 
             MiraiCPPluginConfig cfg{path, handle, eventFuncAddr};
             addPlugin(std::move(cfg));
@@ -144,7 +148,7 @@ namespace LibLoader {
     void loadNewPluginByPath(const std::string &_path, bool activateNow) {
         void *handle = libOpen(_path);
         if (handle != nullptr) {
-            JNIEnvs::logger.error("failed to load new plugin: " + _path);
+            logger.error("failed to load new plugin: " + _path);
             return;
         }
         auto eventFuncAddr = testSymbolExistance(handle, _path);
@@ -168,7 +172,7 @@ namespace LibLoader {
     /// the entrance to load all plugins (not activate)
     void registerAllPlugin(jstring _cfgPath) {
         if (!plugin_list.empty()) {
-            JNIEnvs::logger.warning("Plugin is already loaded");
+            logger.warning("Plugin is already loaded");
             return;
         }
 
@@ -179,7 +183,7 @@ namespace LibLoader {
         auto paths = collect_plugins(cfgPath, std::move(j));
 
         if (paths.empty()) {
-            JNIEnvs::logger.warning("no plugin to load");
+            logger.warning("no plugin to load");
             return;
         }
 
@@ -221,7 +225,7 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         auto it = plugin_list.find(name);
         if (it == plugin_list.end()) {
-            JNIEnvs::logger.error(name + "尚未加载");
+            logger.error(name + "尚未加载");
             return;
         }
         enable_plugin(it->second);
@@ -231,7 +235,7 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         auto it = plugin_list.find(name);
         if (it == plugin_list.end()) {
-            JNIEnvs::logger.error(name + "尚未加载");
+            logger.error(name + "尚未加载");
             return;
         }
         disable_plugin(it->second);

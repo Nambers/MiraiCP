@@ -21,6 +21,7 @@
 
 
 namespace LibLoader {
+    ThreadController ThreadController::_threadController;
     // threadWorker
     void ThreadController::threadWorker::give_job(void_callable newjob) {
         std::lock_guard lk(worker_mtx);
@@ -81,7 +82,7 @@ namespace LibLoader {
         std::lock_guard lk(_mtx);
         auto it = thread_memory.find(name);
         if (it != thread_memory.end()) {
-            JNIEnvs::logger.error("Plugin " + name + " thread already activated!");
+            logger.error("Plugin " + name + " thread already activated!");
             return;
         }
         auto &worker = thread_memory[name];
@@ -96,7 +97,7 @@ namespace LibLoader {
         std::lock_guard lk(_mtx);
         auto it = thread_memory.find(name);
         if (it == thread_memory.end()) {
-            JNIEnvs::logger.error("Plugin " + name + " thread not found!");
+            logger.error("Plugin " + name + " thread not found!");
             return;
         }
 
@@ -121,7 +122,7 @@ namespace LibLoader {
         std::lock_guard lk(_mtx);
         auto it = thread_memory.find(name);
         if (it == thread_memory.end()) {
-            JNIEnvs::logger.error("Plugin " + name + " thread not found!");
+            logger.error("Plugin " + name + " thread not found!");
             return;
         }
         it->second.first->give_job(std::move(func));

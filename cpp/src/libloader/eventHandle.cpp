@@ -21,46 +21,48 @@
 #include "PluginList.h"
 #include <json.hpp>
 
-
-std::string get_or_empty(nlohmann::json j, const std::string &key) {
-    if (j.contains(key)) {
-        return j[key];
+namespace LibLoader {
+    std::string get_or_empty(nlohmann::json j, const std::string &key) {
+        if (j.contains(key)) {
+            return j[key];
+        }
+        return "";
     }
-    return "";
-}
 
-const static std::unordered_map<std::string, std::function<void(const std::string &)>> actions = {
-        {"EnablePlugin", [](const std::string &name) {
-             LibLoader::loader_enablePluginByName(name);
-         }},
-        {"DisablePlugin", [](const std::string &name) {
-             LibLoader::loader_disablePluginByName(name);
-         }},
-        {"DisablePluginList", [](const std::string &name) {
-             // todo DisablePluginList
-         }},
-        {"EnablePluginList", [](const std::string &name) {
-             // todo EnablePluginList
-         }},
-        {"ReloadPlugin", [](const std::string &name) {
-             // todo ReloadPlugin
-         }},
-        {"LoadPlugin", [](const std::string &name) {
-             // todo LoadPlugin
-         }},
-        {"PluginList", [](const std::string &name) {
-             // todo PluginList
-         }},
-};
+    const static std::unordered_map<std::string, std::function<void(const std::string &)>> actions = {
+            // NOLINT(cert-err58-cpp)
+            {"EnablePlugin", [](const std::string &name) {
+                 LibLoader::loader_enablePluginByName(name);
+             }},
+            {"DisablePlugin", [](const std::string &name) {
+                 LibLoader::loader_disablePluginByName(name);
+             }},
+            {"DisablePluginList", [](const std::string &name) {
+                 // todo DisablePluginList
+             }},
+            {"EnablePluginList", [](const std::string &name) {
+                 // todo EnablePluginList
+             }},
+            {"ReloadPlugin", [](const std::string &name) {
+                 // todo ReloadPlugin
+             }},
+            {"LoadPlugin", [](const std::string &name) {
+                 // todo LoadPlugin
+             }},
+            {"PluginList", [](const std::string &name) {
+                 logger.info(logger.vector2string(LibLoader::getAllPluginName()));
+             }},
+    };
 
 
-void builtInCommand(const std::string &cmd) {
-    using nlohmann::json;
-    json j = json::parse(cmd);
-    auto it = actions.find(j["name"]);
-    if (it == actions.end()) {
-        JNIEnvs::logger.error("builtInCommand: unknown command: " + j["name"].get<std::string>());
-        return;
+    void builtInCommand(const std::string &cmd) {
+        using nlohmann::json;
+        json j = json::parse(cmd);
+        auto it = actions.find(j["name"]);
+        if (it == actions.end()) {
+            logger.error("builtInCommand: unknown command: " + j["name"].get<std::string>());
+            return;
+        }
+        it->second(get_or_empty(j, "content"));
     }
-    it->second(get_or_empty(j, "content"));
-}
+} // namespace LibLoader

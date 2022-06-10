@@ -18,34 +18,40 @@
 #include "JNIEnvs.h"
 #include "json.hpp"
 #include "loaderTools.h"
+#include <sstream>
 
+namespace LibLoader {
+    LibLoader::LoaderLogger logger;
+    std::string LibLoader::LoaderLogger::vector2string(const std::vector<std::string> &v) {
+        // from https://stackoverflow.com/a/5689061/14646226
+        const char *const delim = "\n";
+        std::ostringstream imploded;
+        std::copy(v.begin(), v.end(),
+                  std::ostream_iterator<std::string>(imploded, delim));
+        return imploded.str();
+    }
+    void LoaderLogger::init() {
+        logMethod = JNIEnvs::getEnv()->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");
+    }
 
-namespace JNIEnvs {
-    LoaderLogger logger;
-}
+    void LoaderLogger::info(const string &msg) {
+        call_logger(msg, "", -2, 0);
+    }
 
+    void LoaderLogger::warning(const string &msg) {
+        call_logger(msg, "", -2, 1);
+    }
 
-void LoaderLogger::init() {
-    logMethod = JNIEnvs::getEnv()->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");
-}
+    void LoaderLogger::error(const string &msg) {
+        call_logger(msg, "", -2, 2);
+    }
 
-void LoaderLogger::info(const string &msg) {
-    call_logger(msg, "", -2, 0);
-}
-
-void LoaderLogger::warning(const string &msg) {
-    call_logger(msg, "", -2, 1);
-}
-
-void LoaderLogger::error(const string &msg) {
-    call_logger(msg, "", -2, 2);
-}
-
-void LoaderLogger::call_logger(const string &content, string name, int id, int level) {
-    nlohmann::json j = {
-            {"id", id},
-            {"log", content}};
-    if (!name.empty()) j["name"] = std::move(name);
-    auto s = j.dump();
-    JNIEnvs::getEnv()->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, LibLoader::str2jstring(s.c_str()), static_cast<jint>(level));
-}
+    void LoaderLogger::call_logger(const string &content, string name, int id, int level) {
+        nlohmann::json j = {
+                {"id", id},
+                {"log", content}};
+        if (!name.empty()) j["name"] = std::move(name);
+        auto s = j.dump();
+        JNIEnvs::getEnv()->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, LibLoader::str2jstring(s.c_str()), static_cast<jint>(level));
+    }
+} // namespace LibLoader

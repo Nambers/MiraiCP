@@ -20,23 +20,27 @@
 
 #include <jni.h>
 #include <string>
+#include <vector>
 
+namespace LibLoader {
+    class LoaderLogger {
+        using string = std::string;
 
-class LoaderLogger {
-    using string = std::string;
+    private:
+        jmethodID logMethod = nullptr;
 
-private:
-    jmethodID logMethod = nullptr;
+    public:
+        void init();
+        void info(const string &);
+        void warning(const string &);
+        void error(const string &);
+        std::string vector2string(const std::vector<std::string> &);
 
-public:
-    void init();
-    void info(const string &);
-    void warning(const string &);
-    void error(const string &);
-
-private:
-    void call_logger(const string &content, string name, int id, int level);
-};
+    private:
+        void call_logger(const string &content, string name, int id, int level);
+    };
+    extern LoaderLogger logger;
+} // namespace LibLoader
 
 
 #endif //MIRAICP_PRO_LOADERLOGGER_H

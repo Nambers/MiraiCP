@@ -22,7 +22,7 @@
 #include <queue>
 
 
-namespace LibLoader {
+namespace LibLoader::LoaderApi {
     std::queue<loadertask> loader_thread_task_queue;
     std::recursive_mutex task_mtx;
 

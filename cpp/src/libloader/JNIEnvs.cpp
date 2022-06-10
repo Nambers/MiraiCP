@@ -19,7 +19,7 @@
 #include "LoaderLogger.h"
 
 
-namespace JNIEnvs {
+namespace LibLoader::JNIEnvs {
     // globals
     volatile jclass Class_cpplib = nullptr;
 

@@ -20,8 +20,9 @@
 
 #include <string>
 
-
-void builtInCommand(const std::string &cmd);
+namespace LibLoader {
+    void builtInCommand(const std::string &cmd);
+} // namespace LibLoader
 
 
 #endif //MIRAICP_PRO_EVENTHANDLE_H
