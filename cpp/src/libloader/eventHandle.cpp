@@ -32,10 +32,10 @@ namespace LibLoader {
     const static std::unordered_map<std::string, std::function<void(const std::string &)>> actions = {
             // NOLINT(cert-err58-cpp)
             {"EnablePlugin", [](const std::string &name) {
-                 LibLoader::loader_enablePluginByName(name);
+                 LibLoader::loader_enablePluginById(name);
              }},
             {"DisablePlugin", [](const std::string &name) {
-                 LibLoader::loader_disablePluginByName(name);
+                 LibLoader::loader_disablePluginById(name);
              }},
             {"DisablePluginList", [](const std::string &name) {
                  // todo DisablePluginList

@@ -31,11 +31,12 @@ namespace LibLoader {
     // todo(Antares): 文件过于复杂，需要重构
 
     // 暴露的接口，必须开放
-    void loader_enablePluginByName(const std::string &name);
-    void loader_disablePluginByName(const std::string &name);
+    void loader_enablePluginById(const std::string &);
+    void loader_disablePluginById(const std::string &);
     void loader_enableAllPlugins();
     void loader_disableAllPlugins();
     void loader_loadNewPlugin(const std::string &path, bool activateNow);
+    void loader_unloadPluginById(const std::string &);
 
     // loaderMain调用
     void activateAllPlugins();
@@ -47,6 +48,7 @@ namespace LibLoader {
     void reloadAllPlugin(jstring _cfgPath);
     void enableAll();
     void disableAll();
+    void unloadAll();
 } // namespace LibLoader
 
 

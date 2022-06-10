@@ -31,9 +31,9 @@
 namespace LibLoader::LoaderApi {
     std::vector<std::string> _showAllPluginName();
 
-    void _enablePluginByName(const std::string &);
+    void _enablePluginById(const std::string &);
 
-    void _disablePluginByName(const std::string &);
+    void _disablePluginById(const std::string &);
 
     void _enableAllPlugins();
 
@@ -41,27 +41,31 @@ namespace LibLoader::LoaderApi {
 
     void _loadNewPlugin(const std::string &, bool);
 
+    void _unloadPluginById(const std::string &);
+
     JNIEnv *_getEnv();
 
     struct interface_funcs {
-        decltype(&_showAllPluginName) showAllPluginName;
-        decltype(&_enablePluginByName) enablePluginByName;
-        decltype(&_disablePluginByName) disablePluginByName;
+        decltype(&_showAllPluginName) showAllPluginId;
+        decltype(&_enablePluginById) enablePluginById;
+        decltype(&_disablePluginById) disablePluginById;
         decltype(&_enableAllPlugins) enableAllPlugins;
         decltype(&_disableAllPlugins) disableAllPlugins;
         decltype(&_loadNewPlugin) loadNewPlugin;
+        decltype(&_unloadPluginById) unloadPluginById;
         decltype(&_getEnv) getEnv;
     };
     // DON'T CALL THIS in MiraiCP plugins!!!
     constexpr inline interface_funcs collect_interface_functions() {
-        static_assert(sizeof(interface_funcs) == sizeof(void *) * 7);
+        static_assert(sizeof(interface_funcs) == sizeof(void *) * 8);
         return {
                 _showAllPluginName,
-                _enablePluginByName,
-                _disablePluginByName,
+                _enablePluginById,
+                _disablePluginById,
                 _enableAllPlugins,
                 _disableAllPlugins,
                 _loadNewPlugin,
+                _unloadPluginById,
                 _getEnv,
         };
     }

@@ -76,9 +76,9 @@ namespace LibLoader {
 
     ////////////////////////////////////
     // api
-    void disable_plugin(MiraiCPPluginConfig &plugin) {
+    void unload_plugin(MiraiCPPluginConfig &plugin) {
         if (!plugin.handle) {
-            logger.warning("plugin " + plugin.path + " is already disabled");
+            logger.warning("plugin " + plugin.path + " is already unloaded");
             return;
         }
 
@@ -160,9 +160,10 @@ namespace LibLoader {
         addPlugin({_path, handle, eventFuncAddr});
     }
 
+
     void reloadAllPlugin(jstring _cfgPath) {
         std::lock_guard lk(pluginlist_mtx);
-        disableAll();
+        unloadAll();
         plugin_list.clear();
 
         std::string cfgPath = jstring2str(_cfgPath);
@@ -221,24 +222,24 @@ namespace LibLoader {
     ////////////////////////////////////
 
 
-    void loader_enablePluginByName(const std::string &name) {
+    void loader_enablePluginById(const std::string &id) {
         std::lock_guard lk(pluginlist_mtx);
-        auto it = plugin_list.find(name);
+        auto it = plugin_list.find(id);
         if (it == plugin_list.end()) {
-            logger.error(name + "尚未加载");
+            logger.error(id + "尚未加载");
             return;
         }
         enable_plugin(it->second);
     }
 
-    void loader_disablePluginByName(const std::string &name) {
+    void loader_disablePluginById(const std::string &id) {
         std::lock_guard lk(pluginlist_mtx);
-        auto it = plugin_list.find(name);
+        auto it = plugin_list.find(id);
         if (it == plugin_list.end()) {
-            logger.error(name + "尚未加载");
+            logger.error(id + "尚未加载");
             return;
         }
-        disable_plugin(it->second);
+        // disable todo
     }
 
     void loader_enableAllPlugins() {
@@ -256,6 +257,16 @@ namespace LibLoader {
         loadNewPluginByPath(path, activateNow);
     }
 
+    void loader_unloadPluginById(const std::string &id) {
+        std::lock_guard lk(pluginlist_mtx);
+        auto it = plugin_list.find(id);
+        if (it == plugin_list.end()) {
+            logger.error(id + "尚未加载");
+            return;
+        }
+        unload_plugin(it->second);
+    }
+
     void enableAll() {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: plugin_list) {
@@ -266,7 +277,14 @@ namespace LibLoader {
     void disableAll() {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: plugin_list) {
-            disable_plugin(v);
+            // disableAll todo
+        }
+    }
+
+    void unloadAll() {
+        std::lock_guard lk(pluginlist_mtx);
+        for (auto &&[k, v]: plugin_list) {
+            unload_plugin(v);
         }
     }
 

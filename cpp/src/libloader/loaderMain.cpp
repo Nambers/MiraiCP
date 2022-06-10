@@ -47,10 +47,10 @@ namespace LibLoader {
 
             switch (task.first) {
                 case LOADER_TASKS::ADD_THREAD:
-                    loader_enablePluginByName(task.second);
+                    loader_enablePluginById(task.second);
                     break;
                 case LOADER_TASKS::END_THREAD:
-                    loader_disablePluginByName(task.second);
+                    loader_disablePluginById(task.second);
                     break;
                 case LOADER_TASKS::ENABLE_ALL:
                     loader_enableAllPlugins();
