@@ -22,6 +22,11 @@
 #define MIRAICP_PRO_LOADERAPI_H
 
 
+#define __NOTHING__(X)
+#define __LOADER_API_INNER_(X) __NOTHING__(X)
+#define __LOADER_API__ __LOADER_API_INNER_(__COUNTER__)
+
+
 #include <jni.h>
 #include <string>
 #include <vector>
@@ -29,20 +34,28 @@
 
 // the API defs to be exposed
 namespace LibLoader::LoaderApi {
+    __LOADER_API__
     std::vector<std::string> _showAllPluginName();
 
+    __LOADER_API__
     void _enablePluginById(const std::string &);
 
+    __LOADER_API__
     void _disablePluginById(const std::string &);
 
+    __LOADER_API__
     void _enableAllPlugins();
 
+    __LOADER_API__
     void _disableAllPlugins();
 
+    __LOADER_API__
     void _loadNewPlugin(const std::string &, bool);
 
+    __LOADER_API__
     void _unloadPluginById(const std::string &);
 
+    __LOADER_API__
     JNIEnv *_getEnv();
 
     struct interface_funcs {
@@ -55,9 +68,10 @@ namespace LibLoader::LoaderApi {
         decltype(&_unloadPluginById) unloadPluginById;
         decltype(&_getEnv) getEnv;
     };
+
     // DON'T CALL THIS in MiraiCP plugins!!!
     constexpr inline interface_funcs collect_interface_functions() {
-        static_assert(sizeof(interface_funcs) == sizeof(void *) * 8);
+        static_assert(sizeof(interface_funcs) == sizeof(void *) * __COUNTER__);
         return {
                 _showAllPluginName,
                 _enablePluginById,
