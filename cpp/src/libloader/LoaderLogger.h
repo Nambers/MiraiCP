@@ -25,11 +25,8 @@
 namespace LibLoader {
     class LoaderLogger {
         using string = std::string;
-
-    private:
-        jmethodID logMethod = nullptr;
-
     public:
+        jmethodID logMethod = nullptr;
         void init();
         void info(const string &);
         void warning(const string &);

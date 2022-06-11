@@ -27,9 +27,9 @@
 #include <jni.h>
 #include <unordered_map>
 
-#define FUNC_ENTRANCE enrollPlugin
-#define FUNC_EVENT eventHandle
-#define FUNC_EXIT onDisable
+#define FUNC_ENTRANCE Init
+#define FUNC_EVENT Event
+#define FUNC_EXIT PluginDisable
 #define PLUGIN_INFO MiraiCPPluginInfo
 
 namespace MiraiCP {
@@ -50,6 +50,7 @@ namespace LibLoader {
         plugin_handle handle;
         plugin_func_ptr eventFunc;
         MiraiCP::PluginConfig *config;
+        bool enable = true;
     };
 } // namespace LibLoader
 

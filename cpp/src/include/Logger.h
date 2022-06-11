@@ -101,7 +101,7 @@ namespace MiraiCP {
         }
 
         // 初始化 获取methodid
-        void init(JNIEnv * = nullptr);
+        void init(jmethodID);
 
         ///发送普通(info级日志)
         template<class... T>

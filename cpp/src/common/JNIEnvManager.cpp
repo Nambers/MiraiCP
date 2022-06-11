@@ -23,12 +23,12 @@
 std::unordered_map<JNIEnvManager::threadid, JNIEnvManager::ThreadInfo> JNIEnvManager::threadJNIEnvs;
 std::recursive_mutex JNIEnvManager::mtx;
 JavaVM *JNIEnvManager::gvm = nullptr;
-long JNIEnvManager::JNIVersion = 0;
 
 
 JNIEnv *JNIEnvManager::newEnv() {
     JNIEnv *env = nullptr;
-    JavaVMAttachArgs args{static_cast<int>(JNIVersion),
+    // todo JNIVersion是否写死
+    JavaVMAttachArgs args{static_cast<int>(JNI_VERSION_1_8),
                           nullptr,
                           nullptr};
     gvm->AttachCurrentThread((void **) &env, &args);

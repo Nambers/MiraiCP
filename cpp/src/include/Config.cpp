@@ -23,24 +23,16 @@
 namespace MiraiCP::Config {
     jclass CPPLib = nullptr;
     jmethodID KOperation = nullptr;
-    // 不可以赋值, 不然会覆盖
-    int pluginId;
     /*
     配置类实现
     throw: InitxException 即找不到对应签名
     */
-    void construct(JNIEnv *env) {
-        if (env == nullptr) env = JNIEnvManager::getEnv();
-        CPPLib = reinterpret_cast<jclass>(env->NewGlobalRef(
-                env->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
-        if (CPPLib == nullptr) {
-            throw APIException("初始化错误，找不到CPPLib类", MIRAICP_EXCEPTION_WHERE);
-        }
-        KOperation = env->GetStaticMethodID(CPPLib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
+    void construct(jclass clazz, jmethodID method) {
+        CPPLib = clazz;
+        KOperation = method;
     }
 
     void destruct() {
-        JNIEnvManager::getEnv()->DeleteGlobalRef(CPPLib);
     }
 
     std::string koperation(operation_set type, const nlohmann::json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {

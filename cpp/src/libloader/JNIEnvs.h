@@ -18,19 +18,15 @@
 #define MIRAICP_PRO_JNIENVS_H
 
 
+#include "JNIEnvManager.h"
 #include <jni.h>
-
-
-class LoaderLogger;
-
 
 namespace LibLoader::JNIEnvs {
     extern jclass volatile Class_cpplib;
+    extern jmethodID volatile koper;
 
     // functions
     JNIEnv *getEnv();
-
-    void setJNIVersion();
 
     void loadConfigClass();
 

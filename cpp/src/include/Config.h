@@ -29,8 +29,6 @@ namespace MiraiCP {
         extern jclass CPPLib;
         /// 调用mirai方法
         extern jmethodID KOperation;
-        /// 本插件id
-        extern int pluginId;
 
         /// 操作id
         enum operation_set {
@@ -103,7 +101,7 @@ namespace MiraiCP {
         std::string koperation(operation_set type, const nlohmann::json &data, JNIEnv * = nullptr,
                                bool catchErr = true, const std::string &errorInfo = "");
 
-        void construct(JNIEnv * = nullptr);
+        void construct(jclass, jmethodID);
 
         void destruct();
     };

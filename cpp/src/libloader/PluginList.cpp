@@ -26,6 +26,8 @@
 #include <mutex>
 #include <string>
 
+#define init_func_ptr void (*)(JavaVM *, jclass, jmethodID, jmethodID)
+
 namespace LibLoader {
     using LoaderApi::libClose;
     using LoaderApi::libOpen;
@@ -42,6 +44,7 @@ namespace LibLoader {
 
     inline void addPlugin(MiraiCPPluginConfig cfg) {
         std::lock_guard lk(pluginlist_mtx);
+
         auto cfgptr = (MiraiCP::PluginConfig *) libSymbolLookup(cfg.handle, STRINGIFY(PLUGIN_INFO));
         if (cfgptr == nullptr) {
             logger.error("Runtime Error: plugin config does not exist, did you forget to check symbol existance?");
@@ -145,6 +148,7 @@ namespace LibLoader {
         }
     }
 
+    // todo 设计上应该是全部都要当场init，不存在activateNow == false的情况?
     void loadNewPluginByPath(const std::string &_path, bool activateNow) {
         void *handle = libOpen(_path);
         if (handle != nullptr) {
@@ -158,6 +162,8 @@ namespace LibLoader {
         }
 
         addPlugin({_path, handle, eventFuncAddr});
+        auto init = (init_func_ptr) libSymbolLookup(handle, STRINGIFY(FUNC_ENTRANCE));
+        init(JNIEnvManager::getGvm(), JNIEnvs::Class_cpplib, logger.logMethod, JNIEnvs::koper);
     }
 
 
@@ -239,7 +245,7 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        // disable todo
+        it->second.enable = false;
     }
 
     void loader_enableAllPlugins() {
@@ -277,7 +283,7 @@ namespace LibLoader {
     void disableAll() {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: plugin_list) {
-            // disableAll todo
+            v.enable = false;
         }
     }
 

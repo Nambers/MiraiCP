@@ -32,9 +32,8 @@ namespace MiraiCP {
     日志类实现
     throw: InitException 即找不到签名
     */
-    void Logger_interface::init(JNIEnv *env) {
-        if (env == nullptr) env = JNIEnvManager::getEnv();
-        this->log = env->GetStaticMethodID(Config::CPPLib, "KSendLog", "(Ljava/lang/String;I)V");
+    void Logger_interface::init(jmethodID logger) {
+        this->log = logger;
     }
 
 

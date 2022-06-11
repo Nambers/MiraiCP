@@ -38,14 +38,11 @@ namespace MiraiCP {
     inline void enrollPlugin0(CPPPlugin *p) {
         CPPPlugin::plugin = p;
     }
-    namespace JNIApi {
-        // todo 暴露了一些接口
-        JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content);
-        JNIEXPORT jstring returnNull();
-        JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job);
-        JNIEXPORT jstring Verify(JNIEnv *env, jobject, jstring id);
-        int registerMethods(JNIEnv *env, const char *className, JNINativeMethod *gMethods, int numMethods);
-    } // namespace JNIApi
 } // namespace MiraiCP
+extern "C" {
+void Event(std::string content);
+void PluginDisable();
+void Init(JavaVM *gvm, jclass, jmethodID logger, jmethodID);
+}
 
 #endif //MIRAICP_PRO_UTILS_H

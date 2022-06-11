@@ -47,9 +47,6 @@ private:
     static std::unordered_map<threadid, ThreadInfo> threadJNIEnvs; /// < 线程池(线程id:env).
     static std::recursive_mutex mtx;                               ///< 线程池读写锁.
     static JavaVM *gvm;                                            ///< 全局JavaVM对象，用于多线程管理中新建线程的JNIEnv.
-public:
-    /// @brief JNI 版本.
-    static long JNIVersion;
 
 private:
     JNIEnvManager() = default;

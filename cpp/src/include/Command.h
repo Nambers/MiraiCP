@@ -84,7 +84,8 @@ namespace MiraiCP {
         bool registerCommand(T command) {
             static_assert(std::is_base_of_v<IRawCommand, T>, "只支持IRawCommand的派生类");
             nlohmann::json j;
-            j["pluginId"] = Config::pluginId;
+            // todo identify
+            j["pluginId"] = "";
             j["usage"] = command.config().usage;
             j["primaryName"] = command.config().primaryName;
             j["secondName"] = command.config().secondNames;

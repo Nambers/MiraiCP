@@ -22,15 +22,12 @@
 namespace LibLoader::JNIEnvs {
     // globals
     volatile jclass Class_cpplib = nullptr;
-
-    void setJNIVersion() {
-        JNIEnvManager::JNIVersion = getEnv()->GetVersion();
-    }
-
+    volatile jmethodID koper = nullptr;
     // functions
     void loadConfigClass() {
         auto env = getEnv();
         Class_cpplib = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
+        koper = env->GetStaticMethodID(Class_cpplib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
     }
 
     void initializeMiraiCPLoader() {

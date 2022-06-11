@@ -64,6 +64,9 @@ namespace LibLoader {
                 case LOADER_TASKS::LOAD_NEW_DONTACTIVATE:
                     loader_loadNewPlugin(task.second, false);
                     break;
+                case LOADER_TASKS::UNLOAD:
+                    loader_unloadPluginById(task.second);
+                    break;
                 default:
                     throw std::exception();
             }

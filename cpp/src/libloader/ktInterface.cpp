@@ -31,6 +31,7 @@ namespace LibLoader {
     std::string activateAllPlugins();
     std::thread loaderThread;
     std::vector<plugin_func_ptr> getEntrances(JNIEnv *env) {
+        // todo
         return {};
     }
 } // namespace LibLoader
@@ -43,8 +44,6 @@ jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
     using json = nlohmann::json;
 
     assert(JNIEnvManager::getGvm() != nullptr);
-
-    LibLoader::JNIEnvs::setJNIVersion();
 
     std::string ans;
     try {
@@ -98,9 +97,9 @@ int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *g
 }
 
 // register
-extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnv *env = nullptr;
-    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+    if (vm->GetEnv((void **) &env, JNI_VERSION_1_8) != JNI_OK) {
         return JNI_ERR;
     }
     assert(env != nullptr);
@@ -109,5 +108,5 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
     if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", method_table, 3)) {
         return JNI_ERR;
     }
-    return JNI_VERSION_1_6;
+    return JNI_VERSION_1_8;
 }
