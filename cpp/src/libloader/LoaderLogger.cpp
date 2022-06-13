@@ -20,8 +20,10 @@
 #include "loaderTools.h"
 #include <sstream>
 
+
 namespace LibLoader {
     LibLoader::LoaderLogger logger;
+
     std::string LibLoader::LoaderLogger::vector2string(const std::vector<std::string> &v) {
         // from https://stackoverflow.com/a/5689061/14646226
         const char *const delim = "\n";
@@ -30,6 +32,7 @@ namespace LibLoader {
                   std::ostream_iterator<std::string>(imploded, delim));
         return imploded.str();
     }
+
     void LoaderLogger::init() {
         logMethod = JNIEnvs::getEnv()->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");
     }

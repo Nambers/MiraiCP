@@ -14,6 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+/// 本文件的全部函数实现都是kt线程调用的函数
+
 #include "ktInterface.h"
 #include "JNIEnvManager.h"
 #include "JNIEnvs.h"
@@ -28,10 +30,9 @@
 
 namespace LibLoader {
     void registerAllPlugin(jstring);
-    std::string activateAllPlugins();
     std::thread loaderThread;
-    std::vector<plugin_func_ptr> getEntrances(JNIEnv *env) {
-        // todo
+    std::vector<plugin_func_ptr> getEventFuncAddr(JNIEnv *env) {
+        // todo(Antares): 获取所有的插件event函数指针
         return {};
     }
 } // namespace LibLoader
@@ -69,8 +70,9 @@ jobject Event(JNIEnv *env, jobject, jstring content) {
         return nullptr;
     }
 
-    auto entrances = LibLoader::getEntrances(env);
+    auto entrances = LibLoader::getEventFuncAddr(env);
     for (auto a: entrances) {
+        // todo(Antares): 实现
         // a(str);
         // 解析交给MiraiCP吧
         // 异常也应该在MiraiCP中捕获

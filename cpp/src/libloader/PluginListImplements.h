@@ -14,16 +14,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MIRAICP_PRO_EVENTHANDLE_H
-#define MIRAICP_PRO_EVENTHANDLE_H
+#ifndef MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H
+#define MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H
 
 
 #include <string>
+#include "commonTypes.h"
 
 
 namespace LibLoader {
-    void builtInCommand(const std::string &cmd);
+    /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用一次
+    /// 实际的入口，plugin_list 必须在这里初始化，该函数只会被调用一次
+    void registerAllPlugin(jstring _cfgPath);
+
+    /// 该函数在插件被 registerAllPlugin 全部注册完成后，调用一次
+    // todo(antares): logger指针也要传递给插件
+    void activateAllPlugins();
+
+    void loadNewPluginByPath(const std::string &_path, bool activateNow);
+
+    void enable_plugin(MiraiCPPluginConfig &plugin);
+
+    void unload_plugin(MiraiCPPluginConfig &plugin);
 } // namespace LibLoader
-
-
-#endif //MIRAICP_PRO_EVENTHANDLE_H
+#endif //MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H

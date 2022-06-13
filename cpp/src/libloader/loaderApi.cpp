@@ -16,8 +16,9 @@
 
 #include "loaderApi.h"
 #include "JNIEnvManager.h"
+#include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
-#include "PluginList.h"
+#include "PluginListManager.h"
 #include <mutex>
 #include <queue>
 
@@ -29,7 +30,7 @@ namespace LibLoader::LoaderApi {
 
     /// interfaces for plugins
     std::vector<std::string> _showAllPluginName() {
-        return getAllPluginName();
+        return PluginListManager::getAllPluginName();
     }
 
     void _enablePluginById(const std::string &id) {
@@ -68,4 +69,8 @@ namespace LibLoader::LoaderApi {
     JNIEnv *_getEnv() {
         return JNIEnvManager::getEnv();
     }
-} // namespace LibLoader
+
+    void _loggerInterface(const std::string &content, std::string name, int id, int level) {
+        logger.call_logger(content, std::move(name), id, level);
+    }
+} // namespace LibLoader::LoaderApi

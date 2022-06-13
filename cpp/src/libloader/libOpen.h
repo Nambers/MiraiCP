@@ -41,7 +41,7 @@
 
 namespace LibLoader::LoaderApi {
     // dlopen or sth like dlopen on Windows
-    inline void *libOpen(const std::string &path) {
+    inline plugin_handle libOpen(const std::string &path) {
         return OPEN_LIBRARY(path);
     }
 

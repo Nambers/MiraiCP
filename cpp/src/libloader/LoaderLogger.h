@@ -25,17 +25,28 @@
 namespace LibLoader {
     class LoaderLogger {
         using string = std::string;
+
     public:
         jmethodID logMethod = nullptr;
+
         void init();
+
+    public:
+        /// 注意，这三个函数不是给MiraiCP插件使用的，而是给loader部分使用的
+        /// 实际暴露的接口只有call_logger一个，
+        /// MiraiCP插件通过call_logger具体实现多种不同的logger
         void info(const string &);
         void warning(const string &);
         void error(const string &);
-        std::string vector2string(const std::vector<std::string> &);
 
-    private:
+    public:
+        /// 实际暴露的接口
         void call_logger(const string &content, string name, int id, int level);
+
+    public:
+        static std::string vector2string(const std::vector<std::string> &);
     };
+
     extern LoaderLogger logger;
 } // namespace LibLoader
 

@@ -14,12 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 #include "eventHandle.h"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
-#include "PluginList.h"
+#include "PluginListManager.h"
 #include <json.hpp>
+
 
 namespace LibLoader {
     std::string get_or_empty(nlohmann::json j, const std::string &key) {
@@ -29,13 +29,16 @@ namespace LibLoader {
         return "";
     }
 
+    // todo(Antares): loader_ 开头的函数只能由loader线程调用，请检查实现
+    //  个人理解是builtin command不是由loader线程调用的，
+    //  也就是说这些操作应该是将任务post给loader线程，而不是直接调用
     const static std::unordered_map<std::string, std::function<void(const std::string &)>> actions = {
             // NOLINT(cert-err58-cpp)
             {"EnablePlugin", [](const std::string &name) {
-                 LibLoader::loader_enablePluginById(name);
+                 // LibLoader::loader_enablePluginById(name);
              }},
             {"DisablePlugin", [](const std::string &name) {
-                 LibLoader::loader_disablePluginById(name);
+                 // LibLoader::loader_disablePluginById(name);
              }},
             {"DisablePluginList", [](const std::string &name) {
                  // todo DisablePluginList
@@ -50,7 +53,7 @@ namespace LibLoader {
                  // todo LoadPlugin
              }},
             {"PluginList", [](const std::string &name) {
-                 logger.info(logger.vector2string(LibLoader::getAllPluginName()));
+                 // logger.info(logger.vector2string(PluginListManager::getAllPluginName()));
              }},
     };
 

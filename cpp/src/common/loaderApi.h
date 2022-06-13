@@ -58,6 +58,9 @@ namespace LibLoader::LoaderApi {
     __LOADER_API__
     JNIEnv *_getEnv();
 
+    __LOADER_API__
+    void _loggerInterface(const std::string &content, std::string name, int id, int level);
+
     struct interface_funcs {
         decltype(&_showAllPluginName) showAllPluginId;
         decltype(&_enablePluginById) enablePluginById;
@@ -67,9 +70,10 @@ namespace LibLoader::LoaderApi {
         decltype(&_loadNewPlugin) loadNewPlugin;
         decltype(&_unloadPluginById) unloadPluginById;
         decltype(&_getEnv) getEnv;
+        decltype(&_loggerInterface) loggerInterface;
     };
 
-    // DON'T CALL THIS in MiraiCP plugins!!!
+    /// DON'T CALL THIS in MiraiCP plugins!!!
     constexpr inline interface_funcs collect_interface_functions() {
         static_assert(sizeof(interface_funcs) == sizeof(void *) * __COUNTER__);
         return {
@@ -81,6 +85,7 @@ namespace LibLoader::LoaderApi {
                 _loadNewPlugin,
                 _unloadPluginById,
                 _getEnv,
+                _loggerInterface,
         };
     }
 } // namespace LibLoader::LoaderApi

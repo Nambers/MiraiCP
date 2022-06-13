@@ -17,7 +17,8 @@
 #include "loaderMain.h"
 #include "JNIEnvManager.h"
 #include "LoaderTaskQueue.h"
-#include "PluginList.h"
+#include "PluginListImplements.h"
+#include "PluginListManager.h"
 #include "ThreadController.h"
 
 
@@ -34,6 +35,37 @@ namespace LibLoader {
 
         shutdownLoader();
     }
+
+    ////////////////////////////////////
+    /// 这里是loader线程调用的实际操作pluginlist的接口
+    /// 每次操作都必须保证原子性。如果有多个函数调用，需要getLock()并自行创建lock_guard对象
+    /// 见getLock()的注释
+
+    void loader_enableAllPlugins() {
+        PluginListManager::enableAll();
+    }
+
+    void loader_disableAllPlugins() {
+        PluginListManager::disableAll();
+    }
+
+    void loader_loadNewPlugin(const std::string &path, bool activateNow) {
+        loadNewPluginByPath(path, activateNow);
+    }
+
+    void loader_unloadPluginById(const std::string &id) {
+        PluginListManager::unloadById(id);
+    }
+
+    void loader_enablePluginById(const std::string &id) {
+        PluginListManager::enableById(id);
+    }
+
+    void loader_disablePluginById(const std::string &id) {
+        PluginListManager::disableById(id);
+    }
+
+    ////////////////////////////////////
 
     void LoaderMain::mainloop() {
         if (LoaderApi::loader_thread_task_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(70));

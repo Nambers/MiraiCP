@@ -44,12 +44,18 @@ namespace LibLoader {
     typedef void (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
     typedef void (*plugin_func_ptr)();
 
+    enum PluginAuthority {
+        PLUGIN_AUTHORITY_NORMAL = 0,
+        PLUGIN_AUTHORITY_ADMIN = 1,
+    };
+
     // implement MiraiCPPluginConfig
     struct MiraiCPPluginConfig {
         std::string path;
         plugin_handle handle;
         plugin_func_ptr eventFunc;
         MiraiCP::PluginConfig *config;
+        PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;
         bool enable = true;
     };
 } // namespace LibLoader
