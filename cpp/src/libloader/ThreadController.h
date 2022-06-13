@@ -55,7 +55,7 @@ namespace LibLoader {
         };
 
         // the address of "threadWorker" should not be moved,
-        // use smart pointers to assure allocated on heap;
+        // use smart pointers to assure allocated at the same address;
         // also, to init "std::thread" lazily, use smart pointers
         typedef std::pair<std::shared_ptr<threadWorker>, std::shared_ptr<std::thread>> workerThread;
 

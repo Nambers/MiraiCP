@@ -49,6 +49,7 @@ namespace LibLoader {
             }
         }
 
+        std::lock_guard lk(worker_mtx);
         while (!job_queue.empty()) {
             auto job = std::move(job_queue.front());
             job_queue.pop();
