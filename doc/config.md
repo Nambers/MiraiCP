@@ -140,20 +140,22 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 该元素类型为列表, 包含要加载的全部dll的路径, 与loader端的配置文件相同, 也可以加载多个dll文件和加载依赖的dll, 如
 ```json
 {
-	"pluginConfig":[{
-		"path":"<dll路径1>",
-    "dependences": [
-    "<依赖的dll1>",
-    "<依赖的dll2>",
-    ]
-	},
-  {
-		"path":"<dll路径2>",
-    "dependences": [
-    "<依赖的dll1>",
-    "<依赖的dll2>",
-    ]
-	}]
+  "pluginConfig": [
+    {
+      "path": "<dll路径1>",
+      "dependencies": [
+        "<依赖的dll1>",
+        "<依赖的dll2>"
+      ]
+    },
+    {
+      "path": "<dll路径2>",
+      "dependencies": [
+        "<依赖的dll1>",
+        "<依赖的dll2>"
+      ]
+    }
+  ]
 }
 ```
 ### 进阶配置
