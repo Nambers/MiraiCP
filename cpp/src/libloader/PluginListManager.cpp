@@ -25,7 +25,7 @@
 
 
 namespace LibLoader {
-    PluginList PluginListManager::plugin_list;
+    PluginListManager::PluginList PluginListManager::plugin_list;
     std::recursive_mutex PluginListManager::pluginlist_mtx;
 
     ////////////////////////////////////
@@ -82,7 +82,6 @@ namespace LibLoader {
             v.enable = false;
         }
     }
-
 
     void PluginListManager::enableAll() {
         std::lock_guard lk(pluginlist_mtx);

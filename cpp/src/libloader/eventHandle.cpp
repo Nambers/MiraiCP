@@ -57,7 +57,6 @@ namespace LibLoader {
              }},
     };
 
-
     void builtInCommand(const std::string &cmd) {
         using nlohmann::json;
         json j = json::parse(cmd);

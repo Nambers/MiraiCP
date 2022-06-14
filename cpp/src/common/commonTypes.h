@@ -23,23 +23,21 @@
 // don't create cpp for this header
 
 
+#include "PluginConfig.h"
 #include "loaderApi.h"
 #include <jni.h>
 #include <unordered_map>
+
 
 #define FUNC_ENTRANCE Init
 #define FUNC_EVENT Event
 #define FUNC_EXIT PluginDisable
 #define PLUGIN_INFO MiraiCPPluginInfo
 
-namespace MiraiCP {
-    class PluginConfig;
-}
-
 
 namespace LibLoader {
     struct MiraiCPPluginConfig;
-    typedef std::unordered_map<std::string, MiraiCPPluginConfig> PluginList;
+
     typedef void *plugin_handle;
     typedef void (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
     typedef void (*plugin_func_ptr)();
@@ -54,9 +52,21 @@ namespace LibLoader {
         std::string path;
         plugin_handle handle;
         plugin_func_ptr eventFunc;
-        MiraiCP::PluginConfig *config;
+        const MiraiCP::PluginConfig *config;
         PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;
         bool enable = true;
+
+        const std::string &getId() const {
+            return config->id;
+        }
+
+        void reset() {
+            handle = nullptr;
+            eventFunc = nullptr;
+            config = nullptr;
+            authority = PLUGIN_AUTHORITY_NORMAL;
+            enable = true;
+        }
     };
 } // namespace LibLoader
 

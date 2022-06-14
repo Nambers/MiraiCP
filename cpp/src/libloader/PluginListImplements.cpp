@@ -18,6 +18,7 @@
 
 #include "PluginListImplements.h"
 #include "LoaderLogger.h"
+#include "PluginConfig.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
 #include "libOpen.h"
@@ -27,8 +28,14 @@
 
 
 namespace LibLoader {
+    struct PluginAddrInfo {
+        plugin_func_ptr event_func;
+        const MiraiCP::PluginConfig *pluginAddr;
+    };
+
     ////////////////////////////////////
     /// 这部分是一些工具函数、对象
+    // todo(Antares): 这部分的path全部换成id
 
     /// 该对象的地址将被用于传递给MiraiCP插件
     constexpr static LoaderApi::interface_funcs interfaces = LoaderApi::collect_interface_functions();
@@ -39,11 +46,11 @@ namespace LibLoader {
 
     /// 测试符号存在性，并返回event func的地址。return nullptr代表符号测试未通过，不是一个可以使用的MiraiCP插件
     /// 不会调用其中任何一个函数
-    plugin_func_ptr testSymbolExistance(plugin_handle handle, const std::string &path) {
+    PluginAddrInfo testSymbolExistance(plugin_handle handle, const std::string &path) {
         // using static keyword; don't capture any data
-        static auto errorMsg = [](const std::string &path) {
+        static auto errorMsg = [](const std::string &path) -> PluginAddrInfo {
             logger.error("failed to find symbol in plugin " + path);
-            return nullptr;
+            return {nullptr, nullptr};
         };
 
         auto symbol = LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_ENTRANCE));
@@ -55,22 +62,22 @@ namespace LibLoader {
         auto event_addr = (plugin_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_EVENT));
         if (!event_addr) return errorMsg(path);
 
-        auto pluginInfo = LoaderApi::libSymbolLookup(handle, STRINGIFY(PLUGIN_INFO));
+        auto pluginInfo = (const MiraiCP::PluginConfig *) LoaderApi::libSymbolLookup(handle, STRINGIFY(PLUGIN_INFO));
         if (!pluginInfo) return errorMsg(path);
 
-        return event_addr;
+        return {event_addr, pluginInfo};
     }
 
     void unload_plugin(MiraiCPPluginConfig &plugin) {
         if (!plugin.handle) {
-            logger.warning("plugin " + plugin.path + " is already unloaded");
+            logger.warning("plugin " + plugin.config->id + " is already unloaded");
             return;
         }
 
         auto disable_func = (plugin_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_EXIT));
-        ThreadController::getController().callThreadEnd(plugin.path, disable_func);
+        ThreadController::getController().callThreadEnd(plugin.config->id, disable_func);
         LoaderApi::libClose(plugin.handle);
-        plugin.handle = nullptr;
+        plugin.reset();
     }
 
     void enable_plugin(MiraiCPPluginConfig &plugin) {
@@ -86,8 +93,8 @@ namespace LibLoader {
             return;
         }
 
-        auto event_func = testSymbolExistance(plugin.handle, plugin.path);
-        if (nullptr == event_func) {
+        auto addrInfo = testSymbolExistance(plugin.handle, plugin.path);
+        if (nullptr == addrInfo.event_func || nullptr == addrInfo.pluginAddr) {
             logger.error("failed to read symbol in plugin " + plugin.path);
             LoaderApi::libClose(plugin.handle);
             plugin.handle = nullptr;
@@ -99,7 +106,8 @@ namespace LibLoader {
             callEntranceFunc(func); // discard return value
         });
 
-        plugin.eventFunc = event_func;
+        plugin.eventFunc = addrInfo.event_func;
+        plugin.config = addrInfo.pluginAddr;
     }
 
     /// 仅加载并测试所有plugin的符号是否存在
@@ -114,8 +122,8 @@ namespace LibLoader {
             }
 
             // test symbol existance
-            auto eventFuncAddr = testSymbolExistance(handle, path);
-            if (nullptr == eventFuncAddr) {
+            auto pluginInfo = testSymbolExistance(handle, path);
+            if (nullptr == pluginInfo.pluginAddr || nullptr == pluginInfo.event_func) {
                 LoaderApi::libClose(handle);
                 continue;
             }
@@ -125,7 +133,7 @@ namespace LibLoader {
             auto timedelta = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp2 - timestamp).count();
             logger.info("loaded plugin " + path + " in " + std::to_string(timedelta) + "ms");
 
-            MiraiCPPluginConfig cfg{path, handle, eventFuncAddr};
+            MiraiCPPluginConfig cfg{path, handle, pluginInfo.event_func, pluginInfo.pluginAddr};
             PluginListManager::addPlugin(std::move(cfg));
         }
     }
@@ -136,13 +144,13 @@ namespace LibLoader {
             logger.error("failed to load new plugin: " + _path);
             return;
         }
-        auto eventFuncAddr = testSymbolExistance(handle, _path);
-        if (nullptr == eventFuncAddr) {
+        auto pluginInfo = testSymbolExistance(handle, _path);
+        if (nullptr == pluginInfo.pluginAddr || nullptr == pluginInfo.event_func) {
             LoaderApi::libClose(handle);
             return;
         }
 
-        PluginListManager::addPlugin({_path, handle, eventFuncAddr});
+        PluginListManager::addPlugin({_path, handle, pluginInfo.event_func, pluginInfo.pluginAddr});
         // todo 设计上应该是全部都要当场init，不存在activateNow == false的情况?
         // todo(Antares): 这里代码写错了，init的签名见commonTypes.h: plugin_entrance_func_ptr，
         //  之后把这一段重新设计一下

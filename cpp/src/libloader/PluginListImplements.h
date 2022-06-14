@@ -18,8 +18,8 @@
 #define MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H
 
 
-#include <string>
 #include "commonTypes.h"
+#include <string>
 
 
 namespace LibLoader {
@@ -27,8 +27,8 @@ namespace LibLoader {
     /// 实际的入口，plugin_list 必须在这里初始化，该函数只会被调用一次
     void registerAllPlugin(jstring _cfgPath);
 
+    /// 激活目前所有存储的插件。被loader线程调用
     /// 该函数在插件被 registerAllPlugin 全部注册完成后，调用一次
-    // todo(antares): logger指针也要传递给插件
     void activateAllPlugins();
 
     void loadNewPluginByPath(const std::string &_path, bool activateNow);

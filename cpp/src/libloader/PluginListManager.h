@@ -23,6 +23,7 @@
 #include <jni.h>
 #include <mutex>
 
+
 // 字符串宏
 #define STRINGIFY(A) __STRINGIFY(A)
 #ifndef __STRINGIFY
@@ -31,9 +32,9 @@
 
 
 namespace LibLoader {
-    // todo(Antares): 文件过于复杂，需要重构
-
     class PluginListManager {
+        typedef std::unordered_map<std::string, MiraiCPPluginConfig> PluginList;
+
     private:
         PluginListManager() = default;
         ~PluginListManager() = default;
@@ -42,7 +43,6 @@ namespace LibLoader {
         static PluginList plugin_list;
         static std::recursive_mutex pluginlist_mtx;
 
-    public:
     public:
         /// 为保证一些外部操作是原子操作，允许在外部获取所对象的引用
         static auto &getLock() { return pluginlist_mtx; }
