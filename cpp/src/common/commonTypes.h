@@ -36,18 +36,9 @@
 
 
 namespace LibLoader {
-    struct LoaderPluginConfig;
-
     typedef void *plugin_handle;
     typedef void (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
     typedef void (*plugin_func_ptr)();
-
-    enum PluginAuthority {
-        PLUGIN_AUTHORITY_NORMAL = 0,
-        PLUGIN_AUTHORITY_ADMIN = 1,
-    };
-
-
 } // namespace LibLoader
 
 

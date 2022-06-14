@@ -38,7 +38,7 @@ namespace LibLoader {
 
     ////////////////////////////////////
     /// 这里是loader线程调用的实际操作pluginlist的接口
-    /// 每次操作都必须保证原子性。如果有多个函数调用，需要getLock()并自行创建lock_guard对象
+    /// 每次操作都必须保证原子性。如果有多个函数调用，需要getLock()并自行创建lock_guard对象，
     /// 见getLock()的注释
 
     void loader_enableAllPlugins() {
