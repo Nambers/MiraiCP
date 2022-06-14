@@ -33,14 +33,14 @@ namespace LibLoader {
     /// 这部分必须保证每个函数都是原子操作
     /// 如果有第一行不是创建lock_guard对象的请务必检查
 
-    void PluginListManager::run_over_pluginlist(const std::function<void(const std::string &, const MiraiCPPluginConfig &)> &f) {
+    void PluginListManager::run_over_pluginlist(const std::function<void(const std::string &, const LoaderPluginConfig &)> &f) {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: plugin_list) {
             f(k, v);
         }
     }
 
-    void PluginListManager::addPlugin(MiraiCPPluginConfig cfg) {
+    void PluginListManager::addPlugin(LoaderPluginConfig cfg) {
         std::lock_guard lk(pluginlist_mtx);
 
         auto cfgptr = (MiraiCP::PluginConfig *) LoaderApi::libSymbolLookup(cfg.handle, STRINGIFY(PLUGIN_INFO));

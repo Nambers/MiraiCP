@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H
 
 
+#include "LoaderPluginConfig.h"
 #include "commonTypes.h"
 #include <string>
 
@@ -33,8 +34,8 @@ namespace LibLoader {
 
     void loadNewPluginByPath(const std::string &_path, bool activateNow);
 
-    void enable_plugin(MiraiCPPluginConfig &plugin);
+    void enable_plugin(LoaderPluginConfig &plugin);
 
-    void unload_plugin(MiraiCPPluginConfig &plugin);
+    void unload_plugin(LoaderPluginConfig &plugin);
 } // namespace LibLoader
 #endif //MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H

@@ -68,7 +68,7 @@ namespace LibLoader {
         return {event_addr, pluginInfo};
     }
 
-    void unload_plugin(MiraiCPPluginConfig &plugin) {
+    void unload_plugin(LoaderPluginConfig &plugin) {
         if (!plugin.handle) {
             logger.warning("plugin " + plugin.config->id + " is already unloaded");
             return;
@@ -80,7 +80,7 @@ namespace LibLoader {
         plugin.reset();
     }
 
-    void enable_plugin(MiraiCPPluginConfig &plugin) {
+    void enable_plugin(LoaderPluginConfig &plugin) {
         if (plugin.handle) {
             logger.warning("plugin " + plugin.path + " is already disabled");
             return;
@@ -133,7 +133,7 @@ namespace LibLoader {
             auto timedelta = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp2 - timestamp).count();
             logger.info("loaded plugin " + path + " in " + std::to_string(timedelta) + "ms");
 
-            MiraiCPPluginConfig cfg{path, handle, pluginInfo.event_func, pluginInfo.pluginAddr};
+            LoaderPluginConfig cfg{path, handle, pluginInfo.event_func, pluginInfo.pluginAddr};
             PluginListManager::addPlugin(std::move(cfg));
         }
     }
@@ -196,7 +196,7 @@ namespace LibLoader {
 
         int i = 0;
 
-        std::function f = [&](const std::string &k, const MiraiCPPluginConfig &v) {
+        std::function f = [&](const std::string &k, const LoaderPluginConfig &v) {
             auto &pr = promiselist[i];
             auto &fu = futurelist[i];
             fu = pr.get_future();

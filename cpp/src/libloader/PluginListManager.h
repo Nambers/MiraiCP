@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_PLUGINLISTMANAGER_H
 
 
+#include "LoaderPluginConfig.h"
 #include "commonTypes.h"
 #include <functional>
 #include <jni.h>
@@ -33,7 +34,7 @@
 
 namespace LibLoader {
     class PluginListManager {
-        typedef std::unordered_map<std::string, MiraiCPPluginConfig> PluginList;
+        typedef std::unordered_map<std::string, LoaderPluginConfig> PluginList;
 
     private:
         PluginListManager() = default;
@@ -67,14 +68,14 @@ namespace LibLoader {
         static void disableAll();
 
     public: // load
-        static void addPlugin(MiraiCPPluginConfig cfg);
+        static void addPlugin(LoaderPluginConfig cfg);
 
     public: // unload
         static void unloadAll();
         static void unloadById(const std::string &);
 
     public:
-        static void run_over_pluginlist(const std::function<void(const std::string &, const MiraiCPPluginConfig &)> &);
+        static void run_over_pluginlist(const std::function<void(const std::string &, const LoaderPluginConfig &)> &);
     };
 } // namespace LibLoader
 
