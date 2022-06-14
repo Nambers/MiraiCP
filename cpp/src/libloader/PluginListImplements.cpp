@@ -68,6 +68,7 @@ namespace LibLoader {
         return {event_addr, pluginInfo};
     }
 
+    // unload将释放插件的内存，但不从插件列表删除；不会修改插件权限
     void unload_plugin(LoaderPluginConfig &plugin) {
         if (!plugin.handle) {
             logger.warning("plugin " + plugin.config->id + " is already unloaded");
@@ -164,7 +165,7 @@ namespace LibLoader {
     ////////////////////////////////////
 
     /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用且仅调用一次
-    /// 实际的入口，plugin_list 必须在这里初始化
+    /// 实际的入口，id_plugin_list 必须在这里初始化
     void registerAllPlugin(jstring _cfgPath) {
         // 获取cfg文件路径并读取
         std::string cfgPath = jstring2str(_cfgPath);

@@ -28,23 +28,32 @@ namespace LibLoader {
     };
 
     struct LoaderPluginConfig {
-        std::string path;
+        const std::string path;
         plugin_handle handle;
         plugin_func_ptr eventFunc;
         const MiraiCP::PluginConfig *config;
         PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;
-        bool enable = true;
+        bool enabled = false;
 
         const std::string &getId() const {
             return config->id;
         }
 
         void reset() {
+            // cannot modify path
             handle = nullptr;
             eventFunc = nullptr;
             config = nullptr;
-            authority = PLUGIN_AUTHORITY_NORMAL;
-            enable = true;
+            // do not modify authority
+            enabled = false;
+        }
+
+        void enable() {
+            enabled = true;
+        }
+
+        void disable() {
+            enabled = false;
         }
     };
 } // namespace LibLoader

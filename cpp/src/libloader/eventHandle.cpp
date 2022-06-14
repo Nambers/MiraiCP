@@ -29,16 +29,15 @@ namespace LibLoader {
         return "";
     }
 
-    // todo(Antares): loader_ 开头的函数只能由loader线程调用，请检查实现
-    //  个人理解是builtin command不是由loader线程调用的，
+    // todo(Antares): 个人理解是builtin command不是由loader线程调用的，
     //  也就是说这些操作应该是将任务post给loader线程，而不是直接调用
     const static std::unordered_map<std::string, std::function<void(const std::string &)>> actions = {
             // NOLINT(cert-err58-cpp)
             {"EnablePlugin", [](const std::string &name) {
-                 // LibLoader::loader_enablePluginById(name);
+                 LoaderApi::_enablePluginById(name);
              }},
             {"DisablePlugin", [](const std::string &name) {
-                 // LibLoader::loader_disablePluginById(name);
+                 LoaderApi::_disablePluginById(name);
              }},
             {"DisablePluginList", [](const std::string &name) {
                  // todo DisablePluginList
@@ -53,7 +52,7 @@ namespace LibLoader {
                  // todo LoadPlugin
              }},
             {"PluginList", [](const std::string &name) {
-                 // logger.info(logger.vector2string(PluginListManager::getAllPluginName()));
+                 // logger.info(logger.vector2string(PluginListManager::getAllPluginId()));
              }},
     };
 

@@ -33,15 +33,17 @@
 
 
 namespace LibLoader {
+    // todo(Antares): 需要能从path以及id获取到config，改为std::shared_ptr<LoaderPluginConfig>
     class PluginListManager {
-        typedef std::unordered_map<std::string, LoaderPluginConfig> PluginList;
+        typedef std::unordered_map<std::string, std::shared_ptr<LoaderPluginConfig>> PluginList;
 
     private:
         PluginListManager() = default;
         ~PluginListManager() = default;
 
     private:
-        static PluginList plugin_list;
+        static PluginList id_plugin_list;
+        static PluginList path_plugin_list;
         static std::recursive_mutex pluginlist_mtx;
 
     public:
@@ -49,12 +51,19 @@ namespace LibLoader {
         static auto &getLock() { return pluginlist_mtx; }
 
     public:
-        static std::vector<std::string> getAllPluginName();
+        static std::vector<std::string> getAllPluginId();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
-        static auto count() { return plugin_list.size(); }
+        static auto count() { return id_plugin_list.size(); }
         /// 返回目前记录的插件个数，使用前请先获取锁
-        static bool empty() { return plugin_list.empty(); }
+        static bool empty() { return id_plugin_list.empty(); }
+
+    public: // load
+        static void addPlugin(LoaderPluginConfig cfg);
+
+    public: // unload
+        static void unloadAll();
+        static void unloadById(const std::string &);
 
     public: // reload
         static void reloadAllPlugin(jstring _cfgPath);
@@ -64,15 +73,8 @@ namespace LibLoader {
         static void enableById(const std::string &);
 
     public: // disable
-        static void disableById(const std::string &);
         static void disableAll();
-
-    public: // load
-        static void addPlugin(LoaderPluginConfig cfg);
-
-    public: // unload
-        static void unloadAll();
-        static void unloadById(const std::string &);
+        static void disableById(const std::string &);
 
     public:
         static void run_over_pluginlist(const std::function<void(const std::string &, const LoaderPluginConfig &)> &);

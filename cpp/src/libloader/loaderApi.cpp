@@ -29,7 +29,7 @@ namespace LibLoader::LoaderApi {
 
     /// interfaces for plugins
     std::vector<std::string> _showAllPluginName() {
-        return PluginListManager::getAllPluginName();
+        return PluginListManager::getAllPluginId();
     }
 
     void _enablePluginById(const std::string &id) {
