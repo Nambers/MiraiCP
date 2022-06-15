@@ -31,8 +31,21 @@ namespace LibLoader {
                 throw std::exception();
             }
             for (auto &&v: _pairs) {
-                paths.emplace_back(v["path"].get<std::string>());
-                authorities.emplace_back(v["authority"].get<PluginAuthority>());
+                // path
+                {
+                    paths.emplace_back(v["path"].get<std::string>());
+                }
+                // authority
+                {
+                    PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;
+
+                    if (v.find("authority") != v.end()) {
+                        // change this if you want to support multiple authorities
+                        authority = v["authority"].get<unsigned long long>() ? PLUGIN_AUTHORITY_ADMIN : PLUGIN_AUTHORITY_NORMAL;
+                    }
+
+                    authorities.emplace_back(authority);
+                }
             }
         } catch (...) {
             logger.error("failed to load json: " + cfgPath);

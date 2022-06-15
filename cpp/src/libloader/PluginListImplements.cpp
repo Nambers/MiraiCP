@@ -38,10 +38,16 @@ namespace LibLoader {
     // todo(Antares): 这部分的path全部换成id
 
     /// 该对象的地址将被用于传递给MiraiCP插件
-    constexpr static LoaderApi::interface_funcs interfaces = LoaderApi::collect_interface_functions();
+    constexpr static LoaderApi::interface_funcs interfaces = LoaderApi::collect_interface_functions(true);
 
-    void callEntranceFunc(plugin_entrance_func_ptr func) {
+    constexpr static LoaderApi::interface_funcs normal_interfaces = LoaderApi::collect_interface_functions(false);
+
+    void callEntranceFuncAdmin(plugin_entrance_func_ptr func) {
         func(interfaces);
+    }
+
+    void callEntranceFuncNormal(plugin_entrance_func_ptr func) {
+        func(normal_interfaces);
     }
 
     /// 测试符号存在性，并返回event func的地址。return {nullptr, nullptr} 代表符号测试未通过，
@@ -69,6 +75,7 @@ namespace LibLoader {
         return {event_addr, pluginInfo};
     }
 
+    ////////////////////////////////////
 
     void disable_plugin(LoaderPluginConfig &plugin) {
         if (nullptr == plugin.handle) {
@@ -84,6 +91,7 @@ namespace LibLoader {
         ThreadController::getController().callThreadEnd(plugin.config->id, disable_func);
         plugin.disable();
     }
+
     // unload将释放插件的内存
     // 不涉及插件列表的修改；不会修改插件权限
     void unload_plugin(LoaderPluginConfig &plugin) {
@@ -116,12 +124,12 @@ namespace LibLoader {
 
         auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
         ThreadController::getController().addThread(plugin.getId(), [&]() {
-            callEntranceFunc(func); // discard return value
+            callEntranceFuncAdmin(func);
         });
         plugin.enable();
     }
 
-    void load_plugin(LoaderPluginConfig &plugin) {
+    void load_plugin(LoaderPluginConfig &plugin, bool alsoEnablePlugin) {
         if (plugin.handle != nullptr) {
             logger.error("plugin at location " + plugin.path + " is already loaded!");
             return;
@@ -141,12 +149,40 @@ namespace LibLoader {
 
         plugin.load(handle, symbols.event_func, symbols.pluginAddr);
 
-        plugin.enabled = false;
-        enable_plugin(plugin);
+        plugin.disable();
+        if (alsoEnablePlugin) enable_plugin(plugin);
+    }
+
+    ////////////////////////////////////
+
+    void loadNewPluginByPath(const std::string &_path, bool activateNow) {
+        void *handle = LoaderApi::libOpen(_path);
+        if (handle != nullptr) {
+            logger.error("failed to load new plugin: " + _path);
+            return;
+        }
+        auto pluginInfo = testSymbolExistance(handle, _path);
+        if (nullptr == pluginInfo.pluginAddr || nullptr == pluginInfo.event_func) {
+            LoaderApi::libClose(handle);
+            return;
+        }
+
+        LoaderPluginConfig cfg{_path};
+
+        cfg.load(handle, pluginInfo.event_func, pluginInfo.pluginAddr);
+        cfg.disable();
+        if (activateNow) enable_plugin(cfg);
+
+        PluginListManager::addNewPlugin(std::move(cfg));
     }
 
     /// 仅加载并测试所有plugin的符号是否存在
+    /// 仅被registerAllPlugin调用，即，在kt（主）线程Verify中会被调用一次
+    /// 作用是将所有plugin加入plugin列表
+    /// 这一过程必须是原子的
     void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) {
+        std::lock_guard lk(PluginListManager::getLock());
+
         for (int i = 0; i < paths.size(); ++i) {
             auto &path = paths[i];
             auto authority = authorities[i];
@@ -171,35 +207,14 @@ namespace LibLoader {
             auto timedelta = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp2 - timestamp).count();
             logger.info("loaded plugin " + path + " in " + std::to_string(timedelta) + "ms");
 
-            LoaderPluginConfig cfg{path, handle, pluginInfo.event_func, pluginInfo.pluginAddr, authority};
-            PluginListManager::addNewPlugin(std::move(cfg), false);
+            LoaderPluginConfig cfg{path};
+            cfg.load(handle, pluginInfo.event_func, pluginInfo.pluginAddr);
+            cfg.disable();
+            cfg.authority = authority;
+
+            PluginListManager::addNewPlugin(std::move(cfg));
         }
     }
-
-    void loadNewPluginByPath(const std::string &_path, bool activateNow) {
-        void *handle = LoaderApi::libOpen(_path);
-        if (handle != nullptr) {
-            logger.error("failed to load new plugin: " + _path);
-            return;
-        }
-        auto pluginInfo = testSymbolExistance(handle, _path);
-        if (nullptr == pluginInfo.pluginAddr || nullptr == pluginInfo.event_func) {
-            LoaderApi::libClose(handle);
-            return;
-        }
-
-        PluginListManager::addNewPlugin({_path, handle, pluginInfo.event_func, pluginInfo.pluginAddr});
-        // todo 设计上应该是全部都要当场init，不存在activateNow == false的情况?
-        // todo(Antares): 这里代码写错了，init的签名见commonTypes.h: plugin_entrance_func_ptr，
-        //  之后把这一段重新设计一下
-        //  关于activateNow的这部分，最开始的想法是load和enable的区别，
-        //  activateNow=true就相当于是load+enable；false的话不enable，不会被event传递
-        //  实际考虑的时候确实有欠缺，需要再讨论一下
-        // auto init = (init_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_ENTRANCE));
-        // init(JNIEnvManager::getGvm(), JNIEnvs::Class_cpplib, logger.logMethod, JNIEnvs::koper);
-    }
-
-    ////////////////////////////////////
 
     /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用且仅调用一次
     /// 实际的入口，id_plugin_list 必须在这里初始化
@@ -209,7 +224,6 @@ namespace LibLoader {
         nlohmann::json j = readJsonFile(cfgPath);
 
         // 读取全部path
-        // todo(Antares): 增加插件权限的读取，需要讨论一下json格式
         auto [paths, authorities] = collect_plugins(cfgPath, std::move(j));
 
         if (paths.empty()) {
@@ -218,42 +232,5 @@ namespace LibLoader {
         }
 
         loadsAll(paths, authorities);
-    }
-
-    /// 激活目前所有存储的插件。被loader线程调用
-    /// 该函数在插件被 registerAllPlugin 全部注册完成后，调用一次
-    // todo(Antares): 需要讨论一下是否需要loader线程等待所有线程激活完成
-    //  可能是不必要的，如果能保证callEntranceFunc不会使得loader线程出现冲突
-    void activateAllPlugins() {
-        std::lock_guard lk(PluginListManager::getLock());
-
-        auto len = PluginListManager::count();
-
-        std::unique_ptr<std::promise<void>[]> promiselist(new std::promise<void>[len]);
-        std::unique_ptr<std::future<void>[]> futurelist(new std::future<void>[len]);
-
-        int i = 0;
-
-        std::function f = [&](const std::string &k, const LoaderPluginConfig &v) {
-            auto &pr = promiselist[i];
-            auto &fu = futurelist[i];
-            fu = pr.get_future();
-
-            auto entrance = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(v.handle, STRINGIFY(FUNC_ENTRANCE));
-
-            /// 创建新线程并指派第一个任务，激活插件并set value给future对象
-            ThreadController::getController().addThread(k, [&]() {
-                callEntranceFunc(entrance);
-                pr.set_value();
-            });
-            ++i;
-        };
-
-        /// 此处开始执行插件的激活
-        PluginListManager::run_over_pluginlist(f);
-
-        for (i = 0; i < len; ++i) {
-            futurelist[i].get();
-        }
     }
 } // namespace LibLoader

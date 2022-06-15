@@ -22,61 +22,68 @@
 #define MIRAICP_PRO_LOADERAPI_H
 
 
-#define __NOTHING__(X)
-#define __LOADER_API_INNER_(X) __NOTHING__(X)
-#define __LOADER_API__ __LOADER_API_INNER_(__COUNTER__)
-
-
 #include <jni.h>
 #include <string>
 #include <vector>
 
 
+constexpr int LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
+#define LOADERAPI_H_NOTHING(X)
+#define LOADERAPI_H_LOADER_API_INNER(X) LOADERAPI_H_NOTHING(X)
+#define LOADER_API_COUNT LOADERAPI_H_LOADER_API_INNER(__COUNTER__)
+#define LOADERAPI_H_GET_COUNTER (__COUNTER__ - LOADERAPI_H_COUNTER_BASE)
+
+
 // the API defs to be exposed
 namespace LibLoader::LoaderApi {
-    __LOADER_API__
-    std::vector<std::string> _showAllPluginName();
-
-    __LOADER_API__
-    void _enablePluginById(const std::string &);
-
-    __LOADER_API__
-    void _disablePluginById(const std::string &);
-
-    __LOADER_API__
-    void _enableAllPlugins();
-
-    __LOADER_API__
-    void _disableAllPlugins();
-
-    __LOADER_API__
-    void _loadNewPlugin(const std::string &, bool);
-
-    __LOADER_API__
-    void _unloadPluginById(const std::string &);
-
-    __LOADER_API__
+    LOADER_API_COUNT
     JNIEnv *_getEnv();
 
-    __LOADER_API__
+    LOADER_API_COUNT
     void _loggerInterface(const std::string &content, std::string name, int id, int level);
 
+    LOADER_API_COUNT
+    std::vector<std::string> _showAllPluginName();
+
+    LOADER_API_COUNT
+    void _enablePluginById(const std::string &);
+
+    LOADER_API_COUNT
+    void _disablePluginById(const std::string &);
+
+    LOADER_API_COUNT
+    void _enableAllPlugins();
+
+    LOADER_API_COUNT
+    void _disableAllPlugins();
+
+    LOADER_API_COUNT
+    void _loadNewPlugin(const std::string &, bool);
+
+    LOADER_API_COUNT
+    void _unloadPluginById(const std::string &);
+
     struct interface_funcs {
-        decltype(&_showAllPluginName) showAllPluginId;
-        decltype(&_enablePluginById) enablePluginById;
-        decltype(&_disablePluginById) disablePluginById;
-        decltype(&_enableAllPlugins) enableAllPlugins;
-        decltype(&_disableAllPlugins) disableAllPlugins;
-        decltype(&_loadNewPlugin) loadNewPlugin;
-        decltype(&_unloadPluginById) unloadPluginById;
         decltype(&_getEnv) getEnv;
         decltype(&_loggerInterface) loggerInterface;
+        decltype(&_showAllPluginName) showAllPluginId;
+        decltype(&_enablePluginById) enablePluginById = nullptr;
+        decltype(&_disablePluginById) disablePluginById = nullptr;
+        decltype(&_enableAllPlugins) enableAllPlugins = nullptr;
+        decltype(&_disableAllPlugins) disableAllPlugins = nullptr;
+        decltype(&_loadNewPlugin) loadNewPlugin = nullptr;
+        decltype(&_unloadPluginById) unloadPluginById = nullptr;
     };
 
     /// DON'T CALL THIS in MiraiCP plugins!!!
-    constexpr inline interface_funcs collect_interface_functions() {
-        static_assert(sizeof(interface_funcs) == sizeof(void *) * __COUNTER__);
-        return {
+    constexpr inline interface_funcs collect_interface_functions(bool admin) {
+        constexpr int counter = LOADERAPI_H_GET_COUNTER;
+        static_assert(sizeof(interface_funcs) == sizeof(void *) * counter);
+
+        constexpr int line0 = __LINE__;
+        interface_funcs t = {
+                _getEnv,
+                _loggerInterface,
                 _showAllPluginName,
                 _enablePluginById,
                 _disablePluginById,
@@ -84,9 +91,19 @@ namespace LibLoader::LoaderApi {
                 _disableAllPlugins,
                 _loadNewPlugin,
                 _unloadPluginById,
+        };
+        constexpr int line1 = __LINE__;
+
+        static_assert(line1 - line0 == counter + 3);
+
+        if (admin) return t;
+
+        interface_funcs t2 = {
                 _getEnv,
                 _loggerInterface,
+                _showAllPluginName,
         };
+        return t2;
     }
 } // namespace LibLoader::LoaderApi
 

@@ -24,7 +24,8 @@
 
 
 namespace LibLoader {
-    void callEntranceFunc(plugin_entrance_func_ptr func);
+    void callEntranceFuncAdmin(plugin_entrance_func_ptr func);
+    void callEntranceFuncNormal(plugin_entrance_func_ptr func);
     /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用一次
     /// 实际的入口，id_plugin_list 必须在这里初始化，该函数只会被调用一次
     void registerAllPlugin(jstring _cfgPath);

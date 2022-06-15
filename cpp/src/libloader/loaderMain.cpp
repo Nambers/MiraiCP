@@ -29,7 +29,7 @@ namespace LibLoader::LoaderApi {
 namespace LibLoader {
     volatile bool LoaderMain::loader_exit = false;
     void LoaderMain::loaderMain() {
-        activateAllPlugins();
+        PluginListManager::enableAll();
 
         while (!is_loader_exited()) mainloop();
 

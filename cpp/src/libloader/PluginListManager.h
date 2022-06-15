@@ -38,12 +38,12 @@ namespace LibLoader {
         typedef std::unordered_map<std::string, std::shared_ptr<LoaderPluginConfig>> PluginList;
 
     private:
-        PluginListManager() = default;
-        ~PluginListManager() = default;
-
-    private:
         static PluginList id_plugin_list;
         static std::recursive_mutex pluginlist_mtx;
+
+    public:
+        PluginListManager() = delete;
+        ~PluginListManager() = delete;
 
     public:
         /// 为保证一些外部操作是原子操作，允许在外部获取所对象的引用
@@ -51,6 +51,7 @@ namespace LibLoader {
 
     public:
         static std::vector<std::string> getAllPluginId();
+        static std::vector<std::string> getAllPluginPath();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
         static auto count() { return id_plugin_list.size(); }
@@ -58,14 +59,14 @@ namespace LibLoader {
         static bool empty() { return id_plugin_list.empty(); }
 
     public: // load
-        static void addNewPlugin(LoaderPluginConfig cfg, bool activateNow = true);
+        static bool addNewPlugin(LoaderPluginConfig cfg);
 
     public: // unload
         static void unloadAll();
         static void unloadById(const std::string &);
 
     public: // reload
-        static void reloadAllPlugin(jstring _cfgPath);
+        static void reloadAllPlugin();
 
     public: // enable
         static void enableAll();
@@ -76,7 +77,7 @@ namespace LibLoader {
         static void disableById(const std::string &);
 
     public:
-        static void run_over_pluginlist(const std::function<void(const std::string &, const LoaderPluginConfig &)> &);
+        static void run_over_pluginlist(const std::function<void(const std::string &, LoaderPluginConfig &)> &);
     };
 } // namespace LibLoader
 
