@@ -49,16 +49,6 @@ namespace LibLoader {
         return ans;
     }
 
-    std::vector<plugin_event_func_ptr> PluginListManager::getEnabledPluginsEventFunc() {
-        std::vector<plugin_event_func_ptr> ans;
-        std::lock_guard lk(pluginlist_mtx);
-        for (auto &&[k, v]: id_plugin_list) {
-            if (v->handle && v->enabled) {
-                ans.emplace_back(v->eventFunc);
-            }
-        }
-    }
-
     /// PluginList 仅存储plugin的信息，addNewPlugin 接收的是一个已经load 或者已经enable 的 Plugin
     /// 总之，addNewPlugin 只是把plugin加入到PluginList中，其他什么都不做
     /// cfg 中已经存储了handle，id等信息

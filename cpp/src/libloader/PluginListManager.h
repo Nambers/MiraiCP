@@ -54,7 +54,6 @@ namespace LibLoader {
     public:
         static std::vector<std::string> getAllPluginId();
         static std::vector<std::string> getAllPluginPath();
-        static std::vector<plugin_event_func_ptr> getEnabledPluginsEventFunc();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
         static auto count() { return id_plugin_list.size(); }
