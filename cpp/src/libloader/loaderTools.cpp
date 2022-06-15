@@ -17,27 +17,28 @@
 #include "loaderTools.h"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
-#include <iostream>
 #include <json.hpp>
 #include <utf8.h>
 
 
 namespace LibLoader {
-    std::vector<std::string> collect_plugins(const std::string &cfgPath, nlohmann::json j) {
+    std::pair<std::vector<std::string>, std::vector<PluginAuthority>> collect_plugins(const std::string &cfgPath, nlohmann::json j) {
         std::vector<std::string> paths;
+        std::vector<PluginAuthority> authorities;
         try {
-            auto &_paths = j["pluginpaths"];
-            if (!_paths.is_array()) {
+            auto &_pairs = j["pluginpaths"];
+            if (!_pairs.is_array()) {
                 throw std::exception();
             }
-            for (auto &&v: _paths) {
-                paths.emplace_back(v);
+            for (auto &&v: _pairs) {
+                paths.emplace_back(v["path"].get<std::string>());
+                authorities.emplace_back(v["authority"].get<PluginAuthority>());
             }
         } catch (...) {
             logger.error("failed to load json: " + cfgPath);
             return {};
         }
-        return paths;
+        return {std::move(paths), std::move(authorities)};
     }
 
     std::string jstring2str(jstring jStr) {

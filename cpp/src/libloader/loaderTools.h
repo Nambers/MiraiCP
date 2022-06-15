@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_LOADERTOOLS_H
 
 
+#include "LoaderPluginConfig.h"
 #include <fstream>
 #include <jni.h>
 #include <json.hpp>
@@ -40,7 +41,7 @@ namespace LibLoader {
         return j;
     }
 
-    std::vector<std::string> collect_plugins(const std::string &cfgPath, nlohmann::json j);
+    std::pair<std::vector<std::string>, std::vector<PluginAuthority>> collect_plugins(const std::string &cfgPath, nlohmann::json j);
 
     std::string jstring2str(jstring jStr);
 

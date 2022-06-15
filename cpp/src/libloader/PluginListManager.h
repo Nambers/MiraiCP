@@ -43,7 +43,6 @@ namespace LibLoader {
 
     private:
         static PluginList id_plugin_list;
-        static PluginList path_plugin_list;
         static std::recursive_mutex pluginlist_mtx;
 
     public:
@@ -59,7 +58,7 @@ namespace LibLoader {
         static bool empty() { return id_plugin_list.empty(); }
 
     public: // load
-        static void addPlugin(LoaderPluginConfig cfg);
+        static void addNewPlugin(LoaderPluginConfig cfg, bool activateNow = true);
 
     public: // unload
         static void unloadAll();

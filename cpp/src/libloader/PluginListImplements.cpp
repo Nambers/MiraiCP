@@ -40,16 +40,17 @@ namespace LibLoader {
     /// 该对象的地址将被用于传递给MiraiCP插件
     constexpr static LoaderApi::interface_funcs interfaces = LoaderApi::collect_interface_functions();
 
-    inline void callEntranceFunc(plugin_entrance_func_ptr func) {
+    void callEntranceFunc(plugin_entrance_func_ptr func) {
         func(interfaces);
     }
 
-    /// 测试符号存在性，并返回event func的地址。return nullptr代表符号测试未通过，不是一个可以使用的MiraiCP插件
+    /// 测试符号存在性，并返回event func的地址。return {nullptr, nullptr} 代表符号测试未通过，
+    /// 不是一个可以使用的MiraiCP插件
     /// 不会调用其中任何一个函数
     PluginAddrInfo testSymbolExistance(plugin_handle handle, const std::string &path) {
         // using static keyword; don't capture any data
         static auto errorMsg = [](const std::string &path) -> PluginAddrInfo {
-            logger.error("failed to find symbol in plugin " + path);
+            logger.error("failed to find symbol in plugin at location: " + path);
             return {nullptr, nullptr};
         };
 
@@ -68,52 +69,88 @@ namespace LibLoader {
         return {event_addr, pluginInfo};
     }
 
-    // unload将释放插件的内存，但不从插件列表删除；不会修改插件权限
-    void unload_plugin(LoaderPluginConfig &plugin) {
-        if (!plugin.handle) {
-            logger.warning("plugin " + plugin.config->id + " is already unloaded");
+
+    void disable_plugin(LoaderPluginConfig &plugin) {
+        if (nullptr == plugin.handle) {
+            logger.error("plugin " + plugin.getId() + " is not loaded!");
+            return;
+        }
+        if (!plugin.enabled) {
+            logger.warning("plugin " + plugin.getId() + " is already disabled");
             return;
         }
 
         auto disable_func = (plugin_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_EXIT));
         ThreadController::getController().callThreadEnd(plugin.config->id, disable_func);
+        plugin.disable();
+    }
+    // unload将释放插件的内存
+    // 不涉及插件列表的修改；不会修改插件权限
+    void unload_plugin(LoaderPluginConfig &plugin) {
+        if (nullptr == plugin.handle) {
+            logger.warning("plugin " + plugin.config->id + " is already unloaded");
+            return;
+        }
+
+        // first disable it
+        if (plugin.enabled) {
+            disable_plugin(plugin);
+        }
+
+        // then unload it
         LoaderApi::libClose(plugin.handle);
-        plugin.reset();
+        plugin.unload();
     }
 
+    // enable的前提是该插件已经被加载进内存，但尚未执行初始化函数，或者执行了Exit
+    // 不涉及插件列表的修改；不会修改插件权限
     void enable_plugin(LoaderPluginConfig &plugin) {
-        if (plugin.handle) {
-            logger.warning("plugin " + plugin.path + " is already disabled");
+        if (plugin.enabled) {
+            logger.warning("plugin " + plugin.getId() + " is already enabled");
             return;
         }
-
-        plugin.handle = LoaderApi::libOpen(plugin.path);
-
-        if (nullptr == plugin.handle) {
-            logger.error("failed to load plugin " + plugin.path);
-            return;
-        }
-
-        auto addrInfo = testSymbolExistance(plugin.handle, plugin.path);
-        if (nullptr == addrInfo.event_func || nullptr == addrInfo.pluginAddr) {
-            logger.error("failed to read symbol in plugin " + plugin.path);
-            LoaderApi::libClose(plugin.handle);
-            plugin.handle = nullptr;
+        if (plugin.handle == nullptr) {
+            logger.error("plugin " + plugin.getId() + " is not loaded!");
             return;
         }
 
         auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
-        ThreadController::getController().addThread(plugin.path, [&]() {
+        ThreadController::getController().addThread(plugin.getId(), [&]() {
             callEntranceFunc(func); // discard return value
         });
+        plugin.enable();
+    }
 
-        plugin.eventFunc = addrInfo.event_func;
-        plugin.config = addrInfo.pluginAddr;
+    void load_plugin(LoaderPluginConfig &plugin) {
+        if (plugin.handle != nullptr) {
+            logger.error("plugin at location " + plugin.path + " is already loaded!");
+            return;
+        }
+
+        auto handle = LoaderApi::libOpen(plugin.path);
+        if (handle == nullptr) {
+            logger.error("failed to load plugin at location " + plugin.path);
+            return;
+        }
+
+        auto symbols = testSymbolExistance(handle, plugin.path);
+        if (symbols.pluginAddr == nullptr || symbols.event_func == nullptr) {
+            logger.error("failed to find plugin symbol at location " + plugin.path);
+            return;
+        }
+
+        plugin.load(handle, symbols.event_func, symbols.pluginAddr);
+
+        plugin.enabled = false;
+        enable_plugin(plugin);
     }
 
     /// 仅加载并测试所有plugin的符号是否存在
-    void loadsAll(const std::vector<std::string> &paths) {
-        for (auto &&path: paths) {
+    void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) {
+        for (int i = 0; i < paths.size(); ++i) {
+            auto &path = paths[i];
+            auto authority = authorities[i];
+
             auto timestamp = std::chrono::system_clock::now();
 
             plugin_handle handle = LoaderApi::libOpen(path);
@@ -134,8 +171,8 @@ namespace LibLoader {
             auto timedelta = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp2 - timestamp).count();
             logger.info("loaded plugin " + path + " in " + std::to_string(timedelta) + "ms");
 
-            LoaderPluginConfig cfg{path, handle, pluginInfo.event_func, pluginInfo.pluginAddr};
-            PluginListManager::addPlugin(std::move(cfg));
+            LoaderPluginConfig cfg{path, handle, pluginInfo.event_func, pluginInfo.pluginAddr, authority};
+            PluginListManager::addNewPlugin(std::move(cfg), false);
         }
     }
 
@@ -151,7 +188,7 @@ namespace LibLoader {
             return;
         }
 
-        PluginListManager::addPlugin({_path, handle, pluginInfo.event_func, pluginInfo.pluginAddr});
+        PluginListManager::addNewPlugin({_path, handle, pluginInfo.event_func, pluginInfo.pluginAddr});
         // todo 设计上应该是全部都要当场init，不存在activateNow == false的情况?
         // todo(Antares): 这里代码写错了，init的签名见commonTypes.h: plugin_entrance_func_ptr，
         //  之后把这一段重新设计一下
@@ -173,14 +210,14 @@ namespace LibLoader {
 
         // 读取全部path
         // todo(Antares): 增加插件权限的读取，需要讨论一下json格式
-        auto paths = collect_plugins(cfgPath, std::move(j));
+        auto [paths, authorities] = collect_plugins(cfgPath, std::move(j));
 
         if (paths.empty()) {
             logger.warning("no plugin to load");
             return;
         }
 
-        loadsAll(paths);
+        loadsAll(paths, authorities);
     }
 
     /// 激活目前所有存储的插件。被loader线程调用

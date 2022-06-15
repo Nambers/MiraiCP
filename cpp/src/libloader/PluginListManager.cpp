@@ -18,6 +18,8 @@
 #include "LoaderLogger.h"
 #include "PluginConfig.h"
 #include "PluginListImplements.h"
+#include "ThreadController.h"
+#include "libOpen.h"
 #include "loaderTools.h"
 #include <future>
 #include <string>
@@ -25,7 +27,6 @@
 
 namespace LibLoader {
     PluginListManager::PluginList PluginListManager::id_plugin_list;
-    PluginListManager::PluginList PluginListManager::path_plugin_list;
     std::recursive_mutex PluginListManager::pluginlist_mtx;
 
     ////////////////////////////////////
@@ -42,16 +43,27 @@ namespace LibLoader {
         return ans;
     }
 
-    void PluginListManager::addPlugin(LoaderPluginConfig cfg) {
+    /// PluginList 仅存储plugin的信息，addNewPlugin 接收的是一个已经加载好的 Plugin
+    /// cfg 中已经存储了handle，id等信息
+    /// 如果插件id重复则应该取消加载
+    void PluginListManager::addNewPlugin(LoaderPluginConfig cfg, bool activateNow) {
         std::lock_guard lk(pluginlist_mtx);
 
-        // todo(Antares): 重写
-        //        auto cfgptr = (MiraiCP::PluginConfig *) LoaderApi::libSymbolLookup(cfg.handle, STRINGIFY(PLUGIN_INFO));
-        //        if (cfgptr == nullptr) {
-        //            logger.error("Runtime Error: plugin config does not exist, did you forget to check symbol existance?");
-        //            return;
-        //        }
-        //        id_plugin_list.insert(std::make_pair(cfgptr->id, std::move(cfg)));
+        auto id = cfg.getId();
+        auto handle = cfg.handle;
+        auto pr = id_plugin_list.insert(std::make_pair(id, std::make_shared<LoaderPluginConfig>(std::move(cfg))));
+
+        if (!pr.second) {
+            logger.error("Plugin with id: " + id + " Already exists");
+            LoaderApi::libClose(handle);
+            return;
+        }
+
+        auto &plugincfg = *(pr.first->second);
+
+        plugincfg.disable();
+
+        if (activateNow) enable_plugin(plugincfg);
     }
 
     /// unload全部插件，但不会修改任何key
@@ -77,7 +89,6 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         unloadAll();
         id_plugin_list.clear();
-        path_plugin_list.clear();
 
         std::string cfgPath = jstring2str(_cfgPath);
         // todo(antares): this function is not finished

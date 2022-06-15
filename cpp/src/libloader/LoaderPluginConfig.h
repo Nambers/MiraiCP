@@ -39,7 +39,13 @@ namespace LibLoader {
             return config->id;
         }
 
-        void reset() {
+        void load(plugin_handle _handle, plugin_func_ptr _eventFunc, const MiraiCP::PluginConfig *_config) {
+            handle = _handle;
+            eventFunc = _eventFunc;
+            config = _config;
+        }
+
+        void unload() {
             // cannot modify path
             handle = nullptr;
             eventFunc = nullptr;

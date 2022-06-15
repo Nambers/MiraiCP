@@ -59,7 +59,6 @@ namespace LibLoader {
         // also, to init "std::thread" lazily, use smart pointers
         typedef std::pair<std::shared_ptr<threadWorker>, std::shared_ptr<std::thread>> workerThread;
 
-
     private:
         std::unordered_map<std::string, workerThread> thread_memory;
         std::recursive_mutex _mtx;
@@ -86,6 +85,7 @@ namespace LibLoader {
     public:
         void addThread(const std::string &name, void_callable func);
 
+        /// 该函数阻塞地结束一个线程
         void callThreadEnd(const std::string &name, void_callable func);
 
         void submitJob(const std::string &name, void_callable func);
