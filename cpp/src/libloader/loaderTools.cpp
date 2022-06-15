@@ -39,7 +39,7 @@ namespace LibLoader {
                 {
                     PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;
 
-                    if (v.find("authority") != v.end()) {
+                    if (v.contains("authority")) {
                         // change this if you want to support multiple authorities
                         authority = v["authority"].get<unsigned long long>() ? PLUGIN_AUTHORITY_ADMIN : PLUGIN_AUTHORITY_NORMAL;
                     }

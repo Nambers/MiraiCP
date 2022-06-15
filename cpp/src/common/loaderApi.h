@@ -63,6 +63,9 @@ namespace LibLoader::LoaderApi {
     LOADER_API_COUNT
     void _unloadPluginById(const std::string &);
 
+    LOADER_API_COUNT
+    void _reloadPluginById(const std::string &);
+
     struct interface_funcs {
         decltype(&_getEnv) getEnv;
         decltype(&_loggerInterface) loggerInterface;
@@ -73,6 +76,7 @@ namespace LibLoader::LoaderApi {
         decltype(&_disableAllPlugins) disableAllPlugins = nullptr;
         decltype(&_loadNewPlugin) loadNewPlugin = nullptr;
         decltype(&_unloadPluginById) unloadPluginById = nullptr;
+        decltype(&_reloadPluginById) reloadPluginById = nullptr;
     };
 
     /// DON'T CALL THIS in MiraiCP plugins!!!
@@ -91,6 +95,7 @@ namespace LibLoader::LoaderApi {
                 _disableAllPlugins,
                 _loadNewPlugin,
                 _unloadPluginById,
+                _reloadPluginById,
         };
         constexpr int line1 = __LINE__;
 

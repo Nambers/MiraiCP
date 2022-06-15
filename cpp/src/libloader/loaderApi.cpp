@@ -65,6 +65,11 @@ namespace LibLoader::LoaderApi {
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::UNLOAD, id));
     }
 
+    void _reloadPluginById(const std::string &id){
+        std::lock_guard lk(task_mtx);
+        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::RELOAD, id));
+    }
+
     JNIEnv *_getEnv() {
         return JNIEnvManager::getEnv();
     }

@@ -19,7 +19,6 @@
 #include "PluginConfig.h"
 #include "PluginListImplements.h"
 #include "libOpen.h"
-#include "loaderTools.h"
 #include <future>
 #include <string>
 
@@ -48,6 +47,16 @@ namespace LibLoader {
             ans.emplace_back(v->path);
         }
         return ans;
+    }
+
+    std::vector<plugin_event_func_ptr> PluginListManager::getEnabledPluginsEventFunc() {
+        std::vector<plugin_event_func_ptr> ans;
+        std::lock_guard lk(pluginlist_mtx);
+        for (auto &&[k, v]: id_plugin_list) {
+            if (v->handle && v->enabled) {
+                ans.emplace_back(v->eventFunc);
+            }
+        }
     }
 
     /// PluginList 仅存储plugin的信息，addNewPlugin 接收的是一个已经load 或者已经enable 的 Plugin
@@ -108,7 +117,32 @@ namespace LibLoader {
         id_plugin_list.clear();
         for (auto &&cfg: cfgs) {
             loadNewPluginByPath(cfg->path, true);
-            id_plugin_list[cfg->getId()] = cfg;
+            auto pr = id_plugin_list.insert(std::make_pair(cfg->getId(), cfg));
+            if (!pr.second) {
+                logger.error("插件id: " + cfg->getId() + " 重复加载，将自动unload加载较晚的插件");
+                unload_plugin(*cfg);
+            }
+        }
+    }
+
+    /// reload 一个插件。
+    /// 该函数设计时需要注意，我们假设插件仍然保存在原路径，但是不能保证id仍然不变
+    /// key必须被清除然后重新添加
+    void PluginListManager::reloadById(const std::string &id) {
+        std::lock_guard lk(pluginlist_mtx);
+        auto it = id_plugin_list.find(id);
+        if (it == id_plugin_list.end()) {
+            logger.error(id + "尚未加载");
+            return;
+        }
+
+        auto &cfg = *(it->second);
+        unload_plugin(cfg);
+        load_plugin(cfg, true);
+
+        if (cfg.getId() != it->first) {
+            logger.warning("插件id: " + it->first + " 被修改为: " + cfg.getId());
+            changeKey(it->first, cfg.getId());
         }
     }
 
@@ -148,10 +182,22 @@ namespace LibLoader {
 
     /// 遍历所有插件，by id（默认是不会by path的，path是用于id变更的特殊情况的备份）
     /// 注意：不会检查插件是否enable，请自行检查
-    void PluginListManager::run_over_pluginlist(const std::function<void(const std::string &, LoaderPluginConfig &)> &f) {
+    void PluginListManager::run_over_pluginlist(const std::function<void(LoaderPluginConfig &)> &f) {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
-            f(k, *v);
+            f(*v);
+        }
+    }
+
+    void PluginListManager::changeKey(const std::string &key, const std::string &new_key) {
+        std::lock_guard lk(pluginlist_mtx);
+        auto ptr = id_plugin_list[key];
+        id_plugin_list.erase(key);
+        auto pr = id_plugin_list.insert(std::make_pair(new_key, ptr));
+        if (!pr.second) {
+            logger.error("Reload失败！插件id: " + new_key + " 已经被另一个插件占用。当前插件将被unload");
+            unload_plugin(*ptr);
+            return;
         }
     }
 } // namespace LibLoader

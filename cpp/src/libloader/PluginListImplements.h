@@ -30,14 +30,12 @@ namespace LibLoader {
     /// 实际的入口，id_plugin_list 必须在这里初始化，该函数只会被调用一次
     void registerAllPlugin(jstring _cfgPath);
 
-    /// 激活目前所有存储的插件。被loader线程调用
-    /// 该函数在插件被 registerAllPlugin 全部注册完成后，调用一次
-    void activateAllPlugins();
-
     void loadNewPluginByPath(const std::string &_path, bool activateNow);
 
     void enable_plugin(LoaderPluginConfig &plugin);
 
     void unload_plugin(LoaderPluginConfig &plugin);
+
+    void load_plugin(LoaderPluginConfig &plugin, bool alsoEnablePlugin);
 } // namespace LibLoader
 #endif //MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H

@@ -16,9 +16,12 @@
 
 /// 本文件的全部函数实现都是kt线程调用的函数
 
+
 #include "ktInterface.h"
 #include "JNIEnvManager.h"
 #include "JNIEnvs.h"
+#include "PluginListManager.h"
+#include "ThreadController.h"
 #include "commonTypes.h"
 #include "eventHandle.h"
 #include "loaderMain.h"
@@ -31,10 +34,6 @@
 namespace LibLoader {
     void registerAllPlugin(jstring);
     std::thread loaderThread;
-    std::vector<plugin_func_ptr> getEventFuncAddr(JNIEnv *env) {
-        // todo(Antares): 获取所有的插件event函数指针
-        return {};
-    }
 } // namespace LibLoader
 
 
@@ -63,20 +62,32 @@ jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
     return nullptr;
 }
 
+/// 事件广播，由kt（主）线程调用
+/// 广播过程中应当锁住 plugin list，以防止内存访问冲突
+/// 广播给插件的过程中由插件线程完成所有任务
+/// 插件线程无法给plugin list加锁，因为插件端只能向loader线程发送某个任务的申请
+/// loader线程可能会尝试获取 plugin list 的锁，
+/// 但Event函数在派发任务后是会立刻退出并释放锁的，
+/// 不会造成死锁
 jobject Event(JNIEnv *env, jobject, jstring content) {
-    std::string str = LibLoader::jstring2str(content);
+    static std::string str;
+    str = LibLoader::jstring2str(content);
     if (str.find("\"id\":1001") != std::string::npos) {
         LibLoader::builtInCommand(str);
         return nullptr;
     }
 
-    auto entrances = LibLoader::getEventFuncAddr(env);
-    for (auto a: entrances) {
-        // todo(Antares): 实现
-        // a(str);
-        // 解析交给MiraiCP吧
-        // 异常也应该在MiraiCP中捕获
-    }
+    // static lambda，不可以捕获参数！str被声明为static了会被自动捕获
+    static std::function broadcast_func = [](LibLoader::LoaderPluginConfig &cfg) {
+        if (cfg.handle && cfg.enabled) {
+            LibLoader::ThreadController::getController().submitJob(cfg.getId(), [&]() {
+                cfg.eventFunc(str);
+            });
+        }
+    };
+
+    LibLoader::PluginListManager::run_over_pluginlist(broadcast_func);
+
     return nullptr;
 }
 

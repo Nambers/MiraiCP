@@ -33,13 +33,15 @@
 
 
 namespace LibLoader {
-    // todo(Antares): 需要能从path以及id获取到config，改为std::shared_ptr<LoaderPluginConfig>
     class PluginListManager {
         typedef std::unordered_map<std::string, std::shared_ptr<LoaderPluginConfig>> PluginList;
 
     private:
         static PluginList id_plugin_list;
         static std::recursive_mutex pluginlist_mtx;
+
+    private:
+        static void changeKey(const std::string &key, const std::string &new_key);
 
     public:
         PluginListManager() = delete;
@@ -52,6 +54,7 @@ namespace LibLoader {
     public:
         static std::vector<std::string> getAllPluginId();
         static std::vector<std::string> getAllPluginPath();
+        static std::vector<plugin_event_func_ptr> getEnabledPluginsEventFunc();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
         static auto count() { return id_plugin_list.size(); }
@@ -67,6 +70,7 @@ namespace LibLoader {
 
     public: // reload
         static void reloadAllPlugin();
+        static void reloadById(const std::string &);
 
     public: // enable
         static void enableAll();
@@ -77,7 +81,7 @@ namespace LibLoader {
         static void disableById(const std::string &);
 
     public:
-        static void run_over_pluginlist(const std::function<void(const std::string &, LoaderPluginConfig &)> &);
+        static void run_over_pluginlist(const std::function<void(LoaderPluginConfig &)> &f);
     };
 } // namespace LibLoader
 

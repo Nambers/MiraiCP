@@ -65,6 +65,9 @@ namespace LibLoader {
         PluginListManager::disableById(id);
     }
 
+    void loader_reloadPluginById(const std::string &id){
+        PluginListManager::reloadById(id);
+    }
     ////////////////////////////////////
 
     void LoaderMain::mainloop() {
@@ -98,6 +101,9 @@ namespace LibLoader {
                     break;
                 case LOADER_TASKS::UNLOAD:
                     loader_unloadPluginById(task.second);
+                    break;
+                case LOADER_TASKS::RELOAD:
+                    loader_reloadPluginById(task.second);
                     break;
                 default:
                     throw std::exception();

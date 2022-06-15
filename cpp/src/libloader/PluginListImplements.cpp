@@ -29,13 +29,12 @@
 
 namespace LibLoader {
     struct PluginAddrInfo {
-        plugin_func_ptr event_func;
+        plugin_event_func_ptr event_func;
         const MiraiCP::PluginConfig *pluginAddr;
     };
 
     ////////////////////////////////////
     /// 这部分是一些工具函数、对象
-    // todo(Antares): 这部分的path全部换成id
 
     /// 该对象的地址将被用于传递给MiraiCP插件
     constexpr static LoaderApi::interface_funcs interfaces = LoaderApi::collect_interface_functions(true);
@@ -66,7 +65,7 @@ namespace LibLoader {
         symbol = LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_EXIT));
         if (!symbol) return errorMsg(path);
 
-        auto event_addr = (plugin_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_EVENT));
+        auto event_addr = (plugin_event_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_EVENT));
         if (!event_addr) return errorMsg(path);
 
         auto pluginInfo = (const MiraiCP::PluginConfig *) LoaderApi::libSymbolLookup(handle, STRINGIFY(PLUGIN_INFO));

@@ -30,6 +30,7 @@ namespace LibLoader {
         LOAD_NEW_ACTIVATENOW,
         LOAD_NEW_DONTACTIVATE,
         UNLOAD,
+        RELOAD,
         TASK_TYPES_COUNT [[maybe_unused]],
     };
 
