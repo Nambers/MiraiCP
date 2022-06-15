@@ -29,9 +29,9 @@ namespace LibLoader {
 
     struct LoaderPluginConfig {
         const std::string path;
-        plugin_handle handle;
-        plugin_func_ptr eventFunc;
-        const MiraiCP::PluginConfig *config;
+        plugin_handle handle = nullptr;
+        plugin_func_ptr eventFunc = nullptr;
+        const MiraiCP::PluginConfig *config = nullptr;
         PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;
         bool enabled = false;
 

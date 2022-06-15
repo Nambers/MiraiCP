@@ -124,7 +124,10 @@ namespace LibLoader {
 
         auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
         ThreadController::getController().addThread(plugin.getId(), [&]() {
-            callEntranceFuncAdmin(func);
+            if (plugin.authority == PLUGIN_AUTHORITY_ADMIN)
+                callEntranceFuncAdmin(func);
+            else
+                callEntranceFuncNormal(func);
         });
         plugin.enable();
     }
@@ -156,22 +159,9 @@ namespace LibLoader {
     ////////////////////////////////////
 
     void loadNewPluginByPath(const std::string &_path, bool activateNow) {
-        void *handle = LoaderApi::libOpen(_path);
-        if (handle != nullptr) {
-            logger.error("failed to load new plugin: " + _path);
-            return;
-        }
-        auto pluginInfo = testSymbolExistance(handle, _path);
-        if (nullptr == pluginInfo.pluginAddr || nullptr == pluginInfo.event_func) {
-            LoaderApi::libClose(handle);
-            return;
-        }
-
         LoaderPluginConfig cfg{_path};
 
-        cfg.load(handle, pluginInfo.event_func, pluginInfo.pluginAddr);
-        cfg.disable();
-        if (activateNow) enable_plugin(cfg);
+        load_plugin(cfg, activateNow);
 
         PluginListManager::addNewPlugin(std::move(cfg));
     }
@@ -187,29 +177,17 @@ namespace LibLoader {
             auto &path = paths[i];
             auto authority = authorities[i];
 
+            LoaderPluginConfig cfg{path};
+
             auto timestamp = std::chrono::system_clock::now();
 
-            plugin_handle handle = LoaderApi::libOpen(path);
-            if (!handle) {
-                logger.error("failed to load plugin at " + path);
-                continue;
-            }
-
-            // test symbol existance
-            auto pluginInfo = testSymbolExistance(handle, path);
-            if (nullptr == pluginInfo.pluginAddr || nullptr == pluginInfo.event_func) {
-                LoaderApi::libClose(handle);
-                continue;
-            }
+            load_plugin(cfg, false);
 
             auto timestamp2 = std::chrono::system_clock::now();
 
             auto timedelta = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp2 - timestamp).count();
             logger.info("loaded plugin " + path + " in " + std::to_string(timedelta) + "ms");
 
-            LoaderPluginConfig cfg{path};
-            cfg.load(handle, pluginInfo.event_func, pluginInfo.pluginAddr);
-            cfg.disable();
             cfg.authority = authority;
 
             PluginListManager::addNewPlugin(std::move(cfg));
