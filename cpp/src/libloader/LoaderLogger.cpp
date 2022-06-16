@@ -54,9 +54,7 @@ namespace LibLoader {
                 {"id", id},
                 {"log", content}};
         if (!name.empty()) j["name"] = std::move(name);
-        log0(content, level, j, JNIEnvs::getEnv());
-    }
-    void LoaderLogger::log0(const string &content, int level, nlohmann::json j, JNIEnv *env) {
-        env->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, str2jstring(j.dump().c_str()), (jint) level);
+        auto s = j.dump();
+        JNIEnvs::getEnv()->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, LibLoader::str2jstring(s.c_str()), static_cast<jint>(level));
     }
 } // namespace LibLoader

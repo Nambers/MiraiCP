@@ -18,7 +18,6 @@
 #define MIRAICP_PRO_LOADERLOGGER_H
 
 
-#include "json.hpp"
 #include <jni.h>
 #include <string>
 #include <vector>
@@ -39,11 +38,10 @@ namespace LibLoader {
         void info(const string &);
         void warning(const string &);
         void error(const string &);
-        void call_logger(const string &content, string name, int id, int level);
 
     public:
         /// 实际暴露的接口
-        void log0(const string &content, int level, nlohmann::json j, JNIEnv *env);
+        void call_logger(const string &content, string name, int id, int level);
 
     public:
         static std::string vector2string(const std::vector<std::string> &);

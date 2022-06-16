@@ -16,13 +16,11 @@
 
 #include "loaderApi.h"
 #include "JNIEnvManager.h"
-#include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
 #include "PluginListManager.h"
 #include <mutex>
 #include <queue>
-#include <utility>
 
 
 namespace LibLoader::LoaderApi {
@@ -72,15 +70,11 @@ namespace LibLoader::LoaderApi {
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::RELOAD, id));
     }
 
-    std::pair<jclass, jmethodID> _getConfigClassAndMethod() {
-        return std::make_pair(JNIEnvs::Class_cpplib, JNIEnvs::koper);
-    }
-
     JNIEnv *_getEnv() {
         return JNIEnvManager::getEnv();
     }
 
-    void _loggerInterface(const std::string &content, int level, nlohmann::json json, JNIEnv *env) {
-        logger.log0(content, level, std::move(json), env);
+    void _loggerInterface(const std::string &content, std::string name, int id, int level) {
+        logger.call_logger(content, std::move(name), id, level);
     }
 } // namespace LibLoader::LoaderApi
