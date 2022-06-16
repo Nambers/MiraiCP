@@ -17,95 +17,88 @@
 #ifndef MIRAICP_PRO_CONFIG_H
 #define MIRAICP_PRO_CONFIG_H
 
+#include <jni.h> // todo(Antares): 删除掉<jni.h>的include
 #include <json.hpp>
-#include <jni.h>
 
-namespace MiraiCP {
-    /// @brief 配置类声明, 主要存放各种jmethodid, MiraiCP内部使用, 不需要更改或其他操作
-    /// @internal 一般为MiraiCP内部调用jni接口使用
-    /// @class Config
-    namespace Config {
-        /// kt中JNI接口类
-        extern jclass CPPLib;
-        /// 调用mirai方法
-        extern jmethodID KOperation;
 
-        /// 操作id
-        enum operation_set {
-            /// 撤回信息
-            Recall,
-            /// 发送信息
-            Send,
-            /// 查询信息接口
-            RefreshInfo,
-            /// 上传图片
-            UploadImg,
-            /// 取好友列表
-            QueryBFL,
-            /// 取群组列表
-            QueryBGL,
-            /// 上传文件
-            SendFile,
-            /// 查询文件信息
-            RemoteFileInfo,
-            /// 查询图片下载地址
-            QueryImgInfo,
-            /// 禁言
-            MuteM,
-            /// 查询权限
-            QueryM,
-            /// 踢出
-            KickM,
-            /// 取群主
-            QueryOwner,
-            /// 语音
-            Voice,
-            /// 查询群成员列表
-            QueryML,
-            /// 群设置
-            GroupSetting,
-            /// 构建转发信息
-            Buildforward,
-            /// 好友申请事件
-            Nfroperation,
-            /// 群聊邀请事件
-            Gioperation,
-            /// 回复(引用并发送)
-            SendWithQuote,
-            /// 群公告操作
-            Announcement,
-            /// 定时任务
-            TimeOut,
-            /// 发送戳一戳
-            SendNudge,
-            /// 下一条信息
-            NextMsg,
-            /// 更改权限
-            ModifyAdmin,
-            /// 群成员申请入群
-            MemberJoinRequest,
-            /// 图片是否已经上传
-            ImageUploaded,
-            /// 注册指令
-            CommandReg,
-            /// 改名称
-            ChangeNameCard,
-        };
-
-        /**
-         * @brief 调用mirai操作
-         * @param type 操作id
-         * @param data 传入数据
-         * @return 返回数据
-         */
-        std::string koperation(operation_set type, const nlohmann::json &data, JNIEnv * = nullptr,
-                               bool catchErr = true, const std::string &errorInfo = "");
-
-        void construct(jclass, jmethodID);
-
-        void destruct();
+/// @brief 配置类声明,  MiraiCP内部使用, 不需要更改或其他操作
+/// @internal 一般为MiraiCP内部调用jni接口使用
+/// @namespace KtOperation
+namespace MiraiCP::KtOperation {
+    /// 操作id
+    enum operation_set {
+        /// 撤回信息
+        Recall,
+        /// 发送信息
+        Send,
+        /// 查询信息接口
+        RefreshInfo,
+        /// 上传图片
+        UploadImg,
+        /// 取好友列表
+        QueryBFL,
+        /// 取群组列表
+        QueryBGL,
+        /// 上传文件
+        SendFile,
+        /// 查询文件信息
+        RemoteFileInfo,
+        /// 查询图片下载地址
+        QueryImgInfo,
+        /// 禁言
+        MuteM,
+        /// 查询权限
+        QueryM,
+        /// 踢出
+        KickM,
+        /// 取群主
+        QueryOwner,
+        /// 语音
+        Voice,
+        /// 查询群成员列表
+        QueryML,
+        /// 群设置
+        GroupSetting,
+        /// 构建转发信息
+        Buildforward,
+        /// 好友申请事件
+        Nfroperation,
+        /// 群聊邀请事件
+        Gioperation,
+        /// 回复(引用并发送)
+        SendWithQuote,
+        /// 群公告操作
+        Announcement,
+        /// 定时任务
+        TimeOut,
+        /// 发送戳一戳
+        SendNudge,
+        /// 下一条信息
+        NextMsg,
+        /// 更改权限
+        ModifyAdmin,
+        /// 群成员申请入群
+        MemberJoinRequest,
+        /// 图片是否已经上传
+        ImageUploaded,
+        /// 注册指令
+        CommandReg,
+        /// 改名称
+        ChangeNameCard,
     };
 
-} // namespace MiraiCP
+    /**
+     * @brief 调用mirai操作
+     * @param type 操作id
+     * @param data 传入数据
+     * @return 返回数据
+     */
+    std::string ktOperation(
+            operation_set type,
+            nlohmann::json data,
+            JNIEnv * = nullptr, // todo(Antares): 删除掉JNIEnv
+            bool catchErr = true,
+            const std::string &errorInfo = "");
+} // namespace MiraiCP::KtOperation
 
 #endif //MIRAICP_PRO_CONFIG_H

@@ -55,7 +55,7 @@ namespace MiraiCP {
         temp["botid"] = c->botid();
         if (display.has_value())
             temp["display"] = display->toJson();
-        std::string re = Config::koperation(Config::Buildforward, temp, env);
+        std::string re = KtOperation::ktOperation(KtOperation::Buildforward, temp, env);
         ErrorHandle(re, "");
         return MessageSource::deserializeFromString(re);
     }

@@ -24,7 +24,7 @@ namespace MiraiCP {
     void MessageSource::recall(JNIEnv *env) const {
         json j;
         j["source"] = this->serializeToString();
-        std::string re = Config::koperation(Config::Recall, j, env);
+        std::string re = KtOperation::ktOperation(KtOperation::Recall, j, env);
         if (re == "Y") return;
         if (re == "E2") throw RecallException(MIRAICP_EXCEPTION_WHERE);
     }

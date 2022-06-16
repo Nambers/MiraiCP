@@ -17,6 +17,8 @@
 #ifndef MIRAICP_PRO_CPPPLUGIN_H
 #define MIRAICP_PRO_CPPPLUGIN_H
 
+#include <utility>
+
 #include "Logger.h"
 #include "PluginConfig.h"
 
@@ -24,19 +26,16 @@ namespace MiraiCP {
     /// 插件父类
     class CPPPlugin {
     public:
-        /// @brief 插件信息
-        PluginConfig config;
-        /// @brief 插件级logger
-        static PluginLogger *pluginLogger;
+        CPPPlugin() = default;
+        virtual ~CPPPlugin() = default;
 
-        static CPPPlugin *plugin;
+    public:
+        static std::unique_ptr<CPPPlugin> plugin;
 
         /// 插件启用时调用一次
         virtual void onEnable() {}
 
         virtual void onDisable() {}
-
-        explicit CPPPlugin(PluginConfig c) : config(std::move(c)) {}
     };
 
 } // namespace MiraiCP

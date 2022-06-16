@@ -35,7 +35,7 @@ namespace MiraiCP {
         sign["MiraiCode"] = true;
         sign["groupid"] = groupid;
         obj["sign"] = sign.dump();
-        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
+        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj, env);
         return MessageSource::deserializeFromString(re);
     }
 

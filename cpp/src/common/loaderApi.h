@@ -44,10 +44,10 @@ namespace LibLoader::LoaderApi {
     std::string pluginOperation(const std::string &);
 
     LOADER_API_COUNT
-    void loggerInterface(const std::string &, std::string, int, int);
+    void loggerInterface(const std::string &content, std::string name, long long id, int level);
 
     LOADER_API_COUNT
-    std::vector<std::string> showAllPluginName();
+    std::vector<std::string> showAllPluginId();
 
     LOADER_API_COUNT
     void enablePluginById(const std::string &);
@@ -75,7 +75,7 @@ namespace LibLoader::LoaderApi {
         decltype(&getEnv) _getEnv;
         decltype(&pluginOperation) _pluginOperation;
         decltype(&loggerInterface) _loggerInterface;
-        decltype(&showAllPluginName) _showAllPluginId;
+        decltype(&showAllPluginId) _showAllPluginId;
         decltype(&enablePluginById) _enablePluginById = nullptr;
         decltype(&disablePluginById) _disablePluginById = nullptr;
         decltype(&enableAllPlugins) _enableAllPlugins = nullptr;
@@ -89,34 +89,34 @@ namespace LibLoader::LoaderApi {
     constexpr inline interface_funcs collect_interface_functions(bool admin) {
         constexpr int counter = LOADERAPI_H_GET_COUNTER;
         static_assert(sizeof(interface_funcs) == sizeof(void *) * counter);
+        if (admin) {
+            constexpr int line0 = __LINE__;
+            interface_funcs t = {
+                    getEnv,
+                    pluginOperation,
+                    loggerInterface,
+                    showAllPluginId,
+                    enablePluginById,
+                    disablePluginById,
+                    enableAllPlugins,
+                    disableAllPlugins,
+                    loadNewPlugin,
+                    unloadPluginById,
+                    reloadPluginById,
+            };
+            constexpr int line1 = __LINE__;
 
-        constexpr int line0 = __LINE__;
-        interface_funcs t = {
-                getEnv,
-                pluginOperation,
-                loggerInterface,
-                showAllPluginName,
-                enablePluginById,
-                disablePluginById,
-                enableAllPlugins,
-                disableAllPlugins,
-                loadNewPlugin,
-                unloadPluginById,
-                reloadPluginById,
-        };
-        constexpr int line1 = __LINE__;
-
-        static_assert(line1 - line0 == counter + 3);
-
-        if (admin) return t;
-
-        interface_funcs t2 = {
-                getEnv,
-                pluginOperation,
-                loggerInterface,
-                showAllPluginName,
-        };
-        return t2;
+            static_assert(line1 - line0 == counter + 3);
+            return t;
+        } else {
+            interface_funcs t2 = {
+                    getEnv,
+                    pluginOperation,
+                    loggerInterface,
+                    showAllPluginId,
+            }; // no admin functions
+            return t2;
+        }
     }
 } // namespace LibLoader::LoaderApi
 

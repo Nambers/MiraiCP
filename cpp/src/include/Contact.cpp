@@ -40,7 +40,7 @@ namespace MiraiCP {
         sign["MiraiCode"] = true;
         sign["groupid"] = this->groupid();
         obj["sign"] = sign.dump();
-        std::string re = Config::koperation(Config::SendWithQuote, obj, env);
+        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj, env);
         ErrorHandle(re, "");
         return MessageSource::deserializeFromString(re);
     }
@@ -86,7 +86,7 @@ namespace MiraiCP {
         source["path"] = path;
         j["source"] = source.dump();
         j["contactSource"] = this->toString();
-        std::string re = Config::koperation(Config::Voice, j, env);
+        std::string re = KtOperation::ktOperation(KtOperation::Voice, j, env);
         if (re == "E1") {
             throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在", MIRAICP_EXCEPTION_WHERE);
         } else if (re == "E2") {

@@ -25,19 +25,29 @@
 // 开始对接JNI接口代码
 
 using json = nlohmann::json;
+
+namespace LibLoader::LoaderApi {
+    const interface_funcs const *get_loader_apis();
+
+    void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis);
+
+    void reset_loader_apis();
+} // namespace LibLoader::LoaderApi
+
 extern "C" {
-void Init(LibLoader::LoaderApi::interface_funcs funcs) {
+/// 插件开启入口
+void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
+    static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
     using namespace MiraiCP;
-    JNIEnvManager::getEnvMethod = funcs.getEnv;
+
+    LibLoader::LoaderApi::set_loader_apis(&funcs);
+
     try {
-        //初始化日志模块
-        auto tmp = funcs.getConfigClassAndMethod();
-        Config::construct(tmp.first, tmp.second);
-        Logger::logger.init(funcs.loggerInterface);
         enrollPlugin();
+
         // plugin == nullptr 无插件实例加载
         if (CPPPlugin::plugin != nullptr) {
-            CPPPlugin::pluginLogger = new PluginLogger(&Logger::logger);
+            new PluginLogger(&Logger::logger);
             CPPPlugin::plugin->onEnable();
         }
     } catch (const MiraiCPExceptionBase &e) {
@@ -45,10 +55,13 @@ void Init(LibLoader::LoaderApi::interface_funcs funcs) {
     }
 }
 
-/*
-     * 插件结束事件(也可能是暂时的disable)
-     */
-void PluginDisable() {
+
+/// 插件结束(也可能是暂时的disable)
+void FUNC_EXIT() {
+    static_assert(std::is_same_v<decltype(&FUNC_EXIT), LibLoader::plugin_func_ptr>);
+
+    LibLoader::LoaderApi::reset_loader_apis();
+
     if (MiraiCP::CPPPlugin::plugin == nullptr) return;
     using namespace MiraiCP;
     try {
@@ -59,11 +72,12 @@ void PluginDisable() {
     CPPPlugin::plugin = nullptr;
 }
 
-/*
-    * 消息解析分流
-     * env != null, call from jni
-    */
-void Event(std::string content) {
+
+/// 消息解析分流
+/// env != null, call from jni
+void FUNC_EVENT(std::string content) {
+    static_assert(std::is_same_v<decltype(&FUNC_EVENT), LibLoader::plugin_event_func_ptr>);
+
     using namespace MiraiCP;
     json j;
     try {
@@ -222,12 +236,6 @@ void Event(std::string content) {
         Logger::logger.error(e.what());
         Logger::logger.error("info:", content);
     }
-}
-
-MiraiCP::PluginConfig MiraiCPPluginInfo() {
-    if (MiraiCP::CPPPlugin::plugin == nullptr)
-        return {"null", "null", "null", "null"};
-    return MiraiCP::CPPPlugin::plugin->config;
 }
 }
 //结束对接JNI接口代码

@@ -38,7 +38,7 @@ namespace MiraiCP {
             return;
         nlohmann::json j;
         j["source"] = Contact(4, 0, 0, "", this->id).toString();
-        LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));
+        LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, j, env));
         this->_avatarUrl = tmp.avatarUrl;
         this->_nick = tmp.nickornamecard;
     }
@@ -46,7 +46,7 @@ namespace MiraiCP {
     std::vector<QQID> Bot::getFriendList(JNIEnv *env) const {
         nlohmann::json j;
         j["botid"] = this->id;
-        std::string temp = Config::koperation(Config::QueryBFL, j, env);
+        std::string temp = KtOperation::ktOperation(KtOperation::QueryBFL, j, env);
         return Tools::StringToVector(std::move(temp));
     }
 
@@ -57,7 +57,7 @@ namespace MiraiCP {
     std::vector<QQID> Bot::getGroupList(JNIEnv *env) const {
         nlohmann::json j;
         j["botid"] = this->id;
-        std::string temp = Config::koperation(Config::QueryBGL, j, env);
+        std::string temp = KtOperation::ktOperation(KtOperation::QueryBGL, j, env);
         return Tools::StringToVector(std::move(temp));
     }
 

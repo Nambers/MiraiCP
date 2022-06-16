@@ -27,7 +27,7 @@ namespace MiraiCP {
         j["text"] = source;
         j["accept"] = accept;
         j["botid"] = botid;
-        std::string re = Config::koperation(Config::Gioperation, j, env);
+        std::string re = KtOperation::ktOperation(KtOperation::Gioperation, j, env);
         if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
     }
 
@@ -36,7 +36,7 @@ namespace MiraiCP {
         j["contactSource"] = this->sender.toString();
         j["time"] = time;
         j["halt"] = halt;
-        std::string r = Config::koperation(Config::NextMsg, j, env);
+        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, j, env);
         if (r == "E1")
             throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
@@ -48,7 +48,7 @@ namespace MiraiCP {
         j["contactSource"] = this->group.toString();
         j["time"] = time;
         j["halt"] = halt;
-        std::string r = Config::koperation(Config::NextMsg, j, env);
+        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, j, env);
         if (r == "E1")
             throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
@@ -60,7 +60,7 @@ namespace MiraiCP {
         j["contactSource"] = this->sender.toString();
         j["time"] = time;
         j["halt"] = halt;
-        std::string r = Config::koperation(Config::NextMsg, j, env);
+        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, j, env);
         if (r == "E1")
             throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
@@ -73,7 +73,7 @@ namespace MiraiCP {
         j["accept"] = accept;
         j["botid"] = botid;
         j["ban"] = ban;
-        std::string re = Config::koperation(Config::Nfroperation, j, env);
+        std::string re = KtOperation::ktOperation(KtOperation::Nfroperation, j, env);
         if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
     }
 
@@ -83,6 +83,6 @@ namespace MiraiCP {
         j["botid"] = botid;
         j["sign"] = sign;
         j["msg"] = msg;
-        Config::koperation(Config::MemberJoinRequest, j, env);
+        KtOperation::ktOperation(KtOperation::MemberJoinRequest, j, env);
     }
 } // namespace MiraiCP

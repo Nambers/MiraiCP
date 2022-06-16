@@ -55,7 +55,7 @@ namespace MiraiCP {
         if (isAnonymous) return 0;
         json j;
         j["contactSource"] = this->toString();
-        std::string re = Config::koperation(Config::QueryM, j, env);
+        std::string re = KtOperation::ktOperation(KtOperation::QueryM, j, env);
         return stoi(re);
     }
 
@@ -63,7 +63,7 @@ namespace MiraiCP {
         json j;
         j["time"] = time;
         j["contactSource"] = this->toString();
-        std::string re = Config::koperation(Config::MuteM, j, env);
+        std::string re = KtOperation::ktOperation(KtOperation::MuteM, j, env);
         if (re == "E4")
             throw MuteException(MIRAICP_EXCEPTION_WHERE);
     }
@@ -72,7 +72,7 @@ namespace MiraiCP {
         json j;
         j["message"] = reason;
         j["contactSource"] = this->toString();
-        Config::koperation(Config::KickM, j, env);
+        KtOperation::ktOperation(KtOperation::KickM, j, env);
     }
 
     void Member::modifyAdmin(bool admin, JNIEnv *env) {
@@ -80,7 +80,7 @@ namespace MiraiCP {
         json j;
         j["admin"] = admin;
         j["contactSource"] = this->toString();
-        Config::koperation(Config::ModifyAdmin, j, env);
+        KtOperation::ktOperation(KtOperation::ModifyAdmin, j, env);
         refreshInfo(env);
     }
 
@@ -89,7 +89,7 @@ namespace MiraiCP {
         json j;
         j["contactSource"] = this->toString();
         j["newName"] = newName;
-        Config::koperation(Config::ChangeNameCard, j, env);
+        KtOperation::ktOperation(KtOperation::ChangeNameCard, j, env);
         refreshInfo(env);
     }
 
@@ -97,7 +97,7 @@ namespace MiraiCP {
         if (isAnonymous) return;
         json j;
         j["contactSource"] = this->toString();
-        std::string re = Config::koperation(Config::SendNudge, j);
+        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, j);
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone", MIRAICP_EXCEPTION_WHERE);
     }

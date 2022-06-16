@@ -16,8 +16,14 @@
 
 #ifndef MIRAICP_PRO_UTILS_H
 #define MIRAICP_PRO_UTILS_H
+
+
 #include "CPPPlugin.h"
 #include "Config.h"
+#include "PluginConfig.h"
+#include "commonTypes.h"
+
+
 namespace MiraiCP {
     /*!
      * @brief 定时任务, 在一定时间后广播**一次**TimeOutEvent
@@ -29,24 +35,24 @@ namespace MiraiCP {
         nlohmann::json j;
         j["time"] = time;
         j["msg"] = msg;
-        Config::koperation(Config::TimeOut, j, env);
+        KtOperation::ktOperation(KtOperation::TimeOut, j, env);
     }
+
     /// 注册插件函数, 需要被实现, 类似onStart();
     void enrollPlugin();
 
     /// 用指针绑定插件
-    inline void enrollPlugin0(CPPPlugin *p) {
-        CPPPlugin::plugin = p;
+    inline void enrollPlugin(CPPPlugin *p) {
+        CPPPlugin::plugin.reset(p);
     }
 } // namespace MiraiCP
-namespace LibLoader::LoaderApi {
-    struct interface_funcs;
-}
+
+
 extern "C" {
-void Event(std::string content);
-void PluginDisable();
-void Init(LibLoader::LoaderApi::interface_funcs);
-MiraiCP::PluginConfig MiraiCPPluginInfo();
+void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &);
+void FUNC_EVENT(std::string content);
+void FUNC_EXIT();
+extern MiraiCP::PluginConfig PLUGIN_INFO;
 }
 
 #endif //MIRAICP_PRO_UTILS_H

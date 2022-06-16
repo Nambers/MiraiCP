@@ -15,14 +15,15 @@
 //
 
 #include "Logger.h"
-
 #include "CPPPlugin.h"
 #include "Config.h"
-#include "JNIEnvManager.h"
 #include "MiraiCode.h"
 #include "Tools.h"
-#include <utility>
+#include "loaderApi.h"
 
+extern "C" {
+extern MiraiCP::PluginConfig PLUGIN_INFO;
+}
 namespace MiraiCP {
     using json = nlohmann::json;
     // 静态成员
@@ -38,33 +39,15 @@ namespace MiraiCP {
         logMethod = logMethod1;
     }
 
-
-    void Logger_interface::log0(const std::string &content, int level, json j, JNIEnv *env) {
-        if (env == nullptr) env = JNIEnvManager::getEnv();
-        if (this->loggerhandler.enable)
-            this->loggerhandler.action(content, level);
-        logMethod(content, level, std::move(j), env);
-    }
-
     void Logger::log1(const std::string &content, int level, JNIEnv *env) {
-        json j;
-        j["id"] = -2;
-        j["log"] = content;
-        log0(content, level, j, env);
+        LibLoader::LoaderApi::loggerInterface(content, "", -2, level);
     }
 
     void IdLogger::log1(const std::string &content, int level, JNIEnv *env) {
-        json j;
-        j["id"] = id;
-        j["log"] = content;
-        log0(content, level, j, env);
+        LibLoader::LoaderApi::loggerInterface(content, "", static_cast<long long>(id), level);
     }
 
     void PluginLogger::log1(const std::string &content, int level, JNIEnv *env) {
-        json j;
-        j["id"] = -1;
-        j["name"] = CPPPlugin::plugin->config.id;
-        j["log"] = content;
-        log0(content, level, j, env);
+        LibLoader::LoaderApi::loggerInterface(content, PLUGIN_INFO.id, -1, level);
     }
 } // namespace MiraiCP

@@ -32,13 +32,16 @@
 #define FUNC_ENTRANCE Init
 #define FUNC_EVENT Event
 #define FUNC_EXIT PluginDisable
-#define PLUGIN_INFO MiraiCPPluginInfo
+#define PLUGIN_INFO MiraiCPPluginInfo /// 必须为 MiraiCP::PluginConfig 类型的extern "C" 对象
 
 
 namespace LibLoader {
     typedef void *plugin_handle;
+    /// @see @macro FUNC_ENTRANCE
     typedef void (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
+    /// @see @macro FUNC_EVENT
     typedef void (*plugin_event_func_ptr)(const std::string);
+    /// @see @macro FUNC_EXIT
     typedef void (*plugin_func_ptr)();
 } // namespace LibLoader
 

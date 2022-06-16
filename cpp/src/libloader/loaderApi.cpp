@@ -30,7 +30,7 @@ namespace LibLoader::LoaderApi {
     std::recursive_mutex task_mtx;
 
     /// interfaces for plugins
-    std::vector<std::string> showAllPluginName() {
+    std::vector<std::string> showAllPluginId() {
         return PluginListManager::getAllPluginId();
     }
 
@@ -83,8 +83,7 @@ namespace LibLoader::LoaderApi {
                                                                  str2jstring(s.c_str())));
     }
 
-
-    void loggerInterface(const std::string &content, std::string name, int id, int level) {
+    void loggerInterface(const std::string &content, std::string name, long long id, int level) {
         logger.call_logger(content, std::move(name), id, level);
     }
 } // namespace LibLoader::LoaderApi

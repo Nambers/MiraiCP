@@ -25,7 +25,6 @@
 #include "MiraiDefs.h"
 
 namespace MiraiCP {
-
     class MiraiCodeable; // forward declaration
 
     /*!
@@ -88,7 +87,6 @@ namespace MiraiCP {
         }
 
     protected:
-        void log0(const string &log, int level, nlohmann::json j, JNIEnv *env = nullptr);
         /// @brief 日志底层实现封装
         /// @param log 日志内容
         /// @param level 日志等级

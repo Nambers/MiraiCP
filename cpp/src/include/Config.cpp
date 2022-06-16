@@ -16,35 +16,17 @@
 
 #include "Config.h"
 #include "Exception.h"
-#include "JNIEnvManager.h"
-#include "Tools.h"
 #include "MiraiDefs.h"
+#include "loaderApi.h"
 
-namespace MiraiCP::Config {
-    jclass CPPLib = nullptr;
-    jmethodID KOperation = nullptr;
-    /*
-    配置类实现
-    throw: InitxException 即找不到对应签名
-    */
-    void construct(jclass clazz, jmethodID method) {
-        CPPLib = clazz;
-        KOperation = method;
-    }
 
-    void destruct() {
-    }
-
-    std::string koperation(operation_set type, const nlohmann::json &data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
-        if (env == nullptr) env = JNIEnvManager::getEnv();
+namespace MiraiCP::KtOperation {
+    std::string ktOperation(operation_set type, nlohmann::json data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
         nlohmann::json j;
         j["type"] = type;
-        j["data"] = data;
-        std::string re = Tools::jstring2str((jstring) env->CallStaticObjectMethod(CPPLib,
-                                                                                  KOperation,
-                                                                                  Tools::str2jstring(j.dump().c_str(), env)),
-                                            env);
+        j["data"] = std::move(data);
+        std::string re = LibLoader::LoaderApi::pluginOperation(j.dump());
         if (catchErr) ErrorHandle(re, errorInfo);
         return re;
     }
-} // namespace MiraiCP::Config
+} // namespace MiraiCP::KtOperation

@@ -49,7 +49,7 @@ namespace LibLoader {
         call_logger(msg, "", -2, 2);
     }
 
-    void LoaderLogger::call_logger(const string &content, string name, int id, int level) {
+    void LoaderLogger::call_logger(const string &content, string name, long long id, int level) {
         nlohmann::json j = {
                 {"id", id},
                 {"log", content}};

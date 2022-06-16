@@ -115,7 +115,7 @@ namespace MiraiCP {
         if (this->size == 0) throw IllegalArgumentException("size不能为0", MIRAICP_EXCEPTION_WHERE);
         nlohmann::json tmp = this->toJson();
         tmp["botid"] = botid;
-        std::string re = Config::koperation(Config::ImageUploaded, tmp, env);
+        std::string re = KtOperation::ktOperation(KtOperation::ImageUploaded, tmp, env);
         return re == "true";
     }
     nlohmann::json FlashImage::toJson() const {
@@ -264,7 +264,7 @@ namespace MiraiCP {
 
     /*图片类实现*/
     void Image::refreshInfo(JNIEnv *env) {
-        std::string re = Config::koperation(Config::QueryImgInfo, this->toJson(), env);
+        std::string re = KtOperation::ktOperation(KtOperation::QueryImgInfo, this->toJson(), env);
         if (re == "E1")
             throw RemoteAssetException("图片id格式错误", MIRAICP_EXCEPTION_WHERE);
         json j = json::parse(re);

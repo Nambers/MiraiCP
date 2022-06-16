@@ -41,7 +41,7 @@ namespace LibLoader {
 
     public:
         /// 实际暴露的接口
-        void call_logger(const string &content, string name, int id, int level);
+        void call_logger(const string &content, string name, long long id, int level);
 
     public:
         static std::string vector2string(const std::vector<std::string> &);

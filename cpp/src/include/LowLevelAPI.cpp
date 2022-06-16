@@ -29,7 +29,7 @@ namespace MiraiCP {
         j["source"] = tmp.dump();
         j["miraiCode"] = miraicode;
         j["retryTime"] = retryTime;
-        return Config::koperation(Config::Send, j, env, true, errorInfo);
+        return KtOperation::ktOperation(KtOperation::Send, j, env, true, errorInfo);
     }
     LowLevelAPI::info LowLevelAPI::info0(const std::string &source) {
         info re;
@@ -43,12 +43,12 @@ namespace MiraiCP {
     std::string LowLevelAPI::getInfoSource(const std::string &c, JNIEnv *env = nullptr) {
         nlohmann::json j;
         j["source"] = c;
-        return Config::koperation(Config::RefreshInfo, j, env);
+        return KtOperation::ktOperation(KtOperation::RefreshInfo, j, env);
     }
     std::string LowLevelAPI::uploadImg0(const std::string &path, const std::string &c, JNIEnv *env = nullptr) {
         nlohmann::json j;
         j["fileName"] = path;
         j["source"] = c;
-        return Config::koperation(Config::UploadImg, j, env);
+        return KtOperation::ktOperation(KtOperation::UploadImg, j, env);
     }
 } // namespace MiraiCP

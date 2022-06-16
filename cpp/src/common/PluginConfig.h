@@ -34,20 +34,7 @@ namespace MiraiCP {
         /// @brief [optional]插件描述
         std::string description;
         /// @brief [optional]构建时间, 默认为__DATE__宏
-        std::string time;
-
-        PluginConfig(std::string id,
-                     std::string name,
-                     std::string version,
-                     std::string author,
-                     std::string description = "",
-                     std::string time = __DATE__)
-            : id(std::move(id)),
-              name(std::move(name)),
-              version(std::move(version)),
-              author(std::move(author)),
-              description(std::move(description)),
-              time(std::move(time)) {}
+        std::string time = __DATE__;
 
         nlohmann::json serialize();
 

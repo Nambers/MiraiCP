@@ -108,7 +108,7 @@ namespace MiraiCP {
             }
             nlohmann::json rej;
             rej["command"] = j.dump();
-            std::string re = Config::koperation(Config::CommandReg, rej);
+            std::string re = KtOperation::ktOperation(KtOperation::CommandReg, rej);
             return re == "true";
         }
         static CommandManager commandManager;
