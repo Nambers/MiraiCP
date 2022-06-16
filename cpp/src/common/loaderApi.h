@@ -22,17 +22,20 @@
 #define MIRAICP_PRO_LOADERAPI_H
 
 
-#include "json.hpp"
 #include <jni.h>
 #include <string>
 #include <vector>
 
 
+#ifdef MIRAICP_LIB_LOADER
 constexpr int LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
 #define LOADERAPI_H_NOTHING(X)
 #define LOADERAPI_H_LOADER_API_INNER(X) LOADERAPI_H_NOTHING(X)
 #define LOADER_API_COUNT LOADERAPI_H_LOADER_API_INNER(__COUNTER__)
 #define LOADERAPI_H_GET_COUNTER (__COUNTER__ - LOADERAPI_H_COUNTER_BASE)
+#else
+#define LOADER_API_COUNT
+#endif
 
 
 // the API defs to be exposed
@@ -76,6 +79,7 @@ namespace LibLoader::LoaderApi {
         decltype(&pluginOperation) _pluginOperation;
         decltype(&loggerInterface) _loggerInterface;
         decltype(&showAllPluginId) _showAllPluginId;
+        // function below can only be called by admin plugins
         decltype(&enablePluginById) _enablePluginById = nullptr;
         decltype(&disablePluginById) _disablePluginById = nullptr;
         decltype(&enableAllPlugins) _enableAllPlugins = nullptr;
@@ -85,7 +89,7 @@ namespace LibLoader::LoaderApi {
         decltype(&reloadPluginById) _reloadPluginById = nullptr;
     };
 
-    /// DON'T CALL THIS in MiraiCP plugins!!!
+#ifdef MIRAICP_LIB_LOADER
     constexpr inline interface_funcs collect_interface_functions(bool admin) {
         constexpr int counter = LOADERAPI_H_GET_COUNTER;
         static_assert(sizeof(interface_funcs) == sizeof(void *) * counter);
@@ -118,6 +122,7 @@ namespace LibLoader::LoaderApi {
             return t2;
         }
     }
+#endif
 } // namespace LibLoader::LoaderApi
 
 

@@ -126,6 +126,7 @@ target_include_directories(loader PUBLIC
         ${SRC_PATH}/common
         ${SRC_PATH}
         )
+target_compile_options(loader PUBLIC -DMIRAICP_LIB_LOADER)
 if (UNIX)
     target_link_libraries(loader ${JAVA_JVM_LIBRARY} dl)
 endif (UNIX)
