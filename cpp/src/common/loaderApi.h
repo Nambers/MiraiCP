@@ -22,6 +22,7 @@
 #define MIRAICP_PRO_LOADERAPI_H
 
 
+#include "json.hpp"
 #include <jni.h>
 #include <string>
 #include <vector>
@@ -40,7 +41,7 @@ namespace LibLoader::LoaderApi {
     JNIEnv *_getEnv();
 
     LOADER_API_COUNT
-    void _loggerInterface(const std::string &content, std::string name, int id, int level);
+    void _loggerInterface(const std::string &content, int level, nlohmann::json json, JNIEnv *env);
 
     LOADER_API_COUNT
     std::vector<std::string> _showAllPluginName();
@@ -66,10 +67,14 @@ namespace LibLoader::LoaderApi {
     LOADER_API_COUNT
     void _reloadPluginById(const std::string &);
 
+    LOADER_API_COUNT
+    std::pair<jclass, jmethodID> _getConfigClassAndMethod();
+
     struct interface_funcs {
         decltype(&_getEnv) getEnv;
         decltype(&_loggerInterface) loggerInterface;
         decltype(&_showAllPluginName) showAllPluginId;
+        decltype(&_getConfigClassAndMethod) getConfigClassAndMethod;
         decltype(&_enablePluginById) enablePluginById = nullptr;
         decltype(&_disablePluginById) disablePluginById = nullptr;
         decltype(&_enableAllPlugins) enableAllPlugins = nullptr;
@@ -89,6 +94,7 @@ namespace LibLoader::LoaderApi {
                 _getEnv,
                 _loggerInterface,
                 _showAllPluginName,
+                _getConfigClassAndMethod,
                 _enablePluginById,
                 _disablePluginById,
                 _enableAllPlugins,

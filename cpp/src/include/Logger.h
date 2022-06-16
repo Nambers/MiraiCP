@@ -42,6 +42,9 @@ namespace MiraiCP {
     class Logger_interface {
         using string = std::string;
 
+    protected:
+        typedef void (*logMethodType)(const std::string &, int, nlohmann::json, JNIEnv *);
+        logMethodType logMethod = nullptr;
 
     public:
         /// @brief 封装lambda类型
@@ -61,9 +64,6 @@ namespace MiraiCP {
         };
 
         Handler loggerhandler;
-
-    protected:
-        jmethodID log = nullptr;
 
     private:
         std::string p() {
@@ -96,12 +96,12 @@ namespace MiraiCP {
         virtual void log1(const string &log, int level, JNIEnv *env = nullptr) = 0;
 
     public:
-        jmethodID getjmethod() {
-            return this->log;
+        logMethodType getLogMethod() {
+            return this->logMethod;
         }
 
         // 初始化 获取methodid
-        void init(jmethodID);
+        void init(logMethodType);
 
         ///发送普通(info级日志)
         template<class... T>
@@ -162,7 +162,7 @@ namespace MiraiCP {
     public:
         IdLogger(QQID id, Logger *l) : id(id) {
             this->loggerhandler = l->loggerhandler;
-            this->log = l->getjmethod();
+            this->logMethod = l->getLogMethod();
         }
     };
 
@@ -174,7 +174,7 @@ namespace MiraiCP {
     public:
         explicit PluginLogger(Logger *l) {
             this->loggerhandler = l->loggerhandler;
-            this->log = l->getjmethod();
+            this->logMethod = l->getLogMethod();
         }
     };
 } // namespace MiraiCP

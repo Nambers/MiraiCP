@@ -15,11 +15,13 @@
 //
 
 #include "Logger.h"
+
 #include "CPPPlugin.h"
 #include "Config.h"
+#include "JNIEnvManager.h"
 #include "MiraiCode.h"
 #include "Tools.h"
-#include "JNIEnvManager.h"
+#include <utility>
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -32,8 +34,8 @@ namespace MiraiCP {
     日志类实现
     throw: InitException 即找不到签名
     */
-    void Logger_interface::init(jmethodID logger) {
-        this->log = logger;
+    void Logger_interface::init(Logger_interface::logMethodType logMethod1) {
+        logMethod = logMethod1;
     }
 
 
@@ -41,7 +43,7 @@ namespace MiraiCP {
         if (env == nullptr) env = JNIEnvManager::getEnv();
         if (this->loggerhandler.enable)
             this->loggerhandler.action(content, level);
-        env->CallStaticVoidMethod(Config::CPPLib, log, Tools::str2jstring(j.dump().c_str()), (jint) level);
+        logMethod(content, level, std::move(j), env);
     }
 
     void Logger::log1(const std::string &content, int level, JNIEnv *env) {

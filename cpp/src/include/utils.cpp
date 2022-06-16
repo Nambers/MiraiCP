@@ -20,24 +20,20 @@
 #include "Exception.h"
 #include "JNIEnvManager.h"
 #include "Tools.h"
+#include "loaderApi.h"
 
 // 开始对接JNI接口代码
 
 using json = nlohmann::json;
 extern "C" {
-/*
-    * 作用:判断是否连接上本插件，勿改
-    * 参数:env 必备，job 必备
-    * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
-    */
-// env != null, call from jni
-void Init(JavaVM *gvm, jclass clazz, jmethodID logger, jmethodID oper) {
+void Init(LibLoader::LoaderApi::interface_funcs funcs) {
     using namespace MiraiCP;
-    JNIEnvManager::setGvm(gvm);
+    JNIEnvManager::getEnvMethod = funcs.getEnv;
     try {
         //初始化日志模块
-        Config::construct(clazz, oper);
-        Logger::logger.init(logger);
+        auto tmp = funcs.getConfigClassAndMethod();
+        Config::construct(tmp.first, tmp.second);
+        Logger::logger.init(funcs.loggerInterface);
         enrollPlugin();
         // plugin == nullptr 无插件实例加载
         if (CPPPlugin::plugin != nullptr) {
@@ -47,12 +43,10 @@ void Init(JavaVM *gvm, jclass clazz, jmethodID logger, jmethodID oper) {
     } catch (const MiraiCPExceptionBase &e) {
         e.raise();
     }
-    //验证机制，返回当前SDK版本
 }
 
 /*
-     * 插件结束事件
-     * env != null, call from jni
+     * 插件结束事件(也可能是暂时的disable)
      */
 void PluginDisable() {
     if (MiraiCP::CPPPlugin::plugin == nullptr) return;
@@ -228,6 +222,12 @@ void Event(std::string content) {
         Logger::logger.error(e.what());
         Logger::logger.error("info:", content);
     }
+}
+
+MiraiCP::PluginConfig MiraiCPPluginInfo() {
+    if (MiraiCP::CPPPlugin::plugin == nullptr)
+        return {"null", "null", "null", "null"};
+    return MiraiCP::CPPPlugin::plugin->config;
 }
 }
 //结束对接JNI接口代码

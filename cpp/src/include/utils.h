@@ -39,10 +39,14 @@ namespace MiraiCP {
         CPPPlugin::plugin = p;
     }
 } // namespace MiraiCP
+namespace LibLoader::LoaderApi {
+    struct interface_funcs;
+}
 extern "C" {
 void Event(std::string content);
 void PluginDisable();
-void Init(JavaVM *gvm, jclass, jmethodID logger, jmethodID);
+void Init(LibLoader::LoaderApi::interface_funcs);
+MiraiCP::PluginConfig MiraiCPPluginInfo();
 }
 
 #endif //MIRAICP_PRO_UTILS_H
