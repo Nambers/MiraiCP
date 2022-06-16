@@ -32,7 +32,7 @@ namespace LibLoader::LoaderApi {
     }
 
     /// 这个函数是给本cpp以外的文件使用的，大概率用不到
-    const interface_funcs const *get_loader_apis() {
+    const interface_funcs *get_loader_apis() {
         return loader_apis;
     }
 
@@ -42,6 +42,28 @@ namespace LibLoader::LoaderApi {
     ///  这个之后讨论一下
 
     /// interfaces for plugins
+
+    JNIEnv *getEnv() {
+        if (loader_apis == nullptr || loader_apis->_getEnv == nullptr) {
+            return nullptr;
+        }
+        return loader_apis->_getEnv();
+    }
+
+    std::string pluginOperation(const std::string &s) {
+        if (loader_apis == nullptr || loader_apis->_pluginOperation == nullptr) {
+            return "";
+        }
+        return loader_apis->_pluginOperation(s);
+    }
+
+    void loggerInterface(const std::string &content, std::string name, long long id, int level) {
+        if (loader_apis == nullptr || loader_apis->_loggerInterface == nullptr) {
+            return;
+        }
+        loader_apis->_loggerInterface(content, std::move(name), id, level);
+    }
+
     std::vector<std::string> showAllPluginId() {
         if (loader_apis == nullptr || loader_apis->_showAllPluginId == nullptr) {
             return {};
@@ -97,26 +119,5 @@ namespace LibLoader::LoaderApi {
             return;
         }
         loader_apis->_reloadPluginById(id);
-    }
-
-    JNIEnv *getEnv() {
-        if (loader_apis == nullptr || loader_apis->_getEnv == nullptr) {
-            return nullptr;
-        }
-        return loader_apis->_getEnv();
-    }
-
-    std::string pluginOperation(const std::string &s) {
-        if (loader_apis == nullptr || loader_apis->_pluginOperation == nullptr) {
-            return "";
-        }
-        return loader_apis->_pluginOperation(s);
-    }
-
-    void loggerInterface(const std::string &content, std::string name, long long id, int level) {
-        if (loader_apis == nullptr || loader_apis->_loggerInterface == nullptr) {
-            return;
-        }
-        loader_apis->_loggerInterface(content, std::move(name), id, level);
     }
 } // namespace LibLoader::LoaderApi

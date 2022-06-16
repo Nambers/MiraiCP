@@ -40,7 +40,7 @@ void JNIEnvManager::setEnv(JNIEnv *e) {
     std::lock_guard lk(mtx);
     auto pr = threadJNIEnvs.insert(std::make_pair(getThreadId(), ThreadInfo{e, false}));
     if (!pr.second) {
-        pr.first->second.e = e;
+        pr.first->second.env_ptr = e;
     }
 }
 
@@ -51,9 +51,9 @@ JNIEnv *JNIEnvManager::getEnv() {
         std::lock_guard lk(mtx);
         auto pr = threadJNIEnvs.insert(std::make_pair(getThreadId(), ThreadInfo{nullptr, true}));
         if (pr.second) {
-            pr.first->second.e = newEnv();
+            pr.first->second.env_ptr = newEnv();
         }
-        tmp = pr.first->second.e;
+        tmp = pr.first->second.env_ptr;
     }
     return tmp;
 }

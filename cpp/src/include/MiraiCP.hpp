@@ -37,7 +37,6 @@
 #include "SingleMessage.h"
 #include "Tools.h"
 #include "utils.h"
-#include "../common/JNIEnvManager.h"
 #include "../common/PluginConfig.h"
 #include "../common/commonTypes.h"
 #include "../common/loaderApi.h"

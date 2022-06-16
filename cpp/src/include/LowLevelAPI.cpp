@@ -17,6 +17,8 @@
 #include "Config.h"
 #include "Exception.h"
 #include "MiraiDefs.h"
+#include <utility>
+
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -25,7 +27,7 @@ namespace MiraiCP {
         nlohmann::json j;
         nlohmann::json tmp;
         tmp["content"] = content;
-        tmp["contact"] = c;
+        tmp["contact"] = std::move(c);
         j["source"] = tmp.dump();
         j["miraiCode"] = miraicode;
         j["retryTime"] = retryTime;

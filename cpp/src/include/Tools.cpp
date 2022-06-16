@@ -16,14 +16,19 @@
 
 #include "Tools.h"
 #include "Logger.h"
-#include "JNIEnvManager.h"
+#include "loaderApi.h"
 #include <regex>
 #include <utf8.h>
 
+
 namespace MiraiCP::Tools {
+    // todo(Antares): 删掉下面两个函数。
+    //  如果core端需要的话，移动到core端，
+    //  或者考虑让core来include一下lobloader端的这两个函数
+
     /*工具类实现*/
     std::string jstring2str(jstring jStr, JNIEnv *env) {
-        if (env == nullptr) env = JNIEnvManager::getEnv();
+        if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
         if (!jStr) {
             Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
             return "";
@@ -39,7 +44,7 @@ namespace MiraiCP::Tools {
     }
 
     jstring str2jstring(const char *stra, JNIEnv *env) {
-        if (env == nullptr) env = JNIEnvManager::getEnv();
+        if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
         if (!stra) {
             Logger::logger.error("警告:C++部分传入空字符串，位置:Tools::str2jstring");
         }

@@ -39,7 +39,7 @@ class JNIEnvManager {
 public:
     /// @brief 每个线程实例.
     struct ThreadInfo {
-        JNIEnv *e{};
+        JNIEnv *env_ptr{};
         bool attach{};
     };
 

@@ -18,7 +18,6 @@
 #include "Config.h"
 #include "Event.h"
 #include "Exception.h"
-#include "JNIEnvManager.h"
 #include "Tools.h"
 #include "loaderApi.h"
 
@@ -27,7 +26,7 @@
 using json = nlohmann::json;
 
 namespace LibLoader::LoaderApi {
-    const interface_funcs const *get_loader_apis();
+    const interface_funcs *get_loader_apis();
 
     void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis);
 

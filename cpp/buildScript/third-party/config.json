@@ -2,7 +2,6 @@
     "project": "Mirai C++ SDK",
     "target": "single_include/MiraiCP/MiraiCP.hpp",
     "sources": [
-        "common/JNIEnvManager.h",
         "common/PluginConfig.h",
         "common/commonTypes.h",
         "common/loaderApi.h",
