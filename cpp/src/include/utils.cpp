@@ -15,7 +15,7 @@
 //
 #include "utils.h"
 #include "Command.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Event.h"
 #include "Exception.h"
 #include "Tools.h"

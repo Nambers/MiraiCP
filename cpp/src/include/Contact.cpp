@@ -15,7 +15,7 @@
 //
 
 #include "Contact.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 #include "Logger.h"
 #include "LowLevelAPI.h"

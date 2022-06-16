@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 #include "MiraiDefs.h"
 #include "loaderApi.h"

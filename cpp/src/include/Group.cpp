@@ -15,7 +15,7 @@
 //
 
 #include "Group.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 #include "LowLevelAPI.h"
 #include "Member.h"

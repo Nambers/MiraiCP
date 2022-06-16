@@ -15,7 +15,7 @@
 //
 
 #include "ForwardedMessage.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Contact.h"
 #include <utility>
 

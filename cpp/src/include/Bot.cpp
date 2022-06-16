@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "Bot.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Friend.h"
 #include "Group.h"
 #include "LowLevelAPI.h"

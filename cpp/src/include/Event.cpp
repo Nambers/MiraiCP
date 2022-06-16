@@ -15,7 +15,7 @@
 //
 
 #include "Event.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 
 namespace MiraiCP {

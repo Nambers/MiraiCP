@@ -14,8 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MIRAICP_PRO_CONFIG_H
-#define MIRAICP_PRO_CONFIG_H
+#ifndef MIRAICP_PRO_KTOPERATION_H
+#define MIRAICP_PRO_KTOPERATION_H
+
 
 #include <jni.h> // todo(Antares): 删除掉<jni.h>的include
 #include <json.hpp>
@@ -101,4 +102,4 @@ namespace MiraiCP::KtOperation {
             const std::string &errorInfo = "");
 } // namespace MiraiCP::KtOperation
 
-#endif //MIRAICP_PRO_CONFIG_H
+#endif //MIRAICP_PRO_KTOPERATION_H

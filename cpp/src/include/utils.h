@@ -19,7 +19,7 @@
 
 
 #include "CPPPlugin.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "PluginConfig.h"
 #include "commonTypes.h"
 

@@ -16,7 +16,7 @@
 
 #include "Logger.h"
 #include "CPPPlugin.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "MiraiCode.h"
 #include "Tools.h"
 #include "loaderApi.h"

@@ -16,7 +16,7 @@
 
 #ifndef MIRAICP_PRO_COMMAND_H
 #define MIRAICP_PRO_COMMAND_H
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 #include "Logger.h"
 #include <optional>

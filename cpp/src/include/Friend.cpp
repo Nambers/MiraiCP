@@ -15,7 +15,7 @@
 //
 
 #include "Friend.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 #include "LowLevelAPI.h"
 

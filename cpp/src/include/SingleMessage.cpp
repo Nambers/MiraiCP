@@ -16,7 +16,7 @@
 
 #include <json.hpp>
 
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 #include "Logger.h"
 #include "SingleMessage.h"
