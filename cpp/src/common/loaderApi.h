@@ -38,50 +38,51 @@ constexpr int LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
 // the API defs to be exposed
 namespace LibLoader::LoaderApi {
     LOADER_API_COUNT
-    JNIEnv *_getEnv();
+    JNIEnv *getEnv();
 
     LOADER_API_COUNT
-    void _loggerInterface(const std::string &content, int level, nlohmann::json json, JNIEnv *env);
+    std::string pluginOperation(const std::string &);
 
     LOADER_API_COUNT
-    std::vector<std::string> _showAllPluginName();
+    void loggerInterface(const std::string &, std::string, int, int);
 
     LOADER_API_COUNT
-    void _enablePluginById(const std::string &);
+    std::vector<std::string> showAllPluginName();
 
     LOADER_API_COUNT
-    void _disablePluginById(const std::string &);
+    void enablePluginById(const std::string &);
 
     LOADER_API_COUNT
-    void _enableAllPlugins();
+    void disablePluginById(const std::string &);
 
     LOADER_API_COUNT
-    void _disableAllPlugins();
+    void enableAllPlugins();
 
     LOADER_API_COUNT
-    void _loadNewPlugin(const std::string &, bool);
+    void disableAllPlugins();
 
     LOADER_API_COUNT
-    void _unloadPluginById(const std::string &);
+    void loadNewPlugin(const std::string &, bool);
 
     LOADER_API_COUNT
-    void _reloadPluginById(const std::string &);
+    void unloadPluginById(const std::string &);
 
     LOADER_API_COUNT
-    std::pair<jclass, jmethodID> _getConfigClassAndMethod();
+    void reloadPluginById(const std::string &);
+
 
     struct interface_funcs {
-        decltype(&_getEnv) getEnv;
-        decltype(&_loggerInterface) loggerInterface;
-        decltype(&_showAllPluginName) showAllPluginId;
-        decltype(&_getConfigClassAndMethod) getConfigClassAndMethod;
-        decltype(&_enablePluginById) enablePluginById = nullptr;
-        decltype(&_disablePluginById) disablePluginById = nullptr;
-        decltype(&_enableAllPlugins) enableAllPlugins = nullptr;
-        decltype(&_disableAllPlugins) disableAllPlugins = nullptr;
-        decltype(&_loadNewPlugin) loadNewPlugin = nullptr;
-        decltype(&_unloadPluginById) unloadPluginById = nullptr;
-        decltype(&_reloadPluginById) reloadPluginById = nullptr;
+        decltype(&getEnv) _getEnv;
+        decltype(&pluginOperation) _pluginOperation;
+        decltype(&loggerInterface) _loggerInterface;
+        decltype(&showAllPluginName) _showAllPluginId;
+        decltype(&enablePluginById) _enablePluginById = nullptr;
+        decltype(&disablePluginById) _disablePluginById = nullptr;
+        decltype(&enableAllPlugins) _enableAllPlugins = nullptr;
+        decltype(&disableAllPlugins) _disableAllPlugins = nullptr;
+        decltype(&loadNewPlugin) _loadNewPlugin = nullptr;
+        decltype(&unloadPluginById) _unloadPluginById = nullptr;
+        decltype(&reloadPluginById) _reloadPluginById = nullptr;
     };
 
     /// DON'T CALL THIS in MiraiCP plugins!!!
@@ -91,17 +92,17 @@ namespace LibLoader::LoaderApi {
 
         constexpr int line0 = __LINE__;
         interface_funcs t = {
-                _getEnv,
-                _loggerInterface,
-                _showAllPluginName,
-                _getConfigClassAndMethod,
-                _enablePluginById,
-                _disablePluginById,
-                _enableAllPlugins,
-                _disableAllPlugins,
-                _loadNewPlugin,
-                _unloadPluginById,
-                _reloadPluginById,
+                getEnv,
+                pluginOperation,
+                loggerInterface,
+                showAllPluginName,
+                enablePluginById,
+                disablePluginById,
+                enableAllPlugins,
+                disableAllPlugins,
+                loadNewPlugin,
+                unloadPluginById,
+                reloadPluginById,
         };
         constexpr int line1 = __LINE__;
 
@@ -110,9 +111,10 @@ namespace LibLoader::LoaderApi {
         if (admin) return t;
 
         interface_funcs t2 = {
-                _getEnv,
-                _loggerInterface,
-                _showAllPluginName,
+                getEnv,
+                pluginOperation,
+                loggerInterface,
+                showAllPluginName,
         };
         return t2;
     }

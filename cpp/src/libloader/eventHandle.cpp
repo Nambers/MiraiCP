@@ -32,22 +32,22 @@ namespace LibLoader {
     const static std::unordered_map<std::string, std::function<void(const std::string &)>> actions = {
             // NOLINT(cert-err58-cpp)
             {"EnablePlugin", [](const std::string &name) {
-                 LoaderApi::_enablePluginById(name);
+                 LoaderApi::enablePluginById(name);
              }},
             {"DisablePlugin", [](const std::string &name) {
-                 LoaderApi::_disablePluginById(name);
+                 LoaderApi::disablePluginById(name);
              }},
             {"DisablePluginList", [](const std::string &name) {
-                 LoaderApi::_disableAllPlugins();
+                 LoaderApi::disableAllPlugins();
              }},
             {"EnablePluginList", [](const std::string &name) {
-                 LoaderApi::_enableAllPlugins();
+                 LoaderApi::enableAllPlugins();
              }},
             {"ReloadPlugin", [](const std::string &name) {
-                 LoaderApi::_reloadPluginById(name);
+                 LoaderApi::reloadPluginById(name);
              }},
             {"LoadPlugin", [](const std::string &name) {
-                 LoaderApi::_loadNewPlugin(name, true);
+                 LoaderApi::loadNewPlugin(name, true);
              }},
             {"PluginList", [](const std::string &name) {
                  logger.info(LoaderLogger::vector2string(PluginListManager::getAllPluginId()));

@@ -16,9 +16,11 @@
 
 #include "loaderApi.h"
 #include "JNIEnvManager.h"
+#include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
 #include "PluginListManager.h"
+#include "loaderTools.h"
 #include <mutex>
 #include <queue>
 
@@ -28,31 +30,31 @@ namespace LibLoader::LoaderApi {
     std::recursive_mutex task_mtx;
 
     /// interfaces for plugins
-    std::vector<std::string> _showAllPluginName() {
+    std::vector<std::string> showAllPluginName() {
         return PluginListManager::getAllPluginId();
     }
 
-    void _enablePluginById(const std::string &id) {
+    void enablePluginById(const std::string &id) {
         std::lock_guard lk(task_mtx);
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::ADD_THREAD, id));
     }
 
-    void _disablePluginById(const std::string &id) {
+    void disablePluginById(const std::string &id) {
         std::lock_guard lk(task_mtx);
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::END_THREAD, id));
     }
 
-    void _enableAllPlugins() {
+    void enableAllPlugins() {
         std::lock_guard lk(task_mtx);
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::ENABLE_ALL, ""));
     }
 
-    void _disableAllPlugins() {
+    void disableAllPlugins() {
         std::lock_guard lk(task_mtx);
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::DISABLE_ALL, ""));
     }
 
-    void _loadNewPlugin(const std::string &path, bool activateNow) {
+    void loadNewPlugin(const std::string &path, bool activateNow) {
         std::lock_guard lk(task_mtx);
         if (activateNow)
             loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_ACTIVATENOW, path));
@@ -60,21 +62,29 @@ namespace LibLoader::LoaderApi {
             loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_DONTACTIVATE, path));
     }
 
-    void _unloadPluginById(const std::string &id) {
+    void unloadPluginById(const std::string &id) {
         std::lock_guard lk(task_mtx);
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::UNLOAD, id));
     }
 
-    void _reloadPluginById(const std::string &id) {
+    void reloadPluginById(const std::string &id) {
         std::lock_guard lk(task_mtx);
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::RELOAD, id));
     }
 
-    JNIEnv *_getEnv() {
+    JNIEnv *getEnv() {
         return JNIEnvManager::getEnv();
     }
 
-    void _loggerInterface(const std::string &content, std::string name, int id, int level) {
+    std::string pluginOperation(const std::string &s) {
+        auto env = JNIEnvManager::getEnv();
+        return jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
+                                                                 JNIEnvs::koper,
+                                                                 str2jstring(s.c_str())));
+    }
+
+
+    void loggerInterface(const std::string &content, std::string name, int id, int level) {
         logger.call_logger(content, std::move(name), id, level);
     }
 } // namespace LibLoader::LoaderApi
