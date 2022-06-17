@@ -43,6 +43,8 @@ namespace LibLoader {
     typedef void (*plugin_event_func_ptr)(const std::string);
     /// @see @macro FUNC_EXIT
     typedef void (*plugin_func_ptr)();
+    /// @see @macro PLUGIN_INFO
+    typedef const MiraiCP::PluginConfig &(*plugin_info_func_ptr)();
 } // namespace LibLoader
 
 

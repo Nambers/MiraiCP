@@ -15,9 +15,9 @@
 //
 #include "utils.h"
 #include "Command.h"
-#include "KtOperation.h"
 #include "Event.h"
 #include "Exception.h"
+#include "KtOperation.h"
 #include "Tools.h"
 #include "loaderApi.h"
 
@@ -234,9 +234,12 @@ void FUNC_EVENT(std::string content) {
     }
 }
 
-MiraiCP::PluginConfig PLUGIN_INFO() {
+const MiraiCP::PluginConfig &PLUGIN_INFO() {
+    static_assert(std::is_same_v<decltype(&PLUGIN_INFO), LibLoader::plugin_info_func_ptr>);
+
     if (MiraiCP::CPPPlugin::plugin == nullptr)
-        return {"null"};
+        throw MiraiCP::IllegalStateException("Plugin not loaded", MIRAICP_EXCEPTION_WHERE);
+
     return MiraiCP::CPPPlugin::plugin->config;
 }
 }
