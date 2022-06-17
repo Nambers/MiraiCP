@@ -29,10 +29,10 @@
 #include <unordered_map>
 
 
-#define FUNC_ENTRANCE Init
-#define FUNC_EVENT Event
-#define FUNC_EXIT PluginDisable
-#define PLUGIN_INFO MiraiCPPluginInfo /// 必须为 MiraiCP::PluginConfig 类型的extern "C" 对象
+#define FUNC_ENTRANCE FUNC_ENTRANCE
+#define FUNC_EVENT FUNC_EVENT
+#define FUNC_EXIT FUNC_EXIT
+#define PLUGIN_INFO PLUGIN_INFO
 
 
 namespace LibLoader {

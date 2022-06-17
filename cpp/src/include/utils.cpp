@@ -43,12 +43,9 @@ void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
 
     try {
         enrollPlugin();
-
         // plugin == nullptr 无插件实例加载
-        if (CPPPlugin::plugin != nullptr) {
-            new PluginLogger(&Logger::logger);
+        if (CPPPlugin::plugin != nullptr)
             CPPPlugin::plugin->onEnable();
-        }
     } catch (const MiraiCPExceptionBase &e) {
         e.raise();
     }
@@ -235,6 +232,12 @@ void FUNC_EVENT(std::string content) {
         Logger::logger.error(e.what());
         Logger::logger.error("info:", content);
     }
+}
+
+MiraiCP::PluginConfig PLUGIN_INFO() {
+    if (MiraiCP::CPPPlugin::plugin == nullptr)
+        return {"null"};
+    return MiraiCP::CPPPlugin::plugin->config;
 }
 }
 //结束对接JNI接口代码

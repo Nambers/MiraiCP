@@ -52,7 +52,7 @@ extern "C" {
 void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &);
 void FUNC_EVENT(std::string content);
 void FUNC_EXIT();
-extern MiraiCP::PluginConfig PLUGIN_INFO;
+MiraiCP::PluginConfig PLUGIN_INFO();
 }
 
 #endif //MIRAICP_PRO_UTILS_H

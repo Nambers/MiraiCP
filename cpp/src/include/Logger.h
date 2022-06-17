@@ -163,18 +163,6 @@ namespace MiraiCP {
             this->logMethod = l->getLogMethod();
         }
     };
-
-    /// 插件logger
-    class PluginLogger : public Logger_interface {
-    protected:
-        void log1(const std::string &content, int level, JNIEnv *env) override;
-
-    public:
-        explicit PluginLogger(Logger *l) {
-            this->loggerhandler = l->loggerhandler;
-            this->logMethod = l->getLogMethod();
-        }
-    };
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_LOGGER_H

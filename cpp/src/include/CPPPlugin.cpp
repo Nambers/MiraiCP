@@ -17,5 +17,6 @@
 #include "CPPPlugin.h"
 
 namespace MiraiCP {
+    Logger *CPPPlugin::pluginLogger = &Logger::logger;
     std::unique_ptr<CPPPlugin> CPPPlugin::plugin = nullptr;
 } // namespace MiraiCP

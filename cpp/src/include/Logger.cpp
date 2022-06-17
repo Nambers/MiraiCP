@@ -40,14 +40,11 @@ namespace MiraiCP {
     }
 
     void Logger::log1(const std::string &content, int level, JNIEnv *env) {
-        LibLoader::LoaderApi::loggerInterface(content, "", -2, level);
+        LibLoader::LoaderApi::loggerInterface(content, MiraiCP::CPPPlugin::plugin->config.name, -1, level);
+        // LibLoader::LoaderApi::loggerInterface(content, "", -2, level);
     }
 
     void IdLogger::log1(const std::string &content, int level, JNIEnv *env) {
         LibLoader::LoaderApi::loggerInterface(content, "", static_cast<long long>(id), level);
-    }
-
-    void PluginLogger::log1(const std::string &content, int level, JNIEnv *env) {
-        LibLoader::LoaderApi::loggerInterface(content, PLUGIN_INFO.id, -1, level);
     }
 } // namespace MiraiCP
