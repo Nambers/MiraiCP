@@ -91,7 +91,7 @@ namespace LibLoader {
         logger.warning("DEBUG0");
 
         auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
-        ThreadController::getController().addThread(plugin.getId(), [&]() {
+        ThreadController::getController().addThread(plugin.getId(), [&, func]() {
             logger.warning("DEBUG-sub0");
             if (plugin.authority == PLUGIN_AUTHORITY_ADMIN)
                 callEntranceFuncAdmin(func);
