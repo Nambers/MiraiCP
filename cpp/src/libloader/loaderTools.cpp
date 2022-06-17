@@ -26,8 +26,9 @@ namespace LibLoader {
         std::vector<std::string> paths;
         std::vector<PluginAuthority> authorities;
         try {
-            auto &_pairs = j["pluginpaths"];
+            auto &_pairs = (j.contains("pluginConfig") ? j["pluginConfig"] : j["cppPaths"]);
             if (!_pairs.is_array()) {
+                logger.error("pluginConfig is not an array");
                 throw std::exception();
             }
             for (auto &&v: _pairs) {

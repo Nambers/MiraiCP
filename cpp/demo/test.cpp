@@ -30,6 +30,7 @@ public:
 
 public:
     void onEnable() override {
+        Logger::logger.info("loaded");
         // 监听
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
             Logger::logger.info("b");
