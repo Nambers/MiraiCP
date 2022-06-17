@@ -30,7 +30,7 @@
 namespace LibLoader {
     struct PluginAddrInfo {
         plugin_event_func_ptr event_func;
-        const MiraiCP::PluginConfig *pluginAddr;
+        plugin_info_func_ptr pluginAddr;
     };
 
     ////////////////////////////////////
@@ -68,7 +68,7 @@ namespace LibLoader {
         auto event_addr = (plugin_event_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_EVENT));
         if (!event_addr) return errorMsg(path);
 
-        auto pluginInfo = (const MiraiCP::PluginConfig *) LoaderApi::libSymbolLookup(handle, STRINGIFY(PLUGIN_INFO));
+        auto pluginInfo = (plugin_info_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(PLUGIN_INFO));
         if (!pluginInfo) return errorMsg(path);
 
         return {event_addr, pluginInfo};
@@ -87,7 +87,7 @@ namespace LibLoader {
         }
 
         auto disable_func = (plugin_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_EXIT));
-        ThreadController::getController().callThreadEnd(plugin.config->id, disable_func);
+        ThreadController::getController().callThreadEnd(plugin.getId(), disable_func);
         plugin.disable();
     }
 
@@ -95,7 +95,7 @@ namespace LibLoader {
     // 不涉及插件列表的修改；不会修改插件权限
     void unload_plugin(LoaderPluginConfig &plugin) {
         if (nullptr == plugin.handle) {
-            logger.warning("plugin " + plugin.config->id + " is already unloaded");
+            logger.warning("plugin " + plugin.getId() + " is already unloaded");
             return;
         }
 

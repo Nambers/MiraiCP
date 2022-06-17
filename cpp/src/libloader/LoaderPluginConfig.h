@@ -31,15 +31,15 @@ namespace LibLoader {
         const std::string path;
         plugin_handle handle = nullptr;
         plugin_event_func_ptr eventFunc = nullptr;
-        const MiraiCP::PluginConfig *config = nullptr;
+        plugin_info_func_ptr config = nullptr;
         PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;
         bool enabled = false;
 
         const std::string &getId() const {
-            return config->id;
+            return config().id;
         }
 
-        void load(plugin_handle _handle, plugin_event_func_ptr _eventFunc, const MiraiCP::PluginConfig *_config) {
+        void load(plugin_handle _handle, plugin_event_func_ptr _eventFunc, plugin_info_func_ptr _config) {
             handle = _handle;
             eventFunc = _eventFunc;
             config = _config;
