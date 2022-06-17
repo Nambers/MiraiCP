@@ -26,18 +26,19 @@ namespace MiraiCP {
     /// 插件父类
     class CPPPlugin {
     public:
-        explicit CPPPlugin(PluginConfig c) : config(std::move(c)){};
+        CPPPlugin() = default;
         virtual ~CPPPlugin() = default;
 
     public:
         /// @brief 插件信息
-        PluginConfig config;
+        static PluginConfig config;
         /// @brief 插件级logger
         /// @deprecated use Logger::logger instead
         [[deprecated("Use Logger::logger instead")]] static Logger *pluginLogger;
 
         static std::unique_ptr<CPPPlugin> plugin;
 
+    public:
         /// 插件启用时调用一次
         virtual void onEnable() {}
 

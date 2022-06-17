@@ -40,7 +40,7 @@ namespace MiraiCP {
     }
 
     void Logger::log1(const std::string &content, int level, JNIEnv *env) {
-        LibLoader::LoaderApi::loggerInterface(content, MiraiCP::CPPPlugin::plugin->config.name, -1, level);
+        LibLoader::LoaderApi::loggerInterface(content, MiraiCP::CPPPlugin::config.name, -1, level);
         // LibLoader::LoaderApi::loggerInterface(content, "", -2, level);
     }
 

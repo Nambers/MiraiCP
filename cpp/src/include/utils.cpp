@@ -13,15 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
+
 #include "utils.h"
 #include "Command.h"
 #include "Event.h"
 #include "Exception.h"
 #include "KtOperation.h"
+#include "Logger.h"
 #include "Tools.h"
 #include "loaderApi.h"
 
-// 开始对接JNI接口代码
+
+// 开始对接libloader接口代码
 
 using json = nlohmann::json;
 
@@ -41,6 +45,10 @@ void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
 
     LibLoader::LoaderApi::set_loader_apis(&funcs);
 
+    assert(LibLoader::LoaderApi::get_loader_apis() != nullptr);
+
+    Logger::logger.warning("DEBUG-plugin0");
+
     try {
         enrollPlugin();
         // plugin == nullptr 无插件实例加载
@@ -48,6 +56,9 @@ void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
             CPPPlugin::plugin->onEnable();
     } catch (const MiraiCPExceptionBase &e) {
         e.raise();
+        Logger::logger.info("插件" + MiraiCP::CPPPlugin::config.id + "加载失败");
+        FUNC_EXIT();
+    } catch (...) {
     }
 }
 
@@ -58,14 +69,18 @@ void FUNC_EXIT() {
 
     LibLoader::LoaderApi::reset_loader_apis();
 
-    if (MiraiCP::CPPPlugin::plugin == nullptr) return;
     using namespace MiraiCP;
+
+    if (CPPPlugin::plugin == nullptr) return;
+
     try {
         CPPPlugin::plugin->onDisable();
     } catch (const MiraiCPExceptionBase &e) {
         e.raise();
+    } catch (...) {
     }
-    CPPPlugin::plugin = nullptr;
+
+    CPPPlugin::plugin.reset();
 }
 
 
@@ -234,13 +249,16 @@ void FUNC_EVENT(std::string content) {
     }
 }
 
+/// 获取 Plugin Info
+/// 如果未正确定义，插件无法正确加载
+/// 该函数不可调用loader api；因为会在入口函数调用前先调用，loader api未初始化
 const MiraiCP::PluginConfig &PLUGIN_INFO() {
     static_assert(std::is_same_v<decltype(&PLUGIN_INFO), LibLoader::plugin_info_func_ptr>);
 
-    if (MiraiCP::CPPPlugin::plugin == nullptr)
-        throw MiraiCP::IllegalStateException("Plugin not loaded", MIRAICP_EXCEPTION_WHERE);
+    if (MiraiCP::CPPPlugin::config.id.empty())
+        throw std::exception();
 
-    return MiraiCP::CPPPlugin::plugin->config;
+    return MiraiCP::CPPPlugin::config;
 }
 }
 //结束对接JNI接口代码

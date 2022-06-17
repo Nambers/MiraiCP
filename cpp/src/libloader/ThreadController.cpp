@@ -16,23 +16,32 @@
 
 #include "ThreadController.h"
 #include "JNIEnvManager.h"
-#include "JNIEnvs.h"
 #include "LoaderLogger.h"
+#include "PluginListManager.h"
 
 
 namespace LibLoader {
     ThreadController ThreadController::_threadController;
+
     // threadWorker
     void ThreadController::threadWorker::give_job(void_callable newjob) {
         std::lock_guard lk(worker_mtx);
         job_queue.emplace(std::move(newjob));
     }
 
-    inline void _do_job(const void_callable &job) {
-        try {
-            if (job) job();
-        } catch (...) { // do not let any exception raise to avoid crash
+    void ThreadController::threadWorker::call_this_thread_end() {
+        logger.error("Unexpected error: plugin " + pluginid + " crashed");
+
+        decltype(job_queue) emptyqueue;
+        {
+            std::lock_guard lk(worker_mtx);
+            std::swap(emptyqueue, job_queue);
         }
+
+        std::string plugin_id = std::move(pluginid);
+        // this指针随即释放。如果不移动pluginid而再次访问，会导致内存问题
+        PluginListManager::unloadById(plugin_id);
+        ThreadController::getController().endThread(plugin_id);
     }
 
     void ThreadController::threadWorker::run() {
@@ -45,7 +54,7 @@ namespace LibLoader {
                     nowjob = std::move(job_queue.front());
                     job_queue.pop();
                 }
-                _do_job(nowjob);
+                if (!_do_job(nowjob)) return;
             }
         }
 
@@ -53,7 +62,7 @@ namespace LibLoader {
         while (!job_queue.empty()) {
             auto job = std::move(job_queue.front());
             job_queue.pop();
-            _do_job(job);
+            if (!_do_job(job)) return;
         }
 
         // clean up
@@ -65,7 +74,7 @@ namespace LibLoader {
     // ThreadController helper functions, with no mutex lock
 
     // safely shutdown one thread using std::thread::join()
-    void ThreadController::shutdownThread(workerThread &worker) {
+    void ThreadController::joinAndShutdownThread(workerThread &worker) {
         worker.first->end();
         worker.second->join();
     }
@@ -87,7 +96,7 @@ namespace LibLoader {
             return;
         }
         auto &worker = thread_memory[name];
-        worker.first.reset(new threadWorker);
+        worker.first.reset(new threadWorker(name));
         worker.first->give_job(std::move(func));
         auto worker_ptr = worker.first.get();
         worker.second = std::make_shared<std::thread>([=]() { worker_ptr->run(); });
@@ -105,7 +114,7 @@ namespace LibLoader {
         auto &worker = it->second;
         worker.first->give_job(std::move(func));
         // shut down the thread
-        shutdownThread(it->second);
+        joinAndShutdownThread(it->second);
         // thread is dead, safely remove it
         thread_memory.erase(it);
     }
@@ -123,9 +132,23 @@ namespace LibLoader {
         std::lock_guard lk(_mtx);
         auto it = thread_memory.find(name);
         if (it == thread_memory.end()) {
-            logger.error("Plugin " + name + " thread not found!");
+            logger.error("Submit job: plugin " + name + " thread not found!");
             return;
         }
         it->second.first->give_job(std::move(func));
+    }
+
+    void ThreadController::endThread(const std::string &name) {
+        std::lock_guard lk(_mtx);
+        auto it = thread_memory.find(name);
+        if (it == thread_memory.end()) {
+            logger.error("End thread: plugin " + name + " thread not found!");
+            return;
+        }
+
+        // detach the thread
+        detachThread(it->second);
+        // thread is dead, safely remove it
+        thread_memory.erase(it);
     }
 } // namespace LibLoader

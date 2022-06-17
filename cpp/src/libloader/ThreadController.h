@@ -24,6 +24,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <utility>
 #include <vector>
 
 
@@ -33,15 +34,30 @@ namespace LibLoader {
 
     class ThreadController {
         class threadWorker {
+            std::string pluginid;
             std::queue<void_callable> job_queue;
             std::recursive_mutex worker_mtx;
             const volatile bool exit = false;
 
+
         public:
-            threadWorker() = default;
+            explicit threadWorker(std::string _pluginid) : pluginid(std::move(_pluginid)) {}
             // DO NOT copy (to avoid wild pointers)!
             threadWorker(threadWorker &&) = delete;
             threadWorker(const threadWorker &) = delete;
+
+        private:
+            bool _do_job(const void_callable &job) {
+                try {
+                    if (job) job();
+                } catch (...) { // do not let any exception raise to avoid crash
+                    call_this_thread_end();
+                    return false;
+                }
+                return true;
+            }
+
+            void call_this_thread_end();
 
         public:
             /// only for main thread
@@ -90,8 +106,10 @@ namespace LibLoader {
 
         void submitJob(const std::string &name, void_callable func);
 
+        void endThread(const std::string &name);
+
     private:
-        static void shutdownThread(workerThread &worker);
+        static void joinAndShutdownThread(workerThread &worker);
 
         static void detachThread(workerThread &worker);
 

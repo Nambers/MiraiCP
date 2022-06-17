@@ -76,6 +76,35 @@ namespace LibLoader {
 
     ////////////////////////////////////
 
+    // enable的前提是该插件已经被加载进内存，但尚未执行初始化函数，或者执行了Exit
+    // 不涉及插件列表的修改；不会修改插件权限
+    void enable_plugin(LoaderPluginConfig &plugin) {
+        if (plugin.enabled) {
+            logger.warning("plugin " + plugin.getId() + " is already enabled");
+            return;
+        }
+        if (plugin.handle == nullptr) {
+            logger.error("plugin " + plugin.getId() + " is not loaded!");
+            return;
+        }
+
+        logger.warning("DEBUG0");
+
+        auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
+        ThreadController::getController().addThread(plugin.getId(), [&]() {
+            logger.warning("DEBUG-sub0");
+            if (plugin.authority == PLUGIN_AUTHORITY_ADMIN)
+                callEntranceFuncAdmin(func);
+            else
+                callEntranceFuncNormal(func);
+            logger.warning("DEBUG-sub1");
+        });
+        plugin.enable();
+
+        logger.warning("DEBUG1");
+    }
+
+    // 不涉及插件列表的修改；不会修改插件权限
     void disable_plugin(LoaderPluginConfig &plugin) {
         if (nullptr == plugin.handle) {
             logger.error("plugin " + plugin.getId() + " is not loaded!");
@@ -91,46 +120,7 @@ namespace LibLoader {
         plugin.disable();
     }
 
-    // unload将释放插件的内存
     // 不涉及插件列表的修改；不会修改插件权限
-    void unload_plugin(LoaderPluginConfig &plugin) {
-        if (nullptr == plugin.handle) {
-            logger.warning("plugin " + plugin.getId() + " is already unloaded");
-            return;
-        }
-
-        // first disable it
-        if (plugin.enabled) {
-            disable_plugin(plugin);
-        }
-
-        // then unload it
-        LoaderApi::libClose(plugin.handle);
-        plugin.unload();
-    }
-
-    // enable的前提是该插件已经被加载进内存，但尚未执行初始化函数，或者执行了Exit
-    // 不涉及插件列表的修改；不会修改插件权限
-    void enable_plugin(LoaderPluginConfig &plugin) {
-        if (plugin.enabled) {
-            logger.warning("plugin " + plugin.getId() + " is already enabled");
-            return;
-        }
-        if (plugin.handle == nullptr) {
-            logger.error("plugin " + plugin.getId() + " is not loaded!");
-            return;
-        }
-
-        auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
-        ThreadController::getController().addThread(plugin.getId(), [&]() {
-            if (plugin.authority == PLUGIN_AUTHORITY_ADMIN)
-                callEntranceFuncAdmin(func);
-            else
-                callEntranceFuncNormal(func);
-        });
-        plugin.enable();
-    }
-
     void load_plugin(LoaderPluginConfig &plugin, bool alsoEnablePlugin) {
         if (plugin.handle != nullptr) {
             logger.error("plugin at location " + plugin.path + " is already loaded!");
@@ -153,6 +143,24 @@ namespace LibLoader {
 
         plugin.disable();
         if (alsoEnablePlugin) enable_plugin(plugin);
+    }
+
+    // unload将释放插件的内存
+    // 不涉及插件列表的修改；不会修改插件权限
+    void unload_plugin(LoaderPluginConfig &plugin) {
+        if (nullptr == plugin.handle) {
+            logger.warning("plugin " + plugin.getId() + " is already unloaded");
+            return;
+        }
+
+        // first disable it
+        if (plugin.enabled) {
+            disable_plugin(plugin);
+        }
+
+        // then unload it
+        LoaderApi::libClose(plugin.handle);
+        plugin.unload();
     }
 
     ////////////////////////////////////

@@ -139,7 +139,7 @@ namespace LibLoader {
     void PluginListManager::enableAll() {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
-            v->enable();
+            enable_plugin(*v);
         }
     }
 
@@ -150,13 +150,13 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        it->second->enable();
+        enable_plugin(*(it->second));
     }
 
     void PluginListManager::disableAll() {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
-            v->disable();
+            disable_plugin(*v);
         }
     }
 
@@ -167,7 +167,7 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        it->second->disable();
+        disable_plugin(*(it->second));
     }
 
     /// 遍历所有插件，by id（默认是不会by path的，path是用于id变更的特殊情况的备份）

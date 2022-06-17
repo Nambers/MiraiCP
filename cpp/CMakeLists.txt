@@ -114,21 +114,21 @@ if (UNIX)
 endif (UNIX)
 # -- end --
 
-# -- MiraiCP libloader --
-add_library(loader
+# -- MiraiCP libLoader --
+add_library(Loader
         SHARED
         ${LOADER_PATH}
         ${MIRAICP_COMMON_PATH}
         )
-target_include_directories(loader PUBLIC
+target_include_directories(Loader PUBLIC
         ${SOURCE_PATH}
         ${SRC_PATH}/include
         ${SRC_PATH}/common
         ${SRC_PATH}
         )
-target_compile_options(loader PUBLIC -DMIRAICP_LIB_LOADER)
+target_compile_options(Loader PUBLIC -DMIRAICP_LIB_LOADER -rdynamic)
 if (UNIX)
-    target_link_libraries(loader ${JAVA_JVM_LIBRARY} dl)
+    target_link_libraries(Loader ${JAVA_JVM_LIBRARY} dl)
 endif (UNIX)
 # -- end --
 

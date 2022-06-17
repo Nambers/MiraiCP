@@ -16,6 +16,7 @@
 
 #include "loaderMain.h"
 #include "JNIEnvManager.h"
+#include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
 #include "PluginListImplements.h"
 #include "PluginListManager.h"
@@ -29,6 +30,8 @@ namespace LibLoader::LoaderApi {
 namespace LibLoader {
     volatile bool LoaderMain::loader_exit = false;
     void LoaderMain::loaderMain() {
+        logger.info("libLoader thread start");
+
         PluginListManager::enableAll();
 
         while (!is_loader_exited()) mainloop();
@@ -65,7 +68,7 @@ namespace LibLoader {
         PluginListManager::disableById(id);
     }
 
-    void loader_reloadPluginById(const std::string &id){
+    void loader_reloadPluginById(const std::string &id) {
         PluginListManager::reloadById(id);
     }
     ////////////////////////////////////

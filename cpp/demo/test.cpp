@@ -19,20 +19,26 @@
 #include <MiraiCP.hpp>
 using namespace MiraiCP;
 
+PluginConfig CPPPlugin::config{
+        "id1",   // 插件id
+        "test", // 插件名称
+        "v1.0", // 插件版本
+        "a",    // 插件作者
+                // 可选：插件描述
+                // 可选：日期
+};
+
 class Main : public CPPPlugin {
 public:
     // 配置插件信息
-    Main() : CPPPlugin({"id",
-                        "test",
-                        "v1.0",
-                        "a"}) {}
+    Main() : CPPPlugin() {}
     ~Main() override = default;
 
 public:
     void onEnable() override {
         Logger::logger.info("loaded");
         // 监听
-        Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
+        Event::registerEvent<GroupMessageEvent>([](const GroupMessageEvent& a) {
             Logger::logger.info("b");
             auto b = Group(a.group.id(), a.group.botid());
             Logger::logger.info("c");
@@ -47,7 +53,8 @@ public:
     }
 };
 
-// 绑定当前插件实例，必须实现该函数
+// 绑定当前插件实例，除去new Main以外请不要进行其他操作，
+// 初始化请在onEnable中进行
 void MiraiCP::enrollPlugin() {
     MiraiCP::enrollPlugin(new Main);
 }
