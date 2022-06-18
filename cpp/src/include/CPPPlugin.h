@@ -27,15 +27,15 @@ namespace MiraiCP {
     class CPPPlugin {
     public:
         // for api-compatible
-        explicit CPPPlugin(PluginConfig c) {
-            CPPPlugin::config = std::move(c);
+        [[deprecated("请初始化静态常量 CPPPlugin::config")]] explicit CPPPlugin(const PluginConfig &c) {
+            // 不可覆盖原本的config，这里什么都不做
         }
         explicit CPPPlugin() = default;
         virtual ~CPPPlugin() = default;
 
     public:
-        /// @brief 插件信息
-        static PluginConfig config;
+        /// @brief 插件信息，一个插件中该内容不应变化
+        const static PluginConfig config;
         /// @brief 插件级logger
         /// @deprecated use Logger::logger instead
         [[deprecated("Use Logger::logger instead")]] static Logger *pluginLogger;

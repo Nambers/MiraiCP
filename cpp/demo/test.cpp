@@ -19,8 +19,8 @@
 #include <MiraiCP.hpp>
 using namespace MiraiCP;
 
-PluginConfig CPPPlugin::config{
-        "id1",   // 插件id
+const PluginConfig CPPPlugin::config{
+        "id1",  // 插件id
         "test", // 插件名称
         "v1.0", // 插件版本
         "a",    // 插件作者
@@ -34,7 +34,7 @@ public:
     Main() : CPPPlugin({"id1",
                         "test",
                         "v1.0",
-                        "a"}) {}
+                        "a"}) {} // 此处配置deprecated
     ~Main() override = default;
 
 public:
