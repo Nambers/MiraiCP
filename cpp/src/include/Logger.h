@@ -41,10 +41,6 @@ namespace MiraiCP {
     class Logger_interface {
         using string = std::string;
 
-    protected:
-        typedef void (*logMethodType)(const std::string &, int, nlohmann::json, JNIEnv *);
-        logMethodType logMethod = nullptr;
-
     public:
         /// @brief 封装lambda类型
         /// @param string 日志内容
@@ -94,13 +90,6 @@ namespace MiraiCP {
         virtual void log1(const string &log, int level, JNIEnv *env = nullptr) = 0;
 
     public:
-        logMethodType getLogMethod() {
-            return this->logMethod;
-        }
-
-        // 初始化 获取methodid
-        void init(logMethodType);
-
         ///发送普通(info级日志)
         template<class... T>
         void info(T... val) {
@@ -160,7 +149,6 @@ namespace MiraiCP {
     public:
         IdLogger(QQID id, Logger *l) : id(id) {
             this->loggerhandler = l->loggerhandler;
-            this->logMethod = l->getLogMethod();
         }
     };
 } // namespace MiraiCP

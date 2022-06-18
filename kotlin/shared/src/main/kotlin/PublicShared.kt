@@ -70,7 +70,7 @@ object PublicShared {
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
     const val now_tag = "v${BuiltInConstants.version}"
-    val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
+    private val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
     var cachePath: File = File("")
     var maxThread = Integer.MAX_VALUE
@@ -108,10 +108,18 @@ object PublicShared {
         }
     }
 
+    private fun getPluginLogger(name: String): MiraiLogger =
+        if (logger4plugins.containsKey(name))
+            logger4plugins[name]!!
+        else
+            MiraiLogger.Factory.create(this::class, name).apply {
+                logger4plugins[name] = this
+            }
+
     //日志部分实现
     fun basicSendLog(log: String, botid: Long, name: String = "") {
         when (botid) {
-            -1L -> logger4plugins[name]!!.info(log)
+            -1L -> getPluginLogger(name).info(log)
             -2L -> logger.info(log)
             else -> Bot.getInstance(botid).logger.info(log)
         }
@@ -119,7 +127,7 @@ object PublicShared {
 
     fun sendWarning(log: String, botid: Long, name: String = "") {
         when (botid) {
-            -1L -> logger4plugins[name]!!.warning(log)
+            -1L -> getPluginLogger(name).warning(log)
             -2L -> logger.warning(log)
             else -> Bot.getInstance(botid).logger.warning(log)
         }
@@ -127,7 +135,7 @@ object PublicShared {
 
     fun sendError(log: String, botid: Long, name: String = "") {
         when (botid) {
-            -1L -> logger4plugins[name]!!.error(log)
+            -1L -> getPluginLogger(name).error(log)
             -2L -> logger.error(log)
             else -> Bot.getInstance(botid).logger.error(log)
         }

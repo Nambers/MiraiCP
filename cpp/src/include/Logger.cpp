@@ -31,14 +31,6 @@ namespace MiraiCP {
 
     // 结束静态成员
 
-    /*
-    日志类实现
-    throw: InitException 即找不到签名
-    */
-    void Logger_interface::init(Logger_interface::logMethodType logMethod1) {
-        logMethod = logMethod1;
-    }
-
     void Logger::log1(const std::string &content, int level, JNIEnv *env) {
         LibLoader::LoaderApi::loggerInterface(content, MiraiCP::CPPPlugin::config.name, -1, level);
         // LibLoader::LoaderApi::loggerInterface(content, "", -2, level);
