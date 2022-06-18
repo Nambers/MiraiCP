@@ -71,6 +71,9 @@ namespace LibLoader {
         auto pluginInfo = (plugin_info_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(PLUGIN_INFO));
         if (!pluginInfo) return errorMsg(path);
 
+        auto pluginEnroll = (plugin_info_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_ENROLL));
+        if (!pluginEnroll) return errorMsg(path);
+
         return {event_addr, pluginInfo};
     }
 
@@ -91,8 +94,11 @@ namespace LibLoader {
         logger.warning("DEBUG0");
 
         auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
-        ThreadController::getController().addThread(plugin.getId(), [&, func]() {
+        auto func1 = (plugin_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENROLL));
+        ThreadController::getController().addThread(plugin.getId(), [&, func, func1]() {
             logger.warning("DEBUG-sub0");
+            // enroll
+            func1();
             if (plugin.authority == PLUGIN_AUTHORITY_ADMIN)
                 callEntranceFuncAdmin(func);
             else

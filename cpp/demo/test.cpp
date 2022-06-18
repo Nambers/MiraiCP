@@ -31,19 +31,23 @@ PluginConfig CPPPlugin::config{
 class Main : public CPPPlugin {
 public:
     // 配置插件信息
-    Main() : CPPPlugin() {}
+    Main() : CPPPlugin({"id1",
+                        "test",
+                        "v1.0",
+                        "a"}) {}
     ~Main() override = default;
 
 public:
     void onEnable() override {
         Logger::logger.info("loaded");
         // 监听
-        Event::registerEvent<GroupMessageEvent>([](const GroupMessageEvent& a) {
+        Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
             Logger::logger.info("b");
             auto b = Group(a.group.id(), a.group.botid());
             Logger::logger.info("c");
             auto c = b[a.sender.id()];
             Logger::logger.info("d");
+            a.group.sendMessage("a");
             c.changeNameCard(a.message.toMiraiCode());
         });
     }
@@ -56,5 +60,5 @@ public:
 // 绑定当前插件实例，除去new Main以外请不要进行其他操作，
 // 初始化请在onEnable中进行
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin(new Main);
+    MiraiCP::enrollPlugin(new Main());
 }

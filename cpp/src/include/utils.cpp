@@ -50,7 +50,6 @@ void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
     Logger::logger.warning("DEBUG-plugin0");
 
     try {
-        enrollPlugin();
         // plugin == nullptr 无插件实例加载
         if (CPPPlugin::plugin != nullptr)
             CPPPlugin::plugin->onEnable();
@@ -247,6 +246,10 @@ void FUNC_EVENT(std::string content) {
         Logger::logger.error(e.what());
         Logger::logger.error("info:", content);
     }
+}
+
+void FUNC_ENROLL() {
+    MiraiCP::enrollPlugin();
 }
 
 /// 获取 Plugin Info

@@ -26,7 +26,11 @@ namespace MiraiCP {
     /// 插件父类
     class CPPPlugin {
     public:
-        CPPPlugin() = default;
+        // for api-compatible
+        explicit CPPPlugin(PluginConfig c) {
+            CPPPlugin::config = std::move(c);
+        }
+        explicit CPPPlugin() = default;
         virtual ~CPPPlugin() = default;
 
     public:

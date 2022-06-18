@@ -33,6 +33,7 @@
 #define FUNC_EVENT FUNC_EVENT
 #define FUNC_EXIT FUNC_EXIT
 #define PLUGIN_INFO PLUGIN_INFO
+#define FUNC_ENROLL FUNC_ENROLL
 
 
 namespace LibLoader {
