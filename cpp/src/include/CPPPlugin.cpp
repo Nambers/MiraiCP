@@ -17,6 +17,10 @@
 #include "CPPPlugin.h"
 
 namespace MiraiCP {
+    // 静态区代码一般不会使用logger，虽是ub，但应该不会造成影响；
+    // 静态区强行调用的话，因为loggerInterface尚未传入，若logger尚未初始化，访问Logger::logger将是ub
+    // 可以考虑把logger做成纯静态实现？以及最好做成 Logger * const
     Logger *CPPPlugin::pluginLogger = &Logger::logger;
+
     std::unique_ptr<CPPPlugin> CPPPlugin::plugin = nullptr;
 } // namespace MiraiCP

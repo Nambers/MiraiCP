@@ -17,12 +17,12 @@
 #ifndef MIRAICP_PRO_LOGGER_H
 #define MIRAICP_PRO_LOGGER_H
 
-#include <functional>
-#include <sstream>
-#include <jni.h>
-#include <json.hpp>
+
 #include "MiraiCode.h"
 #include "MiraiDefs.h"
+#include <functional>
+#include <sstream>
+
 
 namespace MiraiCP {
     class MiraiCodeable; // forward declaration
@@ -51,6 +51,7 @@ namespace MiraiCP {
         typedef std::function<void(string, int)> Action;
 
         /// @brief loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等
+        // todo(Antares): 这个东西似乎没用到？如果是类似于handle那样的东西建议用register event那里一样的方法来处理
         struct Handler {
             /// @brief 是否启用
             bool enable = true;
@@ -61,51 +62,50 @@ namespace MiraiCP {
         Handler loggerhandler;
 
     private:
-        std::string p() {
+        static std::string constructString() {
             return "";
         }
 
         template<class T, class... T1>
-        std::string p(T val, T1... val1) {
+        static std::string constructString(T val, T1... val1) {
             std::stringstream sstream;
             sstream << val;
-            return sstream.str() + p(val1...);
+            return sstream.str() + constructString(val1...);
         }
 
         template<class... T>
-        std::string p(std::string a, T... val1) {
-            return a + p(val1...);
+        static std::string constructString(std::string a, T... val1) {
+            return a + constructString(val1...);
         }
 
         template<class... T>
-        std::string p(MiraiCodeable &val, T... val1) {
-            return val.toMiraiCode() + p(val1...);
+        static std::string constructString(MiraiCodeable &val, T... val1) {
+            return val.toMiraiCode() + constructString(val1...);
         }
 
     protected:
         /// @brief 日志底层实现封装
         /// @param log 日志内容
         /// @param level 日志等级
-        /// @param env jnienv
-        virtual void log1(const string &log, int level, JNIEnv *env = nullptr) = 0;
+        virtual void log_interface(const string &log, int level) = 0;
 
     public:
         ///发送普通(info级日志)
         template<class... T>
         void info(T... val) {
-            this->log1(p(val...), 0);
+            this->log_interface(constructString(val...), 0);
         }
 
         ///发送警告(warning级日志)
         template<class... T>
         void warning(T... val) {
-            this->log1(p(val...), 1);
+            this->log_interface(constructString(val...), 1);
         }
 
         ///发送错误(error级日志)
         template<class... T>
         void error(T... val) {
-            this->log1(p(val...), 2);
+            this->log_interface(constructString(val...), 2);
         }
 
         /// @brief 设置loggerhandler的action
@@ -132,7 +132,7 @@ namespace MiraiCP {
         /// @param content 日志内容
         /// @param level 日志等级
         /// @param env jnienv
-        void log1(const std::string &content, int level, JNIEnv *env) override;
+        void log_interface(const std::string &content, int level) override;
 
     public:
         static Logger logger;
@@ -144,7 +144,7 @@ namespace MiraiCP {
         QQID id;
 
     protected:
-        void log1(const std::string &content, int level, JNIEnv *env) override;
+        void log_interface(const std::string &content, int level) override;
 
     public:
         IdLogger(QQID id, Logger *l) : id(id) {

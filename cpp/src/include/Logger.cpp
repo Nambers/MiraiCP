@@ -16,27 +16,18 @@
 
 #include "Logger.h"
 #include "CPPPlugin.h"
-#include "KtOperation.h"
 #include "MiraiCode.h"
-#include "Tools.h"
 #include "loaderApi.h"
 
-extern "C" {
-extern MiraiCP::PluginConfig PLUGIN_INFO;
-}
+
 namespace MiraiCP {
-    using json = nlohmann::json;
-    // 静态成员
-    Logger Logger::logger = Logger();
+    Logger Logger::logger;
 
-    // 结束静态成员
-
-    void Logger::log1(const std::string &content, int level, JNIEnv *env) {
+    void Logger::log_interface(const std::string &content, int level) {
         LibLoader::LoaderApi::loggerInterface(content, MiraiCP::CPPPlugin::config.name, -1, level);
-        // LibLoader::LoaderApi::loggerInterface(content, "", -2, level);
     }
 
-    void IdLogger::log1(const std::string &content, int level, JNIEnv *env) {
+    void IdLogger::log_interface(const std::string &content, int level) {
         LibLoader::LoaderApi::loggerInterface(content, "", static_cast<long long>(id), level);
     }
 } // namespace MiraiCP
