@@ -56,9 +56,8 @@ fun event(obj: Any) {
 }
 
 // todo(ea): 确定存放路径
-fun getLibLoader(): String = CPPLib
-    .javaClass
-    .getResource(if (System.getProperty("os.name").contains("Windows")) "libLoader.dll" else "libLoader.so")
+fun getLibLoader(): String = CPPLib::class.java
+    .getResource(if (System.getProperty("os.name").contains("Windows")) "/libLoader.dll" else "/libLoader.so")
     .path
 
 fun Group.toContact(): Config.Contact = Config.Contact(2, this.id, 0, this.name, this.bot.id)
