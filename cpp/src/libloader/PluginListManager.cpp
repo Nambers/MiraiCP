@@ -36,7 +36,8 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans;
         for (auto &&[k, v]: id_plugin_list) {
-            ans.emplace_back(k);
+            // todo(ea): 格式
+            ans.emplace_back("id: " + k + " - " + "name: " + v->config().name);
         }
         return ans;
     }

@@ -72,7 +72,7 @@ jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
 jobject Event(JNIEnv *env, jobject, jstring content) {
     static std::string str;
     str = LibLoader::jstring2str(content);
-    if (str.find("\"id\":1001") != std::string::npos) {
+    if (str.find(R"("type":1000)") != std::string::npos) {
         LibLoader::builtInCommand(str);
         return nullptr;
     }

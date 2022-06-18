@@ -55,6 +55,7 @@ fun event(obj: Any) {
     }
 }
 
+// todo(ea): 确定存放路径
 fun getLibLoader(): String = CPPLib
     .javaClass
     .getResource(if (System.getProperty("os.name").contains("Windows")) "libLoader.dll" else "libLoader.so")
