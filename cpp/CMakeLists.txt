@@ -126,8 +126,10 @@ target_include_directories(Loader PUBLIC
         ${SRC_PATH}/common
         ${SRC_PATH}
         )
-target_compile_options(Loader PUBLIC -DMIRAICP_LIB_LOADER -rdynamic)
+# https://stackoverflow.com/questions/45114078/get-address-for-symbol-in-current-process-in-windows
+target_compile_options(Loader PUBLIC -DMIRAICP_LIB_LOADER)
 if (UNIX)
+    target_compile_options(Loader PUBLIC -rdynamic)
     target_link_libraries(Loader ${JAVA_JVM_LIBRARY} dl)
 endif (UNIX)
 # -- end --
