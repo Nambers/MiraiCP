@@ -14,10 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//
-// Created by antares on 5/25/22.
-//
-
 #ifndef MIRAICP_PRO_COMMONTYPES_H
 #define MIRAICP_PRO_COMMONTYPES_H
 // don't create cpp for this header
@@ -25,7 +21,6 @@
 
 #include "PluginConfig.h"
 #include "loaderApi.h"
-#include <jni.h>
 #include <unordered_map>
 
 
@@ -33,7 +28,6 @@
 #define FUNC_EVENT FUNC_EVENT
 #define FUNC_EXIT FUNC_EXIT
 #define PLUGIN_INFO PLUGIN_INFO
-#define FUNC_ENROLL FUNC_ENROLL
 
 
 namespace LibLoader {

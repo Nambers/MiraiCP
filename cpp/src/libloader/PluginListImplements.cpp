@@ -71,9 +71,6 @@ namespace LibLoader {
         auto pluginInfo = (plugin_info_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(PLUGIN_INFO));
         if (!pluginInfo) return errorMsg(path);
 
-        auto pluginEnroll = (plugin_info_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_ENROLL));
-        if (!pluginEnroll) return errorMsg(path);
-
         return {event_addr, pluginInfo};
     }
 
@@ -91,23 +88,20 @@ namespace LibLoader {
             return;
         }
 
-        logger.warning("DEBUG0");
-
         auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
-        auto func1 = (plugin_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENROLL));
-        ThreadController::getController().addThread(plugin.getId(), [&, func, func1]() {
-            logger.warning("DEBUG-sub0");
-            // enroll
-            func1();
-            if (plugin.authority == PLUGIN_AUTHORITY_ADMIN)
+
+        // 注意：plugin虽然被分配在一个固定地址（map中的值是shared_ptr，内部的 LoaderPluginConfig 不会被复制），
+        // 但这里引用plugin地址的话，当shared_ptr在某个线程中被释放掉，还是可能会产生段错误
+        // 因为我们无法保证getController().addThread()一定会把提交的这个函数在plugin被销毁前处理掉，
+        // 也就是说这里按引用捕获plugin，或者任意别的东西都可能导致段错误！
+        // 请务必全部按值捕获
+        ThreadController::getController().addThread(plugin.getId(), [=, authority = plugin.authority] {
+            if (authority == PLUGIN_AUTHORITY_ADMIN)
                 callEntranceFuncAdmin(func);
             else
                 callEntranceFuncNormal(func);
-            logger.warning("DEBUG-sub1");
         });
         plugin.enable();
-
-        logger.warning("DEBUG1");
     }
 
     // 不涉及插件列表的修改；不会修改插件权限

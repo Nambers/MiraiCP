@@ -14,14 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 #include "utils.h"
 #include "Command.h"
 #include "Event.h"
 #include "Exception.h"
 #include "KtOperation.h"
 #include "Logger.h"
-#include "Tools.h"
 #include "loaderApi.h"
 
 
@@ -246,10 +244,6 @@ void FUNC_EVENT(std::string content) {
         Logger::logger.error(e.what());
         Logger::logger.error("info:", content);
     }
-}
-
-void FUNC_ENROLL() {
-    MiraiCP::enrollPlugin();
 }
 
 /// 获取 Plugin Info
