@@ -27,7 +27,7 @@ namespace MiraiCP {
     class CPPPlugin {
     public:
         // for api-compatible
-        [[deprecated("请初始化静态常量 CPPPlugin::config")]] explicit CPPPlugin(const PluginConfig &c) {
+        ShouldNotUse("请改为初始化静态常量 CPPPlugin::config") explicit CPPPlugin(const PluginConfig &c) {
             // 不可覆盖原本的config，这里什么都不做
         }
         explicit CPPPlugin() = default;
