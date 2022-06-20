@@ -17,10 +17,12 @@
 #ifndef MIRAICP_PRO_BOT_H
 #define MIRAICP_PRO_BOT_H
 
-#include <jni.h>
 #include <string>
 #include <vector>
 #include "MiraiDefs.h"
+
+// forward declaration
+struct JNIEnv;
 
 namespace MiraiCP {
     class Friend;  // forward declaration

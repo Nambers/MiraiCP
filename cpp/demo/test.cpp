@@ -31,10 +31,7 @@ const PluginConfig CPPPlugin::config{
 class Main : public CPPPlugin {
 public:
     // 配置插件信息
-    Main() : CPPPlugin({"id1",
-                        "test",
-                        "v1.0",
-                        "a"}) {} // 此处配置deprecated
+    Main() : CPPPlugin() {} // 此处填写配置已deprecated
     ~Main() override = default;
 
 public:

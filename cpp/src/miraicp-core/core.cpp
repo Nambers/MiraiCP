@@ -34,6 +34,54 @@ void freeLibrary(void *pointer) {
 
 typedef jint(JNICALL *JNICREATEPROC)(JavaVM **, void **, void *);
 
+namespace MiraiCP::Tools {
+    /*!
+         * @name jstring2str
+         * @brief string类型转码转换到jstring类型, UTF16 -> UTF8
+         * @note 来源https://blog.csdn.net/chunleixiahe/article/details/51394116
+         * @param jstr 转换内容,jstring类型
+         * @param env 可选，JNIEnv
+         * @return 内容转换成jstring类型
+         */
+    std::string jstring2str(jstring jStr, JNIEnv *env = nullptr) {
+        if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
+        if (!jStr) {
+            Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
+            return "";
+        }
+        std::u16string s = reinterpret_cast<const char16_t *>(env->GetStringChars(jStr, nullptr));
+        if (s.length() == 0) {
+            Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
+            return "";
+        }
+        std::string x;
+        utf8::utf16to8(s.begin(), s.end(), std::back_inserter(x));
+        return x;
+    }
+    /*!
+         * @name str2jstring
+         * @brief string类型到jsting类型 UTF8 -> UTF16
+         * @note 来源https://blog.csdn.net/chunleixiahe/article/details/51394116
+         * @param stra const char*(string.c_str()转换的内容)
+         * @param env 可选JNIEnv
+         * @return 转换后jstring类型
+         */
+    jstring str2jstring(const char *stra, JNIEnv *env = nullptr) {
+        if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
+        if (!stra) {
+            Logger::logger.error("警告:C++部分传入空字符串，位置:Tools::str2jstring");
+        }
+        std::string str(stra);
+        std::vector<unsigned short> utf16line;
+        utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
+        auto *c = new jchar[utf16line.size()];
+        for (int i = 0; i < utf16line.size(); i++) {
+            c[i] = utf16line[i];
+        }
+        return env->NewString((jchar *) c, (jsize) utf16line.size());
+    }
+} // namespace MiraiCP::Tools
+
 namespace MiraiCP::Core {
     void *jvmLib;
     jclass coreClaz;

@@ -16,8 +16,10 @@
 
 #ifndef MIRAICP_PRO_LOWLEVELAPI_H
 #define MIRAICP_PRO_LOWLEVELAPI_H
-#include <jni.h>
+// #include <jni.h>
 #include <json.hpp>
+
+struct JNIEnv;
 
 namespace MiraiCP {
     /// 较底层api

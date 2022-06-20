@@ -18,8 +18,10 @@
 #define MIRAICP_PRO_MESSAGESOURCE_H
 
 #include <string>
-#include <jni.h>
+// #include <jni.h>
 #include "MiraiDefs.h"
+
+struct JNIEnv;
 
 namespace MiraiCP {
     class MiraiCodeable; // forward declaration

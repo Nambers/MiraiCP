@@ -19,7 +19,7 @@
 
 #include "MiraiDefs.h"
 #include <functional>
-#include <jni.h>
+// #include <jni.h>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -46,24 +46,6 @@ namespace MiraiCP {
     /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
     /// @class Tools
     namespace Tools {
-        /*!
-         * @name jstring2str
-         * @brief string类型转码转换到jstring类型, UTF16 -> UTF8
-         * @note 来源https://blog.csdn.net/chunleixiahe/article/details/51394116
-         * @param jstr 转换内容,jstring类型
-         * @param env 可选，JNIEnv
-         * @return 内容转换成jstring类型
-         */
-        std::string jstring2str(jstring jstr, JNIEnv * = nullptr);
-        /*!
-         * @name str2jstring
-         * @brief string类型到jsting类型 UTF8 -> UTF16
-         * @note 来源https://blog.csdn.net/chunleixiahe/article/details/51394116
-         * @param stra const char*(string.c_str()转换的内容)
-         * @param env 可选JNIEnv
-         * @return 转换后jstring类型
-         */
-        jstring str2jstring(const char *stra, JNIEnv * = nullptr);
         /*!
          * @brief 替换全部在一个字符串中.
          * @param str 原字符串.

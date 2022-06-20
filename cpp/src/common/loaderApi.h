@@ -14,17 +14,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//
-// Created by antares on 5/25/22.
-//
-
 #ifndef MIRAICP_PRO_LOADERAPI_H
 #define MIRAICP_PRO_LOADERAPI_H
 
 
-#include <jni.h>
 #include <string>
 #include <vector>
+
+
+#ifdef MIRAICP_LIB_LOADER
+#include <jni.h>
+#else
+// forward declaration
+struct JNIEnv;
+#endif
 
 
 #ifdef MIRAICP_LIB_LOADER
@@ -88,6 +91,7 @@ namespace LibLoader::LoaderApi {
         decltype(&unloadPluginById) _unloadPluginById = nullptr;
         decltype(&reloadPluginById) _reloadPluginById = nullptr;
     };
+
 
 #ifdef MIRAICP_LIB_LOADER
     constexpr inline interface_funcs collect_interface_functions(bool admin) {

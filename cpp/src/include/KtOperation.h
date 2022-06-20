@@ -18,8 +18,10 @@
 #define MIRAICP_PRO_KTOPERATION_H
 
 
-#include <jni.h> // todo(Antares): 删除掉<jni.h>的include
 #include <json.hpp>
+
+
+struct JNIEnv;
 
 
 /// @brief 配置类声明,  MiraiCP内部使用, 不需要更改或其他操作

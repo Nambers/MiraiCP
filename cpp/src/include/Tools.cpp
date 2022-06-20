@@ -22,41 +22,7 @@
 
 
 namespace MiraiCP::Tools {
-    // todo(Antares): 删掉下面两个函数。
-    //  如果core端需要的话，移动到core端，
-    //  或者考虑让core来include一下lobloader端的这两个函数
-
-    /*工具类实现*/
-    std::string jstring2str(jstring jStr, JNIEnv *env) {
-        if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
-        if (!jStr) {
-            Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
-            return "";
-        }
-        std::u16string s = reinterpret_cast<const char16_t *>(env->GetStringChars(jStr, nullptr));
-        if (s.length() == 0) {
-            Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
-            return "";
-        }
-        std::string x;
-        utf8::utf16to8(s.begin(), s.end(), std::back_inserter(x));
-        return x;
-    }
-
-    jstring str2jstring(const char *stra, JNIEnv *env) {
-        if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
-        if (!stra) {
-            Logger::logger.error("警告:C++部分传入空字符串，位置:Tools::str2jstring");
-        }
-        std::string str(stra);
-        std::vector<unsigned short> utf16line;
-        utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
-        auto *c = new jchar[utf16line.size()];
-        for (int i = 0; i < utf16line.size(); i++) {
-            c[i] = utf16line[i];
-        }
-        return env->NewString((jchar *) c, (jsize) utf16line.size());
-    }
+    // 工具函数实现
 
     std::string replace(std::string str, std::string_view from, std::string_view to) {
         size_t start_pos = 0;
