@@ -66,7 +66,6 @@ object PublicShared {
         }
     }
     private var friend_cache = ArrayList<NormalMember>(0)
-    val cpp: ArrayList<CPPLib> = arrayListOf()
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
     const val now_tag = "v${BuiltInConstants.version}"
@@ -734,7 +733,7 @@ object PublicShared {
         "s"
     }
 
-    fun onDisable() = cpp.forEach { it.PluginDisable() }
+    fun onDisable() = CPPLib.PluginDisable()
 
     @MiraiExperimentalApi
     fun onEnable(eventChannel: EventChannel<Event>) {

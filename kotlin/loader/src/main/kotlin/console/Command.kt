@@ -27,10 +27,7 @@ import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.login
-import tech.eritquearcus.miraicp.shared.CPPEvent
-import tech.eritquearcus.miraicp.shared.Command2C
-import tech.eritquearcus.miraicp.shared.PublicShared
-import tech.eritquearcus.miraicp.shared.event
+import tech.eritquearcus.miraicp.shared.*
 import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
@@ -231,7 +228,7 @@ object Command {
                     it.bid
                 )
             )
-            PublicShared.cpp[it.pid].Event(tmp)
+            CPPLib.Event(tmp)
             return true
         }
         return false
