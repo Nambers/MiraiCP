@@ -16,8 +16,9 @@
 
 #ifndef MIRAICP_PRO_COMMAND_H
 #define MIRAICP_PRO_COMMAND_H
-#include "KtOperation.h"
+#include "CPPPlugin.h"
 #include "Exception.h"
+#include "KtOperation.h"
 #include "Logger.h"
 #include <optional>
 namespace MiraiCP {
@@ -40,25 +41,13 @@ namespace MiraiCP {
             /// 可以为空
             std::vector<string> secondNames;
             /// 用法
-            string usage;
+            string usage = "null";
             /// 描述
-            string description;
+            string description = "null";
             /// 覆盖已有命令
-            bool override;
+            bool overrideOrigin = false;
             /// 前缀`/`可省略
-            bool preFixOption;
-            explicit Config(string primaryName,
-                            std::vector<string> secondNames = std::vector<std::string>(),
-                            string usage = "null",
-                            string description = "null",
-                            bool override = false,
-                            bool preFixOption = false)
-                : primaryName(std::move(primaryName)),
-                  secondNames(std::move(secondNames)),
-                  usage(std::move(usage)),
-                  description(std::move(description)),
-                  override(override),
-                  preFixOption(preFixOption) {}
+            bool preFixOption = false;
         };
 
         virtual IRawCommand::Config config() = 0;
@@ -84,8 +73,7 @@ namespace MiraiCP {
         bool registerCommand(T command) {
             static_assert(std::is_base_of_v<IRawCommand, T>, "只支持IRawCommand的派生类");
             nlohmann::json j;
-            // todo identify
-            j["pluginId"] = "";
+            j["pluginId"] = CPPPlugin::config.id;
             j["usage"] = command.config().usage;
             j["primaryName"] = command.config().primaryName;
             j["secondName"] = command.config().secondNames;
