@@ -48,6 +48,7 @@ void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
     Logger::logger.warning("DEBUG-plugin0");
 
     try {
+        enrollPlugin();
         // plugin == nullptr 无插件实例加载
         if (CPPPlugin::plugin != nullptr)
             CPPPlugin::plugin->onEnable();

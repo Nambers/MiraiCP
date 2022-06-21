@@ -36,13 +36,13 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans;
         for (auto &&[k, v]: id_plugin_list) {
-            // todo(ea): 格式
-            ans.emplace_back("id: " + k + " - " + "name: " + v->config().name);
+            ans.emplace_back(v->config().id);
         }
         return ans;
     }
 
     std::vector<std::string> PluginListManager::getAllPluginPath() {
+        std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans;
         for (auto &&[k, v]: id_plugin_list) {
             ans.emplace_back(v->path);
@@ -91,6 +91,7 @@ namespace LibLoader {
             return;
         }
         unload_plugin(*(it->second));
+        id_plugin_list.erase(it);
     }
 
     /// reload 所有插件。

@@ -43,6 +43,9 @@ namespace LibLoader {
     private:
         static void changeKey(const std::string &key, const std::string &new_key);
 
+    private:
+        static void unloadAll();
+
     public:
         PluginListManager() = delete;
         ~PluginListManager() = delete;
@@ -64,7 +67,6 @@ namespace LibLoader {
         static bool addNewPlugin(LoaderPluginConfig cfg);
 
     public: // unload
-        static void unloadAll();
         static void unloadById(const std::string &);
 
     public: // reload
