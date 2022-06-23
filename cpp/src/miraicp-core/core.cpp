@@ -29,11 +29,16 @@ void freeLibrary(void *pointer) {
 #else
 #include <unistd.h>
 void freeLibrary(void *pointer) {
-    JNIEnvManager::getGvm()->DestroyJavaVM();
+    // todo(ea): 重构6
+    // JNIEnvManager::getGvm()->DestroyJavaVM();
 }
 #endif
 
 typedef jint(JNICALL *JNICREATEPROC)(JavaVM **, void **, void *);
+
+// todo(ea): 重构
+const MiraiCP::PluginConfig MiraiCP::CPPPlugin::config{
+        "1", "Core"};
 
 namespace MiraiCP::Tools {
     /*!
@@ -156,12 +161,13 @@ namespace MiraiCP::Core {
         //     return 3;
         // }
 #else
-        long flag = JNI_CreateJavaVM(&JNIEnvManager::getGvm(), (void **) &env, &vmInitArgs);
-        if (flag != 0) {
-            // Error creating VM. Exiting...
-            freeLibrary(nullptr);
-            return 3;
-        }
+        // todo(ea): 重构7
+        // long flag = JNI_CreateJavaVM(&JNIEnvManager::getGvm(), (void **) &env, &vmInitArgs);
+        // if (flag != 0) {
+        //     // Error creating VM. Exiting...
+        //     freeLibrary(nullptr);
+        //     return 3;
+        // }
 #endif
         //加载启动类
         coreClaz = env->FindClass("tech/eritquearcus/miraicp/core/Core");
