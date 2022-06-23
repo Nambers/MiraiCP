@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(MiraiCP_pro LANGUAGES CXX)
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-file(GLOB MIRAICP_CPP_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/include/*.cpp)
-file(GLOB MIRAICP_COMMON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/common/*.cpp)
+file(GLOB MIRAICP_CPP_PATH ${SRC_PATH}/include/*.cpp)
+file(GLOB MIRAICP_COMMON_PATH ${SRC_PATH}/common/*.cpp)
 file(GLOB LOADER_PATH ${SRC_PATH}/libloader/*.cpp)
 
 # -- automatic add include --
@@ -34,12 +34,14 @@ set(JAVA_AWT_INCLUDE_PATH NotNeeded)
 find_package(JNI REQUIRED)
 if (JNI_FOUND)
     message(STATUS "FOUND JNI IN ${JAVA_INCLUDE_PATH}")
-    set(SOURCE_PATH
+    set(JNI_PATH
+            ${JAVA_INCLUDE_PATH}
+            ${JAVA_INCLUDE_PATH2}
+            )
+    set(3RD_PATH
             ${SRC_PATH}/3rd_include/
             ${SRC_PATH}/3rd_include/utf8
             ${SRC_PATH}/3rd_include/utf8/utf8
-            ${JAVA_INCLUDE_PATH}
-            ${JAVA_INCLUDE_PATH2}
             )
 else ()
     message(STATUS "Cannot find JNI")
@@ -67,7 +69,7 @@ set_target_properties(MiraiCP_multi PROPERTIES
 target_include_directories(MiraiCP_multi PUBLIC
         ${SRC_PATH}/include
         ${SRC_PATH}/common
-        ${SOURCE_PATH}
+        ${3RD_PATH}
         )
 target_compile_options(MiraiCP_multi PUBLIC -w)
 # -- end --
@@ -90,7 +92,7 @@ set_target_properties(MiraiCP_single PROPERTIES
         OUTPUT_NAME MiraiCP_single)
 target_include_directories(MiraiCP_single PUBLIC
         ${SRC_PATH}/single_include/MiraiCP
-        ${SOURCE_PATH}
+        ${3RD_PATH}
         )
 target_compile_options(MiraiCP_single PUBLIC -w)
 # -- end --
@@ -103,7 +105,8 @@ add_executable(MiraiCP_core
         ${MIRAICP_COMMON_PATH}
         )
 target_include_directories(MiraiCP_core PUBLIC
-        ${SOURCE_PATH}
+        ${JNI_PATH}
+        ${3RD_PATH}
         ${SRC_PATH}/miraicp-core
         ${SRC_PATH}/include
         ${SRC_PATH}/common
@@ -122,7 +125,8 @@ add_library(Loader
         ${MIRAICP_COMMON_PATH}
         )
 target_include_directories(Loader PUBLIC
-        ${SOURCE_PATH}
+        ${JNI_PATH}
+        ${3RD_PATH}
         ${SRC_PATH}/include
         ${SRC_PATH}/common
         ${SRC_PATH}
