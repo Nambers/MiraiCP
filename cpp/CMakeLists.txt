@@ -109,6 +109,7 @@ target_include_directories(MiraiCP_core PUBLIC
         ${SRC_PATH}/common
         ${SRC_PATH}
         )
+target_compile_options(MiraiCP_core PUBLIC -DMIRAICP_CORE)
 if (UNIX)
     target_link_libraries(MiraiCP_core ${JAVA_JVM_LIBRARY})
 endif (UNIX)

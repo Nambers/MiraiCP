@@ -18,6 +18,7 @@
 #include <MiraiCP.hpp>
 #include <iostream>
 #include <jni.h>
+#include <utf8.h>
 
 #ifdef _WIN32
 #include <io.h>
@@ -87,15 +88,18 @@ namespace MiraiCP::Core {
     jclass coreClaz;
 
     JNIEXPORT jstring enroll(JNIEnv *env, jobject) {
-        JNINativeMethod tmp[]{
-                {(char *) "Verify", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) MiraiCP::JNIApi::Verify},
-                {(char *) "Event", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) MiraiCP::JNIApi::Event},
-                {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;", (jobject *) MiraiCP::JNIApi::PluginDisable}};
-        MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", tmp, 3);
+        // todo(ea) 重构1
+        // JNINativeMethod tmp[]{
+        //         {(char *) "Verify", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) MiraiCP::JNIApi::Verify},
+        //         {(char *) "Event", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) MiraiCP::JNIApi::Event},
+        //         {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;", (jobject *) MiraiCP::JNIApi::PluginDisable}};
+        // MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", tmp, 3);
         return MiraiCP::Tools::str2jstring("MIRAICP_NULL", env);
     }
 
     int loadCore(const std::string &corePath) {
+        // 未实现
+        throw std::exception();
 #ifdef _WIN32
         if (_access(corePath.c_str(), 0) != 0) {
 #else
@@ -144,12 +148,13 @@ namespace MiraiCP::Core {
             // 加载JVM动态库错误
             return 2;
         }
-        jint jvmProc = (jvmProcAddress) (&MiraiCP::JNIEnvManager::gvm, (void **) &env, &vmInitArgs);
-        if (jvmProc < 0 || MiraiCP::JNIEnvManager::gvm == nullptr || env == nullptr) {
-            freeLibrary(jvmLib);
-            // 创建JVM错误
-            return 3;
-        }
+        // todo(ea): 重构2
+        // jint jvmProc = (jvmProcAddress) (&MiraiCP::JNIEnvManager::gvm, (void **) &env, &vmInitArgs);
+        // if (jvmProc < 0 || MiraiCP::JNIEnvManager::gvm == nullptr || env == nullptr) {
+        //     freeLibrary(jvmLib);
+        //     // 创建JVM错误
+        //     return 3;
+        // }
 #else
         long flag = JNI_CreateJavaVM(&JNIEnvManager::getGvm(), (void **) &env, &vmInitArgs);
         if (flag != 0) {
@@ -177,14 +182,16 @@ namespace MiraiCP::Core {
             return 5;
         }
         JNINativeMethod e[] = {{(char *) "enroll", (char *) "()Ljava/lang/Void;", (jstring *) enroll}};
-        MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/core/Core", e, 1);
+        // todo(ea): 重构3
+        // MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/core/Core", e, 1);
         env->CallStaticVoidMethod(coreClaz, methodID, nullptr);
         return 0;
     }
 
     void exitCore() {
         //jvm释放
-        JNIEnvManager::getGvm()->DestroyJavaVM();
+        // todo(ea): 重构4
+        // JNIEnvManager::getGvm()->DestroyJavaVM();
         freeLibrary(jvmLib);
     }
 
@@ -195,8 +202,9 @@ namespace MiraiCP::Core {
         tmp["md5"] = md5;
         tmp["protocol"] = protocol;
         tmp["heartBeat"] = heartBeat;
-        if (env == nullptr)
-            env = JNIEnvManager::getEnv();
+        // todo(ea): 重构5
+        // if (env == nullptr)
+        //     env = JNIEnvManager::getEnv();
         jmethodID loginMethodId = env->GetStaticMethodID(coreClaz, "login", "(Ljava/lang/String;)Ljava/lang/String;");
         std::string re = MiraiCP::Tools::jstring2str((jstring) env->CallStaticObjectMethod(coreClaz, loginMethodId, MiraiCP::Tools::str2jstring(tmp.dump().c_str(), env)));
         if (re != "200")

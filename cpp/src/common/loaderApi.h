@@ -22,7 +22,7 @@
 #include <vector>
 
 
-#ifdef MIRAICP_LIB_LOADER
+#if defined(MIRAICP_LIB_LOADER) | defined(MIRAICP_CORE)
 #include <jni.h>
 #else
 // forward declaration
