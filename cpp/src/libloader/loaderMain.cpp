@@ -23,12 +23,11 @@
 #include "ThreadController.h"
 
 
-namespace LibLoader::LoaderApi {
-    extern std::queue<loadertask> loader_thread_task_queue;
-    extern std::recursive_mutex task_mtx;
-} // namespace LibLoader::LoaderApi
 namespace LibLoader {
     volatile bool LoaderMain::loader_exit = false;
+
+    /// LoaderMain实现开始
+
     void LoaderMain::loaderMain() {
         logger.info("libLoader thread start");
 
@@ -71,16 +70,22 @@ namespace LibLoader {
     void loader_reloadPluginById(const std::string &id) {
         PluginListManager::reloadById(id);
     }
+
+    void loader_pluginEndByException(const std::string &id) {
+        PluginListManager::unloadById(id);
+        ThreadController::getController().endThread(id);
+    }
+
     ////////////////////////////////////
 
     void LoaderMain::mainloop() {
-        if (LoaderApi::loader_thread_task_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(70));
+        if (loader_thread_task_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(70));
         else {
             loadertask task;
             {
-                std::lock_guard lk(LoaderApi::task_mtx);
-                task = std::move(LoaderApi::loader_thread_task_queue.front());
-                LoaderApi::loader_thread_task_queue.pop();
+                std::lock_guard lk(task_mtx);
+                task = std::move(loader_thread_task_queue.front());
+                loader_thread_task_queue.pop();
             }
 
             switch (task.first) {
@@ -107,6 +112,9 @@ namespace LibLoader {
                     break;
                 case LOADER_TASKS::RELOAD:
                     loader_reloadPluginById(task.second);
+                    break;
+                case LOADER_TASKS::EXCEPTION_PLUGINEND:
+                    loader_pluginEndByException(task.second);
                     break;
                 default:
                     throw std::exception();

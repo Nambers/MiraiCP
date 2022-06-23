@@ -38,6 +38,7 @@
 #include "Tools.h"
 #include "utils.h"
 #include "../common/PluginConfig.h"
+#include "../common/commonTools.h"
 #include "../common/commonTypes.h"
 #include "../common/loaderApi.h"
 

@@ -17,11 +17,18 @@
 #include "ThreadController.h"
 #include "JNIEnvManager.h"
 #include "LoaderLogger.h"
+#include "LoaderTaskQueue.h"
 #include "PluginListManager.h"
+#include "commonTools.h"
 
 
 namespace LibLoader {
     ThreadController ThreadController::_threadController;
+
+    inline void sendPluginException(std::string plugin_id) {
+        std::lock_guard lk(task_mtx);
+        loader_thread_task_queue.emplace(loadertask(LOADER_TASKS::EXCEPTION_PLUGINEND, std::move(plugin_id)));
+    }
 
     // threadWorker
     void ThreadController::threadWorker::give_job(void_callable newjob) {
@@ -29,22 +36,18 @@ namespace LibLoader {
         job_queue.emplace(std::move(newjob));
     }
 
-    void ThreadController::threadWorker::call_this_thread_end() {
-        logger.error("Unexpected error: plugin " + pluginid + " crashed");
+    // 被调用后必须立刻结束run()
+    void ThreadController::threadWorker::exception_call_this_thread_end() {
+        logger.error("Error: plugin " + pluginid + " crashed (caused by throwing an unknown exception)");
 
-        decltype(job_queue) emptyqueue;
-        {
-            std::lock_guard lk(worker_mtx);
-            std::swap(emptyqueue, job_queue);
-        }
-
-        std::string plugin_id = std::move(pluginid);
-        // this指针随即释放。如果不移动pluginid而再次访问，会导致内存问题
-        PluginListManager::unloadById(plugin_id);
-        ThreadController::getController().endThread(plugin_id);
+        sendPluginException(std::move(pluginid));
     }
 
     void ThreadController::threadWorker::run() {
+        // clean up at function end
+        // try to detach this thread from JVM
+        MiraiCP_defer(JNIEnvManager::detach(););
+
         while (!exit) {
             if (job_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(10));
             else {
@@ -54,7 +57,10 @@ namespace LibLoader {
                     nowjob = std::move(job_queue.front());
                     job_queue.pop();
                 }
-                if (!_do_job(nowjob)) return;
+                if (!_do_job(nowjob)) {
+                    exception_call_this_thread_end();
+                    return;
+                }
             }
         }
 
@@ -62,12 +68,11 @@ namespace LibLoader {
         while (!job_queue.empty()) {
             auto job = std::move(job_queue.front());
             job_queue.pop();
-            if (!_do_job(job)) return;
+            if (!_do_job(job)) {
+                exception_call_this_thread_end();
+                return;
+            }
         }
-
-        // clean up
-        // try to detach this thread from JVM
-        JNIEnvManager::detach();
     }
 
     // ThreadController methods

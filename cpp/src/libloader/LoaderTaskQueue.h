@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_LOADERTASKQUEUE_H
 
 
+#include <queue>
 #include <string>
 
 
@@ -31,10 +32,14 @@ namespace LibLoader {
         LOAD_NEW_DONTACTIVATE,
         UNLOAD,
         RELOAD,
+        EXCEPTION_PLUGINEND,
         TASK_TYPES_COUNT [[maybe_unused]],
     };
 
     typedef std::pair<LOADER_TASKS, std::string> loadertask;
+
+    extern std::queue<loadertask> loader_thread_task_queue;
+    extern std::recursive_mutex task_mtx;
 } // namespace LibLoader
 
 

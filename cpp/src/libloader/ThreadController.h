@@ -47,17 +47,16 @@ namespace LibLoader {
             threadWorker(const threadWorker &) = delete;
 
         private:
-            bool _do_job(const void_callable &job) {
+            static bool _do_job(const void_callable &job) {
                 try {
                     if (job) job();
                 } catch (...) { // do not let any exception raise to avoid crash
-                    call_this_thread_end();
                     return false;
                 }
                 return true;
             }
 
-            void call_this_thread_end();
+            void exception_call_this_thread_end();
 
         public:
             /// only for main thread

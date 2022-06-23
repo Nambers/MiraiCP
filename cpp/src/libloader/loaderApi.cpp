@@ -25,10 +25,13 @@
 #include <queue>
 
 
-namespace LibLoader::LoaderApi {
+namespace LibLoader {
     std::queue<loadertask> loader_thread_task_queue; // NOLINT(cert-err58-cpp)
     std::recursive_mutex task_mtx;
+} // namespace LibLoader
 
+
+namespace LibLoader::LoaderApi {
     /// interfaces for plugins
     std::vector<std::string> showAllPluginId() {
         return PluginListManager::getAllPluginId();

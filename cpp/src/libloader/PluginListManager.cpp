@@ -20,6 +20,7 @@
 #include "PluginListImplements.h"
 #include "libOpen.h"
 #include <future>
+#include <queue>
 #include <string>
 
 

@@ -17,11 +17,12 @@
 #ifndef MIRAICP_PRO_TOOLS_H
 #define MIRAICP_PRO_TOOLS_H
 
+
 #include "MiraiDefs.h"
-#include <functional>
 #include <sstream>
 #include <string>
 #include <vector>
+
 
 #if defined(__clang__) || defined(__GNUC__)
 #define MIRAICP_CPP_STANDARD __cplusplus
@@ -30,16 +31,12 @@
 #endif
 
 
-#define MiraiCP_defer(code)                              \
-    auto __defered_statement_wrapper__ = [&]() { code }; \
-    Tools::MiraiCPDefer<void> __defered_object__(__defered_statement_wrapper__);
-
-
 //#if MIRAICP_CPP_STANDARD >= 201703L
 //#define get_return_type std::invoke_result_t
 //#else
 //#define get_return_type std::result_of_t
 //#endif
+
 
 namespace MiraiCP {
     /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
@@ -86,22 +83,6 @@ namespace MiraiCP {
         bool iequal(std::string_view str1, std::string_view str2);
         /// from https://www.zhihu.com/question/36642771, delim is regex(ignore last `+`)
         std::vector<std::string> split(const std::string &text, const std::string &delim);
-
-        /// defer class
-        /// @see MiraiCP_defer
-        template<typename RT_TYPE>
-        class MiraiCPDefer {
-        public:
-            std::function<RT_TYPE()> defer_func;
-
-            template<class F>
-            MiraiCPDefer(F &&func) : defer_func(func) {
-            }
-
-            virtual ~MiraiCPDefer() {
-                defer_func();
-            }
-        };
     }; // namespace Tools
 } // namespace MiraiCP
 
