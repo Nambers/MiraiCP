@@ -19,7 +19,6 @@
 
 #include "MiraiDefs.h"
 #include <functional>
-// #include <jni.h>
 #include <sstream>
 #include <string>
 #include <vector>

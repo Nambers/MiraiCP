@@ -21,9 +21,6 @@
 #include <json.hpp>
 
 
-struct JNIEnv;
-
-
 /// @brief 配置类声明,  MiraiCP内部使用, 不需要更改或其他操作
 /// @internal 一般为MiraiCP内部调用jni接口使用
 /// @namespace KtOperation

@@ -224,7 +224,7 @@ namespace MiraiCP {
         /// @deprecated use Contact.quoteAndSend or `this->quoteAndSend1(s, groupid, env)`, since v2.8.1
         template<class T>
         ShouldNotUse("use Contact.quoteAndSend") MessageSource
-                quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = nullptr) = delete;
+                quoteAndSendMessage(T s, QQID groupid = -1, void *env = nullptr) = delete;
 
     public: // static functions
         /// @brief 找到miraiCode结尾的`]`

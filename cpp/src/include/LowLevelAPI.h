@@ -16,10 +16,7 @@
 
 #ifndef MIRAICP_PRO_LOWLEVELAPI_H
 #define MIRAICP_PRO_LOWLEVELAPI_H
-// #include <jni.h>
 #include <json.hpp>
-
-struct JNIEnv;
 
 namespace MiraiCP {
     /// 较底层api
@@ -29,7 +26,6 @@ namespace MiraiCP {
         /// @param content 信息字符串
         /// @param c 目标Contact->serialization()
         /// @param miraicode 是否为miraicode格式
-        /// @param env JNIEnv
         /// @return
         static std::string send0(const std::string &content, nlohmann::json c, int retryTime, bool miraicode,
                                  const std::string &errorInfo = "");
@@ -43,7 +39,6 @@ namespace MiraiCP {
          * @brief 上传图片
          * @param path 本地地址
          * @param c 上传的对象, Contact->serializationToString()
-         * @param env JNIEnv
          * @return string 待解析json
          */
         static std::string uploadImg0(const std::string &, const std::string &);

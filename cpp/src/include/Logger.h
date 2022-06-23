@@ -131,7 +131,6 @@ namespace MiraiCP {
         /// @brief 日志底层实现封装
         /// @param content 日志内容
         /// @param level 日志等级
-        /// @param env jnienv
         void log_interface(const std::string &content, int level) override;
 
     public:

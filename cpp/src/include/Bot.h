@@ -21,9 +21,6 @@
 #include <vector>
 #include "MiraiDefs.h"
 
-// forward declaration
-struct JNIEnv;
-
 namespace MiraiCP {
     class Friend;  // forward declaration
     class Group;   // forward declaration
