@@ -119,7 +119,7 @@ namespace MiraiCP {
          * @param halt 是否拦截该事件(不让这个消息被注册的其他监听器收到处理)
          * @return 消息链
          */
-        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv *env = nullptr) const;
+        MessageChain nextMessage(long time = -1, bool halt = true) const;
 
         /*!
          * @brief 取群聊中同群成员的下一个消息(发送人和群与本事件一样)
@@ -127,7 +127,7 @@ namespace MiraiCP {
          * @param halt 是否拦截该事件(不让消息被注册的其他监听器收到处理)
          * @return 消息链
          */
-        MessageChain senderNextMessage(long time = -1, bool halt = true, JNIEnv *env = nullptr) const;
+        MessageChain senderNextMessage(long time = -1, bool halt = true) const;
 
     public:
         Contact *chat() override {
@@ -183,7 +183,7 @@ namespace MiraiCP {
          * @param halt 是否拦截该事件(不被注册的监听器收到处理)
          * @return 消息链
          */
-        MessageChain nextMessage(long time = -1, bool halt = true, JNIEnv *env = nullptr) const;
+        MessageChain nextMessage(long time = -1, bool halt = true) const;
 
     public:
         Contact *chat() override {
@@ -225,15 +225,14 @@ namespace MiraiCP {
         /// 群号
         QQID groupid = 0;
 
-        static void operation0(const std::string &source, QQID botid, bool accept,
-                               JNIEnv *env = nullptr);
+        static void operation0(const std::string &source, QQID botid, bool accept);
 
-        void reject(JNIEnv *env = nullptr) {
-            GroupInviteEvent::operation0(this->source, this->bot.id, false, env);
+        void reject() {
+            GroupInviteEvent::operation0(this->source, this->bot.id, false);
         }
 
-        void accept(JNIEnv *env = nullptr) {
-            GroupInviteEvent::operation0(this->source, this->bot.id, true, env);
+        void accept() {
+            GroupInviteEvent::operation0(this->source, this->bot.id, true);
         }
 
         /*!
@@ -271,18 +270,17 @@ namespace MiraiCP {
 
         /// @brief 接受好友申请
         /// @param source 事件序列化信息
-        static void operation0(const std::string &source, QQID botid, bool accept,
-                               JNIEnv *env = nullptr, bool ban = false);
+        static void operation0(const std::string &source, QQID botid, bool accept, bool ban = false);
 
         /// @brief 拒绝好友申请
-        void reject(bool ban = false, JNIEnv *env = nullptr) {
-            NewFriendRequestEvent::operation0(this->source, this->bot.id, false, env);
+        /// @param ban - 是否加入黑名单
+        void reject(bool ban = false) {
+            NewFriendRequestEvent::operation0(this->source, this->bot.id, false, ban);
         }
 
         /// @brief 接受申请
-        /// @param ban - 是否加入黑名单
-        void accept(JNIEnv *env = nullptr) {
-            NewFriendRequestEvent::operation0(this->source, this->bot.id, true, env);
+        void accept() {
+            NewFriendRequestEvent::operation0(this->source, this->bot.id, true);
         }
 
         /*!
@@ -580,8 +578,7 @@ namespace MiraiCP {
         static void operate(std::string_view s,
                             QQID botid,
                             bool sign,
-                            const std::string &msg = "",
-                            JNIEnv *env = nullptr);
+                            const std::string &msg = "");
 
     public:
         static eventTypes get_event_type() {

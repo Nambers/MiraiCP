@@ -47,7 +47,7 @@ namespace MiraiCP {
 
     protected:
         /// 发送语音
-        MessageSource sendVoice0(const std::string &path, JNIEnv * = nullptr);
+        MessageSource sendVoice0(const std::string &path);
 
     public:
         // constructors
@@ -159,8 +159,7 @@ namespace MiraiCP {
         ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, true, env)`
-        ShouldNotUse("Use sendMessage") MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3,
-                                                                    JNIEnv *env = nullptr) const = delete;
+        ShouldNotUse("Use sendMessage") MessageSource sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
 
         /*!
          * @brief 回复并发送
@@ -173,8 +172,8 @@ namespace MiraiCP {
          * @note 可以改MessageSource里的内容, 客户端在发送的时候并不会校验MessageSource的内容正确性(比如改originalMessage来改引用的文本的内容, 或者改id来定位到其他信息)
          */
         template<class T>
-        MessageSource quoteAndSendMessage(T s, MessageSource ms, JNIEnv *env = nullptr) {
-            return this->quoteAndSend1(s, ms, env);
+        MessageSource quoteAndSendMessage(T s, MessageSource ms) {
+            return this->quoteAndSend1(s, ms);
         }
         /*!
          * @brief 回复并发送
@@ -216,18 +215,18 @@ namespace MiraiCP {
         /// @param retryTime 重试次数
         /// @return MessageSource
         template<class T>
-        MessageSource sendMessage(T msg, int retryTime = 3, JNIEnv *env = nullptr) {
-            return this->send1(msg, retryTime, env);
+        MessageSource sendMessage(T msg, int retryTime = 3) {
+            return this->send1(msg, retryTime);
         }
 
         /// @deprecated since v2.8.1, use `sendMessage(msg)` or `sendMsg0(msg, retryTime, false, env)`
-        ShouldNotUse("Use sendMessage") MessageSource sendMsg(const std::string &msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage") MessageSource sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, false, env);`
-        ShouldNotUse("Use sendMessage") MessageSource sendMsg(const MiraiCode &msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage") MessageSource sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(Tools::VectorToString(std::move(msg)))` or `sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);`
-        ShouldNotUse("Use sendMessage") MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, JNIEnv *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage") MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /*!
         * @brief 上传本地图片，务必要用绝对路径
@@ -237,8 +236,8 @@ namespace MiraiCP {
         * -可能抛出UploadException异常代表路径无效或大小大于30MB
         * -可能抛出MemberException找不到群或群成员
         */
-        Image uploadImg(const std::string &path, JNIEnv * = nullptr) const;
-        FlashImage uploadFlashImg(const std::string &path, JNIEnv * = nullptr) const;
+        Image uploadImg(const std::string &path) const;
+        FlashImage uploadFlashImg(const std::string &path) const;
 
         template<class T>
         T to() {
@@ -249,45 +248,44 @@ namespace MiraiCP {
     private: // private methods
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsg0(const std::string &msg, int retryTime, bool miraicode = false,
-                               JNIEnv * = nullptr) const;
+        MessageSource sendMsg0(const std::string &msg, int retryTime, bool miraicode = false) const;
 
         template<class T>
-        MessageSource send1(T msg, int retryTime, JNIEnv *env) {
+        MessageSource send1(T msg, int retryTime) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+            return sendMsg0(msg.toMiraiCode(), retryTime, true);
         }
 
-        MessageSource send1(MessageChain msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        MessageSource send1(MessageChain msg, int retryTime) {
+            return sendMsg0(msg.toMiraiCode(), retryTime, true);
         }
 
-        MessageSource send1(MiraiCode msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(msg.toMiraiCode(), retryTime, true, env);
+        MessageSource send1(MiraiCode msg, int retryTime) {
+            return sendMsg0(msg.toMiraiCode(), retryTime, true);
         }
 
-        MessageSource send1(std::string msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(msg, retryTime, false, env);
+        MessageSource send1(std::string msg, int retryTime) {
+            return sendMsg0(msg, retryTime, false);
         }
 
-        MessageSource send1(const char *msg, int retryTime, JNIEnv *env) {
-            return sendMsg0(std::string(msg), retryTime, false, env);
+        MessageSource send1(const char *msg, int retryTime) {
+            return sendMsg0(std::string(msg), retryTime, false);
         }
 
-        MessageSource quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env = nullptr);
+        MessageSource quoteAndSend0(const std::string &msg, MessageSource ms);
 
         template<class T>
-        MessageSource quoteAndSend1(T s, MessageSource ms, JNIEnv *env = nullptr) {
+        MessageSource quoteAndSend1(T s, MessageSource ms) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return this->quoteAndSend0(s.toMiraiCode(), ms, env);
+            return this->quoteAndSend0(s.toMiraiCode(), ms);
         }
 
-        MessageSource quoteAndSend1(std::string s, MessageSource ms, JNIEnv *env) {
-            return this->quoteAndSend0(s, ms, env);
+        MessageSource quoteAndSend1(std::string s, MessageSource ms) {
+            return this->quoteAndSend0(s, ms);
         }
 
-        MessageSource quoteAndSend1(MessageChain mc, MessageSource ms, JNIEnv *env) {
-            return this->quoteAndSend0(mc.toMiraiCode(), ms, env);
+        MessageSource quoteAndSend1(MessageChain mc, MessageSource ms) {
+            return this->quoteAndSend0(mc.toMiraiCode(), ms);
         }
     };
 

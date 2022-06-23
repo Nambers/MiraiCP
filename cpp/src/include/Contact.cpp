@@ -23,16 +23,15 @@
 
 namespace MiraiCP {
     using json = nlohmann::json;
-    MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode, JNIEnv *env) const {
+    MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode) const {
         if (msg.empty()) {
             throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
         }
-        std::string re = LowLevelAPI::send0(msg, this->toJson(), retryTime, miraicode, env,
-                                            "reach a error area, Contact::SendMiraiCode");
+        std::string re = LowLevelAPI::send0(msg, this->toJson(), retryTime, miraicode, "reach a error area, Contact::SendMiraiCode");
         ErrorHandle(re, "");
         return MessageSource::deserializeFromString(re);
     }
-    MessageSource Contact::quoteAndSend0(const std::string &msg, MessageSource ms, JNIEnv *env) {
+    MessageSource Contact::quoteAndSend0(const std::string &msg, MessageSource ms) {
         json obj;
         json sign;
         obj["messageSource"] = ms.serializeToString();
@@ -40,20 +39,20 @@ namespace MiraiCP {
         sign["MiraiCode"] = true;
         sign["groupid"] = this->groupid();
         obj["sign"] = sign.dump();
-        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj, env);
+        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
         ErrorHandle(re, "");
         return MessageSource::deserializeFromString(re);
     }
 
-    Image Contact::uploadImg(const std::string &path, JNIEnv *env) const {
-        std::string re = LowLevelAPI::uploadImg0(path, this->toString(), env);
+    Image Contact::uploadImg(const std::string &path) const {
+        std::string re = LowLevelAPI::uploadImg0(path, this->toString());
         if (re == "E2")
             throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
         return Image::deserialize(re);
     }
 
-    FlashImage Contact::uploadFlashImg(const std::string &path, JNIEnv *env) const {
-        std::string re = LowLevelAPI::uploadImg0(path, this->toString(), env);
+    FlashImage Contact::uploadFlashImg(const std::string &path) const {
+        std::string re = LowLevelAPI::uploadImg0(path, this->toString());
         if (re == "E2")
             throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
         return FlashImage::deserialize(re);
@@ -80,13 +79,13 @@ namespace MiraiCP {
                        j["anonymous"]);
     }
 
-    MessageSource Contact::sendVoice0(const std::string &path, JNIEnv *env) {
+    MessageSource Contact::sendVoice0(const std::string &path) {
         json j;
         json source;
         source["path"] = path;
         j["source"] = source.dump();
         j["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::Voice, j, env);
+        std::string re = KtOperation::ktOperation(KtOperation::Voice, j);
         if (re == "E1") {
             throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在", MIRAICP_EXCEPTION_WHERE);
         } else if (re == "E2") {

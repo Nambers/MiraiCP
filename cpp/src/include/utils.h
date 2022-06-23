@@ -31,11 +31,11 @@ namespace MiraiCP {
      * @param msg 附加的string类型信息
      * @doxygenEg{1017, schedule.cpp, 定时任务}
      */
-    inline void schedule(long time, const std::string &msg, JNIEnv *env = nullptr) {
+    inline void schedule(long time, const std::string &msg) {
         nlohmann::json j;
         j["time"] = time;
         j["msg"] = msg;
-        KtOperation::ktOperation(KtOperation::TimeOut, j, env);
+        KtOperation::ktOperation(KtOperation::TimeOut, j);
     }
 
     /// 注册插件函数, 需要被实现, 类似onStart();

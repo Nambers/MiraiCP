@@ -24,9 +24,9 @@ namespace MiraiCP {
     class Friend : public Contact, INudgeSupport {
     public:
         /// 删除好友(delete是C++关键字)
-        void deleteFriend(JNIEnv *env = nullptr);
+        void deleteFriend();
 
-        void refreshInfo(JNIEnv *env = nullptr);
+        void refreshInfo();
 
         /*!
          * @brief 发送戳一戳
@@ -40,7 +40,7 @@ namespace MiraiCP {
          * @param friendid q号
          * @param botid 对应机器人id
          */
-        explicit Friend(QQID friendid, QQID botid, JNIEnv * = nullptr);
+        explicit Friend(QQID friendid, QQID botid);
 
         explicit Friend(const Contact &c) : Contact(c) {
             if (c.type() != 1)

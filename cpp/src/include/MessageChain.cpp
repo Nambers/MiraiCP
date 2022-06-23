@@ -26,8 +26,7 @@ namespace MiraiCP {
     std::string MessageChain::toMiraiCode() const {
         return Tools::VectorToString(this->toMiraiCodeVector(), "");
     }
-    MessageSource MessageChain::quoteAndSend0(std::string msg, QQID groupid,
-                                              JNIEnv *env) {
+    MessageSource MessageChain::quoteAndSend0(std::string msg, QQID groupid) {
         json obj;
         json sign;
         obj["messageSource"] = this->source->serializeToString();
@@ -35,7 +34,7 @@ namespace MiraiCP {
         sign["MiraiCode"] = true;
         sign["groupid"] = groupid;
         obj["sign"] = sign.dump();
-        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj, env);
+        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
         return MessageSource::deserializeFromString(re);
     }
 

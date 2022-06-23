@@ -22,22 +22,22 @@
 namespace MiraiCP {
     using json = nlohmann::json;
     /*好友类实现*/
-    Friend::Friend(QQID id, QQID botid, JNIEnv *env) : Contact() {
+    Friend::Friend(QQID id, QQID botid) : Contact() {
         this->_type = MIRAI_FRIEND;
         this->_id = id;
         this->_botid = botid;
-        refreshInfo(env);
+        refreshInfo();
     }
 
-    void Friend::deleteFriend(JNIEnv *env) {
+    void Friend::deleteFriend() {
         json j;
         j["source"] = this->toString();
         j["quit"] = true;
-        KtOperation::ktOperation(KtOperation::RefreshInfo, j, env);
+        KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
 
-    void Friend::refreshInfo(JNIEnv *env) {
-        std::string temp = LowLevelAPI::getInfoSource(this->toString(), env);
+    void Friend::refreshInfo() {
+        std::string temp = LowLevelAPI::getInfoSource(this->toString());
         if (temp == "E1") {
             throw FriendException(MIRAICP_EXCEPTION_WHERE);
         }

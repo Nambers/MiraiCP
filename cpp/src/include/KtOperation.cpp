@@ -21,7 +21,7 @@
 
 
 namespace MiraiCP::KtOperation {
-    std::string ktOperation(operation_set type, nlohmann::json data, JNIEnv *env, bool catchErr, const std::string &errorInfo) {
+    std::string ktOperation(operation_set type, nlohmann::json data, bool catchErr, const std::string &errorInfo) {
         nlohmann::json j;
         j["type"] = type;
         j["data"] = std::move(data);

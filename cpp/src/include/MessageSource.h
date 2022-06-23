@@ -74,7 +74,7 @@ namespace MiraiCP {
         std::string serializeToString() const;
 
         /// @brief 撤回该信息
-        void recall(JNIEnv * = nullptr) const;
+        void recall() const;
 
         bool operator==(const MessageSource &ms) const {
             return this->ids == ms.ids && this->internalids == ms.internalids;

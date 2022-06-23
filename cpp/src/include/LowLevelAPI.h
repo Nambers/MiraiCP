@@ -31,13 +31,13 @@ namespace MiraiCP {
         /// @param miraicode 是否为miraicode格式
         /// @param env JNIEnv
         /// @return
-        static std::string send0(const std::string &content, nlohmann::json c, int retryTime, bool miraicode, JNIEnv *env,
+        static std::string send0(const std::string &content, nlohmann::json c, int retryTime, bool miraicode,
                                  const std::string &errorInfo = "");
 
         /// @brief 取该联系人的一些信息
         /// @param c 该联系人Contact->serializationToString()
         /// @return json格式字符串，待解析
-        static std::string getInfoSource(const std::string &, JNIEnv *);
+        static std::string getInfoSource(const std::string &);
 
         /*!
          * @brief 上传图片
@@ -46,7 +46,7 @@ namespace MiraiCP {
          * @param env JNIEnv
          * @return string 待解析json
          */
-        static std::string uploadImg0(const std::string &, const std::string &, JNIEnv *);
+        static std::string uploadImg0(const std::string &, const std::string &);
 
         /// 每个对象的必有信息
         struct info {

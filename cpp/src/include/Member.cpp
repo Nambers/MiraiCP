@@ -22,19 +22,19 @@
 namespace MiraiCP {
     using json = nlohmann::json;
     /*成员类实现*/
-    Member::Member(QQID id, QQID groupid, QQID botid, JNIEnv *env)
+    Member::Member(QQID id, QQID groupid, QQID botid)
         : Contact() {
         this->_type = MIRAI_MEMBER;
         this->_id = id;
         this->_groupid = groupid;
         this->_botid = botid;
-        refreshInfo(env);
+        refreshInfo();
     }
 
-    void Member::refreshInfo(JNIEnv *env) {
+    void Member::refreshInfo() {
         if (isAnonymous)
             return;
-        std::string temp = LowLevelAPI::getInfoSource(this->toString(), env);
+        std::string temp = LowLevelAPI::getInfoSource(this->toString());
         if (temp == "E1")
             throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
         if (temp == "E2")
@@ -51,46 +51,46 @@ namespace MiraiCP {
         }
     }
 
-    unsigned int Member::getPermission(JNIEnv *env) const {
+    unsigned int Member::getPermission() const {
         if (isAnonymous) return 0;
         json j;
         j["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::QueryM, j, env);
+        std::string re = KtOperation::ktOperation(KtOperation::QueryM, j);
         return stoi(re);
     }
 
-    void Member::mute(int time, JNIEnv *env) {
+    void Member::mute(int time) {
         json j;
         j["time"] = time;
         j["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::MuteM, j, env);
+        std::string re = KtOperation::ktOperation(KtOperation::MuteM, j);
         if (re == "E4")
             throw MuteException(MIRAICP_EXCEPTION_WHERE);
     }
 
-    void Member::kick(const std::string &reason, JNIEnv *env) {
+    void Member::kick(const std::string &reason) {
         json j;
         j["message"] = reason;
         j["contactSource"] = this->toString();
-        KtOperation::ktOperation(KtOperation::KickM, j, env);
+        KtOperation::ktOperation(KtOperation::KickM, j);
     }
 
-    void Member::modifyAdmin(bool admin, JNIEnv *env) {
+    void Member::modifyAdmin(bool admin) {
         if (isAnonymous) return;
         json j;
         j["admin"] = admin;
         j["contactSource"] = this->toString();
-        KtOperation::ktOperation(KtOperation::ModifyAdmin, j, env);
-        refreshInfo(env);
+        KtOperation::ktOperation(KtOperation::ModifyAdmin, j);
+        refreshInfo();
     }
 
-    void Member::changeNameCard(std::string_view newName, JNIEnv* env) {
+    void Member::changeNameCard(std::string_view newName) {
         if (isAnonymous) return;
         json j;
         j["contactSource"] = this->toString();
         j["newName"] = newName;
-        KtOperation::ktOperation(KtOperation::ChangeNameCard, j, env);
-        refreshInfo(env);
+        KtOperation::ktOperation(KtOperation::ChangeNameCard, j);
+        refreshInfo();
     }
 
     void Member::sendNudge() {

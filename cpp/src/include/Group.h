@@ -143,7 +143,7 @@ namespace MiraiCP {
         /// @param groupid 群号
         /// @param botid 机器人id
         /// @doxygenEg{1007, group.cpp, 从群号构建群对象}
-        Group(QQID groupid, QQID botid, JNIEnv * = nullptr);
+        Group(QQID groupid, QQID botid);
 
         explicit Group(const Contact &c) : Contact(c) {
             if (c.type() != 2)
@@ -158,11 +158,11 @@ namespace MiraiCP {
          * @details 从服务器拉去群设置用refreshInfo
          * @see Group::refreshInfo()
          */
-        void updateSetting(JNIEnv * = nullptr);
+        void updateSetting();
 
         /// 取群成员列表
         /// @return vector<long>
-        std::vector<unsigned long long> getMemberList(JNIEnv *env = nullptr);
+        std::vector<unsigned long long> getMemberList();
 
         /*!
          * 以string格式取群成员列表
@@ -172,21 +172,21 @@ namespace MiraiCP {
         std::string MemberListToString();
 
         /// 取群主
-        Member getOwner(JNIEnv * = nullptr);
+        Member getOwner();
 
 
         /// 取群成员
-        Member getMember(QQID memberid, JNIEnv *env = nullptr);
+        Member getMember(QQID memberid);
 
         Member operator[](QQID id);
 
         /// 取群公告列表
-        std::vector<OnlineAnnouncement> getAnnouncementsList(JNIEnv *env);
+        std::vector<OnlineAnnouncement> getAnnouncementsList();
 
         /// 刷新群聊信息
-        void refreshInfo(JNIEnv *env = nullptr);
+        void refreshInfo();
 
-        void quit(JNIEnv *env = nullptr);
+        void quit();
 
         /*!
         @brief 上传并发送远程(群)文件
@@ -195,12 +195,11 @@ namespace MiraiCP {
         @attention 路径分隔符是 `/`
         @doxygenEg{1008, group.cpp, 发送群文件}
         */
-        RemoteFile sendFile(const std::string &path, const std::string &filepath,
-                            JNIEnv * = nullptr);
+        RemoteFile sendFile(const std::string &path, const std::string &filepath);
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv *env = nullptr) {
-            return Contact::sendVoice0(path, env);
+        MessageSource sendVoice(const std::string &path) {
+            return Contact::sendVoice0(path);
         }
 
         /*!
@@ -211,8 +210,7 @@ namespace MiraiCP {
         @see RemoteFile
         @doxygenEg{1009, group.cpp, 获取群文件}
         */
-        RemoteFile getFile(const std::string &path, const std::string &id = "",
-                           JNIEnv * = nullptr);
+        RemoteFile getFile(const std::string &path, const std::string &id = "");
 
         /*!
          * @brief 取文件信息(根据id)
@@ -220,10 +218,10 @@ namespace MiraiCP {
          * @return 文件
          * @detail 相当于从根目录开始遍历查找文件, 相当于getFile("/", id);
          */
-        RemoteFile getFileById(const std::string &id, JNIEnv * = nullptr);
+        RemoteFile getFileById(const std::string &id);
 
-        RemoteFile getFileByFile(const RemoteFile &file, JNIEnv *env = nullptr) {
-            return getFileById(file.id, env);
+        RemoteFile getFileByFile(const RemoteFile &file) {
+            return getFileById(file.id);
         }
 
         /*!
@@ -232,11 +230,11 @@ namespace MiraiCP {
          * @return 返回值为一个vector容器, 每一项为short_info
          * @doxygenEg{1010, group.cpp, 获取群文件列表}
         */
-        std::vector<file_short_info> getFileList(const std::string &path, JNIEnv * = nullptr);
+        std::vector<file_short_info> getFileList(const std::string &path);
 
         /// 取文件列表以字符串形式返回
         /// @param path 文件夹路径
-        std::string getFileListString(const std::string &path, JNIEnv * = nullptr);
+        std::string getFileListString(const std::string &path);
     };
 } // namespace MiraiCP
 

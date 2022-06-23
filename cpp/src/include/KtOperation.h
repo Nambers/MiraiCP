@@ -99,7 +99,6 @@ namespace MiraiCP::KtOperation {
     std::string ktOperation(
             operation_set type,
             nlohmann::json data,
-            JNIEnv * = nullptr, // todo(Antares): 删除掉JNIEnv
             bool catchErr = true,
             const std::string &errorInfo = "");
 } // namespace MiraiCP::KtOperation
