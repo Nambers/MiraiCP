@@ -44,9 +44,6 @@ constexpr int LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
 // the API defs to be exposed
 namespace LibLoader::LoaderApi {
     LOADER_API_COUNT
-    JNIEnv *getEnv();
-
-    LOADER_API_COUNT
     std::string pluginOperation(const std::string &);
 
     LOADER_API_COUNT
@@ -78,7 +75,6 @@ namespace LibLoader::LoaderApi {
 
 
     struct interface_funcs {
-        decltype(&getEnv) _getEnv;
         decltype(&pluginOperation) _pluginOperation;
         decltype(&loggerInterface) _loggerInterface;
         decltype(&showAllPluginId) _showAllPluginId;
@@ -100,7 +96,6 @@ namespace LibLoader::LoaderApi {
         if (admin) {
             constexpr int line0 = __LINE__;
             interface_funcs t = {
-                    getEnv,
                     pluginOperation,
                     loggerInterface,
                     showAllPluginId,
@@ -113,12 +108,10 @@ namespace LibLoader::LoaderApi {
                     reloadPluginById,
             };
             constexpr int line1 = __LINE__;
-
             static_assert(line1 - line0 == counter + 3);
             return t;
         } else {
             interface_funcs t2 = {
-                    getEnv,
                     pluginOperation,
                     loggerInterface,
                     showAllPluginId,

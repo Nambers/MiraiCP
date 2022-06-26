@@ -75,10 +75,6 @@ namespace LibLoader::LoaderApi {
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::RELOAD, id));
     }
 
-    JNIEnv *getEnv() {
-        return JNIEnvManager::getEnv();
-    }
-
     std::string pluginOperation(const std::string &s) {
         auto env = JNIEnvManager::getEnv();
         return jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,

@@ -43,13 +43,6 @@ namespace LibLoader::LoaderApi {
 
     /// interfaces for plugins
 
-    JNIEnv *getEnv() {
-        if (loader_apis == nullptr || loader_apis->_getEnv == nullptr) {
-            return nullptr;
-        }
-        return loader_apis->_getEnv();
-    }
-
     std::string pluginOperation(const std::string &s) {
         if (loader_apis == nullptr || loader_apis->_pluginOperation == nullptr) {
             return "";
