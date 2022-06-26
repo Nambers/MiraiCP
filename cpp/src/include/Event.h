@@ -713,6 +713,7 @@ namespace MiraiCP {
             return processor._all_events_[index].empty();
         }
 
+        static void incomingEvent(nlohmann::json j, int type);
         /// 广播一个事件, 必须为MiraiCPEvent的派生类
         template<typename EventClass>
         static void broadcast(EventClass &&val) {
