@@ -15,6 +15,8 @@
 //
 
 #include "loaderApi.h"
+#include "Exception.h"
+#include "MiraiDefs.h"
 #include <string>
 #include <utility>
 #include <vector>
@@ -36,81 +38,67 @@ namespace LibLoader::LoaderApi {
         return loader_apis;
     }
 
-    /// todo(Antares): 目前还没有实现失败时的处理，
-    ///  比如如果showAllPluginId()里loader_apis == nullptr，
-    ///  那么应该在logger或者其他地方输出，但是logger这个时候也是nullptr，获取不到
-    ///  这个之后讨论一下
+    using MiraiCP::PluginNotAuthorizedException;
+    using MiraiCP::PluginNotEnabledException;
+
+    // check the func ptr existance before use it
+    inline void checkApi(void *funcptr) {
+        if (loader_apis == nullptr) [[unlikely]] {
+            throw PluginNotEnabledException(MIRAICP_EXCEPTION_WHERE);
+        } else if (funcptr == nullptr) [[unlikely]] {
+            throw PluginNotAuthorizedException(MIRAICP_EXCEPTION_WHERE);
+        }
+    }
 
     /// interfaces for plugins
 
     std::string pluginOperation(const std::string &s) {
-        if (loader_apis == nullptr || loader_apis->_pluginOperation == nullptr) {
-            return "";
-        }
+        checkApi((void *) loader_apis->_pluginOperation);
         return loader_apis->_pluginOperation(s);
     }
 
     void loggerInterface(const std::string &content, std::string name, long long id, int level) {
-        if (loader_apis == nullptr || loader_apis->_loggerInterface == nullptr) {
-            return;
-        }
+        checkApi((void *) loader_apis->_loggerInterface);
         loader_apis->_loggerInterface(content, std::move(name), id, level);
     }
 
     std::vector<std::string> showAllPluginId() {
-        if (loader_apis == nullptr || loader_apis->_showAllPluginId == nullptr) {
-            return {};
-        }
+        checkApi((void *) loader_apis->_showAllPluginId);
         return loader_apis->_showAllPluginId();
     }
 
     void enablePluginById(const std::string &id) {
-        if (loader_apis == nullptr || loader_apis->_enablePluginById == nullptr) {
-            return;
-        }
+        checkApi((void *) loader_apis->_enablePluginById);
         loader_apis->_enablePluginById(id);
     }
 
     void disablePluginById(const std::string &id) {
-        if (loader_apis == nullptr || loader_apis->_disablePluginById == nullptr) {
-            return;
-        }
+        checkApi((void *) loader_apis->_disablePluginById);
         loader_apis->_disablePluginById(id);
     }
 
     void enableAllPlugins() {
-        if (loader_apis == nullptr || loader_apis->_enableAllPlugins == nullptr) {
-            return;
-        }
-
+        checkApi((void *) loader_apis->_enableAllPlugins);
         loader_apis->_enableAllPlugins();
     }
 
     void disableAllPlugins() {
-        if (loader_apis == nullptr || loader_apis->_disableAllPlugins == nullptr) {
-            return;
-        }
+        checkApi((void *) loader_apis->_disableAllPlugins);
         loader_apis->_disableAllPlugins();
     }
 
     void loadNewPlugin(const std::string &path, bool activateNow) {
-        if (loader_apis == nullptr || loader_apis->_loadNewPlugin == nullptr) {
-            return;
-        }
+        checkApi((void *) loader_apis->_loadNewPlugin);
         loader_apis->_loadNewPlugin(path, activateNow);
     }
 
     void unloadPluginById(const std::string &id) {
-        if (loader_apis == nullptr || loader_apis->_unloadPluginById == nullptr) {
-            return;
-        }
+        checkApi((void *) loader_apis->_unloadPluginById);
         loader_apis->_unloadPluginById(id);
     }
 
     void reloadPluginById(const std::string &id) {
-        if (loader_apis == nullptr || loader_apis->_reloadPluginById == nullptr) {
-            return;
-        }
+        checkApi((void *) loader_apis->_reloadPluginById);
         loader_apis->_reloadPluginById(id);
     }
 } // namespace LibLoader::LoaderApi
