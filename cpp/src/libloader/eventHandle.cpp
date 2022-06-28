@@ -49,8 +49,8 @@ namespace LibLoader {
             {"LoadPlugin", [](const std::string &name) {
                  LoaderApi::loadNewPlugin(name, true);
              }},
-            {"UnloadPlugin", [](const std::string id){
-                LoaderApi::unloadPluginById(id);
+            {"UnloadPlugin", [](const std::string &id) {
+                 LoaderApi::unloadPluginById(id);
              }},
             {"PluginList", [](const std::string &name) {
                  logger.info(LibLoader::PluginListManager::pluginListInfo([](LibLoader::LoaderPluginConfig *) { return true; }));

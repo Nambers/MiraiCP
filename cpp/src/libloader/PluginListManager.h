@@ -43,7 +43,7 @@ namespace LibLoader {
     private:
         static void changeKey(const std::string &key, const std::string &new_key);
 
-    private:
+    public:
         static void unloadAll();
 
     public:

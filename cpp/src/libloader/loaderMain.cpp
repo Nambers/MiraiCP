@@ -124,5 +124,7 @@ namespace LibLoader {
 
     void LoaderMain::shutdownLoader() {
         loader_disableAllPlugins();
+        // 为了删除 Win 下复制的缓存
+        PluginListManager::unloadAll();
     }
 } // namespace LibLoader

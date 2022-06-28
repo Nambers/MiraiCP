@@ -26,6 +26,15 @@
 #include <future>
 #include <jni.h>
 
+#ifdef WIN32
+#include <direct.h>
+std::string current_working_directory() {
+    char *cwd = _getcwd(nullptr, 0); // **** microsoft specific ****
+    std::string working_directory(cwd);
+    std::free(cwd);
+    return working_directory;
+}
+#endif
 
 namespace LibLoader {
     struct PluginAddrInfo {
@@ -126,10 +135,18 @@ namespace LibLoader {
             logger.error("plugin at location " + plugin.path + " is already loaded!");
             return;
         }
+#ifdef WIN32
+        plugin.actualPath = current_working_directory() + "\\cache_" + std::to_string(std::hash<std::string>()(plugin.path)) + ".dll";
+        std::ifstream src(plugin.path, std::ios::binary);
+        std::ofstream dst(plugin.actualPath, std::ios::binary);
+        dst << src.rdbuf();
+        src.close();
+        dst.close();
+#endif
 
-        auto handle = LoaderApi::libOpen(plugin.path);
+        auto handle = LoaderApi::libOpen(plugin.actualPath);
         if (handle == nullptr) {
-            logger.error("failed to load plugin at location " + plugin.path);
+            logger.error("failed to load plugin at location " + plugin.path + "(" + plugin.actualPath + ")");
             return;
         }
 
@@ -160,6 +177,11 @@ namespace LibLoader {
 
         // then unload it
         LoaderApi::libClose(plugin.handle);
+#ifdef WIN32
+        auto s = DeleteFile(TEXT(plugin.actualPath.c_str()));
+        if (!s)
+            LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + std::to_string(GetLastError()));
+#endif
         plugin.unload();
     }
 
