@@ -25,7 +25,10 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
-import tech.eritquearcus.miraicp.shared.*
+import tech.eritquearcus.miraicp.shared.BuiltInConstants
+import tech.eritquearcus.miraicp.shared.CPPConfig
+import tech.eritquearcus.miraicp.shared.CPPLib
+import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
 import java.io.File
 import kotlin.system.exitProcess
@@ -33,13 +36,13 @@ import kotlin.system.exitProcess
 object KotlinMain {
     val job = Job()
     val coroutineScope = CoroutineScope(job)
-    lateinit var loginAccount: List<CPPConfig.loaderConfig.Account>
+    lateinit var loginAccount: List<CPPConfig.LoaderConfig.Account>
     var alive = true
 
     @OptIn(MiraiExperimentalApi::class)
     fun main(j: String, path: String) {
         job.start()
-        val c = Gson().fromJson(j, CPPConfig.loaderConfig::class.java)
+        val c = Gson().fromJson(j, CPPConfig.LoaderConfig::class.java)
         loginAccount = c.accounts ?: emptyList()
         Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
@@ -55,7 +58,18 @@ object KotlinMain {
             if (c.advanceConfig!!.maxThread!! <= 0) PublicShared.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
             else PublicShared.maxThread = c.advanceConfig!!.maxThread!!
         }
-        CPPLib.init(getLibLoader(), path)
+        val tmp = if (c.advanceConfig?.libLoaderPath != null) {
+            val tmp2 = File(c.advanceConfig?.libLoaderPath!!)
+            if(tmp2.exists() && tmp2.name.startsWith("libLoader") && tmp2.isFile)
+                listOf(tmp2.parent)
+            else {
+                logger.error("AdvanceConfig 中的 libLoaderPath(${c.advanceConfig?.libLoaderPath?:"\"\""}) 无效或不存在, 使用缺省路径")
+                emptyList()
+            }
+        }else emptyList()
+
+
+        CPPLib.init(libPath = tmp, cfgPath = path)
 //        }.cppPaths.forEach {
 //            val d = it.dependencies?.filter { p ->
 //                File(p).let { f -> f.isFile && f.exists() }

@@ -20,6 +20,7 @@
 #include "ktInterface.h"
 #include "JNIEnvManager.h"
 #include "JNIEnvs.h"
+#include "LoaderLogger.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
 #include "commonTypes.h"
@@ -69,7 +70,7 @@ jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
 /// loader线程可能会尝试获取 plugin list 的锁，
 /// 但Event函数在派发任务后是会立刻退出并释放锁的，
 /// 不会造成死锁
-jobject Event(JNIEnv *env, jobject, jstring content) {
+jobject Event(JNIEnv *, jobject, jstring content) {
     static std::string str;
     str = LibLoader::jstring2str(content);
     if (str.find(R"("type":1000)") != std::string::npos) {
@@ -91,7 +92,7 @@ jobject Event(JNIEnv *env, jobject, jstring content) {
     return nullptr;
 }
 
-jobject PluginDisable(JNIEnv *env, jobject) {
+jobject PluginDisable(JNIEnv *, jobject) {
     LibLoader::LoaderMain::loaderExit();
     LibLoader::loaderThread.join();
     return nullptr;

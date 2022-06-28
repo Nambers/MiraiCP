@@ -42,7 +42,7 @@ internal fun String.decodeHex(): ByteArray {
  * @throws LoginFailedException 正常登录失败时抛出
  */
 @MiraiExperimentalApi
-fun CPPConfig.loaderConfig.Account.login() {
+fun CPPConfig.LoaderConfig.Account.login() {
     this.logined = true
     val p = when (this.protocol?.uppercase()) {
         "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD

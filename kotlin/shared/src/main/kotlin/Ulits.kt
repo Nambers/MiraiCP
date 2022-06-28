@@ -32,6 +32,7 @@ import net.mamoe.mirai.message.data.ImageType
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.MessageSource
 import org.json.JSONObject
+import java.io.File
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -55,10 +56,22 @@ fun event(obj: Any) {
     }
 }
 
-// todo(ea): 确定存放路径
-fun getLibLoader(): String = CPPLib::class.java
-    .getResource(if (System.getProperty("os.name").contains("Windows")) "/libLoader.dll" else "/libLoader.so")
-    .path
+fun getLibLoader(pathsInput: List<String>): String {
+    val suffix =
+        File.separator + if (System.getProperty("os.name").contains("Windows")) "libLoader.dll" else "libLoader.so"
+    val paths = pathsInput.plus(System.getProperty("user.dir")).map { it + suffix }
+    paths.forEach { path ->
+        File(path).let {
+            if (it.exists()) return it.absolutePath
+        }
+    }
+    PublicShared.logger.error(
+        "找不到 libLoader 组件于下列位置:\n" +
+        paths.joinToString(prefix = "\t", postfix = "\n") +
+        "请到 MiraiCP release 下载 libLoader 组件并放在以上目录其中一个的位置"
+    )
+    throw IllegalStateException("找不到 libLoader 组件")
+}
 
 fun Group.toContact(): Config.Contact = Config.Contact(2, this.id, 0, this.name, this.bot.id)
 

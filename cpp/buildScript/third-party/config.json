@@ -3,6 +3,7 @@
     "target": "single_include/MiraiCP/MiraiCP.hpp",
     "sources": [
         "common/PluginConfig.h",
+        "common/commonTools.h",
         "common/commonTypes.h",
         "common/loaderApi.h",
         "include/Bot.h",

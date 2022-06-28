@@ -42,6 +42,19 @@ namespace LibLoader {
         return ans;
     }
 
+    std::string PluginListManager::pluginListInfo(const std::function<bool(LoaderPluginConfig *)> &filter) {
+        std::lock_guard lk(pluginlist_mtx);
+        std::string ans;
+        ans = "\nid\tname\tauthor\tdescription\n";
+        for (auto &&[k, v]: id_plugin_list) {
+            if (filter(v.get())) {
+                auto tmp = v->config();
+                ans += tmp.id + "\t" + tmp.name + "\t" + tmp.author + "\t" + tmp.description + "\n";
+            }
+        }
+        return ans;
+    }
+
     std::vector<std::string> PluginListManager::getAllPluginPath() {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans;

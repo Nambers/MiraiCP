@@ -43,7 +43,7 @@ object Core {
     @JvmStatic
     fun login(source: String): String {
         try {
-            gson.fromJson(source, CPPConfig.loaderConfig.Account::class.java).login()
+            gson.fromJson(source, CPPConfig.LoaderConfig.Account::class.java).login()
         } catch (e: Exception) {
             PublicShared.logger.error("登录失败, 原因: " + e.message + " cause: " + e.cause)
             return if (e.message.isNullOrBlank()) "unknown reason" else e.message!!

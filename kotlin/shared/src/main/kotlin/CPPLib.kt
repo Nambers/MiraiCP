@@ -57,7 +57,7 @@ import tech.eritquearcus.miraicp.shared.PublicShared.uploadVoice
 object CPPLib {
     fun init(
         // 本地地址
-        libPath: String? = getLibLoader(),
+        libPath: List<String>? = emptyList(),
         cfgPath: String? = "",
         // 只在libPath == null下生效
         callback: () -> Unit = {}
@@ -65,7 +65,7 @@ object CPPLib {
         if (libPath == null) {
             callback()
         } else {
-            System.load(libPath)
+            System.load(getLibLoader(libPath))
         }
         Verify(BuiltInConstants.version, cfgPath!!)
 //        config = if (libPath == null) {

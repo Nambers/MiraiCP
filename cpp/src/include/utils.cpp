@@ -64,18 +64,13 @@ void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
 void FUNC_EXIT() {
     static_assert(std::is_same_v<decltype(&FUNC_EXIT), LibLoader::plugin_func_ptr>);
 
-    LibLoader::LoaderApi::reset_loader_apis();
-
     using namespace MiraiCP;
 
     if (CPPPlugin::plugin == nullptr) return;
 
-    try {
-        CPPPlugin::plugin->onDisable();
-    } catch (const MiraiCPExceptionBase &e) {
-        e.raise();
-    } catch (...) {
-    }
+    CPPPlugin::plugin->onDisable();
+
+    LibLoader::LoaderApi::reset_loader_apis();
 
     CPPPlugin::plugin.reset();
 }

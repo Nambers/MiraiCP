@@ -154,14 +154,15 @@ object CPPConfig {
     )
 
     data class AdvanceConfig(
-        val maxThread: Int?
+        val maxThread: Int?,
+        val libLoaderPath: String?
     )
 
-    data class pluginConfig(
+    data class PluginConfig(
         val pluginConfig: List<cppPath>, val advanceConfig: AdvanceConfig?
     )
 
-    data class loaderConfig(
+    data class LoaderConfig(
         val accounts: List<Account>?, val cppPaths: List<cppPath>, val advanceConfig: AdvanceConfig?
     ) {
         data class Account(
