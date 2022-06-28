@@ -50,7 +50,8 @@ namespace MiraiCP::Tools {
          * @return 内容转换成jstring类型
          */
     std::string jstring2str(jstring jStr, JNIEnv *env = nullptr) {
-        if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
+        //todo(ea) 重构
+        // if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
         if (!jStr) {
             Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
             return "";
@@ -73,7 +74,8 @@ namespace MiraiCP::Tools {
          * @return 转换后jstring类型
          */
     jstring str2jstring(const char *stra, JNIEnv *env = nullptr) {
-        if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
+        // todo(ea): 重构
+        // if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
         if (!stra) {
             Logger::logger.error("警告:C++部分传入空字符串，位置:Tools::str2jstring");
         }
