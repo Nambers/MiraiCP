@@ -47,8 +47,8 @@ object Command {
         "disablePlugin <plugin id>" to "简写disable, 禁用插件, 后面跟插件的名字作为参数, 可用enablePlugin启用, 可能会对程序的速度造成一些影响",
         "enablePlugin <plugin id>" to "简写enable, 启用插件, 后面跟插件的名字作为参数",
         "loadPlugin <plugin path>" to "简写load, 加载某个插件, 后面跟插件的地址作为参数",
-        "removePlugin <plugin id>" to "简写rm, 移除插件但不会取消对dll文件的占用, 后面跟插件的名字作为参数",
-        "reloadPlugin <plugin path>" to "简写reload, 加载某个插件(位于<plugin path>), 如果已经加载则`removePlugin`那个插件, 如果未加载过则效果类似`load`"
+        "unloadPlugin <plugin id>" to "简写unload, 移除插件但不会取消对dll文件的占用, 后面跟插件的名字作为参数",
+        "reloadPlugin <plugin id>" to "简写reload, 重新加载某个插件"
     )
 
     private fun printHelp() {
@@ -205,11 +205,11 @@ object Command {
 //                    info("启用${order[1]}成功")
 //                }
             }
-//            "removePlugin", "rm" -> {
-//                removePlugin(order.joinToString(" "), order[1])
-//            }
+            "unloadPlugin", "unload" -> {
+                event(CPPEvent.LibLoaderEvent("UnloadPlugin", order[1]))
+            }
             "reloadPlugin", "reload" -> {
-                reload(order.joinToString(" "), order[1])
+                event(CPPEvent.LibLoaderEvent("ReloadPlugin", order[1]))
             }
             else -> lastOneOrMoreParamOrder(re)
         }

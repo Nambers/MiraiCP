@@ -43,11 +43,14 @@ namespace LibLoader {
             {"EnablePluginList", [](const std::string &name) {
                  LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](LibLoader::LoaderPluginConfig *c) { return c->enabled; }));
              }},
-            {"ReloadPlugin", [](const std::string &name) {
-                 LoaderApi::reloadPluginById(name);
+            {"ReloadPlugin", [](const std::string &id) {
+                 LoaderApi::reloadPluginById(id);
              }},
             {"LoadPlugin", [](const std::string &name) {
                  LoaderApi::loadNewPlugin(name, true);
+             }},
+            {"UnloadPlugin", [](const std::string id){
+                LoaderApi::unloadPluginById(id);
              }},
             {"PluginList", [](const std::string &name) {
                  logger.info(LibLoader::PluginListManager::pluginListInfo([](LibLoader::LoaderPluginConfig *) { return true; }));

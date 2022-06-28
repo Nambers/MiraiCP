@@ -42,8 +42,8 @@ object DisablePlugin : SimpleCommand(
     description = "禁用一个已经加载的MiraiCP插件[可被enable指令启用](简写: disable)"
 ) {
     @Handler
-    fun ConsoleCommandSender.disable(name: String) {
-        event(CPPEvent.LibLoaderEvent("DisablePlugin", name))
+    fun ConsoleCommandSender.disable(id: String) {
+        event(CPPEvent.LibLoaderEvent("DisablePlugin", id))
 //        try {
 //            PublicShared.cpp.first { it.config.name == name }
 //            (!PublicShared.disablePlugins.contains(name)) && PublicShared.disablePlugins.add(name)
@@ -60,8 +60,8 @@ object EnablePlugin : SimpleCommand(
     description = "启用一个被加载的MiraiCP插件[可被disable指令禁用](简写: enable)"
 ) {
     @Handler
-    fun ConsoleCommandSender.enable(name: String) {
-        event(CPPEvent.LibLoaderEvent("EnablePlugin", name))
+    fun ConsoleCommandSender.enable(id: String) {
+        event(CPPEvent.LibLoaderEvent("EnablePlugin", id))
 //        if (PublicShared.disablePlugins.contains(name)) {
 //            PublicShared.disablePlugins.remove(name)
 //            sendMessage("启用${name}成功")
@@ -105,14 +105,36 @@ object LoadPlugin : SimpleCommand(
     }
 }
 
+object UnloadPlugin : SimpleCommand(
+    PluginMain,
+    "unloadPlugin", "unload",
+    description = "加载一个未被加载过的MiraiCP插件(简写: unload)"
+) {
+    @Handler
+    fun ConsoleCommandSender.load(id: String) {
+        event(CPPEvent.LibLoaderEvent("UnloadPlugin", id))
+    }
+}
+
+object ReloadPlugin : SimpleCommand(
+    PluginMain,
+    "reloadPlugin", "reload",
+    description = "加载一个未被加载过的MiraiCP插件(简写: reload)"
+) {
+    @Handler
+    fun ConsoleCommandSender.load(id: String) {
+        event(CPPEvent.LibLoaderEvent("reloadPlugin", id))
+    }
+}
+
 object ReLoadPlugin : SimpleCommand(
     PluginMain,
     "reLoadPlugin", "reload",
     description = "重新加载一个被加载过的MiraiCP插件(简写: reload)"
 ) {
     @Handler
-    fun ConsoleCommandSender.reload(path: String) {
-        event(CPPEvent.LibLoaderEvent("ReLoadPlugin", path))
+    fun ConsoleCommandSender.reload(id: String) {
+        event(CPPEvent.LibLoaderEvent("ReLoadPlugin", id))
 //        val file = File(path)
 //        if (!file.isFile || !file.exists()) {
 //            sendMessage("Err:${file.absolutePath} 不是一个有效的文件")
