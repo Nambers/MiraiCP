@@ -45,8 +45,6 @@ void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
 
     assert(LibLoader::LoaderApi::get_loader_apis() != nullptr);
 
-    Logger::logger.warning("DEBUG-plugin0");
-
     try {
         enrollPlugin();
         // plugin == nullptr 无插件实例加载
