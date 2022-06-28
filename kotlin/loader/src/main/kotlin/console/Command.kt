@@ -199,10 +199,11 @@ object Command {
 //                }
             }
             "enablePlugin", "enable" -> {
-                if (PublicShared.disablePlugins.contains(order[1])) {
-                    PublicShared.disablePlugins.remove(order[1])
-                    info("启用${order[1]}成功")
-                }
+                event(CPPEvent.LibLoaderEvent("EnablePlugin", order[1]))
+//                if (PublicShared.disablePlugins.contains(order[1])) {
+//                    PublicShared.disablePlugins.remove(order[1])
+//                    info("启用${order[1]}成功")
+//                }
             }
 //            "removePlugin", "rm" -> {
 //                removePlugin(order.joinToString(" "), order[1])

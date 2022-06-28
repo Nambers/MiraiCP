@@ -39,6 +39,7 @@ extern "C" {
 void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
     static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
     using namespace MiraiCP;
+    MiraiCP::Event::clear();
 
     LibLoader::LoaderApi::set_loader_apis(&funcs);
 
@@ -69,9 +70,7 @@ void FUNC_EXIT() {
     if (CPPPlugin::plugin == nullptr) return;
 
     CPPPlugin::plugin->onDisable();
-
     LibLoader::LoaderApi::reset_loader_apis();
-
     CPPPlugin::plugin.reset();
 }
 
