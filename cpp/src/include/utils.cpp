@@ -36,20 +36,24 @@ namespace LibLoader::LoaderApi {
 
 extern "C" {
 /// 插件开启入口
-void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
+void FUNC_ENTRANCE(std::string version, const LibLoader::LoaderApi::interface_funcs &funcs) {
     static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
     using namespace MiraiCP;
-    MiraiCP::Event::clear();
+    Event::clear();
 
     LibLoader::LoaderApi::set_loader_apis(&funcs);
 
     assert(LibLoader::LoaderApi::get_loader_apis() != nullptr);
+    if (version != MiraiCPVersion) {
+        Logger::logger.warning("MiraiCP依赖库版本(" + MiraiCPVersion + ")和libLoader版本(" + version + ")不一致, 建议更新到最新");
+    }
 
     try {
         enrollPlugin();
         // plugin == nullptr 无插件实例加载
-        if (CPPPlugin::plugin != nullptr)
+        if (CPPPlugin::plugin != nullptr) {
             CPPPlugin::plugin->onEnable();
+        }
     } catch (const MiraiCPExceptionBase &e) {
         e.raise();
         Logger::logger.info("插件" + MiraiCP::CPPPlugin::config.id + "加载失败");

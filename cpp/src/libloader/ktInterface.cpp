@@ -41,24 +41,26 @@ namespace LibLoader {
 /// 实际初始化函数
 /// 1. 设置全局变量
 /// 2. 开启loader线程并获取插件入口函数的返回值
-jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
+jobject Verify(JNIEnv *, jobject, jstring _version, jstring _cfgPath) {
     using json = nlohmann::json;
 
     assert(JNIEnvManager::getGvm() != nullptr);
 
-    std::string ans;
-    try {
-        //初始化日志模块
-        LibLoader::JNIEnvs::initializeMiraiCPLoader();
+    //初始化日志模块
+    LibLoader::JNIEnvs::initializeMiraiCPLoader();
 
-        // 测试有效的插件
-        LibLoader::registerAllPlugin(_cfgPath);
-
-        // 激活插件。创建loader thread。
-        // loader thread中创建多线程加载所有插件，调用入口函数
-        LibLoader::loaderThread = std::thread(LibLoader::LoaderMain::loaderMain);
-    } catch (std::exception &e) {
+    LibLoader::logger.info("⭐libLoader 版本: " + MiraiCP::MiraiCPVersion);
+    auto version = "v" + LibLoader::jstring2str(_version);
+    if (version != MiraiCP::MiraiCPVersion) {
+        LibLoader::logger.warning("libLoader(" + MiraiCP::MiraiCPVersion + ")版本和MiraiCP启动器(" + version + ")不符合, 建议更新至最新");
     }
+
+    // 测试有效的插件
+    LibLoader::registerAllPlugin(_cfgPath);
+
+    // 激活插件。创建loader thread。
+    // loader thread中创建多线程加载所有插件，调用入口函数
+    LibLoader::loaderThread = std::thread(LibLoader::LoaderMain::loaderMain);
 
     return nullptr;
 }

@@ -70,7 +70,6 @@ object PublicShared {
     lateinit var logger: MiraiLogger
     const val now_tag = "v${BuiltInConstants.version}"
     private val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
-    val disablePlugins = arrayListOf<String>()
     var cachePath: File = File("")
     var maxThread = Integer.MAX_VALUE
     lateinit var commandReg: CommandHandler

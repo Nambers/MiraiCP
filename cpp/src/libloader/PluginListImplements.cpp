@@ -51,11 +51,11 @@ namespace LibLoader {
     constexpr static LoaderApi::interface_funcs normal_interfaces = LoaderApi::collect_interface_functions(false);
 
     void callEntranceFuncAdmin(plugin_entrance_func_ptr func) {
-        func(interfaces);
+        func(MiraiCP::MiraiCPVersion, interfaces);
     }
 
     void callEntranceFuncNormal(plugin_entrance_func_ptr func) {
-        func(normal_interfaces);
+        func(MiraiCP::MiraiCPVersion, normal_interfaces);
     }
 
     /// 测试符号存在性，并返回event func的地址。return {nullptr, nullptr} 代表符号测试未通过，
@@ -136,12 +136,16 @@ namespace LibLoader {
             return;
         }
 #ifdef WIN32
-        plugin.actualPath = current_working_directory() + "\\cache_" + std::to_string(std::hash<std::string>()(plugin.path)) + ".dll";
+        plugin.actualPath = current_working_directory() + "\\cache\\cache_" + std::to_string(std::hash<std::string>()(plugin.path)) + ".dll";
         std::ifstream src(plugin.path, std::ios::binary);
-        std::ofstream dst(plugin.actualPath, std::ios::binary);
-        dst << src.rdbuf();
+        if(!src.fail()){
+            std::ofstream dst(plugin.actualPath, std::ios::binary);
+            dst << src.rdbuf();
+            dst.close();
+        }else{
+            logger.error("input file stream fail to open:" + plugin.path);
+        }
         src.close();
-        dst.close();
 #endif
 
         auto handle = LoaderApi::libOpen(plugin.actualPath);
