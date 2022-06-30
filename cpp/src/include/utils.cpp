@@ -90,7 +90,7 @@ void FUNC_EVENT(std::string content) {
     }
     int type = j["type"].get<int>();
 
-    if (eventTypes(type) != eventTypes::Command && Event::noRegistered(type)) return;
+    if (type != eventTypes::Command && Event::noRegistered(type)) return;
     try {
         Event::incomingEvent(std::move(j), type);
     } catch (json::type_error &e) {

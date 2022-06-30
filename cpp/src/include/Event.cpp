@@ -89,7 +89,7 @@ namespace MiraiCP {
     }
 
     void Event::incomingEvent(json j, int type) {
-        switch (eventTypes(type)) {
+        switch (type) {
             case eventTypes::GroupMessageEvent: {
                 //GroupMessage
                 Event::broadcast<GroupMessageEvent>(
