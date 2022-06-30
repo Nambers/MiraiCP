@@ -43,7 +43,7 @@ object Core {
     @JvmStatic
     fun login(source: String): String {
         try {
-            gson.fromJson(source, CPPConfig.loaderConfig.Account::class.java).login()
+            gson.fromJson(source, CPPConfig.LoaderConfig.Account::class.java).login()
         } catch (e: Exception) {
             PublicShared.logger.error("登录失败, 原因: " + e.message + " cause: " + e.cause)
             return if (e.message.isNullOrBlank()) "unknown reason" else e.message!!
@@ -65,7 +65,7 @@ object Core {
         logger.info("⭐当前MiraiCP版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
         KotlinMain.loginAccount = emptyList()
         PublicShared.commandReg = LoaderCommandHandlerImpl()
-        CPPLib(null, null) {
+        CPPLib.init(null) {
             enroll()
         }
         logger.info("⭐已成功加载MiraiCP⭐")

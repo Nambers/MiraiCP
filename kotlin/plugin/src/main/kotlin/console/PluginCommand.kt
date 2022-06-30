@@ -47,7 +47,7 @@ class CommandHandlerImpl : CommandHandler {
                         bindId
                     )
                 )
-                PublicShared.cpp[pluginId].Event(tmp)
+                CPPLib.Event(tmp)
             }
         }
         a::preFixOption.set(c.preFixOption)

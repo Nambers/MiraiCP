@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_BOT_H
 #define MIRAICP_PRO_BOT_H
 
-#include <jni.h>
 #include <string>
 #include <vector>
 #include "MiraiDefs.h"
@@ -51,16 +50,16 @@ namespace MiraiCP {
          * @brief 刷新bot信息
          * @param env
          */
-        void refreshInfo(JNIEnv *env = nullptr);
+        void refreshInfo();
 
         /// 用id构建机器人
         explicit Bot(QQID i) : id(i) {}
 
         /// 取好友
-        Friend getFriend(QQID i, JNIEnv *env = nullptr) const;
+        Friend getFriend(QQID i) const;
 
         /// 取群聊
-        Group getGroup(QQID groupid, JNIEnv *env = nullptr) const;
+        Group getGroup(QQID groupid) const;
 
         /// 昵称
         std::string nick() {
@@ -75,13 +74,13 @@ namespace MiraiCP {
         }
 
         /// 取好友列表
-        std::vector<QQID> getFriendList(JNIEnv *env = nullptr) const;
+        std::vector<QQID> getFriendList() const;
 
         /// 好友列表string形式返回，利于保存
         std::string FriendListToString();
 
         /// 取群列表
-        std::vector<QQID> getGroupList(JNIEnv *env = nullptr) const;
+        std::vector<QQID> getGroupList() const;
 
         /// 群列表string形式返回，利于保存
         std::string GroupListToString() const;

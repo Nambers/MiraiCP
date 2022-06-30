@@ -224,7 +224,7 @@ namespace MiraiCP {
         /// @deprecated use Contact.quoteAndSend or `this->quoteAndSend1(s, groupid, env)`, since v2.8.1
         template<class T>
         ShouldNotUse("use Contact.quoteAndSend") MessageSource
-                quoteAndSendMessage(T s, QQID groupid = -1, JNIEnv *env = nullptr) = delete;
+                quoteAndSendMessage(T s, QQID groupid = -1, void *env = nullptr) = delete;
 
     public: // static functions
         /// @brief 找到miraiCode结尾的`]`
@@ -285,21 +285,20 @@ namespace MiraiCP {
             constructMessages(args...);
         }
 
-        MessageSource quoteAndSend0(std::string msg, QQID groupid = -1,
-                                    JNIEnv *env = nullptr);
+        MessageSource quoteAndSend0(std::string msg, QQID groupid = -1);
 
         template<class T>
-        MessageSource quoteAndSend1(T s, QQID groupid = -1, JNIEnv *env = nullptr) {
+        MessageSource quoteAndSend1(T s, QQID groupid = -1) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return this->quoteAndSend0(s.toMiraiCode(), groupid, env);
+            return this->quoteAndSend0(s.toMiraiCode(), groupid);
         }
 
-        MessageSource quoteAndSend1(std::string s, QQID groupid, JNIEnv *env) {
-            return this->quoteAndSend0(std::move(s), groupid, env);
+        MessageSource quoteAndSend1(std::string s, QQID groupid) {
+            return this->quoteAndSend0(std::move(s), groupid);
         }
 
-        MessageSource quoteAndSend1(const MessageChain &mc, QQID groupid, JNIEnv *env) {
-            return this->quoteAndSend0(mc.toMiraiCode(), groupid, env);
+        MessageSource quoteAndSend1(const MessageChain &mc, QQID groupid) {
+            return this->quoteAndSend0(mc.toMiraiCode(), groupid);
         }
     };
 } // namespace MiraiCP

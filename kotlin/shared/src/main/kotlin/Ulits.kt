@@ -31,7 +31,6 @@ import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.ImageType
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.MessageSource
-import net.mamoe.mirai.utils.MiraiLogger
 import org.json.JSONObject
 import java.io.File
 import java.util.concurrent.SynchronousQueue
@@ -51,40 +50,27 @@ private val cc by lazy {
 //): R = runInterruptible(context = cc, block = { block() })
 
 // 广播事件到cpp
-fun ArrayList<CPPLib>.event(obj: Any) {
-    val content = if (obj is String) obj else PublicShared.gson.toJson(obj)
+fun event(obj: Any) {
     cc.submit {
-        when {
-            PublicShared.disablePlugins.isNotEmpty() -> {
-                this@event.filter {
-                    !PublicShared.disablePlugins.contains(it.config.name)
-                }.forEach {
-                    it.Event(content)
-                }
-            }
-            else -> this@event.forEach { it.Event(content) }
-        }
+        CPPLib.Event(if (obj is String) obj else PublicShared.gson.toJson(obj))
     }
 }
 
-// load native lib from File
-fun File.loadAsCPPLib(d: List<String>?, uncheck: Boolean = false): CPPLib {
-    this.copyTo(File.createTempFile(this.name, ".cache", PublicShared.cachePath), true).let { tempFile ->
-        return CPPLib(tempFile.absolutePath, d).apply {
-            PublicShared.logger.info("⭐加载${tempFile.absolutePath}成功")
-            this.showInfo()
-            if (!uncheck) {
-                if (PublicShared.cpp.count { it.config.id == this.config.id } > 1) {
-                    val lib = PublicShared.cpp.first { it.config.id == this.config.id }
-                    PublicShared.logger.error("已加载id为${lib.config.id}的插件, 放弃加载当前插件(位于:${this@loadAsCPPLib.absolutePath})")
-                    return lib
-                }
-                if (PublicShared.cpp.count { it.config.name == this.config.name } > 1)
-                    PublicShared.logger.warning("检测到列表已经有重复的插件名称(${this.config.name}), 请检测配置文件中是否重复或提醒开发者改插件名称，但该插件还是会加载")
-            }
-            PublicShared.logger4plugins[this.config.id] = MiraiLogger.Factory.create(this::class, this.config.name)
+fun getLibLoader(pathsInput: List<String>): String {
+    val suffix =
+        File.separator + if (System.getProperty("os.name").contains("Windows")) "libLoader.dll" else "libLoader.so"
+    val paths = pathsInput.plus(System.getProperty("user.dir")).map { it + suffix }
+    paths.forEach { path ->
+        File(path).let {
+            if (it.exists()) return it.absolutePath
         }
     }
+    PublicShared.logger.error(
+        "找不到 libLoader 组件于下列位置:\n" +
+        paths.joinToString(prefix = "\t", postfix = "\n") +
+        "请到 MiraiCP release 下载 libLoader 组件并放在以上目录其中一个的位置"
+    )
+    throw IllegalStateException("找不到 libLoader 组件")
 }
 
 fun Group.toContact(): Config.Contact = Config.Contact(2, this.id, 0, this.name, this.bot.id)

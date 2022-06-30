@@ -18,7 +18,6 @@
 #define MIRAICP_PRO_MESSAGESOURCE_H
 
 #include <string>
-#include <jni.h>
 #include "MiraiDefs.h"
 
 namespace MiraiCP {
@@ -39,18 +38,18 @@ namespace MiraiCP {
 
         /// @deprecated 用Contact.quoteAndSendMessage, since v2.8.1
         ShouldNotUse("Use Contact.quoteAndSendMessage") MessageSource
-        quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
-                              JNIEnv *env = nullptr) const = delete;
+                quoteAndSendMiraiCode(MiraiCodeable *msg, QQID groupid = 0,
+                                      void *env = nullptr) const = delete;
 
         /// @deprecated use Contact.quoteAndSendMessage, since v2.8.1
         ShouldNotUse("Use Contact.quoteAndSendMessage") MessageSource
-        quoteAndSendMsg(const std::string &c, QQID groupid = 0,
-                        JNIEnv * = nullptr) const = delete;
+                quoteAndSendMsg(const std::string &c, QQID groupid = 0,
+                                void * = nullptr) const = delete;
 
         /// @deprecated use Contact.quoteAndSendMessage, since v2.8.1
         ShouldNotUse("Use Contact.quoteAndSendMessage") MessageSource
-        quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
-                              JNIEnv * = nullptr) const = delete;
+                quoteAndSendMiraiCode(const std::string &c, QQID groupid = 0,
+                                      void * = nullptr) const = delete;
 
         /*!
          * @brief 构建消息源
@@ -72,7 +71,7 @@ namespace MiraiCP {
         std::string serializeToString() const;
 
         /// @brief 撤回该信息
-        void recall(JNIEnv * = nullptr) const;
+        void recall() const;
 
         bool operator==(const MessageSource &ms) const {
             return this->ids == ms.ids && this->internalids == ms.internalids;

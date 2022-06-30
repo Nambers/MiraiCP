@@ -14,39 +14,39 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "Bot.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Friend.h"
 #include "Group.h"
 #include "LowLevelAPI.h"
 #include "Tools.h"
 
 namespace MiraiCP {
-    Group Bot::getGroup(QQID groupid, JNIEnv *env) const {
-        return {groupid, this->id, env};
+    Group Bot::getGroup(QQID groupid) const {
+        return {groupid, this->id};
     }
 
-    Friend Bot::getFriend(QQID i, JNIEnv *env) const {
-        return Friend(i, this->id, env);
+    Friend Bot::getFriend(QQID i) const {
+        return Friend(i, this->id);
     }
 
     bool Bot::operator==(const Contact &c) const {
         return this->id == c.id();
     }
 
-    void Bot::refreshInfo(JNIEnv *env) {
+    void Bot::refreshInfo() {
         if (this->id == 0)
             return;
         nlohmann::json j;
         j["source"] = Contact(4, 0, 0, "", this->id).toString();
-        LowLevelAPI::info tmp = LowLevelAPI::info0(Config::koperation(Config::RefreshInfo, j, env));
+        LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, j));
         this->_avatarUrl = tmp.avatarUrl;
         this->_nick = tmp.nickornamecard;
     }
 
-    std::vector<QQID> Bot::getFriendList(JNIEnv *env) const {
+    std::vector<QQID> Bot::getFriendList() const {
         nlohmann::json j;
         j["botid"] = this->id;
-        std::string temp = Config::koperation(Config::QueryBFL, j, env);
+        std::string temp = KtOperation::ktOperation(KtOperation::QueryBFL, j);
         return Tools::StringToVector(std::move(temp));
     }
 
@@ -54,10 +54,10 @@ namespace MiraiCP {
         return Tools::VectorToString(getFriendList());
     }
 
-    std::vector<QQID> Bot::getGroupList(JNIEnv *env) const {
+    std::vector<QQID> Bot::getGroupList() const {
         nlohmann::json j;
         j["botid"] = this->id;
-        std::string temp = Config::koperation(Config::QueryBGL, j, env);
+        std::string temp = KtOperation::ktOperation(KtOperation::QueryBGL, j);
         return Tools::StringToVector(std::move(temp));
     }
 

@@ -18,7 +18,10 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.utils.MiraiInternalApi
 import org.jline.reader.LineReader
@@ -66,7 +69,6 @@ object Console {
     }
     private const val prompt = "> "
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun listen() {
         KotlinMain.coroutineScope.launch(CoroutineName("Console Command")) {
             while (isActive) {
@@ -84,6 +86,7 @@ object Console {
                         it.closeAndJoin()
                         PublicShared.logger.info("Bot ${it.id} closed")
                     }
+                    PublicShared.onDisable()
                     exitProcess(0)
                 }
                 if (re.isEmpty() || re.isBlank()) continue

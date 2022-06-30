@@ -18,6 +18,7 @@
 #include <MiraiCP.hpp>
 #include <iostream>
 #include <jni.h>
+#include <utf8.h>
 
 #ifdef _WIN32
 #include <io.h>
@@ -28,26 +29,84 @@ void freeLibrary(void *pointer) {
 #else
 #include <unistd.h>
 void freeLibrary(void *pointer) {
-    MiraiCP::ThreadManager::gvm->DestroyJavaVM();
+    // todo(ea): 重构6
+    // JNIEnvManager::getGvm()->DestroyJavaVM();
 }
 #endif
 
 typedef jint(JNICALL *JNICREATEPROC)(JavaVM **, void **, void *);
+
+// todo(ea): 重构
+const MiraiCP::PluginConfig MiraiCP::CPPPlugin::config{
+        "1", "Core"};
+
+namespace MiraiCP::Tools {
+    /*!
+         * @name jstring2str
+         * @brief string类型转码转换到jstring类型, UTF16 -> UTF8
+         * @note 来源https://blog.csdn.net/chunleixiahe/article/details/51394116
+         * @param jstr 转换内容,jstring类型
+         * @param env 可选，JNIEnv
+         * @return 内容转换成jstring类型
+         */
+    std::string jstring2str(jstring jStr, JNIEnv *env = nullptr) {
+        //todo(ea) 重构
+        // if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
+        if (!jStr) {
+            Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
+            return "";
+        }
+        std::u16string s = reinterpret_cast<const char16_t *>(env->GetStringChars(jStr, nullptr));
+        if (s.length() == 0) {
+            Logger::logger.error("警告:kotlin部分返回空字符串, 位置:Tools::jstring2str");
+            return "";
+        }
+        std::string x;
+        utf8::utf16to8(s.begin(), s.end(), std::back_inserter(x));
+        return x;
+    }
+    /*!
+         * @name str2jstring
+         * @brief string类型到jsting类型 UTF8 -> UTF16
+         * @note 来源https://blog.csdn.net/chunleixiahe/article/details/51394116
+         * @param stra const char*(string.c_str()转换的内容)
+         * @param env 可选JNIEnv
+         * @return 转换后jstring类型
+         */
+    jstring str2jstring(const char *stra, JNIEnv *env = nullptr) {
+        // todo(ea): 重构
+        // if (env == nullptr) env = LibLoader::LoaderApi::getEnv();
+        if (!stra) {
+            Logger::logger.error("警告:C++部分传入空字符串，位置:Tools::str2jstring");
+        }
+        std::string str(stra);
+        std::vector<unsigned short> utf16line;
+        utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
+        auto *c = new jchar[utf16line.size()];
+        for (int i = 0; i < utf16line.size(); i++) {
+            c[i] = utf16line[i];
+        }
+        return env->NewString((jchar *) c, (jsize) utf16line.size());
+    }
+} // namespace MiraiCP::Tools
 
 namespace MiraiCP::Core {
     void *jvmLib;
     jclass coreClaz;
 
     JNIEXPORT jstring enroll(JNIEnv *env, jobject) {
-        JNINativeMethod tmp[]{
-                {(char *) "Verify", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) MiraiCP::JNIApi::Verify},
-                {(char *) "Event", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) MiraiCP::JNIApi::Event},
-                {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;", (jobject *) MiraiCP::JNIApi::PluginDisable}};
-        MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", tmp, 3);
+        // todo(ea) 重构1
+        // JNINativeMethod tmp[]{
+        //         {(char *) "Verify", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) MiraiCP::JNIApi::Verify},
+        //         {(char *) "Event", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) MiraiCP::JNIApi::Event},
+        //         {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;", (jobject *) MiraiCP::JNIApi::PluginDisable}};
+        // MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", tmp, 3);
         return MiraiCP::Tools::str2jstring("MIRAICP_NULL", env);
     }
 
     int loadCore(const std::string &corePath) {
+        // 未实现
+        throw std::exception();
 #ifdef _WIN32
         if (_access(corePath.c_str(), 0) != 0) {
 #else
@@ -96,19 +155,21 @@ namespace MiraiCP::Core {
             // 加载JVM动态库错误
             return 2;
         }
-        jint jvmProc = (jvmProcAddress) (&MiraiCP::ThreadManager::gvm, (void **) &env, &vmInitArgs);
-        if (jvmProc < 0 || MiraiCP::ThreadManager::gvm == nullptr || env == nullptr) {
-            freeLibrary(jvmLib);
-            // 创建JVM错误
-            return 3;
-        }
+        // todo(ea): 重构2
+        // jint jvmProc = (jvmProcAddress) (&MiraiCP::JNIEnvManager::gvm, (void **) &env, &vmInitArgs);
+        // if (jvmProc < 0 || MiraiCP::JNIEnvManager::gvm == nullptr || env == nullptr) {
+        //     freeLibrary(jvmLib);
+        //     // 创建JVM错误
+        //     return 3;
+        // }
 #else
-        long flag = JNI_CreateJavaVM(&MiraiCP::ThreadManager::gvm, (void **) &env, &vmInitArgs);
-        if (flag != 0) {
-            // Error creating VM. Exiting...
-            freeLibrary(nullptr);
-            return 3;
-        }
+        // todo(ea): 重构7
+        // long flag = JNI_CreateJavaVM(&JNIEnvManager::getGvm(), (void **) &env, &vmInitArgs);
+        // if (flag != 0) {
+        //     // Error creating VM. Exiting...
+        //     freeLibrary(nullptr);
+        //     return 3;
+        // }
 #endif
         //加载启动类
         coreClaz = env->FindClass("tech/eritquearcus/miraicp/core/Core");
@@ -129,14 +190,16 @@ namespace MiraiCP::Core {
             return 5;
         }
         JNINativeMethod e[] = {{(char *) "enroll", (char *) "()Ljava/lang/Void;", (jstring *) enroll}};
-        MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/core/Core", e, 1);
+        // todo(ea): 重构3
+        // MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/core/Core", e, 1);
         env->CallStaticVoidMethod(coreClaz, methodID, nullptr);
         return 0;
     }
 
     void exitCore() {
         //jvm释放
-        MiraiCP::ThreadManager::gvm->DestroyJavaVM();
+        // todo(ea): 重构4
+        // JNIEnvManager::getGvm()->DestroyJavaVM();
         freeLibrary(jvmLib);
     }
 
@@ -147,8 +210,9 @@ namespace MiraiCP::Core {
         tmp["md5"] = md5;
         tmp["protocol"] = protocol;
         tmp["heartBeat"] = heartBeat;
-        if (env == nullptr)
-            env = MiraiCP::ThreadManager::getEnv();
+        // todo(ea): 重构5
+        // if (env == nullptr)
+        //     env = JNIEnvManager::getEnv();
         jmethodID loginMethodId = env->GetStaticMethodID(coreClaz, "login", "(Ljava/lang/String;)Ljava/lang/String;");
         std::string re = MiraiCP::Tools::jstring2str((jstring) env->CallStaticObjectMethod(coreClaz, loginMethodId, MiraiCP::Tools::str2jstring(tmp.dump().c_str(), env)));
         if (re != "200")

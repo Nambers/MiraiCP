@@ -14,22 +14,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "LowLevelAPI.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 #include "MiraiDefs.h"
+#include <utility>
+
 
 namespace MiraiCP {
     using json = nlohmann::json;
-    std::string LowLevelAPI::send0(const std::string &content, json c, int retryTime, bool miraicode, JNIEnv *env,
+    std::string LowLevelAPI::send0(const std::string &content, json c, int retryTime, bool miraicode,
                                    const std::string &errorInfo) {
         nlohmann::json j;
         nlohmann::json tmp;
         tmp["content"] = content;
-        tmp["contact"] = c;
+        tmp["contact"] = std::move(c);
         j["source"] = tmp.dump();
         j["miraiCode"] = miraicode;
         j["retryTime"] = retryTime;
-        return Config::koperation(Config::Send, j, env, true, errorInfo);
+        return KtOperation::ktOperation(KtOperation::Send, j, true, errorInfo);
     }
     LowLevelAPI::info LowLevelAPI::info0(const std::string &source) {
         info re;
@@ -40,15 +42,15 @@ namespace MiraiCP {
         return re;
     }
 
-    std::string LowLevelAPI::getInfoSource(const std::string &c, JNIEnv *env = nullptr) {
+    std::string LowLevelAPI::getInfoSource(const std::string &c) {
         nlohmann::json j;
         j["source"] = c;
-        return Config::koperation(Config::RefreshInfo, j, env);
+        return KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
-    std::string LowLevelAPI::uploadImg0(const std::string &path, const std::string &c, JNIEnv *env = nullptr) {
+    std::string LowLevelAPI::uploadImg0(const std::string &path, const std::string &c) {
         nlohmann::json j;
         j["fileName"] = path;
         j["source"] = c;
-        return Config::koperation(Config::UploadImg, j, env);
+        return KtOperation::ktOperation(KtOperation::UploadImg, j);
     }
 } // namespace MiraiCP

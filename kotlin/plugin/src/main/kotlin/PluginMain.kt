@@ -54,7 +54,7 @@ object PluginMain : KotlinPlugin(
         l.info("⭐github地址:https://github.com/Nambers/MiraiCP")
         l.info("⭐MiraiCP版本: $version, 构建时间: ${BuiltInConstants.date}")
         PublicShared.commandReg = CommandHandlerImpl()
-        Gson().fromJson(File("${dataFolder.absoluteFile}/miraicp.json").apply {
+        val config = Gson().fromJson(File("${dataFolder.absoluteFile}/miraicp.json").apply {
             if (!this.exists() || !this.isFile) {
                 l.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
                 l.error("配置文件应该在(${this.absolutePath}), 并且拥有以下json格式(见https://github.com/Nambers/MiraiCP/blob/master/doc/config.md):")
@@ -71,33 +71,41 @@ object PluginMain : KotlinPlugin(
                 )
                 return
             }
-        }.readText(), CPPConfig.pluginConfig::class.java)
-            .apply {
-                if (this.advanceConfig != null && this.advanceConfig!!.maxThread != null) {
-                    if (this.advanceConfig!!.maxThread!! <= 0)
-                        PublicShared.logger.error("配置错误: 配置项AdvanceConfig.maxThread的值应该>=0, 使用默认值")
-                    else
-                        PublicShared.maxThread = this.advanceConfig!!.maxThread!!
-                }
+        }.readText(), CPPConfig.PluginConfig::class.java)
+        if (config.advanceConfig != null && config.advanceConfig!!.maxThread != null) {
+            if (config.advanceConfig!!.maxThread!! <= 0) PublicShared.logger.error("配置错误: 配置项AdvanceConfig.maxThread的值应该>=0, 使用默认值")
+            else PublicShared.maxThread = config.advanceConfig!!.maxThread!!
+        }
+        val tmp = if (config.advanceConfig?.libLoaderPath != null) {
+            val tmp2 = File(config.advanceConfig?.libLoaderPath!!)
+            if (tmp2.exists() && tmp2.name.startsWith("libLoader") && tmp2.isFile) listOf(tmp2.parent)
+            else {
+                logger.error("AdvanceConfig 中的 libLoaderPath(${config.advanceConfig?.libLoaderPath ?: "\"\""}) 无效或不存在, 使用缺省路径")
+                emptyList()
             }
-            .pluginConfig.forEach { i ->
-                val d = i.dependencies?.filter { p ->
-                    File(p).let { f -> f.isFile && f.exists() }
-                }
-                val f = File(i.path)
-                val files = (if (f.isAbsolute)
-                    listOf(f)
-                else
-                    listOf(f, dataFolder.resolve(f), configFolder.resolve(f)))
-                val re = files.firstOrNull { it.isFile && it.exists() }
-                if (re == null) {
-                    l.error(files.joinToString("/") { it.absolutePath } + " 不是一个有效的文件")
-                } else
-                    re.loadAsCPPLib(d)
-            }
+        } else emptyList()
+        CPPLib.init(
+            listOf(dataFolder.absoluteFile.absolutePath, configFolder.absoluteFile.absolutePath).plus(tmp),
+            cfgPath = "${dataFolder.absoluteFile}/miraicp.json"
+        )
+//            .pluginConfig.forEach { i ->
+//                val d = i.dependencies?.filter { p ->
+//                    File(p).let { f -> f.isFile && f.exists() }
+//                }
+//                val f = File(i.path)
+//                val files = (if (f.isAbsolute)
+//                    listOf(f)
+//                else
+//                    listOf(f, dataFolder.resolve(f), configFolder.resolve(f)))
+//                val re = files.firstOrNull { it.isFile && it.exists() }
+//                if (re == null) {
+//                    l.error(files.joinToString("/") { it.absolutePath } + " 不是一个有效的文件")
+//                } else
+//                    re.loadAsCPPLib(d)
+//            }
         logger.info("⭐已成功启动MiraiCP⭐")
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
-            PublicShared.cpp.event(
+            event(
                 PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
             )
         }

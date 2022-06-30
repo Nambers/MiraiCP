@@ -154,14 +154,15 @@ object CPPConfig {
     )
 
     data class AdvanceConfig(
-        val maxThread: Int?
+        val maxThread: Int?,
+        val libLoaderPath: String?
     )
 
-    data class pluginConfig(
+    data class PluginConfig(
         val pluginConfig: List<cppPath>, val advanceConfig: AdvanceConfig?
     )
 
-    data class loaderConfig(
+    data class LoaderConfig(
         val accounts: List<Account>?, val cppPaths: List<cppPath>, val advanceConfig: AdvanceConfig?
     ) {
         data class Account(
@@ -307,6 +308,12 @@ object CPPEvent {
     )
     // type = 16, ExceptionEvent
     // type = 17, Command
+
+    data class LibLoaderEvent(
+        val name: String,
+        val content: String? = null,
+        val type: Int = 1000
+    )
 }
 
 data class PluginConfig(
