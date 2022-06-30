@@ -52,7 +52,7 @@ object KotlinMain {
         PublicShared.cachePath.mkdir()
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
-        logger.info("⭐当前MiraiCP版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
+        logger.info("⭐MiraiCP-plugin 版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
         PublicShared.commandReg = LoaderCommandHandlerImpl()
         if (c.advanceConfig != null && c.advanceConfig!!.maxThread != null) {
             if (c.advanceConfig!!.maxThread!! <= 0) PublicShared.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")

@@ -52,7 +52,7 @@ object PluginMain : KotlinPlugin(
         PublicShared.cachePath.mkdir()
         l.info("⭐MiraiCP启动中⭐")
         l.info("⭐github地址:https://github.com/Nambers/MiraiCP")
-        l.info("⭐MiraiCP版本: $version, 构建时间: ${BuiltInConstants.date}")
+        l.info("⭐MiraiCP-loader 版本: $version, 构建时间: ${BuiltInConstants.date}")
         PublicShared.commandReg = CommandHandlerImpl()
         val config = Gson().fromJson(File("${dataFolder.absoluteFile}/miraicp.json").apply {
             if (!this.exists() || !this.isFile) {
