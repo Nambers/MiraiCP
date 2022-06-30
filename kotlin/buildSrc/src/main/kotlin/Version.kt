@@ -17,8 +17,8 @@
  */
 
 object Version {
-    const val kotlin = "1.5.32"
-    const val `kotlinx-serialization-json` = "1.3.1"
+    const val kotlin = "1.6.21"
+    const val `kotlinx-serialization-json` = "1.3.2"
     const val `kotlinx-coroutines-core` = "1.6.0"
 
     const val mirai = "2.11.0"

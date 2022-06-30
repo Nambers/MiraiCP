@@ -16,7 +16,7 @@
 
 #include <json.hpp>
 
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 #include "Logger.h"
 #include "SingleMessage.h"
@@ -110,12 +110,12 @@ namespace MiraiCP {
         this->size = this->width = this->height = 0;
         this->imageType = 5;
     }
-    bool Image::isUploaded(QQID botid, JNIEnv *env) {
+    bool Image::isUploaded(QQID botid) {
         if (!this->md5.has_value()) this->refreshInfo();
         if (this->size == 0) throw IllegalArgumentException("size不能为0", MIRAICP_EXCEPTION_WHERE);
         nlohmann::json tmp = this->toJson();
         tmp["botid"] = botid;
-        std::string re = Config::koperation(Config::ImageUploaded, tmp, env);
+        std::string re = KtOperation::ktOperation(KtOperation::ImageUploaded, tmp);
         return re == "true";
     }
     nlohmann::json FlashImage::toJson() const {
@@ -263,8 +263,8 @@ namespace MiraiCP {
     }
 
     /*图片类实现*/
-    void Image::refreshInfo(JNIEnv *env) {
-        std::string re = Config::koperation(Config::QueryImgInfo, this->toJson(), env);
+    void Image::refreshInfo() {
+        std::string re = KtOperation::ktOperation(KtOperation::QueryImgInfo, this->toJson());
         if (re == "E1")
             throw RemoteAssetException("图片id格式错误", MIRAICP_EXCEPTION_WHERE);
         json j = json::parse(re);

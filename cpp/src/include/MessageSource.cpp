@@ -15,16 +15,16 @@
 //
 
 #include "MessageSource.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 #include "Logger.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
-    void MessageSource::recall(JNIEnv *env) const {
+    void MessageSource::recall() const {
         json j;
         j["source"] = this->serializeToString();
-        std::string re = Config::koperation(Config::Recall, j, env);
+        std::string re = KtOperation::ktOperation(KtOperation::Recall, j);
         if (re == "Y") return;
         if (re == "E2") throw RecallException(MIRAICP_EXCEPTION_WHERE);
     }

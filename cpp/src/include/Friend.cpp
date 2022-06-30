@@ -15,29 +15,29 @@
 //
 
 #include "Friend.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Exception.h"
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
     /*好友类实现*/
-    Friend::Friend(QQID id, QQID botid, JNIEnv *env) : Contact() {
+    Friend::Friend(QQID id, QQID botid) : Contact() {
         this->_type = MIRAI_FRIEND;
         this->_id = id;
         this->_botid = botid;
-        refreshInfo(env);
+        refreshInfo();
     }
 
-    void Friend::deleteFriend(JNIEnv *env) {
+    void Friend::deleteFriend() {
         json j;
         j["source"] = this->toString();
         j["quit"] = true;
-        Config::koperation(Config::RefreshInfo, j, env);
+        KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
 
-    void Friend::refreshInfo(JNIEnv *env) {
-        std::string temp = LowLevelAPI::getInfoSource(this->toString(), env);
+    void Friend::refreshInfo() {
+        std::string temp = LowLevelAPI::getInfoSource(this->toString());
         if (temp == "E1") {
             throw FriendException(MIRAICP_EXCEPTION_WHERE);
         }
@@ -49,7 +49,7 @@ namespace MiraiCP {
     void Friend::sendNudge() {
         json j;
         j["contactSource"] = this->toString();
-        std::string re = Config::koperation(Config::SendNudge, j);
+        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, j);
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone/ipad", MIRAICP_EXCEPTION_WHERE);
     }

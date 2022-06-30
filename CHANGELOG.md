@@ -1,4 +1,18 @@
 # Change Log
+## v2.12.0-RC
++ 引进 LibLoader 中间件
++ 在 MiraiCP-plugin 以及 MiraiCP-loader 去掉 jni 依赖
++ 支持同时加载多个插件
++ 支持热加载
++ 每个插件对应一个线程
+
+API Change:
++ 插件的信息配置从构造函数移了出去
++ 有关 jni 的全部接口被移除
++ 所有关于 jni 的参数都无需再传入
+
+> **本 release 包含的 MiraiCP-core 组件无法使用, 先用上一个的**
+
 ## v2.11.0
 + 新增`registerBlockingEvent`，可以用于阻塞后续回调函数；`registerEvent`可以设定优先级
 + 修复`disbale`在`plugin == null`的时候的问题

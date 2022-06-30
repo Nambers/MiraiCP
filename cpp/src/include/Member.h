@@ -36,14 +36,13 @@ namespace MiraiCP {
         /// @brief 更改群成员权限
         /// @param admin 如果为true为更改到管理员
         /// @param env
-        void modifyAdmin(bool admin, JNIEnv *env = nullptr);
+        void modifyAdmin(bool admin);
 
         /// @brief 构建群成员对象
         /// @param qqid 该成员q号
         /// @param groupid 所在群号
         /// @param botid 机器人id
-        explicit Member(QQID qqid, QQID groupid, QQID botid,
-                        JNIEnv * = nullptr);
+        explicit Member(QQID qqid, QQID groupid, QQID botid);
 
         explicit Member(const Contact &c) : Contact(c) {
             if (c.type() != 3)
@@ -56,33 +55,33 @@ namespace MiraiCP {
         bool isAnonymous = false;
 
         /// 重新获取(刷新)群成员信息
-        void refreshInfo(JNIEnv *env = nullptr);
+        void refreshInfo();
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path, JNIEnv *env = nullptr) {
-            return Contact::sendVoice0(path, env);
+        MessageSource sendVoice(const std::string &path) {
+            return Contact::sendVoice0(path);
         }
 
         /// 获取权限，会在构造时调用，请使用permission缓存变量
         /// @see Member::permission
-        unsigned int getPermission(JNIEnv * = nullptr) const;
+        unsigned int getPermission() const;
 
         /*!
          * 禁言当前对象，单位是秒，最少0秒最大30天，如果为0或者为负则unmute
          * @throws BotException, MuteException
         */
-        void mute(int time, JNIEnv * = nullptr);
+        void mute(int time);
 
         /// 取消禁言
         /// @throws BotException, MuteException
-        void unMute(JNIEnv *env = nullptr) {
-            mute(0, env);
+        void unMute() {
+            mute(0);
         }
 
         /*! 踢出这个群成员
         * @param reason - 原因
         */
-        void kick(const std::string &reason, JNIEnv * = nullptr);
+        void kick(const std::string &reason);
 
         /// At一个群成员
         At at() {
@@ -91,7 +90,7 @@ namespace MiraiCP {
 
         /// 更改群名片
         /// @throw MiraiCP::BotException 如果没权限时
-        void changeNameCard(std::string_view newName, JNIEnv* = nullptr);
+        void changeNameCard(std::string_view newName);
 
         /*!
          * @brief 发送戳一戳

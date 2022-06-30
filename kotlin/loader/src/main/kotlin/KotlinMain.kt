@@ -27,22 +27,22 @@ import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
 import tech.eritquearcus.miraicp.shared.BuiltInConstants
 import tech.eritquearcus.miraicp.shared.CPPConfig
+import tech.eritquearcus.miraicp.shared.CPPLib
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
-import tech.eritquearcus.miraicp.shared.loadAsCPPLib
 import java.io.File
 import kotlin.system.exitProcess
 
 object KotlinMain {
     val job = Job()
     val coroutineScope = CoroutineScope(job)
-    lateinit var loginAccount: List<CPPConfig.loaderConfig.Account>
+    lateinit var loginAccount: List<CPPConfig.LoaderConfig.Account>
     var alive = true
 
     @OptIn(MiraiExperimentalApi::class)
-    fun main(j: String) {
+    fun main(j: String, path: String) {
         job.start()
-        val c = Gson().fromJson(j, CPPConfig.loaderConfig::class.java)
+        val c = Gson().fromJson(j, CPPConfig.LoaderConfig::class.java)
         loginAccount = c.accounts ?: emptyList()
         Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
@@ -54,22 +54,33 @@ object KotlinMain {
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
         logger.info("⭐当前MiraiCP版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
         PublicShared.commandReg = LoaderCommandHandlerImpl()
-        c.apply {
-            if (this.advanceConfig != null && this.advanceConfig!!.maxThread != null) {
-                if (this.advanceConfig!!.maxThread!! <= 0) PublicShared.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
-                else PublicShared.maxThread = this.advanceConfig!!.maxThread!!
-            }
-        }.cppPaths.forEach {
-            val d = it.dependencies?.filter { p ->
-                File(p).let { f -> f.isFile && f.exists() }
-            }
-            val f = File(it.path)
-            if (!f.exists() || !f.isFile) {
-                logger.error("Error: dll文件 ${f.absolutePath} 不存在, 请检查config.json配置")
-                return@forEach
-            }
-            f.loadAsCPPLib(d)
+        if (c.advanceConfig != null && c.advanceConfig!!.maxThread != null) {
+            if (c.advanceConfig!!.maxThread!! <= 0) PublicShared.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
+            else PublicShared.maxThread = c.advanceConfig!!.maxThread!!
         }
+        val tmp = if (c.advanceConfig?.libLoaderPath != null) {
+            val tmp2 = File(c.advanceConfig?.libLoaderPath!!)
+            if(tmp2.exists() && tmp2.name.startsWith("libLoader") && tmp2.isFile)
+                listOf(tmp2.parent)
+            else {
+                logger.error("AdvanceConfig 中的 libLoaderPath(${c.advanceConfig?.libLoaderPath?:"\"\""}) 无效或不存在, 使用缺省路径")
+                emptyList()
+            }
+        }else emptyList()
+
+
+        CPPLib.init(libPath = tmp, cfgPath = path)
+//        }.cppPaths.forEach {
+//            val d = it.dependencies?.filter { p ->
+//                File(p).let { f -> f.isFile && f.exists() }
+//            }
+//            val f = File(it.path)
+//            if (!f.exists() || !f.isFile) {
+//                logger.error("Error: dll文件 ${f.absolutePath} 不存在, 请检查config.json配置")
+//                return@forEach
+//            }
+////            f.loadAsCPPLib(d)
+//        }
         if (c.accounts == null || c.accounts!!.isEmpty()) {
             logger.error("Error: 无可登录账号，请检查config.json内容")
             return
@@ -147,5 +158,5 @@ fun main(args: Array<String>) {
         }
     }
     println("正在启动\n配置文件地址:${f.absolutePath}")
-    KotlinMain.main(f.readText())
+    KotlinMain.main(f.readText(), f.absolutePath)
 }

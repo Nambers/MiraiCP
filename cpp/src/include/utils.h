@@ -16,8 +16,14 @@
 
 #ifndef MIRAICP_PRO_UTILS_H
 #define MIRAICP_PRO_UTILS_H
+
+
 #include "CPPPlugin.h"
-#include "Config.h"
+#include "KtOperation.h"
+#include "PluginConfig.h"
+#include "commonTypes.h"
+
+
 namespace MiraiCP {
     /*!
      * @brief 定时任务, 在一定时间后广播**一次**TimeOutEvent
@@ -25,27 +31,28 @@ namespace MiraiCP {
      * @param msg 附加的string类型信息
      * @doxygenEg{1017, schedule.cpp, 定时任务}
      */
-    inline void schedule(long time, const std::string &msg, JNIEnv *env = nullptr) {
+    inline void schedule(long time, const std::string &msg) {
         nlohmann::json j;
         j["time"] = time;
         j["msg"] = msg;
-        Config::koperation(Config::TimeOut, j, env);
+        KtOperation::ktOperation(KtOperation::TimeOut, j);
     }
+
     /// 注册插件函数, 需要被实现, 类似onStart();
     void enrollPlugin();
 
     /// 用指针绑定插件
-    inline void enrollPlugin0(CPPPlugin *p) {
-        CPPPlugin::plugin = p;
+    inline void enrollPlugin(CPPPlugin *p) {
+        CPPPlugin::plugin.reset(p);
     }
-    namespace JNIApi {
-        // todo 暴露了一些接口
-        JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content);
-        JNIEXPORT jstring returnNull();
-        JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job);
-        JNIEXPORT jstring Verify(JNIEnv *env, jobject, jstring id);
-        int registerMethods(JNIEnv *env, const char *className, JNINativeMethod *gMethods, int numMethods);
-    } // namespace JNIApi
 } // namespace MiraiCP
+
+
+extern "C" {
+void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &);
+void FUNC_EVENT(std::string content);
+void FUNC_EXIT();
+const MiraiCP::PluginConfig &PLUGIN_INFO();
+}
 
 #endif //MIRAICP_PRO_UTILS_H

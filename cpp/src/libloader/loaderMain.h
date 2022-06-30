@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2022 - 2022. Antares, Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,18 +14,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "PluginConfig.h"
+#ifndef MIRAICP_PRO_LOADERMAIN_H
+#define MIRAICP_PRO_LOADERMAIN_H
 
-namespace MiraiCP {
-    using json = nlohmann::json;
-    json PluginConfig::serialize() {
-        json j;
-        j["name"] = name;
-        j["version"] = version;
-        j["author"] = author;
-        j["description"] = description;
-        j["time"] = time;
-        j["id"] = id;
-        return j;
-    }
-} // namespace MiraiCP
+
+namespace LibLoader {
+    class LoaderMain {
+        volatile static bool loader_exit;
+
+    private:
+        static void mainloop();
+
+        static void shutdownLoader();
+
+    public:
+        static bool is_loader_exited() { return loader_exit; }
+
+        static void loaderExit() { loader_exit = true; }
+
+        static void loaderMain();
+    };
+} // namespace LibLoader
+#endif //MIRAICP_PRO_LOADERMAIN_H

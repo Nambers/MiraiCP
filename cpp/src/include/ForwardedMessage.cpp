@@ -15,7 +15,7 @@
 //
 
 #include "ForwardedMessage.h"
-#include "Config.h"
+#include "KtOperation.h"
 #include "Contact.h"
 #include <utility>
 
@@ -44,7 +44,7 @@ namespace MiraiCP {
     }
 
     //发送这个聊天记录
-    MessageSource ForwardedMessage::sendTo(Contact *c, JNIEnv *env) {
+    MessageSource ForwardedMessage::sendTo(Contact *c) {
         json temp;
         json text;
         text["id"] = c->id();
@@ -55,7 +55,7 @@ namespace MiraiCP {
         temp["botid"] = c->botid();
         if (display.has_value())
             temp["display"] = display->toJson();
-        std::string re = Config::koperation(Config::Buildforward, temp, env);
+        std::string re = KtOperation::ktOperation(KtOperation::Buildforward, temp);
         ErrorHandle(re, "");
         return MessageSource::deserializeFromString(re);
     }

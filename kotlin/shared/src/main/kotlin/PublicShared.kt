@@ -66,11 +66,10 @@ object PublicShared {
         }
     }
     private var friend_cache = ArrayList<NormalMember>(0)
-    val cpp: ArrayList<CPPLib> = arrayListOf()
     val gson: Gson = Gson()
     lateinit var logger: MiraiLogger
     const val now_tag = "v${BuiltInConstants.version}"
-    val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
+    private val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     val disablePlugins = arrayListOf<String>()
     var cachePath: File = File("")
     var maxThread = Integer.MAX_VALUE
@@ -108,10 +107,18 @@ object PublicShared {
         }
     }
 
+    private fun getPluginLogger(name: String): MiraiLogger =
+        if (logger4plugins.containsKey(name))
+            logger4plugins[name]!!
+        else
+            MiraiLogger.Factory.create(this::class, name).apply {
+                logger4plugins[name] = this
+            }
+
     //日志部分实现
     fun basicSendLog(log: String, botid: Long, name: String = "") {
         when (botid) {
-            -1L -> logger4plugins[name]!!.info(log)
+            -1L -> getPluginLogger(name).info(log)
             -2L -> logger.info(log)
             else -> Bot.getInstance(botid).logger.info(log)
         }
@@ -119,7 +126,7 @@ object PublicShared {
 
     fun sendWarning(log: String, botid: Long, name: String = "") {
         when (botid) {
-            -1L -> logger4plugins[name]!!.warning(log)
+            -1L -> getPluginLogger(name).warning(log)
             -2L -> logger.warning(log)
             else -> Bot.getInstance(botid).logger.warning(log)
         }
@@ -127,7 +134,7 @@ object PublicShared {
 
     fun sendError(log: String, botid: Long, name: String = "") {
         when (botid) {
-            -1L -> logger4plugins[name]!!.error(log)
+            -1L -> getPluginLogger(name).error(log)
             -2L -> logger.error(log)
             else -> Bot.getInstance(botid).logger.error(log)
         }
@@ -660,7 +667,7 @@ object PublicShared {
     //定时任务
     fun scheduling(time: Long, msg: String): String {
         Timer("Timer", true).schedule(time) {
-            cpp.event(CPPEvent.TimeOutEvent(msg))
+            event(CPPEvent.TimeOutEvent(msg))
         }
         return "Y"
     }
@@ -726,14 +733,14 @@ object PublicShared {
         "s"
     }
 
-    fun onDisable() = cpp.forEach { it.PluginDisable() }
+    fun onDisable() = CPPLib.PluginDisable()
 
     @MiraiExperimentalApi
     fun onEnable(eventChannel: EventChannel<Event>) {
         //配置文件目录 "${dataFolder.absolutePath}/"
         eventChannel.subscribeAlways<FriendMessageEvent> {
             //好友信息
-            cpp.event(
+            event(
                 CPPEvent.PrivateMessage(
                     this.sender.toContact(), this.message.serializeToMiraiCode(), json.encodeToString(
                         MessageSource.Serializer, this.message[MessageSource]!!
@@ -743,7 +750,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
-            cpp.event(
+            event(
                 CPPEvent.GroupMessage(
                     this.group.toContact(),
                     Config.Contact(
@@ -756,7 +763,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
             friend_cache.add(this.member)
-            cpp.event(
+            event(
                 CPPEvent.MemberLeave(
                     this.group.toContact(),
                     this.member.id,
@@ -769,7 +776,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<MemberLeaveEvent.Quit> {
             friend_cache.add(this.member)
-            cpp.event(
+            event(
                 CPPEvent.MemberLeave(
                     this.group.toContact(), this.member.id, 2, this.member.id
                 )
@@ -778,7 +785,7 @@ object PublicShared {
             friend_cache.remove(this.member)
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Retrieve> {
-            cpp.event(
+            event(
                 CPPEvent.MemberJoin(
                     this.group.toContact(),
                     Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
@@ -789,7 +796,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Active> {
-            cpp.event(
+            event(
                 CPPEvent.MemberJoin(
                     this.group.toContact(),
                     Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
@@ -800,7 +807,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Invite> {
-            cpp.event(
+            event(
                 CPPEvent.MemberJoin(
                     this.group.toContact(),
                     Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
@@ -812,7 +819,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<NewFriendRequestEvent> {
             //自动同意好友申请
-            cpp.event(
+            event(
                 CPPEvent.NewFriendRequest(
                     CPPEvent.NewFriendRequest.NewFriendRequestSource(
                         this.bot.id, this.eventId, this.message, this.fromId, this.fromGroupId, this.fromNick
@@ -823,7 +830,7 @@ object PublicShared {
 
         }
         eventChannel.subscribeAlways<MessageRecallEvent.FriendRecall> {
-            cpp.event(
+            event(
                 CPPEvent.RecallEvent(
                     1,
                     this.authorId,
@@ -837,7 +844,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<MessageRecallEvent.GroupRecall> {
-            cpp.event(
+            event(
                 CPPEvent.RecallEvent(
                     2,
                     this.authorId,
@@ -853,7 +860,7 @@ object PublicShared {
 
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Invite> {
-            cpp.event(
+            event(
                 CPPEvent.BotJoinGroup(
                     1, this.group.toContact(), this.invitor.id
                 )
@@ -861,7 +868,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Active> {
-            cpp.event(
+            event(
                 CPPEvent.BotJoinGroup(
                     2, this.group.toContact(), 0
                 )
@@ -869,7 +876,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve> {
-            cpp.event(
+            event(
                 CPPEvent.BotJoinGroup(
                     3, this.group.toContact(), 0
                 )
@@ -878,7 +885,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
             //自动同意加群申请
-            cpp.event(
+            event(
                 CPPEvent.GroupInvite(
                     CPPEvent.GroupInvite.GroupInviteSource(
                         this.bot.id, this.eventId, this.invitorId, this.groupId, this.groupName, this.invitorNick
@@ -889,7 +896,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<GroupTempMessageEvent> {
             //群临时会话
-            cpp.event(
+            event(
                 CPPEvent.GroupTempMessage(
                     this.group.toContact(),
                     this.sender.toContact(),
@@ -902,7 +909,7 @@ object PublicShared {
         }
 
         eventChannel.subscribeAlways<NudgeEvent> {
-            cpp.event(
+            event(
                 CPPEvent.NugdeEvent(
                     this.from.toContact() ?: return@subscribeAlways,
                     this.target.toContact() ?: return@subscribeAlways,
@@ -913,7 +920,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<BotLeaveEvent> {
-            cpp.event(
+            event(
                 CPPEvent.BotLeaveEvent(
                     this.group.id, this.bot.id
                 )
@@ -921,7 +928,7 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<MemberJoinRequestEvent> {
-            cpp.event(
+            event(
                 CPPEvent.MemberJoinRequestEvent(
                     this.group?.toContact() ?: emptyContact(this.bot.id),
                     this.invitor?.toContact() ?: emptyContact(this.bot.id),
@@ -932,7 +939,7 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<MessagePreSendEvent> {
             val t = this.target.toContact() ?: return@subscribeAlways
-            cpp.event(
+            event(
                 CPPEvent.MessagePreSendEvent(t, this.bot.id, this.message.toMessageChain().serializeToJsonString())
             )
         }

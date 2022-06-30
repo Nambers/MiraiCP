@@ -13,269 +13,110 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 #include "utils.h"
-#include "Command.h"
-#include "Config.h"
 #include "Event.h"
 #include "Exception.h"
-#include "ThreadManager.h"
-#include "Tools.h"
+#include "KtOperation.h"
+#include "Logger.h"
+#include "loaderApi.h"
 
-// 开始对接JNI接口代码
+
+// 开始对接libloader接口代码
 
 using json = nlohmann::json;
-namespace MiraiCP::JNIApi {
-    /*
-    * 作用:判断是否连接上本插件，勿改
-    * 参数:env 必备，job 必备
-    * 返回值:jstring (用str2jstring把string类型转成jsrting) 发送返回的字符串
-    */
-    // env != null, call from jni
-    JNIEXPORT jstring Verify(JNIEnv *env, jobject, jstring id) {
-        using namespace MiraiCP;
-        ThreadManager::setEnv(env);
-        MiraiCP::ThreadManager::JNIVersion = env->GetVersion();
-        try {
-            //初始化日志模块
-            Config::construct();
-            Logger::logger.init();
-            enrollPlugin();
-            // plugin == nullptr 无插件实例加载
-            if (CPPPlugin::plugin != nullptr) {
-                CPPPlugin::pluginLogger = new PluginLogger(&Logger::logger);
-                CPPPlugin::plugin->onEnable();
-            }
-        } catch (const MiraiCPExceptionBase &e) {
-            e.raise();
-        }
-        json j = (CPPPlugin::plugin != nullptr) ? CPPPlugin::plugin->config.serialize() : json::parse("{}");
-        j["MiraiCPversion"] = MiraiCPVersion;
-        Config::pluginId = std::stoi(Tools::jstring2str(id));
-        return Tools::str2jstring(j.dump().c_str());
-        //验证机制，返回当前SDK版本
-    }
 
-    /*
-     * 插件结束事件
-     * env != null, call from jni
-     */
-    JNIEXPORT jobject PluginDisable(JNIEnv *env, jobject job) {
-        if (CPPPlugin::plugin == nullptr) return job;
-        using namespace MiraiCP;
-        ThreadManager::setEnv(env);
-        try {
-            CPPPlugin::plugin->onDisable();
-        } catch (const MiraiCPExceptionBase &e) {
-            e.raise();
-        }
-        CPPPlugin::plugin = nullptr;
-        return job;
-    }
+namespace LibLoader::LoaderApi {
+    const interface_funcs *get_loader_apis();
 
-    /*返回空值*/
-    JNIEXPORT jstring returnNull() {
-        return MiraiCP::Tools::str2jstring("MIRAICP_NULL");
-    }
+    void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis);
 
-    /*
-    * 消息解析分流
-     * env != null, call from jni
-    */
-    JNIEXPORT jstring Event(JNIEnv *env, jobject, jstring content) {
-        using namespace MiraiCP;
-        ThreadManager::setEnv(env);
-        std::string tmp = Tools::jstring2str(content, env);
-        json j;
-        try {
-            j = json::parse(tmp);
-        } catch (json::parse_error &e) {
-            APIException("格式化json错误", MIRAICP_EXCEPTION_WHERE).raise();
-            Logger::logger.error("For debug:" + j.dump());
-            Logger::logger.error(e.what(), false);
-            return returnNull();
-        }
-        int type = j["type"].get<int>();
+    void reset_loader_apis();
+} // namespace LibLoader::LoaderApi
 
-        if (eventTypes(type) != eventTypes::Command && Event::noRegistered(type)) return returnNull();
-        try {
-            switch (eventTypes(type)) {
-                case eventTypes::GroupMessageEvent: {
-                    //GroupMessage
-                    Event::broadcast<GroupMessageEvent>(
-                            GroupMessageEvent(j["group"]["botid"],
-                                              Group(Group::deserialize(j["group"])),
-                                              Member(Member::deserialize(j["member"])),
-                                              MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>()))
-                                                      .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
-                    break;
-                }
-                case eventTypes::PrivateMessageEvent: {
-                    //私聊消息
-                    Event::broadcast<PrivateMessageEvent>(
-                            PrivateMessageEvent(j["friend"]["botid"],
-                                                Friend(Friend::deserialize(j["friend"])),
-                                                MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>()))
-                                                        .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
-                    break;
-                }
-                case eventTypes::GroupInviteEvent:
-                    //群聊邀请
-                    Event::broadcast<GroupInviteEvent>(
-                            GroupInviteEvent(
-                                    j["source"]["botid"],
-                                    j["request"],
-                                    j["source"]["inviternick"],
-                                    j["source"]["inviterid"],
-                                    j["source"]["groupname"],
-                                    j["source"]["groupid"]));
-                    break;
-                case eventTypes::NewFriendRequestEvent:
-                    //好友
-                    Event::broadcast<NewFriendRequestEvent>(
-                            NewFriendRequestEvent(
-                                    j["source"]["botid"],
-                                    j["request"],
-                                    j["source"]["fromid"],
-                                    j["source"]["fromgroupid"],
-                                    j["source"]["fromnick"],
-                                    j["source"]["message"]));
-                    break;
-                case eventTypes::MemberJoinEvent:
-                    //新成员加入
-                    Event::broadcast<MemberJoinEvent>(
-                            MemberJoinEvent(
-                                    j["group"]["botid"],
-                                    j["jointype"],
-                                    Member(Member::deserialize(j["member"])),
-                                    Group(Group::deserialize(j["group"])),
-                                    j["inviterid"]));
-                    break;
-                case eventTypes::MemberLeaveEvent:
-                    //群成员退出
-                    Event::broadcast<MemberLeaveEvent>(MemberLeaveEvent(
-                            j["group"]["botid"],
-                            j["leavetype"],
-                            j["memberid"],
-                            Group(Group::deserialize(j["group"])),
-                            j["operatorid"]));
-                    break;
-                case eventTypes::RecallEvent:
-                    Event::broadcast<RecallEvent>(RecallEvent(
-                            j["botid"],
-                            j["etype"],
-                            j["time"],
-                            j["authorid"],
-                            j["operatorid"],
-                            j["ids"],
-                            j["internalids"],
-                            j["groupid"]));
-                    break;
-                case eventTypes::BotJoinGroupEvent:
-                    Event::broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
-                            j["group"]["botid"],
-                            j["etype"],
-                            Group(Group::deserialize(j["group"])),
-                            j["inviterid"]));
-                    break;
-                case eventTypes::GroupTempMessageEvent:
-                    Event::broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
-                            j["group"]["botid"],
-                            Group(Group::deserialize(j["group"])),
-                            Member(Member::deserialize(j["member"])),
-                            MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>()))
-                                    .plus(MessageSource::deserializeFromString(j["source"]))));
-                    break;
-                case eventTypes::TimeOutEvent:
-                    Event::broadcast(TimeOutEvent(j["msg"]));
-                    break;
-                case eventTypes::BotOnlineEvent:
-                    Event::broadcast(BotOnlineEvent(j["botid"]));
-                    break;
-                case eventTypes::NudgeEvent:
-                    Event::broadcast(NudgeEvent(Contact::deserialize(j["from"]),
-                                                Contact::deserialize(j["target"]),
-                                                Contact::deserialize(j["subject"]),
-                                                j["botid"]));
-                    break;
-                case eventTypes::BotLeaveEvent:
-                    Event::broadcast(BotLeaveEvent(j["groupid"], j["botid"]));
-                    break;
-                case eventTypes::MemberJoinRequestEvent: {
-                    std::optional<Group> a;
-                    std::optional<Member> b;
-                    Contact temp = Contact::deserialize(j["group"]);
-                    if (temp.id() == 0)
-                        a = std::nullopt;
-                    else
-                        a = Group(temp);
-                    temp = Contact::deserialize(j["inviter"]);
-                    if (temp.id() == 0)
-                        b = std::nullopt;
-                    else
-                        b = Member(temp);
-                    Event::broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requester"], j["requestData"]));
-                    break;
-                }
-                case eventTypes::MessagePreSendEvent: {
-                    Event::broadcast(MessagePreSendEvent(Contact::deserialize(j["target"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false), j["botid"]));
-                    break;
-                }
-                case eventTypes::Command: {
-                    // command
-                    std::optional<Contact> c = std::nullopt;
-                    if (j.contains("contact")) c = Contact::deserialize(j["contact"]);
-                    CommandManager::commandManager[j["bindId"]]->onCommand(c, Bot(j["botid"]), MessageChain::deserializationFromMessageSourceJson((j.contains("message") ? j["message"].get<std::string>() : ""), false));
-                    break;
-                }
-                default:
-                    throw APIException("Unreachable code", MIRAICP_EXCEPTION_WHERE);
-            }
-        } catch (json::type_error &e) {
-            Logger::logger.error("json格式化异常,位置C-Handle");
-            Logger::logger.error(e.what());
-            Logger::logger.error("info:", tmp);
-            return Tools::str2jstring("ERROR");
-        } catch (MiraiCPExceptionBase &e) {
-            Event::broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(&e));
-            e.raise();
-            return Tools::str2jstring("ERROR");
-        } catch (const std::exception &e) {
-            // 这里如果不catch全部exception就会带崩jvm
-            Logger::logger.error(e.what());
-            Logger::logger.error("info:", tmp);
-            return Tools::str2jstring("ERROR");
-        }
-        return returnNull();
+extern "C" {
+/// 插件开启入口
+void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
+    static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
+    using namespace MiraiCP;
+    MiraiCP::Event::clear();
+
+    LibLoader::LoaderApi::set_loader_apis(&funcs);
+
+    assert(LibLoader::LoaderApi::get_loader_apis() != nullptr);
+
+    try {
+        enrollPlugin();
+        // plugin == nullptr 无插件实例加载
+        if (CPPPlugin::plugin != nullptr)
+            CPPPlugin::plugin->onEnable();
+    } catch (const MiraiCPExceptionBase &e) {
+        e.raise();
+        Logger::logger.info("插件" + MiraiCP::CPPPlugin::config.id + "加载失败");
+        FUNC_EXIT();
+    } catch (...) {
     }
-    // env != null
-    int registerMethods(JNIEnv *env, const char *className, JNINativeMethod *gMethods, int numMethods) {
-        jclass clazz = env->FindClass(className);
-        if (clazz == nullptr) {
-            return JNI_FALSE;
-        }
-        //注册native方法
-        if (env->RegisterNatives(clazz, gMethods, numMethods) < 0) {
-            return JNI_FALSE;
-        }
-        return JNI_TRUE;
-    }
-    JNINativeMethod method_table[]{
-            {(char *) "Verify", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) Verify},
-            {(char *) "Event", (char *) "(Ljava/lang/String;)Ljava/lang/String;", (jstring *) Event},
-            {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;", (jobject *) PluginDisable}};
-} // namespace MiraiCP::JNIApi
-extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
-    JNIEnv *env = nullptr;
-    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-        return JNI_ERR;
-    }
-    assert(env != nullptr);
-    MiraiCP::ThreadManager::gvm = vm;
-    // 注册native方法
-    if (!MiraiCP::JNIApi::registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", MiraiCP::JNIApi::method_table, 3)) {
-        return JNI_ERR;
-    }
-    return JNI_VERSION_1_6;
 }
 
+
+/// 插件结束(也可能是暂时的disable)
+void FUNC_EXIT() {
+    static_assert(std::is_same_v<decltype(&FUNC_EXIT), LibLoader::plugin_func_ptr>);
+
+    using namespace MiraiCP;
+
+    if (CPPPlugin::plugin == nullptr) return;
+
+    CPPPlugin::plugin->onDisable();
+    LibLoader::LoaderApi::reset_loader_apis();
+    CPPPlugin::plugin.reset();
+}
+
+
+/// 消息解析分流
+/// env != null, call from jni
+void FUNC_EVENT(std::string content) {
+    static_assert(std::is_same_v<decltype(&FUNC_EVENT), LibLoader::plugin_event_func_ptr>);
+
+    using namespace MiraiCP;
+    json j;
+    try {
+        j = json::parse(content);
+    } catch (json::parse_error &e) {
+        Logger::logger.error("消息解析分流：格式化json错误");
+        Logger::logger.error("For debug: " + content);
+        Logger::logger.error(e.what());
+        return;
+    }
+    int type = j["type"].get<int>();
+
+    if (type != eventTypes::Command && Event::noRegistered(type)) return;
+    try {
+        Event::incomingEvent(std::move(j), type);
+    } catch (json::type_error &e) {
+        Logger::logger.error("json格式化异常,位置C-Handle");
+        Logger::logger.error(e.what());
+        Logger::logger.error("info:", content);
+    } catch (MiraiCPExceptionBase &e) {
+        Event::broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(&e));
+        e.raise();
+    } catch (const std::exception &e) {
+        // 这里如果不catch全部exception就会带崩jvm
+        Logger::logger.error(e.what());
+        Logger::logger.error("info:", content);
+    }
+}
+
+/// 获取 Plugin Info
+/// 如果未正确定义，插件无法正确加载
+/// 该函数不可调用loader api；因为会在入口函数调用前先调用，loader api未初始化
+const MiraiCP::PluginConfig &PLUGIN_INFO() {
+    static_assert(std::is_same_v<decltype(&PLUGIN_INFO), LibLoader::plugin_info_func_ptr>);
+
+    if (MiraiCP::CPPPlugin::config.id.empty())
+        throw std::exception();
+
+    return MiraiCP::CPPPlugin::config;
+}
+}
 //结束对接JNI接口代码

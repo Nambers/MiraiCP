@@ -127,7 +127,7 @@ namespace MiraiCP {
         void add(const ForwardedNode &a) { this->nodes.push_back(a); }
 
         /// 发送给群或好友或群成员
-        MessageSource sendTo(Contact *c, JNIEnv * = nullptr);
+        MessageSource sendTo(Contact *c);
 
         nlohmann::json nodesToJson();
 

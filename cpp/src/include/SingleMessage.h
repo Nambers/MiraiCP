@@ -186,7 +186,7 @@ namespace MiraiCP {
          * @param botid 所属Botid
          * @return 是否已上传
          */
-        bool isUploaded(QQID botid, JNIEnv *env = nullptr);
+        bool isUploaded(QQID botid);
 
         /*!
         * @brief 从图片builder构造，适用于服务器上已经有的图片，即接收到的
@@ -209,7 +209,7 @@ namespace MiraiCP {
         explicit Image(const SingleMessage &sg);
 
         /// 刷新信息(获取图片下载Url,md5, size)
-        void refreshInfo(JNIEnv *env = nullptr);
+        void refreshInfo();
 
         /// 取图片Mirai码
         std::string toMiraiCode() const override {

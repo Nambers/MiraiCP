@@ -27,9 +27,7 @@ import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.login
-import tech.eritquearcus.miraicp.shared.Command2C
-import tech.eritquearcus.miraicp.shared.PublicShared
-import tech.eritquearcus.miraicp.shared.loadAsCPPLib
+import tech.eritquearcus.miraicp.shared.*
 import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
@@ -49,8 +47,8 @@ object Command {
         "disablePlugin <plugin id>" to "简写disable, 禁用插件, 后面跟插件的名字作为参数, 可用enablePlugin启用, 可能会对程序的速度造成一些影响",
         "enablePlugin <plugin id>" to "简写enable, 启用插件, 后面跟插件的名字作为参数",
         "loadPlugin <plugin path>" to "简写load, 加载某个插件, 后面跟插件的地址作为参数",
-        "removePlugin <plugin id>" to "简写rm, 移除插件但不会取消对dll文件的占用, 后面跟插件的名字作为参数",
-        "reloadPlugin <plugin path>" to "简写reload, 加载某个插件(位于<plugin path>), 如果已经加载则`removePlugin`那个插件, 如果未加载过则效果类似`load`"
+        "unloadPlugin <plugin id>" to "简写unload, 移除插件但不会取消对dll文件的占用, 后面跟插件的名字作为参数",
+        "reloadPlugin <plugin id>" to "简写reload, 重新加载某个插件"
     )
 
     private fun printHelp() {
@@ -119,14 +117,10 @@ object Command {
                 acs.forEach { println(gson.toJson(it)) }
             }
             "pluginList", "pList" -> {
-                PublicShared.cpp.forEach {
-                    it.showInfo()
-                }
+                event(CPPEvent.LibLoaderEvent("PluginList"))
             }
             "disablePluginList", "dList" -> {
-                PublicShared.disablePlugins.forEach {
-                    println(it)
-                }
+                event(CPPEvent.LibLoaderEvent("DisablePluginList"))
             }
             else -> lastOneOrMoreParamOrder(listOf(order))
         }
@@ -136,35 +130,36 @@ object Command {
     private fun login(id: Long) =
         KotlinMain.loginAccount.first { it.id == id && (it.logined == null || it.logined == false) }.login()
 
-    private fun removePlugin(order: String, id: String) {
-        try {
-            PublicShared.cpp.filter {
-                it.config.id == id
-            }.forEach {
-                PublicShared.cpp.remove(it)
-                PublicShared.disablePlugins.contains(id) && PublicShared.disablePlugins.remove(id)
-                info("成功移除(${id})${it.config.name}插件")
-            }
-        } catch (e: NoSuchElementException) {
-            error(order, "已使用的插件列表中没有${id}")
-        }
-    }
+//    private fun removePlugin(order: String, id: String) {
+////        try {
+////            PublicShared.cpp.filter {
+////                it.config.id == id
+////            }.forEach {
+////                PublicShared.cpp.remove(it)
+////                PublicShared.disablePlugins.contains(id) && PublicShared.disablePlugins.remove(id)
+////                info("成功移除(${id})${it.config.name}插件")
+////            }
+////        } catch (e: NoSuchElementException) {
+////            error(order, "已使用的插件列表中没有${id}")
+////        }
+//    }
 
     private fun reload(order: String, path: String) {
-        val file = File(path)
-        if (!file.isFile || !file.exists()) {
-            error(order, "插件(${path})不存在")
-            return
-        }
-        val plugin = file.loadAsCPPLib(emptyList(), true)
-        PublicShared.cpp.filter { it.config.id == plugin.config.id }.apply {
-            if (this.size != 2)
-                PublicShared.logger.warning("重载未找到id为(${plugin.config.id}), 但会继续执行, 效果类似`load`")
-        }.forEach {
-            if (it.libPath == plugin.libPath) return
-            PublicShared.cpp.remove(it)
-            PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
-        }
+        event(CPPEvent.LibLoaderEvent("ReloadPlugin", path))
+//        val file = File(path)
+//        if (!file.isFile || !file.exists()) {
+//            error(order, "插件(${path})不存在")
+//            return
+//        }
+//        val plugin = file.loadAsCPPLib(emptyList(), true)
+//        PublicShared.cpp.filter { it.config.id == plugin.config.id }.apply {
+//            if (this.size != 2)
+//                PublicShared.logger.warning("重载未找到id为(${plugin.config.id}), 但会继续执行, 效果类似`load`")
+//        }.forEach {
+//            if (it.libPath == plugin.libPath) return
+//            PublicShared.cpp.remove(it)
+//            PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
+//        }
     }
 
     private fun oneParamOrder(order: List<String>, re: List<String>) {
@@ -189,30 +184,32 @@ object Command {
                         error(order.joinToString(" "), order[1] + "不是一个有效的文件")
                     }
                     else -> {
-                        f.loadAsCPPLib(emptyList())
+                        event(CPPEvent.LibLoaderEvent("LoadPlugin", f.absolutePath))
                     }
                 }
             }
             "disablePlugin", "disable" -> {
-                try {
-                    PublicShared.cpp.first { it.config.id == order[1] }
-                    (!PublicShared.disablePlugins.contains(order[1])) && PublicShared.disablePlugins.add(order[1])
-                    info("禁用${order[1]}成功")
-                } catch (e: NoSuchElementException) {
-                    error(order.joinToString(" "), "找不到${order[1]}插件, 关闭失败")
-                }
+                event(CPPEvent.LibLoaderEvent("DisablePlugin", order[1]))
+//                try {
+//                    PublicShared.cpp.first { it.config.id == order[1] }
+//                    (!PublicShared.disablePlugins.contains(order[1])) && PublicShared.disablePlugins.add(order[1])
+//                    info("禁用${order[1]}成功")
+//                } catch (e: NoSuchElementException) {
+//                    error(order.joinToString(" "), "找不到${order[1]}插件, 关闭失败")
+//                }
             }
             "enablePlugin", "enable" -> {
-                if (PublicShared.disablePlugins.contains(order[1])) {
-                    PublicShared.disablePlugins.remove(order[1])
-                    info("启用${order[1]}成功")
-                }
+                event(CPPEvent.LibLoaderEvent("EnablePlugin", order[1]))
+//                if (PublicShared.disablePlugins.contains(order[1])) {
+//                    PublicShared.disablePlugins.remove(order[1])
+//                    info("启用${order[1]}成功")
+//                }
             }
-            "removePlugin", "rm" -> {
-                removePlugin(order.joinToString(" "), order[1])
+            "unloadPlugin", "unload" -> {
+                event(CPPEvent.LibLoaderEvent("UnloadPlugin", order[1]))
             }
             "reloadPlugin", "reload" -> {
-                reload(order.joinToString(" "), order[1])
+                event(CPPEvent.LibLoaderEvent("ReloadPlugin", order[1]))
             }
             else -> lastOneOrMoreParamOrder(re)
         }
@@ -232,7 +229,7 @@ object Command {
                     it.bid
                 )
             )
-            PublicShared.cpp[it.pid].Event(tmp)
+            CPPLib.Event(tmp)
             return true
         }
         return false
