@@ -19,8 +19,10 @@
 #include "PluginConfig.h"
 #include "PluginListImplements.h"
 #include "libOpen.h"
-#include <future>
-#include <queue>
+// for std::setw
+#include <iomanip>
+// for ostringstream
+#include <sstream>
 #include <string>
 
 
@@ -42,17 +44,47 @@ namespace LibLoader {
         return ans;
     }
 
+    void CASStrong(short &a, short b) {
+        if (a < b) a = b;
+    }
+
     std::string PluginListManager::pluginListInfo(const std::function<bool(LoaderPluginConfig *)> &filter) {
         std::lock_guard lk(pluginlist_mtx);
-        std::string ans;
-        ans = "\nid\tname\tauthor\tdescription\n";
+        std::vector<std::string> ans = {"id", "name", "author", "description", "\n"};
+        short charNum[4] = {2 + 1, 4 + 1, 6 + 1, 11 + 1};
         for (auto &&[k, v]: id_plugin_list) {
             if (filter(v.get())) {
                 auto tmp = v->config();
-                ans += tmp.id + "\t" + tmp.name + "\t" + tmp.author + "\t" + tmp.description + "\n";
+                CASStrong(charNum[0], tmp.id.size() + 1);
+                CASStrong(charNum[1], tmp.name.size() + 1);
+                CASStrong(charNum[2], tmp.author.size() + 1);
+                CASStrong(charNum[3], tmp.description.size() + 1);
+                ans.emplace_back(tmp.id);
+                ans.emplace_back(tmp.name);
+                ans.emplace_back(tmp.author);
+                ans.emplace_back(tmp.description);
+                ans.emplace_back("\n");
             }
         }
-        return ans;
+        std::ostringstream ansStr;
+        ansStr << std::setiosflags(std::ios::left) << "\n";
+        short index = 0;
+        for (const auto &a: ans) {
+            if (index == 0) ansStr << '|';
+            if (a != "\n") {
+                ansStr << std::setfill(' ') << std::setw(charNum[index]) << a;
+                ansStr << '|';
+            } else {
+                ansStr << "\n";
+            }
+            index++;
+            if (index == 5) {
+                index = 0;
+                ansStr << std::setw(charNum[0] + charNum[1] + charNum[2] + charNum[3] + 4 + 1) << std::setfill('-') << "";
+                ansStr << "\n";
+            }
+        }
+        return ansStr.str();
     }
 
     std::vector<std::string> PluginListManager::getAllPluginPath() {
