@@ -6,5 +6,6 @@ x64
 cache
 selenium
 cmake-build-debug/
+cmake-build-release/
 out
 CMakeFiles
