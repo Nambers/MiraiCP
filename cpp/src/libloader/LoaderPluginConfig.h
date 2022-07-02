@@ -19,7 +19,6 @@
 
 
 #include "commonTypes.h"
-#include <string>
 
 namespace LibLoader {
     enum PluginAuthority {

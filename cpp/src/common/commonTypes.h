@@ -21,7 +21,6 @@
 
 #include "PluginConfig.h"
 #include "loaderApi.h"
-#include <unordered_map>
 
 
 #define FUNC_ENTRANCE FUNC_ENTRANCE
@@ -33,7 +32,7 @@
 namespace LibLoader {
     typedef void *plugin_handle;
     /// @see @macro FUNC_ENTRANCE
-    typedef void (*plugin_entrance_func_ptr)(std::string, const LoaderApi::interface_funcs &);
+    typedef void (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
     /// @see @macro FUNC_EVENT
     typedef void (*plugin_event_func_ptr)(const std::string);
     /// @see @macro FUNC_EXIT

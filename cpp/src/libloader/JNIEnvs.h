@@ -19,7 +19,6 @@
 
 
 #include "JNIEnvManager.h"
-#include <jni.h>
 
 namespace LibLoader::JNIEnvs {
     extern jclass volatile Class_cpplib;

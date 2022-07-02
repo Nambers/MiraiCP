@@ -20,8 +20,6 @@
 
 #include "LoaderPluginConfig.h"
 #include "commonTypes.h"
-#include <functional>
-#include <jni.h>
 #include <mutex>
 
 

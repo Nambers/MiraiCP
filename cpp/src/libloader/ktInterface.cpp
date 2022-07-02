@@ -18,18 +18,13 @@
 
 
 #include "ktInterface.h"
-#include "JNIEnvManager.h"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
-#include "commonTypes.h"
 #include "eventHandle.h"
 #include "loaderMain.h"
 #include "loaderTools.h"
-#include <exception>
-#include <future>
-#include <json.hpp>
 
 
 namespace LibLoader {
@@ -52,7 +47,7 @@ jobject Verify(JNIEnv *, jobject, jstring _version, jstring _cfgPath) {
     LibLoader::logger.info("⭐libLoader 版本: " + MiraiCP::MiraiCPVersion);
     auto version = "v" + LibLoader::jstring2str(_version);
     if (version != MiraiCP::MiraiCPVersion) {
-        LibLoader::logger.warning("libLoader(" + MiraiCP::MiraiCPVersion + ")版本和MiraiCP启动器(" + version + ")不符合, 建议更新至最新");
+        LibLoader::logger.warning("libLoader(" + MiraiCP::MiraiCPVersion + ")版本和MiraiCP启动器(" + version + ")不一致, 建议更新至最新");
     }
 
     // 测试有效的插件

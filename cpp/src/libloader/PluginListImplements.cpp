@@ -23,8 +23,6 @@
 #include "ThreadController.h"
 #include "libOpen.h"
 #include "loaderTools.h"
-#include <future>
-#include <jni.h>
 
 #ifdef WIN32
 #include <direct.h>
@@ -51,11 +49,11 @@ namespace LibLoader {
     constexpr static LoaderApi::interface_funcs normal_interfaces = LoaderApi::collect_interface_functions(false);
 
     void callEntranceFuncAdmin(plugin_entrance_func_ptr func) {
-        func(MiraiCP::MiraiCPVersion, interfaces);
+        func(interfaces);
     }
 
     void callEntranceFuncNormal(plugin_entrance_func_ptr func) {
-        func(MiraiCP::MiraiCPVersion, normal_interfaces);
+        func(normal_interfaces);
     }
 
     /// 测试符号存在性，并返回event func的地址。return {nullptr, nullptr} 代表符号测试未通过，
@@ -98,7 +96,9 @@ namespace LibLoader {
         }
 
         auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
-
+        if (plugin.config()._MVersion != MiraiCP::MiraiCPVersion) {
+            LibLoader::logger.warning("MiraiCP依赖库版本(" + plugin.config()._MVersion + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
+        }
         // 注意：plugin虽然被分配在一个固定地址（map中的值是shared_ptr，内部的 LoaderPluginConfig 不会被复制），
         // 但这里引用plugin地址的话，当shared_ptr在某个线程中被释放掉，还是可能会产生段错误
         // 因为我们无法保证getController().addThread()一定会把提交的这个函数在plugin被销毁前处理掉，

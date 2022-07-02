@@ -15,7 +15,6 @@
 //
 
 #include "JNIEnvs.h"
-#include "JNIEnvManager.h"
 #include "LoaderLogger.h"
 
 
