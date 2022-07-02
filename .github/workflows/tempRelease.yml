@@ -117,11 +117,11 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: libLoaderdll
-        path: ./tr/${{ github.event.inputs.v }}/libLoader.dll
+        path: ./tr/${{ github.event.inputs.v }}/
     - uses: actions/download-artifact@v3
       with:
         name: libLoaderso
-        path: ./tr/${{ github.event.inputs.v }}/libLoader.so
+        path: ./tr/${{ github.event.inputs.v }}/
     - name: mv
       run: mv ./tr/.git/ ./.git
     - name: Push
