@@ -14,7 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// todo(Antares): 迁移到libloader
 
 #ifndef MIRAICP_PRO_JNIENVMANAGER_H
 #define MIRAICP_PRO_JNIENVMANAGER_H
