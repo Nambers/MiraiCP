@@ -45,6 +45,10 @@ namespace MiraiCP {
     inline void enrollPlugin(CPPPlugin *p) {
         CPPPlugin::plugin.reset(p);
     }
+
+    [[deprecated("use enrollPlugin instead")]] inline void enrollPlugin0(CPPPlugin *p) {
+        enrollPlugin(p);
+    }
 } // namespace MiraiCP
 
 

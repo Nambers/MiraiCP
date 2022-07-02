@@ -51,7 +51,6 @@ namespace MiraiCP {
         typedef std::function<void(string, int)> Action;
 
         /// @brief loggerhandler会在每次log执行前执行一遍，可用于执行自定义的保存操作等
-        // todo(Antares): 这个东西似乎没用到？如果是类似于handle那样的东西建议用register event那里一样的方法来处理
         struct Handler {
             /// @brief 是否启用
             bool enable = true;
