@@ -23,15 +23,8 @@
 #include "ThreadController.h"
 #include "libOpen.h"
 #include "loaderTools.h"
-
 #ifdef WIN32
-#include <direct.h>
-std::string current_working_directory() {
-    char *cwd = _getcwd(nullptr, 0); // **** microsoft specific ****
-    std::string working_directory(cwd);
-    std::free(cwd);
-    return working_directory;
-}
+#include <filesystem>
 #endif
 
 namespace LibLoader {
@@ -136,16 +129,17 @@ namespace LibLoader {
             return;
         }
 #ifdef WIN32
-        plugin.actualPath = current_working_directory() + "\\cache\\cache_" + std::to_string(std::hash<std::string>()(plugin.path)) + ".dll";
-        std::ifstream src(plugin.path, std::ios::binary);
-        if(!src.fail()){
-            std::ofstream dst(plugin.actualPath, std::ios::binary);
-            dst << src.rdbuf();
-            dst.close();
-        }else{
-            logger.error("input file stream fail to open:" + plugin.path);
+        auto from = std::filesystem::path(plugin.path);
+        if (!exists(from) || !from.has_extension()) {
+            logger.error("path don't exist or invalid " + plugin.path);
         }
-        src.close();
+        auto actualFile = std::filesystem::temp_directory_path().append(std::to_string(std::hash<std::string>()(plugin.path)) + ".dll");
+        plugin.actualPath = actualFile.string();
+        try {
+            std::filesystem::copy(plugin.path, actualFile, std::filesystem::copy_options::overwrite_existing);
+        } catch (std::filesystem::filesystem_error &e) {
+            logger.error("无法复制dll(" + plugin.path + ")到缓存目录, 原因: " + e.what());
+        }
 #endif
 
         auto handle = LoaderApi::libOpen(plugin.actualPath);
@@ -182,9 +176,13 @@ namespace LibLoader {
         // then unload it
         LoaderApi::libClose(plugin.handle);
 #ifdef WIN32
-        auto s = DeleteFile(TEXT(plugin.actualPath.c_str()));
-        if (!s)
-            LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + std::to_string(GetLastError()));
+        try {
+            auto s = std::filesystem::remove(std::filesystem::path(plugin.actualPath));
+            if (!s)
+                LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath);
+        } catch (std::filesystem::filesystem_error &e) {
+            LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + e.what());
+        }
 #endif
         plugin.unload();
     }
