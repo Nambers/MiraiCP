@@ -15,10 +15,8 @@
 //
 
 #include "eventHandle.h"
-#include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "PluginListManager.h"
-#include <json.hpp>
 
 
 namespace LibLoader {

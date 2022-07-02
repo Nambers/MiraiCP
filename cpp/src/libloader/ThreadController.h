@@ -19,13 +19,9 @@
 
 
 #include "commonTypes.h"
-#include <functional>
-#include <memory>
 #include <mutex>
 #include <queue>
 #include <thread>
-#include <utility>
-#include <vector>
 
 
 // multi thread controller

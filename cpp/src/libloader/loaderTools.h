@@ -20,13 +20,8 @@
 
 #include "LoaderPluginConfig.h"
 #include <fstream>
-#include <jni.h>
-#include <json.hpp>
-#include <memory>
-#include <mutex>
 #include <string>
 #include <thread>
-#include <vector>
 
 
 namespace LibLoader {

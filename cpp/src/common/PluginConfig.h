@@ -37,6 +37,8 @@ namespace MiraiCP {
         /// @brief [optional]构建时间, 默认为__DATE__宏
         std::string time = __DATE__;
 
+        const std::string _MVersion = MiraiCPVersion;
+
         nlohmann::json serialize();
 
         std::string serialize2string();

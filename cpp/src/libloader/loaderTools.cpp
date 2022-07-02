@@ -17,7 +17,6 @@
 #include "loaderTools.h"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
-#include <json.hpp>
 #include <utf8.h>
 
 

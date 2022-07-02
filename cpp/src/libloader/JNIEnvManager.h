@@ -22,16 +22,9 @@
 #include <functional>
 #include <jni.h>
 #include <mutex>
-#include <sstream>
 #include <thread>
-#include <unordered_map>
 
 
-/*!
-    * @class JNIEnvManager
-    * @brief 多线程JNIEnv管理.
-    * @doxygenEg{1016, thread.cpp, 多线程}
-    */
 class JNIEnvManager {
     typedef std::thread::id threadid;
 

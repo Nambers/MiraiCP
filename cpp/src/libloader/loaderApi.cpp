@@ -15,14 +15,12 @@
 //
 
 #include "loaderApi.h"
-#include "JNIEnvManager.h"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
 #include "PluginListManager.h"
 #include "loaderTools.h"
 #include <mutex>
-#include <queue>
 
 
 namespace LibLoader {

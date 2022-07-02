@@ -36,7 +36,7 @@ namespace LibLoader::LoaderApi {
 
 extern "C" {
 /// 插件开启入口
-void FUNC_ENTRANCE(std::string version, const LibLoader::LoaderApi::interface_funcs &funcs) {
+void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
     static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
     using namespace MiraiCP;
     Event::clear();
@@ -44,9 +44,6 @@ void FUNC_ENTRANCE(std::string version, const LibLoader::LoaderApi::interface_fu
     LibLoader::LoaderApi::set_loader_apis(&funcs);
 
     assert(LibLoader::LoaderApi::get_loader_apis() != nullptr);
-    if (version != MiraiCPVersion) {
-        Logger::logger.warning("MiraiCP依赖库版本(" + MiraiCPVersion + ")和libLoader版本(" + version + ")不一致, 建议更新到最新");
-    }
 
     try {
         enrollPlugin();
