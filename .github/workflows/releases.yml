@@ -155,11 +155,11 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: libLoaderdll
-        path: ./libLoader.dll
+        path: ./
     - uses: actions/download-artifact@v3
       with:
         name: libLoaderso
-        path: ./libLoader.so
+        path: ./
     - name: Create Release
       uses: ncipollo/release-action@v1.8.6
       with:
