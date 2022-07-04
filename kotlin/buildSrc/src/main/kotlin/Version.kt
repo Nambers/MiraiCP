@@ -19,10 +19,10 @@
 object Version {
     const val kotlin = "1.6.21"
     const val `kotlinx-serialization-json` = "1.3.2"
-    const val `kotlinx-coroutines-core` = "1.6.0"
+    const val `kotlinx-coroutines-core` = "1.6.1"
 
-    const val mirai = "2.11.0"
-    const val miraiCP = "2.11.0"
+    const val mirai = "2.12.0"
+    const val miraiCP = "2.12.0-RC"
 
     const val shadowJar = "7.1.1"
     const val mavenCenterPublish = "1.0.0-dev-1"
