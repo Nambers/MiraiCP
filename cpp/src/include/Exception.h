@@ -20,6 +20,7 @@
 #include "CPPPlugin.h"
 #include <exception>
 #include <string>
+#include <thread>
 
 namespace MiraiCP {
     /// @brief 总异常抽象类，用于一般捕获，不要直接抛出该类，不知道抛出什么的时候请抛出 MiraiCPException
@@ -276,6 +277,26 @@ namespace MiraiCP {
         explicit PluginNotEnabledException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("插件" + CPPPlugin::config.id + "未加载", std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "PluginNotEnabledException"; }
+    };
+
+    /// 如果在 MiraiCPNewThread 中捕获到了非 MiraiCP 之外的异常抛出
+    /// @see MiraiCPNewThread
+    class NewThreadException : public MiraiCPExceptionCRTP<NewThreadException> {
+    private:
+        static std::string getThreadIdStr(const std::thread::id &id) {
+            std::stringstream ss;
+            ss << id;
+            return ss.str();
+        }
+
+    public:
+        /// 抛出异常的线程 ID
+        std::thread::id threadId;
+
+        std::string getThreadIdStr() { return getThreadIdStr(threadId); }
+
+        explicit NewThreadException(const std::thread::id &threadId, string _filename, int _lineNum) : MiraiCPExceptionCRTP("threadId=" + getThreadIdStr(threadId), std::move(_filename), _lineNum), threadId(threadId) {}
+        static string exceptionType() { return "NewThreadException"; }
     };
 
     inline void ErrorHandle0(const std::string &name, int line, const std::string &re, const std::string &ErrorMsg = "") {
