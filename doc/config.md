@@ -70,7 +70,8 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 - `protocol` 登录协议选择, 可选: pad/phone/watch/ipad (默认为phone), 详细查看[mirai文档](https://github.com/mamoe/mirai/blob/dev/docs/Bots.md#%E5%88%87%E6%8D%A2%E7%99%BB%E5%BD%95%E5%8D%8F%E8%AE%AE)
 
 ### 1.2 cppPaths
-`cppPaths` 该元素类型为列表, 里面包含你全部要加载的插件(会自动在启动时加载全部), 如:
+`cppPaths` 该元素类型为列表，里面包含你全部要加载的插件（会自动在启动时加载全部）以及该插件对应的权限（权限只有0和非0两种，0表示普通权限，非0表示该插件有管理自身及其他插件的权限，包括重载、卸载插件等功能。不填该项默认为0），如：
+
 ```json
 {
   "accounts": [{
@@ -79,7 +80,8 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
   }],
   "cppPaths":[
 	{
-	  "path":"<dll1 路径>"
+	  "path":"<dll1 路径>",
+        "authority":1
 	},
   {
     "path": "<dll2 路径>"
@@ -92,16 +94,6 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 ```json
 {
   "path": "<dll 路径>"
-}
-```
-除了最基本的路径, 也可以设置依赖dll的路径(在报错 `cannot find dependences` 的时候可以试一下把依赖加进来):
-```json
-{
-  "path": "<dll 路径>",
-  "dependencies": [
-    "<依赖的dll1>",
-    "<依赖的dll2>"
-  ]
 }
 ```
 模板代码见[Config.kt#L132](https://github.com/Nambers/MiraiCP/blob/master/kotlin/shared/src/main/kotlin/Config.kt#L132)
