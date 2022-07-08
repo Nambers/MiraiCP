@@ -16,33 +16,52 @@
 
 #ifndef MIRAICP_PRO_MIRAICPNEWTHREAD_H
 #define MIRAICP_PRO_MIRAICPNEWTHREAD_H
+
+
 #include "Event.h"
 #include "Exception.h"
 #include <ostream>
 #include <thread>
+
+
 namespace MiraiCP {
+    /// MiraiCP 对 std::thread 的封装
     class MiraiCPNewThread : public std::thread {
     public:
-        template<typename... Args>
-        explicit MiraiCPNewThread(Args &&...args) {
-            MiraiCPNewThread(std::forward<Args>(args)...);
-        }
+        MiraiCPNewThread() noexcept = default;
+
         template<typename Callable, typename... Args>
-        explicit MiraiCPNewThread(Callable &&func, Args &&...args) : std::thread([func, this](Args &&...argss) {
-                                                                         try {
-                                                                             func(argss...);
-                                                                         } catch (MiraiCPExceptionBase &e) {
-                                                                             Event::broadcast(MiraiCPExceptionEvent(&e));
-                                                                         } catch (std::exception &) {
-                                                                             // todo 传入 exception
-                                                                             NewThreadException e(get_id(), MIRAICP_EXCEPTION_WHERE);
-                                                                             Event::broadcast(MiraiCPExceptionEvent(&e));
-                                                                         } catch (...) {
-                                                                             NewThreadException e(get_id(), MIRAICP_EXCEPTION_WHERE);
-                                                                             Event::broadcast(MiraiCPExceptionEvent(&e));
-                                                                         }
-                                                                     },
-                                                                                 std::forward<Args>(args)...) {}
+        explicit MiraiCPNewThread(Callable &&func, Args &&...args)
+            : std::thread(
+                      [lambda_func = std::forward<Callable>(func)](auto &&...argss) {
+                          try {
+                              lambda_func(std::forward<std::remove_cv_t<decltype(argss)>>(argss)...);
+                          } catch (MiraiCPExceptionBase &e) {
+                              Event::broadcast(MiraiCPExceptionEvent(&e));
+                          } catch (const std::exception &e) {
+                              MiraiCPThreadException exNew(std::string(e.what()), std::this_thread::get_id(), MIRAICP_EXCEPTION_WHERE);
+                              Event::broadcast(MiraiCPExceptionEvent(&exNew));
+                          } catch (...) {
+                              MiraiCPThreadException exNew("unknown exception type", std::this_thread::get_id(), MIRAICP_EXCEPTION_WHERE);
+                              Event::broadcast(MiraiCPExceptionEvent(&exNew));
+                          }
+                      },
+                      std::forward<Args>(args)...) {}
+
+        MiraiCPNewThread &operator=(const std::thread &) = delete;
+        MiraiCPNewThread &operator=(const MiraiCPNewThread &) = delete;
+
+        MiraiCPNewThread &operator=(std::thread &&other) {
+            *static_cast<std::thread *>(this) = std::move(other);
+            return *this;
+        }
+
+        MiraiCPNewThread &operator=(MiraiCPNewThread &&other) {
+            *static_cast<std::thread *>(this) = std::move(*static_cast<std::thread *>(&other));
+            return *this;
+        }
     };
+
 } // namespace MiraiCP
+
 #endif //MIRAICP_PRO_MIRAICPNEWTHREAD_H

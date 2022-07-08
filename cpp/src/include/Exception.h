@@ -281,22 +281,28 @@ namespace MiraiCP {
 
     /// 如果在 MiraiCPNewThread 中捕获到了非 MiraiCP 之外的异常抛出
     /// @see MiraiCPNewThread
-    class NewThreadException : public MiraiCPExceptionCRTP<NewThreadException> {
+    class MiraiCPThreadException : public MiraiCPExceptionCRTP<MiraiCPThreadException> {
+    public:
+        /// 抛出异常的线程 ID
+        std::thread::id threadId;
+
+    public:
+        explicit MiraiCPThreadException(const std::string &exception_content, std::thread::id threadId, string _filename, int _lineNum)
+            : MiraiCPExceptionCRTP(exception_content + " at threadId: " + getThreadIdStr(threadId), std::move(_filename), _lineNum),
+              threadId(threadId) {}
+
+    public:
+        std::string getThreadIdStr() const { return getThreadIdStr(threadId); }
+
+    public:
+        static string exceptionType() { return "MiraiCPThreadException"; }
+
     private:
         static std::string getThreadIdStr(const std::thread::id &id) {
             std::stringstream ss;
             ss << id;
             return ss.str();
         }
-
-    public:
-        /// 抛出异常的线程 ID
-        std::thread::id threadId;
-
-        std::string getThreadIdStr() { return getThreadIdStr(threadId); }
-
-        explicit NewThreadException(const std::thread::id &threadId, string _filename, int _lineNum) : MiraiCPExceptionCRTP("threadId=" + getThreadIdStr(threadId), std::move(_filename), _lineNum), threadId(threadId) {}
-        static string exceptionType() { return "NewThreadException"; }
     };
 
     inline void ErrorHandle0(const std::string &name, int line, const std::string &re, const std::string &ErrorMsg = "") {
