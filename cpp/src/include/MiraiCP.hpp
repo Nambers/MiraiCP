@@ -1,4 +1,4 @@
-// Copyright (c) 2021 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -17,10 +17,6 @@
 #define MIRAICP_HPP_H
 
 
-#include "../common/PluginConfig.h"
-#include "../common/commonTools.h"
-#include "../common/commonTypes.h"
-#include "../common/loaderApi.h"
 #include "Bot.h"
 #include "CPPPlugin.h"
 #include "Command.h"
@@ -42,5 +38,9 @@
 #include "SingleMessage.h"
 #include "Tools.h"
 #include "utils.h"
+#include "../common/PluginConfig.h"
+#include "../common/commonTools.h"
+#include "../common/commonTypes.h"
+#include "../common/loaderApi.h"
 
 #endif //MIRAICP_HPP_H

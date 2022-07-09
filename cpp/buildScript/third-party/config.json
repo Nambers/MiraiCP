@@ -21,6 +21,7 @@
         "include/Member.h",
         "include/MessageChain.h",
         "include/MessageSource.h",
+        "include/MiraiCPNewThread.h",
         "include/MiraiCode.h",
         "include/MiraiDefs.h",
         "include/SingleMessage.h",
