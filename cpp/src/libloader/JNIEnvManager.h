@@ -50,7 +50,6 @@ private:
     static threadid getThreadId() { return std::this_thread::get_id(); }
 
 public:
-    static JNIEnv *(*getEnvMethod)();
     static void setGvm(JavaVM *_gvm) { gvm = _gvm; }
 
     static JavaVM *&getGvm() { return gvm; }

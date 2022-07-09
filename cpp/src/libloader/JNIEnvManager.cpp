@@ -20,7 +20,6 @@
 std::unordered_map<JNIEnvManager::threadid, JNIEnvManager::ThreadInfo> JNIEnvManager::threadJNIEnvs;
 std::recursive_mutex JNIEnvManager::mtx;
 JavaVM *JNIEnvManager::gvm = nullptr;
-JNIEnv *(*JNIEnvManager::getEnvMethod)() = nullptr;
 
 
 JNIEnv *JNIEnvManager::newEnv() {
@@ -42,7 +41,6 @@ void JNIEnvManager::setEnv(JNIEnv *e) {
 }
 
 JNIEnv *JNIEnvManager::getEnv() {
-    if (getEnvMethod != nullptr) return getEnvMethod();
     JNIEnv *tmp;
     {
         std::lock_guard lk(mtx);
