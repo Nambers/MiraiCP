@@ -35,7 +35,7 @@ namespace MiraiCP {
             : std::thread(
                       [lambda_func = std::forward<Callable>(func)](auto &&...argss) {
                           try {
-                              lambda_func(std::forward<std::remove_cv_t<decltype(argss)>>(argss)...);
+                              lambda_func(std::forward<decltype(argss)>(argss)...);
                           } catch (MiraiCPExceptionBase &e) {
                               Event::broadcast(MiraiCPExceptionEvent(&e));
                           } catch (const std::exception &e) {
