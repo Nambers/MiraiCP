@@ -717,7 +717,7 @@ namespace MiraiCP {
 
         /// 清空全部配置
         static void clear(){
-            processor = Event();
+            processor._all_events_.clear();
         }
 
         static void incomingEvent(nlohmann::json j, int type);
