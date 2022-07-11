@@ -132,6 +132,7 @@ namespace LibLoader {
         auto from = std::filesystem::path(plugin.path);
         if (!exists(from) || !from.has_extension()) {
             logger.error("path don't exist or invalid " + plugin.path);
+            return;
         }
         auto actualFile = std::filesystem::temp_directory_path().append(std::to_string(std::hash<std::string>()(plugin.path)) + ".dll");
         plugin.actualPath = actualFile.string();

@@ -31,9 +31,8 @@ import org.fusesource.jansi.Ansi
 import java.io.Serializable
 
 @Plugin(name = "Jline3Appender", category = "Core", elementType = "appender", printObject = true)
-class Jline3AppenderImpl protected constructor(
-    name: String, filter: Filter?,
-    layout: Layout<Serializable>, ignoreExceptions: Boolean
+class Jline3AppenderImpl private constructor(
+    name: String, filter: Filter?, layout: Layout<Serializable>, ignoreExceptions: Boolean
 ) : AbstractAppender(name, filter, layout, ignoreExceptions, null) {
 
     override fun append(event: LogEvent) {
@@ -50,7 +49,7 @@ class Jline3AppenderImpl protected constructor(
             @PluginElement("Filter") filter: Filter?
         ): Jline3AppenderImpl? {
             if (name == null) {
-                AbstractLifeCycle.LOGGER.error("No name provided for MyCustomAppenderImpl")
+                AbstractLifeCycle.LOGGER.error("No name provided for Loader logger AppenderImpl")
                 return null
             }
             return Jline3AppenderImpl(name, filter, layout, true)
