@@ -68,6 +68,7 @@ namespace LibLoader {
 
     public: // unload
         static void unloadById(const std::string &);
+        static void unloadWhenException(const std::string &);
 
     public: // reload
         static void reloadAllPlugin();
@@ -82,7 +83,7 @@ namespace LibLoader {
         static void disableById(const std::string &);
 
     public:
-        static void run_over_pluginlist(const std::function<void(LoaderPluginConfig &)> &f);
+        static void run_over_pluginlist(const std::function<void(const LoaderPluginConfig &)> &f);
     };
 } // namespace LibLoader
 
