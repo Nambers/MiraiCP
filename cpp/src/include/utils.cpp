@@ -39,14 +39,13 @@ extern "C" {
 void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
     static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
     using namespace MiraiCP;
+
     Event::clear();
-
     LibLoader::LoaderApi::set_loader_apis(&funcs);
-
     assert(LibLoader::LoaderApi::get_loader_apis() != nullptr);
+    Logger::logger.info("开始启动插件: " + MiraiCP::CPPPlugin::config.id);
 
     try {
-        Logger::logger.info("开始启动插件：" + MiraiCP::CPPPlugin::config.id);
         enrollPlugin();
         // plugin == nullptr 无插件实例加载
         if (CPPPlugin::plugin != nullptr) {
@@ -54,9 +53,11 @@ void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
         }
     } catch (const MiraiCPExceptionBase &e) {
         e.raise();
-        Logger::logger.info("插件" + MiraiCP::CPPPlugin::config.id + "启动失败");
-        FUNC_EXIT();
+        Logger::logger.info("插件(id=" + CPPPlugin::config.id + ", name=" + CPPPlugin::config.name + ")启动失败");
+        throw APIException(e.what(), e.filename, e.lineNum);
     } catch (...) {
+        Logger::logger.info("插件(id=" + CPPPlugin::config.id + ", name=" + CPPPlugin::config.name + ")启动失败");
+        throw APIException("", MIRAICP_EXCEPTION_WHERE);
     }
 }
 

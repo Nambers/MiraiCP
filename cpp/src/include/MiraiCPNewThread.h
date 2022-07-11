@@ -37,9 +37,11 @@ namespace MiraiCP {
                           try {
                               lambda_func(std::forward<decltype(argss)>(argss)...);
                           } catch (MiraiCPExceptionBase &e) {
+                              e.raise();
                               Event::broadcast(MiraiCPExceptionEvent(&e));
                           } catch (const std::exception &e) {
                               MiraiCPThreadException exNew(std::string(e.what()), std::this_thread::get_id(), MIRAICP_EXCEPTION_WHERE);
+                              exNew.raise();
                               Event::broadcast(MiraiCPExceptionEvent(&exNew));
                           } catch (...) {
                               MiraiCPThreadException exNew("unknown exception type", std::this_thread::get_id(), MIRAICP_EXCEPTION_WHERE);
