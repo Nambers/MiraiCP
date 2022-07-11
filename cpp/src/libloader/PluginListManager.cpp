@@ -19,10 +19,7 @@
 #include "PluginConfig.h"
 #include "PluginListImplements.h"
 #include "libOpen.h"
-// for std::setw
-#include <iomanip>
-// for ostringstream
-#include <sstream>
+#include "loaderTools.h"
 #include <string>
 
 
@@ -44,47 +41,16 @@ namespace LibLoader {
         return ans;
     }
 
-    void CASStrong(short &a, short b) {
-        if (a < b) a = b;
-    }
-
     std::string PluginListManager::pluginListInfo(const std::function<bool(const LoaderPluginConfig &)> &filter) {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans = {"id", "name", "author", "description", "\n"};
-        short charNum[4] = {2 + 1, 4 + 1, 6 + 1, 11 + 1};
+        int charNum[4] = {2 + 1, 4 + 1, 6 + 1, 11 + 1};
         for (auto &&[k, v]: id_plugin_list) {
             if (filter(*v)) {
-                auto tmp = v->config();
-                CASStrong(charNum[0], tmp.id.size() + 1);
-                CASStrong(charNum[1], tmp.name.size() + 1);
-                CASStrong(charNum[2], tmp.author.size() + 1);
-                CASStrong(charNum[3], tmp.description.size() + 1);
-                ans.emplace_back(tmp.id);
-                ans.emplace_back(tmp.name);
-                ans.emplace_back(tmp.author);
-                ans.emplace_back(tmp.description);
-                ans.emplace_back("\n");
+                FormatPluginListInfo(v->config(), charNum, ans);
             }
         }
-        std::ostringstream ansStr;
-        ansStr << std::setiosflags(std::ios::left) << "\n";
-        short index = 0;
-        for (const auto &a: ans) {
-            if (index == 0) ansStr << '|';
-            if (a != "\n") {
-                ansStr << std::setfill(' ') << std::setw(charNum[index]) << a;
-                ansStr << '|';
-            } else {
-                ansStr << "\n";
-            }
-            index++;
-            if (index == 5) {
-                index = 0;
-                ansStr << std::setw(charNum[0] + charNum[1] + charNum[2] + charNum[3] + 4 + 1) << std::setfill('-') << "";
-                ansStr << "\n";
-            }
-        }
-        return ansStr.str();
+        return PluginInfoStream(ans, charNum);
     }
 
     std::vector<std::string> PluginListManager::getAllPluginPath() {

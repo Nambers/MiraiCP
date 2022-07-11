@@ -18,6 +18,10 @@
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include <utf8.h>
+// for std::setw
+#include <iomanip>
+// for ostringstream
+#include <sstream>
 
 
 namespace LibLoader {
@@ -79,5 +83,39 @@ namespace LibLoader {
             c[i] = utf16line[i];
         }
         return JNIEnvs::getEnv()->NewString((jchar *) c, (jsize) utf16line.size());
+    }
+
+    void FormatPluginListInfo(const MiraiCP::PluginConfig &plugin_config, int *charNum, std::vector<std::string> &out) {
+        CASStrong(charNum[0], plugin_config.id.size() + 1);
+        CASStrong(charNum[1], plugin_config.name.size() + 1);
+        CASStrong(charNum[2], plugin_config.author.size() + 1);
+        CASStrong(charNum[3], plugin_config.description.size() + 1);
+        out.emplace_back(plugin_config.id);
+        out.emplace_back(plugin_config.name);
+        out.emplace_back(plugin_config.author);
+        out.emplace_back(plugin_config.description);
+        out.emplace_back("\n");
+    }
+
+    std::string PluginInfoStream(const std::vector<std::string> &plugin_info, int *charNum) {
+        std::ostringstream out;
+        out << std::setiosflags(std::ios::left) << "\n";
+        int index = 0;
+        for (const auto &one_plugin_info: plugin_info) {
+            if (index == 0) out << '|';
+            if (one_plugin_info != "\n") {
+                out << std::setfill(' ') << std::setw(charNum[index]) << one_plugin_info;
+                out << '|';
+            } else {
+                out << "\n";
+            }
+            index++;
+            if (index == 5) {
+                index = 0;
+                out << std::setw(charNum[0] + charNum[1] + charNum[2] + charNum[3] + 4 + 1) << std::setfill('-') << "";
+                out << "\n";
+            }
+        }
+        return out.str();
     }
 } // namespace LibLoader
