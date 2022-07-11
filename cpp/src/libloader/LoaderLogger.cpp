@@ -18,35 +18,34 @@
 #include "JNIEnvs.h"
 #include "json.hpp"
 #include "loaderTools.h"
-#include <sstream>
 
 
 namespace LibLoader {
     LibLoader::LoaderLogger logger;
 
-    std::string LibLoader::LoaderLogger::vector2string(const std::vector<std::string> &v) {
-        // from https://stackoverflow.com/a/5689061/14646226
-        const char *const delim = "\n";
-        std::ostringstream imploded;
-        std::copy(v.begin(), v.end(),
-                  std::ostream_iterator<std::string>(imploded, delim));
-        return imploded.str();
-    }
+    // std::string LibLoader::LoaderLogger::vector2string(const std::vector<std::string> &v) {
+    //     // from https://stackoverflow.com/a/5689061/14646226
+    //     const char *const delim = "\n";
+    //     std::ostringstream imploded;
+    //     std::copy(v.begin(), v.end(),
+    //               std::ostream_iterator<std::string>(imploded, delim));
+    //     return imploded.str();
+    // }
 
     void LoaderLogger::init() {
         logMethod = JNIEnvs::getEnv()->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");
     }
 
     void LoaderLogger::info(const string &msg) {
-        call_logger(msg, "", -2, 0);
+        call_logger(msg, "MiraiCP/LibLoader", -1, 0);
     }
 
     void LoaderLogger::warning(const string &msg) {
-        call_logger(msg, "", -2, 1);
+        call_logger(msg, "MiraiCP/LibLoader", -1, 1);
     }
 
     void LoaderLogger::error(const string &msg) {
-        call_logger(msg, "", -2, 2);
+        call_logger(msg, "MiraiCP/LibLoader", -1, 2);
     }
 
     void LoaderLogger::call_logger(const string &content, string name, long long id, int level) {

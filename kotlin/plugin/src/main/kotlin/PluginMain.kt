@@ -33,11 +33,11 @@ import java.io.File
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
-        id = "tech.eritquearcus.miraiCP",
-        name = "miraiCP",
+        id = "tech.eritquearcus.miraicp",
+        name = "MiraiCP",
         version = version
     ) {
-        author("Eritque arcus")
+        author("Eritque arcus and other contributors")
     }
 ) {
     @OptIn(MiraiExperimentalApi::class)

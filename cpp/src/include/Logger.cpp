@@ -24,7 +24,7 @@ namespace MiraiCP {
     Logger Logger::logger;
 
     void Logger::log_interface(const std::string &content, int level) {
-        LibLoader::LoaderApi::loggerInterface(content, MiraiCP::CPPPlugin::config.name, -1, level);
+        LibLoader::LoaderApi::loggerInterface(content, "plugin/" + MiraiCP::CPPPlugin::config.name, -1, level);
     }
 
     void IdLogger::log_interface(const std::string &content, int level) {
