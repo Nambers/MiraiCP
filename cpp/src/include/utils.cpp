@@ -53,11 +53,15 @@ void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
         }
     } catch (const MiraiCPExceptionBase &e) {
         e.raise();
-        Logger::logger.info("插件(id=" + CPPPlugin::config.id + ", name=" + CPPPlugin::config.name + ")启动失败");
-        throw APIException(e.what(), e.filename, e.lineNum);
+        Logger::logger.error("插件(id=" + CPPPlugin::config.id + ", name=" + CPPPlugin::config.name + ")启动失败");
+        throw IllegalStateException(e.what(), e.filename, e.lineNum);
+    } catch (const std::exception &e) {
+        Logger::logger.error(e.what());
+        Logger::logger.error("插件(id=" + CPPPlugin::config.id + ", name=" + CPPPlugin::config.name + ")启动失败");
+        throw IllegalStateException(e.what(), MIRAICP_EXCEPTION_WHERE);
     } catch (...) {
-        Logger::logger.info("插件(id=" + CPPPlugin::config.id + ", name=" + CPPPlugin::config.name + ")启动失败");
-        throw APIException("", MIRAICP_EXCEPTION_WHERE);
+        Logger::logger.error("插件(id=" + CPPPlugin::config.id + ", name=" + CPPPlugin::config.name + ")启动失败");
+        throw IllegalStateException("", MIRAICP_EXCEPTION_WHERE);
     }
 }
 

@@ -45,6 +45,7 @@ namespace MiraiCP {
                               Event::broadcast(MiraiCPExceptionEvent(&exNew));
                           } catch (...) {
                               MiraiCPThreadException exNew("unknown exception type", std::this_thread::get_id(), MIRAICP_EXCEPTION_WHERE);
+                              exNew.raise();
                               Event::broadcast(MiraiCPExceptionEvent(&exNew));
                           }
                       },
@@ -58,7 +59,7 @@ namespace MiraiCP {
             return *this;
         }
 
-        MiraiCPNewThread &operator=(MiraiCPNewThread &&other) {
+        MiraiCPNewThread &operator=(MiraiCPNewThread &&other) noexcept {
             *static_cast<std::thread *>(this) = std::move(*static_cast<std::thread *>(&other));
             return *this;
         }
