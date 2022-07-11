@@ -76,7 +76,7 @@ jobject Event(JNIEnv *, jobject, jstring content) {
     }
 
     // static lambda，不可以捕获参数！str被声明为static了会被自动捕获
-    static std::function broadcast_func = [](LibLoader::LoaderPluginConfig &cfg) {
+    static std::function broadcast_func = [](const LibLoader::LoaderPluginConfig &cfg) {
         if (cfg.handle && cfg.enabled) {
             LibLoader::ThreadController::getController().submitJob(cfg.getId(), [&]() {
                 cfg.eventFunc(str);

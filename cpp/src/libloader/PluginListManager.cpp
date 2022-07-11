@@ -95,6 +95,7 @@ namespace LibLoader {
         }
     }
 
+    /// 插件正常工作时的卸载函数，不会修改任何key
     void PluginListManager::unloadById(const std::string &id) {
         std::lock_guard lk(pluginlist_mtx);
         auto it = id_plugin_list.find(id);
@@ -103,7 +104,17 @@ namespace LibLoader {
             return;
         }
         unload_plugin(*(it->second));
-        id_plugin_list.erase(it);
+    }
+
+    /// 插件异常时的卸载函数，输入插件id，不会修改任何key
+    void PluginListManager::unloadWhenException(const std::string &id) {
+        std::lock_guard lk(pluginlist_mtx);
+        auto it = id_plugin_list.find(id);
+        if (it == id_plugin_list.end()) {
+            logger.error(id + "尚未加载");
+            return;
+        }
+        unload_when_exception(*(it->second));
     }
 
     /// reload 所有插件。
@@ -186,7 +197,7 @@ namespace LibLoader {
 
     /// 遍历所有插件，by id（默认是不会by path的，path是用于id变更的特殊情况的备份）
     /// 注意：不会检查插件是否enable，请自行检查
-    void PluginListManager::run_over_pluginlist(const std::function<void(LoaderPluginConfig &)> &f) {
+    void PluginListManager::run_over_pluginlist(const std::function<void(const LoaderPluginConfig &)> &f) {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
             f(*v);

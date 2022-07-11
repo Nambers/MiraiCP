@@ -72,8 +72,7 @@ namespace LibLoader {
     }
 
     void loader_pluginEndByException(const std::string &id) {
-        PluginListManager::unloadById(id);
-        ThreadController::getController().endThread(id);
+        PluginListManager::unloadWhenException(id);
     }
 
     ////////////////////////////////////

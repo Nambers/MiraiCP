@@ -179,8 +179,7 @@ namespace LibLoader {
 #ifdef WIN32
         try {
             auto s = std::filesystem::remove(std::filesystem::path(plugin.actualPath));
-            if (!s)
-                LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath);
+            if (!s) LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath);
         } catch (std::filesystem::filesystem_error &e) {
             LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + e.what());
         }
@@ -188,6 +187,28 @@ namespace LibLoader {
         plugin.unload();
     }
 
+    void unload_when_exception(LoaderPluginConfig &plugin) {
+        if (nullptr == plugin.handle) {
+            logger.warning("plugin " + plugin.getId() + " is already unloaded");
+            return;
+        }
+
+        // first detach the thread
+        ThreadController::getController().endThread(plugin.getId());
+        // unload it directly since the thread is already down
+        LoaderApi::libClose(plugin.handle);
+
+#ifdef WIN32
+        try {
+            auto s = std::filesystem::remove(std::filesystem::path(plugin.actualPath));
+            if (!s) LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath);
+        } catch (std::filesystem::filesystem_error &e) {
+            LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + e.what());
+        }
+#endif
+        plugin.disable();
+        plugin.unload();
+    }
     ////////////////////////////////////
 
     void loadNewPluginByPath(const std::string &_path, bool activateNow) {

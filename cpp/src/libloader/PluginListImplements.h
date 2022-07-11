@@ -39,5 +39,7 @@ namespace LibLoader {
     void load_plugin(LoaderPluginConfig &plugin, bool alsoEnablePlugin);
 
     void unload_plugin(LoaderPluginConfig &plugin);
+
+    void unload_when_exception(LoaderPluginConfig &plugin);
 } // namespace LibLoader
 #endif //MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H
