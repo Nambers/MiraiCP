@@ -36,13 +36,20 @@ namespace LibLoader {
         return j;
     }
 
+    template<typename Val1, typename Val2>
+    inline void CASStrong(Val1 &a, Val2 b) {
+        if (a < b) a = b;
+    }
+
+    void FormatPluginListInfo(const MiraiCP::PluginConfig &plugin_config, int *charNum, std::vector<std::string> &out);
+
+    std::string PluginInfoStream(const std::vector<std::string> &plugin_info, int *charNum);
+
     std::pair<std::vector<std::string>, std::vector<PluginAuthority>> collect_plugins(const std::string &cfgPath, nlohmann::json j);
 
     std::string jstring2str(jstring jStr);
 
     jstring str2jstring(const char *cstr);
-
-
 } // namespace LibLoader
 
 #endif //MIRAICP_PRO_LOADERTOOLS_H
