@@ -48,12 +48,12 @@ namespace LibLoader {
         if (a < b) a = b;
     }
 
-    std::string PluginListManager::pluginListInfo(const std::function<bool(LoaderPluginConfig *)> &filter) {
+    std::string PluginListManager::pluginListInfo(const std::function<bool(const LoaderPluginConfig &)> &filter) {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans = {"id", "name", "author", "description", "\n"};
         short charNum[4] = {2 + 1, 4 + 1, 6 + 1, 11 + 1};
         for (auto &&[k, v]: id_plugin_list) {
-            if (filter(v.get())) {
+            if (filter(*v)) {
                 auto tmp = v->config();
                 CASStrong(charNum[0], tmp.id.size() + 1);
                 CASStrong(charNum[1], tmp.name.size() + 1);

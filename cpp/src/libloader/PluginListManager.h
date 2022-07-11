@@ -55,7 +55,7 @@ namespace LibLoader {
     public:
         static std::vector<std::string> getAllPluginId();
         // filter == true
-        static std::string pluginListInfo(const std::function<bool(LoaderPluginConfig *)> &);
+        static std::string pluginListInfo(const std::function<bool(const LoaderPluginConfig &)> &);
         static std::vector<std::string> getAllPluginPath();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
