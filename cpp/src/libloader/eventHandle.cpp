@@ -36,10 +36,10 @@ namespace LibLoader {
                  LoaderApi::disablePluginById(name);
              }},
             {"DisablePluginList", [](const std::string &name) {
-                 LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](LibLoader::LoaderPluginConfig *c) { return !c->enabled; }));
+                 LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::LoaderPluginConfig &c) { return !c.enabled; }));
              }},
             {"EnablePluginList", [](const std::string &name) {
-                 LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](LibLoader::LoaderPluginConfig *c) { return c->enabled; }));
+                 LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::LoaderPluginConfig &c) { return c.enabled; }));
              }},
             {"ReloadPlugin", [](const std::string &id) {
                  LoaderApi::reloadPluginById(id);
@@ -51,7 +51,7 @@ namespace LibLoader {
                  LoaderApi::unloadPluginById(id);
              }},
             {"PluginList", [](const std::string &name) {
-                 logger.info(LibLoader::PluginListManager::pluginListInfo([](LibLoader::LoaderPluginConfig *) { return true; }));
+                 logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::LoaderPluginConfig &) { return true; }));
              }},
     };
 
