@@ -16,30 +16,31 @@
 #include <MiraiCP.hpp>
 #include <iostream>
 #include <thread>
-
-
 using namespace MiraiCP;
 
-void func() {
+const PluginConfig CPPPlugin::config{
+        "id",   // 插件id
+        "test", // 插件名称
+        "v1.0", // 插件版本
+        "a",    // 插件作者
+                // 可选：插件描述
+                // 可选：日期
+};
+
+void func(int i, bool b) {
     std::cout << "hello world" << std::endl;
-    // 一个完整的线程应该在结束时调用detach来释放env的空间
-    JNIEnvManager::detach();
 }
 
 class Main : public CPPPlugin {
 public:
-    Main() : CPPPlugin(PluginConfig(
-                     "id",
-                     "test",
-                     "v1.0",
-                     "a")) {}
+    Main() : CPPPlugin() {}
     void onEnable() override {
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
-            std::thread(func).detach();
+            MiraiCPNewThread(func, 1, true).detach();
         });
     }
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin0(new Main());
+    MiraiCP::enrollPlugin(new Main());
 }

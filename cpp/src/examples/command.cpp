@@ -16,10 +16,19 @@
 #include <MiraiCP.hpp>
 using namespace MiraiCP;
 
+const PluginConfig CPPPlugin::config{
+        "id",   // 插件id
+        "test", // 插件名称
+        "v1.0", // 插件版本
+        "a",    // 插件作者
+                // 可选：插件描述
+                // 可选：日期
+};
+
 class a : public IRawCommand {
 public:
     IRawCommand::Config config() override {
-        return IRawCommand::Config("test");
+        return {"test", {"sname1", "sname2"}};
     }
     void onCommand(std::optional<Contact> c, const Bot &b, const MessageChain &a) override {
         Logger::logger.info(a.toMiraiCode());
@@ -29,18 +38,12 @@ public:
 
 class Main : public CPPPlugin {
 public:
-    Main() : CPPPlugin(PluginConfig(
-                     "id",
-                     "test",
-                     "v1.0",
-                     "a")) {}
+    Main() : CPPPlugin() {}
     void onEnable() override {
-        Event::processor.registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
-            CommandManager::commandManager.registerCommand(a());
-        });
+        CommandManager::commandManager.registerCommand(a());
     }
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin0(new Main());
+    MiraiCP::enrollPlugin(new Main());
 }
