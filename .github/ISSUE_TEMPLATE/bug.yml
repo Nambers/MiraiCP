@@ -2,14 +2,23 @@ name: Bug Report
 description: 提交一份错误报告
 labels: ["t:question"]
 body:
-  - type: markdown
+  - type: checkboxes
+    id: preCheck
     attributes:
-      value: |
+      label: Code of Conduct
+      description: |
         Thank for reporting!
         在提交前请确保做完以下的检查:
         - 没有相同内容/类型issue
-        - 已经更新到最新版
+        - 中间件, 启动器, SDK依赖已经更新到最新版
+        - 我确认不是产生了自己导致的编译问题,包括:
+          - 不是尝试在Linux上使用.dll文件或者Windows上使用.so文件等
+          - 生成的动态链接库与使用的jdk均为64位, jdk版本>=11
+          - 在同一台计算机上编译并使用或已经自行保证了可移植性
         - By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/Nambers/MiraiCP/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I conform
+          required: true
   - type: textarea
     id: description
     attributes:
@@ -35,9 +44,10 @@ body:
     attributes:
       label: 组件
       description: 发生在哪个组件上
+      multiple: true
       options:
         - Loader
         - Plugin
-        - Both
+        - LibLoader
     validations:
       required: true
