@@ -17,21 +17,31 @@
 #include <string>
 using namespace MiraiCP;
 
+const PluginConfig CPPPlugin::config{
+        "id",   // 插件id
+        "test", // 插件名称
+        "v1.0", // 插件版本
+        "a",    // 插件作者
+                // 可选：插件描述
+                // 可选：日期
+};
+
 class Main : public CPPPlugin {
 public:
     // 配置插件信息
-    Main() : CPPPlugin(PluginConfig(
-                     "id",
-                     "test",
-                     "v1.0",
-                     "a")) {}
+    Main() : CPPPlugin() {}
 
     void onEnable() override {
-        auto handle0 = Event::registerEvent<GroupMessageEvent>([](const GroupMessageEvent &e) {
+        auto handle0 = Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
             e.group.sendMessage("Hello world!");
         });
 
-        auto handle1 = Event::registerEvent<BotOnlineEvent>([](const BotOnlineEvent &e) {
+        Event::registerEvent<PrivateMessageEvent>([=](PrivateMessageEvent e) {
+            // 停止handle0注册的GroupMessageEvent
+            handle0->stop();
+        });
+
+        auto handle1 = Event::registerEvent<BotOnlineEvent>([](BotOnlineEvent e) {
             auto f = Friend(1234567890, 9876543210);
             f.sendMessage("Bot is live!");
         });
@@ -41,13 +51,10 @@ public:
             Logger::logger.info(e.getException());
             ct.sendMessage("Error occurs, type: " + e.getException()->getExceptionType() + ".\nError occurs in file: " + e.getException()->filename + ", line: " + std::to_string(e.getException()->lineNum));
         });
-
-        // 停止handle0注册的GroupMessageEvent
-        handle0->stop();
     }
 };
 
 // 绑定当前插件实例
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin0(new Main());
+    MiraiCP::enrollPlugin(new Main());
 }

@@ -78,7 +78,7 @@ namespace MiraiCP {
             j["primaryName"] = command.config().primaryName;
             j["secondName"] = command.config().secondNames;
             j["description"] = command.config().description;
-            j["override"] = command.config().override;
+            j["override"] = command.config().overrideOrigin;
             j["preFixOption"] = command.config().preFixOption;
             size_t before = commandList.size();
             std::shared_ptr<IRawCommand> c;

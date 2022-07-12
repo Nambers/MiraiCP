@@ -16,13 +16,18 @@
 #include <MiraiCP.hpp>
 using namespace MiraiCP;
 
+const PluginConfig CPPPlugin::config{
+        "id",   // 插件id
+        "test", // 插件名称
+        "v1.0", // 插件版本
+        "a",    // 插件作者
+                // 可选：插件描述
+                // 可选：日期
+};
+
 class Main : public CPPPlugin {
 public:
-    Main() : CPPPlugin(PluginConfig(
-                     "id",
-                     "test",
-                     "v1.0",
-                     "a")) {}
+    Main() : CPPPlugin() {}
     void onEnable() override {
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
             // 从id构造群成员
@@ -47,5 +52,5 @@ public:
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin0(new Main());
+    MiraiCP::enrollPlugin(new Main());
 }
