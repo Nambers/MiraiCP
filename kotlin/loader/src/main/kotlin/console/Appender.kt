@@ -35,11 +35,10 @@ class Jline3AppenderImpl private constructor(
     name: String, filter: Filter?, layout: Layout<Serializable>, ignoreExceptions: Boolean
 ) : AbstractAppender(name, filter, layout, ignoreExceptions, null) {
 
-    override fun append(event: LogEvent) {
-        Console.lineReader.printAbove(String(layout.toByteArray(event)) + Ansi().reset().toString())
-    }
-
     companion object {
+        var handle: (String) -> Unit =  {
+            Console.lineReader.printAbove(it)
+        }
 
         @PluginFactory
         @JvmStatic
@@ -54,5 +53,9 @@ class Jline3AppenderImpl private constructor(
             }
             return Jline3AppenderImpl(name, filter, layout, true)
         }
+    }
+
+    override fun append(event: LogEvent) {
+        handle(String(layout.toByteArray(event)) + Ansi().reset().toString())
     }
 }

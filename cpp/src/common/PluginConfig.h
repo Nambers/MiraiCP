@@ -22,7 +22,7 @@
 
 
 namespace MiraiCP {
-    const std::string MiraiCPVersion = "v2.11.0";
+    const std::string MiraiCPVersion = "v2.12.0-RC";
     struct PluginConfig {
         /// @brief 插件id, 要与别人不一样否则报错无法加载(建议用类包格式，如: io.github.nambers)
         std::string id;

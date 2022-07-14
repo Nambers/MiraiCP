@@ -39,6 +39,13 @@ object KotlinMain {
     lateinit var loginAccount: List<CPPConfig.LoaderConfig.Account>
     var alive = true
 
+    var exit: () -> Unit = {
+        PublicShared.exit()
+        job.cancel()
+        alive = false
+        exitProcess(0)
+    }
+
     @OptIn(MiraiExperimentalApi::class)
     fun main(j: String, path: String) {
         job.start()
@@ -83,7 +90,7 @@ object KotlinMain {
 //        }
         if (c.accounts == null || c.accounts!!.isEmpty()) {
             logger.error("Error: 无可登录账号，请检查config.json内容")
-            return
+            exit()
         }
         c.accounts?.filter { it.autoLogin == true }?.forEach {
             it.login()

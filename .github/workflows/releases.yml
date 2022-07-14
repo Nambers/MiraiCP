@@ -11,6 +11,8 @@ on:
     description: pre-release
 
 jobs:
+  loadTest:
+    uses: ./.github/workflows/loadTest.yml
   build-libLoader-mingw-4-windows:
     runs-on: windows-latest
     steps:
@@ -126,6 +128,7 @@ jobs:
          MESSAGE: ${{ github.event.inputs.v }} # The commit message     
     
   publish-release:
+    needs: loadTest
     runs-on: ubuntu-latest
     steps:
     - name: checkout
