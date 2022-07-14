@@ -2,6 +2,7 @@ name: loadTest
 
 on: 
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   windows-load-test:
