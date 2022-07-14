@@ -38,7 +38,7 @@ allprojects {
             kotlinOptions {
                 freeCompilerArgs += "-Xjvm-default=enable"
                 freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-                kotlinOptions.jvmTarget = "1.8"
+                kotlinOptions.jvmTarget = "11"
             }
         }
     }

@@ -1,0 +1,37 @@
+name: loadTest
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  windows-load-test:
+    runs-on: windows-latest
+    steps:
+    - name: checkout  
+      uses: actions/checkout@v2
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'adopt'
+        java-version: '15'
+        cache: 'gradle'
+    - name: chmod -R 777 *
+      run: chmod -R 777 *
+    - name: configure
+      env:
+        cc: gcc
+        cxx: g++
+      run: mkdir "cpp/cmake-build-debug" && cd "cpp/cmake-build-debug" && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" .. && cmake --build . --target Loader && cmake --build . --target MiraiCP_multi && cd ../../kotlin/ && ./gradlew build && ./gradlew :MiraiCP-loader:test --tests "tech.eritquearcus.miraicp.loader.LoaderCITest.test" --warning-mode all --info --stacktrace
+  ubuntu-load-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: chmod -R 777 *
+      run: chmod -R 777 *
+    - name: configure
+      env:
+        cc: gcc
+        cxx: g++
+      run: mkdir "cpp/cmake-build-debug" && cd "cpp/cmake-build-debug" && cmake -DCMAKE_BUILD_TYPE=Release .. && make Loader && make MiraiCP_multi
+    - name: loadTest
+      run:  cd ./kotlin/ && ./gradlew :MiraiCP-loader:test --tests "tech.eritquearcus.miraicp.loader.LoaderCITest.test" --warning-mode all --info --stacktrace

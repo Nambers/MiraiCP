@@ -69,7 +69,7 @@ object PluginMain : KotlinPlugin(
                     }
                 """.trimIndent()
                 )
-                return
+                throw IllegalStateException("配置文件不存在, 请写入配置文件并重启 MiraiCP")
             }
         }.readText(), CPPConfig.PluginConfig::class.java)
         if (config.advanceConfig != null && config.advanceConfig!!.maxThread != null) {

@@ -12,6 +12,8 @@ API Change:
 + 所有关于 jni 的参数都无需再传入
 
 > **本 release 包含的 MiraiCP-core 组件无法使用, 先用上一个的**
+>
+> PSS: 本次为 dev 版本，可能包含 bug 错误
 
 ## v2.11.0
 + 新增`registerBlockingEvent`，可以用于阻塞后续回调函数；`registerEvent`可以设定优先级

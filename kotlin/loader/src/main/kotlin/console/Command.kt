@@ -19,6 +19,7 @@
 package tech.eritquearcus.miraicp.loader.console
 
 import com.google.gson.Gson
+import kotlinx.coroutines.job
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
@@ -96,16 +97,8 @@ object Command {
     private fun pureOrder(order: String) {
         when (order) {
             "exit" -> {
-                PublicShared.onDisable()
-                PublicShared.logger.info("Closing MiraiCP...")
-                Bot.instances.forEach {
-                    runBlocking {
-                        it.closeAndJoin()
-                    }
-                    PublicShared.logger.info("Bot ${it.id} closed")
-                }
-                KotlinMain.alive = false
-                exitProcess(0)
+                PublicShared.exit()
+                KotlinMain.exit()
             }
             "help" -> printHelp()
             "status" -> {

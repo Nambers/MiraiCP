@@ -55,6 +55,7 @@ import org.json.JSONObject
 import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.system.exitProcess
 
 
 object PublicShared {
@@ -76,6 +77,17 @@ object PublicShared {
 
     fun init(l: MiraiLogger) {
         logger = l
+    }
+
+    fun exit(){
+        onDisable()
+        logger.info("Closing MiraiCP...")
+        Bot.instances.forEach {
+            runBlocking {
+                it.closeAndJoin()
+            }
+            logger.info("Bot ${it.id} closed")
+        }
     }
 
     fun nextMsg(c: Config.Contact, time: Long, halt: Boolean): String {
