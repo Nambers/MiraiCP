@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 # 以utf8编译, for msvc
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/EHa>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/EHa>")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -133,7 +135,7 @@ target_include_directories(Loader PUBLIC
         )
 # https://stackoverflow.com/questions/45114078/get-address-for-symbol-in-current-process-in-windows
 target_compile_options(Loader PUBLIC -DMIRAICP_LIB_LOADER)
-target_link_libraries(Loader ${JAVA_JVM_LIBRARY})
+target_link_libraries(Loader -static)
 if (UNIX)
     target_compile_options(Loader PUBLIC -rdynamic)
 endif (UNIX)
