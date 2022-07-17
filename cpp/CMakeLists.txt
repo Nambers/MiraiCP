@@ -135,10 +135,13 @@ target_include_directories(Loader PUBLIC
         )
 # https://stackoverflow.com/questions/45114078/get-address-for-symbol-in-current-process-in-windows
 target_compile_options(Loader PUBLIC -DMIRAICP_LIB_LOADER)
-target_link_libraries(Loader -static)
 if (UNIX)
+    target_link_libraries(Loader  -static-libstdc++ -static-libgcc)
     target_compile_options(Loader PUBLIC -rdynamic)
 endif (UNIX)
+if (WIN32)
+    target_link_libraries(Loader -static)
+endif (WIN32)
 # -- end --
 
 # -- delete outdated single headers task --
