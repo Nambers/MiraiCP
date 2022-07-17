@@ -23,7 +23,7 @@ jobs:
         cxx: g++
       run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" ..
     - name: build with gcc
-      run: cd ./cpp && && cmake --build build --target Loader
+      run: cd ./cpp && cmake --build build --target Loader
     - name: upload
       uses: actions/upload-artifact@v3
       with:
