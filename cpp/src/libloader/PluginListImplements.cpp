@@ -165,7 +165,8 @@ namespace LibLoader {
     // 不涉及插件列表的修改；不会修改插件权限
     void unload_plugin(LoaderPluginConfig &plugin) {
         if (nullptr == plugin.handle) {
-            logger.warning("plugin " + plugin.getId() + " is already unloaded");
+            // DON'T CALL getId() if plugin is disabled!!!
+            logger.warning("plugin at path: " + plugin.path + " is already unloaded");
             return;
         }
 
