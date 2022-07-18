@@ -111,7 +111,7 @@ namespace LibLoader {
             return;
         }
         if (plugin.handle == nullptr) {
-            logger.error("plugin " + plugin.getId() + " is not loaded!");
+            logger.error("plugin at location " + plugin.path + " is not loaded!");
             return;
         }
 
@@ -136,7 +136,7 @@ namespace LibLoader {
     // 不涉及插件列表的修改；不会修改插件权限
     void disable_plugin(LoaderPluginConfig &plugin) {
         if (nullptr == plugin.handle) {
-            logger.error("plugin " + plugin.getId() + " is not loaded!");
+            logger.error("plugin at location " + plugin.path + " is not loaded!");
             return;
         }
         if (!plugin.enabled) {
@@ -169,10 +169,11 @@ namespace LibLoader {
             logger.error("无法复制dll(" + plugin.path + ")到缓存目录, 原因: " + e.what());
         }
 #endif
-
+        // todo(antares): 把上面这段条件编译代码移动到libOpen里封装起来，不需要暴露在load_plugin逻辑中。
+        //  load_plugin函数只需要知道libOpen是否正常工作，不需要知道底层细节
         auto handle = LoaderApi::libOpen(plugin.actualPath);
         if (handle == nullptr) {
-            logger.error("failed to load plugin at location " + plugin.path + "(" + plugin.actualPath + ")");
+            logger.error("failed to load plugin at location " + plugin.path); //  + "(" + plugin.actualPath + ")");
             return;
         }
 
@@ -217,13 +218,13 @@ namespace LibLoader {
 
     void unload_when_exception(LoaderPluginConfig &plugin) {
         if (nullptr == plugin.handle) {
-            logger.warning("plugin " + plugin.getId() + " is already unloaded");
+            logger.warning("plugin at location " + plugin.path + " is already unloaded");
             return;
         }
 
         // first detach the thread
         ThreadController::getController().endThread(plugin.getId());
-        // unload it directly since the thread is already down
+        // unload it directly since the thread is already down by exception
         LoaderApi::libClose(plugin.handle);
 
 #ifdef WIN32
@@ -234,6 +235,7 @@ namespace LibLoader {
             LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + e.what());
         }
 #endif
+        // todo(antares): 可以不用删除缓存
         plugin.disable();
         plugin.unload();
     }
