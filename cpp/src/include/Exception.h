@@ -263,7 +263,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class PluginNotAuthorizedException : public MiraiCPExceptionCRTP<PluginNotAuthorizedException> {
     public:
-        explicit PluginNotAuthorizedException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("插件" + CPPPlugin::config.id + "没有管理权限", std::move(_filename), _lineNum) {}
+        explicit PluginNotAuthorizedException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("插件" + CPPPlugin::config.getId() + "没有管理权限", std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "PluginNotAuthorizedException"; }
     };
@@ -274,7 +274,7 @@ namespace MiraiCP {
     /// @see MiraiCPExceptionBase
     class PluginNotEnabledException : public MiraiCPExceptionCRTP<PluginNotEnabledException> {
     public:
-        explicit PluginNotEnabledException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("插件" + CPPPlugin::config.id + "未加载", std::move(_filename), _lineNum) {}
+        explicit PluginNotEnabledException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("插件" + CPPPlugin::config.getId() + "未加载", std::move(_filename), _lineNum) {}
 
         static string exceptionType() { return "PluginNotEnabledException"; }
     };
