@@ -149,17 +149,12 @@ namespace LibLoader {
         plugin.disable();
     }
 
-    // 不涉及插件列表的修改；不会修改插件权限
-    void load_plugin(LoaderPluginConfig &plugin, bool alsoEnablePlugin) {
-        if (plugin.handle != nullptr) {
-            logger.error("plugin at location " + plugin.path + " is already loaded!");
-            return;
-        }
+    plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) {
 #ifdef WIN32
         auto from = std::filesystem::path(plugin.path);
         if (!exists(from) || !from.has_extension()) {
             logger.error("path don't exist or invalid " + plugin.path);
-            return;
+            return nullptr;
         }
         auto actualFile = std::filesystem::temp_directory_path().append(std::to_string(std::hash<std::string>()(plugin.path)) + ".dll");
         plugin.actualPath = actualFile.string();
@@ -167,11 +162,19 @@ namespace LibLoader {
             std::filesystem::copy(plugin.path, actualFile, std::filesystem::copy_options::overwrite_existing);
         } catch (std::filesystem::filesystem_error &e) {
             logger.error("无法复制dll(" + plugin.path + ")到缓存目录, 原因: " + e.what());
+            return nullptr;
         }
 #endif
-        // todo(antares): 把上面这段条件编译代码移动到libOpen里封装起来，不需要暴露在load_plugin逻辑中。
-        //  load_plugin函数只需要知道libOpen是否正常工作，不需要知道底层细节
-        auto handle = LoaderApi::libOpen(plugin.actualPath);
+        return LoaderApi::libOpen(plugin.actualPath);
+    }
+
+    // 不涉及插件列表的修改；不会修改插件权限
+    void load_plugin(LoaderPluginConfig &plugin, bool alsoEnablePlugin) {
+        if (plugin.handle != nullptr) {
+            logger.error("plugin at location " + plugin.path + " is already loaded!");
+            return;
+        }
+        auto handle = loadPluginInternal(plugin);
         if (handle == nullptr) {
             logger.error("failed to load plugin at location " + plugin.path); //  + "(" + plugin.actualPath + ")");
             return;
