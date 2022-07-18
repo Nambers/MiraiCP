@@ -49,9 +49,9 @@ else ()
     message(STATUS "Cannot find JNI")
 endif ()
 if (WIN32)
-    # ADD_DEFINITIONS(-D_JVM_DLL_PATH=\"${JAVA_INCLUDE_PATH}/../bin/server/jvm.dll\")
+    ADD_DEFINITIONS(-D_JVM_DLL_PATH=\"${JAVA_INCLUDE_PATH}/../bin/server/jvm.dll\")
 else (WIN32)
-    # ADD_DEFINITIONS(-D_JVM_DLL_PATH=\"\")
+    ADD_DEFINITIONS(-D_JVM_DLL_PATH=\"\")
 endif (WIN32)
 # -- end --
 
@@ -135,13 +135,13 @@ target_include_directories(Loader PUBLIC
         )
 # https://stackoverflow.com/questions/45114078/get-address-for-symbol-in-current-process-in-windows
 target_compile_options(Loader PUBLIC -DMIRAICP_LIB_LOADER)
+if (WIN32)
+    target_link_libraries(Loader -static)
+endif (WIN32)
 if (UNIX)
     target_link_libraries(Loader  -static-libstdc++ -static-libgcc)
     target_compile_options(Loader PUBLIC -rdynamic)
 endif (UNIX)
-if (WIN32)
-    target_link_libraries(Loader -static)
-endif (WIN32)
 # -- end --
 
 # -- delete outdated single headers task --

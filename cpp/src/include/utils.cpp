@@ -36,7 +36,7 @@ namespace LibLoader::LoaderApi {
 
 extern "C" {
 /// 插件开启入口
-void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
+__declspec(dllexport) void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
     static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
     using namespace MiraiCP;
 
@@ -67,7 +67,7 @@ void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
 
 
 /// 插件结束(也可能是暂时的disable)
-void FUNC_EXIT() {
+__declspec(dllexport) void FUNC_EXIT() {
     static_assert(std::is_same_v<decltype(&FUNC_EXIT), LibLoader::plugin_func_ptr>);
 
     using namespace MiraiCP;
@@ -86,7 +86,7 @@ void FUNC_EXIT() {
 
 /// 消息解析分流
 /// env != null, call from jni
-void FUNC_EVENT(std::string content) {
+__declspec(dllexport) void FUNC_EVENT(std::string content) {
     static_assert(std::is_same_v<decltype(&FUNC_EVENT), LibLoader::plugin_event_func_ptr>);
 
     using namespace MiraiCP;
@@ -123,7 +123,7 @@ void FUNC_EVENT(std::string content) {
 /// 获取 Plugin Info
 /// 如果未正确定义，插件无法正确加载
 /// 该函数不可调用loader api；因为会在入口函数调用前先调用，loader api未初始化
-const MiraiCP::PluginConfig &PLUGIN_INFO() {
+__declspec(dllexport) const MiraiCP::PluginConfig &PLUGIN_INFO() {
     static_assert(std::is_same_v<decltype(&PLUGIN_INFO), LibLoader::plugin_info_func_ptr>);
 
     if (MiraiCP::CPPPlugin::config.id.empty())
