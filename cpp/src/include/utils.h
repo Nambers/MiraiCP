@@ -53,10 +53,10 @@ namespace MiraiCP {
 
 
 extern "C" {
-void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &);
-void FUNC_EVENT(std::string content);
-void FUNC_EXIT();
-const MiraiCP::PluginConfig &PLUGIN_INFO();
+__declspec(dllexport) void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &);
+__declspec(dllexport) void FUNC_EVENT(std::string content);
+__declspec(dllexport) void FUNC_EXIT();
+__declspec(dllexport) const MiraiCP::PluginConfig &PLUGIN_INFO();
 }
 
 #endif //MIRAICP_PRO_UTILS_H

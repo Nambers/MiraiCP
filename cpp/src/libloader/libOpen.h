@@ -45,8 +45,9 @@ namespace LibLoader::LoaderApi {
         return OPEN_LIBRARY(path);
     }
 
-    inline void *libSymbolLookup(void *handle, const char *symbol) {
-        return (void *) GET_SYMBOL(handle, symbol);
+    using FuncAddress = void *(*) ();
+    inline FuncAddress libSymbolLookup(void *handle, const char *symbol) {
+        return (FuncAddress) GET_SYMBOL(handle, symbol);
     }
 
     inline int libClose(void *handle) {
