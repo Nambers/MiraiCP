@@ -19,6 +19,8 @@
 
 
 #include "commonTypes.h"
+#include "LoaderLogger.h"
+
 
 namespace LibLoader {
     enum PluginAuthority {
@@ -35,7 +37,11 @@ namespace LibLoader {
         bool enabled = false;
         std::string actualPath = path;
 
-        const std::string &getId() const {
+        const std::string getId() const {
+            if (!handle) {
+                logger.error("致命错误：插件未加载或已经被卸载，请联系MiraiCP开发者并提供您的历史日志");
+                return "";
+            }
             return config().id;
         }
 
