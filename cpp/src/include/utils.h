@@ -52,11 +52,20 @@ namespace MiraiCP {
 } // namespace MiraiCP
 
 
+#ifndef MIRAICP_EXPORT
+#ifdef WIN32
+#define MIRAICP_EXPORT __declspec(dllexport)
+#else
+#define MIRAICP_EXPORT
+#endif
+#endif
+
+
 extern "C" {
-__declspec(dllexport) void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &);
-__declspec(dllexport) void FUNC_EVENT(std::string content);
-__declspec(dllexport) void FUNC_EXIT();
-__declspec(dllexport) const MiraiCP::PluginConfig &PLUGIN_INFO();
+MIRAICP_EXPORT void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &);
+MIRAICP_EXPORT void FUNC_EVENT(std::string content);
+MIRAICP_EXPORT void FUNC_EXIT();
+MIRAICP_EXPORT const MiraiCP::PluginConfig &PLUGIN_INFO();
 }
 
 #endif //MIRAICP_PRO_UTILS_H
