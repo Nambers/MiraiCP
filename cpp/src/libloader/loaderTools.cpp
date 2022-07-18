@@ -86,10 +86,10 @@ namespace LibLoader {
     }
 
     void FormatPluginListInfo(const MiraiCP::PluginConfig &plugin_config, int *charNum, std::vector<std::string> &out) {
-        CASStrong(charNum[0], plugin_config.id.size() + 1);
-        CASStrong(charNum[1], plugin_config.name.size() + 1);
-        CASStrong(charNum[2], plugin_config.author.size() + 1);
-        CASStrong(charNum[3], plugin_config.description.size() + 1);
+        CASStrong(charNum[0], strlen(plugin_config.id) + 1);
+        CASStrong(charNum[1], strlen(plugin_config.name) + 1);
+        CASStrong(charNum[2], strlen(plugin_config.author) + 1);
+        CASStrong(charNum[3], strlen(plugin_config.description) + 1);
         out.emplace_back(plugin_config.id);
         out.emplace_back(plugin_config.name);
         out.emplace_back(plugin_config.author);

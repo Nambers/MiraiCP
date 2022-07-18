@@ -43,7 +43,7 @@ __declspec(dllexport) void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_f
     Event::clear();
     LibLoader::LoaderApi::set_loader_apis(&funcs);
     assert(LibLoader::LoaderApi::get_loader_apis() != nullptr);
-    Logger::logger.info("开始启动插件: " + MiraiCP::CPPPlugin::config.id);
+    Logger::logger.info("开始启动插件: " + MiraiCP::CPPPlugin::config.getId());
 
     try {
         enrollPlugin();
@@ -53,14 +53,14 @@ __declspec(dllexport) void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_f
         }
     } catch (const MiraiCPExceptionBase &e) {
         e.raise();
-        Logger::logger.error("插件(id=" + CPPPlugin::config.id + ", name=" + CPPPlugin::config.name + ")启动失败");
+        Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         throw IllegalStateException(e.what(), e.filename, e.lineNum);
     } catch (const std::exception &e) {
         Logger::logger.error(e.what());
-        Logger::logger.error("插件(id=" + CPPPlugin::config.id + ", name=" + CPPPlugin::config.name + ")启动失败");
+        Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         throw IllegalStateException(e.what(), MIRAICP_EXCEPTION_WHERE);
     } catch (...) {
-        Logger::logger.error("插件(id=" + CPPPlugin::config.id + ", name=" + CPPPlugin::config.name + ")启动失败");
+        Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         throw IllegalStateException("", MIRAICP_EXCEPTION_WHERE);
     }
 }
@@ -72,7 +72,7 @@ __declspec(dllexport) void FUNC_EXIT() {
 
     using namespace MiraiCP;
 
-    Logger::logger.info("开始禁用插件：" + MiraiCP::CPPPlugin::config.id);
+    Logger::logger.info("开始禁用插件：" + MiraiCP::CPPPlugin::config.getId());
 
     Event::clear();
 
@@ -126,7 +126,7 @@ __declspec(dllexport) void FUNC_EVENT(std::string content) {
 __declspec(dllexport) const MiraiCP::PluginConfig &PLUGIN_INFO() {
     static_assert(std::is_same_v<decltype(&PLUGIN_INFO), LibLoader::plugin_info_func_ptr>);
 
-    if (MiraiCP::CPPPlugin::config.id.empty())
+    if (MiraiCP::CPPPlugin::config.getId().empty())
         throw std::exception();
 
     return MiraiCP::CPPPlugin::config;
