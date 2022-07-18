@@ -48,11 +48,7 @@ if (JNI_FOUND)
 else ()
     message(STATUS "Cannot find JNI")
 endif ()
-if (WIN32)
-    ADD_DEFINITIONS(-D_JVM_DLL_PATH=\"${JAVA_INCLUDE_PATH}/../bin/server/jvm.dll\")
-else (WIN32)
-    ADD_DEFINITIONS(-D_JVM_DLL_PATH=\"\")
-endif (WIN32)
+
 # -- end --
 
 
@@ -114,10 +110,11 @@ target_include_directories(MiraiCP_core PUBLIC
         ${SRC_PATH}/common
         ${SRC_PATH}
         )
-target_compile_options(MiraiCP_core PUBLIC -DMIRAICP_CORE)
-if (UNIX)
-    #    target_link_libraries(MiraiCP_core ${JAVA_JVM_LIBRARY})
-endif (UNIX)
+if (WIN32)
+    target_compile_options(MiraiCP_core PUBLIC -DMIRAICP_CORE -D_JVM_DLL_PATH=\"${JAVA_INCLUDE_PATH}/../bin/server/jvm.dll\")
+else (WIN32)
+    target_compile_options(MiraiCP_core PUBLIC -DMIRAICP_CORE -D_JVM_DLL_PATH=\"\")
+endif (WIN32)
 # -- end --
 
 # -- MiraiCP libLoader --
