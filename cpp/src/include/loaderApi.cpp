@@ -52,27 +52,27 @@ namespace LibLoader::LoaderApi {
 
     /// interfaces for plugins
 
-    std::string pluginOperation(const std::string &s) {
+    const char *pluginOperation(const char *s) {
         checkApi((void *) loader_apis->_pluginOperation);
         return loader_apis->_pluginOperation(s);
     }
 
-    void loggerInterface(const std::string &content, std::string name, long long id, int level) {
+    void loggerInterface(const char *content, const char *name, long long id, int level) {
         checkApi((void *) loader_apis->_loggerInterface);
-        loader_apis->_loggerInterface(content, std::move(name), id, level);
+        loader_apis->_loggerInterface(content, name, id, level);
     }
 
-    std::vector<std::string> showAllPluginId() {
+    std::vector<const char *> showAllPluginId() {
         checkApi((void *) loader_apis->_showAllPluginId);
         return loader_apis->_showAllPluginId();
     }
 
     void enablePluginById(const std::string &id) {
         checkApi((void *) loader_apis->_enablePluginById);
-        loader_apis->_enablePluginById(id);
+        loader_apis->_enablePluginById(id.c_str());
     }
 
-    void disablePluginById(const std::string &id) {
+    void disablePluginById(const char *&id) {
         checkApi((void *) loader_apis->_disablePluginById);
         loader_apis->_disablePluginById(id);
     }
@@ -87,17 +87,17 @@ namespace LibLoader::LoaderApi {
         loader_apis->_disableAllPlugins();
     }
 
-    void loadNewPlugin(const std::string &path, bool activateNow) {
+    void loadNewPlugin(const char *path, bool activateNow) {
         checkApi((void *) loader_apis->_loadNewPlugin);
         loader_apis->_loadNewPlugin(path, activateNow);
     }
 
-    void unloadPluginById(const std::string &id) {
+    void unloadPluginById(const char *id) {
         checkApi((void *) loader_apis->_unloadPluginById);
         loader_apis->_unloadPluginById(id);
     }
 
-    void reloadPluginById(const std::string &id) {
+    void reloadPluginById(const char *id) {
         checkApi((void *) loader_apis->_reloadPluginById);
         loader_apis->_reloadPluginById(id);
     }

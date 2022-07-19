@@ -79,7 +79,7 @@ jobject Event(JNIEnv *, jobject, jstring content) {
     static std::function broadcast_func = [](const LibLoader::LoaderPluginConfig &cfg) {
         if (cfg.handle && cfg.enabled) {
             LibLoader::ThreadController::getController().submitJob(cfg.getId(), [&cfg]() {
-                cfg.eventFunc(str);
+                cfg.eventFunc(str.c_str());
             });
         }
     };

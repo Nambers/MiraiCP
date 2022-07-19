@@ -31,18 +31,22 @@ namespace LibLoader {
 
 namespace LibLoader::LoaderApi {
     /// interfaces for plugins
-    std::vector<std::string> showAllPluginId() {
-        return PluginListManager::getAllPluginId();
+    std::vector<const char *> showAllPluginId() {
+        std::vector<const char *> re;
+        for (auto a: PluginListManager::getAllPluginId()) {
+            re.emplace_back(a.c_str());
+        }
+        return re;
     }
 
-    void enablePluginById(const std::string &id) {
+    void enablePluginById(const char *id) {
         std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::ADD_THREAD, id));
+        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::ADD_THREAD, std::string(id)));
     }
 
-    void disablePluginById(const std::string &id) {
+    void disablePluginById(const char *id) {
         std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::END_THREAD, id));
+        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::END_THREAD, std::string(id)));
     }
 
     void enableAllPlugins() {
@@ -55,32 +59,35 @@ namespace LibLoader::LoaderApi {
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::DISABLE_ALL, ""));
     }
 
-    void loadNewPlugin(const std::string &path, bool activateNow) {
+    void loadNewPlugin(const char *path, bool activateNow) {
         std::lock_guard lk(task_mtx);
         if (activateNow)
-            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_ACTIVATENOW, path));
+            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_ACTIVATENOW, std::string(path)));
         else
-            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_DONTACTIVATE, path));
+            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_DONTACTIVATE, std::string(path)));
     }
 
-    void unloadPluginById(const std::string &id) {
+    void unloadPluginById(const char *id) {
         std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::UNLOAD, id));
+        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::UNLOAD, std::string(id)));
     }
 
-    void reloadPluginById(const std::string &id) {
+    void reloadPluginById(const char *id) {
         std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::RELOAD, id));
+        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::RELOAD, std::string(id)));
     }
 
-    std::string pluginOperation(const std::string &s) {
+    const char *pluginOperation(const char *s) {
         auto env = JNIEnvManager::getEnv();
-        return jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
-                                                                 JNIEnvs::koper,
-                                                                 str2jstring(s.c_str())));
+        auto tmp = jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
+                                                                     JNIEnvs::koper,
+                                                                     str2jstring(s)));
+        std::unique_ptr<char[]> re(new char[tmp.length() + 1]);
+        strcpy(re.get(), tmp.c_str());
+        return re.get();
     }
 
-    void loggerInterface(const std::string &content, std::string name, long long id, int level) {
-        logger.call_logger(content, std::move(name), id, level);
+    void loggerInterface(const char *content, const char *name, long long id, int level) {
+        logger.call_logger(content, name, id, level);
     }
 } // namespace LibLoader::LoaderApi
