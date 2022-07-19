@@ -116,8 +116,8 @@ namespace LibLoader {
         }
 
         auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
-        if (plugin.config()._MVersion != MiraiCP::MiraiCPVersion) {
-            LibLoader::logger.warning("MiraiCP依赖库版本(" + plugin.config()._MVersion + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
+        if (plugin.config().getMVersion() != MiraiCP::MiraiCPVersion) {
+            LibLoader::logger.warning("MiraiCP依赖库版本(" + plugin.config().getMVersion() + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
         }
         plugin.enable();
         // 注意：plugin虽然被分配在一个固定地址（map中的值是shared_ptr，内部的 LoaderPluginConfig 不会被复制），

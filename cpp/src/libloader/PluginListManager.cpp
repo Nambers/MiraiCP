@@ -36,7 +36,7 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans;
         for (auto &&[k, v]: id_plugin_list) {
-            ans.emplace_back(v->config().id);
+            ans.emplace_back(v->config().getId());
         }
         return ans;
     }

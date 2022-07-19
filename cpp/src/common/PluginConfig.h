@@ -36,6 +36,7 @@ namespace MiraiCP {
         const char *description;
         /// @brief [optional]构建时间, 默认为__DATE__宏
         const char *time = __DATE__;
+        const char *mversion = MiraiCPVersion.c_str();
 
         std::string getId() const {
             return {id};
@@ -56,7 +57,9 @@ namespace MiraiCP {
             return {time};
         }
 
-        const std::string _MVersion = MiraiCPVersion;
+        std::string getMVersion() const {
+            return {mversion};
+        }
 
         nlohmann::json serialize();
 
