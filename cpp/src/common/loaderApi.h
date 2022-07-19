@@ -44,19 +44,19 @@ constexpr int LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
 // the API defs to be exposed
 namespace LibLoader::LoaderApi {
     LOADER_API_COUNT
-    std::string pluginOperation(const std::string &);
+    const char *pluginOperation(const char *);
 
     LOADER_API_COUNT
-    void loggerInterface(const std::string &content, std::string name, long long id, int level);
+    void loggerInterface(const char *content, const char *name, long long id, int level);
 
     LOADER_API_COUNT
-    std::vector<std::string> showAllPluginId();
+    std::vector<const char *> showAllPluginId();
 
     LOADER_API_COUNT
-    void enablePluginById(const std::string &);
+    void enablePluginById(const char *);
 
     LOADER_API_COUNT
-    void disablePluginById(const std::string &);
+    void disablePluginById(const char *);
 
     LOADER_API_COUNT
     void enableAllPlugins();
@@ -65,13 +65,13 @@ namespace LibLoader::LoaderApi {
     void disableAllPlugins();
 
     LOADER_API_COUNT
-    void loadNewPlugin(const std::string &, bool);
+    void loadNewPlugin(const char *, bool);
 
     LOADER_API_COUNT
-    void unloadPluginById(const std::string &);
+    void unloadPluginById(const char *);
 
     LOADER_API_COUNT
-    void reloadPluginById(const std::string &);
+    void reloadPluginById(const char *);
 
 
     struct interface_funcs {

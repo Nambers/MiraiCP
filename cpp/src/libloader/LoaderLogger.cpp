@@ -48,12 +48,12 @@ namespace LibLoader {
         call_logger(msg, "MiraiCP/LibLoader", -1, 2);
     }
 
-    void LoaderLogger::call_logger(const string &content, string name, long long id, int level) {
+    void LoaderLogger::call_logger(const string &content, const string &name, long long id, int level) const {
         nlohmann::json j = {
                 {"id", id},
                 {"log", content}};
         if (!name.empty()) j["name"] = std::move(name);
         auto env = JNIEnvs::getEnv();
-        env->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, LibLoader::str2jstring(j.dump().c_str()), (jint)(level));
+        env->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, LibLoader::str2jstring(j.dump().c_str()), (jint) (level));
     }
 } // namespace LibLoader

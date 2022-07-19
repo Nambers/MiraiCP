@@ -63,7 +63,7 @@ namespace MiraiCP {
 
 extern "C" {
 MIRAICP_EXPORT void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &);
-MIRAICP_EXPORT void FUNC_EVENT(std::string content);
+MIRAICP_EXPORT void FUNC_EVENT(const char *content);
 MIRAICP_EXPORT void FUNC_EXIT();
 MIRAICP_EXPORT const MiraiCP::PluginConfig &PLUGIN_INFO();
 }

@@ -25,7 +25,8 @@ namespace MiraiCP::KtOperation {
         nlohmann::json j;
         j["type"] = type;
         j["data"] = std::move(data);
-        std::string re = LibLoader::LoaderApi::pluginOperation(j.dump());
+        auto tmp = j.dump();
+        std::string re = LibLoader::LoaderApi::pluginOperation(tmp.c_str());
         if (catchErr) ErrorHandle(re, errorInfo);
         return re;
     }

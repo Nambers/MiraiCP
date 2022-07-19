@@ -41,7 +41,7 @@ namespace LibLoader {
 
     public:
         /// 实际暴露的接口
-        void call_logger(const string &content, string name, long long id, int level);
+        void call_logger(const string &content, const string &name, long long id, int level) const;
     };
 
     extern LoaderLogger logger;
