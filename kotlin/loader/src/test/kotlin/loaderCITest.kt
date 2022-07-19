@@ -58,9 +58,9 @@ class LoaderCITest {
         }
         main(arrayOf(f.absolutePath))
         val re = text.filter { it.contains("[ERROR]") && !it.contains("Error: 无可登录账号，请检查config.json内容") }
-        assertTrue { re.isEmpty() }
         re.forEach {
             println(it)
         }
+        assertTrue { re.isEmpty() }
     }
 }

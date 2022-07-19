@@ -21,7 +21,9 @@ jobs:
       env:
         cc: gcc
         cxx: g++
-      run: mkdir "cpp/cmake-build-debug" && cd "cpp/cmake-build-debug" && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" .. && cmake --build . --target Loader && cmake --build . --target MiraiCP_multi && cd ../../kotlin/ && ./gradlew build && ./gradlew :MiraiCP-loader:test --tests "tech.eritquearcus.miraicp.loader.LoaderCITest.test" --warning-mode all --info --stacktrace
+      run: mkdir "cpp/cmake-build-debug" && cd "cpp/cmake-build-debug" && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" .. && cmake --build . --target Loader && cmake --build . --target MiraiCP_multi
+    - name: loadTest
+      run: cd ./kotlin/ && ./gradlew :MiraiCP-loader:test --tests "tech.eritquearcus.miraicp.loader.LoaderCITest.test" --warning-mode all --info --stacktrace
   ubuntu-load-test:
     runs-on: ubuntu-latest
     steps:
