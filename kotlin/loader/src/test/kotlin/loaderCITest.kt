@@ -18,43 +18,49 @@
 
 package tech.eritquearcus.miraicp.loader
 
+import tech.eritquearcus.miraicp.loader.KotlinMain.alive
+import tech.eritquearcus.miraicp.loader.KotlinMain.job
+import tech.eritquearcus.miraicp.loader.console.Jline3AppenderImpl
+import tech.eritquearcus.miraicp.shared.PublicShared
+import java.io.File
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 class LoaderCITest {
     @Test
     fun test() {
-//        val extension = if (System.getProperty("os.name").contains("Windows")) "dll" else "so"
-//        val f = File("config.json")
-//        f.writeText(
-//            """
-//{
-//  "advanceConfig": {
-//    "libLoaderPath": "../../cpp/cmake-build-debug/libLoader.$extension"
-//  },
-//  "accounts": [],
-//  "cppPaths": [
-//    {
-//      "path": "../../cpp/cmake-build-debug/libMiraiCP_multi.$extension"
-//    }
-//  ]
-//}
-//    """
-//        )
-//        println(File("").absolutePath)
-//        val text = mutableListOf<String>()
-//        Jline3AppenderImpl.handle = {
-//            text.add(it)
-//        }
-//        KotlinMain.exit = {
-//            PublicShared.exit()
-//            job.cancel()
-//            alive = false
-//        }
-//        main(arrayOf(f.absolutePath))
-//        val re = text.filter { it.contains("[ERROR]") && !it.contains("Error: 无可登录账号，请检查config.json内容") }
-//        assertTrue { re.isEmpty() }
-//        re.forEach {
-//            println(it)
-//        }
+        val extension = if (System.getProperty("os.name").contains("Windows")) "dll" else "so"
+        val f = File("config.json")
+        f.writeText(
+            """
+{
+  "advanceConfig": {
+    "libLoaderPath": "../../cpp/cmake-build-debug/libLoader.$extension"
+  },
+  "accounts": [],
+  "cppPaths": [
+    {
+      "path": "../../cpp/cmake-build-debug/libMiraiCP_multi.$extension"
+    }
+  ]
+}
+    """
+        )
+        println(File("").absolutePath)
+        val text = mutableListOf<String>()
+        Jline3AppenderImpl.handle = {
+            text.add(it)
+        }
+        KotlinMain.exit = {
+            PublicShared.exit()
+            job.cancel()
+            alive = false
+        }
+        main(arrayOf(f.absolutePath))
+        val re = text.filter { it.contains("[ERROR]") && !it.contains("Error: 无可登录账号，请检查config.json内容") }
+        assertTrue { re.isEmpty() }
+        re.forEach {
+            println(it)
+        }
     }
 }
