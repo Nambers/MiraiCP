@@ -16,16 +16,19 @@
 
 #ifndef MIRAICP_PRO_MIRAICPSTRING_H
 #define MIRAICP_PRO_MIRAICPSTRING_H
-#include "Exception.h"
-#include "assert.h"
-#include <iostream>
+
+
+#include <cassert>
 #include <string>
 
+
 namespace MiraiCP {
+    // this class is used to ensure data consistency between dynamic libs
     // note: do not use this directly;
     // always convert to const char* or std::string before using.
     class MiraiCPString {
         using string = std::string;
+        friend void swap(MiraiCPString &, MiraiCPString &) noexcept;
 
     private:
         static constexpr decltype(&::std::free) std_free_ptr = &::std::free;
@@ -34,14 +37,14 @@ namespace MiraiCP {
         // to keep integration and safe for empty construction/deconstruction, always initialize here
         char *str = nullptr;
         size_t _size = 0;
-        decltype(&::std::free) free_this = std_free_ptr; // specify which free() to use
+        decltype(&::std::free) free_this = std_free_ptr; // specify which free() to use; ensure deconstruction is paired to construction
 
     public:
         bool isEmpty() const {
             return _size == 0;
         }
 
-        MiraiCPString() = default;
+        MiraiCPString() : str(nullptr), _size(0), free_this(std_free_ptr) {}
         // call if _size is set to non-zero
         // allocate memory for str
         void construction();
@@ -56,10 +59,8 @@ namespace MiraiCP {
 
         explicit MiraiCPString(const std::string &string_str);
 
-        friend void swap(MiraiCPString &, MiraiCPString &) noexcept;
-
         std::string toString() const {
-            if (str == nullptr) return {};
+            if (str == nullptr || _size == 0) return {};
             return {str};
         }
 
@@ -67,17 +68,19 @@ namespace MiraiCP {
             return toString();
         }
 
-        bool operator==(const MiraiCPString &another) const {
-            return another._size == _size && (_size == 0 || strcmp(another.str, str) == 0);
-        }
+        // for safe destruction, DO NOT provide move convert to char*
+        // the return value of this method can always be deleted by delete[] and is never nullptr
+        const char *copyToCharPtr() const;
+
+        bool operator==(const MiraiCPString &another) const;
 
         MiraiCPString &operator=(const MiraiCPString &another);
 
         MiraiCPString &operator=(MiraiCPString &&another) noexcept;
-
-        // for safe destruction, DO NOT provide move convert to char*
-        const char *copyToCharPtr() const;
     };
+
+    static_assert(sizeof(char) == 1, "Please make sure the size of char type is 1");
+    static_assert(sizeof(MiraiCPString) == 3 * 8, "Please make sure MiraiCP is compiled under 64-bit mode.");
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_MIRAICPSTRING_H
