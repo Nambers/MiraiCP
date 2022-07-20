@@ -15,17 +15,24 @@
 //
 
 #include "miraicpString.h"
+#include <cstring>
+
 
 namespace MiraiCP {
-    static_assert(sizeof(MiraiCPString) == 3 * 8, "Please make sure MiraiCP is compiled under 64-bit mode.");
+    void swap(MiraiCPString &a, MiraiCPString &b) noexcept {
+        std::swap(a.str, b.str);
+        std::swap(a._size, b._size);
+        std::swap(a.free_this, b.free_this);
+    }
 
+    // avoid calling this if _size == 0
     void MiraiCPString::construction() {
         str = (char *) ::std::malloc(sizeof(char) * (_size + 1));
         if (str == nullptr) {
             // to keep str, use static storage
             static std::string message; // don't give value at init
             message = "Cannot allocate size of " + std::to_string(_size);
-            throw MiraiCP::APIException(message, MIRAICP_EXCEPTION_WHERE);
+            throw std::bad_alloc();
         }
     }
 
@@ -37,21 +44,22 @@ namespace MiraiCP {
         }
     }
 
-    MiraiCPString::MiraiCPString(const MiraiCPString &other) : _size(other._size), free_this(std_free_ptr) {
+    MiraiCPString::MiraiCPString(const MiraiCPString &other) : str(nullptr), _size(other._size), free_this(std_free_ptr) {
+        if (_size == 0) return;
         construction();
         assert(str != nullptr);
         memcpy(str, other.str, _size * sizeof(char));
         str[_size] = 0;
     }
 
-    MiraiCPString::MiraiCPString(MiraiCPString &&temp) noexcept {
+    MiraiCPString::MiraiCPString(MiraiCPString &&temp) noexcept : MiraiCPString() {
         swap(*this, temp);
     }
 
-    MiraiCPString::MiraiCPString(const char *char_str) {
+    MiraiCPString::MiraiCPString(const char *char_str) : MiraiCPString() {
         if (char_str == nullptr) return;
         _size = strlen(char_str);
-        if (!_size) return;
+        if (0 == _size) return;
         construction();
         assert(str != nullptr);
         memcpy(str, char_str, _size * sizeof(char));
@@ -67,27 +75,25 @@ namespace MiraiCP {
         str[_size] = 0;
     }
 
-    void swap(MiraiCPString &a, MiraiCPString &b) noexcept {
-        std::swap(a.str, b.str);
-        std::swap(a._size, b._size);
-        std::swap(a.free_this, b.free_this);
+    const char *MiraiCPString::copyToCharPtr() const {
+        if (str == nullptr || _size == 0) return new char[1]{0};
+        char *t = new char[_size + 1];
+        memcpy(t, str, (_size + 1) * sizeof(char));
+        return t;
+    }
+
+    bool MiraiCPString::operator==(const MiraiCPString &another) const {
+        return another._size == _size && (_size == 0 || strcmp(another.str, str) == 0);
     }
 
     MiraiCPString &MiraiCPString::operator=(const MiraiCPString &another) {
-        MiraiCPString re(another);
-        std::swap(*this, re);
+        MiraiCPString temp(another);
+        std::swap(*this, temp);
         return *this;
     }
 
     MiraiCPString &MiraiCPString::operator=(MiraiCPString &&another) noexcept {
         std::swap(*this, another);
         return *this;
-    }
-
-    const char *MiraiCPString::copyToCharPtr() const {
-        if (str == nullptr) return nullptr;
-        char *t = new char[_size + 1];
-        memcpy(t, str, (_size + 1) * sizeof(char));
-        return t;
     }
 } // namespace MiraiCP
