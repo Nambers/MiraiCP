@@ -126,7 +126,7 @@ add_library(Loader
 target_include_directories(Loader PUBLIC
         ${JNI_PATH}
         ${3RD_PATH}
-        ${SRC_PATH}/include
+        ${SRC_PATH}/libloader
         ${SRC_PATH}/common
         ${SRC_PATH}
         )
