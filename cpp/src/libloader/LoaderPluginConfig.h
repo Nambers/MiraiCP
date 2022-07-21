@@ -35,7 +35,7 @@ namespace LibLoader {
         plugin_info_func_ptr config = nullptr;
         PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;
         bool enabled = false;
-        std::string actualPath = path;
+        // std::string actualPath = path;
 
         const std::string getId() const {
             if (!handle) {
