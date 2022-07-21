@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "loaderApiInternal.h"
+#include "loaderApi.h"
 #include "Exception.h"
 #include "MiraiDefs.h"
 #include <string>
@@ -52,12 +52,12 @@ namespace LibLoader::LoaderApi {
 
     /// interfaces for plugins
 
-    MiraiCPString pluginOperation(const MiraiCPString& s) {
+    MiraiCPString pluginOperation(const MiraiCPString &s) {
         checkApi((void *) loader_apis->_pluginOperation);
         return loader_apis->_pluginOperation(s);
     }
 
-    void loggerInterface(const MiraiCPString& content, const MiraiCPString& name, long long id, int level) {
+    void loggerInterface(const MiraiCPString &content, const MiraiCPString &name, long long id, int level) {
         checkApi((void *) loader_apis->_loggerInterface);
         loader_apis->_loggerInterface(content, name, id, level);
     }
@@ -68,12 +68,12 @@ namespace LibLoader::LoaderApi {
         return loader_apis->_showAllPluginId();
     }
 
-    void enablePluginById(const MiraiCPString& id) {
+    void enablePluginById(const MiraiCPString &id) {
         checkApi((void *) loader_apis->_enablePluginById);
         loader_apis->_enablePluginById(id);
     }
 
-    void disablePluginById(const MiraiCPString& id) {
+    void disablePluginById(const MiraiCPString &id) {
         checkApi((void *) loader_apis->_disablePluginById);
         loader_apis->_disablePluginById(id);
     }
@@ -88,17 +88,17 @@ namespace LibLoader::LoaderApi {
         loader_apis->_disableAllPlugins();
     }
 
-    void loadNewPlugin(const MiraiCPString& path, bool activateNow) {
+    void loadNewPlugin(const MiraiCPString &path, bool activateNow) {
         checkApi((void *) loader_apis->_loadNewPlugin);
         loader_apis->_loadNewPlugin(path, activateNow);
     }
 
-    void unloadPluginById(const MiraiCPString& id) {
+    void unloadPluginById(const MiraiCPString &id) {
         checkApi((void *) loader_apis->_unloadPluginById);
         loader_apis->_unloadPluginById(id);
     }
 
-    void reloadPluginById(const MiraiCPString& id) {
+    void reloadPluginById(const MiraiCPString &id) {
         checkApi((void *) loader_apis->_reloadPluginById);
         loader_apis->_reloadPluginById(id);
     }
