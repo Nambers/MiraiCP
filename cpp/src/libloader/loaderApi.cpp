@@ -30,23 +30,24 @@ namespace LibLoader {
 
 
 namespace LibLoader::LoaderApi {
+    using MiraiCP::MiraiCPString;
     /// interfaces for plugins
-    std::vector<const char *> showAllPluginId() {
-        std::vector<const char *> re;
-        for (auto a: PluginListManager::getAllPluginId()) {
+    MiraiCPString showAllPluginId() {
+        nlohmann::json re;
+        for (const auto& a: PluginListManager::getAllPluginId()) {
             re.emplace_back(a.c_str());
         }
-        return re;
+        return MiraiCPString(re.dump());
     }
 
-    void enablePluginById(const char *id) {
+    void enablePluginById(const MiraiCPString& id) {
         std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::ADD_THREAD, std::string(id)));
+        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::ADD_THREAD, id));
     }
 
-    void disablePluginById(const char *id) {
+    void disablePluginById(const MiraiCPString& id) {
         std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::END_THREAD, std::string(id)));
+        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::END_THREAD, id));
     }
 
     void enableAllPlugins() {
@@ -59,35 +60,33 @@ namespace LibLoader::LoaderApi {
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::DISABLE_ALL, ""));
     }
 
-    void loadNewPlugin(const char *path, bool activateNow) {
+    void loadNewPlugin(const MiraiCPString& path, bool activateNow) {
         std::lock_guard lk(task_mtx);
         if (activateNow)
-            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_ACTIVATENOW, std::string(path)));
+            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_ACTIVATENOW, path));
         else
-            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_DONTACTIVATE, std::string(path)));
+            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_DONTACTIVATE, path));
     }
 
-    void unloadPluginById(const char *id) {
+    void unloadPluginById(const MiraiCPString& id) {
         std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::UNLOAD, std::string(id)));
+        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::UNLOAD, id));
     }
 
-    void reloadPluginById(const char *id) {
+    void reloadPluginById(const MiraiCPString& id) {
         std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::RELOAD, std::string(id)));
+        loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::RELOAD, id));
     }
 
-    const char *pluginOperation(const char *s) {
+    MiraiCPString pluginOperation(const MiraiCPString& s) {
         auto env = JNIEnvManager::getEnv();
         auto tmp = jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
                                                                      JNIEnvs::koper,
-                                                                     str2jstring(s)));
-        std::unique_ptr<char[]> re(new char[tmp.length() + 1]);
-        strcpy(re.get(), tmp.c_str());
-        return re.get();
+                                                                     str2jstring(s.copyToCharPtr())));
+        return MiraiCPString(tmp);
     }
 
-    void loggerInterface(const char *content, const char *name, long long id, int level) {
+    void loggerInterface(const MiraiCPString& content, const MiraiCPString& name, long long id, int level) {
         logger.call_logger(content, name, id, level);
     }
 } // namespace LibLoader::LoaderApi

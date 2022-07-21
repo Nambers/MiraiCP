@@ -30,10 +30,10 @@ namespace LibLoader {
     const static std::unordered_map<std::string, std::function<void(const std::string &)>> actions = {
             // NOLINT(cert-err58-cpp)
             {"EnablePlugin", [](const std::string &name) {
-                 LoaderApi::enablePluginById(name.c_str());
+                 LoaderApi::enablePluginById(name);
              }},
             {"DisablePlugin", [](const std::string &name) {
-                 LoaderApi::disablePluginById(name.c_str());
+                 LoaderApi::disablePluginById(name);
              }},
             {"DisablePluginList", [](const std::string &name) {
                  LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::LoaderPluginConfig &c) { return !c.enabled; }));
@@ -42,13 +42,13 @@ namespace LibLoader {
                  LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::LoaderPluginConfig &c) { return c.enabled; }));
              }},
             {"ReloadPlugin", [](const std::string &id) {
-                 LoaderApi::reloadPluginById(id.c_str());
+                 LoaderApi::reloadPluginById(id);
              }},
             {"LoadPlugin", [](const std::string &name) {
-                 LoaderApi::loadNewPlugin(name.c_str(), true);
+                 LoaderApi::loadNewPlugin(name, true);
              }},
             {"UnloadPlugin", [](const std::string &id) {
-                 LoaderApi::unloadPluginById(id.c_str());
+                 LoaderApi::unloadPluginById(id);
              }},
             {"PluginList", [](const std::string &name) {
                  logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::LoaderPluginConfig &) { return true; }));

@@ -17,9 +17,7 @@
 #ifndef MIRAICP_PRO_LOADERAPI_H
 #define MIRAICP_PRO_LOADERAPI_H
 
-
-#include <string>
-#include <vector>
+#include "miraicpString.h"
 
 
 #if defined(MIRAICP_LIB_LOADER) | defined(MIRAICP_CORE)
@@ -43,20 +41,21 @@ constexpr int LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
 
 // the API defs to be exposed
 namespace LibLoader::LoaderApi {
+    using MiraiCP::MiraiCPString;
     LOADER_API_COUNT
-    const char *pluginOperation(const char *);
+    MiraiCPString pluginOperation(const MiraiCPString&);
 
     LOADER_API_COUNT
-    void loggerInterface(const char *content, const char *name, long long id, int level);
+    void loggerInterface(const MiraiCPString& content, const MiraiCPString& name, long long id, int level);
 
     LOADER_API_COUNT
-    std::vector<const char *> showAllPluginId();
+    MiraiCPString showAllPluginId();
 
     LOADER_API_COUNT
-    void enablePluginById(const char *);
+    void enablePluginById(const MiraiCPString&);
 
     LOADER_API_COUNT
-    void disablePluginById(const char *);
+    void disablePluginById(const MiraiCPString&);
 
     LOADER_API_COUNT
     void enableAllPlugins();
@@ -65,13 +64,13 @@ namespace LibLoader::LoaderApi {
     void disableAllPlugins();
 
     LOADER_API_COUNT
-    void loadNewPlugin(const char *, bool);
+    void loadNewPlugin(const MiraiCPString&, bool);
 
     LOADER_API_COUNT
-    void unloadPluginById(const char *);
+    void unloadPluginById(const MiraiCPString&);
 
     LOADER_API_COUNT
-    void reloadPluginById(const char *);
+    void reloadPluginById(const MiraiCPString&);
 
 
     struct interface_funcs {
