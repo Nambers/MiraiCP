@@ -159,10 +159,14 @@ namespace LibLoader {
         }
         auto actualFile = std::filesystem::temp_directory_path().append(std::to_string(std::hash<std::string>()(plugin.path)) + ".dll");
         actualPath = actualFile.string();
-        try {
-            std::filesystem::copy(plugin.path, actualFile, std::filesystem::copy_options::overwrite_existing);
-        } catch (std::filesystem::filesystem_error &e) {
-            logger.error("无法复制dll(" + plugin.path + ")到缓存目录(" + actualPath + "), 原因: " + e.what());
+        // try to del it anyway
+        // works around with https://github.com/msys2/MSYS2-packages/issues/1937
+        std::error_code ec;
+        std::filesystem::remove(actualFile, ec);
+        ec.clear();
+        std::filesystem::copy(plugin.path, actualFile, std::filesystem::copy_options::overwrite_existing);
+        if (ec) {
+            logger.error("无法复制dll(" + plugin.path + ")到缓存目录(" + actualPath + "), 原因: " + ec.message());
             return nullptr;
         }
 #endif
