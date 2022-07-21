@@ -62,6 +62,7 @@ namespace LibLoader::LoaderApi {
         loader_apis->_loggerInterface(content, name, id, level);
     }
 
+    // todo(ea): 返回可用类型而不是中间类型
     MiraiCPString showAllPluginId() {
         checkApi((void *) loader_apis->_showAllPluginId);
         return loader_apis->_showAllPluginId();

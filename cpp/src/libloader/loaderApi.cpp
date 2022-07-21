@@ -33,11 +33,7 @@ namespace LibLoader::LoaderApi {
     using MiraiCP::MiraiCPString;
     /// interfaces for plugins
     MiraiCPString showAllPluginId() {
-        nlohmann::json re;
-        for (const auto& a: PluginListManager::getAllPluginId()) {
-            re.emplace_back(a.c_str());
-        }
-        return MiraiCPString(re.dump());
+        return nlohmann::json(PluginListManager::getAllPluginId()).dump();
     }
 
     void enablePluginById(const MiraiCPString& id) {
