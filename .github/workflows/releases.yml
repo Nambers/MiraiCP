@@ -143,6 +143,8 @@ jobs:
       with:
         java-version: '15'
         distribution: 'adopt'
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
     - name: Build plugin
       run:  cd ./kotlin/ && ./gradlew MiraiCP-plugin:buildPlugin --warning-mode all --info --stacktrace
     - name: Build core
