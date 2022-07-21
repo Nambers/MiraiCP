@@ -93,6 +93,8 @@ jobs:
         distribution: 'adopt'
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
+      with:
+        cache-read-only: ${{ github.ref != 'refs/heads/main' }}
     - name: chmod -R 777 *
       run: chmod -R 777 *
     - name: Build plugin
