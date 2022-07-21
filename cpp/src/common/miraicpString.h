@@ -55,9 +55,9 @@ namespace MiraiCP {
 
         MiraiCPString(MiraiCPString &&temp) noexcept;
 
-        explicit MiraiCPString(const char *char_str);
+        MiraiCPString(const char *char_str);
 
-        explicit MiraiCPString(const std::string &string_str);
+        MiraiCPString(const std::string &string_str);
 
         std::string toString() const {
             if (str == nullptr || _size == 0) return {};
