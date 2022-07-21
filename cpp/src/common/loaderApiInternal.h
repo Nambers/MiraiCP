@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MIRAICP_PRO_LOADERAPI_H
-#define MIRAICP_PRO_LOADERAPI_H
+#ifndef MIRAICP_PRO_LOADERAPIINTERNAL_H
+#define MIRAICP_PRO_LOADERAPIINTERNAL_H
 
 #include "miraicpString.h"
 
@@ -122,4 +122,4 @@ namespace LibLoader::LoaderApi {
 } // namespace LibLoader::LoaderApi
 
 
-#endif //MIRAICP_PRO_LOADERAPI_H
+#endif //MIRAICP_PRO_LOADERAPIINTERNAL_H

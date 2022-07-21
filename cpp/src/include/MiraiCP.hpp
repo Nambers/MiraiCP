@@ -41,7 +41,7 @@
 #include "../common/PluginConfig.h"
 #include "../common/commonTools.h"
 #include "../common/commonTypes.h"
-#include "../common/loaderApi.h"
+#include "../common/loaderApiInternal.h"
 #include "../common/miraicpString.h"
 
 #endif //MIRAICP_HPP_H

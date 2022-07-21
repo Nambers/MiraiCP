@@ -17,7 +17,7 @@
 #include "Logger.h"
 #include "CPPPlugin.h"
 #include "MiraiCode.h"
-#include "loaderApi.h"
+#include "loaderApiInternal.h"
 
 
 namespace MiraiCP {

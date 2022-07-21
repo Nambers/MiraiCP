@@ -19,7 +19,7 @@
 #include "Exception.h"
 #include "KtOperation.h"
 #include "Logger.h"
-#include "loaderApi.h"
+#include "loaderApiInternal.h"
 
 
 // 开始对接libloader接口代码
