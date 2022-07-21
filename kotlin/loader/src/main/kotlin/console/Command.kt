@@ -19,9 +19,6 @@
 package tech.eritquearcus.miraicp.loader.console
 
 import com.google.gson.Gson
-import kotlinx.coroutines.job
-import kotlinx.coroutines.runBlocking
-import net.mamoe.mirai.Bot
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import net.mamoe.mirai.message.data.PlainText
@@ -32,7 +29,6 @@ import tech.eritquearcus.miraicp.shared.*
 import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
-import kotlin.system.exitProcess
 
 object Command {
     private const val ch = " "
@@ -96,10 +92,7 @@ object Command {
 
     private fun pureOrder(order: String) {
         when (order) {
-            "exit" -> {
-                PublicShared.exit()
-                KotlinMain.exit()
-            }
+            "exit" -> KotlinMain.exit()
             "help" -> printHelp()
             "status" -> {
                 val s = Duration.between(Console.start, LocalDateTime.now()).seconds
