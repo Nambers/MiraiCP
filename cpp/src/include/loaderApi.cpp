@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "loaderApi.h"
+#include "loaderApiInternal.h"
 #include "Exception.h"
 #include "MiraiDefs.h"
 #include <string>

@@ -20,7 +20,7 @@
 
 
 #include "PluginConfig.h"
-#include "loaderApi.h"
+#include "loaderApiInternal.h"
 
 
 #define FUNC_ENTRANCE FUNC_ENTRANCE

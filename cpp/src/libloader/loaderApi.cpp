@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "loaderApi.h"
+#include "loaderApiInternal.h"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
