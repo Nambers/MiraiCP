@@ -150,6 +150,7 @@ namespace LibLoader {
     }
 
     plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) {
+        auto actualPath = plugin.path;
 #ifdef WIN32
         auto from = std::filesystem::path(plugin.path);
         if (!exists(from) || !from.has_extension()) {
@@ -157,15 +158,15 @@ namespace LibLoader {
             return nullptr;
         }
         auto actualFile = std::filesystem::temp_directory_path().append(std::to_string(std::hash<std::string>()(plugin.path)) + ".dll");
-        plugin.actualPath = actualFile.string();
+        actualPath = actualFile.string();
         try {
             std::filesystem::copy(plugin.path, actualFile, std::filesystem::copy_options::overwrite_existing);
         } catch (std::filesystem::filesystem_error &e) {
-            logger.error("无法复制dll(" + plugin.path + ")到缓存目录, 原因: " + e.what());
+            logger.error("无法复制dll(" + plugin.path + ")到缓存目录(" + actualPath + "), 原因: " + e.what());
             return nullptr;
         }
 #endif
-        return LoaderApi::libOpen(plugin.actualPath);
+        return LoaderApi::libOpen(actualPath);
     }
 
     // 不涉及插件列表的修改；不会修改插件权限
@@ -208,14 +209,14 @@ namespace LibLoader {
 
         // then unload it
         LoaderApi::libClose(plugin.handle);
-#ifdef WIN32
-        try {
-            auto s = std::filesystem::remove(std::filesystem::path(plugin.actualPath));
-            if (!s) LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath);
-        } catch (std::filesystem::filesystem_error &e) {
-            LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + e.what());
-        }
-#endif
+        // #ifdef WIN32
+        //         try {
+        //             auto s = std::filesystem::remove(std::filesystem::path(plugin.actualPath));
+        //             if (!s) LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath);
+        //         } catch (std::filesystem::filesystem_error &e) {
+        //             LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + e.what());
+        //         }
+        // #endif
         plugin.unload();
     }
 
@@ -230,15 +231,14 @@ namespace LibLoader {
         // unload it directly since the thread is already down by exception
         LoaderApi::libClose(plugin.handle);
 
-#ifdef WIN32
-        try {
-            auto s = std::filesystem::remove(std::filesystem::path(plugin.actualPath));
-            if (!s) LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath);
-        } catch (std::filesystem::filesystem_error &e) {
-            LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + e.what());
-        }
-#endif
-        // todo(antares): 可以不用删除缓存
+        // #ifdef WIN32
+        //         try {
+        //             auto s = std::filesystem::remove(std::filesystem::path(plugin.actualPath));
+        //             if (!s) LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath);
+        //         } catch (std::filesystem::filesystem_error &e) {
+        //             LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + e.what());
+        //         }
+        // #endif
         plugin.disable();
         plugin.unload();
     }
