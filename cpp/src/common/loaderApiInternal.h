@@ -17,15 +17,8 @@
 #ifndef MIRAICP_PRO_LOADERAPIINTERNAL_H
 #define MIRAICP_PRO_LOADERAPIINTERNAL_H
 
+
 #include "miraicpString.h"
-
-
-#if defined(MIRAICP_LIB_LOADER) | defined(MIRAICP_CORE)
-#include <jni.h>
-#else
-// forward declaration
-struct JNIEnv;
-#endif
 
 
 #ifdef MIRAICP_LIB_LOADER
