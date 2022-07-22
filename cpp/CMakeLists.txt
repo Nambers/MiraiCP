@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 # 以utf8编译, for msvc
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+# fix msvc `message : 函数是 extern "C" 并且指定了 /EHc`
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/EHa>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/EHa>")
@@ -193,3 +194,35 @@ if (UNIX)
     )
 endif (UNIX)
 # -- end --
+
+# -- Test --
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.12.1
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+enable_testing()
+
+add_executable(
+        TestForPlugin_multi
+        src/tests/plugin/multi/MiraiCodeTest.cpp
+        ${MIRAICP_CPP_PATH}
+        ${MIRAICP_COMMON_PATH}
+)
+target_include_directories(TestForPlugin_multi PUBLIC
+        ${SRC_PATH}/include
+        ${SRC_PATH}/common
+        ${3RD_PATH}
+        )
+target_link_libraries(
+        TestForPlugin_multi
+        GTest::gtest_main
+)
+target_compile_options(TestForPlugin_multi PUBLIC -DGOOGLE_TEST)
+include(GoogleTest)
+gtest_discover_tests(TestForPlugin_multi)
+# -- end test --

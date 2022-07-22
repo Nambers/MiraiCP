@@ -26,6 +26,11 @@
 
 using json = nlohmann::json;
 
+#ifdef GOOGLE_TEST
+const MiraiCP::PluginConfig MiraiCP::CPPPlugin::config{
+        "test", "test"};
+#endif
+
 namespace LibLoader::LoaderApi {
     const interface_funcs *get_loader_apis();
 
@@ -46,7 +51,9 @@ MIRAICP_EXPORT void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &f
     Logger::logger.info("开始启动插件: " + MiraiCP::CPPPlugin::config.getId());
 
     try {
+#ifndef GOOGLE_TEST
         enrollPlugin();
+#endif
         // plugin == nullptr 无插件实例加载
         if (CPPPlugin::plugin != nullptr) {
             CPPPlugin::plugin->onEnable();
