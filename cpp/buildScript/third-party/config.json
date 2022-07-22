@@ -5,7 +5,8 @@
         "common/PluginConfig.h",
         "common/commonTools.h",
         "common/commonTypes.h",
-        "common/loaderApi.h",
+        "common/loaderApiInternal.h",
+        "common/miraicpString.h",
         "include/Bot.h",
         "include/CPPPlugin.h",
         "include/Command.h",
@@ -26,6 +27,7 @@
         "include/MiraiDefs.h",
         "include/SingleMessage.h",
         "include/Tools.h",
+        "include/loaderApi.h",
         "include/utils.h"
     ],
     "include_paths": [
