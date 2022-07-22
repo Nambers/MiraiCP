@@ -38,7 +38,7 @@ PROJECT_NAME           = MiraiCP
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = v2.11.0
+PROJECT_NUMBER         = v2.12.0-RC2
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -873,7 +873,8 @@ WARN_LOGFILE           =
 
 INPUT                  = src/miraicp-core \
                          src/include \
-                         src/examples
+                         src/examples \
+                         src/common
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
