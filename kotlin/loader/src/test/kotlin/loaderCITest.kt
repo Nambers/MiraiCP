@@ -35,12 +35,12 @@ class LoaderCITest {
             """
 {
   "advanceConfig": {
-    "libLoaderPath": "../../cpp/cmake-build-debug/libLoader.$extension"
+    "libLoaderPath": "${File("../../cpp/cmake-build-debug/libLoader.$extension").absolutePath.replace("\\", "/")}"
   },
   "accounts": [],
   "cppPaths": [
     {
-      "path": "../../cpp/cmake-build-debug/libMiraiCP_multi.$extension"
+      "path": "${File("../../cpp/cmake-build-debug/libMiraiCP_multi.$extension").absolutePath.replace("\\", "/")}"
     }
   ]
 }
