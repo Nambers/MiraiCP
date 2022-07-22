@@ -133,9 +133,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
-      with:
-       ref: dev
-       fetch-depth: 0
     - name: permission
       run: chmod -R 777 *
     - name: Set up JDK 15
