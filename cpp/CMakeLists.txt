@@ -136,13 +136,19 @@ set_target_properties(Loader PROPERTIES
         OUTPUT_NAME Loader)
 # https://stackoverflow.com/questions/45114078/get-address-for-symbol-in-current-process-in-windows
 target_compile_options(Loader PUBLIC -DMIRAICP_LIB_LOADER)
+
 if (WIN32)
+    target_link_libraries(MiraiCP_multi -static)
+    target_link_libraries(MiraiCP_single -static)
     target_link_libraries(Loader -static)
 endif (WIN32)
 if (UNIX)
-    target_link_libraries(Loader  -static-libstdc++ -static-libgcc)
+    target_link_libraries(MiraiCP_multi -static-libstdc++ -static-libgcc)
+    target_link_libraries(MiraiCP_single -static-libstdc++ -static-libgcc)
+    target_link_libraries(Loader -static-libstdc++ -static-libgcc)
     target_compile_options(Loader PUBLIC -rdynamic)
 endif (UNIX)
+
 # -- end --
 
 # -- delete outdated single headers task --
