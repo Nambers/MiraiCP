@@ -131,6 +131,9 @@ target_include_directories(Loader PUBLIC
         ${SRC_PATH}/common
         ${SRC_PATH}
         )
+set_target_properties(Loader PROPERTIES
+        PREFIX lib
+        OUTPUT_NAME Loader)
 # https://stackoverflow.com/questions/45114078/get-address-for-symbol-in-current-process-in-windows
 target_compile_options(Loader PUBLIC -DMIRAICP_LIB_LOADER)
 if (WIN32)
