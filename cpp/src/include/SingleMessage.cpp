@@ -150,7 +150,7 @@ namespace MiraiCP {
         return j;
     }
     std::string ServiceMessage::toMiraiCode() const {
-        return "[mirai:service:" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
+        return "[mirai:service" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
     }
     ServiceMessage::ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
         if (sg.type != 4)
