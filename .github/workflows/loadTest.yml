@@ -19,10 +19,6 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         cache-read-only: ${{ github.ref != 'refs/heads/main' }}
-    - name: Set up MinGW
-      uses: egor-tensin/setup-mingw@v2
-      with:
-        platform: x64
     - name: chmod -R 777 *
       run: chmod -R 777 *
     - name: configure
