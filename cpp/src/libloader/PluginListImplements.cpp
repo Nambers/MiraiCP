@@ -181,6 +181,9 @@ namespace LibLoader {
         }
         auto handle = loadPluginInternal(plugin);
         if (handle == nullptr) {
+#if _WIN32 || _WIN64 || WIN32
+            logger.error(GetLastErrorAsString());
+#endif
             logger.error("failed to load plugin at location " + plugin.path); //  + "(" + plugin.actualPath + ")");
             return;
         }
