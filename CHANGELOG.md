@@ -1,4 +1,14 @@
 # Change Log
+## v2.12.0-RC2
++ 修复上一个发行版已知问题:
+	+ libLoader 移植性
+	+ 不同编译器定义差别
+	+ win 下复制插件无法覆盖
+	+ MSVC 下符号导出问题
++ 新增 loadTestCI
+
+> **本 release 包含的 MiraiCP-core 组件无法使用, 先用v2.11的**
+
 ## v2.12.0-RC
 + 引进 LibLoader 中间件
 + 在 MiraiCP-plugin 以及 MiraiCP-loader 去掉 jni 依赖
