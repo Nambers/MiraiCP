@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_LIBOPEN_H
 
 
-#if _WIN32 || _WIN64
+#if _WIN32 || _WIN64 || WIN32
 #include <cstdio>
 #include <windows.h>
 #else
@@ -26,7 +26,7 @@
 #endif
 
 
-#if _WIN32 || _WIN64
+#if _WIN32 || _WIN64 || WIN32
 // https://docs.microsoft.com/zh-cn/windows/win32/dlls/using-run-time-dynamic-linking
 // 以及可能需要GetModuleHandle
 #define OPEN_LIBRARY(path) LoadLibrary(TEXT(path.c_str()))

@@ -16,6 +16,7 @@ file(GLOB LOADER_PATH ${SRC_PATH}/libloader/*.cpp)
 
 # -- automatic add include --
 if (WIN32)
+    add_compile_options(-DWIN32)
     execute_process(
             COMMAND python ../buildScript/addinclude.py
             WORKING_DIRECTORY ${SRC_PATH}

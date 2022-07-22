@@ -20,7 +20,7 @@
 #include <jni.h>
 #include <utf8.h>
 
-#ifdef _WIN32
+#if _WIN32 || _WIN64 || WIN32
 #include <io.h>
 #include <windows.h>
 void freeLibrary(void *pointer) {
@@ -107,7 +107,7 @@ namespace MiraiCP::Core {
     int loadCore(const std::string &corePath) {
         // 未实现
         throw std::exception();
-#ifdef _WIN32
+#if _WIN32 || _WIN64 || WIN32
         if (_access(corePath.c_str(), 0) != 0) {
 #else
         if (access(corePath.c_str(), F_OK) != 0) {
@@ -120,7 +120,7 @@ namespace MiraiCP::Core {
         JavaVMOption vmOption[2];
 
         vmOption[0].optionString = (char *) "-Xmx2048M";
-#ifdef _WIN32
+#if _WIN32 || _WIN64 || WIN32
         std::string tmp = "-Djava.class.path=.\\;" + corePath + ";";
 #else
         std::string tmp = "-Djava.class.path=./:" + corePath;
@@ -142,7 +142,7 @@ namespace MiraiCP::Core {
         vmInitArgs.ignoreUnrecognized = JNI_FALSE;
         //加载JVM动态库
         JNIEnv *env = nullptr;
-#ifdef _WIN32
+#if _WIN32 || _WIN64 || WIN32
         jvmLib = ::LoadLibraryA(_JVM_DLL_PATH);
         if (jvmLib == nullptr) {
             // 加载JVM动态库错误

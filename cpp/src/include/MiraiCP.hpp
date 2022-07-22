@@ -17,6 +17,11 @@
 #define MIRAICP_HPP_H
 
 
+#include "../common/PluginConfig.h"
+#include "../common/commonTools.h"
+#include "../common/commonTypes.h"
+#include "../common/loaderApiInternal.h"
+#include "../common/miraicpString.h"
 #include "Bot.h"
 #include "CPPPlugin.h"
 #include "Command.h"
@@ -37,11 +42,7 @@
 #include "MiraiDefs.h"
 #include "SingleMessage.h"
 #include "Tools.h"
+#include "loaderApi.h"
 #include "utils.h"
-#include "../common/PluginConfig.h"
-#include "../common/commonTools.h"
-#include "../common/commonTypes.h"
-#include "../common/loaderApiInternal.h"
-#include "../common/miraicpString.h"
 
 #endif //MIRAICP_HPP_H

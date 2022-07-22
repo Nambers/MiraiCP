@@ -23,7 +23,7 @@
 #include "ThreadController.h"
 #include "libOpen.h"
 #include "loaderTools.h"
-#ifdef WIN32
+#if _WIN32 || _WIN64 || WIN32
 #include <filesystem>
 // https://stackoverflow.com/questions/1387064/how-to-get-the-error-message-from-the-error-code-returned-by-getlasterror
 //Returns the last Win32 error, in string format. Returns an empty string if there is no error.
@@ -79,7 +79,7 @@ namespace LibLoader {
     PluginAddrInfo testSymbolExistance(plugin_handle handle, const std::string &path) {
         // using static keyword; don't capture any data
         static auto errorMsg = [](const std::string &path) -> PluginAddrInfo {
-#ifdef WIN32
+#if _WIN32 || _WIN64 || WIN32
             logger.error(GetLastErrorAsString());
 #endif
             logger.error("failed to find symbol in plugin at location: " + path);
@@ -151,7 +151,7 @@ namespace LibLoader {
 
     plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) {
         auto actualPath = plugin.path;
-#ifdef WIN32
+#if _WIN32 || _WIN64 || WIN32
         auto from = std::filesystem::path(plugin.path);
         if (!exists(from) || !from.has_extension()) {
             logger.error("path don't exist or invalid " + plugin.path);

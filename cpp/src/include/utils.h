@@ -53,7 +53,7 @@ namespace MiraiCP {
 
 
 #ifndef MIRAICP_EXPORT
-#ifdef WIN32
+#if _WIN32 || _WIN64 || WIN32
 #define MIRAICP_EXPORT __declspec(dllexport)
 #else
 #define MIRAICP_EXPORT
