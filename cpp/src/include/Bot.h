@@ -77,7 +77,7 @@ namespace MiraiCP {
         std::vector<QQID> getFriendList() const;
 
         /// 好友列表string形式返回，利于保存
-        std::string FriendListToString();
+        std::string FriendListToString() const;
 
         /// 取群列表
         std::vector<QQID> getGroupList() const;
