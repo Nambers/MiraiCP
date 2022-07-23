@@ -50,106 +50,6 @@ if (JNI_FOUND)
 else ()
     message(STATUS "Cannot find JNI")
 endif ()
-
-# -- end --
-
-
-# -- miraicp multi --
-add_library(
-        MiraiCP_multi
-        SHARED
-        ${CMAKE_CURRENT_SOURCE_DIR}/demo/test.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/demo/test2.cpp
-        ${MIRAICP_CPP_PATH}
-        ${MIRAICP_COMMON_PATH}
-)
-set_target_properties(MiraiCP_multi PROPERTIES
-        PREFIX lib
-        OUTPUT_NAME MiraiCP_multi)
-target_include_directories(MiraiCP_multi PUBLIC
-        ${SRC_PATH}/include
-        ${SRC_PATH}/common
-        ${3RD_PATH}
-        )
-target_compile_options(MiraiCP_multi PUBLIC -w)
-# -- end --
-
-# -- MiraiCP single --
-if (NOT EXISTS "${SRC_PATH}/single_include/MiraiCP/MiraiCP.hpp" OR NOT EXISTS "${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp")
-    FILE(WRITE "${SRC_PATH}/single_include/MiraiCP/MiraiCP.hpp" "")
-    FILE(WRITE "${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp" "")
-endif ()
-add_library(
-        MiraiCP_single
-        SHARED
-        ${CMAKE_CURRENT_SOURCE_DIR}/demo/test.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/demo/test2.cpp
-        ${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp
-)
-add_dependencies(MiraiCP_single generateSingleHeaders)
-set_target_properties(MiraiCP_single PROPERTIES
-        PREFIX lib
-        OUTPUT_NAME MiraiCP_single)
-target_include_directories(MiraiCP_single PUBLIC
-        ${SRC_PATH}/single_include/MiraiCP
-        ${3RD_PATH}
-        )
-target_compile_options(MiraiCP_single PUBLIC -w)
-# -- end --
-
-# -- MiraiCP core --
-add_executable(MiraiCP_core
-        ${CMAKE_CURRENT_SOURCE_DIR}/demo/MiraiCP-core.cpp
-        ${SRC_PATH}/miraicp-core/core.cpp
-        ${MIRAICP_CPP_PATH}
-        ${MIRAICP_COMMON_PATH}
-        )
-target_include_directories(MiraiCP_core PUBLIC
-        ${JNI_PATH}
-        ${3RD_PATH}
-        ${SRC_PATH}/miraicp-core
-        ${SRC_PATH}/include
-        ${SRC_PATH}/common
-        ${SRC_PATH}
-        )
-if (WIN32)
-    target_compile_options(MiraiCP_core PUBLIC -DMIRAICP_CORE -D_JVM_DLL_PATH=\"${JAVA_INCLUDE_PATH}/../bin/server/jvm.dll\")
-else (WIN32)
-    target_compile_options(MiraiCP_core PUBLIC -DMIRAICP_CORE -D_JVM_DLL_PATH=\"\")
-endif (WIN32)
-# -- end --
-
-# -- MiraiCP libLoader --
-add_library(Loader
-        SHARED
-        ${LOADER_PATH}
-        ${MIRAICP_COMMON_PATH}
-        )
-target_include_directories(Loader PUBLIC
-        ${JNI_PATH}
-        ${3RD_PATH}
-        ${SRC_PATH}/libloader
-        ${SRC_PATH}/common
-        ${SRC_PATH}
-        )
-set_target_properties(Loader PROPERTIES
-        PREFIX lib
-        OUTPUT_NAME Loader)
-# https://stackoverflow.com/questions/45114078/get-address-for-symbol-in-current-process-in-windows
-target_compile_options(Loader PUBLIC -DMIRAICP_LIB_LOADER)
-
-if (WIN32)
-    target_link_libraries(MiraiCP_multi -static)
-    target_link_libraries(MiraiCP_single -static)
-    target_link_libraries(Loader -static)
-endif (WIN32)
-if (UNIX)
-    target_link_libraries(MiraiCP_multi -static-libstdc++ -static-libgcc)
-    target_link_libraries(MiraiCP_single -static-libstdc++ -static-libgcc)
-    target_link_libraries(Loader -static-libstdc++ -static-libgcc)
-    target_compile_options(Loader PUBLIC -rdynamic)
-endif (UNIX)
-
 # -- end --
 
 # -- delete outdated single headers task --
@@ -195,4 +95,7 @@ if (UNIX)
 endif (UNIX)
 # -- end --
 
+add_subdirectory(src/include)
+add_subdirectory(src/miraicp-core)
+add_subdirectory(src/libloader)
 add_subdirectory(src/tests)

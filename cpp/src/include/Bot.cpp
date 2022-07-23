@@ -50,7 +50,7 @@ namespace MiraiCP {
         return Tools::StringToVector(std::move(temp));
     }
 
-    std::string Bot::FriendListToString() {
+    std::string Bot::FriendListToString() const {
         return Tools::VectorToString(getFriendList());
     }
 
