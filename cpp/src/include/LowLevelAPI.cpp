@@ -13,15 +13,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 #include "LowLevelAPI.h"
-#include "KtOperation.h"
 #include "Exception.h"
+#include "KtOperation.h"
 #include "MiraiDefs.h"
 #include <utility>
 
 
 namespace MiraiCP {
     using json = nlohmann::json;
+
     std::string LowLevelAPI::send0(const std::string &content, json c, int retryTime, bool miraicode,
                                    const std::string &errorInfo) {
         nlohmann::json j;
@@ -33,6 +35,7 @@ namespace MiraiCP {
         j["retryTime"] = retryTime;
         return KtOperation::ktOperation(KtOperation::Send, j, true, errorInfo);
     }
+
     LowLevelAPI::info LowLevelAPI::info0(const std::string &source) {
         info re;
         ErrorHandle(source, "");
@@ -47,6 +50,7 @@ namespace MiraiCP {
         j["source"] = c;
         return KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
+
     std::string LowLevelAPI::uploadImg0(const std::string &path, const std::string &c) {
         nlohmann::json j;
         j["fileName"] = path;
