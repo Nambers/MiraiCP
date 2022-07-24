@@ -69,7 +69,10 @@ jobject Verify(JNIEnv *, jobject, jstring _version, jstring _cfgPath) {
 /// 不会造成死锁
 jobject Event(JNIEnv *, jobject, jstring content) {
     static std::string str;
+
+    std::lock_guard lk(LibLoader::PluginListManager::getLock());
     str = LibLoader::jstring2str(content);
+
     if (str.find(R"("type":1000)") != std::string::npos) {
         LibLoader::builtInCommand(str);
         return nullptr;
@@ -79,7 +82,7 @@ jobject Event(JNIEnv *, jobject, jstring content) {
     static std::function broadcast_func = [](const LibLoader::LoaderPluginConfig &cfg) {
         if (cfg.handle && cfg.enabled) {
             LibLoader::ThreadController::getController().submitJob(cfg.getId(), [&cfg]() {
-                cfg.eventFunc(str.c_str());
+                cfg.eventFunc(str);
             });
         }
     };

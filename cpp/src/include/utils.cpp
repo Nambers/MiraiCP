@@ -93,7 +93,7 @@ MIRAICP_EXPORT void FUNC_EXIT() {
 
 /// 消息解析分流
 /// env != null, call from jni
-MIRAICP_EXPORT void FUNC_EVENT(const char *c) {
+MIRAICP_EXPORT void FUNC_EVENT(const MiraiCP::MiraiCPString &c) {
     static_assert(std::is_same_v<decltype(&FUNC_EVENT), LibLoader::plugin_event_func_ptr>);
 
     using namespace MiraiCP;

@@ -34,7 +34,7 @@ namespace LibLoader {
     /// @see @macro FUNC_ENTRANCE
     typedef void (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
     /// @see @macro FUNC_EVENT
-    typedef void (*plugin_event_func_ptr)(const char *);
+    typedef void (*plugin_event_func_ptr)(const MiraiCP::MiraiCPString &);
     /// @see @macro FUNC_EXIT
     typedef void (*plugin_func_ptr)();
     /// @see @macro PLUGIN_INFO
