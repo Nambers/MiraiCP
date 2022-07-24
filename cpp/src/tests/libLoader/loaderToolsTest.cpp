@@ -16,7 +16,11 @@
 
 #include "loaderTools.h"
 #include <gtest/gtest.h>
+
+
 using namespace LibLoader;
+using namespace MiraiCP;
+
 
 TEST(loaderToolsTest, readJsonFile) {
     // todo(ea): 其他配置项
@@ -49,6 +53,7 @@ TEST(loaderToolsTest, readJsonFile) {
     EXPECT_EQ("libMiraiCP_multi.dll", target["cppPaths"][0]["path"]);
     remove("test.tmp");
 }
+
 
 TEST(loaderToolsTest, compareAndSwapStrong) {
     int a = 0;
