@@ -35,20 +35,21 @@ constexpr int LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
 // the API defs to be exposed
 namespace LibLoader::LoaderApi {
     using MiraiCP::MiraiCPString;
-    LOADER_API_COUNT
-    MiraiCPString pluginOperation(const MiraiCPString&);
 
     LOADER_API_COUNT
-    void loggerInterface(const MiraiCPString& content, const MiraiCPString& name, long long id, int level);
+    MiraiCPString pluginOperation(const MiraiCPString &);
+
+    LOADER_API_COUNT
+    void loggerInterface(const MiraiCPString &content, const MiraiCPString &name, long long id, int level);
 
     LOADER_API_COUNT
     MiraiCPString showAllPluginId();
 
     LOADER_API_COUNT
-    void enablePluginById(const MiraiCPString&);
+    void enablePluginById(const MiraiCPString &);
 
     LOADER_API_COUNT
-    void disablePluginById(const MiraiCPString&);
+    void disablePluginById(const MiraiCPString &);
 
     LOADER_API_COUNT
     void enableAllPlugins();
@@ -57,20 +58,24 @@ namespace LibLoader::LoaderApi {
     void disableAllPlugins();
 
     LOADER_API_COUNT
-    void loadNewPlugin(const MiraiCPString&, bool);
+    void loadNewPlugin(const MiraiCPString &, bool);
 
     LOADER_API_COUNT
-    void unloadPluginById(const MiraiCPString&);
+    void unloadPluginById(const MiraiCPString &);
 
     LOADER_API_COUNT
-    void reloadPluginById(const MiraiCPString&);
+    void reloadPluginById(const MiraiCPString &);
 
 
+    // internal usage. do not call this directly in plugins.
     struct interface_funcs {
+        static constexpr int line0 = __LINE__;
         decltype(&pluginOperation) _pluginOperation;
         decltype(&loggerInterface) _loggerInterface;
         decltype(&showAllPluginId) _showAllPluginId;
+        static constexpr int line1 = __LINE__;
         // function below can only be called by admin plugins
+        static constexpr int adminline0 = __LINE__;
         decltype(&enablePluginById) _enablePluginById = nullptr;
         decltype(&disablePluginById) _disablePluginById = nullptr;
         decltype(&enableAllPlugins) _enableAllPlugins = nullptr;
@@ -78,6 +83,7 @@ namespace LibLoader::LoaderApi {
         decltype(&loadNewPlugin) _loadNewPlugin = nullptr;
         decltype(&unloadPluginById) _unloadPluginById = nullptr;
         decltype(&reloadPluginById) _reloadPluginById = nullptr;
+        static constexpr int adminline1 = __LINE__;
     };
 
 
@@ -103,11 +109,14 @@ namespace LibLoader::LoaderApi {
             static_assert(line1 - line0 == counter + 3);
             return t;
         } else {
+            constexpr int line0 = __LINE__;
             interface_funcs t2 = {
                     pluginOperation,
                     loggerInterface,
                     showAllPluginId,
             }; // no admin functions
+            constexpr int line1 = __LINE__;
+            static_assert(line1 - line0 == interface_funcs::line1 - interface_funcs::line0 + 2);
             return t2;
         }
     }
