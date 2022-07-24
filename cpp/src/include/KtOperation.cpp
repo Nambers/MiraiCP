@@ -26,7 +26,7 @@ namespace MiraiCP::KtOperation {
         j["type"] = type;
         j["data"] = std::move(data);
         auto tmp = j.dump();
-        std::string re = LibLoader::LoaderApi::pluginOperation(tmp.c_str());
+        std::string re = LibLoader::LoaderApi::pluginOperation(tmp);
         if (catchErr) ErrorHandle(re, errorInfo);
         return re;
     }

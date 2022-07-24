@@ -24,10 +24,10 @@ namespace MiraiCP {
     Logger Logger::logger;
 
     void Logger::log_interface(const std::string &content, int level) {
-        LibLoader::LoaderApi::loggerInterface(content.c_str(), ("plugin/" + MiraiCP::CPPPlugin::config.getName()).c_str(), -1, level);
+        LibLoader::LoaderApi::loggerInterface(content, ("plugin/" + MiraiCP::CPPPlugin::config.getName()), -1, level);
     }
 
     void IdLogger::log_interface(const std::string &content, int level) {
-        LibLoader::LoaderApi::loggerInterface(content.c_str(), "", static_cast<long long>(id), level);
+        LibLoader::LoaderApi::loggerInterface(content, "", static_cast<long long>(id), level);
     }
 } // namespace MiraiCP
