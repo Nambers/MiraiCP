@@ -17,10 +17,10 @@
 #include "loaderApi.h"
 #include "Exception.h"
 #include "MiraiDefs.h"
+#include "loaderApiInternal.h"
 #include <string>
 #include <utility>
 #include <vector>
-
 
 namespace LibLoader::LoaderApi {
     static const interface_funcs *loader_apis = nullptr;
@@ -62,7 +62,6 @@ namespace LibLoader::LoaderApi {
         loader_apis->_loggerInterface(content, name, id, level);
     }
 
-    // todo(ea): 返回可用类型而不是中间类型
     MiraiCPString showAllPluginId() {
         checkApi((void *) loader_apis->_showAllPluginId);
         return loader_apis->_showAllPluginId();
@@ -103,3 +102,42 @@ namespace LibLoader::LoaderApi {
         loader_apis->_reloadPluginById(id);
     }
 } // namespace LibLoader::LoaderApi
+
+namespace MiraiCP::LoaderApi {
+    void loggerInterface(const std::string &content, const std::string &name, long long int id, int level) {
+        LibLoader::LoaderApi::loggerInterface(content, name, id, level);
+    }
+
+    std::vector<std::string> showAllPluginId() {
+        nlohmann::json::array_t PluginIdList = nlohmann::json::parse(LibLoader::LoaderApi::showAllPluginId().toString());
+        return {PluginIdList.begin(), PluginIdList.end()};
+    }
+
+    void enablePluginById(const std::string &id) {
+        LibLoader::LoaderApi::enablePluginById(id);
+    }
+
+    void disablePluginById(const std::string &id) {
+        LibLoader::LoaderApi::disablePluginById(id);
+    }
+
+    void enableAllPlugins() {
+        LibLoader::LoaderApi::enableAllPlugins();
+    }
+
+    void disableAllPlugins() {
+        LibLoader::LoaderApi::disableAllPlugins();
+    }
+
+    void loadNewPlugin(const std::string &path, bool enableNow) {
+        LibLoader::LoaderApi::loadNewPlugin(path, enableNow);
+    }
+
+    void unloadPluginById(const std::string &id) {
+        LibLoader::LoaderApi::unloadPluginById(id);
+    }
+
+    void reloadPluginById(const std::string &id) {
+        LibLoader::LoaderApi::reloadPluginById(id);
+    }
+} // namespace MiraiCP::LoaderApi

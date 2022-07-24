@@ -79,7 +79,7 @@ namespace LibLoader::LoaderApi {
         auto tmp = jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
                                                                      JNIEnvs::koper,
                                                                      str2jstring(s.copyToCharPtr())));
-        return MiraiCPString(tmp);
+        return {tmp};
     }
 
     void loggerInterface(const MiraiCPString& content, const MiraiCPString& name, long long id, int level) {
