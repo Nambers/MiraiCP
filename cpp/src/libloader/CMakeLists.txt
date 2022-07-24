@@ -13,7 +13,8 @@ target_include_directories(Loader PUBLIC
         )
 set_target_properties(Loader PROPERTIES
         PREFIX lib
-        OUTPUT_NAME Loader)
+        OUTPUT_NAME Loader
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 # https://stackoverflow.com/questions/45114078/get-address-for-symbol-in-current-process-in-windows
 target_compile_options(Loader PUBLIC -DMIRAICP_LIB_LOADER)
 
