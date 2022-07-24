@@ -39,10 +39,10 @@
 #include "Tools.h"
 #include "loaderApi.h"
 #include "utils.h"
+#include "../common/MiraiCPStringInternal.h"
 #include "../common/PluginConfig.h"
 #include "../common/commonTools.h"
 #include "../common/commonTypes.h"
 #include "../common/loaderApiInternal.h"
-#include "../common/miraicpString.h"
 
 #endif //MIRAICP_HPP_H

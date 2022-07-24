@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MIRAICP_PRO_MIRAICPSTRING_H
-#define MIRAICP_PRO_MIRAICPSTRING_H
+#ifndef MIRAICP_PRO_MIRAICPSTRINGINTERNAL_H
+#define MIRAICP_PRO_MIRAICPSTRINGINTERNAL_H
 
 
 #include <cassert>
@@ -83,4 +83,4 @@ namespace MiraiCP {
     static_assert(sizeof(MiraiCPString) == 3 * 8, "Please make sure MiraiCP is compiled under 64-bit mode.");
 } // namespace MiraiCP
 
-#endif //MIRAICP_PRO_MIRAICPSTRING_H
+#endif //MIRAICP_PRO_MIRAICPSTRINGINTERNAL_H

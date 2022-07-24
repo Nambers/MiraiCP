@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_LOADERAPIINTERNAL_H
 
 
-#include "miraicpString.h"
+#include "MiraiCPStringInternal.h"
 
 
 #ifdef MIRAICP_LIB_LOADER
