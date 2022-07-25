@@ -32,27 +32,37 @@
 
 namespace MiraiCP {
 
-    struct CoutRedirector {
-        explicit CoutRedirector(std::ostream &obj, std::streambuf *new_buffer)
-            : old(obj.rdbuf(new_buffer)), obj(obj) {}
-
-        ~CoutRedirector() {
+    class OStreamRedirector {
+    public:
+        ~OStreamRedirector() {
             obj.rdbuf(old);
         }
 
+        /**
+         * @brief 重定向 obj 的流
+         * @param obj 需要重定向的流
+         * @param new_buffer 重定向到的新缓冲区
+         */
+        explicit OStreamRedirector(std::ostream &obj, std::streambuf *newBuffer)
+            : old(obj.rdbuf(newBuffer)), obj(obj) {}
+
     private:
+        // 被重定向的流
         std::ostream &obj;
+        // 旧的缓冲区目标
         std::streambuf *old;
     };
 
-    class OString : private std::streambuf, public std::istream {
+    class OString : private std::streambuf, public std::ostream {
     public:
-        explicit OString(bool info) : std::istream(this), info(info) {}
+        // 输出是否为 info 级别
+        explicit OString(bool info) : std::ostream(this), info(info) {}
 
     private:
         bool info;
+        // 缓冲区
         std::ostringstream result{};
-
+        // 加入缓冲区
         int overflow(std::streambuf::int_type c) override {
             if (c == EOF)
                 out();
@@ -60,10 +70,12 @@ namespace MiraiCP {
                 result.put((std::streambuf::char_type) c);
             return c;
         }
+        // std::streambuff 的 sync
         int sync() override {
             out();
             return 0;
         }
+        // 输出缓冲区内容, 相当于 flush
         void out() {
             if (info)
                 log(result.str());
