@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_PLUGINCONFIG_H
 
 
+#include "MiraiCPStringInternal.h"
 #include <json.hpp>
 
 
@@ -25,18 +26,18 @@ namespace MiraiCP {
     const std::string MiraiCPVersion = "v2.12.0-RC2";
     struct PluginConfig {
         /// @brief 插件id, 要与别人不一样否则报错无法加载(建议用类包格式，如: io.github.nambers)
-        const char *id;
+        MiraiCPString id;
         /// @brief 插件名称
-        const char *name;
+        MiraiCPString name;
         /// @brief 插件版本
-        const char *version;
+        MiraiCPString version;
         /// @brief 插件作者(及联系方式)
-        const char *author;
+        MiraiCPString author;
         /// @brief [optional]插件描述
-        const char *description;
+        MiraiCPString description = "";
         /// @brief [optional]构建时间, 默认为__DATE__宏
-        const char *time = __DATE__;
-        const char *mversion = MiraiCPVersion.c_str();
+        MiraiCPString time = __DATE__;
+        MiraiCPString mversion = MiraiCPVersion.c_str();
 
         std::string getId() const {
             return {id};
