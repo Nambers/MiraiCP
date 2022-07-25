@@ -17,7 +17,7 @@
 #include "redirectCout.h"
 
 MiraiCP::OString outTarget(true);
-[[maybe_unused]] const MiraiCP::CoutRedirector outRedirector{std::cout, outTarget.rdbuf()};
+[[maybe_unused]] const MiraiCP::OStreamRedirector outRedirector{std::cout, outTarget.rdbuf()};
 
 MiraiCP::OString errTarget(false);
-[[maybe_unused]] const MiraiCP::CoutRedirector errRedirector{std::cerr, errTarget.rdbuf()};
+[[maybe_unused]] const MiraiCP::OStreamRedirector errRedirector{std::cerr, errTarget.rdbuf()};
