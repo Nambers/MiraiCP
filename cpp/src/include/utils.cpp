@@ -20,6 +20,7 @@
 #include "KtOperation.h"
 #include "Logger.h"
 #include "loaderApiInternal.h"
+#include <iostream>
 
 
 // 开始对接libloader接口代码
@@ -59,14 +60,17 @@ MIRAICP_EXPORT void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &f
             CPPPlugin::plugin->onEnable();
         }
     } catch (const MiraiCPExceptionBase &e) {
+        std::cerr.flush();
         e.raise();
         Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name.toString() + ")启动失败");
         throw IllegalStateException(e.what(), e.filename, e.lineNum);
     } catch (const std::exception &e) {
+        std::cerr.flush();
         Logger::logger.error(e.what());
         Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name.toString() + ")启动失败");
         throw IllegalStateException(e.what(), MIRAICP_EXCEPTION_WHERE);
     } catch (...) {
+        std::cerr.flush();
         Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name.toString() + ")启动失败");
         throw IllegalStateException("", MIRAICP_EXCEPTION_WHERE);
     }
