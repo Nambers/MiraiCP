@@ -16,6 +16,8 @@
 
 #include "LoaderLogger.h"
 #include "JNIEnvs.h"
+#include "loaderTools.h"
+#include <json.hpp>
 
 
 namespace LibLoader {
