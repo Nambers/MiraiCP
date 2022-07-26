@@ -16,8 +16,6 @@
 
 #include "LoaderLogger.h"
 #include "JNIEnvs.h"
-#include "json.hpp"
-#include "loaderTools.h"
 
 
 namespace LibLoader {
@@ -36,24 +34,28 @@ namespace LibLoader {
         logMethod = JNIEnvs::getEnv()->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");
     }
 
-    void LoaderLogger::info(const string &msg) {
+    void LoaderLogger::info(const string &msg) const {
         call_logger(msg, "MiraiCP/LibLoader", -1, 0);
     }
 
-    void LoaderLogger::warning(const string &msg) {
+    void LoaderLogger::warning(const string &msg) const {
         call_logger(msg, "MiraiCP/LibLoader", -1, 1);
     }
 
-    void LoaderLogger::error(const string &msg) {
+    void LoaderLogger::error(const string &msg) const {
         call_logger(msg, "MiraiCP/LibLoader", -1, 2);
     }
 
     void LoaderLogger::call_logger(const string &content, const string &name, long long id, int level) const {
+#ifdef GOOGLE_TEST
+        action(content, name, id, level);
+#else
         nlohmann::json j = {
                 {"id", id},
                 {"log", content}};
         if (!name.empty()) j["name"] = std::move(name);
         auto env = JNIEnvs::getEnv();
         env->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, LibLoader::str2jstring(j.dump().c_str()), (jint) (level));
+#endif
     }
 } // namespace LibLoader
