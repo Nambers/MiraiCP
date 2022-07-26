@@ -18,7 +18,7 @@ add_subdirectory(libLoader)
 # todo(ea): 更好的解决方法
 add_custom_target(AllTests
         COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target AllTestForPlugin_Multi
-        COMMAND ${CMAKE_BINARY_DIR}/src/tests/libLoader/AllTestForLibLoader.exe
+        COMMAND ${CMAKE_BINARY_DIR}/src/tests/plugin/multi/AllTestForPlugin_Multi.exe
         COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target AllTestForLibLoader
         COMMAND ${CMAKE_BINARY_DIR}/src/tests/libLoader/AllTestForLibLoader.exe
         )
