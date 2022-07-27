@@ -28,7 +28,6 @@ namespace MiraiCP {
     // always convert to const char* or std::string before using.
     class MiraiCPString {
         using string = std::string;
-        friend void swap(MiraiCPString &, MiraiCPString &) noexcept;
 
     private:
         static constexpr decltype(&::std::free) std_free_ptr = &::std::free;
@@ -77,6 +76,9 @@ namespace MiraiCP {
         MiraiCPString &operator=(const MiraiCPString &another);
 
         MiraiCPString &operator=(MiraiCPString &&another) noexcept;
+
+    private:
+        void swap(MiraiCPString &other) noexcept;
     };
 
     static_assert(sizeof(char) == 1, "Please make sure the size of char type is 1");

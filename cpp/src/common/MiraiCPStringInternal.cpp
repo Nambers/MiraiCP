@@ -22,12 +22,6 @@
 
 
 namespace MiraiCP {
-    void swap(MiraiCPString &a, MiraiCPString &b) noexcept {
-        std::swap(a.str, b.str);
-        std::swap(a._size, b._size);
-        std::swap(a.free_this, b.free_this);
-    }
-
     // avoid calling this if _size == 0
     void MiraiCPString::construction() {
         str = (char *) ::std::malloc(sizeof(char) * (_size + 1));
@@ -56,7 +50,7 @@ namespace MiraiCP {
     }
 
     MiraiCPString::MiraiCPString(MiraiCPString &&temp) noexcept : MiraiCPString() {
-        swap(*this, temp);
+        swap(temp);
     }
 
     MiraiCPString::MiraiCPString(const char *char_str) : MiraiCPString() {
@@ -91,12 +85,18 @@ namespace MiraiCP {
 
     MiraiCPString &MiraiCPString::operator=(const MiraiCPString &another) {
         MiraiCPString temp(another);
-        std::swap(*this, temp);
+        swap(temp);
         return *this;
     }
 
     MiraiCPString &MiraiCPString::operator=(MiraiCPString &&another) noexcept {
-        std::swap(*this, another);
+        swap(another);
         return *this;
+    }
+
+    void MiraiCPString::swap(MiraiCPString &other) noexcept {
+        std::swap(str, other.str);
+        std::swap(_size, other._size);
+        std::swap(free_this, other.free_this);
     }
 } // namespace MiraiCP
