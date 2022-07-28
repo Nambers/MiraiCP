@@ -20,6 +20,7 @@
 
 #include <functional>
 
+#define MIRAICP_EXCEPTION_WHERE __FILE__, __LINE__
 
 #define MiraiCP_defer(code)                              \
     auto __defered_statement_wrapper__ = [&]() { code }; \

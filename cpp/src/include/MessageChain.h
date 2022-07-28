@@ -17,8 +17,11 @@
 #ifndef MIRAICP_PRO_MESSAGECHAIN_H
 #define MIRAICP_PRO_MESSAGECHAIN_H
 
+
 #include "Exception.h"
 #include "SingleMessage.h"
+#include "commonTools.h"
+
 
 namespace MiraiCP {
     class MessageSource; // forward declaration

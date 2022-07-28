@@ -16,11 +16,11 @@
 
 #include "loaderApi.h"
 #include "Exception.h"
-#include "MiraiDefs.h"
+#include "commonTools.h"
 #include "loaderApiInternal.h"
 #include <string>
-#include <utility>
 #include <vector>
+
 
 namespace LibLoader::LoaderApi {
     static const interface_funcs *loader_apis = nullptr;

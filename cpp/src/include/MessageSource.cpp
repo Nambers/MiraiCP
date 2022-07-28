@@ -15,9 +15,11 @@
 //
 
 #include "MessageSource.h"
-#include "KtOperation.h"
 #include "Exception.h"
+#include "KtOperation.h"
 #include "Logger.h"
+#include "commonTools.h"
+
 
 namespace MiraiCP {
     using json = nlohmann::json;

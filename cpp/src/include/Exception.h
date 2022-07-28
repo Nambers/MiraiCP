@@ -17,10 +17,12 @@
 #ifndef MIRAICP_PRO_EXCEPTION_H
 #define MIRAICP_PRO_EXCEPTION_H
 
+
 #include "CPPPlugin.h"
 #include <exception>
 #include <string>
 #include <thread>
+
 
 namespace MiraiCP {
     /// @brief 总异常抽象类，用于一般捕获，不要直接抛出该类，不知道抛出什么的时候请抛出 MiraiCPException
@@ -74,7 +76,7 @@ namespace MiraiCP {
     /// @brief 总异常CRTP抽象类，不要直接抛出该类，不知道抛出什么的时候请抛出 MiraiCPException。
     /// 该类是用于继承的基类，需要新的异常类型时，继承该类并以子类作为模板参数。
     /// 子类需要实现的方法：
-    /// 1. 构造函数，要求必须委托MiraiCPExceptionCRTP构造，其他成员需要在MiraiCPException构造前完成构造。
+    /// 1. 构造函数，要求必须委托MiraiCPExceptionCRTP构造。
     /// 2. `static std::string exceptionType()` 返回一个字符串表示异常类型。
     /// 继承该类后异常类能正确实现多态。
     /// @interface MiraiCPExceptionCRTP
@@ -83,7 +85,7 @@ namespace MiraiCP {
     class MiraiCPExceptionCRTP : public MiraiCPExceptionBase {
     public:
         /// 委托构造函数
-        explicit MiraiCPExceptionCRTP(std::string _re, string _filename, int _lineNum) : MiraiCPExceptionBase(std::move(_re), std::move(_filename), _lineNum) {
+        explicit MiraiCPExceptionCRTP(string _re, string _filename, int _lineNum) : MiraiCPExceptionBase(std::move(_re), std::move(_filename), _lineNum) {
         }
 
     public:
