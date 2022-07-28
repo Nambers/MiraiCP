@@ -15,6 +15,8 @@
 //
 
 #include "Command.h"
+
+
 namespace MiraiCP {
     CommandManager CommandManager::commandManager = CommandManager();
 }

@@ -14,13 +14,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "SingleMessage.h"
+#include "Exception.h"
+#include "KtOperation.h"
+#include "Logger.h"
+#include "Tools.h"
+#include "commonTools.h"
 #include <json.hpp>
 
-#include "KtOperation.h"
-#include "Exception.h"
-#include "Logger.h"
-#include "SingleMessage.h"
-#include "Tools.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;

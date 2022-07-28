@@ -16,11 +16,16 @@
 
 #ifndef MIRAICP_PRO_COMMAND_H
 #define MIRAICP_PRO_COMMAND_H
+
+
 #include "CPPPlugin.h"
 #include "Exception.h"
 #include "KtOperation.h"
 #include "Logger.h"
+#include "commonTools.h"
 #include <optional>
+
+
 namespace MiraiCP {
     class MessageChain;
     class Bot;
