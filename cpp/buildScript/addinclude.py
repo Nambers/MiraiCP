@@ -50,7 +50,7 @@ fnames.sort()
 
 for filename in fnames:
     if filename.endswith('.h'):
-        ss += "#include \"../common/{}\"\n".format(filename)
+        ss += f"#include \"{filename}\"\n"
 
 ss += "\n#endif //MIRAICP_HPP_H"
 
