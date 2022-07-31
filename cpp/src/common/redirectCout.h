@@ -27,6 +27,8 @@
 #define err(x) MiraiCP::Logger::logger.error(x)
 #endif
 
+// todo(antares): 不要将上述宏定义放在这里；需要用到宏的地方转移到cpp文件中
+
 #ifndef MIRAICP_PRO_REDIRECTCOUT_H
 #define MIRAICP_PRO_REDIRECTCOUT_H
 
@@ -48,11 +50,14 @@ namespace MiraiCP {
 
     private:
         // 被重定向的流
-        std::ostream &obj;
+        std::ostream &obj; // todo(antares): 不要在类成员中使用引用；改为指针
         // 旧的缓冲区目标
         std::streambuf *old;
     };
 
+    // todo(antares): 整理格式，成员变量在最前，之后构造、析构函数，最后成员函数
+    //  继承了具有虚析构函数的父类，析构函数请显式写为virtual override
+    //  长度较小的成员（bool）放到后面
     class OString : private std::streambuf, public std::ostream {
     public:
         // 输出是否为 info 级别
