@@ -55,12 +55,12 @@ namespace MiraiCP {
         MiraiCPNewThread &operator=(const MiraiCPNewThread &) = delete;
 
         MiraiCPNewThread &operator=(std::thread &&other) {
-            *static_cast<std::thread *>(this) = std::move(other);
+            static_cast<std::thread &>(*this) = std::move(other);
             return *this;
         }
 
         MiraiCPNewThread &operator=(MiraiCPNewThread &&other) noexcept {
-            *static_cast<std::thread *>(this) = std::move(*static_cast<std::thread *>(&other));
+            static_cast<std::thread &>(*this) = std::move(static_cast<std::thread &>(other));
             return *this;
         }
     };
