@@ -16,7 +16,7 @@
 
 #ifndef MIRAICP_PRO_MIRAICPNEWTHREAD_H
 #define MIRAICP_PRO_MIRAICPNEWTHREAD_H
-
+#include "Logger.h"
 
 #include "Event.h"
 #include "Exception.h"
