@@ -44,4 +44,20 @@ namespace LibLoader {
                 throw LoaderException("无法到达的代码", MIRAICP_EXCEPTION_WHERE);
         }
     }
+#ifdef WIN32
+#include <windows.h>
+    static EventHandlerPitch pitch = EventHandlerPitch();
+    EventHandlerPitch::EventHandlerPitch() {
+        preHandler = SetUnhandledExceptionFilter(EventHandlerPitch::eventHandler);
+    }
+    EventHandlerPitch::~EventHandlerPitch() {
+        SetUnhandledExceptionFilter(preHandler);
+    }
+    long EventHandlerPitch::eventHandler(PEXCEPTION_POINTERS pExceptionPointers) {
+        // todo(ea): add loader task and handle exceptionCode
+        pExceptionPointers->ExceptionRecord->ExceptionCode;
+        TerminateThread(GetCurrentThread(), 1);
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
+#endif
 } // namespace LibLoader

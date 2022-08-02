@@ -23,6 +23,18 @@
 
 
 namespace LibLoader {
+#ifdef WIN32
+#include <Errhandlingapi.h>
+    class EventHandlerPitch {
+    private:
+        LPTOP_LEVEL_EXCEPTION_FILTER preHandler;
+
+    public:
+        static long __stdcall eventHandler(PEXCEPTION_POINTERS pExceptionPointers);
+        EventHandlerPitch();
+        ~EventHandlerPitch();
+    };
+#endif
     class LoaderBaseException : public ::std::exception {
     protected:
         using string = std::string;
