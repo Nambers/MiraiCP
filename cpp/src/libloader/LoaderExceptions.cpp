@@ -17,6 +17,31 @@
 #include "LoaderExceptions.h"
 #include "commonTools.h"
 
+#ifdef WIN32
+#include "redirectCout.h"
+#include <windows.h>
+class EventHandlerPitch {
+public:
+    static long __stdcall eventHandler(PEXCEPTION_POINTERS pExceptionPointers) {
+        // todo(ea): add loader task and handle exceptionCode
+        pExceptionPointers->ExceptionRecord->ExceptionCode;
+        MiraiCP::OString::errTarget.out();
+        TerminateThread(GetCurrentThread(), 1);
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
+    EventHandlerPitch() {
+        preHandler = SetUnhandledExceptionFilter(EventHandlerPitch::eventHandler);
+    }
+    ~EventHandlerPitch() {
+        SetUnhandledExceptionFilter(preHandler);
+    }
+
+private:
+    LPTOP_LEVEL_EXCEPTION_FILTER preHandler;
+};
+[[maybe_unused]] EventHandlerPitch pitch = EventHandlerPitch();
+#endif
+
 
 namespace LibLoader {
     LoaderBaseException::LoaderBaseException(string info, string _filename, int _lineNum)
@@ -44,20 +69,4 @@ namespace LibLoader {
                 throw LoaderException("无法到达的代码", MIRAICP_EXCEPTION_WHERE);
         }
     }
-#ifdef WIN32
-#include <windows.h>
-    static EventHandlerPitch pitch = EventHandlerPitch();
-    EventHandlerPitch::EventHandlerPitch() {
-        preHandler = SetUnhandledExceptionFilter(EventHandlerPitch::eventHandler);
-    }
-    EventHandlerPitch::~EventHandlerPitch() {
-        SetUnhandledExceptionFilter(preHandler);
-    }
-    long EventHandlerPitch::eventHandler(PEXCEPTION_POINTERS pExceptionPointers) {
-        // todo(ea): add loader task and handle exceptionCode
-        pExceptionPointers->ExceptionRecord->ExceptionCode;
-        TerminateThread(GetCurrentThread(), 1);
-        return EXCEPTION_CONTINUE_EXECUTION;
-    }
-#endif
 } // namespace LibLoader
