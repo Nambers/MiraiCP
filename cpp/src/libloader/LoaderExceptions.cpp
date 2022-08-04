@@ -25,7 +25,7 @@ public:
     static long __stdcall eventHandler(PEXCEPTION_POINTERS pExceptionPointers) {
         // todo(ea): add loader task and handle exceptionCode
         pExceptionPointers->ExceptionRecord->ExceptionCode;
-        MiraiCP::OString::errTarget.out();
+        LibLoader::OString::errTarget.out();
         TerminateThread(GetCurrentThread(), 1);
         return EXCEPTION_CONTINUE_EXECUTION;
     }
