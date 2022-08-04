@@ -36,10 +36,12 @@ namespace LibLoader {
 /// 实际初始化函数
 /// 1. 设置全局变量
 /// 2. 开启loader线程并获取插件入口函数的返回值
-jobject Verify(JNIEnv *, jobject, jstring _version, jstring _cfgPath) {
+jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
     using json = nlohmann::json;
 
     assert(JNIEnvManager::getGvm() != nullptr);
+
+    JNIEnvManager::setEnv(env);
 
     //初始化日志模块
     LibLoader::JNIEnvs::initializeMiraiCPLoader();
@@ -67,8 +69,10 @@ jobject Verify(JNIEnv *, jobject, jstring _version, jstring _cfgPath) {
 /// loader线程可能会尝试获取 plugin list 的锁，
 /// 但Event函数在派发任务后是会立刻退出并释放锁的，
 /// 不会造成死锁
-jobject Event(JNIEnv *, jobject, jstring content) {
+jobject Event(JNIEnv *env, jobject, jstring content) {
     static std::string str;
+
+    JNIEnvManager::setEnv(env);
 
     std::lock_guard lk(LibLoader::PluginListManager::getLock());
     str = LibLoader::jstring2str(content);
@@ -92,7 +96,8 @@ jobject Event(JNIEnv *, jobject, jstring content) {
     return nullptr;
 }
 
-jobject PluginDisable(JNIEnv *, jobject) {
+jobject PluginDisable(JNIEnv *env, jobject) {
+    JNIEnvManager::setEnv(env);
     LibLoader::LoaderMain::loaderExit();
     LibLoader::loaderThread.join();
     return nullptr;
@@ -118,6 +123,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     }
     assert(env != nullptr);
     JNIEnvManager::setGvm(vm);
+    JNIEnvManager::setEnv(env);
     // 注册native方法
     if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", method_table, 3)) {
         return JNI_ERR;
