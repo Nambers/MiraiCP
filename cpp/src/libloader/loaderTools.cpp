@@ -17,6 +17,7 @@
 #include "loaderTools.h"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
+#include "commonTools.h"
 #include <utf8.h>
 // for std::setw
 #include <iomanip>
@@ -62,7 +63,11 @@ namespace LibLoader {
         if (!jStr) {
             return "";
         }
-        std::u16string s = reinterpret_cast<const char16_t *>(JNIEnvs::getEnv()->GetStringChars(jStr, nullptr));
+
+        const jchar *jCharPointer = JNIEnvs::getEnv()->GetStringChars(jStr, nullptr);
+        MiraiCP_defer(JNIEnvs::getEnv()->ReleaseStringChars(jStr, jCharPointer););
+        std::u16string s = reinterpret_cast<const char16_t *>(jCharPointer);
+
         if (s.length() == 0) {
             return "";
         }
