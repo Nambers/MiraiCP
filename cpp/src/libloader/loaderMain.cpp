@@ -21,6 +21,7 @@
 #include "PluginListImplements.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
+#include "redirectCout.h"
 
 
 namespace LibLoader {
@@ -123,6 +124,8 @@ namespace LibLoader {
 
     void LoaderMain::shutdownLoader() {
         loader_disableAllPlugins();
+        LibLoader::outRedirector.reset();
+        LibLoader::errRedirector.reset();
         // 为了删除 Win 下复制的缓存
         PluginListManager::unloadAll();
     }
