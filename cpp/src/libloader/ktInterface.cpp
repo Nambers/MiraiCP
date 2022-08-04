@@ -25,6 +25,8 @@
 #include "eventHandle.h"
 #include "loaderMain.h"
 #include "loaderTools.h"
+#include "redirectCout.h"
+#include <iostream>
 
 
 namespace LibLoader {
@@ -45,6 +47,8 @@ jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
 
     //初始化日志模块
     LibLoader::JNIEnvs::initializeMiraiCPLoader();
+    LibLoader::outRedirector = std::make_unique<LibLoader::OStreamRedirector>(&std::cout, LibLoader::OString::outTarget.rdbuf());
+    LibLoader::errRedirector = std::make_unique<LibLoader::OStreamRedirector>(&std::cerr, LibLoader::OString::errTarget.rdbuf());
 
     LibLoader::logger.info("⭐libLoader 版本: " + MiraiCP::MiraiCPVersion);
     auto version = "v" + LibLoader::jstring2str(_version);

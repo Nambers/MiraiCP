@@ -51,31 +51,7 @@ int LibLoader::OString::sync() {
     return 0;
 }
 
-class OStreamRedirector {
-public:
-    ~OStreamRedirector() {
-        obj->rdbuf(old);
-        obj = nullptr;
-        old = nullptr;
-    }
-
-    /**
-         * @brief 重定向 obj 的流
-         * @param obj 需要重定向的流
-         * @param new_buffer 重定向到的新缓冲区
-         */
-    explicit OStreamRedirector(std::ostream *obj, std::streambuf *newBuffer)
-        : old(obj->rdbuf(newBuffer)), obj(obj) {}
-
-private:
-    // 被重定向的流
-    std::ostream *obj;
-    // 旧的缓冲区目标
-    std::streambuf *old;
-};
-
 LibLoader::OString LibLoader::OString::outTarget(true);
-[[maybe_unused]] const OStreamRedirector outRedirector{&std::cout, LibLoader::OString::outTarget.rdbuf()};
-
 LibLoader::OString LibLoader::OString::errTarget(false);
-[[maybe_unused]] const OStreamRedirector errRedirector{&std::cerr, LibLoader::OString::errTarget.rdbuf()};
+std::unique_ptr<LibLoader::OStreamRedirector> LibLoader::outRedirector;
+std::unique_ptr<LibLoader::OStreamRedirector> LibLoader::errRedirector;

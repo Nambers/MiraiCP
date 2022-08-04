@@ -19,28 +19,28 @@
 #include <gtest/gtest.h>
 using namespace MiraiCP;
 
-TEST(RedirectStandardOutputForPluginTest, COUT) {
-    LoaderApiMock();
-    std::string re;
-    MiraiCP::Logger::logger.registerHandle([&re](const std::string &str, int level) {
-        if (level == 0) re += str;
-    });
-    MiraiCP::Logger::logger.info("test");
-    std::cout << "aabb";
-    std::cout.flush();
-    std::cout << "111" << std::endl;
-    ASSERT_EQ("testaabb111\n", re);
-}
-
-TEST(RedirectStandardOutputForPluginTest, CERR) {
-    LoaderApiMock();
-    std::string re;
-    MiraiCP::Logger::logger.registerHandle([&re](const std::string &str, int level) {
-        if (level == 2) re += str;
-    });
-    MiraiCP::Logger::logger.error("test");
-    std::cerr << "aabb";
-    std::cerr.flush();
-    std::cerr << "111" << std::endl;
-    ASSERT_EQ("testaabb111\n", re);
-}
+// TEST(RedirectStandardOutputForPluginTest, COUT) {
+//     LoaderApiMock();
+//     std::string re;
+//     MiraiCP::Logger::logger.registerHandle([&re](const std::string &str, int level) {
+//         if (level == 0) re += str;
+//     });
+//     MiraiCP::Logger::logger.info("test");
+//     std::cout << "aabb";
+//     std::cout.flush();
+//     std::cout << "111" << std::endl;
+//     ASSERT_EQ("testaabb111\n", re);
+// }
+//
+// TEST(RedirectStandardOutputForPluginTest, CERR) {
+//     LoaderApiMock();
+//     std::string re;
+//     MiraiCP::Logger::logger.registerHandle([&re](const std::string &str, int level) {
+//         if (level == 2) re += str;
+//     });
+//     MiraiCP::Logger::logger.error("test");
+//     std::cerr << "aabb";
+//     std::cerr.flush();
+//     std::cerr << "111" << std::endl;
+//     ASSERT_EQ("testaabb111\n", re);
+// }

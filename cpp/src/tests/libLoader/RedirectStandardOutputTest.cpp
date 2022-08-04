@@ -15,10 +15,13 @@
 //
 
 #include "LoaderLogger.h"
+#include "redirectCout.h"
 #include <gtest/gtest.h>
 #include <string>
 
 TEST(RedirectStandardOutputForLibLoaderTest, COUT) {
+    LibLoader::outRedirector = std::make_unique<LibLoader::OStreamRedirector>(&std::cout, LibLoader::OString::outTarget.rdbuf());
+    LibLoader::errRedirector = std::make_unique<LibLoader::OStreamRedirector>(&std::cerr, LibLoader::OString::errTarget.rdbuf());
     std::string re;
     LibLoader::logger.action = [&re](const std::string &str, const std::string &, long long int, int level) {
         if (level == 0) re += str;
@@ -28,9 +31,13 @@ TEST(RedirectStandardOutputForLibLoaderTest, COUT) {
     std::cout.flush();
     std::cout << "111" << std::endl;
     ASSERT_EQ("testaabb111\n", re);
+    LibLoader::outRedirector.reset();
+    LibLoader::errRedirector.reset();
 }
 
 TEST(RedirectStandardOutputForLibLoaderTest, CERR) {
+    LibLoader::outRedirector = std::make_unique<LibLoader::OStreamRedirector>(&std::cout, LibLoader::OString::outTarget.rdbuf());
+    LibLoader::errRedirector = std::make_unique<LibLoader::OStreamRedirector>(&std::cerr, LibLoader::OString::errTarget.rdbuf());
     std::string re;
     LibLoader::logger.action = [&re](const std::string &str, const std::string &, long long int, int level) {
         if (level == 2) re += str;
@@ -40,4 +47,6 @@ TEST(RedirectStandardOutputForLibLoaderTest, CERR) {
     std::cerr.flush();
     std::cerr << "111" << std::endl;
     ASSERT_EQ("testaabb111\n", re);
+    LibLoader::outRedirector.reset();
+    LibLoader::errRedirector.reset();
 }
