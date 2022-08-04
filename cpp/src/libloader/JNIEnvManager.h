@@ -53,8 +53,9 @@ public:
     static void setGvm(JavaVM *_gvm) { gvm = _gvm; }
 
     static JavaVM *&getGvm() { return gvm; }
-    /// @brief 设置env给当前线程.
-    static void setEnv(JNIEnv *e);
+    /// @brief 尝试设置env给当前线程.
+    /// @return true:设置成功，false:设置失败.
+    static bool setEnv(JNIEnv *e);
 
     /*!
          * 	@brief 结束当前线程的env，也就是释放当前线程缓存的env.

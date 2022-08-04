@@ -32,12 +32,14 @@ JNIEnv *JNIEnvManager::newEnv() {
     return env;
 }
 
-void JNIEnvManager::setEnv(JNIEnv *e) {
+bool JNIEnvManager::setEnv(JNIEnv *e) {
     std::lock_guard lk(mtx);
     auto pr = threadJNIEnvs.insert(std::make_pair(getThreadId(), ThreadInfo{e, false}));
     if (!pr.second) {
         pr.first->second.env_ptr = e;
+        return true;
     }
+    return false;
 }
 
 JNIEnv *JNIEnvManager::getEnv() {
