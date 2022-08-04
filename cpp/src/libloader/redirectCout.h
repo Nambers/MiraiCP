@@ -19,7 +19,7 @@
 #ifndef MIRAICP_PRO_REDIRECTCOUT_H
 #define MIRAICP_PRO_REDIRECTCOUT_H
 
-namespace MiraiCP {
+namespace LibLoader {
     class OString : private std::streambuf, public std::ostream {
     private:
         // 缓冲区

@@ -22,7 +22,7 @@
 #include "Logger.h"
 #endif
 
-std::string MiraiCP::OString::out() {
+std::string LibLoader::OString::out() {
 #ifdef MIRAICP_LIB_LOADER
     if (info)
         LibLoader::logger.info(result.str());
@@ -38,7 +38,7 @@ std::string MiraiCP::OString::out() {
     result.str("");
     return temp;
 }
-int MiraiCP::OString::overflow(std::streambuf::int_type c) {
+int LibLoader::OString::overflow(std::streambuf::int_type c) {
     if (c == EOF)
         out();
     else
@@ -46,7 +46,7 @@ int MiraiCP::OString::overflow(std::streambuf::int_type c) {
     return c;
 }
 
-int MiraiCP::OString::sync() {
+int LibLoader::OString::sync() {
     out();
     return 0;
 }
@@ -74,8 +74,8 @@ private:
     std::streambuf *old;
 };
 
-MiraiCP::OString MiraiCP::OString::outTarget(true);
-[[maybe_unused]] const OStreamRedirector outRedirector{&std::cout, MiraiCP::OString::outTarget.rdbuf()};
+LibLoader::OString LibLoader::OString::outTarget(true);
+[[maybe_unused]] const OStreamRedirector outRedirector{&std::cout, LibLoader::OString::outTarget.rdbuf()};
 
-MiraiCP::OString MiraiCP::OString::errTarget(false);
-[[maybe_unused]] const OStreamRedirector errRedirector{&std::cerr, MiraiCP::OString::errTarget.rdbuf()};
+LibLoader::OString LibLoader::OString::errTarget(false);
+[[maybe_unused]] const OStreamRedirector errRedirector{&std::cerr, LibLoader::OString::errTarget.rdbuf()};
