@@ -15,9 +15,67 @@
 //
 
 #include "redirectCout.h"
+#include <iostream>
+#ifdef MIRAICP_LIB_LOADER
+#include "LoaderLogger.h"
+#else
+#include "Logger.h"
+#endif
 
-MiraiCP::OString outTarget(true);
-[[maybe_unused]] const MiraiCP::OStreamRedirector outRedirector{std::cout, outTarget.rdbuf()};
+std::string MiraiCP::OString::out() {
+#ifdef MIRAICP_LIB_LOADER
+    if (info)
+        LibLoader::logger.info(result.str());
+    else
+        LibLoader::logger.error(result.str());
+#else
+    if (info)
+        MiraiCP::Logger::logger.info(result.str());
+    else
+        MiraiCP::Logger::logger.error(result.str());
+#endif
+    auto temp = result.str();
+    result.str("");
+    return temp;
+}
+int MiraiCP::OString::overflow(std::streambuf::int_type c) {
+    if (c == EOF)
+        out();
+    else
+        result.put((std::streambuf::char_type) c);
+    return c;
+}
 
-MiraiCP::OString errTarget(false);
-[[maybe_unused]] const MiraiCP::OStreamRedirector errRedirector{std::cerr, errTarget.rdbuf()};
+int MiraiCP::OString::sync() {
+    out();
+    return 0;
+}
+
+class OStreamRedirector {
+public:
+    ~OStreamRedirector() {
+        obj->rdbuf(old);
+        obj = nullptr;
+        old = nullptr;
+    }
+
+    /**
+         * @brief 重定向 obj 的流
+         * @param obj 需要重定向的流
+         * @param new_buffer 重定向到的新缓冲区
+         */
+    explicit OStreamRedirector(std::ostream *obj, std::streambuf *newBuffer)
+        : old(obj->rdbuf(newBuffer)), obj(obj) {}
+
+private:
+    // 被重定向的流
+    std::ostream *obj;
+    // 旧的缓冲区目标
+    std::streambuf *old;
+};
+
+MiraiCP::OString MiraiCP::OString::outTarget(true);
+[[maybe_unused]] const OStreamRedirector outRedirector{&std::cout, MiraiCP::OString::outTarget.rdbuf()};
+
+MiraiCP::OString MiraiCP::OString::errTarget(false);
+[[maybe_unused]] const OStreamRedirector errRedirector{&std::cerr, MiraiCP::OString::errTarget.rdbuf()};
