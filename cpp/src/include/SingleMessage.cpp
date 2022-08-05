@@ -25,6 +25,12 @@
 
 namespace MiraiCP {
     using json = nlohmann::json;
+    nlohmann::json SingleMessage::toJson() const {
+        nlohmann::json re;
+        re["key"] = "miraicode";
+        re["content"] = this->toMiraiCode();
+        return re;
+    }
     // 静态成员
     std::unordered_map<int, std::string> SingleMessage::messageType{
             {-5, "MarketFace"},

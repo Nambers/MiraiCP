@@ -19,7 +19,7 @@
 
 #include "MessageChain.h"
 
-#include <json.hpp>
+#include <json_fwd.hpp>
 #include <string>
 
 namespace MiraiCP {
