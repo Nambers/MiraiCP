@@ -7,7 +7,6 @@
         "common/commonTools.h",
         "common/commonTypes.h",
         "common/loaderApiInternal.h",
-        "common/redirectCout.h",
         "include/Bot.h",
         "include/CPPPlugin.h",
         "include/Command.h",

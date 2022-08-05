@@ -17,7 +17,7 @@ target_include_directories(MiraiCP_multi PUBLIC
         ${SRC_PATH}/common
         ${3RD_PATH}
         )
-target_compile_options(MiraiCP_multi PUBLIC -w)
+target_compile_options(MiraiCP_multi PUBLIC -w -DJSON_MultipleHeaders=ON)
 # -- end --
 
 # -- MiraiCP single --
@@ -41,7 +41,7 @@ target_include_directories(MiraiCP_single PUBLIC
         ${SRC_PATH}/single_include/MiraiCP
         ${3RD_PATH}
         )
-target_compile_options(MiraiCP_single PUBLIC -w)
+target_compile_options(MiraiCP_single PUBLIC -w -DJSON_MultipleHeaders=ON)
 # -- end --
 
 # 移植性

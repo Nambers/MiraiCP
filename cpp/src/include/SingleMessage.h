@@ -17,13 +17,13 @@
 #ifndef MIRAICP_PRO_SINGLEMESSAGE_H
 #define MIRAICP_PRO_SINGLEMESSAGE_H
 
-#include <array>
-#include <json.hpp>
-#include <optional>
-#include <sstream>
-
 #include "MessageSource.h"
 #include "MiraiCode.h"
+#include <array>
+#include <json_fwd.hpp>
+#include <optional>
+#include <sstream>
+#include <unordered_map>
 
 namespace MiraiCP {
     /// 用serviceMessage的分享信息
@@ -70,12 +70,7 @@ namespace MiraiCP {
         static int getKey(const std::string &value);
 
     public:
-        virtual nlohmann::json toJson() const {
-            nlohmann::json re;
-            re["key"] = "miraicode";
-            re["content"] = this->toMiraiCode();
-            return re;
-        }
+        virtual nlohmann::json toJson() const;
 
         std::string toMiraiCode() const override;
 

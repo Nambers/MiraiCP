@@ -16,7 +16,7 @@
 
 #ifndef MIRAICP_PRO_LOWLEVELAPI_H
 #define MIRAICP_PRO_LOWLEVELAPI_H
-#include <json.hpp>
+#include <json_fwd.hpp>
 
 namespace MiraiCP {
     /// 较底层api

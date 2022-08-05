@@ -19,7 +19,7 @@
 
 #include "Contact.h"
 
-#include "json.hpp"
+#include <json_fwd.hpp>
 
 namespace MiraiCP {
     class Member; // forward declaration

@@ -43,7 +43,8 @@ if (JNI_FOUND)
             ${JAVA_INCLUDE_PATH2}
             )
     set(3RD_PATH
-            ${SRC_PATH}/3rd_include/
+            ${SRC_PATH}/3rd_include/json
+            ${SRC_PATH}/3rd_include/json/nlohmann
             ${SRC_PATH}/3rd_include/utf8
             ${SRC_PATH}/3rd_include/utf8/utf8
             )
