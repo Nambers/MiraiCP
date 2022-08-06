@@ -46,7 +46,7 @@ class [[maybe_unused]] SignalHandle {
 
     static void sigsegv_handler(int) {
         LibLoader::logger.error("插件遇到致命错误！线程终止");
-        pthread_kill(_GLIBCXX_NATIVE_THREAD_ID, SIGKILL);
+        pthread_kill(pthread_self(), SIGKILL);
     }
 
     static SignalHandle Handler;
