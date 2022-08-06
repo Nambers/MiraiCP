@@ -17,31 +17,6 @@
 #include "LoaderExceptions.h"
 #include "commonTools.h"
 
-#ifdef WIN32
-#include "redirectCout.h"
-#include <windows.h>
-class EventHandlerPitch {
-public:
-    static long __stdcall eventHandler(PEXCEPTION_POINTERS pExceptionPointers) {
-        // todo(ea): add loader task and handle exceptionCode
-        pExceptionPointers->ExceptionRecord->ExceptionCode;
-        LibLoader::OString::errTarget.out();
-        TerminateThread(GetCurrentThread(), 1);
-        return EXCEPTION_CONTINUE_EXECUTION;
-    }
-    EventHandlerPitch() {
-        preHandler = SetUnhandledExceptionFilter(EventHandlerPitch::eventHandler);
-    }
-    ~EventHandlerPitch() {
-        SetUnhandledExceptionFilter(preHandler);
-    }
-
-private:
-    LPTOP_LEVEL_EXCEPTION_FILTER preHandler;
-};
-[[maybe_unused]] EventHandlerPitch pitch = EventHandlerPitch();
-#endif
-
 
 namespace LibLoader {
     LoaderBaseException::LoaderBaseException(string info, string _filename, int _lineNum)
