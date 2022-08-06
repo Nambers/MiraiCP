@@ -25,7 +25,7 @@
 namespace LibLoader {
     ThreadController ThreadController::_threadController;
 
-    inline void sendPluginException(std::string plugin_id) {
+    void sendPluginException(std::string plugin_id) {
         std::lock_guard lk(task_mtx);
         loader_thread_task_queue.emplace(loadertask(LOADER_TASKS::EXCEPTION_PLUGINEND, std::move(plugin_id)));
     }
@@ -47,6 +47,9 @@ namespace LibLoader {
         // clean up at function end
         // try to detach this thread from JVM
         MiraiCP_defer(JNIEnvManager::detach(););
+
+        // set thread name so the debugger can see the plugin id from binding thread
+        pthread_setname_np(pthread_self(), pluginid.c_str());
 
         while (!exit) {
             if (job_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -105,6 +108,7 @@ namespace LibLoader {
         worker.first->give_job(std::move(func));
         auto worker_ptr = worker.first.get();
         worker.second = std::make_shared<std::thread>([=]() { worker_ptr->run(); });
+        thread_id_indexes[worker.second->get_id()] = name;
     }
 
     // safely shutdown
@@ -117,11 +121,14 @@ namespace LibLoader {
         }
 
         auto &worker = it->second;
+        auto threadid = worker.second->get_id();
+
         worker.first->give_job(std::move(func));
         // shut down the thread
         joinAndShutdownThread(it->second);
         // thread is dead, safely remove it
         thread_memory.erase(it);
+        thread_id_indexes.erase(threadid);
     }
 
     // only call this if unexpectedly shutdown happens
@@ -131,6 +138,7 @@ namespace LibLoader {
             detachThread(v);
         }
         thread_memory.clear();
+        thread_id_indexes.clear();
     }
 
     void ThreadController::submitJob(const std::string &name, void_callable func) {
@@ -150,10 +158,20 @@ namespace LibLoader {
             logger.error("End thread: plugin " + name + " thread not found!");
             return;
         }
-
+        auto threadid = it->second.second->get_id();
         // detach the thread
         detachThread(it->second);
         // thread is dead, safely remove it
         thread_memory.erase(it);
+        thread_id_indexes.erase(threadid);
+    }
+
+    std::string ThreadController::getPluginIdFromThreadId(std::thread::id id) {
+        const auto &threadidQuery = getController().thread_id_indexes;
+        auto it = threadidQuery.find(id);
+        if (it == threadidQuery.end()) {
+            return "";
+        }
+        return it->second;
     }
 } // namespace LibLoader
