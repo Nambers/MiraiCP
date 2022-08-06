@@ -30,6 +30,7 @@ namespace LibLoader {
     /// LoaderMain实现开始
 
     void LoaderMain::loaderMain() {
+        pthread_setname_np(pthread_self(), "libLoader");
         logger.info("libLoader thread start");
 
         PluginListManager::enableAll();

@@ -3,6 +3,7 @@
 //
 
 #include "LoaderLogger.h"
+#include "ThreadController.h"
 #include "redirectCout.h"
 
 
@@ -45,8 +46,24 @@ class [[maybe_unused]] SignalHandle {
     ~SignalHandle() = default;
 
     static void sigsegv_handler(int) {
-        LibLoader::logger.error("插件遇到致命错误！线程终止");
-        pthread_kill(pthread_self(), SIGKILL);
+        static int ExceptionReturnValue = 1;
+        auto pluginName = LibLoader::ThreadController::getPluginIdFromThreadId(std::this_thread::get_id());
+        if (pluginName.empty()) {
+            // test the thread name is jvm
+            char threadName[80];
+            pthread_getname_np(pthread_self(), threadName, 80);
+            if (strcmp(threadName, "libLoader") != 0) {
+                return;
+            }
+            LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
+            exit(1);
+        }
+        LibLoader::logger.error("插件" + pluginName + "遇到致命错误！线程终止");
+        LibLoader::sendPluginException(std::move(pluginName));
+
+        pthread_cancel(pthread_self());
+        // 无尽循环
+        // for (;;) std::this_thread::sleep_for(std::chrono::hours(1));
     }
 
     static SignalHandle Handler;

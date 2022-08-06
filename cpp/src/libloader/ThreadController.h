@@ -28,6 +28,8 @@
 namespace LibLoader {
     typedef std::function<void()> void_callable;
 
+    void sendPluginException(std::string plugin_id);
+
     class ThreadController {
         class threadWorker {
             std::string pluginid;
@@ -72,6 +74,7 @@ namespace LibLoader {
 
     private:
         std::unordered_map<std::string, workerThread> thread_memory;
+        std::unordered_map<std::thread::id, std::string> thread_id_indexes;
         std::recursive_mutex _mtx;
 
     private:
@@ -107,6 +110,9 @@ namespace LibLoader {
         static void joinAndShutdownThread(workerThread &worker);
 
         static void detachThread(workerThread &worker);
+
+    public:
+        static std::string getPluginIdFromThreadId(std::thread::id id);
 
     public:
         static ThreadController &getController() {
