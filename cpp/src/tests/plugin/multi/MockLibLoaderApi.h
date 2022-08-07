@@ -17,6 +17,8 @@
 #ifndef MIRAICP_PRO_MOCKLIBLOADERAPI_H
 #define MIRAICP_PRO_MOCKLIBLOADERAPI_H
 #include "loaderApiInternal.h"
+#include "redirectCout.h"
+#include <gtest/gtest.h>
 using namespace MiraiCP;
 namespace LibLoader::LoaderApi {
     const interface_funcs *get_loader_apis();
@@ -52,7 +54,12 @@ public:
             reloadPluginById,
     };
     LoaderApiMock() {
+        MiraiCP::Redirector::start();
         LibLoader::LoaderApi::set_loader_apis(&a);
+    }
+    ~LoaderApiMock(){
+        MiraiCP::Redirector::reset();
+        LibLoader::LoaderApi::reset_loader_apis();
     }
 };
 #endif //MIRAICP_PRO_MOCKLIBLOADERAPI_H

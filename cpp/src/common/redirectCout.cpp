@@ -14,13 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <memory>
-#include <sstream>
-
-#ifndef MIRAICP_PRO_REDIRECTCOUT_H
-#define MIRAICP_PRO_REDIRECTCOUT_H
-
-namespace LibLoader {
+#include "redirectCout.h"
+#include <iostream>
+#ifdef MIRAICP_LIB_LOADER
+#include "LoaderLogger.h"
+#else
+#include "Logger.h"
+#endif
     class OStreamRedirector {
     public:
         ~OStreamRedirector() {
@@ -43,22 +43,15 @@ namespace LibLoader {
         // 旧的缓冲区目标
         std::streambuf *old;
     };
-    extern std::unique_ptr<OStreamRedirector> outRedirector;
-    extern std::unique_ptr<OStreamRedirector> errRedirector;
     class OString : private std::streambuf, public std::ostream {
     private:
         // 缓冲区
         std::ostringstream result{};
 
     public:
-        static OString outTarget;
-        static OString errTarget;
-
-    private:
         // 输出是否为 info 级别
         explicit OString(bool info) : std::ostream(this), info(info) {}
 
-    public:
         ~OString() override = default;
 
         // 加入缓冲区
@@ -71,5 +64,50 @@ namespace LibLoader {
     private:
         bool info;
     };
-} // namespace MiraiCP
-#endif //MIRAICP_PRO_REDIRECTCOUT_H
+
+    // --- impl ---
+
+std::string OString::out() {
+#ifdef MIRAICP_LIB_LOADER
+    if (info)
+        LibLoader::logger.info(result.str());
+    else
+        LibLoader::logger.error(result.str());
+#else
+    if (info)
+        MiraiCP::Logger::logger.info(result.str());
+    else
+        MiraiCP::Logger::logger.error(result.str());
+#endif
+    auto temp = result.str();
+    result.str("");
+    return temp;
+}
+int OString::overflow(std::streambuf::int_type c) {
+    if (c == EOF)
+        out();
+    else
+        result.put((std::streambuf::char_type) c);
+    return c;
+}
+
+int OString::sync() {
+    out();
+    return 0;
+}
+
+OString outTarget(true);
+OString errTarget(false);
+std::unique_ptr<OStreamRedirector> outRedirector;
+std::unique_ptr<OStreamRedirector> errRedirector;
+
+void MiraiCP::Redirector::reset() {
+    outRedirector.reset();
+    errRedirector.reset();
+}
+
+void MiraiCP::Redirector::start() {
+    outRedirector = std::make_unique<OStreamRedirector>(&std::cout, outTarget.rdbuf());
+    errRedirector = std::make_unique<OStreamRedirector>(&std::cerr, errTarget.rdbuf());
+}
+
