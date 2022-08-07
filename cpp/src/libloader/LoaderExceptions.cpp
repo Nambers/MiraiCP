@@ -20,9 +20,17 @@
 
 namespace LibLoader {
     LoaderBaseException::LoaderBaseException(string info, string _filename, int _lineNum)
-        : re(std::move(info)),
+        : errorMessage(std::move(info)),
           filename(std::move(_filename)),
           lineNum(_lineNum) {}
+
+    void LoaderBaseException::raise() const noexcept {
+        LibLoader::logger.error(errorMessage);
+    }
+
+    void LoaderBaseException::warningRaise() const noexcept {
+        LibLoader::logger.warning(errorMessage);
+    }
 
     PluginLoadException::PluginLoadException(const string &_pluginPath, string _filename, int _lineNum)
         : LoaderExceptionCRTP(_pluginPath + " 加载失败", std::move(_filename), _lineNum) {}
@@ -44,4 +52,25 @@ namespace LibLoader {
                 throw LoaderException("无法到达的代码", MIRAICP_EXCEPTION_WHERE);
         }
     }
+
+    PluginAlreadyLoadedException::PluginAlreadyLoadedException(const LoaderBaseException::string &id, LoaderBaseException::string _filename, int _lineNum)
+        : LoaderExceptionCRTP("尝试加载已经被加载的插件：" + id, std::move(_filename), _lineNum) {}
+
+    void PluginAlreadyLoadedException::raise() const noexcept {
+        warningRaise();
+    }
+
+    PluginAlreadyEnabledException::PluginAlreadyEnabledException(const LoaderBaseException::string &id, LoaderBaseException::string _filename, int _lineNum)
+        : LoaderExceptionCRTP("尝试启用已经启用的插件：" + id, std::move(_filename), _lineNum) {}
+
+    void PluginAlreadyEnabledException::raise() const noexcept {
+        warningRaise();
+    }
+
+    PluginNotLoadedException::PluginNotLoadedException(const LoaderBaseException::string &path, LoaderBaseException::string _filename, int _lineNum)
+        : LoaderExceptionCRTP("尝试启用未加载的插件，路径：" + path, std::move(_filename), _lineNum) {}
+
+    PluginIdDuplicateException::PluginIdDuplicateException(const string &id, const string &conflictPluginPathOld, const string &conflictPluginPathNew, string _filename, int _lineNum)
+        : LoaderExceptionCRTP("插件ID " + id + " 重复：已经被位于 " + conflictPluginPathOld + " 的插件使用；位于 " + conflictPluginPathNew + " 的插件将取消加载。请修改插件id后重新编译", std::move(_filename), _lineNum) {}
+
 } // namespace LibLoader

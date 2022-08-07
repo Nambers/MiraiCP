@@ -30,7 +30,7 @@
 
 
 namespace LibLoader {
-    void registerAllPlugin(jstring);
+    void registerAllPlugin(jstring) noexcept;
     std::thread loaderThread;
 } // namespace LibLoader
 

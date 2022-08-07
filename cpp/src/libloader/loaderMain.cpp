@@ -16,6 +16,7 @@
 
 #include "loaderMain.h"
 #include "JNIEnvManager.h"
+#include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
 #include "PluginListImplements.h"
@@ -79,46 +80,51 @@ namespace LibLoader {
 
     ////////////////////////////////////
 
-    void LoaderMain::mainloop() {
+    void LoaderMain::mainloop() noexcept {
         if (loader_thread_task_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(70));
         else {
             loadertask task;
             {
                 std::lock_guard lk(task_mtx);
-                task = std::move(loader_thread_task_queue.front());
+                std::swap(task, loader_thread_task_queue.front());
                 loader_thread_task_queue.pop();
             }
-
-            switch (task.first) {
-                case LOADER_TASKS::ADD_THREAD:
-                    loader_enablePluginById(task.second);
-                    break;
-                case LOADER_TASKS::END_THREAD:
-                    loader_disablePluginById(task.second);
-                    break;
-                case LOADER_TASKS::ENABLE_ALL:
-                    loader_enableAllPlugins();
-                    break;
-                case LOADER_TASKS::DISABLE_ALL:
-                    loader_disableAllPlugins();
-                    break;
-                case LOADER_TASKS::LOAD_NEW_ACTIVATENOW:
-                    loader_loadNewPlugin(task.second, true);
-                    break;
-                case LOADER_TASKS::LOAD_NEW_DONTACTIVATE:
-                    loader_loadNewPlugin(task.second, false);
-                    break;
-                case LOADER_TASKS::UNLOAD:
-                    loader_unloadPluginById(task.second);
-                    break;
-                case LOADER_TASKS::RELOAD:
-                    loader_reloadPluginById(task.second);
-                    break;
-                case LOADER_TASKS::EXCEPTION_PLUGINEND:
-                    loader_pluginEndByException(task.second);
-                    break;
-                default:
-                    throw std::exception();
+            try {
+                switch (task.first) {
+                    case LOADER_TASKS::ADD_THREAD:
+                        loader_enablePluginById(task.second);
+                        break;
+                    case LOADER_TASKS::END_THREAD:
+                        loader_disablePluginById(task.second);
+                        break;
+                    case LOADER_TASKS::ENABLE_ALL:
+                        loader_enableAllPlugins();
+                        break;
+                    case LOADER_TASKS::DISABLE_ALL:
+                        loader_disableAllPlugins();
+                        break;
+                    case LOADER_TASKS::LOAD_NEW_ACTIVATENOW:
+                        loader_loadNewPlugin(task.second, true);
+                        break;
+                    case LOADER_TASKS::LOAD_NEW_DONTACTIVATE:
+                        loader_loadNewPlugin(task.second, false);
+                        break;
+                    case LOADER_TASKS::UNLOAD:
+                        loader_unloadPluginById(task.second);
+                        break;
+                    case LOADER_TASKS::RELOAD:
+                        loader_reloadPluginById(task.second);
+                        break;
+                    case LOADER_TASKS::EXCEPTION_PLUGINEND:
+                        loader_pluginEndByException(task.second);
+                        break;
+                    default:
+                        throw std::exception();
+                }
+            } catch (LoaderBaseException &e) {
+                e.raise();
+            } catch (std::exception &e) {
+                logger.error("libLoader线程遇到无法预料的错误：" + std::string(e.what()) + "，程序将继续执行，如果发生意料之外的状况，请提交issue");
             }
         }
     }
