@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_LOADEREXCEPTIONS_H
 
 
+#include "LoaderLogger.h"
 #include <exception>
 #include <string>
 
@@ -29,7 +30,7 @@ namespace LibLoader {
 
     protected:
         /// @brief 异常内容
-        string re;
+        string errorMessage;
 
     public:
         /// @brief 发生异常的文件名
@@ -47,7 +48,12 @@ namespace LibLoader {
 
     public:
         /// @brief 异常信息（std::exception接口）
-        const char *what() const noexcept override { return re.c_str(); }
+        const char *what() const noexcept override { return errorMessage.c_str(); }
+
+        virtual void raise() const noexcept;
+
+    protected:
+        void warningRaise() const noexcept;
 
     public: // 暴露的接口
         // CRTP实现一次，调用静态的exceptionType
@@ -105,6 +111,38 @@ namespace LibLoader {
 
     private:
         static string SymbolTypeToString(SymbolType);
+    };
+
+    class PluginAlreadyLoadedException : public LoaderExceptionCRTP<PluginAlreadyLoadedException> {
+    public:
+        PluginAlreadyLoadedException(const string &id, string _filename, int _lineNum);
+
+        static string exceptionType() { return "PluginAlreadyLoadedException"; }
+
+        void raise() const noexcept override;
+    };
+
+    class PluginAlreadyEnabledException : public LoaderExceptionCRTP<PluginAlreadyEnabledException> {
+    public:
+        PluginAlreadyEnabledException(const string &id, string _filename, int _lineNum);
+
+        static string exceptionType() { return "PluginAlreadyEnabledException"; }
+
+        void raise() const noexcept override;
+    };
+
+    class PluginNotLoadedException : public LoaderExceptionCRTP<PluginNotLoadedException> {
+    public:
+        PluginNotLoadedException(const string &path, string _filename, int _lineNum);
+
+        static string exceptionType() { return "PluginNotLoadedException"; }
+    };
+
+    class PluginIdDuplicateException : public LoaderExceptionCRTP<PluginIdDuplicateException> {
+    public:
+        PluginIdDuplicateException(const string &id, const string &conflictPluginPathOld, const string &conflictPluginPathNew, string _filename, int _lineNum);
+
+        static string exceptionType() { return "PluginIdDuplicateException"; }
     };
 } // namespace LibLoader
 

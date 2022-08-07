@@ -15,9 +15,11 @@
 //
 
 #include "PluginListManager.h"
+#include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "PluginConfig.h"
 #include "PluginListImplements.h"
+#include "commonTools.h"
 #include "libOpen.h"
 #include "loaderTools.h"
 #include <string>
@@ -70,18 +72,18 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
 
         if (cfg.handle == nullptr || cfg.config == nullptr) {
-            logger.error("addNewPlugin is trying to add a plugin which is not loaded!");
-            return false;
+            throw PluginNotLoadedException(cfg.path, MIRAICP_EXCEPTION_WHERE);
         }
 
         auto id = cfg.getId();
         auto handle = cfg.handle;
+        auto path = cfg.path;
         auto pr = id_plugin_list.insert(std::make_pair(id, std::make_shared<LoaderPluginConfig>(std::move(cfg))));
 
         if (!pr.second) {
             logger.error("Plugin with id: " + id + " Already exists");
             LoaderApi::libClose(handle);
-            return false;
+            throw PluginIdDuplicateException(id, pr.first->first, path, MIRAICP_EXCEPTION_WHERE);
         }
 
         return true;

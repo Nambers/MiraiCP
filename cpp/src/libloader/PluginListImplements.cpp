@@ -17,10 +17,12 @@
 /// 本文件的目的是分离出PluginListManager交互的部分函数实现，方便代码的阅读和维护
 
 #include "PluginListImplements.h"
+#include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "PluginConfig.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
+#include "commonTools.h"
 #include "libOpen.h"
 #include "loaderTools.h"
 #if _WIN32 || _WIN64 || WIN32
@@ -77,26 +79,17 @@ namespace LibLoader {
     /// 不是一个可以使用的MiraiCP插件
     /// 不会调用其中任何一个函数
     PluginAddrInfo testSymbolExistance(plugin_handle handle, const std::string &path) {
-        // using static keyword; don't capture any data
-        static auto errorMsg = [](const std::string &path) -> PluginAddrInfo {
-#if _WIN32 || _WIN64 || WIN32
-            logger.error(GetLastErrorAsString());
-#endif
-            logger.error("failed to find symbol in plugin at location: " + path);
-            return {nullptr, nullptr};
-        };
-
         auto symbol = LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_ENTRANCE));
-        if (!symbol) return errorMsg(path + ", symbol: FUNC_ENTRANCE");
+        if (!symbol) throw SymbolResolveException(path, SymbolResolveException::Entrance, MIRAICP_EXCEPTION_WHERE);
 
         symbol = LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_EXIT));
-        if (!symbol) return errorMsg(path + ", symbol: FUNC_EXIT");
+        if (!symbol) throw SymbolResolveException(path, SymbolResolveException::Exit, MIRAICP_EXCEPTION_WHERE);
 
         auto event_addr = (plugin_event_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_EVENT));
-        if (!event_addr) return errorMsg(path + ", symbol: FUNC_EVENT");
+        if (!event_addr) throw SymbolResolveException(path, SymbolResolveException::Event, MIRAICP_EXCEPTION_WHERE);
 
         auto pluginInfo = (plugin_info_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(PLUGIN_INFO));
-        if (!pluginInfo) return errorMsg(path + ", symbol: PLUGIN_INFO");
+        if (!pluginInfo) throw SymbolResolveException(path, SymbolResolveException::Config, MIRAICP_EXCEPTION_WHERE);
 
         return {event_addr, pluginInfo};
     }
@@ -107,19 +100,20 @@ namespace LibLoader {
     // 不涉及插件列表的修改；不会修改插件权限
     void enable_plugin(LoaderPluginConfig &plugin) {
         if (plugin.enabled) {
-            logger.warning("plugin " + plugin.getId() + " is already enabled");
-            return;
+            throw PluginAlreadyEnabledException(plugin.getId(), MIRAICP_EXCEPTION_WHERE);
         }
+
         if (plugin.handle == nullptr) {
-            logger.error("plugin at location " + plugin.path + " is not loaded!");
-            return;
+            throw PluginNotLoadedException(plugin.path, MIRAICP_EXCEPTION_WHERE);
         }
 
         auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
         if (plugin.config().getMVersion() != MiraiCP::MiraiCPVersion) {
             LibLoader::logger.warning("MiraiCP依赖库版本(" + plugin.config().getMVersion() + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
         }
+
         plugin.enable();
+
         // 注意：plugin虽然被分配在一个固定地址（map中的值是shared_ptr，内部的 LoaderPluginConfig 不会被复制），
         // 但这里引用plugin地址的话，当shared_ptr在某个线程中被释放掉，还是可能会产生段错误
         // 因为我们无法保证getController().addThread()一定会把提交的这个函数在plugin被销毁前处理掉，
@@ -149,7 +143,7 @@ namespace LibLoader {
         plugin.disable();
     }
 
-    plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) {
+    plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) noexcept {
         auto actualPath = plugin.path;
 #if _WIN32 || _WIN64 || WIN32
         auto from = std::filesystem::path(plugin.path);
@@ -166,7 +160,7 @@ namespace LibLoader {
         ec.clear();
         std::filesystem::copy(plugin.path, actualFile, std::filesystem::copy_options::overwrite_existing);
         if (ec) {
-            logger.error("无法复制dll(" + plugin.path + ")到缓存目录(" + actualPath + "), 原因: " + ec.message());
+            logger.error("无法复制dll(" + plugin.path + ")到缓存目录(" + actualPath + "), 原因: " + ec.message() + "，请检查是否有别的进程在占用该缓存文件！");
             return nullptr;
         }
 #endif
@@ -176,27 +170,27 @@ namespace LibLoader {
     // 不涉及插件列表的修改；不会修改插件权限
     void load_plugin(LoaderPluginConfig &plugin, bool alsoEnablePlugin) {
         if (plugin.handle != nullptr) {
-            logger.error("plugin at location " + plugin.path + " is already loaded!");
-            return;
+            throw PluginAlreadyLoadedException(plugin.getId(), MIRAICP_EXCEPTION_WHERE);
         }
+
         auto handle = loadPluginInternal(plugin);
         if (handle == nullptr) {
-#if _WIN32 || _WIN64 || WIN32
+#if _WIN64
             logger.error(GetLastErrorAsString());
 #endif
-            logger.error("failed to load plugin at location " + plugin.path); //  + "(" + plugin.actualPath + ")");
-            return;
+            throw PluginLoadException(plugin.path, MIRAICP_EXCEPTION_WHERE);
         }
 
         auto symbols = testSymbolExistance(handle, plugin.path);
-        if (symbols.pluginAddr == nullptr || symbols.event_func == nullptr) {
-            logger.error("failed to find plugin symbol at location " + plugin.path);
-            return;
-        }
+        //        if (symbols.pluginAddr == nullptr || symbols.event_func == nullptr) {
+        //            logger.error("failed to find plugin symbol at location " + plugin.path);
+        //            return;
+        //        }
+
 
         plugin.load(handle, symbols.event_func, symbols.pluginAddr);
-
         plugin.disable();
+
         if (alsoEnablePlugin) enable_plugin(plugin);
     }
 
@@ -263,7 +257,7 @@ namespace LibLoader {
     /// 仅被registerAllPlugin调用，即，在kt（主）线程Verify中会被调用一次
     /// 作用是将所有plugin加入plugin列表
     /// 这一过程必须是原子的
-    void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) {
+    inline void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept {
         std::lock_guard lk(PluginListManager::getLock());
 
         for (int i = 0; i < paths.size(); ++i) {
@@ -274,7 +268,12 @@ namespace LibLoader {
 
             auto timestamp = std::chrono::system_clock::now();
 
-            load_plugin(cfg, false);
+            try {
+                load_plugin(cfg, false);
+            } catch (LoaderBaseException &e) {
+                e.raise();
+                continue;
+            }
 
             auto timestamp2 = std::chrono::system_clock::now();
 
@@ -283,13 +282,17 @@ namespace LibLoader {
 
             cfg.authority = authority;
 
-            PluginListManager::addNewPlugin(std::move(cfg));
+            try {
+                PluginListManager::addNewPlugin(std::move(cfg));
+            } catch (LoaderBaseException &e) {
+                e.raise();
+            }
         }
     }
 
     /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用且仅调用一次
     /// 实际的入口，id_plugin_list 必须在这里初始化
-    void registerAllPlugin(jstring _cfgPath) {
+    void registerAllPlugin(jstring _cfgPath) noexcept {
         // 获取cfg文件路径并读取
         std::string cfgPath = jstring2str(_cfgPath);
         nlohmann::json j = readJsonFile(cfgPath);
