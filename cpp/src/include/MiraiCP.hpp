@@ -44,5 +44,6 @@
 #include "commonTools.h"
 #include "commonTypes.h"
 #include "loaderApiInternal.h"
+#include "redirectCout.h"
 
 #endif //MIRAICP_HPP_H

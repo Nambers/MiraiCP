@@ -133,7 +133,7 @@ int CheckNoMoreCopy(std::string &s1, std::string &s2) {
 }
 
 TEST(MiraiCPNewThreadTest, test) {
-    LoaderApiMock();
+    auto mock = LoaderApiMock();
     static std::string buf;
     static std::mutex bufmtx;
 
@@ -196,4 +196,5 @@ TEST(MiraiCPNewThreadTest, test) {
     }
 
     ASSERT_EQ(0, CheckNoMoreCopy(result, stdresult)); // fail, 0 != 1
+    ASSERT_FALSE(result.empty());
 }

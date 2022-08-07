@@ -131,8 +131,7 @@ namespace LibLoader {
 
     void LoaderMain::shutdownLoader() {
         loader_disableAllPlugins();
-        LibLoader::outRedirector.reset();
-        LibLoader::errRedirector.reset();
+        MiraiCP::Redirector::reset();
         // 为了删除 Win 下复制的缓存
         PluginListManager::unloadAll();
     }
