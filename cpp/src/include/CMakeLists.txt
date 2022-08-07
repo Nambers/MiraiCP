@@ -11,6 +11,7 @@ set_target_properties(MiraiCP_multi PROPERTIES
         PREFIX lib
         OUTPUT_NAME MiraiCP_multi
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
         )
 target_include_directories(MiraiCP_multi PUBLIC
         ${SRC_PATH}/include
@@ -30,13 +31,13 @@ add_library(
         SHARED
         ${SRC_PATH}/../demo/test.cpp
         ${SRC_PATH}/../demo/test2.cpp
-        ${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp
-)
+        ${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp)
 add_dependencies(MiraiCP_single generateSingleHeaders)
 set_target_properties(MiraiCP_single PROPERTIES
         PREFIX lib
         OUTPUT_NAME MiraiCP_single
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 target_include_directories(MiraiCP_single PUBLIC
         ${SRC_PATH}/single_include/MiraiCP
         ${3RD_PATH}
