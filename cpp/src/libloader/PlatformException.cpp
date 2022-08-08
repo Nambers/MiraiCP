@@ -57,23 +57,25 @@ private:
  * 原因如下：jvm通过将内存页锁住来保证GC时内存不会被访问。线程尝试访问时，会触发sigsegv，
  * 通常来讲会被jvm的sigsegv处理机制捕获，等到GC结束，线程回到原处继续执行。
  * 在cpp端注册的新的sigsegv handler，将会覆盖jvm自带的这一处理机制；
- * 无论该handler自身是否处理，或者丢回给原handler处理，都会造成非常严重的后果。
-#include <signal.h>
+ * 无论该handler自身是否处理，或者丢回给原handler处理，都会造成非常严重的后果。*/
+#include "LoaderLogger.h"
+#include "ThreadController.h"
+#include <csignal>
 #include <thread>
 // 禁止从其他地方构造
 class [[maybe_unused]] SignalHandle {
+    static struct sigaction oact;
     SignalHandle() noexcept {
         static struct sigaction act;
-        act.sa_handler = &SignalHandle::sigsegv_handler;
         act.sa_flags = SA_SIGINFO;
         sigemptyset(&act.sa_mask);
-        act.sa_restorer = nullptr;
-        sigaction(SIGSEGV, &act, nullptr);
+        act.sa_sigaction = &SignalHandle::sigsegv_action;
+        sigaction(SIGSEGV, &act, &oact);
     }
 
     ~SignalHandle() = default;
 
-    static void sigsegv_handler(int) {
+    static void sigsegv_action(int a, siginfo_t *si, void *unused) {
         static int ExceptionReturnValue = 1;
         auto pluginName = LibLoader::ThreadController::getPluginIdFromThreadId(std::this_thread::get_id());
         if (pluginName.empty()) {
@@ -81,6 +83,7 @@ class [[maybe_unused]] SignalHandle {
             char threadName[80];
             pthread_getname_np(pthread_self(), threadName, 80);
             if (strcmp(threadName, "libLoader") != 0) {
+                oact.sa_sigaction(a, si, unused);
                 return;
             }
             LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
@@ -98,5 +101,6 @@ class [[maybe_unused]] SignalHandle {
 };
 
 SignalHandle SignalHandle::Handler;
- */
+struct sigaction SignalHandle::oact;
+// */
 #endif
