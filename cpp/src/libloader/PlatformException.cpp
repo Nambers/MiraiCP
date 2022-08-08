@@ -14,16 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//
-// Created by antares on 8/6/22.
-//
 
+#ifdef _WIN64
 #include "LoaderLogger.h"
 #include "ThreadController.h"
 #include "redirectCout.h"
-
-
-#ifdef _WIN64
 #include <windows.h>
 class EventHandlerPitch {
 public:
@@ -57,6 +52,12 @@ private:
 };
 [[maybe_unused]] EventHandlerPitch pitch = EventHandlerPitch();
 #else
+/*
+ * 我们放弃了在Linux上实现sigsegv捕获
+ * 原因如下：jvm通过将内存页锁住来保证GC时内存不会被访问。线程尝试访问时，会触发sigsegv，
+ * 通常来讲会被jvm的sigsegv处理机制捕获，等到GC结束，线程回到原处继续执行。
+ * 在cpp端注册的新的sigsegv handler，将会覆盖jvm自带的这一处理机制；
+ * 无论该handler自身是否处理，或者丢回给原handler处理，都会造成非常严重的后果。
 #include <signal.h>
 #include <thread>
 // 禁止从其他地方构造
@@ -97,4 +98,5 @@ class [[maybe_unused]] SignalHandle {
 };
 
 SignalHandle SignalHandle::Handler;
+ */
 #endif
