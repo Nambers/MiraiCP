@@ -1,0 +1,56 @@
+name: 使用相关的问题
+description: 问题
+labels: ["t:question"]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 描述遇到的问题
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 发生在哪个版本上
+    validations:
+      required: true
+  - type: dropdown
+    id: compiler
+    attributes:
+      label: 编译器
+      description: 使用的编译器
+      multiple: true
+      options:
+        - Microsoft Visual C++ (MSVC)
+        - MinGW
+        - gcc/g++
+        - 其他
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 系统
+      description: 编译的系统
+      multiple: true
+      options:
+        - Windows
+        - Linux/Unix
+        - OS X
+        - Android
+        - 其他
+  - type: dropdown
+    id: arch
+    attributes:
+      label: 架构
+      description: 架构
+      multiple: true
+      options:
+        - x86-64/amd64
+        - arm64/aarch64
+        - RISC-V64
+        - MIPS64
+        - 其他
+    validations:
+      required: true

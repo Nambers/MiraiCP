@@ -1,6 +1,7 @@
 name: Bug Report
 description: 提交一份错误报告
-labels: ["t:question"]
+labels: ["t:bug"]
+
 body:
   - type: checkboxes
     id: preCheck
@@ -8,13 +9,16 @@ body:
       label: Code of Conduct
       description: |
         Thank for reporting!
-        在提交前请确保做完以下的检查:
+        在提交前请确保做完以下的检查：
         - 没有相同内容/类型issue
-        - 中间件, 启动器, SDK依赖已经更新到最新版
-        - 我确认不是产生了自己导致的编译问题,包括:
+        - 中间件，启动器，SDK依赖已经更新到最新版
+        - 如果是编译错误，我确认不是产生了自己导致的编译问题，包括：
+          - 我没有使用MSVC编译，或者版本是Visual Studio
           - 不是尝试在Linux上使用.dll文件或者Windows上使用.so文件等
           - 生成的动态链接库与使用的jdk均为64位, jdk版本>=11
           - 在同一台计算机上编译并使用或已经自行保证了可移植性
+        - 如果是遇到了段错误/Access Violation，我确认：
+          - 我用debug模式编译运行并保存了错误日志，日志有相关的栈信息，将会在下面贴出
         - By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/Nambers/MiraiCP/blob/main/CODE_OF_CONDUCT.md)
       options:
         - label: I conform
@@ -23,7 +27,7 @@ body:
     id: description
     attributes:
       label: 问题描述
-      description: 描述遇到的问题(预期效果和目前效果)
+      description: 描述遇到的问题（预期效果和目前效果）
     validations:
       required: true
   - type: textarea
@@ -46,8 +50,44 @@ body:
       description: 发生在哪个组件上
       multiple: true
       options:
-        - Loader
-        - Plugin
+        - Loader(java)
         - LibLoader
+        - Plugin(SDK)
+        - 不属于上述项或我不知道属于哪一项
+  - type: dropdown
+    id: compiler
+    attributes:
+      label: 编译器
+      description: 使用的编译器
+      multiple: true
+      options:
+        - Microsoft Visual C++ (MSVC)
+        - MinGW
+        - gcc/g++
+        - 其他
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 系统
+      description: 编译的系统
+      multiple: true
+      options:
+        - Windows
+        - Linux/Unix
+        - OS X
+        - Android
+        - 其他
+  - type: dropdown
+    id: arch
+    attributes:
+      label: 架构
+      description: 架构
+      multiple: true
+      options:
+        - x86-64/amd64
+        - arm64/aarch64
+        - RISC-V64
+        - MIPS64
+        - 其他
     validations:
       required: true
