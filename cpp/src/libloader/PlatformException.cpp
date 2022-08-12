@@ -14,12 +14,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "MiraiCPMacros.h"
 
-#ifdef _WIN64
+
+// TODO(Antares): 1. 调用插件出口函数；2. 防止sigsegv重入
+#if MIRAICP_WINDOWS
+
 #include "LoaderLogger.h"
 #include "ThreadController.h"
 #include "redirectCout.h"
 #include <windows.h>
+// 禁止从其他地方构造
 class EventHandlerPitch {
 public:
     static long __stdcall eventHandler(PEXCEPTION_POINTERS pExceptionPointers) {
@@ -50,40 +55,48 @@ public:
 private:
     LPTOP_LEVEL_EXCEPTION_FILTER preHandler;
 };
+// TODO(Antares): 改为类静态成员，删掉maybe_unused
 [[maybe_unused]] EventHandlerPitch pitch = EventHandlerPitch();
+
 #else
-/*
- * 我们放弃了在Linux上实现sigsegv捕获
- * 原因如下：jvm通过将内存页锁住来保证GC时内存不会被访问。线程尝试访问时，会触发sigsegv，
- * 通常来讲会被jvm的sigsegv处理机制捕获，等到GC结束，线程回到原处继续执行。
- * 在cpp端注册的新的sigsegv handler，将会覆盖jvm自带的这一处理机制；
- * 无论该handler自身是否处理，或者丢回给原handler处理，都会造成非常严重的后果。*/
+
 #include "LoaderLogger.h"
 #include "ThreadController.h"
 #include <csignal>
 #include <thread>
 // 禁止从其他地方构造
 class [[maybe_unused]] SignalHandle {
-    static struct sigaction oact;
     SignalHandle() noexcept {
-        static struct sigaction act;
+        auto &act = getAct();
         act.sa_flags = SA_SIGINFO;
         sigemptyset(&act.sa_mask);
-        act.sa_sigaction = &SignalHandle::sigsegv_action;
-        sigaction(SIGSEGV, &act, &oact);
+        act.sa_sigaction = &SignalHandle::sigsegv_handler;
+        sigaction(SIGSEGV, &act, &getOact());
     }
 
-    ~SignalHandle() = default;
+    ~SignalHandle() {
+        sigaction(SIGSEGV, &getOact(), &getAct());
+    }
 
-    static void sigsegv_action(int a, siginfo_t *si, void *unused) {
-        static int ExceptionReturnValue = 1;
+private:
+    static struct sigaction &getAct() {
+        static struct sigaction act;
+        return act;
+    }
+
+    static struct sigaction &getOact() {
+        static struct sigaction oact;
+        return oact;
+    }
+
+    static void sigsegv_handler(int a, siginfo_t *si, void *unused) {
         auto pluginName = LibLoader::ThreadController::getPluginIdFromThreadId(std::this_thread::get_id());
         if (pluginName.empty()) {
             // test the thread name is jvm
             char threadName[80];
             pthread_getname_np(pthread_self(), threadName, 80);
             if (strcmp(threadName, "libLoader") != 0) {
-                oact.sa_sigaction(a, si, unused);
+                getOact().sa_sigaction(a, si, unused);
                 return;
             }
             LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
@@ -93,14 +106,12 @@ class [[maybe_unused]] SignalHandle {
         LibLoader::sendPluginException(std::move(pluginName));
 
         pthread_cancel(pthread_self());
-        // 无尽循环
-        // for (;;) std::this_thread::sleep_for(std::chrono::hours(1));
     }
 
+private:
     static SignalHandle Handler;
 };
 
 SignalHandle SignalHandle::Handler;
-struct sigaction SignalHandle::oact;
-// */
+
 #endif

@@ -19,14 +19,17 @@
 #include "PluginListImplements.h"
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
+#include "MiraiCPMacros.h"
 #include "PluginConfig.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
-#include "commonTools.h"
 #include "libOpen.h"
 #include "loaderTools.h"
-#if _WIN32 || _WIN64 || WIN32
+
+
+#if MIRAICP_WINDOWS
 #include <filesystem>
+#include <windows.h>
 // https://stackoverflow.com/questions/1387064/how-to-get-the-error-message-from-the-error-code-returned-by-getlasterror
 //Returns the last Win32 error, in string format. Returns an empty string if there is no error.
 std::string GetLastErrorAsString() {
@@ -145,7 +148,7 @@ namespace LibLoader {
 
     plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) noexcept {
         auto actualPath = plugin.path;
-#if _WIN32 || _WIN64 || WIN32
+#if MIRAICP_WINDOWS
         auto from = std::filesystem::path(plugin.path);
         if (!exists(from) || !from.has_extension()) {
             logger.error("path don't exist or invalid " + plugin.path);
@@ -175,18 +178,13 @@ namespace LibLoader {
 
         auto handle = loadPluginInternal(plugin);
         if (handle == nullptr) {
-#if _WIN64
+#if MIRAICP_WINDOWS
             logger.error(GetLastErrorAsString());
 #endif
             throw PluginLoadException(plugin.path, MIRAICP_EXCEPTION_WHERE);
         }
 
         auto symbols = testSymbolExistance(handle, plugin.path);
-        //        if (symbols.pluginAddr == nullptr || symbols.event_func == nullptr) {
-        //            logger.error("failed to find plugin symbol at location " + plugin.path);
-        //            return;
-        //        }
-
 
         plugin.load(handle, symbols.event_func, symbols.pluginAddr);
         plugin.disable();
@@ -210,14 +208,7 @@ namespace LibLoader {
 
         // then unload it
         LoaderApi::libClose(plugin.handle);
-        // #ifdef WIN32
-        //         try {
-        //             auto s = std::filesystem::remove(std::filesystem::path(plugin.actualPath));
-        //             if (!s) LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath);
-        //         } catch (std::filesystem::filesystem_error &e) {
-        //             LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + e.what());
-        //         }
-        // #endif
+
         plugin.unload();
     }
 
@@ -232,14 +223,6 @@ namespace LibLoader {
         // unload it directly since the thread is already down by exception
         LoaderApi::libClose(plugin.handle);
 
-        // #ifdef WIN32
-        //         try {
-        //             auto s = std::filesystem::remove(std::filesystem::path(plugin.actualPath));
-        //             if (!s) LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath);
-        //         } catch (std::filesystem::filesystem_error &e) {
-        //             LibLoader::logger.error("无法删除缓存文件:" + plugin.actualPath + "\n原因:" + e.what());
-        //         }
-        // #endif
         plugin.disable();
         plugin.unload();
     }
