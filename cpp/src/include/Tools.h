@@ -19,7 +19,6 @@
 
 
 #include "MiraiCPMacros.h"
-#include "MiraiDefs.h"
 #include "commonTypes.h"
 #include <sstream>
 #include <string>

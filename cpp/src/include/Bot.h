@@ -18,7 +18,6 @@
 #define MIRAICP_PRO_BOT_H
 
 
-#include "MiraiDefs.h"
 #include "commonTypes.h"
 #include <string>
 #include <vector>

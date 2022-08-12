@@ -17,7 +17,6 @@
 #include "LowLevelAPI.h"
 #include "Exception.h"
 #include "KtOperation.h"
-#include "MiraiDefs.h"
 #include <utility>
 
 
