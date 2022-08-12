@@ -45,7 +45,7 @@ public:
             auto c = b[a.sender.id()];
             Logger::logger.info("d");
             a.group.sendMessage("a");
-            c.changeNameCard(a.message.toMiraiCode());
+            // c.changeNameCard(a.message.toMiraiCode());
         });
         for (auto &&pluginid: LoaderApi::showAllPluginId()) {
             Logger::logger.info("pluginid: " + pluginid);
