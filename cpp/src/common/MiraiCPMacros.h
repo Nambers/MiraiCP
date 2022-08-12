@@ -42,7 +42,7 @@ static_assert(sizeof(char) == 1, "Please make sure the size of char type is 1");
 static_assert(false, "Please make sure MiraiCP is compiled under 64-bit mode.")
 #endif
 #undef MIRAICP_WINDOWS
-#define MIRAICP_WINDOWS 0
+#define MIRAICP_WINDOWS 1
 #elif __APPLE__
 #include <TargetConditionals.h>
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_MACCATALYST || TARGET_OS_IPHONE
@@ -56,7 +56,7 @@ static_assert(false, "Unknown apple platform");
 #endif
 #elif __ANDROID__
 #undef MIRAICP_ANDROID
-#define MIRAICP_ANDROID 0
+#define MIRAICP_ANDROID 1
 #elif __linux__
 #undef MIRAICP_LINUX
 #define MIRAICP_LINUX 1
