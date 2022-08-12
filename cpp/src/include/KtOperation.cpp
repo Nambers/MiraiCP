@@ -16,7 +16,7 @@
 
 #include "KtOperation.h"
 #include "Exception.h"
-#include "MiraiDefs.h"
+#include "MiraiCPMacros.h"
 #include "loaderApiInternal.h"
 
 
@@ -27,7 +27,7 @@ namespace MiraiCP::KtOperation {
         j["data"] = std::move(data);
         auto tmp = j.dump();
         std::string re = LibLoader::LoaderApi::pluginOperation(tmp);
-        if (catchErr) ErrorHandle(re, errorInfo);
+        if (catchErr) MIRAICP_ERROR_HANDLE(re, errorInfo);
         return re;
     }
 } // namespace MiraiCP::KtOperation

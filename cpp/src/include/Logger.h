@@ -20,6 +20,7 @@
 
 #include "MiraiCode.h"
 #include "MiraiDefs.h"
+#include "commonTypes.h"
 #include <functional>
 #include <sstream>
 

@@ -2,11 +2,13 @@
     "project": "Mirai C++ SDK",
     "target": "single_include/MiraiCP/MiraiCP.hpp",
     "sources": [
+        "common/MiraiCPMacros.h",
         "common/MiraiCPStringInternal.h",
         "common/PluginConfig.h",
         "common/commonTools.h",
         "common/commonTypes.h",
         "common/loaderApiInternal.h",
+        "common/redirectCout.h",
         "include/Bot.h",
         "include/CPPPlugin.h",
         "include/Command.h",

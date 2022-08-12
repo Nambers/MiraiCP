@@ -18,24 +18,12 @@
 #define MIRAICP_PRO_TOOLS_H
 
 
+#include "MiraiCPMacros.h"
 #include "MiraiDefs.h"
+#include "commonTypes.h"
 #include <sstream>
 #include <string>
 #include <vector>
-
-
-#if defined(__clang__) || defined(__GNUC__)
-#define MIRAICP_CPP_STANDARD __cplusplus
-#elif defined(_MSC_VER)
-#define MIRAICP_CPP_STANDARD _MSVC_LANG
-#endif
-
-
-//#if MIRAICP_CPP_STANDARD >= 201703L
-//#define get_return_type std::invoke_result_t
-//#else
-//#define get_return_type std::result_of_t
-//#endif
 
 
 namespace MiraiCP {
@@ -51,41 +39,51 @@ namespace MiraiCP {
          * @note 来源:https://stackoverflow.com/a/24315631/14646226
          */
         std::string replace(std::string str, std::string_view from, std::string_view to);
+
+
+        // TODO(antares): 使用模板的做法稍微有点低效
+        //  提供一个抽象类的<<重载实现或者将该函数改为抽象类的一个方法均可
+
         /// @brief long long 类型的vector格式化输出
         /// @param a vector
         /// @return string
         template<typename T>
         std::string VectorToString(const std::vector<T> &a, const std::string &separator = ",") {
             std::stringstream ss;
-            for (size_t i = 0; i < a.size(); ++i) {
-                if (i != 0)
-                    ss << separator;
-                ss << a[i];
+            for (auto it = a.begin(); it != a.end(); ++it) {
+                if (it != a.begin()) ss << separator;
+                ss << *it;
             }
-            std::string s = ss.str();
-            return s;
+
+            return ss.str();
         }
+
         /// @brief 从string格式化到vector
         /// @param temp string
         /// @return vector
         std::vector<QQID> StringToVector(std::string temp);
+
         /// @brief 从miraicode转义到正常
         /// @param s 经过miraicode转义的字符串
         /// @return 原字符串
         std::string escapeFromMiraiCode(const std::string &s);
+
         /// @brief 转义miraicode格式
         std::string escapeToMiraiCode(const std::string &s);
+
         /// starts_with, from <https://stackoverflow.com/questions/1878001/how-do-i-check-if-a-c-stdstring-starts-with-a-certain-string-and-convert-a>
         bool starts_with(std::string_view f, std::string_view s);
+
         /// compare char with case-insensitive
         bool icompareChar(const char &c1, const char &c2);
+
         /// case insensitive string compare from https://thispointer.com/c-case-insensitive-string-comparison-using-stl-c11-boost-library/
         bool iequal(std::string_view str1, std::string_view str2);
+
         /// from https://www.zhihu.com/question/36642771, delim is regex(ignore last `+`)
         std::vector<std::string> split(const std::string &text, const std::string &delim);
     }; // namespace Tools
 } // namespace MiraiCP
 
-// #undef get_return_type
 
 #endif //MIRAICP_PRO_TOOLS_H

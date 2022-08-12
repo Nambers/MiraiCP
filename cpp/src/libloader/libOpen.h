@@ -18,40 +18,15 @@
 #define MIRAICP_PRO_LIBOPEN_H
 
 
-#if _WIN32 || _WIN64 || WIN32
-#include <cstdio>
-#include <windows.h>
-#else
-#include <dlfcn.h>
-#endif
-
-
-#if _WIN32 || _WIN64 || WIN32
-// https://docs.microsoft.com/zh-cn/windows/win32/dlls/using-run-time-dynamic-linking
-// 以及可能需要GetModuleHandle
-#define OPEN_LIBRARY(path) LoadLibrary(TEXT(path.c_str()))
-#define CLOSE_LIBRARY(handle) FreeLibrary((HMODULE) handle)
-#define GET_SYMBOL(handle, symbol) GetProcAddress((HINSTANCE) handle, symbol)
-#else
-#define OPEN_LIBRARY(path) dlopen(path.c_str(), RTLD_LAZY)
-#define CLOSE_LIBRARY(handle) dlclose(handle)
-#define GET_SYMBOL(handle, symbol) dlsym(handle, symbol)
-#endif
-
+#include "commonTypes.h"
 
 namespace LibLoader::LoaderApi {
     // dlopen or sth like dlopen on Windows
-    inline plugin_handle libOpen(const std::string &path) {
-        return OPEN_LIBRARY(path);
-    }
+    plugin_handle libOpen(const std::string &path);
 
-    using FuncAddress = void *(*) ();
-    inline FuncAddress libSymbolLookup(void *handle, const char *symbol) {
-        return (FuncAddress) GET_SYMBOL(handle, symbol);
-    }
 
-    inline int libClose(void *handle) {
-        return CLOSE_LIBRARY(handle);
-    }
-} // namespace LibLoader
+    plugin_func_ptr libSymbolLookup(void *handle, const char *symbol);
+
+    int libClose(void *handle);
+} // namespace LibLoader::LoaderApi
 #endif //MIRAICP_PRO_LIBOPEN_H

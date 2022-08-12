@@ -39,6 +39,7 @@
 #include "Tools.h"
 #include "loaderApi.h"
 #include "utils.h"
+#include "MiraiCPMacros.h"
 #include "MiraiCPStringInternal.h"
 #include "PluginConfig.h"
 #include "commonTools.h"

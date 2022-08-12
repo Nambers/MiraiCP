@@ -17,9 +17,12 @@
 #ifndef MIRAICP_PRO_BOT_H
 #define MIRAICP_PRO_BOT_H
 
+
+#include "MiraiDefs.h"
+#include "commonTypes.h"
 #include <string>
 #include <vector>
-#include "MiraiDefs.h"
+
 
 namespace MiraiCP {
     class Friend;  // forward declaration

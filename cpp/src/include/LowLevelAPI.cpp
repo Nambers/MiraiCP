@@ -38,7 +38,7 @@ namespace MiraiCP {
 
     LowLevelAPI::info LowLevelAPI::info0(const std::string &source) {
         info re;
-        ErrorHandle(source, "");
+        MIRAICP_ERROR_HANDLE(source, "");
         nlohmann::json j = nlohmann::json::parse(source);
         re.avatarUrl = j["avatarUrl"];
         re.nickornamecard = j["nickornamecard"];
