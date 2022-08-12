@@ -17,6 +17,10 @@
 #ifndef MIRAICP_PRO_COMMONTOOLS_H
 #define MIRAICP_PRO_COMMONTOOLS_H
 
+#include "cassert"
+#ifndef assert
+#define assert(x) void(0)
+#endif
 
 #include <functional>
 
@@ -24,22 +28,20 @@
 
 #define MiraiCP_defer(code)                              \
     auto __defered_statement_wrapper__ = [&]() { code }; \
-    CommonTools::MiraiCPDefer<void> __defered_object__(__defered_statement_wrapper__)
+    CommonTools::MiraiCPDefer __defered_object__(__defered_statement_wrapper__)
 
 #define MiraiCP_defer_lambda(lambda)             \
     auto __defered_statement_wrapper__ = lambda; \
-    CommonTools::MiraiCPDefer<void> __defered_object__(__defered_statement_wrapper__)
+    CommonTools::MiraiCPDefer __defered_object__(__defered_statement_wrapper__)
 
 namespace CommonTools {
     /// defer class
     /// @see MiraiCP_defer
-    template<typename RT_TYPE>
     class MiraiCPDefer {
     public:
-        std::function<RT_TYPE()> defer_func;
+        std::function<void()> defer_func;
 
-        template<class F>
-        MiraiCPDefer(F &&func) : defer_func(std::forward<F>(func)) {
+        MiraiCPDefer(std::function<void()> &&func) : defer_func(std::move(func)) {
         }
 
         virtual ~MiraiCPDefer() {

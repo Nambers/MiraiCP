@@ -19,6 +19,7 @@
 #include "Exception.h"
 #include "KtOperation.h"
 #include "Logger.h"
+#include "commonTools.h"
 #include "loaderApiInternal.h"
 #include <iostream>
 
@@ -27,6 +28,7 @@
 
 using json = nlohmann::json;
 
+// todo(antares): delete this
 #ifdef GOOGLE_TEST
 const MiraiCP::PluginConfig MiraiCP::CPPPlugin::config{
         "test", "test"};
