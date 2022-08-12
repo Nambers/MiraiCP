@@ -17,8 +17,12 @@
 #ifndef MIRAICP_PRO_MESSAGESOURCE_H
 #define MIRAICP_PRO_MESSAGESOURCE_H
 
-#include <string>
+
+#include "MiraiCPMacros.h"
 #include "MiraiDefs.h"
+#include "commonTypes.h"
+#include <string>
+
 
 namespace MiraiCP {
     class MiraiCodeable; // forward declaration

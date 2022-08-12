@@ -21,34 +21,27 @@
 
 
 namespace LibLoader {
+    static const std::string LoaderName = "MiraiCP/LibLoader";
     LibLoader::LoaderLogger logger;
-
-    // std::string LibLoader::LoaderLogger::vector2string(const std::vector<std::string> &v) {
-    //     // from https://stackoverflow.com/a/5689061/14646226
-    //     const char *const delim = "\n";
-    //     std::ostringstream imploded;
-    //     std::copy(v.begin(), v.end(),
-    //               std::ostream_iterator<std::string>(imploded, delim));
-    //     return imploded.str();
-    // }
 
     void LoaderLogger::init() {
         logMethod = JNIEnvs::getEnv()->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");
     }
 
     void LoaderLogger::info(const string &msg) const {
-        call_logger(msg, "MiraiCP/LibLoader", -1, 0);
+        call_logger(msg, LoaderName, -1, 0);
     }
 
     void LoaderLogger::warning(const string &msg) const {
-        call_logger(msg, "MiraiCP/LibLoader", -1, 1);
+        call_logger(msg, LoaderName, -1, 1);
     }
 
     void LoaderLogger::error(const string &msg) const {
-        call_logger(msg, "MiraiCP/LibLoader", -1, 2);
+        call_logger(msg, LoaderName, -1, 2);
     }
 
-    void LoaderLogger::call_logger(const string &content, const string &name, long long id, int level) const {
+    void LoaderLogger::call_logger(const string &content, string name, long long id, int level) const {
+        // TODO(Antares): remove this
 #ifdef GOOGLE_TEST
         action(content, name, id, level);
 #else

@@ -15,8 +15,8 @@
 //
 
 #include "ForwardedMessage.h"
-#include "KtOperation.h"
 #include "Contact.h"
+#include "KtOperation.h"
 #include <utility>
 
 namespace MiraiCP {
@@ -56,7 +56,7 @@ namespace MiraiCP {
         if (display.has_value())
             temp["display"] = display->toJson();
         std::string re = KtOperation::ktOperation(KtOperation::Buildforward, temp);
-        ErrorHandle(re, "");
+        MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
     }
 
@@ -114,17 +114,12 @@ namespace MiraiCP {
     */
 
     bool OnlineForwardedMessage::operator==(const OnlineForwardedMessage &m) const {
-        if (this->nodelist.size() != m.nodelist.size())
-            return false;
-        int i = 0;
+        if (this->nodelist.size() != m.nodelist.size()) return false;
 
-        return std::all_of(this->nodelist.begin(), this->nodelist.end(), [&](const auto &n) {
+        int i = 0;
+        return std::all_of(this->nodelist.begin(), this->nodelist.end(), [&i, &m](const auto &n) {
             return n.message == m[i++].message;
         });
-        //        for (int i = 0; i < this->nodelist.size(); i++)
-        //            if (this->nodelist[i].message != m[i].message)
-        //                return false;
-        //        return true;
     }
 
     ForwardedMessage OnlineForwardedMessage::toForwardedMessage(std::optional<ForwardedMessageDisplayStrategy> display) const {

@@ -21,12 +21,7 @@
 
 #include "PluginConfig.h"
 #include "loaderApiInternal.h"
-
-
-#define FUNC_ENTRANCE FUNC_ENTRANCE
-#define FUNC_EVENT FUNC_EVENT
-#define FUNC_EXIT FUNC_EXIT
-#define PLUGIN_INFO PLUGIN_INFO
+#include "MiraiCPMacros.h"
 
 
 namespace LibLoader {
@@ -40,6 +35,11 @@ namespace LibLoader {
     /// @see @macro PLUGIN_INFO
     typedef const MiraiCP::PluginConfig &(*plugin_info_func_ptr)();
 } // namespace LibLoader
+
+
+namespace MiraiCP {
+    using QQID = unsigned long long;
+} // namespace MiraiCP
 
 
 #endif //MIRAICP_PRO_COMMONTYPES_H

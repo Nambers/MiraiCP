@@ -15,22 +15,24 @@
 //
 
 #include "Contact.h"
-#include "KtOperation.h"
 #include "Exception.h"
+#include "KtOperation.h"
 #include "Logger.h"
 #include "LowLevelAPI.h"
 #include "Tools.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
+
     MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode) const {
         if (msg.empty()) {
             throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
         }
         std::string re = LowLevelAPI::send0(msg, this->toJson(), retryTime, miraicode, "reach a error area, Contact::SendMiraiCode");
-        ErrorHandle(re, "");
+        MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
     }
+
     MessageSource Contact::quoteAndSend0(const std::string &msg, MessageSource ms) {
         json obj;
         json sign;
@@ -40,7 +42,7 @@ namespace MiraiCP {
         sign["groupid"] = this->groupid();
         obj["sign"] = sign.dump();
         std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
-        ErrorHandle(re, "");
+        MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
     }
 

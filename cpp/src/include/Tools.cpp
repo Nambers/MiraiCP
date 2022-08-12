@@ -15,10 +15,8 @@
 //
 
 #include "Tools.h"
-#include "Logger.h"
 #include "loaderApiInternal.h"
 #include <regex>
-#include <utf8.h>
 
 
 namespace MiraiCP::Tools {

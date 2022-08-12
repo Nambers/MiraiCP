@@ -81,8 +81,8 @@ namespace MiraiCP {
         void swap(MiraiCPString &other) noexcept;
     };
 
-    static_assert(sizeof(char) == 1, "Please make sure the size of char type is 1");
-    static_assert(sizeof(MiraiCPString) == 3 * 8, "Please make sure MiraiCP is compiled under 64-bit mode.");
+    static_assert(sizeof(char *) == 8, "Please make sure the size of pointers is 8 bytes");
+    static_assert(sizeof(MiraiCPString) == 3 * 8, "Please make sure the size of pointers and size_t are 8 bytes");
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_MIRAICPSTRINGINTERNAL_H

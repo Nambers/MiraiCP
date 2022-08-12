@@ -14,8 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "commonTools.h"
+
 #include "MiraiCPStringInternal.h"
+#include "MiraiCPMacros.h"
 #ifdef MIRAICP_LIB_LOADER
 #include "LoaderLogger.h"
 #endif

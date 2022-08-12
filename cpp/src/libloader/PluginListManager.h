@@ -23,11 +23,7 @@
 #include <mutex>
 
 
-// 字符串宏
-#define STRINGIFY(A) __STRINGIFY(A)
-#ifndef __STRINGIFY
-#define __STRINGIFY(A) #A
-#endif
+
 
 
 namespace LibLoader {

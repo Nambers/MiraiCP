@@ -17,22 +17,10 @@
 #ifndef MIRAICP_PRO_COMMONTOOLS_H
 #define MIRAICP_PRO_COMMONTOOLS_H
 
-#include "cassert"
-#ifndef assert
-#define assert(x) void(0)
-#endif
 
+#include "MiraiCPMacros.h"
 #include <functional>
 
-#define MIRAICP_EXCEPTION_WHERE __FILE__, __LINE__
-
-#define MiraiCP_defer(code)                              \
-    auto __defered_statement_wrapper__ = [&]() { code }; \
-    CommonTools::MiraiCPDefer __defered_object__(__defered_statement_wrapper__)
-
-#define MiraiCP_defer_lambda(lambda)             \
-    auto __defered_statement_wrapper__ = lambda; \
-    CommonTools::MiraiCPDefer __defered_object__(__defered_statement_wrapper__)
 
 namespace CommonTools {
     /// defer class
