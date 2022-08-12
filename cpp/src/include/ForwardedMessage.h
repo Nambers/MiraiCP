@@ -17,10 +17,11 @@
 #ifndef MIRAICP_PRO_FORWARDEDMESSAGE_H
 #define MIRAICP_PRO_FORWARDEDMESSAGE_H
 
+
 #include "MessageChain.h"
-#include "MiraiDefs.h"
 #include <utility>
 #include <variant>
+
 
 namespace MiraiCP {
     class Contact;

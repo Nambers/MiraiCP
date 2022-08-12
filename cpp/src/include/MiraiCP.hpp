@@ -34,7 +34,6 @@
 #include "MessageSource.h"
 #include "MiraiCPNewThread.h"
 #include "MiraiCode.h"
-#include "MiraiDefs.h"
 #include "SingleMessage.h"
 #include "Tools.h"
 #include "loaderApi.h"

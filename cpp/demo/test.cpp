@@ -46,7 +46,6 @@ public:
             Logger::logger.info("d");
             a.group.sendMessage("a");
             // c.changeNameCard(a.message.toMiraiCode());
-            throw std::exception();
         });
         for (auto &&pluginid: LoaderApi::showAllPluginId()) {
             Logger::logger.info("pluginid: " + pluginid);
