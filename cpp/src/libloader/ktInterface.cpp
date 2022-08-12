@@ -41,8 +41,6 @@ namespace LibLoader {
 jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
     using json = nlohmann::json;
 
-    assert(JNIEnvManager::getGvm() != nullptr);
-
     JNIEnvManager::setEnv(env);
 
     //初始化日志模块

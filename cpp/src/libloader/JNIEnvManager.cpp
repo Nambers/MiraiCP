@@ -17,57 +17,67 @@
 #include "JNIEnvManager.h"
 
 
-std::unordered_map<JNIEnvManager::threadid, JNIEnvManager::ThreadInfo> JNIEnvManager::threadJNIEnvs;
-std::recursive_mutex JNIEnvManager::mtx;
-JavaVM *JNIEnvManager::gvm = nullptr;
+//std::unordered_map<JNIEnvManager::threadid, JNIEnvManager::ThreadInfo> JNIEnvManager::threadJNIEnvs;
+//std::recursive_mutex JNIEnvManager::mtx;
 
+class JNIEnvManager::ThreadInfo {
+    friend class JNIEnvManager;
 
-JNIEnv *JNIEnvManager::newEnv() {
+    JNIEnv *env_ptr = nullptr;
+
+    JNIEnv *getEnv() {
+        return env_ptr;
+    }
+
+    void setEnv(JNIEnv *env) {
+        env_ptr = env;
+    };
+
+public:
+    ~ThreadInfo() {
+        if (env_ptr) gvm->DetachCurrentThread();
+    }
+
+private:
+    static JavaVM *gvm; ///< 全局JavaVM对象，用于多线程管理中新建线程的JNIEnv.
+};
+
+JavaVM *JNIEnvManager::ThreadInfo::gvm = nullptr;
+
+thread_local JNIEnvManager::ThreadInfo thread_info;
+
+/// @brief 为当前线程创建一个env.
+inline JNIEnv *newEnv() {
     JNIEnv *env = nullptr;
     // todo JNIVersion是否写死
     JavaVMAttachArgs args{static_cast<int>(JNI_VERSION_1_8),
                           nullptr,
                           nullptr};
-    gvm->AttachCurrentThread((void **) &env, &args);
+    JNIEnvManager::getGvm()->AttachCurrentThread((void **) &env, &args);
     return env;
 }
 
 bool JNIEnvManager::setEnv(JNIEnv *e) {
-    std::lock_guard lk(mtx);
-    auto pr = threadJNIEnvs.insert(std::make_pair(getThreadId(), ThreadInfo{e, false}));
-    if (!pr.second) {
-        pr.first->second.env_ptr = e;
-        return true;
-    }
-    return false;
+    return (nullptr == thread_info.env_ptr) && ((thread_info.env_ptr = e) || true);
 }
 
 JNIEnv *JNIEnvManager::getEnv() {
-    JNIEnv *tmp;
-    {
-        std::lock_guard lk(mtx);
-        auto pr = threadJNIEnvs.insert(std::make_pair(getThreadId(), ThreadInfo{nullptr, true}));
-        if (pr.second) {
-            pr.first->second.env_ptr = newEnv();
-        }
-        tmp = pr.first->second.env_ptr;
-    }
-    return tmp;
+    if (nullptr == thread_info.env_ptr) thread_info.env_ptr = newEnv();
+    return thread_info.env_ptr;
 }
 
 void JNIEnvManager::detach() {
-    std::lock_guard lk(mtx);
-    auto it = threadJNIEnvs.find(getThreadId());
-    if (it != threadJNIEnvs.end()) {
-        if (it->second.attach) gvm->DetachCurrentThread();
-        threadJNIEnvs.erase(it);
+    if (nullptr != thread_info.env_ptr) {
+        getGvm()->DetachCurrentThread();
+        thread_info.env_ptr = nullptr;
     }
 }
 
-void JNIEnvManager::detachAll() {
-    std::lock_guard lk(mtx);
-    for (auto &&[k, v]: threadJNIEnvs) {
-        if (v.attach) gvm->DetachCurrentThread();
-    }
-    threadJNIEnvs.clear();
+
+JavaVM *JNIEnvManager::getGvm() {
+    return ThreadInfo::gvm;
+}
+
+void JNIEnvManager::setGvm(JavaVM *_gvm) {
+    ThreadInfo::gvm = _gvm;
 }
