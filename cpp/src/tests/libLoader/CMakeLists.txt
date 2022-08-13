@@ -8,12 +8,6 @@ target_compile_definitions(AllTestForLibLoader PUBLIC MIRAICP_LIB_LOADER GOOGLE_
 
 add_dependencies(AllTestForLibLoader Loader)
 
-target_include_directories(
-        AllTestForLibLoader PUBLIC
-        ${JNI_PATH}
-        ${3RD_PATH}
-        ${SRC_PATH}/libloader
-        ${SRC_PATH}/common
-)
+target_include_directories(AllTestForLibLoader PUBLIC ${LOADER_INCLUDES_ALL})
 
 gtest_discover_tests(AllTestForLibLoader)
