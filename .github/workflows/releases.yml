@@ -22,7 +22,7 @@ jobs:
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
     - name: build with gcc
       run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target Loader
     - name: upload
@@ -39,7 +39,7 @@ jobs:
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with gcc
       run: cd cpp/build && make generateSingleHeaders && make Loader
     - name: upload
@@ -69,7 +69,7 @@ jobs:
        env: 
          cc: gcc
          cxx: g++
-       run: cd main && mkdir cpp/build && cd cpp/build && cmake .. && make generateSingleHeaders
+       run: cd main && mkdir cpp/build && cd cpp/build && cmake -DGOOGLE_TEST=OFF .. && make generateSingleHeaders
      - name: replace single header(1/2)
        run: cat main/cpp/src/single_include/MiraiCP/MiraiCP.hpp > template/single_include/MiraiCP/MiraiCP.hpp
      - name: replace single header(2/2)
@@ -107,7 +107,7 @@ jobs:
        env: 
          cc: gcc
          cxx: g++
-       run: cd main && mkdir cpp/build && cd cpp/build && cmake .. && make generateSingleHeaders
+       run: cd main && mkdir cpp/build && cd cpp/build && cmake -DGOOGLE_TEST=OFF .. && make generateSingleHeaders
      - name: replace single header(1/4)
        run: cat main/cpp/src/single_include/MiraiCP/MiraiCP.hpp > template/MiraiCP/MiraiCP.hpp
      - name: replace single header(2/4)

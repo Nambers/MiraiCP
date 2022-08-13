@@ -23,7 +23,7 @@ jobs:
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with gcc
       run: cd cpp/build && make generateSingleHeaders && make MiraiCP_single
   windows-msvc-single:
@@ -32,7 +32,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
     - name: configure
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with msvc
       run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single
   windows-mingw-single:
@@ -44,7 +44,7 @@ jobs:
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
     - name: build with gcc
       run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single
   ubuntu-gcc-core:
@@ -56,7 +56,7 @@ jobs:
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with gcc
       run: cd cpp/build && make MiraiCP_core
   windows-mingw-libLoader:
@@ -68,7 +68,7 @@ jobs:
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
     - name: build with gcc
       run: cd ./cpp && cmake --build build --target Loader
   ubuntu-gcc-libLoader:
@@ -80,6 +80,6 @@ jobs:
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with gcc
       run: cd cpp/build && make Loader
