@@ -15,34 +15,77 @@
 //
 
 #include "LoaderLogger.h"
+#include "MiraiCPMacros.h"
+#include "EnvMocker.h"
 #include "redirectCout.h"
 #include <gtest/gtest.h>
 #include <string>
 
+namespace MiraiCP::Redirector {
+    void SetCoutRecorder(void (*recorder)(std::string));
+    void SetCerrRecorder(void (*recorder)(std::string));
+} // namespace MiraiCP::Redirector
+
+
 TEST(RedirectStandardOutputForLibLoaderTest, COUT) {
-    MiraiCP::Redirector::start();
-    std::string re;
-    LibLoader::logger.action = [&re](const std::string &str, const std::string &, long long int, int level) {
-        if (level == 0) re += str;
+    // initialize mocker
+    EnvScopeMocker mocker;
+
+    // define string to memorize result
+    static std::string cout_result;
+    MiraiCP_defer(cout_result.clear(););
+
+    // define recorder
+    struct inner {
+        static void recoder(std::string t) {
+            cout_result += t;
+        }
     };
-    LibLoader::logger.info("test");
+
+    // start redirection
+    MiraiCP::Redirector::start();
+    MiraiCP_defer(MiraiCP::Redirector::reset(););
+
+    // set recorder
+    MiraiCP::Redirector::SetCoutRecorder(inner::recoder);
+    MiraiCP_defer(MiraiCP::Redirector::SetCoutRecorder(nullptr););
+
+    // test
+    std::cout << "test";
+    std::cout.flush();
     std::cout << "aabb";
     std::cout.flush();
     std::cout << "111" << std::endl;
-    ASSERT_EQ("testaabb111\n", re);
-    MiraiCP::Redirector::reset();
+    ASSERT_EQ("testaabb111\n", cout_result);
 }
 
 TEST(RedirectStandardOutputForLibLoaderTest, CERR) {
-    MiraiCP::Redirector::start();
-    std::string re;
-    LibLoader::logger.action = [&re](const std::string &str, const std::string &, long long int, int level) {
-        if (level == 2) re += str;
+    // initialize mocker
+    EnvScopeMocker mocker;
+
+    // define string to memorize result
+    static std::string cerr_result;
+    MiraiCP_defer(cerr_result.clear(););
+
+    // define recorder
+    struct inner {
+        static void recoder(std::string t) {
+            cerr_result += t;
+        }
     };
-    LibLoader::logger.error("test");
+
+    // start redirection
+    MiraiCP::Redirector::start();
+    MiraiCP_defer(MiraiCP::Redirector::reset(););
+
+    // set recorder
+    MiraiCP::Redirector::SetCerrRecorder(inner::recoder);
+    MiraiCP_defer(MiraiCP::Redirector::SetCerrRecorder(nullptr););
+
+    // test
+    std::cerr << "test";
     std::cerr << "aabb";
     std::cerr.flush();
     std::cerr << "111" << std::endl;
-    ASSERT_EQ("testaabb111\n", re);
-    MiraiCP::Redirector::reset();
+    ASSERT_EQ("testaabb111\n", cerr_result);
 }

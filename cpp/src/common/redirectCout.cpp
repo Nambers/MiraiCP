@@ -16,65 +16,100 @@
 
 #include "redirectCout.h"
 #include <iostream>
+#include <memory>
+#include <sstream>
 #ifdef MIRAICP_LIB_LOADER
 #include "LoaderLogger.h"
 #else
 #include "Logger.h"
 #endif
-    class OStreamRedirector {
-    public:
-        ~OStreamRedirector() {
-            obj->rdbuf(old);
-            obj = nullptr;
-            old = nullptr;
-        }
 
-        /**
+class OStreamRedirector {
+public:
+    ~OStreamRedirector() {
+        obj->rdbuf(old);
+        obj = nullptr;
+        old = nullptr;
+    }
+
+    /**
          * @brief 重定向 obj 的流
          * @param obj 需要重定向的流
          * @param new_buffer 重定向到的新缓冲区
          */
-        explicit OStreamRedirector(std::ostream *obj, std::streambuf *newBuffer)
-            : old(obj->rdbuf(newBuffer)), obj(obj) {}
+    explicit OStreamRedirector(std::ostream *obj, std::streambuf *newBuffer)
+        : old(obj->rdbuf(newBuffer)), obj(obj) {}
 
-    private:
-        // 被重定向的流
-        std::ostream *obj;
-        // 旧的缓冲区目标
-        std::streambuf *old;
-    };
-    class OString : private std::streambuf, public std::ostream {
-    private:
-        // 缓冲区
+private:
+    // 被重定向的流
+    std::ostream *obj;
+    // 旧的缓冲区目标
+    std::streambuf *old;
+};
+
+class OString : public std::ostream {
+    class OStringBuf : public std::streambuf {
+        friend class OString;
+        typedef void (*Recorder)(std::string);
+        //
+        explicit OStringBuf(bool inIsInfoLevel) : isInfoLevel(inIsInfoLevel) {}
+        ~OStringBuf() override = default;
+        //
         std::ostringstream result{};
-
-    public:
-        // 输出是否为 info 级别
-        explicit OString(bool info) : std::ostream(this), info(info) {}
-
-        ~OString() override = default;
-
-        // 加入缓冲区
-        int overflow(std::streambuf::int_type c) override;
-        // std::streambuff 的 sync
-        int sync() override;
+        Recorder recorder = nullptr;
+        bool isInfoLevel;
+        //
         // 输出缓冲区内容, 相当于 flush
         std::string out();
+        // std::streambuff interface
+        int sync() override {
+            record(out());
+            return 0;
+        }
 
-    private:
-        bool info;
+        // std::streambuff interface
+        // 加入缓冲区
+        int overflow(std::streambuf::int_type c) override {
+            if (c == EOF)
+                record(out());
+            else
+                result.put((std::streambuf::char_type) c);
+            return c;
+        }
+
+        void record(std::string message) {
+            if (recorder) recorder(std::move(message));
+        }
     };
 
-    // --- impl ---
+public:
+    using Recorder = OStringBuf::Recorder;
 
-std::string OString::out() {
+private:
+    // 缓冲区
+    OStringBuf sbuf;
+
+public:
+    // 输出是否为 info 级别
+    explicit OString(bool info) : sbuf(info), std::ostream(&sbuf) {}
+
+    ~OString() override = default;
+
+    void setRecorder(Recorder recorder) {
+        sbuf.recorder = recorder;
+    }
+};
+
+// --- impl ---
+
+std::string OString::OStringBuf::out() {
 #ifdef MIRAICP_LIB_LOADER
-    if (info)
+    if (isInfoLevel)
         LibLoader::logger.info(result.str());
     else
         LibLoader::logger.error(result.str());
 #else
-    if (info)
+    if (isInfoLevel)
         MiraiCP::Logger::logger.info(result.str());
     else
         MiraiCP::Logger::logger.error(result.str());
@@ -82,18 +117,6 @@ std::string OString::out() {
     auto temp = result.str();
     result.str("");
     return temp;
-}
-int OString::overflow(std::streambuf::int_type c) {
-    if (c == EOF)
-        out();
-    else
-        result.put((std::streambuf::char_type) c);
-    return c;
-}
-
-int OString::sync() {
-    out();
-    return 0;
 }
 
 OString outTarget(true);
@@ -111,3 +134,16 @@ void MiraiCP::Redirector::start() {
     errRedirector = std::make_unique<OStreamRedirector>(&std::cerr, errTarget.rdbuf());
 }
 
+namespace MiraiCP::Redirector {
+    /// @note dev: this function is only used for tests;
+    ///  should never be declared in source headers
+    void SetCoutRecorder(void (*recorder)(std::string)) {
+        outTarget.setRecorder(recorder);
+    }
+
+    /// @note dev: this function is only used for tests;
+    ///  should never be declared in source headers
+    void SetCerrRecorder(void (*recorder)(std::string)) {
+        errTarget.setRecorder(recorder);
+    }
+} // namespace MiraiCP::Redirector
