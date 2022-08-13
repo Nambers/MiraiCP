@@ -41,16 +41,11 @@ namespace LibLoader {
     }
 
     void LoaderLogger::call_logger(const string &content, string name, long long id, int level) const {
-        // TODO(Antares): remove this
-#ifdef GOOGLE_TEST
-        action(content, name, id, level);
-#else
         nlohmann::json j = {
                 {"id", id},
                 {"log", content}};
         if (!name.empty()) j["name"] = std::move(name);
         auto env = JNIEnvs::getEnv();
         env->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, LibLoader::str2jstring(j.dump().c_str()), (jint) (level));
-#endif
     }
 } // namespace LibLoader
