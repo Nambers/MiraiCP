@@ -14,6 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+// todo(Antares): 三方库或者jni有个文件和这个文件重名了，重命名为MiraiCPCore.h
+
 #ifndef MIRAICP_PRO_CORE_H
 #define MIRAICP_PRO_CORE_H
 #include "MiraiCP.hpp"

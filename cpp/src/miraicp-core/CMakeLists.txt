@@ -15,11 +15,11 @@ set_target_properties(
 
 target_include_directories(
         MiraiCP_core PUBLIC
-        ${JNI_PATH}
-        ${3RD_PATH}
         ${SRC_PATH}/miraicp-core
         ${SRC_PATH}/include
         ${SRC_PATH}/common
+        ${JNI_PATH}
+        ${3RD_PATH}
 )
 
 if (WIN32)
