@@ -118,7 +118,7 @@ static_assert(false, "Unsupported platform");
 #endif
 
 
-// defer tool. works like the defer key word in Golang.
+// defer tool, works like the defer key word in Golang.
 #include "commonTools.h"
 #define MIRAICP_DEFER(code)                                                   \
     auto TOKEN_PASTE(_defered_statement_wrapper_, __LINE__) = [&]() { code }; \

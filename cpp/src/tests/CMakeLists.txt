@@ -15,6 +15,7 @@ add_subdirectory(libLoader)
 # -- end test --
 
 # todo(ea): 更好的解决方法
+# (Antares): 我觉得这样子可以，cmake本身就是个单纯的构建工具，运行测试用一个脚本没啥问题
 if (WIN32)
     add_custom_target(AllTests
             COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target AllTestForPlugin_Multi
