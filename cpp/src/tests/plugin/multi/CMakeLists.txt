@@ -8,11 +8,6 @@ target_compile_definitions(AllTestForPlugin_Multi PUBLIC GOOGLE_TEST MIRAICP_LIB
 
 add_dependencies(AllTestForPlugin_Multi MiraiCP_multi)
 
-target_include_directories(
-        AllTestForPlugin_Multi PUBLIC
-        ${SRC_PATH}/include
-        ${SRC_PATH}/common
-        ${3RD_PATH}
-)
+target_include_directories(AllTestForPlugin_Multi PUBLIC ${SDK_INCLUDES_ALL})
 
 gtest_discover_tests(AllTestForPlugin_Multi)

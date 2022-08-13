@@ -15,12 +15,13 @@ set_target_properties(
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-target_include_directories(
-        MiraiCP_multi PUBLIC
+set(SDK_INCLUDES_INTERNAL
         ${SRC_PATH}/include
         ${SRC_PATH}/common
-        ${3RD_PATH}
-)
+        ${3RD_PATH})
+set(SDK_INCLUDES_ALL ${SDK_INCLUDES_INTERNAL} PARENT_SCOPE)
+
+target_include_directories(MiraiCP_multi PUBLIC ${SDK_INCLUDES_INTERNAL})
 
 target_compile_options(MiraiCP_multi PUBLIC -w)
 target_compile_definitions(MiraiCP_multi PUBLIC JSON_MultipleHeaders=ON MIRAICP_LIB_SDK)

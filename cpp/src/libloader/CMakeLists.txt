@@ -5,13 +5,15 @@ add_library(Loader
         ${MIRAICP_COMMON_PATH}
         )
 
-target_include_directories(
-        Loader PUBLIC
+set(LOADER_INCLUDES_INTERNAL
         ${JNI_PATH}
         ${3RD_PATH}
         ${SRC_PATH}/libloader
-        ${SRC_PATH}/common
-)
+        ${SRC_PATH}/common)
+set(LOADER_INCLUDES_ALL ${LOADER_INCLUDES_INTERNAL} PARENT_SCOPE)
+
+target_include_directories(Loader PUBLIC ${LOADER_INCLUDES_INTERNAL}
+        )
 set_target_properties(Loader PROPERTIES
         PREFIX lib
         OUTPUT_NAME Loader
