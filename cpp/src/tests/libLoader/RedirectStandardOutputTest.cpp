@@ -33,7 +33,7 @@ TEST(RedirectStandardOutputForLibLoaderTest, COUT) {
 
     // define string to memorize result
     static std::string cout_result;
-    MiraiCP_defer(cout_result.clear(););
+    MIRAICP_DEFER(cout_result.clear(););
 
     // define recorder
     struct inner {
@@ -44,11 +44,11 @@ TEST(RedirectStandardOutputForLibLoaderTest, COUT) {
 
     // start redirection
     MiraiCP::Redirector::start();
-    MiraiCP_defer(MiraiCP::Redirector::reset(););
+    MIRAICP_DEFER(MiraiCP::Redirector::reset(););
 
     // set recorder
     MiraiCP::Redirector::SetCoutRecorder(inner::recoder);
-    MiraiCP_defer(MiraiCP::Redirector::SetCoutRecorder(nullptr););
+    MIRAICP_DEFER(MiraiCP::Redirector::SetCoutRecorder(nullptr););
 
     // test
     std::cout << "test";
@@ -65,7 +65,7 @@ TEST(RedirectStandardOutputForLibLoaderTest, CERR) {
 
     // define string to memorize result
     static std::string cerr_result;
-    MiraiCP_defer(cerr_result.clear(););
+    MIRAICP_DEFER(cerr_result.clear(););
 
     // define recorder
     struct inner {
@@ -76,11 +76,11 @@ TEST(RedirectStandardOutputForLibLoaderTest, CERR) {
 
     // start redirection
     MiraiCP::Redirector::start();
-    MiraiCP_defer(MiraiCP::Redirector::reset(););
+    MIRAICP_DEFER(MiraiCP::Redirector::reset(););
 
     // set recorder
     MiraiCP::Redirector::SetCerrRecorder(inner::recoder);
-    MiraiCP_defer(MiraiCP::Redirector::SetCerrRecorder(nullptr););
+    MIRAICP_DEFER(MiraiCP::Redirector::SetCerrRecorder(nullptr););
 
     // test
     std::cerr << "test";

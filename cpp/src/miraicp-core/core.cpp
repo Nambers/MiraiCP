@@ -83,7 +83,7 @@ namespace MiraiCP::Tools {
         std::vector<unsigned short> utf16line;
         utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
         auto *c = new jchar[utf16line.size()];
-        MiraiCP_defer(delete[] c;);
+        MIRAICP_DEFER(delete[] c;);
         for (int i = 0; i < utf16line.size(); i++) {
             c[i] = utf16line[i];
         }
