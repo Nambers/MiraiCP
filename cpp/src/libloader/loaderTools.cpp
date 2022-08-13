@@ -65,7 +65,7 @@ namespace LibLoader {
         }
 
         const jchar *jCharPointer = JNIEnvs::getEnv()->GetStringChars(jStr, nullptr);
-        MiraiCP_defer(JNIEnvs::getEnv()->ReleaseStringChars(jStr, jCharPointer););
+        MIRAICP_DEFER(JNIEnvs::getEnv()->ReleaseStringChars(jStr, jCharPointer););
         std::u16string s = reinterpret_cast<const char16_t *>(jCharPointer);
 
         if (s.length() == 0) {
@@ -84,7 +84,7 @@ namespace LibLoader {
         std::vector<unsigned short> utf16line;
         utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
         auto *c = new jchar[utf16line.size()];
-        MiraiCP_defer(delete[] c;);
+        MIRAICP_DEFER(delete[] c;);
         for (int i = 0; i < utf16line.size(); i++) {
             c[i] = utf16line[i];
         }

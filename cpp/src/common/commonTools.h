@@ -24,7 +24,7 @@
 
 namespace CommonTools {
     /// defer class
-    /// @see MiraiCP_defer
+    /// @see MIRAICP_DEFER
     class MiraiCPDefer {
     public:
         std::function<void()> defer_func;

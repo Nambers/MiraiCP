@@ -46,7 +46,7 @@ namespace LibLoader {
     void ThreadController::threadWorker::run() {
         // clean up at function end
         // try to detach this thread from JVM
-        MiraiCP_defer(JNIEnvManager::detach(););
+        MIRAICP_DEFER(JNIEnvManager::detach(););
 
         // set thread name so the debugger can see the plugin id from binding thread
         pthread_setname_np(pthread_self(), pluginid.c_str());

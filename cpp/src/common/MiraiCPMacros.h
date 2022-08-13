@@ -118,9 +118,9 @@ static_assert(false, "Unsupported platform");
 #endif
 
 
-// defer tool
+// defer tool. works like the defer key word in Golang.
 #include "commonTools.h"
-#define MiraiCP_defer(code)                                                   \
+#define MIRAICP_DEFER(code)                                                   \
     auto TOKEN_PASTE(_defered_statement_wrapper_, __LINE__) = [&]() { code }; \
     CommonTools::MiraiCPDefer TOKEN_PASTE(_defered_object_, __LINE__)(std::move(TOKEN_PASTE(_defered_statement_wrapper_, __LINE__)))
 #define MiraiCP_defer_lambda(lambda)             \
