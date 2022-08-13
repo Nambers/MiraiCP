@@ -20,7 +20,9 @@
 
 // This file contains static assertions and macros.
 // If any macro is used, one should always include this file directly or indirectly.
-// Dev: any new macro(s) should be added here.
+// Dev: any new macro(s) should be added here since we have to ensure the "single" target
+// behaves just the same as "multi". If any macro infected the pre-compilation in "single",
+// we will know immediately in "multi".
 
 
 static_assert(sizeof(char) == 1, "Please make sure the size of char type is 1");
@@ -107,11 +109,20 @@ static_assert(false, "Unsupported platform");
 #define MIRAICP_THROW(x, ...) throw x(##__VA_ARGS__, MIRAICP_EXCEPTION_WHERE)
 
 
+// token paste and stringify
+#define TOKEN_PASTE_INNER(X, Y) X##Y
+#define TOKEN_PASTE(X, Y) TOKEN_PASTE_INNER(X, Y)
+#define STRINGIFY(A) __STRINGIFY(A)
+#ifndef __STRINGIFY
+#define __STRINGIFY(A) #A
+#endif
+
+
 // defer tool
 #include "commonTools.h"
-#define MiraiCP_defer(code)                              \
-    auto __defered_statement_wrapper__ = [&]() { code }; \
-    CommonTools::MiraiCPDefer __defered_object__(__defered_statement_wrapper__)
+#define MiraiCP_defer(code)                                                   \
+    auto TOKEN_PASTE(_defered_statement_wrapper_, __LINE__) = [&]() { code }; \
+    CommonTools::MiraiCPDefer TOKEN_PASTE(_defered_object_, __LINE__)(std::move(TOKEN_PASTE(_defered_statement_wrapper_, __LINE__)))
 #define MiraiCP_defer_lambda(lambda)             \
     auto __defered_statement_wrapper__ = lambda; \
     CommonTools::MiraiCPDefer __defered_object__(__defered_statement_wrapper__)
@@ -135,13 +146,5 @@ static_assert(false, "Unsupported platform");
 #else
 #define MIRAICP_EXPORT
 #endif
-
-
-// stringify
-#define STRINGIFY(A) __STRINGIFY(A)
-#ifndef __STRINGIFY
-#define __STRINGIFY(A) #A
-#endif
-
 
 #endif //MIRAICP_PRO_MIRAICPMACROS_H
