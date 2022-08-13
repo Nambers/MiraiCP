@@ -81,3 +81,11 @@ JavaVM *JNIEnvManager::getGvm() {
 void JNIEnvManager::setGvm(JavaVM *_gvm) {
     ThreadInfo::gvm = _gvm;
 }
+
+namespace EnvMocker{
+    /// @note dev: this function is only used for tests;
+    ///  should never be declared in source headers
+    void force_reset_env() {
+        thread_info = JNIEnvManager::ThreadInfo();
+    }
+}

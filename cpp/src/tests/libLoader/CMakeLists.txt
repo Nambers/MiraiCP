@@ -4,6 +4,7 @@ add_executable(AllTestForLibLoader ${libLoader_Tests})#  ${LOADER_PATH} ${MIRAIC
 target_link_libraries(AllTestForLibLoader PUBLIC GTest::gtest_main)
 target_link_directories(AllTestForLibLoader PUBLIC ${CMAKE_BINARY_DIR})
 target_link_options(AllTestForLibLoader PUBLIC -lLoader)
+target_compile_definitions(AllTestForLibLoader PUBLIC -DGOOGLE_TEST)
 
 add_dependencies(AllTestForLibLoader Loader)
 
