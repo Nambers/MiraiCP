@@ -15,6 +15,7 @@
 //
 
 #include "redirectCout.h"
+#include "MiraiCPMacros.h"
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -137,13 +138,13 @@ void MiraiCP::Redirector::start() {
 namespace MiraiCP::Redirector {
     /// @note dev: this function is only used for tests;
     ///  should never be declared in source headers
-    void SetCoutRecorder(void (*recorder)(std::string)) {
+    MIRAICP_EXPORT void SetCoutRecorder(void (*recorder)(std::string)) {
         outTarget.setRecorder(recorder);
     }
 
     /// @note dev: this function is only used for tests;
     ///  should never be declared in source headers
-    void SetCerrRecorder(void (*recorder)(std::string)) {
+    MIRAICP_EXPORT void SetCerrRecorder(void (*recorder)(std::string)) {
         errTarget.setRecorder(recorder);
     }
 } // namespace MiraiCP::Redirector
