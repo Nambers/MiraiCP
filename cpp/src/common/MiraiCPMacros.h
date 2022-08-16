@@ -124,8 +124,8 @@ static_assert(false, "Unsupported platform");
     auto TOKEN_PASTE(_defered_statement_wrapper_, __LINE__) = [&]() { code }; \
     CommonTools::MiraiCPDefer TOKEN_PASTE(_defered_object_, __LINE__)(std::move(TOKEN_PASTE(_defered_statement_wrapper_, __LINE__)))
 #define MiraiCP_defer_lambda(lambda)             \
-    auto __defered_statement_wrapper__ = lambda; \
-    CommonTools::MiraiCPDefer __defered_object__(__defered_statement_wrapper__)
+    auto TOKEN_PASTE(_defered_statement_wrapper_, __LINE__) = lambda; \
+    CommonTools::MiraiCPDefer TOKEN_PASTE(_defered_object_, __LINE__)(std::move(TOKEN_PASTE(_defered_statement_wrapper_, __LINE__)))
 
 
 // names of plugin entry points
