@@ -78,10 +78,10 @@ static_assert(false, "Unsupported platform");
 #if defined(_MSC_VER)
 #undef MIRAICP_MSVC
 #define MIRAICP_MSVC 1
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) // GNUC, MinGW
 #undef MIRAICP_GCC
 #define MIRAICP_GCC 1
-#else // GUNC
+#else
 #undef MIRAICP_COMPILER_OTHER
 #define MIRAICP_COMPILER_OTHER 1
 #endif
@@ -141,7 +141,7 @@ static_assert(false, "Unsupported platform");
 
 
 // export
-#if MMIRAICP_WINDOWS
+#if MIRAICP_WINDOWS
 #define MIRAICP_EXPORT __declspec(dllexport)
 #else
 #define MIRAICP_EXPORT
