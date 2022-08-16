@@ -19,6 +19,7 @@
 
 
 #include "Exception.h"
+#include "MiraiCPMacros.h"
 #include "SingleMessage.h"
 #include "commonTools.h"
 
@@ -32,6 +33,8 @@ namespace MiraiCP {
             // std::shared_ptr<SingleMessage> content;
 
         public: // constructor
+            Message() : std::shared_ptr<SingleMessage>() {} // for MSVC compatible, or you will get an error
+
             template<class T>
             explicit Message(const T &_singleMessage) {
                 static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");

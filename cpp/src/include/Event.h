@@ -675,8 +675,12 @@ namespace MiraiCP {
         public:
             std::function<bool(MiraiCPEvent *)> func;
 
+        public:
+            eventNode() : _handle(), func(nullptr) {}
+
             explicit eventNode(std::function<bool(MiraiCPEvent *)> f) : _handle(new NodeHandle(true)), func(std::move(f)) {}
 
+            eventNode(const eventNode &_o) = default; // for MSVC compatible, or you will get an error
             eventNode(eventNode &&_o) noexcept : _handle(std::move(_o._handle)), func(std::move(_o.func)) {}
 
         public:
