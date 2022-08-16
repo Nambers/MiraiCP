@@ -19,6 +19,7 @@
 #include "Exception.h"
 #include "KtOperation.h"
 #include "Logger.h"
+#include "MiraiCPMacros.h"
 #include "commonTools.h"
 #include "loaderApiInternal.h"
 #include <iostream>
@@ -32,9 +33,9 @@ using json = nlohmann::json;
 namespace LibLoader::LoaderApi {
     const interface_funcs *get_loader_apis();
 
-    void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis);
+    MIRAICP_EXPORT void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis);
 
-    void reset_loader_apis();
+    MIRAICP_EXPORT void reset_loader_apis();
 } // namespace LibLoader::LoaderApi
 
 extern "C" {
