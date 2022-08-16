@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_MIRAICPSTRINGINTERNAL_H
 
 
+#include "MiraiCPMacros.h"
 #include <cassert>
 #include <string>
 
@@ -26,7 +27,7 @@ namespace MiraiCP {
     // this class is used to ensure data consistency between dynamic libs
     // note: do not use this directly;
     // always convert to const char* or std::string before using.
-    class MiraiCPString {
+    class MIRAICP_EXPORT MiraiCPString {
         using string = std::string;
 
     private:

@@ -14,14 +14,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 #ifndef MIRAICP_PRO_REDIRECTCOUT_H
 #define MIRAICP_PRO_REDIRECTCOUT_H
 
+
+#include "MiraiCPMacros.h"
+
+
 namespace MiraiCP::Redirector{
         /// start redirecting cout and cerr
-        void start();
+        MIRAICP_EXPORT void start();
         /// reset all redirecting
-        void reset();
+        MIRAICP_EXPORT void reset();
     } // namespace MiraiCP
 #endif //MIRAICP_PRO_REDIRECTCOUT_H

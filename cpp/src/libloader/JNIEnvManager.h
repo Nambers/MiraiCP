@@ -19,14 +19,17 @@
 #define MIRAICP_PRO_JNIENVMANAGER_H
 
 
+#include "MiraiCPMacros.h"
 #include <functional>
 #include <jni.h>
 #include <mutex>
 #include <thread>
+
+
 class JNIEnvManager;
 
 
-class JNIEnvManager {
+class MIRAICP_EXPORT JNIEnvManager {
 public:
     /// @brief 每个线程实例.
     /// @note dev: thread_local对象，线程唯一实例
