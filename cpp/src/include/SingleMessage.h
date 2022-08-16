@@ -17,6 +17,7 @@
 #ifndef MIRAICP_PRO_SINGLEMESSAGE_H
 #define MIRAICP_PRO_SINGLEMESSAGE_H
 
+
 #include "MessageSource.h"
 #include "MiraiCode.h"
 #include <array>
@@ -24,6 +25,7 @@
 #include <optional>
 #include <sstream>
 #include <unordered_map>
+
 
 namespace MiraiCP {
     /// 用serviceMessage的分享信息
@@ -41,7 +43,7 @@ namespace MiraiCP {
     };
 
     /// MessageChain的组成部分
-    class SingleMessage : public MiraiCodeable {
+    class MIRAICP_EXPORT SingleMessage : public MiraiCodeable {
     public:
         /// MiraiCode类别
         /// @see SingleMessage::messageType
@@ -85,7 +87,7 @@ namespace MiraiCP {
     };
 
     /// 纯文本信息
-    class PlainText : public SingleMessage {
+    class MIRAICP_EXPORT PlainText : public SingleMessage {
     public:
         explicit PlainText(const SingleMessage &sg);
 
@@ -147,7 +149,7 @@ namespace MiraiCP {
     };
 
     /// 图像类声明
-    class Image : public SingleMessage {
+    class MIRAICP_EXPORT Image : public SingleMessage {
     public:
         static int type() { return 3; }
         //图片id，样式:` {xxx}.xx `
@@ -252,7 +254,7 @@ namespace MiraiCP {
     * @attention 自带的模板不稳定，可能发出现没有效果
     * @doxygenEg{1015, lightApp.cpp, 从文本构建LightApp}
     */
-    class LightApp : public SingleMessage {
+    class MIRAICP_EXPORT LightApp : public SingleMessage {
     public:
         static int type() { return 4; }
         /// @brief 使用纯文本构造，推荐使用其他结构体方法构造

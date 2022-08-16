@@ -37,7 +37,7 @@ namespace MiraiCP {
          * @return 返回替换后的字符串.
          * @note 来源:https://stackoverflow.com/a/24315631/14646226
          */
-        std::string replace(std::string str, std::string_view from, std::string_view to);
+        MIRAICP_EXPORT std::string replace(std::string str, std::string_view from, std::string_view to);
 
 
         // TODO(antares): 使用模板的做法稍微有点低效
@@ -47,7 +47,7 @@ namespace MiraiCP {
         /// @param a vector
         /// @return string
         template<typename T>
-        std::string VectorToString(const std::vector<T> &a, const std::string &separator = ",") {
+        MIRAICP_EXPORT std::string VectorToString(const std::vector<T> &a, const std::string &separator = ",") {
             std::stringstream ss;
             for (auto it = a.begin(); it != a.end(); ++it) {
                 if (it != a.begin()) ss << separator;
@@ -60,27 +60,27 @@ namespace MiraiCP {
         /// @brief 从string格式化到vector
         /// @param temp string
         /// @return vector
-        std::vector<QQID> StringToVector(std::string temp);
+        MIRAICP_EXPORT std::vector<QQID> StringToVector(std::string temp);
 
         /// @brief 从miraicode转义到正常
         /// @param s 经过miraicode转义的字符串
         /// @return 原字符串
-        std::string escapeFromMiraiCode(const std::string &s);
+        MIRAICP_EXPORT std::string escapeFromMiraiCode(const std::string &s);
 
         /// @brief 转义miraicode格式
-        std::string escapeToMiraiCode(const std::string &s);
+        MIRAICP_EXPORT std::string escapeToMiraiCode(const std::string &s);
 
         /// starts_with, from <https://stackoverflow.com/questions/1878001/how-do-i-check-if-a-c-stdstring-starts-with-a-certain-string-and-convert-a>
-        bool starts_with(std::string_view f, std::string_view s);
+        MIRAICP_EXPORT bool starts_with(std::string_view f, std::string_view s);
 
         /// compare char with case-insensitive
-        bool icompareChar(const char &c1, const char &c2);
+        MIRAICP_EXPORT bool icompareChar(const char &c1, const char &c2);
 
         /// case insensitive string compare from https://thispointer.com/c-case-insensitive-string-comparison-using-stl-c11-boost-library/
-        bool iequal(std::string_view str1, std::string_view str2);
+        MIRAICP_EXPORT bool iequal(std::string_view str1, std::string_view str2);
 
         /// from https://www.zhihu.com/question/36642771, delim is regex(ignore last `+`)
-        std::vector<std::string> split(const std::string &text, const std::string &delim);
+        MIRAICP_EXPORT std::vector<std::string> split(const std::string &text, const std::string &delim);
     }; // namespace Tools
 } // namespace MiraiCP
 

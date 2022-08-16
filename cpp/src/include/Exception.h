@@ -19,6 +19,7 @@
 
 
 #include "CPPPlugin.h"
+#include "MiraiCPMacros.h"
 #include <exception>
 #include <string>
 #include <thread>
@@ -27,7 +28,7 @@
 namespace MiraiCP {
     /// @brief 总异常抽象类，用于一般捕获，不要直接抛出该类，不知道抛出什么的时候请抛出 MiraiCPException
     /// @interface MiraiCPExceptionBase
-    class MiraiCPExceptionBase : public ::std::exception {
+    class MIRAICP_EXPORT MiraiCPExceptionBase : public ::std::exception {
     protected:
         using string = std::string;
 

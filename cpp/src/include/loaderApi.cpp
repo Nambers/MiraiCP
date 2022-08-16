@@ -25,11 +25,11 @@
 namespace LibLoader::LoaderApi {
     static const interface_funcs *loader_apis = nullptr;
 
-    void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis) {
+    MIRAICP_EXPORT void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis) {
         loader_apis = apis;
     }
 
-    void reset_loader_apis() {
+    MIRAICP_EXPORT void reset_loader_apis() {
         loader_apis = nullptr;
     }
 

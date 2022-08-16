@@ -16,17 +16,19 @@
 
 #ifndef MIRAICP_PRO_MIRAICPNEWTHREAD_H
 #define MIRAICP_PRO_MIRAICPNEWTHREAD_H
-#include "Logger.h"
+
 
 #include "Event.h"
 #include "Exception.h"
+#include "Logger.h"
+#include "MiraiCPMacros.h"
 #include <ostream>
 #include <thread>
 
 
 namespace MiraiCP {
     /// MiraiCP 对 std::thread 的封装
-    class MiraiCPNewThread : public std::thread {
+    class MIRAICP_EXPORT MiraiCPNewThread : public std::thread {
     public:
         MiraiCPNewThread() noexcept = default;
 
@@ -64,7 +66,6 @@ namespace MiraiCP {
             return *this;
         }
     };
-
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_MIRAICPNEWTHREAD_H

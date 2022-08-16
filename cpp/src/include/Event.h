@@ -665,7 +665,7 @@ namespace MiraiCP {
         void resume() { _enable = true; }
     };
 
-    class Event {
+    class MIRAICP_EXPORT Event {
     private: // typedefs
         class eventNode {
         private:

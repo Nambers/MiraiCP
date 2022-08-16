@@ -75,7 +75,7 @@ namespace MiraiCP {
     } // namespace internal
 
     /// 消息链, 一般由SingleMessage组成
-    class MessageChain : public std::vector<internal::Message>, public MiraiCodeable {
+    class MIRAICP_EXPORT MessageChain : public std::vector<internal::Message>, public MiraiCodeable {
     public: // typedefs
         using Message = internal::Message;
 

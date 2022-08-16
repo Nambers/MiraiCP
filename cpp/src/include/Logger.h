@@ -122,7 +122,7 @@ namespace MiraiCP {
         }
     };
 
-    class Logger : public Logger_interface {
+    class MIRAICP_EXPORT Logger : public Logger_interface {
     private:
         Logger() = default;
 
