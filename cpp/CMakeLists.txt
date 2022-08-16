@@ -7,9 +7,11 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 # fix msvc `message : 函数是 extern "C" 并且指定了 /EHc`
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/EHa>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/EHa>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/std:c++17>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/MP>")
 
 #
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17) # not working on MSVC
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(MiraiCP_pro LANGUAGES CXX)
