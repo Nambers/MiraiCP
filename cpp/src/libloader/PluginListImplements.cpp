@@ -132,18 +132,23 @@ namespace LibLoader {
 
     // 不涉及插件列表的修改；不会修改插件权限
     void disable_plugin(LoaderPluginConfig &plugin) {
+        auto disable_func = get_plugin_disable_ptr(plugin);
+        if (disable_func == nullptr) return;
+        ThreadController::getController().callThreadEnd(plugin.getId(), disable_func);
+        plugin.disable();
+    }
+
+    plugin_func_ptr get_plugin_disable_ptr(LoaderPluginConfig &plugin) {
         if (nullptr == plugin.handle) {
             logger.error("plugin at location " + plugin.path + " is not loaded!");
-            return;
+            return nullptr;
         }
         if (!plugin.enabled) {
             logger.warning("plugin " + plugin.getId() + " is already disabled");
-            return;
+            return nullptr;
         }
 
-        auto disable_func = (plugin_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_EXIT));
-        ThreadController::getController().callThreadEnd(plugin.getId(), disable_func);
-        plugin.disable();
+        return (plugin_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_EXIT));
     }
 
     plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) noexcept {
@@ -154,7 +159,8 @@ namespace LibLoader {
             logger.error("path don't exist or invalid " + plugin.path);
             return nullptr;
         }
-        auto actualFile = std::filesystem::temp_directory_path().append(std::to_string(std::hash<std::string>()(plugin.path)) + ".dll");
+        auto actualFile = std::filesystem::temp_directory_path().append(
+                std::to_string(std::hash<std::string>()(plugin.path)) + ".dll");
         actualPath = actualFile.string();
         // try to del it anyway
         // works around with https://github.com/msys2/MSYS2-packages/issues/1937

@@ -140,9 +140,17 @@ namespace LibLoader {
 
     class PluginIdDuplicateException : public LoaderExceptionCRTP<PluginIdDuplicateException> {
     public:
-        PluginIdDuplicateException(const string &id, const string &conflictPluginPathOld, const string &conflictPluginPathNew, string _filename, int _lineNum);
+        PluginIdDuplicateException(const string &id, const string &conflictPluginPathOld,
+                                   const string &conflictPluginPathNew, string _filename, int _lineNum);
 
         static string exceptionType() { return "PluginIdDuplicateException"; }
+    };
+
+    class IllegalStateException : public LoaderExceptionCRTP<IllegalStateException> {
+    public:
+        IllegalStateException(string _filename, int _lineNum);
+
+        static string exceptionType() { return "IllegalStateException"; }
     };
 } // namespace LibLoader
 
