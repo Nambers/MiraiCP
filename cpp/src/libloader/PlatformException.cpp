@@ -15,6 +15,8 @@
 //
 
 #include "MiraiCPMacros.h"
+#include "LoaderTaskQueue.h"
+#include "PluginListManager.h"
 
 
 // TODO(Antares): 1. 调用插件出口函数；2. 防止sigsegv重入
@@ -24,12 +26,18 @@
 #include "ThreadController.h"
 #include "redirectCout.h"
 #include <windows.h>
+
+thread_local bool alreadyInHandler;
+
 // 禁止从其他地方构造
 class EventHandlerPitch {
 public:
     static long __stdcall eventHandler(PEXCEPTION_POINTERS pExceptionPointers) {
-        auto pluginName = LibLoader::ThreadController::getPluginIdFromThreadId(std::this_thread::get_id());
-        if (pluginName.empty()) {
+        if (alreadyInHandler) {
+            return EXCEPTION_CONTINUE_EXECUTION;
+        }
+        auto pluginId = LibLoader::ThreadController::getPluginIdFromThreadId(std::this_thread::get_id());
+        if (pluginId.empty()) {
             // test the thread name is jvm
             char threadName[80];
             pthread_getname_np(pthread_self(), threadName, 80);
@@ -40,8 +48,12 @@ public:
             LibLoader::logger.error("errCod:" + std::to_string(pExceptionPointers->ExceptionRecord->ExceptionCode));
             exit(1);
         }
-        LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 线程终止, errCod:" + std::to_string(pExceptionPointers->ExceptionRecord->ExceptionCode));
-        LibLoader::sendPluginException(std::move(pluginName));
+        alreadyInHandler = true;
+        MIRAICP_DEFER(alreadyInHandler = false;);
+        LibLoader::PluginListManager::disableByIdVanilla(pluginId);
+        LibLoader::logger.error("插件" + pluginId + "遇到致命错误! 线程终止, errCod:" +
+                                std::to_string(pExceptionPointers->ExceptionRecord->ExceptionCode));
+        LibLoader::sendPluginException(std::move(pluginId));//
         TerminateThread(GetCurrentThread(), 1);
         return EXCEPTION_CONTINUE_EXECUTION;
     }
@@ -64,6 +76,7 @@ private:
 #include "ThreadController.h"
 #include <csignal>
 #include <thread>
+thread_local bool alreadyInHandler;
 // 禁止从其他地方构造
 class [[maybe_unused]] SignalHandle {
     SignalHandle() noexcept {
@@ -90,6 +103,9 @@ private:
     }
 
     static void sigsegv_handler(int a, siginfo_t *si, void *unused) {
+        if(alreadyInHandler) {
+            return;
+        }
         auto pluginName = LibLoader::ThreadController::getPluginIdFromThreadId(std::this_thread::get_id());
         if (pluginName.empty()) {
             // test the thread name is jvm
@@ -102,6 +118,9 @@ private:
             LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
             exit(1);
         }
+        alreadyInHandler = true;
+        MIRAICP_DEFER(alreadyInHandler = false;);
+        LibLoader::PluginListManager::disableByIdVanilla(pluginId);
         LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 线程终止");
         LibLoader::sendPluginException(std::move(pluginName));
 

@@ -19,7 +19,8 @@
 
 
 #include <queue>
-
+#include <string>
+#include <mutex>
 
 namespace LibLoader {
     enum struct LOADER_TASKS {

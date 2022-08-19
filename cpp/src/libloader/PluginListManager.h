@@ -78,6 +78,8 @@ namespace LibLoader {
         static void disableAll();
         static void disableById(const std::string &);
 
+        static void disableByIdVanilla(const std::string &);
+
     public:
         static void run_over_pluginlist(const std::function<void(const LoaderPluginConfig &)> &f);
     };
