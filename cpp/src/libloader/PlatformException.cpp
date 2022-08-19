@@ -120,7 +120,7 @@ private:
         }
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
-        LibLoader::PluginListManager::disableByIdVanilla(pluginId);
+        LibLoader::PluginListManager::disableByIdVanilla(pluginName);
         LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 线程终止");
         LibLoader::sendPluginException(std::move(pluginName));
 
