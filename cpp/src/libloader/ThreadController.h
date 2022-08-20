@@ -31,49 +31,20 @@ namespace LibLoader {
     void sendPluginException(std::string plugin_id);
 
     class ThreadController {
-        class threadWorker {
-            std::string pluginid;
-            std::queue<void_callable> job_queue;
-            std::recursive_mutex worker_mtx;
-            const volatile bool exit = false;
-
-
-        public:
-            explicit threadWorker(std::string _pluginid) : pluginid(std::move(_pluginid)) {}
-            // DO NOT copy (to avoid wild pointers)!
-            threadWorker(threadWorker &&) = delete;
-            threadWorker(const threadWorker &) = delete;
-
-        private:
-            static bool _do_job(const void_callable &job) {
-                try {
-                    if (job) job();
-                } catch (...) { // do not let any exception raise to avoid crash
-                    return false;
-                }
-                return true;
-            }
-
-            void exception_call_this_thread_end();
-
-        public:
-            /// only for main thread
-            void give_job(void_callable newjob);
-
-            /// only for worker thread
-            void run();
-
-            /// for main thread
-            void end() { const_cast<bool &>(exit) = true; }
-        };
+        // represents a thread worker
+        class threadWorker;
 
         // the address of "threadWorker" should not be moved,
         // use smart pointers to assure allocated at the same address;
         // also, to init "std::thread" lazily, use smart pointers
-        typedef std::pair<std::shared_ptr<threadWorker>, std::shared_ptr<std::thread>> workerThread;
+        struct workerThreadPair {
+            std::shared_ptr<threadWorker> worker;
+            std::shared_ptr<std::thread> thread;
+        };
+        // typedef std::pair<std::shared_ptr<threadWorker>, std::shared_ptr<std::thread>> workerThreadPair;
 
     private:
-        std::unordered_map<std::string, workerThread> thread_memory;
+        std::unordered_map<std::string, workerThreadPair> thread_memory;
         std::unordered_map<std::thread::id, std::string> thread_id_indexes;
         std::recursive_mutex _mtx;
 
@@ -107,9 +78,9 @@ namespace LibLoader {
         void endThread(const std::string &name);
 
     private:
-        static void joinAndShutdownThread(workerThread &worker);
+        static void joinAndShutdownThread(workerThreadPair &worker);
 
-        static void detachThread(workerThread &worker);
+        static void detachThread(workerThreadPair &worker);
 
     public:
         static std::string getPluginIdFromThreadId(std::thread::id id);
