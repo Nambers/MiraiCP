@@ -117,10 +117,10 @@ namespace LibLoader {
 
         plugin.enable();
 
-        // 注意：plugin虽然被分配在一个固定地址（map中的值是shared_ptr，内部的 LoaderPluginConfig 不会被复制），
+        // dev:注意：plugin虽然被分配在一个固定地址（map中的值是shared_ptr，内部的 LoaderPluginConfig 不会被复制），
         // 但这里引用plugin地址的话，当shared_ptr在某个线程中被释放掉，还是可能会产生段错误
         // 因为我们无法保证getController().addThread()一定会把提交的这个函数在plugin被销毁前处理掉，
-        // 也就是说这里按引用捕获plugin，或者任意别的东西都可能导致段错误！
+        // 这里按引用捕获plugin可能导致段错误！
         // 请务必全部按值捕获
         ThreadController::getController().addThread(plugin.getId(), [=, authority = plugin.authority] {
             if (authority == PLUGIN_AUTHORITY_ADMIN)
@@ -151,7 +151,7 @@ namespace LibLoader {
         return (plugin_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_EXIT));
     }
 
-    plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) noexcept {
+    inline plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) noexcept {
         auto actualPath = plugin.path;
 #if MIRAICP_WINDOWS
         auto from = std::filesystem::path(plugin.path);
