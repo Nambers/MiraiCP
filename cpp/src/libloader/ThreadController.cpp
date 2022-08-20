@@ -30,6 +30,41 @@ namespace LibLoader {
         loader_thread_task_queue.emplace(loadertask(LOADER_TASKS::EXCEPTION_PLUGINEND, std::move(plugin_id)));
     }
 
+    class ThreadController::threadWorker {
+        std::string pluginid;
+        std::queue<void_callable> job_queue;
+        std::recursive_mutex worker_mtx;
+        const volatile bool exit = false;
+
+    public:
+        explicit threadWorker(std::string _pluginid) : pluginid(std::move(_pluginid)) {}
+        // DO NOT copy (to avoid wild pointers)!
+        threadWorker(threadWorker &&) = delete;
+        threadWorker(const threadWorker &) = delete;
+
+    private:
+        static bool _do_job(const void_callable &job) {
+            try {
+                if (job) job();
+            } catch (...) { // do not let any exception raise to avoid crash
+                return false;
+            }
+            return true;
+        }
+
+        void exception_call_this_thread_end();
+
+    public:
+        /// only for main thread
+        void give_job(void_callable newjob);
+
+        /// only for worker thread
+        void run();
+
+        /// for main thread
+        void end() { const_cast<bool &>(exit) = true; }
+    };
+
     // threadWorker
     void ThreadController::threadWorker::give_job(void_callable newjob) {
         std::lock_guard lk(worker_mtx);
@@ -82,15 +117,15 @@ namespace LibLoader {
     // ThreadController helper functions, with no mutex lock
 
     // safely shutdown one thread using std::thread::join()
-    void ThreadController::joinAndShutdownThread(workerThread &worker) {
-        worker.first->end();
-        worker.second->join();
+    void ThreadController::joinAndShutdownThread(workerThreadPair &worker) {
+        worker.worker->end();
+        worker.thread->join();
     }
 
     // detach thread even if there is a job working. Better call at program exiting
-    void ThreadController::detachThread(workerThread &worker) {
-        worker.first->end();
-        worker.second->detach();
+    void ThreadController::detachThread(workerThreadPair &worker) {
+        worker.worker->end();
+        worker.thread->detach();
     }
 
     // data maintain methods, use mutex
@@ -104,11 +139,11 @@ namespace LibLoader {
             return;
         }
         auto &worker = thread_memory[name];
-        worker.first.reset(new threadWorker(name));
-        worker.first->give_job(std::move(func));
-        auto worker_ptr = worker.first.get();
-        worker.second = std::make_shared<std::thread>([=]() { worker_ptr->run(); });
-        thread_id_indexes[worker.second->get_id()] = name;
+        worker.worker.reset(new threadWorker(name));
+        worker.worker->give_job(std::move(func));
+        auto worker_ptr = worker.worker.get();
+        worker.thread = std::make_shared<std::thread>([=]() { worker_ptr->run(); });
+        thread_id_indexes[worker.thread->get_id()] = name;
     }
 
     // safely shutdown
@@ -121,9 +156,9 @@ namespace LibLoader {
         }
 
         auto &worker = it->second;
-        auto threadid = worker.second->get_id();
+        auto threadid = worker.thread->get_id();
 
-        worker.first->give_job(std::move(func));
+        worker.worker->give_job(std::move(func));
         // shut down the thread
         joinAndShutdownThread(it->second);
         // thread is dead, safely remove it
@@ -148,7 +183,7 @@ namespace LibLoader {
             logger.error("Submit job: plugin " + name + " thread not found!");
             return;
         }
-        it->second.first->give_job(std::move(func));
+        it->second.worker->give_job(std::move(func));
     }
 
     void ThreadController::endThread(const std::string &name) {
@@ -158,7 +193,7 @@ namespace LibLoader {
             logger.error("End thread: plugin " + name + " thread not found!");
             return;
         }
-        auto threadid = it->second.second->get_id();
+        auto threadid = it->second.thread->get_id();
         // detach the thread
         detachThread(it->second);
         // thread is dead, safely remove it
