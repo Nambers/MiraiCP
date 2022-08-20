@@ -34,7 +34,8 @@ namespace LibLoader {
         std::string pluginid;
         std::queue<void_callable> job_queue;
         std::recursive_mutex worker_mtx;
-        const volatile bool exit = false;
+        volatile bool exit = false;
+        bool busy = false;
 
     public:
         explicit threadWorker(std::string _pluginid) : pluginid(std::move(_pluginid)) {}
@@ -43,7 +44,7 @@ namespace LibLoader {
         threadWorker(const threadWorker &) = delete;
 
     private:
-        static bool _do_job(const void_callable &job) {
+        static bool _do_job(const void_callable &job) noexcept {
             try {
                 if (job) job();
             } catch (...) { // do not let any exception raise to avoid crash
@@ -56,20 +57,21 @@ namespace LibLoader {
 
     public:
         /// only for main thread
-        void give_job(void_callable newjob);
+        void give_job(void_callable newjob) {
+            std::lock_guard lk(worker_mtx);
+            job_queue.emplace(std::move(newjob));
+        }
 
         /// only for worker thread
         void run();
 
         /// for main thread
-        void end() { const_cast<bool &>(exit) = true; }
+        void end() { exit = true; }
+
+        bool isBusy() const { return busy; }
     };
 
     // threadWorker
-    void ThreadController::threadWorker::give_job(void_callable newjob) {
-        std::lock_guard lk(worker_mtx);
-        job_queue.emplace(std::move(newjob));
-    }
 
     // 被调用后必须立刻结束run()
     void ThreadController::threadWorker::exception_call_this_thread_end() {
@@ -79,9 +81,10 @@ namespace LibLoader {
     }
 
     void ThreadController::threadWorker::run() {
+        busy = true;
         // clean up at function end
         // try to detach this thread from JVM
-        MIRAICP_DEFER(JNIEnvManager::detach(););
+        MIRAICP_DEFER(busy = false; JNIEnvManager::detach(););
 
         // set thread name so the debugger can see the plugin id from binding thread
         pthread_setname_np(pthread_self(), pluginid.c_str());
@@ -119,7 +122,19 @@ namespace LibLoader {
     // safely shutdown one thread using std::thread::join()
     void ThreadController::joinAndShutdownThread(workerThreadPair &worker) {
         worker.worker->end();
-        worker.thread->join();
+        // wait at most 10 secs. if not exited, detach it
+        // get current time
+        auto start = std::chrono::system_clock::now();
+        while (std::chrono::system_clock::now() - start < std::chrono::seconds(10)) {
+            if (worker.worker->isBusy()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            } else {
+                worker.thread->join();
+                return;
+            }
+        }
+        // if still busy, detach it
+        worker.thread->detach();
     }
 
     // detach thread even if there is a job working. Better call at program exiting
@@ -159,7 +174,7 @@ namespace LibLoader {
         auto threadid = worker.thread->get_id();
 
         worker.worker->give_job(std::move(func));
-        // shut down the thread
+        // shut down the thread anyway
         joinAndShutdownThread(it->second);
         // thread is dead, safely remove it
         thread_memory.erase(it);
