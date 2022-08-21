@@ -57,18 +57,23 @@ public:
         TerminateThread(GetCurrentThread(), 1);
         return EXCEPTION_CONTINUE_EXECUTION;
     }
+
+private:
     EventHandlerPitch() {
         preHandler = SetUnhandledExceptionFilter(EventHandlerPitch::eventHandler);
     }
+
     ~EventHandlerPitch() {
         SetUnhandledExceptionFilter(preHandler);
     }
 
+    static EventHandlerPitch pitch;
+
 private:
     LPTOP_LEVEL_EXCEPTION_FILTER preHandler;
 };
-// TODO(Antares): 改为类静态成员，删掉maybe_unused
-[[maybe_unused]] EventHandlerPitch pitch = EventHandlerPitch();
+
+[[maybe_unused]] EventHandlerPitch EventHandlerPitch::pitch = EventHandlerPitch();
 
 #else
 

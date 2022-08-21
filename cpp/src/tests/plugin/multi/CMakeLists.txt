@@ -1,6 +1,12 @@
 file(GLOB Multi_Tests ${SRC_PATH}/tests/plugin/multi/*.cpp)
 add_executable(AllTestForPlugin_Multi ${Multi_Tests})
 
+set_target_properties(
+        AllTestForPlugin_Multi PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
 target_link_libraries(AllTestForPlugin_Multi PUBLIC GTest::gtest_main)
 target_link_directories(AllTestForPlugin_Multi PUBLIC ${CMAKE_BINARY_DIR})
 target_link_options(AllTestForPlugin_Multi PUBLIC -lMiraiCP_multi)

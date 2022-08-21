@@ -39,13 +39,17 @@ public:
          * @param new_buffer 重定向到的新缓冲区
          */
     explicit OStreamRedirector(std::ostream *obj, std::streambuf *newBuffer)
-        : old(obj->rdbuf(newBuffer)), obj(obj) {}
+            : old(obj->rdbuf(newBuffer)), obj(obj), oldStream(old) {}
 
 private:
     // 被重定向的流
     std::ostream *obj;
     // 旧的缓冲区目标
     std::streambuf *old;
+    std::ostream oldStream;
+
+    // print directly
+    friend void print(const std::string &);
 };
 
 class OString : public std::ostream {
@@ -62,13 +66,14 @@ class OString : public std::ostream {
         //
         // 输出缓冲区内容, 相当于 flush
         std::string out();
-        // std::streambuff interface
+
+        // std::streambuf interface
         int sync() override {
             record(out());
             return 0;
         }
 
-        // std::streambuff interface
+        // std::streambuf interface
         // 加入缓冲区
         int overflow(std::streambuf::int_type c) override {
             if (c == EOF)
@@ -128,6 +133,15 @@ std::unique_ptr<OStreamRedirector> errRedirector;
 void MiraiCP::Redirector::reset() {
     outRedirector.reset();
     errRedirector.reset();
+}
+
+void print(const std::string &str) {
+    if (outRedirector == nullptr) {
+        std::cout << str << std::endl;
+    } else {
+        outRedirector->oldStream << str;
+        outRedirector->oldStream.flush();
+    }
 }
 
 void MiraiCP::Redirector::start() {
