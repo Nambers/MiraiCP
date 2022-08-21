@@ -1,6 +1,12 @@
 file(GLOB libLoader_Tests ${SRC_PATH}/tests/libLoader/*.cpp)
 add_executable(AllTestForLibLoader ${libLoader_Tests})
 
+set_target_properties(
+        AllTestForLibLoader PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
 target_link_libraries(AllTestForLibLoader PUBLIC GTest::gtest_main)
 target_link_directories(AllTestForLibLoader PUBLIC ${CMAKE_BINARY_DIR})
 target_link_options(AllTestForLibLoader PUBLIC -lLoader)
