@@ -42,9 +42,6 @@ static_assert(sizeof(char) == 1, "Please make sure the size of char is 1");
 // detect platform
 // ref: https://stackoverflow.com/questions/5919996/how-to-detect-reliably-mac-os-x-ios-linux-windows-in-c-preprocessor
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-#ifndef _WIN64
-static_assert(false, "Please make sure MiraiCP is compiled under 64-bit mode.")
-#endif
 #undef MIRAICP_WINDOWS
 #define MIRAICP_WINDOWS 1
 #elif __APPLE__
