@@ -26,11 +26,11 @@
 
 // multi thread controller
 namespace LibLoader {
-    typedef std::function<void()> void_callable;
-
     void sendPluginException(std::string plugin_id);
 
     class ThreadController {
+        typedef std::function<void()> void_callable;
+
         // represents a thread worker
         class threadWorker;
 

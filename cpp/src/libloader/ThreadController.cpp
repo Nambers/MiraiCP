@@ -35,7 +35,7 @@ namespace LibLoader {
         std::queue<void_callable> job_queue;
         std::recursive_mutex worker_mtx;
         volatile bool exit = false;
-        bool busy = false;
+        bool busy = true;
 
     public:
         explicit threadWorker(std::string _pluginid) : pluginid(std::move(_pluginid)) {}
@@ -53,7 +53,11 @@ namespace LibLoader {
             return true;
         }
 
-        void exception_call_this_thread_end();
+        // 被调用后必须立刻结束run()
+        void exception_call_this_thread_end() {
+            logger.error("Error: plugin " + pluginid + " crashed (caused by throwing an unknown exception)");
+            sendPluginException(std::move(pluginid));
+        }
 
     public:
         /// only for main thread
@@ -73,15 +77,7 @@ namespace LibLoader {
 
     // threadWorker
 
-    // 被调用后必须立刻结束run()
-    void ThreadController::threadWorker::exception_call_this_thread_end() {
-        logger.error("Error: plugin " + pluginid + " crashed (caused by throwing an unknown exception)");
-
-        sendPluginException(std::move(pluginid));
-    }
-
     void ThreadController::threadWorker::run() {
-        busy = true;
         // clean up at function end
         // try to detach this thread from JVM
         MIRAICP_DEFER(busy = false; JNIEnvManager::detach(););
@@ -135,6 +131,7 @@ namespace LibLoader {
         }
         // if still busy, detach it
         worker.thread->detach();
+        // todo(Antares): give log or throw exception here (throw is prefered)
     }
 
     // detach thread even if there is a job working. Better call at program exiting
