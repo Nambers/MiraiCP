@@ -24,6 +24,8 @@
 
 
 namespace LibLoader {
+    plugin_func_ptr get_plugin_disable_ptr(LoaderPluginConfig &plugin);
+
     void callEntranceFuncAdmin(plugin_entrance_func_ptr func);
 
     void callEntranceFuncNormal(plugin_entrance_func_ptr func);
@@ -35,8 +37,6 @@ namespace LibLoader {
     void loadNewPluginByPath(const std::string &_path, bool activateNow);
 
     void enable_plugin(LoaderPluginConfig &plugin);
-
-    plugin_func_ptr get_plugin_disable_ptr(LoaderPluginConfig &plugin);
 
     void disable_plugin(LoaderPluginConfig &plugin);
 

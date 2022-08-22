@@ -26,6 +26,12 @@
 #endif
 
 class OStreamRedirector {
+    // 旧的缓冲区目标
+    std::streambuf *old;
+    // 被重定向的流
+    std::ostream *obj;
+    std::ostream oldStream;
+
 public:
     ~OStreamRedirector() {
         obj->rdbuf(old);
@@ -38,16 +44,10 @@ public:
          * @param obj 需要重定向的流
          * @param new_buffer 重定向到的新缓冲区
          */
-    explicit OStreamRedirector(std::ostream *obj, std::streambuf *newBuffer)
-            : old(obj->rdbuf(newBuffer)), obj(obj), oldStream(old) {}
+    explicit OStreamRedirector(std::ostream *in_obj, std::streambuf *newBuffer)
+        : old(in_obj->rdbuf(newBuffer)), obj(in_obj), oldStream(old) {}
 
 private:
-    // 被重定向的流
-    std::ostream *obj;
-    // 旧的缓冲区目标
-    std::streambuf *old;
-    std::ostream oldStream;
-
     // print directly
     friend void print(const std::string &);
 };
@@ -108,6 +108,11 @@ public:
 
 // --- impl ---
 
+OString outTarget(true);
+OString errTarget(false);
+std::unique_ptr<OStreamRedirector> outRedirector;
+std::unique_ptr<OStreamRedirector> errRedirector;
+
 std::string OString::OStringBuf::out() {
 #ifdef MIRAICP_LIB_LOADER
     if (isInfoLevel)
@@ -124,11 +129,6 @@ std::string OString::OStringBuf::out() {
     result.str("");
     return temp;
 }
-
-OString outTarget(true);
-OString errTarget(false);
-std::unique_ptr<OStreamRedirector> outRedirector;
-std::unique_ptr<OStreamRedirector> errRedirector;
 
 void MiraiCP::Redirector::reset() {
     outRedirector.reset();
