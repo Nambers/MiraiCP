@@ -25,7 +25,8 @@
 // we will know immediately in "multi".
 
 
-static_assert(sizeof(char) == 1, "Please make sure the size of char type is 1");
+static_assert(sizeof(void *) == 8, "Only 64-bit platforms are supported");
+static_assert(sizeof(char) == 1, "Please make sure the size of char is 1");
 
 
 // detect platform, pre-define default value
@@ -35,6 +36,7 @@ static_assert(sizeof(char) == 1, "Please make sure the size of char type is 1");
 #define MIRAICP_IOS 0
 #define MIRAICP_MACOS 0
 #define MIRAICP_ANDROID 0
+#define MIRAICP_TERMUX 0
 
 
 // detect platform
@@ -57,8 +59,13 @@ static_assert(false, "Please make sure MiraiCP is compiled under 64-bit mode.")
 static_assert(false, "Unknown apple platform");
 #endif
 #elif __ANDROID__
+#ifdef __TERMUX__
+#undef MIRAICP_TERMUX
+#define MIRAICP_TERMUX 1
+#else
 #undef MIRAICP_ANDROID
 #define MIRAICP_ANDROID 1
+#endif
 #elif __linux__
 #undef MIRAICP_LINUX
 #define MIRAICP_LINUX 1
@@ -123,7 +130,7 @@ static_assert(false, "Unsupported platform");
 #define MIRAICP_DEFER(code)                                                   \
     auto TOKEN_PASTE(_defered_statement_wrapper_, __LINE__) = [&]() { code }; \
     CommonTools::MiraiCPDefer TOKEN_PASTE(_defered_object_, __LINE__)(std::move(TOKEN_PASTE(_defered_statement_wrapper_, __LINE__)))
-#define MiraiCP_defer_lambda(lambda)             \
+#define MIRAICP_DEFER_LAMBDA(lambda)                                  \
     auto TOKEN_PASTE(_defered_statement_wrapper_, __LINE__) = lambda; \
     CommonTools::MiraiCPDefer TOKEN_PASTE(_defered_object_, __LINE__)(std::move(TOKEN_PASTE(_defered_statement_wrapper_, __LINE__)))
 
@@ -141,10 +148,13 @@ static_assert(false, "Unsupported platform");
 
 
 // export
-#if MIRAICP_WINDOWS
-#define MIRAICP_EXPORT __declspec(dllexport)
-#else
 #define MIRAICP_EXPORT
+#ifndef GOOGLE_TEST
+#if MIRAICP_WINDOWS
+#undef MIRAICP_EXPORT
+#define MIRAICP_EXPORT __declspec(dllexport)
 #endif
+#endif
+
 
 #endif //MIRAICP_PRO_MIRAICPMACROS_H

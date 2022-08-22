@@ -204,7 +204,11 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        get_plugin_disable_ptr(*(it->second))();
+
+        try {
+            auto exit_ptr = get_plugin_disable_ptr(*(it->second));
+            exit_ptr();
+        } catch (...) {} // do not leak any exception
     }
 
     /// 遍历所有插件，by id（默认是不会by path的，path是用于id变更的特殊情况的备份）
