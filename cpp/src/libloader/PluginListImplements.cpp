@@ -148,7 +148,11 @@ namespace LibLoader {
             return nullptr;
         }
 
-        return (plugin_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_EXIT));
+        auto ptr = (plugin_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_EXIT));
+        if (ptr == nullptr)
+            throw IllegalStateException(MIRAICP_EXCEPTION_WHERE);
+
+        return ptr;
     }
 
     inline plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) noexcept {
