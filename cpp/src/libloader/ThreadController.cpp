@@ -18,6 +18,7 @@
 #include "JNIEnvManager.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
+#include "PlatformThreading.h"
 #include "PluginListManager.h"
 #include "commonTools.h"
 
@@ -83,7 +84,7 @@ namespace LibLoader {
         MIRAICP_DEFER(busy = false; JNIEnvManager::detach(););
 
         // set thread name so the debugger can see the plugin id from binding thread
-        pthread_setname_np(pthread_self(), pluginid.c_str());
+        platform_set_thread_name(platform_thread_self(), pluginid.c_str());
 
         while (!exit) {
             if (job_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(10));

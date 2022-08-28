@@ -38,7 +38,7 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans;
         for (auto &&[k, v]: id_plugin_list) {
-            ans.emplace_back(v->config().getId());
+            if (v->handle != nullptr) ans.emplace_back(v->config().getId());
         }
         return ans;
     }
@@ -48,8 +48,10 @@ namespace LibLoader {
         std::vector<std::string> ans = {"id", "name", "author", "description", "\n"};
         int charNum[4] = {2 + 1, 4 + 1, 6 + 1, 11 + 1};
         for (auto &&[k, v]: id_plugin_list) {
-            if (filter(*v)) {
-                FormatPluginListInfo(v->config(), charNum, ans);
+            if (v->handle != nullptr) {
+                if (filter(*v)) FormatPluginListInfo(v->config(), charNum, ans);
+            } else {
+                // todo(Antares): 显示path
             }
         }
         return PluginInfoStream(ans, charNum);

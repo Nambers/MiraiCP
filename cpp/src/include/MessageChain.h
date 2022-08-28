@@ -43,7 +43,7 @@ namespace MiraiCP {
                 } else if constexpr (std::is_base_of_v<SingleMessage, NoCVRefType>) {
                     reset(new NoCVRefType(std::forward<T>(Arg)));
                 } else {
-                    static_assert(false, "只支持SingleMessage的子类");
+                    static_assert(std::is_base_of_v<Super, NoCVRefType> || std::is_base_of_v<SingleMessage, NoCVRefType>, "只支持SingleMessage的子类");
                 }
             }
 
