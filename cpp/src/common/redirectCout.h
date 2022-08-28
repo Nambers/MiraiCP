@@ -19,12 +19,13 @@
 
 
 #include "MiraiCPMacros.h"
+#include <sstream>
 
-
-namespace MiraiCP::Redirector{
-        /// start redirecting cout and cerr
-        MIRAICP_EXPORT void start();
-        /// reset all redirecting
-        MIRAICP_EXPORT void reset();
-    } // namespace MiraiCP
+namespace MiraiCP::Redirector {
+    MIRAICP_EXPORT void setRedirectedObjs(std::ostream *, std::ostream *);
+    /// start redirecting cout and cerr
+    MIRAICP_EXPORT void start();
+    /// reset all redirecting
+    MIRAICP_EXPORT void reset();
+} // namespace MiraiCP
 #endif //MIRAICP_PRO_REDIRECTCOUT_H

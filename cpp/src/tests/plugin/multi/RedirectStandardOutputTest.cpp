@@ -21,6 +21,7 @@
 using namespace MiraiCP;
 
  TEST(RedirectStandardOutputForPluginTest, COUT) {
+     MiraiCP::Redirector::setRedirectedObjs(&std::cout, &std::cerr);
      auto mock = LoaderApiMock();
      std::string re;
      MiraiCP::Logger::logger.registerHandle([&re](const std::string &str, int level) {
@@ -34,6 +35,7 @@ using namespace MiraiCP;
  }
 
  TEST(RedirectStandardOutputForPluginTest, CERR) {
+    MiraiCP::Redirector::setRedirectedObjs(&std::cout, &std::cerr);
      auto mock = LoaderApiMock();
      std::string re;
      MiraiCP::Logger::logger.registerHandle([&re](const std::string &str, int level) {

@@ -28,6 +28,8 @@ namespace MiraiCP::Redirector {
 
 
 TEST(RedirectStandardOutputForLibLoaderTest, COUT) {
+    // use local cout and cerr
+    MiraiCP::Redirector::setRedirectedObjs(&std::cout, &std::cerr);
     // initialize mocker
     EnvScopeMocker mocker;
 
@@ -60,6 +62,8 @@ TEST(RedirectStandardOutputForLibLoaderTest, COUT) {
 }
 
 TEST(RedirectStandardOutputForLibLoaderTest, CERR) {
+    // use local cout and cerr
+    MiraiCP::Redirector::setRedirectedObjs(&std::cout, &std::cerr);
     // initialize mocker
     EnvScopeMocker mocker;
 
