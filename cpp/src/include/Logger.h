@@ -66,19 +66,21 @@ namespace MiraiCP {
         }
 
         template<class T, class... T1>
-        static std::string constructString(T&& val, T1&&... val1) {
+        static std::string constructString(T &&val, T1 &&...val1) {
+            // todo(Antares): 构造一个std::stringstream消耗很大，改为T类型实现序列化函数，
+            //  调用 T::serialize
             std::stringstream sstream;
             sstream << val;
             return sstream.str() + constructString(std::forward<T1>(val1)...);
         }
 
         template<class... T>
-        static std::string constructString(const std::string& a, T&&... val1) {
+        static std::string constructString(const std::string &a, T &&...val1) {
             return a + constructString(std::forward<T>(val1)...);
         }
 
         template<class... T>
-        static std::string constructString(const MiraiCodeable &val, T&&... val1) {
+        static std::string constructString(const MiraiCodeable &val, T &&...val1) {
             return val.toMiraiCode() + constructString(std::forward<T>(val1)...);
         }
 
@@ -91,19 +93,19 @@ namespace MiraiCP {
     public:
         ///发送普通(info级日志)
         template<class... T>
-        void info(T&&... val) {
+        void info(T &&...val) {
             this->log_interface(constructString(std::forward<T>(val)...), 0);
         }
 
         ///发送警告(warning级日志)
         template<class... T>
-        void warning(T&&... val) {
+        void warning(T &&...val) {
             this->log_interface(constructString(std::forward<T>(val)...), 1);
         }
 
         ///发送错误(error级日志)
         template<class... T>
-        void error(T&&... val) {
+        void error(T &&...val) {
             this->log_interface(constructString(std::forward<T>(val)...), 2);
         }
 

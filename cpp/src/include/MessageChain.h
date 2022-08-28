@@ -29,19 +29,19 @@ namespace MiraiCP {
 
     namespace internal {
         class Message : public std::shared_ptr<SingleMessage> {
-        private:
-            // std::shared_ptr<SingleMessage> content;
+            typedef std::shared_ptr<SingleMessage> Super;
 
-        public: // constructor
+        public:                                             // constructor
             Message() : std::shared_ptr<SingleMessage>() {} // for MSVC compatible, or you will get an error
 
             template<class T>
-            explicit Message(const T &_singleMessage) {
-                static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
-                reset(new T(_singleMessage));
+            Message(T &&_singleMessage) {
+                using NoCVRefType = typename std::remove_cv_t<typename std::remove_reference_t<T>>;
+                static_assert(std::is_base_of_v<SingleMessage, NoCVRefType>, "只支持SingleMessage的子类");
+                reset(new NoCVRefType(std::forward<T>(_singleMessage)));
             }
 
-            explicit Message(std::shared_ptr<SingleMessage> msgptr) : std::shared_ptr<SingleMessage>(std::move(msgptr)) {}
+            explicit Message(Super msgptr) : Super(std::move(msgptr)) {}
 
         public:
             /// 代表的子类
@@ -90,12 +90,6 @@ namespace MiraiCP {
         MessageChain(const MessageChain &_o) = default;
         MessageChain(MessageChain &&_o) = default;
 
-        /// incoming构造器
-        template<class... T>
-        explicit MessageChain(MessageSource ms, T... args) : source(std::move(ms)) {
-            this->constructMessages(args...);
-        };
-
         /*!
          * @brief 从多个参数构建MessageChain
          * @tparam T 多个传入参数的类型
@@ -105,20 +99,19 @@ namespace MiraiCP {
          * @param args 参数本身
          */
         template<class... T>
-        explicit MessageChain(T... args) {
-            constructMessages(args...);
+        explicit MessageChain(T &&...args) {
+            constructMessages(std::forward<T>(args)...);
         };
 
-        /// outcoming 构造器
-        template<class T>
-        explicit MessageChain(const T &msg) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage子类");
-            emplace_back(msg);
+        /// incoming构造器，对第一个参数为MessageSource的特化
+        template<class... T>
+        explicit MessageChain(MessageSource ms, T &&...args) : source(std::move(ms)) {
+            this->constructMessages(std::forward<T>(args)...);
         };
 
     public:
         [[deprecated("MessageChain继承自std::vector<Message>，无需获取内部vector")]] const std::vector<Message> &vector() const {
-            return *static_cast<const std::vector<Message> *>(this);
+            return static_cast<const std::vector<Message> &>(*this);
         }
 
         std::string toMiraiCode() const override;
@@ -267,34 +260,34 @@ namespace MiraiCP {
         void constructMessages() {}
 
         template<class T1, class... T2>
-        void constructMessages(T1 h, T2... args) {
-            static_assert(std::is_base_of_v<SingleMessage, T1>, "只支持SingleMessage子类");
-            emplace_back(h);
-            constructMessages(args...);
+        void constructMessages(T1 &&h, T2 &&...args) {
+            static_assert(std::is_base_of_v<SingleMessage, typename std::remove_reference_t<T1>>, "只支持SingleMessage子类");
+            emplace_back(std::forward<T1>(h));
+            constructMessages(std::forward<T2>(args)...);
         }
 
         template<class... T2>
-        void constructMessages(const std::string &h, T2... args) {
+        void constructMessages(const std::string &h, T2 &&...args) {
             emplace_back(PlainText(h));
-            constructMessages(args...);
+            constructMessages(std::forward<T2>(args)...);
         }
 
         template<class... T2>
-        void constructMessages(const char *h, T2... args) {
+        void constructMessages(const char *h, T2 &&...args) {
             emplace_back(PlainText(h));
-            constructMessages(args...);
+            constructMessages(std::forward<T2>(args)...);
         }
 
         template<class... T>
-        void constructMessages(const MessageChain &mc, T... args) {
+        void constructMessages(const MessageChain &mc, T &&...args) {
             insert(end(), mc.begin(), mc.end());
-            constructMessages(args...);
+            constructMessages(std::forward<T>(args)...);
         }
 
         MessageSource quoteAndSend0(std::string msg, QQID groupid = -1);
 
         template<class T>
-        MessageSource quoteAndSend1(T s, QQID groupid = -1) {
+        MessageSource quoteAndSend1(const T &s, QQID groupid = -1) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
             return this->quoteAndSend0(s.toMiraiCode(), groupid);
         }

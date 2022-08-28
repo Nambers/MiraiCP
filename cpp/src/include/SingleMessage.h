@@ -93,6 +93,8 @@ namespace MiraiCP {
 
         template<typename T>
         explicit PlainText(const T &a) : SingleMessage(PlainText::type(), ([&a]() -> std::string {
+                                                           // todo (Antares): 构造一个std::stringstream消耗很大，改为T类型实现序列化函数，
+                                                           //  调用 a.serialize，去掉lambda
                                                            std::stringstream sst;
                                                            sst << a;
                                                            return sst.str();
