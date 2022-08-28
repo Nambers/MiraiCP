@@ -19,10 +19,13 @@
 #include <iostream>
 #include <memory>
 #include <sstream>
+
 #ifdef MIRAICP_LIB_LOADER
 #include "LoaderLogger.h"
 #else
+
 #include "Logger.h"
+
 #endif
 
 class OStreamRedirector {
@@ -44,8 +47,8 @@ public:
          * @param obj 需要重定向的流
          * @param new_buffer 重定向到的新缓冲区
          */
-    explicit OStreamRedirector(std::ostream *in_obj, std::streambuf *newBuffer)
-        : old(in_obj->rdbuf(newBuffer)), obj(in_obj), oldStream(old) {}
+    explicit OStreamRedirector(std::ostream *in_obj, std::streambuf *newBuffer) : old(in_obj->rdbuf(newBuffer)),
+                                                                                  obj(in_obj), oldStream(old) {}
 
 private:
     // print directly
@@ -55,14 +58,19 @@ private:
 class OString : public std::ostream {
     class OStringBuf : public std::streambuf {
         friend class OString;
+
         typedef void (*Recorder)(std::string);
+
         //
         explicit OStringBuf(bool inIsInfoLevel) : isInfoLevel(inIsInfoLevel) {}
+
         ~OStringBuf() override = default;
+
         //
         std::ostringstream result{};
         Recorder recorder = nullptr;
         bool isInfoLevel;
+
         //
         // 输出缓冲区内容, 相当于 flush
         std::string out();
@@ -113,6 +121,12 @@ OString errTarget(false);
 std::unique_ptr<OStreamRedirector> outRedirector;
 std::unique_ptr<OStreamRedirector> errRedirector;
 
+struct RedirectedOstream {
+public:
+    std::ostream *out = &std::cout;
+    std::ostream *err = &std::cerr;
+} pointers;
+
 std::string OString::OStringBuf::out() {
 #ifdef MIRAICP_LIB_LOADER
     if (isInfoLevel)
@@ -144,9 +158,13 @@ void print(const std::string &str) {
     }
 }
 
+void MiraiCP::Redirector::setRedirectedObjs(std::ostream *outStream, std::ostream *errStream) {
+    pointers = {outStream, errStream};
+}
+
 void MiraiCP::Redirector::start() {
-    outRedirector = std::make_unique<OStreamRedirector>(&std::cout, outTarget.rdbuf());
-    errRedirector = std::make_unique<OStreamRedirector>(&std::cerr, errTarget.rdbuf());
+    outRedirector = std::make_unique<OStreamRedirector>(pointers.out, outTarget.rdbuf());
+    errRedirector = std::make_unique<OStreamRedirector>(pointers.err, errTarget.rdbuf());
 }
 
 namespace MiraiCP::Redirector {
