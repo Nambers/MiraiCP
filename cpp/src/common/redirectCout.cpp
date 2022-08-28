@@ -121,27 +121,28 @@ OString errTarget(false);
 std::unique_ptr<OStreamRedirector> outRedirector;
 std::unique_ptr<OStreamRedirector> errRedirector;
 
-struct RedirectedOstream {
+struct RedirectedOstreamPair {
 public:
     std::ostream *out = &std::cout;
     std::ostream *err = &std::cerr;
-} pointers;
+} RedirectedOstreamPointers;
 
 std::string OString::OStringBuf::out() {
+    std::string resultstr = result.str();
+    result.str("");
+
 #ifdef MIRAICP_LIB_LOADER
     if (isInfoLevel)
-        LibLoader::logger.info(result.str());
+        LibLoader::logger.info(resultstr);
     else
-        LibLoader::logger.error(result.str());
+        LibLoader::logger.error(resultstr);
 #else
     if (isInfoLevel)
-        MiraiCP::Logger::logger.info(result.str());
+        MiraiCP::Logger::logger.info(resultstr);
     else
-        MiraiCP::Logger::logger.error(result.str());
+        MiraiCP::Logger::logger.error(resultstr);
 #endif
-    auto temp = result.str();
-    result.str("");
-    return temp;
+    return resultstr;
 }
 
 void MiraiCP::Redirector::reset() {
@@ -159,12 +160,12 @@ void print(const std::string &str) {
 }
 
 void MiraiCP::Redirector::setRedirectedObjs(std::ostream *outStream, std::ostream *errStream) {
-    pointers = {outStream, errStream};
+    RedirectedOstreamPointers = {outStream, errStream};
 }
 
 void MiraiCP::Redirector::start() {
-    outRedirector = std::make_unique<OStreamRedirector>(pointers.out, outTarget.rdbuf());
-    errRedirector = std::make_unique<OStreamRedirector>(pointers.err, errTarget.rdbuf());
+    outRedirector = std::make_unique<OStreamRedirector>(RedirectedOstreamPointers.out, outTarget.rdbuf());
+    errRedirector = std::make_unique<OStreamRedirector>(RedirectedOstreamPointers.err, errTarget.rdbuf());
 }
 
 namespace MiraiCP::Redirector {
