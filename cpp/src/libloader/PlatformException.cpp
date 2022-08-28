@@ -15,16 +15,14 @@
 //
 
 #include "MiraiCPMacros.h"
-#include "LoaderTaskQueue.h"
+#include "PlatformThreading.h"
 #include "PluginListManager.h"
 
 
 // TODO(Antares): 1. 调用插件出口函数；2. 防止sigsegv重入
 #if MIRAICP_WINDOWS
-
 #include "LoaderLogger.h"
 #include "ThreadController.h"
-#include "redirectCout.h"
 #include <windows.h>
 
 thread_local bool alreadyInHandler;
@@ -40,7 +38,7 @@ public:
         if (pluginId.empty()) {
             // test the thread name is jvm
             char threadName[80];
-            pthread_getname_np(pthread_self(), threadName, 80);
+            platform_get_thread_name(platform_thread_self(), threadName, 80);
             if (strcmp(threadName, "libLoader") != 0) {
                 return EXCEPTION_CONTINUE_EXECUTION;
             }
@@ -53,7 +51,7 @@ public:
         LibLoader::PluginListManager::disableByIdVanilla(pluginId);
         LibLoader::logger.error("插件" + pluginId + "遇到致命错误! 线程终止, errCod:" +
                                 std::to_string(pExceptionPointers->ExceptionRecord->ExceptionCode));
-        LibLoader::sendPluginException(std::move(pluginId));//
+        LibLoader::sendPluginException(std::move(pluginId)); //
         TerminateThread(GetCurrentThread(), 1);
         return EXCEPTION_CONTINUE_EXECUTION;
     }
@@ -108,7 +106,7 @@ private:
     }
 
     static void sigsegv_handler(int a, siginfo_t *si, void *unused) {
-        if(alreadyInHandler) {
+        if (alreadyInHandler) {
             return;
         }
         auto pluginName = LibLoader::ThreadController::getPluginIdFromThreadId(std::this_thread::get_id());

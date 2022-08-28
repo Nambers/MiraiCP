@@ -19,6 +19,7 @@
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
+#include "PlatformThreading.h"
 #include "PluginListImplements.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
@@ -31,7 +32,7 @@ namespace LibLoader {
     /// LoaderMain实现开始
 
     void LoaderMain::loaderMain() {
-        pthread_setname_np(pthread_self(), "libLoader");
+        platform_set_thread_name(platform_thread_self(), "libLoader");
         logger.info("libLoader thread start");
 
         PluginListManager::enableAll();
