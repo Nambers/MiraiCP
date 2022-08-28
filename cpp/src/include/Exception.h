@@ -83,7 +83,7 @@ namespace MiraiCP {
     /// @interface MiraiCPExceptionCRTP
     /// @note 请勿给该类增加新的属性。如果要增加属性应在 MiraiCPExceptionBase 中增加
     template<class T>
-    class MiraiCPExceptionCRTP : public MiraiCPExceptionBase {
+    class MIRAICP_EXPORT MiraiCPExceptionCRTP : public MiraiCPExceptionBase {
     public:
         /// 委托构造函数
         explicit MiraiCPExceptionCRTP(string _re, string _filename, int _lineNum) : MiraiCPExceptionBase(std::move(_re), std::move(_filename), _lineNum) {
@@ -97,11 +97,11 @@ namespace MiraiCP {
     /// @brief 通用MiraiCP异常
     /// @param const string &description, string _filename, int _lineNum
     /// @see MiraiCPExceptionBase
-    typedef MiraiCPExceptionCRTP<MiraiCPExceptionBase> MiraiCPException;
+    MIRAICP_EXPORT typedef MiraiCPExceptionCRTP<MiraiCPExceptionBase> MiraiCPException;
 
     /// 文件读取异常.
     /// @see MiraiCPExceptionBase
-    class UploadException : public MiraiCPExceptionCRTP<UploadException> {
+    class MIRAICP_EXPORT UploadException : public MiraiCPExceptionCRTP<UploadException> {
     public:
         explicit UploadException(const std::string &text, string _filename, int _lineNum) : MiraiCPExceptionCRTP("上传(图片/文件)异常" + text, std::move(_filename), _lineNum) {}
 
@@ -110,7 +110,7 @@ namespace MiraiCP {
 
     /// 通常为Mirai返回
     /// @see MiraiCPExceptionBase
-    class IllegalStateException : public MiraiCPExceptionCRTP<IllegalStateException> {
+    class MIRAICP_EXPORT IllegalStateException : public MiraiCPExceptionCRTP<IllegalStateException> {
     public:
         explicit IllegalStateException(const std::string &text, string _filename, int _lineNum) : MiraiCPExceptionCRTP("状态异常:" + text, std::move(_filename), _lineNum) {}
 
@@ -119,7 +119,7 @@ namespace MiraiCP {
 
     /// 内部异常, 通常为json读写问题
     /// @see MiraiCPExceptionBase
-    class APIException : public MiraiCPExceptionCRTP<APIException> {
+    class MIRAICP_EXPORT APIException : public MiraiCPExceptionCRTP<APIException> {
     public:
         explicit APIException(const std::string &text, string _filename, int _lineNum) : MiraiCPExceptionCRTP("MiraiCP内部无法预料的错误:" + text, std::move(_filename), _lineNum) {}
 
@@ -128,7 +128,7 @@ namespace MiraiCP {
 
     /// 机器人操作异常
     /// @see MiraiCPExceptionBase
-    class BotException : public MiraiCPExceptionCRTP<BotException> {
+    class MIRAICP_EXPORT BotException : public MiraiCPExceptionCRTP<BotException> {
     public:
         explicit BotException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("没有权限执行该操作", std::move(_filename), _lineNum) {}
 
@@ -138,7 +138,7 @@ namespace MiraiCP {
     };
 
     /// 被禁言异常, 通常发生于发送信息
-    class BotIsBeingMutedException : public MiraiCPExceptionCRTP<BotIsBeingMutedException> {
+    class MIRAICP_EXPORT BotIsBeingMutedException : public MiraiCPExceptionCRTP<BotIsBeingMutedException> {
     public:
         /// 剩余禁言时间, 单位秒
         int timeRemain;
@@ -151,7 +151,7 @@ namespace MiraiCP {
 
     /// 禁言异常
     /// @see MiraiCPExceptionBase
-    class MuteException : public MiraiCPExceptionCRTP<MuteException> {
+    class MIRAICP_EXPORT MuteException : public MiraiCPExceptionCRTP<MuteException> {
     public:
         /*
         *	 禁言时间超出0s~30d
@@ -163,7 +163,7 @@ namespace MiraiCP {
 
     /// 获取群成员错误
     /// @see MiraiCPExceptionBase
-    class MemberException : public MiraiCPExceptionCRTP<MemberException> {
+    class MIRAICP_EXPORT MemberException : public MiraiCPExceptionCRTP<MemberException> {
     public:
         enum MemberExceptionType : int {
             OtherType,
@@ -195,7 +195,7 @@ namespace MiraiCP {
 
     /// 获取群成员错误
     /// @see MiraiCPExceptionBase
-    class FriendException : public MiraiCPExceptionCRTP<FriendException> {
+    class MIRAICP_EXPORT FriendException : public MiraiCPExceptionCRTP<FriendException> {
     public:
         /*
         *   找不到好友
@@ -207,7 +207,7 @@ namespace MiraiCP {
 
     /// 获取群错误
     /// @see MiraiCPExceptionBase
-    class GroupException : public MiraiCPExceptionCRTP<GroupException> {
+    class MIRAICP_EXPORT GroupException : public MiraiCPExceptionCRTP<GroupException> {
     public:
         GroupException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("找不到群", std::move(_filename), _lineNum) {}
 
@@ -216,7 +216,7 @@ namespace MiraiCP {
 
     /// 撤回异常
     /// @see MiraiCPExceptionBase
-    class RecallException : public MiraiCPExceptionCRTP<RecallException> {
+    class MIRAICP_EXPORT RecallException : public MiraiCPExceptionCRTP<RecallException> {
     public:
         RecallException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("该消息已经被撤回", std::move(_filename), _lineNum) {}
 
@@ -225,7 +225,7 @@ namespace MiraiCP {
 
     /// 远程资源出现问题
     /// @see MiraiCPExceptionBase
-    class RemoteAssetException : public MiraiCPExceptionCRTP<RemoteAssetException> {
+    class MIRAICP_EXPORT RemoteAssetException : public MiraiCPExceptionCRTP<RemoteAssetException> {
     public:
         explicit RemoteAssetException(const string &e, string _filename, int _lineNum) : MiraiCPExceptionCRTP(e, std::move(_filename), _lineNum) {}
 
@@ -234,7 +234,7 @@ namespace MiraiCP {
 
     /// 参数错误
     /// @see MiraiCPExceptionBase
-    class IllegalArgumentException : public MiraiCPExceptionCRTP<IllegalArgumentException> {
+    class MIRAICP_EXPORT IllegalArgumentException : public MiraiCPExceptionCRTP<IllegalArgumentException> {
     public:
         explicit IllegalArgumentException(const string &e, string _filename, int _lineNum) : MiraiCPExceptionCRTP(e, std::move(_filename), _lineNum) {
         }
@@ -244,7 +244,7 @@ namespace MiraiCP {
 
     /// 超时
     /// @see MiraiCPExceptionBase
-    class TimeOutException : public MiraiCPExceptionCRTP<TimeOutException> {
+    class MIRAICP_EXPORT TimeOutException : public MiraiCPExceptionCRTP<TimeOutException> {
     public:
         explicit TimeOutException(const std::string &e, string _filename, int _lineNum) : MiraiCPExceptionCRTP(e, std::move(_filename), _lineNum) {}
 
@@ -253,7 +253,7 @@ namespace MiraiCP {
 
     /// 事件被取消, 一般出现在发送消息时在preSendMessageEvent取消的时候抛出
     /// @see MiraiCPExceptionBase
-    class EventCancelledException : public MiraiCPExceptionCRTP<EventCancelledException> {
+    class MIRAICP_EXPORT EventCancelledException : public MiraiCPExceptionCRTP<EventCancelledException> {
     public:
         explicit EventCancelledException(const string &msg, string _filename, int _lineNum) : MiraiCPExceptionCRTP(msg, std::move(_filename), _lineNum) {}
 
@@ -264,7 +264,7 @@ namespace MiraiCP {
     /// 该异常仅可能在插件尝试调用libLoader 高级权限的Api接口时抛出
     /// 如插件尝试重载、加载、卸载插件等操作，但配置文件中并没有赋予该插件权限时
     /// @see MiraiCPExceptionBase
-    class PluginNotAuthorizedException : public MiraiCPExceptionCRTP<PluginNotAuthorizedException> {
+    class MIRAICP_EXPORT PluginNotAuthorizedException : public MiraiCPExceptionCRTP<PluginNotAuthorizedException> {
     public:
         explicit PluginNotAuthorizedException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("插件" + CPPPlugin::config.getId() + "没有管理权限", std::move(_filename), _lineNum) {}
 
@@ -275,7 +275,7 @@ namespace MiraiCP {
     /// 在插件能正常运行时不会抛出，出现该异常事件时请不要再次尝试收发消息等Mirai操作，
     /// 否则可能导致异常处理时再次抛出异常
     /// @see MiraiCPExceptionBase
-    class PluginNotEnabledException : public MiraiCPExceptionCRTP<PluginNotEnabledException> {
+    class MIRAICP_EXPORT PluginNotEnabledException : public MiraiCPExceptionCRTP<PluginNotEnabledException> {
     public:
         explicit PluginNotEnabledException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("插件" + CPPPlugin::config.getId() + "未加载", std::move(_filename), _lineNum) {}
 
@@ -284,7 +284,7 @@ namespace MiraiCP {
 
     /// 如果在 MiraiCPNewThread 中捕获到了非 MiraiCP 之外的异常抛出
     /// @see MiraiCPNewThread
-    class MiraiCPThreadException : public MiraiCPExceptionCRTP<MiraiCPThreadException> {
+    class MIRAICP_EXPORT MiraiCPThreadException : public MiraiCPExceptionCRTP<MiraiCPThreadException> {
     public:
         /// 抛出异常的线程 ID
         std::thread::id threadId;
@@ -301,11 +301,7 @@ namespace MiraiCP {
         static string exceptionType() { return "MiraiCPThreadException"; }
 
     private:
-        static std::string getThreadIdStr(const std::thread::id &id) {
-            std::stringstream ss;
-            ss << id;
-            return ss.str();
-        }
+        static std::string getThreadIdStr(const std::thread::id &id);
     };
 
     inline void ErrorHandle0(const std::string &name, int line, const std::string &re, const std::string &ErrorMsg = "") {

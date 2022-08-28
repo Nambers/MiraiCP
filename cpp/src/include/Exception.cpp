@@ -15,7 +15,7 @@
 //
 
 #include "Exception.h"
-#include "Event.h"
+
 
 namespace MiraiCP {
     void MiraiCPExceptionBase::basicRaise() const {
@@ -27,5 +27,13 @@ namespace MiraiCP {
         if (!filename.empty() && lineNum != 0) {
             Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
         }
+    }
+
+    std::string MiraiCPThreadException::getThreadIdStr(const std::thread::id &id) {
+        static std::stringstream ss;
+        ss << id;
+        auto result = ss.str();
+        ss.str("");
+        return result;
     }
 } // namespace MiraiCP
