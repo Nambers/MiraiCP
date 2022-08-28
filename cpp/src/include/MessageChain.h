@@ -35,10 +35,16 @@ namespace MiraiCP {
             Message() : std::shared_ptr<SingleMessage>() {} // for MSVC compatible, or you will get an error
 
             template<class T>
-            Message(T &&_singleMessage) {
+            Message(T &&Arg) {
                 using NoCVRefType = typename std::remove_cv_t<typename std::remove_reference_t<T>>;
-                static_assert(std::is_base_of_v<SingleMessage, NoCVRefType>, "只支持SingleMessage的子类");
-                reset(new NoCVRefType(std::forward<T>(_singleMessage)));
+
+                if constexpr (std::is_base_of_v<Super, NoCVRefType>) {
+                    *this = std::forward<T>(Arg);
+                } else if constexpr (std::is_base_of_v<SingleMessage, NoCVRefType>) {
+                    reset(new NoCVRefType(std::forward<T>(Arg)));
+                } else {
+                    static_assert(false, "只支持SingleMessage的子类");
+                }
             }
 
             explicit Message(Super msgptr) : Super(std::move(msgptr)) {}

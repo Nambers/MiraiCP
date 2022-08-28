@@ -20,6 +20,8 @@ using namespace MiraiCP;
 
 TEST(MiraiCodeTest, Image) {
     auto target = MessageChain::deserializationFromMiraiCode("[mirai:image:{4D120D1B-F461-3A12-C731-57D974CE28EB}.jpg]");
+    auto target2 = target;
+    target2.emplace_back(MessageChain::Message(PlainText("testing")));
     ASSERT_EQ(1, target.size());
     ASSERT_EQ(true, target.first<Image>().has_value());
     EXPECT_EQ("{4D120D1B-F461-3A12-C731-57D974CE28EB}.jpg", target.first<Image>().value().id);

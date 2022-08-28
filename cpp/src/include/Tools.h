@@ -47,7 +47,7 @@ namespace MiraiCP {
         /// @param a vector
         /// @return string
         template<typename T>
-        MIRAICP_EXPORT std::string VectorToString(const std::vector<T> &a, const std::string &separator = ",") {
+        std::string VectorToString(const std::vector<T> &a, const std::string &separator = ",") {
             std::stringstream ss;
             for (auto it = a.begin(); it != a.end(); ++it) {
                 if (it != a.begin()) ss << separator;
