@@ -146,8 +146,11 @@ static_assert(false, "Unsupported platform");
 
 // export
 #define MIRAICP_EXPORT
-#ifndef GOOGLE_TEST
 #if MIRAICP_WINDOWS
+#ifdef GOOGLE_TEST
+#undef MIRAICP_EXPORT
+#define MIRAICP_EXPORT __declspec(dllimport)
+#else
 #undef MIRAICP_EXPORT
 #define MIRAICP_EXPORT __declspec(dllexport)
 #endif
