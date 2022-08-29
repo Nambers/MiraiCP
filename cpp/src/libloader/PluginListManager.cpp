@@ -45,13 +45,15 @@ namespace LibLoader {
 
     std::string PluginListManager::pluginListInfo(const std::function<bool(const LoaderPluginConfig &)> &filter) {
         std::lock_guard lk(pluginlist_mtx);
-        std::vector<std::string> ans = {"id", "name", "author", "description", "\n"};
-        int charNum[4] = {2 + 1, 4 + 1, 6 + 1, 11 + 1};
+        std::vector<std::string> ans = {"id", "name or path", "author", "description", "\n"};
+        int charNum[4] = {2 + 1, 12 + 1, 6 + 1, 11 + 1};
         for (auto &&[k, v]: id_plugin_list) {
             if (v->handle != nullptr) {
                 if (filter(*v)) FormatPluginListInfo(v->config(), charNum, ans);
             } else {
-                // todo(Antares): 显示path
+                FormatPluginListInfo(
+                        MiraiCP::PluginConfig{"(unknown)", v->path, "(unknown)", "(unknown)", "(unknown)", "(unknown)",
+                                              "(unknown)"}, charNum, ans);
             }
         }
         return PluginInfoStream(ans, charNum);
