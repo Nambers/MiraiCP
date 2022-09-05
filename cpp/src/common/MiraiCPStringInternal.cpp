@@ -43,7 +43,8 @@ namespace MiraiCP {
         }
     }
 
-    MiraiCPString::MiraiCPString(const MiraiCPString &other) : str(nullptr), _size(other._size), free_this(std_free_ptr) {
+    MiraiCPString::MiraiCPString(const MiraiCPString &other) {
+        _size = other._size;
         if (_size == 0) return;
         construction();
         assert(str != nullptr);
@@ -51,11 +52,11 @@ namespace MiraiCP {
         str[_size] = 0;
     }
 
-    MiraiCPString::MiraiCPString(MiraiCPString &&temp) noexcept : MiraiCPString() {
+    MiraiCPString::MiraiCPString(MiraiCPString &&temp) noexcept {
         swap(temp);
     }
 
-    MiraiCPString::MiraiCPString(const char *char_str) : MiraiCPString() {
+    MiraiCPString::MiraiCPString(const char *char_str) {
         if (char_str == nullptr) return;
         _size = strlen(char_str);
         if (0 == _size) return;

@@ -27,7 +27,7 @@ namespace MiraiCP {
     // this class is used to ensure data consistency between dynamic libs
     // note: do not use this directly;
     // always convert to const char* or std::string before using.
-    class MIRAICP_EXPORT MiraiCPString {
+    class MIRAICP_EXPORT MiraiCPString final {
         using string = std::string;
 
     private:
@@ -44,7 +44,7 @@ namespace MiraiCP {
             return _size == 0;
         }
 
-        MiraiCPString() : str(nullptr), _size(0), free_this(std_free_ptr) {}
+        MiraiCPString() = default;
         // call if _size is set to non-zero
         // allocate memory for str
         void construction();
@@ -83,7 +83,7 @@ namespace MiraiCP {
     };
 
     static_assert(sizeof(char *) == 8, "Please make sure the size of pointers is 8 bytes");
-    static_assert(sizeof(MiraiCPString) == 3 * 8, "Please make sure the size of pointers and size_t are 8 bytes");
+    static_assert(sizeof(MiraiCPString) == 3 * 8, "Please make sure the size of size_t is 8 bytes");
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_MIRAICPSTRINGINTERNAL_H
