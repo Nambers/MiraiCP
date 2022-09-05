@@ -29,10 +29,10 @@ namespace CommonTools {
     public:
         std::function<void()> defer_func;
 
-        MiraiCPDefer(std::function<void()> &&func) : defer_func(std::move(func)) {
+        MiraiCPDefer(std::function<void()> func) : defer_func(std::move(func)) {
         }
 
-        virtual ~MiraiCPDefer() {
+        ~MiraiCPDefer() {
             defer_func();
         }
     };
