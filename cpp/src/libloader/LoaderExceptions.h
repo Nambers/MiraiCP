@@ -146,6 +146,7 @@ namespace LibLoader {
         static string exceptionType() { return "PluginIdDuplicateException"; }
     };
 
+    // todo(Antares): 意义不明，改为更明确且直接的异常
     class IllegalStateException : public LoaderExceptionCRTP<IllegalStateException> {
     public:
         IllegalStateException(string _filename, int _lineNum);
