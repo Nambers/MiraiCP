@@ -25,6 +25,11 @@ namespace MiraiCP {
      * @doxygenEg{1013, member.cpp, 群成员操作}
      */
     class Member : public Contact, INudgeSupport {
+    private:
+        friend class Contact;
+
+        explicit Member() = default;
+
     public:
         /// @brief 权限等级
         ///     - OWNER群主 为 2
@@ -44,15 +49,15 @@ namespace MiraiCP {
         /// @param botid 机器人id
         explicit Member(QQID qqid, QQID groupid, QQID botid);
 
-        explicit Member(const Contact &c) : Contact(c) {
-            if (c.type() != 3)
-                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 3(member)", MIRAICP_EXCEPTION_WHERE);
-            this->isAnonymous = this->_anonymous;
-            refreshInfo();
-        };
+//        explicit Member(const Contact &c) : Contact(c) {
+//            if (c.type() != 3)
+//                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 3(member)", MIRAICP_EXCEPTION_WHERE);
+//            this->isAnonymous = this->_anonymous;
+//            refreshInfo();
+//        };
 
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
-        bool isAnonymous = false;
+        bool isAnonymous;
 
         /// 重新获取(刷新)群成员信息
         void refreshInfo();
