@@ -22,6 +22,11 @@
 namespace MiraiCP {
     /// 好友类声明
     class Friend : public Contact, INudgeSupport {
+    private:
+        friend class Contact;
+
+        explicit Friend() = default;
+
     public:
         /// 删除好友(delete是C++关键字)
         void deleteFriend();
@@ -42,11 +47,11 @@ namespace MiraiCP {
          */
         explicit Friend(QQID friendid, QQID botid);
 
-        explicit Friend(const Contact &c) : Contact(c) {
-            if (c.type() != 1)
-                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 1(friend)", MIRAICP_EXCEPTION_WHERE);
-            refreshInfo();
-        };
+//        explicit Friend(const Contact &c) : Contact(c) {
+//            if (c.type() != 1)
+//                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 1(friend)", MIRAICP_EXCEPTION_WHERE);
+//            refreshInfo();
+//        };
     };
 } // namespace MiraiCP
 

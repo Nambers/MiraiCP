@@ -32,6 +32,7 @@ namespace MiraiCP {
     }
 
     void Member::refreshInfo() {
+        this->isAnonymous = this->_anonymous;
         if (isAnonymous)
             return;
         std::string temp = LowLevelAPI::getInfoSource(this->toString());

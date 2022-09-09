@@ -94,19 +94,23 @@ namespace MiraiCP {
                 //GroupMessage
                 Event::broadcast<GroupMessageEvent>(
                         GroupMessageEvent(j["group"]["botid"],
-                                          Group(Group::deserialize(j["group"])),
-                                          Member(Member::deserialize(j["member"])),
-                                          MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>()))
-                                                  .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
+                                          Group::deserialize<Group>(j["group"]),
+                                          Member::deserialize<Member>(j["member"]),
+                                          MessageChain::deserializationFromMessageSourceJson(
+                                                  json::parse(j["source"].get<std::string>()))
+                                                  .plus(MessageSource::deserializeFromString(
+                                                          j["source"].get<std::string>()))));
                 break;
             }
             case eventTypes::PrivateMessageEvent: {
                 //私聊消息
                 Event::broadcast<PrivateMessageEvent>(
                         PrivateMessageEvent(j["friend"]["botid"],
-                                            Friend(Friend::deserialize(j["friend"])),
-                                            MessageChain::deserializationFromMessageSourceJson(json::parse(j["source"].get<std::string>()))
-                                                    .plus(MessageSource::deserializeFromString(j["source"].get<std::string>()))));
+                                            Friend::deserialize<Friend>(j["friend"]),
+                                            MessageChain::deserializationFromMessageSourceJson(
+                                                    json::parse(j["source"].get<std::string>()))
+                                                    .plus(MessageSource::deserializeFromString(
+                                                            j["source"].get<std::string>()))));
                 break;
             }
             case eventTypes::GroupInviteEvent:
@@ -137,8 +141,8 @@ namespace MiraiCP {
                         MemberJoinEvent(
                                 j["group"]["botid"],
                                 j["jointype"],
-                                Member(Member::deserialize(j["member"])),
-                                Group(Group::deserialize(j["group"])),
+                                Member::deserialize<Member>(j["member"]),
+                                Group::deserialize<Group>(j["group"]),
                                 j["inviterid"]));
                 break;
             case eventTypes::MemberLeaveEvent:
@@ -147,7 +151,7 @@ namespace MiraiCP {
                         j["group"]["botid"],
                         j["leavetype"],
                         j["memberid"],
-                        Group(Group::deserialize(j["group"])),
+                        Group::deserialize<Group>(j["group"]),
                         j["operatorid"]));
                 break;
             case eventTypes::RecallEvent:
@@ -165,14 +169,14 @@ namespace MiraiCP {
                 Event::broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
                         j["group"]["botid"],
                         j["etype"],
-                        Group(Group::deserialize(j["group"])),
+                        Group::deserialize<Group>(j["group"]),
                         j["inviterid"]));
                 break;
             case eventTypes::GroupTempMessageEvent:
                 Event::broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
                         j["group"]["botid"],
-                        Group(Group::deserialize(j["group"])),
-                        Member(Member::deserialize(j["member"])),
+                        Group::deserialize<Group>(j["group"]),
+                        Member::deserialize<Member>(j["member"]),
                         MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>()))
                                 .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
@@ -192,19 +196,13 @@ namespace MiraiCP {
                 Event::broadcast(BotLeaveEvent(j["groupid"], j["botid"]));
                 break;
             case eventTypes::MemberJoinRequestEvent: {
-                std::optional<Group> a;
-                std::optional<Member> b;
-                Contact temp = Contact::deserialize(j["group"]);
-                if (temp.id() == 0)
-                    a = std::nullopt;
-                else
-                    a = Group(temp);
-                temp = Contact::deserialize(j["inviter"]);
-                if (temp.id() == 0)
-                    b = std::nullopt;
-                else
-                    b = Member(temp);
-                Event::broadcast(MemberJoinRequestEvent(a, b, temp.botid(), j["requester"], j["requestData"]));
+                std::optional<Group> a = std::nullopt;
+                std::optional<Member> b = std::nullopt;
+                if (j["group"]["id"] != 0)
+                    a.emplace(Group::deserialize<Group>(j["group"]));
+                if (j["inviter"]["id"] != 0)
+                    b.emplace(Member::deserialize<Member>(j["inviter"]));
+                Event::broadcast(MemberJoinRequestEvent(a, b, a->botid(), j["requester"], j["requestData"]));
                 break;
             }
             case eventTypes::MessagePreSendEvent: {
