@@ -24,38 +24,32 @@
 
 
 namespace MiraiCP {
-    class Friend;  // forward declaration
-    class Group;   // forward declaration
-    class Contact; // forward declaration
+    class Friend;      // forward declaration
+    class Group;       // forward declaration
+    class Contact;     // forward declaration
+    class InternalBot; // forward declaration
 
     /// 当前bot账号信息
     class Bot {
     private:
-        bool inited = false;
-        std::string _nick;
-        std::string _avatarUrl;
+        std::shared_ptr<InternalBot> _InternalBot;
 
     public:
         /// 该botid
         QQID id;
 
     private:
-        void check() {
-            if (!this->inited) {
-                refreshInfo();
-                this->inited = true;
-            }
-        }
+        void check();
 
     public:
         /*!
          * @brief 刷新bot信息
          * @param env
          */
-        void refreshInfo();
+        // void refreshInfo();
 
         /// 用id构建机器人
-        explicit Bot(QQID i) : id(i) {}
+        explicit Bot(QQID in_id);
 
         /// 取好友
         Friend getFriend(QQID i) const;
@@ -63,28 +57,23 @@ namespace MiraiCP {
         /// 取群聊
         Group getGroup(QQID groupid) const;
 
-        /// 昵称
-        std::string nick() {
-            check();
-            return this->_nick;
-        }
+        /// @brief 昵称
+        /// @note 并发情形下并不保证能得到正确结果
+        std::string nick();
 
-        /// 头像下载链接
-        std::string avatarUrl() {
-            check();
-            return this->_avatarUrl;
-        }
+        /// @brief 头像下载链接
+        std::string avatarUrl();
 
-        /// 取好友列表
+        /// @brief 取好友列表
         std::vector<QQID> getFriendList() const;
 
-        /// 好友列表string形式返回，利于保存
+        /// @brief 好友列表string形式返回，利于保存
         std::string FriendListToString() const;
 
-        /// 取群列表
+        /// @brief 取群列表
         std::vector<QQID> getGroupList() const;
 
-        /// 群列表string形式返回，利于保存
+        /// @brief 群列表string形式返回，利于保存
         std::string GroupListToString() const;
 
         bool operator==(const Contact &c) const;

@@ -18,7 +18,9 @@
 #include "Exception.h"
 #include "KtOperation.h"
 #include <utility>
-
+namespace LibLoader::LoaderApi {
+    const interface_funcs *get_loader_apis();
+}
 
 namespace MiraiCP {
     using json = nlohmann::json;
@@ -55,5 +57,9 @@ namespace MiraiCP {
         j["fileName"] = path;
         j["source"] = c;
         return KtOperation::ktOperation(KtOperation::UploadImg, j);
+    }
+
+    bool LowLevelAPI::checkSafeCall() {
+        return LibLoader::LoaderApi::get_loader_apis() != nullptr;
     }
 } // namespace MiraiCP
