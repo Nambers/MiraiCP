@@ -55,7 +55,7 @@ namespace MiraiCP {
             /// @brief 是否启用
             bool enable = true;
             /// @brief 执行的操作，格式为lambda
-            Action action = [](const string &content, int level) {};
+            Action action;
         };
 
         Handler loggerhandler;
