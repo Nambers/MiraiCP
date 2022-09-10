@@ -14,13 +14,42 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "Bot.h"
-#include "KtOperation.h"
 #include "Friend.h"
 #include "Group.h"
+#include "KtOperation.h"
 #include "LowLevelAPI.h"
 #include "Tools.h"
 
 namespace MiraiCP {
+    class InternalBot {
+        friend class Bot;
+
+        std::string _nick;
+        std::string _avatarUrl;
+        std::atomic_bool inited = false;
+
+        void request_refresh(QQID id) {
+            if (!LowLevelAPI::checkSafeCall()) return;
+            if (!inited.exchange(true)) {
+                nlohmann::json j;
+                j["source"] = Contact(4, 0, 0, "", id).toString();
+                LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, j));
+                this->_avatarUrl = tmp.avatarUrl;
+                this->_nick = tmp.nickornamecard;
+            }
+        }
+
+        void force_refresh(QQID id) {
+            inited = false;
+        }
+    };
+
+    static std::unordered_map<QQID, std::shared_ptr<InternalBot>> BotPool;
+
+    inline std::shared_ptr<InternalBot> get_bot(QQID id) {
+        return BotPool.try_emplace(id).first->second;
+    }
+
     Group Bot::getGroup(QQID groupid) const {
         return {groupid, this->id};
     }
@@ -33,15 +62,9 @@ namespace MiraiCP {
         return this->id == c.id();
     }
 
-    void Bot::refreshInfo() {
-        if (this->id == 0)
-            return;
-        nlohmann::json j;
-        j["source"] = Contact(4, 0, 0, "", this->id).toString();
-        LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, j));
-        this->_avatarUrl = tmp.avatarUrl;
-        this->_nick = tmp.nickornamecard;
-    }
+//    void Bot::refreshInfo() {
+//        _InternalBot->request_refresh(id);
+//    }
 
     std::vector<QQID> Bot::getFriendList() const {
         nlohmann::json j;
@@ -63,5 +86,23 @@ namespace MiraiCP {
 
     std::string Bot::GroupListToString() const {
         return Tools::VectorToString(getGroupList());
+    }
+
+    void Bot::check() {
+        _InternalBot->request_refresh(id);
+    }
+
+    Bot::Bot(QQID in_id) : _InternalBot(get_bot(in_id)), id(in_id) {
+        _InternalBot->force_refresh(in_id);
+    }
+
+    std::string Bot::nick() {
+        check();
+        return _InternalBot->_nick;
+    }
+
+    std::string Bot::avatarUrl() {
+        check();
+        return _InternalBot->_avatarUrl;
     }
 } // namespace MiraiCP

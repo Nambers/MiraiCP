@@ -52,6 +52,9 @@ namespace MiraiCP {
         /// 获取每个对象必有信息
         /// @see LowLevelAPI::info
         static info info0(const std::string &source);
+
+        /// 判断目前是否可以安全地call LoaderApi
+        static bool checkSafeCall();
     };
 } // namespace MiraiCP
 
