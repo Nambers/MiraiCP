@@ -22,8 +22,8 @@ set(SDK_INCLUDES_ALL ${SDK_INCLUDES_INTERNAL} PARENT_SCOPE)
 
 target_include_directories(MiraiCP_multi PUBLIC ${SDK_INCLUDES_INTERNAL})
 
-target_compile_options(MiraiCP_multi PUBLIC -w)
-target_compile_definitions(MiraiCP_multi PUBLIC JSON_MultipleHeaders=ON MIRAICP_LIB_SDK)
+# target_compile_options(MiraiCP_multi PUBLIC -Wall)
+target_compile_definitions(MiraiCP_multi PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
 # -- end --
 
 # -- MiraiCP single --
@@ -54,7 +54,7 @@ set_target_properties(
 
 add_dependencies(MiraiCP_single generateSingleHeaders)
 target_compile_options(MiraiCP_single PUBLIC -w)
-target_compile_definitions(MiraiCP_single PUBLIC JSON_MultipleHeaders=ON MIRAICP_LIB_SDK)
+target_compile_definitions(MiraiCP_single PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
 # -- end --
 
 # 移植性

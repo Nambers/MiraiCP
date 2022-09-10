@@ -1,20 +1,20 @@
 cmake_minimum_required(VERSION 3.10)
+project(MiraiCP_pro LANGUAGES CXX) # MSVC detecting must be after project declaration
 
-# 以utf8编译, for msvc
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-
-# fix msvc `message : 函数是 extern "C" 并且指定了 /EHc`
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/EHa>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/EHa>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/std:c++17>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/MP>")
+if(MSVC)
+    message("MSVC detected")
+    # 以utf8编译, for msvc; EHa参数启用标准 C++ stack unwinding; 启用多线程编译
+    add_compile_options(/W4 /utf-8 /EHa /std:c++17 /MP)
+    # See Warning C4668
+    add_compile_definitions(WIN32_LEAN_AND_MEAN)
+else()
+    add_compile_options(-Wall)
+endif()
 
 #
 set(CMAKE_CXX_STANDARD 17) # not working on MSVC
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-project(MiraiCP_pro LANGUAGES CXX)
 
 #
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
