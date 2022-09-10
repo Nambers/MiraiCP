@@ -21,6 +21,7 @@
 #include "LowLevelAPI.h"
 #include "Tools.h"
 #include <atomic>
+#include <mutex>
 
 
 namespace MiraiCP {
@@ -50,7 +51,11 @@ namespace MiraiCP {
     static std::unordered_map<QQID, std::shared_ptr<InternalBot>> BotPool;
 
     inline std::shared_ptr<InternalBot> get_bot(QQID id) {
-        return BotPool.try_emplace(id).first->second;
+        static std::mutex mtx;
+        std::lock_guard<std::mutex> lck(mtx);
+        auto &Ptr = BotPool.try_emplace(id).first->second;
+        if (!Ptr) Ptr.reset(new InternalBot);
+        return Ptr;
     }
 
     Group Bot::getGroup(QQID groupid) const {
