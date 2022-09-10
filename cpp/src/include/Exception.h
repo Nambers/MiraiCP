@@ -284,7 +284,7 @@ namespace MiraiCP {
 
     /// 如果在 MiraiCPNewThread 中捕获到了非 MiraiCP 之外的异常抛出
     /// @see MiraiCPNewThread
-    class MIRAICP_EXPORT MiraiCPThreadException : public MiraiCPExceptionCRTP<MiraiCPThreadException> {
+    class MiraiCPThreadException : public MiraiCPExceptionCRTP<MiraiCPThreadException> {
     public:
         /// 抛出异常的线程 ID
         std::thread::id threadId;
@@ -298,10 +298,10 @@ namespace MiraiCP {
         std::string getThreadIdStr() const { return getThreadIdStr(threadId); }
 
     public:
-        static string exceptionType() { return "MiraiCPThreadException"; }
+        MIRAICP_EXPORT static string exceptionType() { return "MiraiCPThreadException"; }
 
     private:
-        static std::string getThreadIdStr(const std::thread::id &id);
+        MIRAICP_EXPORT static std::string getThreadIdStr(const std::thread::id &id);
     };
 
     inline void ErrorHandle0(const std::string &name, int line, const std::string &re, const std::string &ErrorMsg = "") {
