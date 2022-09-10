@@ -13,12 +13,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 #include "Bot.h"
 #include "Friend.h"
 #include "Group.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
 #include "Tools.h"
+#include <atomic>
+
 
 namespace MiraiCP {
     class InternalBot {
@@ -62,9 +65,9 @@ namespace MiraiCP {
         return this->id == c.id();
     }
 
-//    void Bot::refreshInfo() {
-//        _InternalBot->request_refresh(id);
-//    }
+    //    void Bot::refreshInfo() {
+    //        _InternalBot->request_refresh(id);
+    //    }
 
     std::vector<QQID> Bot::getFriendList() const {
         nlohmann::json j;
