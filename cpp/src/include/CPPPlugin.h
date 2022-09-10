@@ -35,7 +35,7 @@ namespace MiraiCP {
 
     public:
         /// @brief 插件信息，一个插件中该内容不应变化
-        const static PluginConfig config;
+        MIRAICP_EXPORT const static PluginConfig config;
         /// @brief 插件级logger
         /// @deprecated use Logger::logger instead
         [[deprecated("Use Logger::logger instead")]] static Logger *pluginLogger;
