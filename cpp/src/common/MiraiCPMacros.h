@@ -38,7 +38,6 @@ static_assert(sizeof(char) == 1, "Please make sure the size of char is 1");
 #define MIRAICP_ANDROID 0
 #define MIRAICP_TERMUX 0
 
-
 // detect platform
 // ref: https://stackoverflow.com/questions/5919996/how-to-detect-reliably-mac-os-x-ios-linux-windows-in-c-preprocessor
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
@@ -93,7 +92,8 @@ static_assert(false, "Unsupported platform");
 
 // ShouldNotUse
 #if MIRAICP_MSVC
-#define ShouldNotUse(msg) _Pragma("warning(error:4996)") [[deprecated(msg)]] _Pragma("warning(warning:4996)")
+#pragma warning (error:4996)
+#define ShouldNotUse(msg) [[deprecated(msg)]]
 #elif MIRAICP_GCC
 #define ShouldNotUse(msg) [[deprecated(msg)]] __attribute__((error(msg)))
 #else

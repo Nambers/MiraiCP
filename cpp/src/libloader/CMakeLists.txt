@@ -22,6 +22,7 @@ set_target_properties(Loader PROPERTIES
 
 # https://stackoverflow.com/questions/45114078/get-address-for-symbol-in-current-process-in-windows
 target_compile_definitions(Loader PUBLIC MIRAICP_LIB_LOADER JSON_MultipleHeaders=ON)
+# target_compile_options(Loader PUBLIC -Wall)
 
 # 移植性
 if (WIN32)
