@@ -3,7 +3,6 @@ add_library(
         MiraiCP_multi
         SHARED
         ${SRC_PATH}/../demo/test.cpp
-        ${SRC_PATH}/../demo/test2.cpp
         ${MIRAICP_CPP_PATH}
         ${MIRAICP_COMMON_PATH}
 )
@@ -38,7 +37,6 @@ add_library(
         MiraiCP_single
         SHARED
         ${SRC_PATH}/../demo/test.cpp
-        ${SRC_PATH}/../demo/test2.cpp
         ${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp
 )
 target_include_directories(
