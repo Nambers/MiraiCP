@@ -17,11 +17,12 @@
 #ifndef MIRAICP_PRO_MIRAICPNEWTHREAD_H
 #define MIRAICP_PRO_MIRAICPNEWTHREAD_H
 
-
+#include "CPPPlugin.h"
 #include "Event.h"
 #include "Exception.h"
 #include "Logger.h"
 #include "MiraiCPMacros.h"
+#include "PlatformThreading.h"
 #include <ostream>
 #include <thread>
 
@@ -37,6 +38,9 @@ namespace MiraiCP {
             : std::thread(
                       [lambda_func = std::forward<Callable>(func)](auto &&...argss) {
                           try {
+                              const char *thread_name = CPPPlugin::config.id.copyToCharPtr();
+                              platform_set_thread_name(platform_thread_self(), thread_name);
+                              delete[] thread_name;
                               lambda_func(std::forward<decltype(argss)>(argss)...);
                           } catch (MiraiCPExceptionBase &e) {
                               e.raise();

@@ -40,6 +40,7 @@
 #include "utils.h"
 #include "MiraiCPMacros.h"
 #include "MiraiCPStringInternal.h"
+#include "PlatformThreading.h"
 #include "PluginConfig.h"
 #include "commonTools.h"
 #include "commonTypes.h"

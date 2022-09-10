@@ -4,6 +4,7 @@
     "sources": [
         "common/MiraiCPMacros.h",
         "common/MiraiCPStringInternal.h",
+        "common/PlatformThreading.h",
         "common/PluginConfig.h",
         "common/commonTools.h",
         "common/commonTypes.h",
