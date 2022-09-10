@@ -24,15 +24,17 @@
 namespace MiraiCP {
     class Member; // forward declaration
     /*!
-     * @detail 群聊类声明
+     * @brief 群聊类
      */
     class Group : public Contact {
     private:
         friend class Contact;
-
+        /*!
+         * @brief 群聊类的内部构造函数，不可使用
+         */
         explicit Group() = default;
 
-    public: // member classes and structs
+    public: // nested classes and structs
         /// 群公告参数
         class AnnouncementParams {
         public:
