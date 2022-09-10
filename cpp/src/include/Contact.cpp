@@ -99,8 +99,8 @@ namespace MiraiCP {
     void Contact::deserializeWriter(const nlohmann::json &source) {
         _type = static_cast<contactType>(source["type"]);
         _id = source["id"];
-        _groupid = source["gid"];
-        _nickOrNameCard = source["name"];
+        _groupid = source["groupid"];
+        _nickOrNameCard = source["nickornamecard"];
         _botid = source["botid"];
         _anonymous = source["anonymous"];
     }
