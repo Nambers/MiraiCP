@@ -95,4 +95,13 @@ namespace MiraiCP {
         }
         return MessageSource::deserializeFromString(re);
     }
+
+    void Contact::deserializeWriter(const nlohmann::json &source) {
+        _type = static_cast<contactType>(source["type"]);
+        _id = source["id"];
+        _groupid = source["gid"];
+        _nickOrNameCard = source["name"];
+        _botid = source["botid"];
+        _anonymous = source["anonymous"];
+    }
 } // namespace MiraiCP

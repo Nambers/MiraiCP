@@ -155,20 +155,18 @@ namespace MiraiCP {
 
         static Contact deserialize(nlohmann::json source);
 
-        // for derive class
+        // for derived class
         template<class T>
         static T deserialize(const nlohmann::json &source) {
             static_assert(std::is_base_of_v<Contact, T>, "Cannot deserialize class that isn't base on Contact");
-            T re = T();
-            re._type = static_cast<contactType>(source["type"]);
-            re._id = source["id"];
-            re._groupid = source["gid"];
-            re._nickOrNameCard = source["name"];
-            re._botid = source["botid"];
-            re._anonymous = source["anonymous"];
-            re.refreshInfo();
-            return re;
+            T contactObject = T();
+            contactObject.deserializeWriter(source);
+            contactObject.refreshInfo();
+            return contactObject;
         }
+
+    private: // serialization
+        void deserializeWriter(const nlohmann::json &source);
 
     public:
         /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
@@ -176,7 +174,7 @@ namespace MiraiCP {
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, true, env)`
         ShouldNotUse("Use sendMessage") MessageSource
-        sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
+                sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
 
         /*!
          * @brief 回复并发送
