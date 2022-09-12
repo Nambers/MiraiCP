@@ -38,7 +38,7 @@ allprojects {
             kotlinOptions {
                 freeCompilerArgs += "-Xjvm-default=enable"
                 freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-                kotlinOptions.jvmTarget = "11"
+                kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
             }
         }
     }
