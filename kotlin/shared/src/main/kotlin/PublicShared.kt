@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.contact.*
@@ -110,7 +111,7 @@ object PublicShared {
             gson.toJson(
                 Config.Message(
                     json.encodeToString(
-                        MessageSource.Serializer, e[MessageSource]!!
+                        MessageSerializers.serializersModule.serializer(), e[MessageSource]!!
                     )
                 )
             )
@@ -348,7 +349,7 @@ object PublicShared {
 
     //recall
     suspend fun recallMsg(a: String): String {
-        val source = json.decodeFromString(MessageSource.Serializer, a)
+        val source = json.decodeFromString(MessageSerializers.serializersModule.serializer<MessageSource>(), a)
         try {
             source.recall()
         } catch (e: PermissionDeniedException) {
@@ -393,7 +394,10 @@ object PublicShared {
         }
         return file.toExternalResource().use {
             try {
-                json.encodeToString(MessageSource.Serializer, cc.uploadAudio(it).sendTo(cc).source)
+                json.encodeToString(
+                    MessageSerializers.serializersModule.serializer(),
+                    cc.uploadAudio(it).sendTo(cc).source
+                )
             } catch (e: OverFileSizeMaxException) {
                 logger.error("上传语音失败, 文件应在大约1MB以内, 实际大小:${it.size}, 文件路径:${file.absolutePath}")
                 "E2"
@@ -584,7 +588,8 @@ object PublicShared {
     }
 
     suspend fun sendWithQuote(messageSource: String, msg: String, sign: String): String {
-        val source = json.decodeFromString(MessageSource.Serializer, messageSource)
+        val source =
+            json.decodeFromString(MessageSerializers.serializersModule.serializer<MessageSource>(), messageSource)
         val obj = JSONObject(sign)
         val message = if (obj.getBoolean("MiraiCode")) {
             MiraiCode.deserializeMiraiCode(msg)
@@ -594,22 +599,22 @@ object PublicShared {
         val bot = Bot.getInstanceOrNull(source.botId) ?: let {
             return "EB"
         }
-        val c = when {
-            source.kind == MessageSourceKind.FRIEND -> {
+        val c = when (source.kind) {
+            MessageSourceKind.FRIEND -> {
                 bot.getFriend(source.fromId) ?: let {
                     logger.error("找不到好友,位置:K-sendWithQuote,id:${source.fromId}")
                     return "EF"
                 }
             }
 
-            source.kind == MessageSourceKind.GROUP -> {
+            MessageSourceKind.GROUP -> {
                 bot.getGroup(source.targetId) ?: let {
                     logger.error("找不到群,位置:K-sendWithQuote,gid:${source.targetId}")
                     return "EG"
                 }
             }
 
-            source.kind == MessageSourceKind.TEMP -> {
+            MessageSourceKind.TEMP -> {
                 val tmp = bot.getGroup(obj.getLong("groupid")) ?: let {
                     logger.error("找不到群,位置:K-sendWithQuote,gid:${obj.getLong("groupid")}")
                     return "EM"
@@ -756,13 +761,19 @@ object PublicShared {
             event(
                 CPPEvent.PrivateMessage(
                     this.sender.toContact(), this.message.serializeToMiraiCode(), json.encodeToString(
-                        MessageSource.Serializer, this.message[MessageSource]!!
+                        MessageSerializers.serializersModule.serializer(), this.message[MessageSource]!!
                     )
                 )
             )
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
+            logger.error(
+                "a" + json.encodeToString(
+                    MessageSerializers.serializersModule.serializer(),
+                    this.message[MessageSource]!!
+                )
+            )
             event(
                 CPPEvent.GroupMessage(
                     this.group.toContact(),
@@ -770,7 +781,10 @@ object PublicShared {
                         3, this.sender.id, this.group.id, this.senderName, this.bot.id, (this.sender is AnonymousMember)
                     ),
                     this.message.serializeToMiraiCode(),
-                    json.encodeToString(MessageSource.Serializer, this.message[MessageSource]!!)
+                    json.encodeToString(
+                        MessageSerializers.serializersModule.serializer(),
+                        this.message[MessageSource]!!
+                    )
                 )
             )
         }
@@ -915,7 +929,7 @@ object PublicShared {
                     this.sender.toContact(),
                     this.message.serializeToMiraiCode(),
                     json.encodeToString(
-                        MessageSource.Serializer, this.source
+                        MessageSerializers.serializersModule.serializer(), this.source
                     )
                 )
             )
