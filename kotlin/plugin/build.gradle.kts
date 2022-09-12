@@ -43,6 +43,10 @@ plugins {
 version = Version.miraiCP
 description = "Plugin version for MiraiCP"
 
+mirai {
+    jvmTarget = JavaVersion.VERSION_15
+}
+
 tasks {
     afterEvaluate {
         named<me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication>(me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication.TASK_NAME) {

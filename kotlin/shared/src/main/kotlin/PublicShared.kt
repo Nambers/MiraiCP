@@ -55,7 +55,6 @@ import org.json.JSONObject
 import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
-import kotlin.system.exitProcess
 
 
 object PublicShared {
@@ -595,20 +594,22 @@ object PublicShared {
         val bot = Bot.getInstanceOrNull(source.botId) ?: let {
             return "EB"
         }
-        val c = when (source.kind) {
-            MessageSourceKind.FRIEND -> {
+        val c = when {
+            source.kind == MessageSourceKind.FRIEND -> {
                 bot.getFriend(source.fromId) ?: let {
                     logger.error("找不到好友,位置:K-sendWithQuote,id:${source.fromId}")
                     return "EF"
                 }
             }
-            MessageSourceKind.GROUP -> {
+
+            source.kind == MessageSourceKind.GROUP -> {
                 bot.getGroup(source.targetId) ?: let {
                     logger.error("找不到群,位置:K-sendWithQuote,gid:${source.targetId}")
                     return "EG"
                 }
             }
-            MessageSourceKind.TEMP -> {
+
+            source.kind == MessageSourceKind.TEMP -> {
                 val tmp = bot.getGroup(obj.getLong("groupid")) ?: let {
                     logger.error("找不到群,位置:K-sendWithQuote,gid:${obj.getLong("groupid")}")
                     return "EM"
@@ -618,6 +619,7 @@ object PublicShared {
                     return "EMM"
                 }
             }
+
             else -> {
                 logger.error("类型出错, 位置:K-sendWithQuote, messageSource:${messageSource}")
                 return "EA"
