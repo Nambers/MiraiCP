@@ -34,7 +34,7 @@ namespace MiraiCP {
 
         IContactInternalImpl() = default;
 
-        ~IContactInternalImpl() = default;
+        virtual ~IContactInternalImpl() = default;
 
         virtual void refreshInfo(MiraiCP::Contact *) = 0;
 
@@ -62,6 +62,8 @@ namespace MiraiCP {
             bot->_avatarUrl = tmp.avatarUrl;
             bot->_nickOrNameCard = tmp.nickornamecard;
         }
+
+        ~InternalBot() override = default;
     };
 
     static InternalBot::poolType BotPool;
