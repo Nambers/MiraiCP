@@ -16,6 +16,8 @@
  *
  */
 
+@file:Suppress("UnusedReceiverParameter")
+
 package tech.eritquearcus.miraicp.console
 
 import net.mamoe.mirai.console.command.CommandManager
@@ -127,36 +129,11 @@ object ReloadPlugin : SimpleCommand(
     }
 }
 
-object ReLoadPlugin : SimpleCommand(
-    PluginMain,
-    "reLoadPlugin", "reload",
-    description = "重新加载一个被加载过的MiraiCP插件(简写: reload)"
-) {
-    @Handler
-    fun ConsoleCommandSender.reload(id: String) {
-        event(CPPEvent.LibLoaderEvent("ReLoadPlugin", id))
-//        val file = File(path)
-//        if (!file.isFile || !file.exists()) {
-//            sendMessage("Err:${file.absolutePath} 不是一个有效的文件")
-//            return
-//        }
-//        val plugin = file.loadAsCPPLib(emptyList(), true)
-//        PublicShared.cpp.filter { it.config.id == plugin.config.id }.apply {
-//            if (this.size != 2)
-//                sendMessage("Warning:重载未找到id为(${plugin.config.id}), 但会继续执行, 效果类似`load`")
-//        }.forEach {
-//            if (it.libPath == plugin.libPath) return
-//            PublicShared.cpp.remove(it)
-//            PublicShared.disablePlugins.contains(it.config.id) && PublicShared.disablePlugins.remove(it.config.id)
-//        }
-    }
-}
-
 fun registerCommands() {
     CommandManager.registerCommand(PluginList)
     CommandManager.registerCommand(DisablePlugin)
     CommandManager.registerCommand(EnablePlugin)
     CommandManager.registerCommand(DisablePluginList)
     CommandManager.registerCommand(LoadPlugin)
-    CommandManager.registerCommand(ReLoadPlugin)
+    CommandManager.registerCommand(ReloadPlugin)
 }
