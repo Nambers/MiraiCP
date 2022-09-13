@@ -21,6 +21,7 @@
 #include "CPPPlugin.h"
 #include "Command.h"
 #include "Contact.h"
+#include "ContactImpl.h"
 #include "Event.h"
 #include "Exception.h"
 #include "ForwardedMessage.h"

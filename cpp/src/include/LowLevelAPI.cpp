@@ -59,7 +59,7 @@ namespace MiraiCP {
         return KtOperation::ktOperation(KtOperation::UploadImg, j);
     }
 
-    bool LowLevelAPI::checkSafeCall() {
+    bool checkSafeCall() {
         return LibLoader::LoaderApi::get_loader_apis() != nullptr;
     }
 } // namespace MiraiCP
