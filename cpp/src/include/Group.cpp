@@ -103,7 +103,7 @@ namespace MiraiCP {
         return Tools::StringToVector(std::move(re));
     }
 
-    Group::Group(QQID groupid, QQID botid) : Contact() {
+    Group::Group(QQID groupid, QQID botid) : ContactWithSendSupport() {
         this->_type = MIRAI_GROUP;
         this->_id = groupid;
         this->_botid = botid;

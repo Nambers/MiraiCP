@@ -22,7 +22,7 @@
 namespace MiraiCP {
     using json = nlohmann::json;
     /*好友类实现*/
-    Friend::Friend(QQID id, QQID botid) : Contact() {
+    Friend::Friend(QQID id, QQID botid) : ContactWithSendSupport() {
         this->_type = MIRAI_FRIEND;
         this->_id = id;
         this->_botid = botid;

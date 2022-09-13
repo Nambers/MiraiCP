@@ -26,9 +26,10 @@ namespace MiraiCP {
     /*!
      * @brief 群聊类
      */
-    class Group : public Contact {
+    class Group : public ContactWithSendSupport {
     private:
         friend class Contact;
+
         /*!
          * @brief 群聊类的内部构造函数，不可使用
          */
@@ -93,8 +94,8 @@ namespace MiraiCP {
             OnlineAnnouncement(const std::string &content, AnnouncementParams &params,
                                QQID groupid, QQID senderid, QQID botid,
                                long long int publicationTime, const std::string &fid, int confirmNum,
-                               const std::string &imageid) : content(content), params(params), groupid(groupid),
-                                                             senderid(senderid), botid(botid),
+                               const std::string &imageid) : content(content), botid(botid), params(params),
+                                                             groupid(groupid), senderid(senderid),
                                                              publicationTime(publicationTime),
                                                              fid(fid), confirmNum(confirmNum), imageid(imageid) {}
         };
@@ -206,7 +207,7 @@ namespace MiraiCP {
 
         /// 发送语音
         MessageSource sendVoice(const std::string &path) {
-            return Contact::sendVoice0(path);
+            return sendVoice0(path);
         }
 
         /*!

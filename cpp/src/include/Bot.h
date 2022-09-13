@@ -19,6 +19,7 @@
 
 
 #include "commonTypes.h"
+#include "Contact.h"
 #include <string>
 #include <vector>
 
@@ -26,11 +27,12 @@
 namespace MiraiCP {
     class Friend;      // forward declaration
     class Group;       // forward declaration
-    class Contact;     // forward declaration
     class InternalBot; // forward declaration
 
     /// 当前bot账号信息
-    class Bot {
+    class Bot : Contact {
+        friend class InternalBot;
+
     private:
         std::shared_ptr<InternalBot> _InternalBot;
 
@@ -75,8 +77,6 @@ namespace MiraiCP {
 
         /// @brief 群列表string形式返回，利于保存
         std::string GroupListToString() const;
-
-        bool operator==(const Contact &c) const;
 
         bool operator==(const Bot &b) const {
             return this->id == b.id;

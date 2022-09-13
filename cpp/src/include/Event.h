@@ -530,7 +530,7 @@ namespace MiraiCP {
     };
 
     /*! 戳一戳事件
-    /* @warning nudgeEvent事件也会被bot自己发的Nudge触发, 可能会造成无限循环
+     * @warning nudgeEvent事件也会被bot自己发的Nudge触发, 可能会造成无限循环
      */
     class NudgeEvent : public BotEvent<NudgeEvent> {
     public:
@@ -596,8 +596,10 @@ namespace MiraiCP {
         QQID requesterId;
 
     public:
-        MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, QQID requesterId, std::string source)
-            : BotEvent(botid), group(std::move(g)), inviter(std::move(i)), source(std::move(source)), requesterId(requesterId){};
+        MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, QQID requesterId,
+                               std::string source)
+                : BotEvent(botid), source(std::move(source)), group(std::move(g)), inviter(std::move(i)),
+                  requesterId(requesterId) {};
 
         /// 通过
         void accept() {

@@ -24,7 +24,7 @@ namespace MiraiCP {
      * @brief 群成员类声明
      * @doxygenEg{1013, member.cpp, 群成员操作}
      */
-    class Member : public Contact, INudgeSupport {
+    class Member : public ContactWithSendSupport, INudgeSupport {
     private:
         friend class Contact;
 
@@ -64,7 +64,7 @@ namespace MiraiCP {
 
         /// 发送语音
         MessageSource sendVoice(const std::string &path) {
-            return Contact::sendVoice0(path);
+            return sendVoice0(path);
         }
 
         /// 获取权限，会在构造时调用，请使用permission缓存变量

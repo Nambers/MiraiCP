@@ -23,7 +23,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
     /*成员类实现*/
     Member::Member(QQID id, QQID groupid, QQID botid)
-        : Contact() {
+            : ContactWithSendSupport() {
         this->_type = MIRAI_MEMBER;
         this->_id = id;
         this->_groupid = groupid;

@@ -21,7 +21,7 @@
 
 namespace MiraiCP {
     /// 好友类声明
-    class Friend : public Contact, INudgeSupport {
+    class Friend : public ContactWithSendSupport, INudgeSupport {
     private:
         friend class Contact;
 

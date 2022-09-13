@@ -29,8 +29,12 @@ namespace MiraiCP {
         MIRAI_FRIEND = 1,
         MIRAI_GROUP = 2,
         MIRAI_MEMBER = 3,
+        // bot
         MIRAI_OTHERTYPE = 4,
     };
+
+    class ContactWithSendSupport;
+
     /*!
     * @brief group, friend, member的父类
     * @doxygenEg{1002, message.cpp, 发送以及回复群消息}
@@ -45,16 +49,12 @@ namespace MiraiCP {
         QQID _botid;
         bool _anonymous = false;
 
-    protected:
-        /// 发送语音
-        MessageSource sendVoice0(const std::string &path);
-
     public:
         // constructors
 
         /*!
          * @brief 无参初始化Contact类型
-         * @internal 一般在MiraiCp内部构造
+         * @internal 一般在MiraiCP内部构造
          */
         Contact() {
             this->_type = MIRAI_CONTACT;
@@ -146,6 +146,8 @@ namespace MiraiCP {
         }
         /// @deprecated since v2.8.1, use `this->toString()`
         ShouldNotUse("use toString") std::string serializationToString() const = delete;
+        /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
+        ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source) = delete;
 
         /// 反序列化成bot，可以通过serializationToString序列化，利于保存
         /// @see Contact::serializationToString()
@@ -165,16 +167,21 @@ namespace MiraiCP {
             return contactObject;
         }
 
+        explicit operator ContactWithSendSupport() const;
+
     private: // serialization
         void deserializeWriter(const nlohmann::json &source);
+    };
+
+    class ContactWithSendSupport : public Contact {
+    protected:
+        /// 发送语音
+        MessageSource sendVoice0(const std::string &path);
 
     public:
-        /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
-        ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source) = delete;
-
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, true, env)`
         ShouldNotUse("Use sendMessage") MessageSource
-                sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
+        sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
 
         /*!
          * @brief 回复并发送
@@ -190,6 +197,7 @@ namespace MiraiCP {
         MessageSource quoteAndSendMessage(T s, MessageSource ms) {
             return this->quoteAndSend1(s, ms);
         }
+
         /*!
          * @brief 回复并发送
          * @param s 内容
@@ -235,13 +243,16 @@ namespace MiraiCP {
         }
 
         /// @deprecated since v2.8.1, use `sendMessage(msg)` or `sendMsg0(msg, retryTime, false, env)`
-        ShouldNotUse("Use sendMessage") MessageSource sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage") MessageSource
+        sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, false, env);`
-        ShouldNotUse("Use sendMessage") MessageSource sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage") MessageSource
+        sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(Tools::VectorToString(std::move(msg)))` or `sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);`
-        ShouldNotUse("Use sendMessage") MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage") MessageSource
+        sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /*!
         * @brief 上传本地图片，务必要用绝对路径
@@ -252,6 +263,7 @@ namespace MiraiCP {
         * -可能抛出MemberException找不到群或群成员
         */
         Image uploadImg(const std::string &path) const;
+
         FlashImage uploadFlashImg(const std::string &path) const;
 
         template<class T>
@@ -302,6 +314,13 @@ namespace MiraiCP {
         MessageSource quoteAndSend1(MessageChain mc, MessageSource ms) {
             return this->quoteAndSend0(mc.toMiraiCode(), ms);
         }
+
+    public:
+        ContactWithSendSupport() = default;
+
+        ~ContactWithSendSupport() override = default;
+
+        ContactWithSendSupport(int type, QQID id, QQID gid, const std::string &name, QQID botid, bool anonymous);
     };
 
     class INudgeSupport {

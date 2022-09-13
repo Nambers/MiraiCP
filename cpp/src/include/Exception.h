@@ -144,7 +144,9 @@ namespace MiraiCP {
         int timeRemain;
 
     public:
-        explicit BotIsBeingMutedException(int t, string _filename, int _lineNum) : timeRemain(t), MiraiCPExceptionCRTP("发送信息失败, bot已被禁言, 剩余时间" + std::to_string(t), std::move(_filename), _lineNum) {}
+        explicit BotIsBeingMutedException(int t, string _filename, int _lineNum) : MiraiCPExceptionCRTP(
+                "发送信息失败, bot已被禁言, 剩余时间" + std::to_string(t), std::move(_filename), _lineNum),
+                                                                                   timeRemain(t) {}
 
         static string exceptionType() { return "BotIsBeingMutedException"; }
     };

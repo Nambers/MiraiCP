@@ -24,42 +24,6 @@
 namespace MiraiCP {
     using json = nlohmann::json;
 
-    MessageSource Contact::sendMsg0(const std::string &msg, int retryTime, bool miraicode) const {
-        if (msg.empty()) {
-            throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
-        }
-        std::string re = LowLevelAPI::send0(msg, this->toJson(), retryTime, miraicode, "reach a error area, Contact::SendMiraiCode");
-        MIRAICP_ERROR_HANDLE(re, "");
-        return MessageSource::deserializeFromString(re);
-    }
-
-    MessageSource Contact::quoteAndSend0(const std::string &msg, MessageSource ms) {
-        json obj;
-        json sign;
-        obj["messageSource"] = ms.serializeToString();
-        obj["msg"] = msg;
-        sign["MiraiCode"] = true;
-        sign["groupid"] = this->groupid();
-        obj["sign"] = sign.dump();
-        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
-        MIRAICP_ERROR_HANDLE(re, "");
-        return MessageSource::deserializeFromString(re);
-    }
-
-    Image Contact::uploadImg(const std::string &path) const {
-        std::string re = LowLevelAPI::uploadImg0(path, this->toString());
-        if (re == "E2")
-            throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
-        return Image::deserialize(re);
-    }
-
-    FlashImage Contact::uploadFlashImg(const std::string &path) const {
-        std::string re = LowLevelAPI::uploadImg0(path, this->toString());
-        if (re == "E2")
-            throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
-        return FlashImage::deserialize(re);
-    }
-
     Contact Contact::deserialize(const std::string &source) {
         json j;
         try {
@@ -81,7 +45,57 @@ namespace MiraiCP {
                        j["anonymous"]);
     }
 
-    MessageSource Contact::sendVoice0(const std::string &path) {
+    void Contact::deserializeWriter(const nlohmann::json &source) {
+        _type = static_cast<contactType>(source["type"]);
+        _id = source["id"];
+        _groupid = source["groupid"];
+        _nickOrNameCard = source["nickornamecard"];
+        _botid = source["botid"];
+        _anonymous = source["anonymous"];
+    }
+
+    Contact::operator ContactWithSendSupport() const {
+        return {type(), id(), groupid(), nickOrNameCard(), botid(), _anonymous};
+    }
+
+    MessageSource ContactWithSendSupport::sendMsg0(const std::string &msg, int retryTime, bool miraicode) const {
+        if (msg.empty()) {
+            throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
+        }
+        std::string re = LowLevelAPI::send0(msg, this->toJson(), retryTime, miraicode,
+                                            "reach a error area, Contact::SendMiraiCode");
+        MIRAICP_ERROR_HANDLE(re, "");
+        return MessageSource::deserializeFromString(re);
+    }
+
+    MessageSource ContactWithSendSupport::quoteAndSend0(const std::string &msg, MessageSource ms) {
+        json obj;
+        json sign;
+        obj["messageSource"] = ms.serializeToString();
+        obj["msg"] = msg;
+        sign["MiraiCode"] = true;
+        sign["groupid"] = this->groupid();
+        obj["sign"] = sign.dump();
+        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
+        MIRAICP_ERROR_HANDLE(re, "");
+        return MessageSource::deserializeFromString(re);
+    }
+
+    Image ContactWithSendSupport::uploadImg(const std::string &path) const {
+        std::string re = LowLevelAPI::uploadImg0(path, this->toString());
+        if (re == "E2")
+            throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
+        return Image::deserialize(re);
+    }
+
+    FlashImage ContactWithSendSupport::uploadFlashImg(const std::string &path) const {
+        std::string re = LowLevelAPI::uploadImg0(path, this->toString());
+        if (re == "E2")
+            throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
+        return FlashImage::deserialize(re);
+    }
+
+    MessageSource ContactWithSendSupport::sendVoice0(const std::string &path) {
         json j;
         json source;
         source["path"] = path;
@@ -96,12 +110,7 @@ namespace MiraiCP {
         return MessageSource::deserializeFromString(re);
     }
 
-    void Contact::deserializeWriter(const nlohmann::json &source) {
-        _type = static_cast<contactType>(source["type"]);
-        _id = source["id"];
-        _groupid = source["groupid"];
-        _nickOrNameCard = source["nickornamecard"];
-        _botid = source["botid"];
-        _anonymous = source["anonymous"];
-    }
+    ContactWithSendSupport::ContactWithSendSupport(int type, QQID id, QQID gid, const std::string &name, QQID botid,
+                                                   bool anonymous) : Contact(type, id, gid, name, botid, anonymous) {}
+
 } // namespace MiraiCP

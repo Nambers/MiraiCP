@@ -350,8 +350,8 @@ namespace MiraiCP {
 
         explicit OnlineAudio(std::string f, std::array<uint8_t, 16> md5, int size, int codec, int length,
                              std::string url) : SingleMessage(OnlineAudio::type(), ""),
-                                                filename(std::move(f)), md5(md5), size(size), codec(codec),
-                                                length(length), url(std::move(url)){};
+                                                filename(std::move(f)), url(std::move(url)), size(size), codec(codec),
+                                                length(length), md5(md5) {};
 
         bool operator==(const OnlineAudio &oa) const {
             return this->md5 == oa.md5;

@@ -23,32 +23,48 @@
 #include <atomic>
 #include <mutex>
 
-
 namespace MiraiCP {
-    class InternalBot {
-        friend class Bot;
-
-        std::string _nick;
-        std::string _avatarUrl;
+    template<class implClass>
+    class IContactInternalImpl {
+    private:
         std::atomic_bool inited = false;
+        std::mutex mtx;
+    public:
+        using poolType = std::unordered_map<MiraiCP::QQID, std::shared_ptr<implClass>>;
 
-        void request_refresh(QQID id) {
-            if (!LowLevelAPI::checkSafeCall()) return;
+        IContactInternalImpl() = default;
+
+        ~IContactInternalImpl() = default;
+
+        virtual void refreshInfo(MiraiCP::Contact *) = 0;
+
+        // for auto cast
+        void request_refresh(Contact *c) {
+            if (!MiraiCP::LowLevelAPI::checkSafeCall()) return;
             if (!inited.exchange(true)) {
-                nlohmann::json j;
-                j["source"] = Contact(4, 0, 0, "", id).toString();
-                LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, j));
-                this->_avatarUrl = tmp.avatarUrl;
-                this->_nick = tmp.nickornamecard;
+                std::lock_guard<std::mutex> lck(mtx);
+                refreshInfo(c);
             }
         }
 
-        void force_refresh(QQID id) {
+        void force_refresh() {
             inited = false;
         }
     };
 
-    static std::unordered_map<QQID, std::shared_ptr<InternalBot>> BotPool;
+    class InternalBot : public IContactInternalImpl<InternalBot> {
+    public:
+        void refreshInfo(Contact *c) override {
+            auto bot = dynamic_cast<Bot *>(c);
+            nlohmann::json j;
+            j["source"] = Contact(4, 0, 0, "", c->id()).toString();
+            LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, j));
+            bot->_avatarUrl = tmp.avatarUrl;
+            bot->_nickOrNameCard = tmp.nickornamecard;
+        }
+    };
+
+    static InternalBot::poolType BotPool;
 
     inline std::shared_ptr<InternalBot> get_bot(QQID id) {
         static std::mutex mtx;
@@ -64,10 +80,6 @@ namespace MiraiCP {
 
     Friend Bot::getFriend(QQID i) const {
         return Friend(i, this->id);
-    }
-
-    bool Bot::operator==(const Contact &c) const {
-        return this->id == c.id();
     }
 
     //    void Bot::refreshInfo() {
@@ -97,20 +109,20 @@ namespace MiraiCP {
     }
 
     void Bot::check() {
-        _InternalBot->request_refresh(id);
+        _InternalBot->request_refresh(this);
     }
 
-    Bot::Bot(QQID in_id) : _InternalBot(get_bot(in_id)), id(in_id) {
-        _InternalBot->force_refresh(in_id);
+    Bot::Bot(QQID in_id) : Contact(4, 0, 0, "", in_id), _InternalBot(get_bot(in_id)), id(in_id) {
+        _InternalBot->force_refresh();
     }
 
     std::string Bot::nick() {
         check();
-        return _InternalBot->_nick;
+        return _nickOrNameCard;
     }
 
     std::string Bot::avatarUrl() {
         check();
-        return _InternalBot->_avatarUrl;
+        return _avatarUrl;
     }
 } // namespace MiraiCP
