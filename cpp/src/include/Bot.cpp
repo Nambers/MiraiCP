@@ -15,6 +15,7 @@
 //
 
 #include "Bot.h"
+#include "ContactImpl.h"
 #include "Friend.h"
 #include "Group.h"
 #include "KtOperation.h"
@@ -24,33 +25,7 @@
 #include <mutex>
 
 namespace MiraiCP {
-    template<class implClass>
-    class IContactInternalImpl {
-    private:
-        std::atomic_bool inited = false;
-        std::mutex mtx;
-    public:
-        using poolType = std::unordered_map<MiraiCP::QQID, std::shared_ptr<implClass>>;
 
-        IContactInternalImpl() = default;
-
-        virtual ~IContactInternalImpl() = default;
-
-        virtual void refreshInfo(MiraiCP::Contact *) = 0;
-
-        // for auto cast
-        void request_refresh(Contact *c) {
-            if (!MiraiCP::LowLevelAPI::checkSafeCall()) return;
-            if (!inited.exchange(true)) {
-                std::lock_guard<std::mutex> lck(mtx);
-                refreshInfo(c);
-            }
-        }
-
-        void force_refresh() {
-            inited = false;
-        }
-    };
 
     class InternalBot : public IContactInternalImpl<InternalBot> {
     public:
@@ -66,7 +41,7 @@ namespace MiraiCP {
         ~InternalBot() override = default;
     };
 
-    static InternalBot::poolType BotPool;
+    static InternalBot::PoolType BotPool;
 
     inline std::shared_ptr<InternalBot> get_bot(QQID id) {
         static std::mutex mtx;
