@@ -157,4 +157,15 @@ static_assert(false, "Unsupported platform");
 #endif
 
 
+// getter
+// need to define LOC_CLASS_NAMESPACE to the class first!
+
+#define DECL_GETTER(attr) decltype(_InternalData->attr) attr();
+#define IMPL_GETTER(attr) decltype(LOC_CLASS_NAMESPACE::_InternalData->_##attr) \
+    attr(){ \
+        check(); \
+        std::shared_lock<std::shared_mutex> _lck(_mtx); \
+        return InternalData->_##attr;\
+    }
+
 #endif //MIRAICP_PRO_MIRAICPMACROS_H
