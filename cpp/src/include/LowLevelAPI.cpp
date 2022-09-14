@@ -25,11 +25,11 @@ namespace LibLoader::LoaderApi {
 namespace MiraiCP {
     using json = nlohmann::json;
 
-    std::string LowLevelAPI::send0(const std::string &content, json c, int retryTime, bool miraicode,
+    std::string LowLevelAPI::send0( std::string content, json c, int retryTime, bool miraicode,
                                    const std::string &errorInfo) {
         nlohmann::json j;
         nlohmann::json tmp;
-        tmp["content"] = content;
+        tmp["content"] = std::move(content);
         tmp["contact"] = std::move(c);
         j["source"] = tmp.dump();
         j["miraiCode"] = miraicode;

@@ -29,6 +29,11 @@ namespace MiraiCP {
         friend class Contact;
 
         explicit Member() = default;
+        QQID _groupid;
+        QQID _botid;
+        std::string _nickOrNameCard;
+        std::string _avatarUrl;
+        bool _anonymous;
 
     public:
         /// @brief 权限等级
