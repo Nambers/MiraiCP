@@ -24,13 +24,13 @@
 
 namespace MiraiCP {
 
-    enum contactType {
+    enum ContactType : uint8_t {
         MIRAI_CONTACT = 0,
         MIRAI_FRIEND = 1,
         MIRAI_GROUP = 2,
-        MIRAI_MEMBER = 3,
+        MIRAI_MEMBER = 4,
         // bot
-        MIRAI_OTHERTYPE = 4,
+        MIRAI_OTHERTYPE = 128,
     };
 
     class ContactWithSendSupport;
@@ -41,13 +41,14 @@ namespace MiraiCP {
     */
     class Contact {
     protected: // attrs
-        contactType _type;
         QQID _id;
-        QQID _groupid;
-        std::string _nickOrNameCard;
-        std::string _avatarUrl;
-        QQID _botid;
-        bool _anonymous = false;
+        ContactType _type;
+
+        //        QQID _groupid;
+        //        std::string _nickOrNameCard;
+        //        std::string _avatarUrl;
+        //        QQID _botid;
+        //        bool _anonymous = false;
 
     public:
         // constructors
@@ -59,10 +60,16 @@ namespace MiraiCP {
         Contact() {
             this->_type = MIRAI_CONTACT;
             this->_id = 0;
-            this->_groupid = 0;
-            this->_nickOrNameCard = "";
-            this->_botid = 0;
+            //            this->_groupid = 0;
+            //            this->_nickOrNameCard = "";
+            //            this->_botid = 0;
         }
+
+        /*!
+         * @brief 初始化Contact类型
+         * @note dev: 子类应调用该函数进行初始化
+         */
+        Contact(QQID id, ContactType tp) : _id(id), _type(tp) {}
 
         /*!
          * @brief 构造contact类型
@@ -76,18 +83,15 @@ namespace MiraiCP {
          *  @see Contact::name()
          * @param botid 对应的botid
          */
-        explicit Contact(int type, QQID id, QQID gid, const std::string &name, QQID botid, bool anonymous = false) {
-            if (type < 0 || type > 4) throw APIException("Contact::type incorrect", MIRAICP_EXCEPTION_WHERE);
-            this->_type = static_cast<contactType>(type);
-            this->_id = id;
-            this->_groupid = gid;
-            this->_nickOrNameCard = name;
-            this->_botid = botid;
-            this->_anonymous = anonymous;
-        };
-
-        //        Contact(Contact &&c) : _type(c._type), _id(c._id), _groupid(c._groupid), _botid(c._botid), _anonymous(c._anonymous), _nickOrNameCard(std::move(c._nickOrNameCard)), _avatarUrl(std::move(c._avatarUrl)) {
-        //        }
+        //        explicit Contact(int type, QQID id, QQID gid, const std::string &name, QQID botid, bool anonymous = false) {
+        //            if (type < 0 || type > 4) throw APIException("Contact::type incorrect", MIRAICP_EXCEPTION_WHERE);
+        //            this->_type = static_cast<ContactType>(type);
+        //            this->_id = id;
+        //            this->_groupid = gid;
+        //            this->_nickOrNameCard = name;
+        //            this->_botid = botid;
+        //            this->_anonymous = anonymous;
+        //        };
 
         // destructor
         virtual ~Contact() = default;
@@ -97,16 +101,16 @@ namespace MiraiCP {
         }
 
         /// @brief 当前对象类型
-        /// @see contactType
-        ///     - 1 Friend 好友
-        ///     - 2 Group 群聊
-        ///     - 3 Member 群成员
-        contactType type() const { return this->_type; }
+        /// @see ContactType
+        ///     - ContactType::Friend 好友
+        ///     - ContactType::Group 群聊
+        ///     - ContactType::Member 群成员
+        ContactType type() const { return this->_type; }
 
         /// @brief id在全部情况存在
-        ///     - 当当前type为1(Friend)时，为好友id
-        ///     - 当当前type为2(Group)时，为群id
-        ///     - 当当前type为3(Member)时，为群成员id
+        ///     - 当当前type为Friend时，为好友id
+        ///     - 当当前type为Group时，为群id
+        ///     - 当当前type为Member时，为群成员id
         QQID id() const { return this->_id; }
 
         /// @brief 当type为3的时候存在，否则为0，可以看作补充id
@@ -114,30 +118,30 @@ namespace MiraiCP {
         ///     - 当当前type为2(Group)时，为0
         ///     - 当当前type为3(Member)时，为群号
         /// @attention 当当前type为2(Group)时，为0，不为群号，id才是群号
-        QQID groupid() const { return this->_groupid; }
+        // QQID groupid() const { return this->_groupid; }
 
         /// 群名称，群成员群名片，或好友昵称
-        std::string nickOrNameCard() const { return this->_nickOrNameCard; };
+        // std::string nickOrNameCard() const { return this->_nickOrNameCard; };
 
         /// 头像url地址
-        std::string avatarUrl() const { return this->_avatarUrl; };
+        // std::string avatarUrl() const { return this->_avatarUrl; };
 
         /// 所属bot
-        QQID botid() const { return this->_botid; };
+        // QQID botid() const { return this->_botid; };
 
     public: // serialization
         /// 序列化到json对象
-        nlohmann::json toJson() const {
-            nlohmann::json j;
-            j["type"] = type();
-            j["id"] = id();
-            j["groupid"] = groupid();
-            j["nickornamecard"] = nickOrNameCard();
-            j["botid"] = botid();
-            return j;
-        }
+        virtual nlohmann::json toJson() const { return {}; } //{
+                                                             //            nlohmann::json j;
+                                                             //            j["type"] = type();
+                                                             //            j["id"] = id();
+                                                             //            j["groupid"] = groupid();
+                                                             //            j["nickornamecard"] = nickOrNameCard();
+                                                             //            j["botid"] = botid();
+                                                             //            return j;
+                                                             //        }
         /// @deprecated since v2.8.1, use `this->toJson()`
-        ShouldNotUse("use toJson") nlohmann::json serialization() const = delete;
+        ShouldNotUse("use toJson") nlohmann::json serialization() const;
 
         /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
         /// @see Contact::fromString()
@@ -147,15 +151,15 @@ namespace MiraiCP {
         /// @deprecated since v2.8.1, use `this->toString()`
         ShouldNotUse("use toString") std::string serializationToString() const = delete;
         /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
-        ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source) = delete;
+        // ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source);
 
         /// 反序列化成bot，可以通过serializationToString序列化，利于保存
         /// @see Contact::serializationToString()
         /// @param source 序列化后的文本
         /// @throw APIException
-        static Contact deserialize(const std::string &source);
-
-        static Contact deserialize(nlohmann::json source);
+        //        static Contact deserialize(const std::string &source);
+        //
+        static std::shared_ptr<Contact> deserialize(nlohmann::json source);
 
         // for derived class
         template<class T>
@@ -181,7 +185,7 @@ namespace MiraiCP {
     public:
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, true, env)`
         ShouldNotUse("Use sendMessage") MessageSource
-        sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
+                sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
 
         /*!
          * @brief 回复并发送
@@ -244,15 +248,15 @@ namespace MiraiCP {
 
         /// @deprecated since v2.8.1, use `sendMessage(msg)` or `sendMsg0(msg, retryTime, false, env)`
         ShouldNotUse("Use sendMessage") MessageSource
-        sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
+                sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, false, env);`
         ShouldNotUse("Use sendMessage") MessageSource
-        sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
+                sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(Tools::VectorToString(std::move(msg)))` or `sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);`
         ShouldNotUse("Use sendMessage") MessageSource
-        sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
+                sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /*!
         * @brief 上传本地图片，务必要用绝对路径
@@ -267,15 +271,22 @@ namespace MiraiCP {
         FlashImage uploadFlashImg(const std::string &path) const;
 
         template<class T>
-        T to() {
+        T &to() {
             static_assert(std::is_base_of_v<Contact, T>);
-            return T(*this);
+            return static_cast<T &>(*this);
         }
+
+        template<class T>
+        const T &to_const() const {
+            static_assert(std::is_base_of_v<Contact, T>);
+            return static_cast<const T &>(*this);
+        }
+
 
     private: // private methods
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsg0(const std::string &msg, int retryTime, bool miraicode = false) const;
+        MessageSource sendMsg0(std::string msg, int retryTime, bool miraicode = false) const;
 
         template<class T>
         MessageSource send1(T msg, int retryTime) {
@@ -292,14 +303,14 @@ namespace MiraiCP {
         }
 
         MessageSource send1(std::string msg, int retryTime) {
-            return sendMsg0(msg, retryTime, false);
+            return sendMsg0(std::move(msg), retryTime, false);
         }
 
         MessageSource send1(const char *msg, int retryTime) {
             return sendMsg0(std::string(msg), retryTime, false);
         }
 
-        MessageSource quoteAndSend0(const std::string &msg, MessageSource ms);
+        MessageSource quoteAndSend0(const std::string &msg, const MessageSource &ms);
 
         template<class T>
         MessageSource quoteAndSend1(T s, MessageSource ms) {

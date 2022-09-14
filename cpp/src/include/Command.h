@@ -56,7 +56,7 @@ namespace MiraiCP {
         };
 
         virtual IRawCommand::Config config() = 0;
-        virtual void onCommand(std::optional<Contact>, const Bot &, const MessageChain &) = 0;
+        virtual void onCommand(std::shared_ptr<Contact>, const Bot &, const MessageChain &) = 0;
         IRawCommand() = default;
         virtual ~IRawCommand() = default;
     };

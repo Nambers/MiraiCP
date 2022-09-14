@@ -27,7 +27,7 @@ namespace MiraiCP {
         /// @param c 目标Contact->serialization()
         /// @param miraicode 是否为miraicode格式
         /// @return
-        static std::string send0(const std::string &content, nlohmann::json c, int retryTime, bool miraicode,
+        static std::string send0(std::string content, nlohmann::json c, int retryTime, bool miraicode,
                                  const std::string &errorInfo = "");
 
         /// @brief 取该联系人的一些信息

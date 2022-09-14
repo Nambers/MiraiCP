@@ -27,6 +27,10 @@ namespace MiraiCP {
 
         explicit Friend() = default;
 
+        QQID _botid;
+        std::string _nickOrNameCard;
+        std::string _avatarUrl;
+
     public:
         /// 删除好友(delete是C++关键字)
         void deleteFriend();

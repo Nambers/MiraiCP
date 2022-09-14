@@ -24,57 +24,68 @@
 namespace MiraiCP {
     using json = nlohmann::json;
 
-    Contact Contact::deserialize(const std::string &source) {
-        json j;
-        try {
-            j = json::parse(source);
-        } catch (json::parse_error &e) {
-            Logger::logger.error("json序列化错误 Contact::deserializationFromString");
-            Logger::logger.error(source);
-            Logger::logger.error(e.what());
-        }
-        return Contact::deserialize(j);
-    }
+//    Contact Contact::deserialize(const std::string &source) {
+//        json j;
+//        try {
+//            j = json::parse(source);
+//        } catch (json::parse_error &e) {
+//            Logger::logger.error("json序列化错误 Contact::deserializationFromString");
+//            Logger::logger.error(source);
+//            Logger::logger.error(e.what());
+//        }
+//        return Contact::deserialize(j);
+//    }
 
-    Contact Contact::deserialize(nlohmann::json j) {
-        return Contact(j["type"],
-                       j["id"],
-                       j["groupid"],
-                       j["nickornamecard"],
-                       j["botid"],
-                       j["anonymous"]);
+    std::shared_ptr<Contact> Contact::deserialize(nlohmann::json j) {
+        uint8_t thistype = j["type"];
+        switch (thistype) {
+            case MIRAI_FRIEND:
+                // TODO(Antares): 返回实际子类对象的指针
+                //  没有的field就不要构造，比如anonymous，Friend没有就不要往里面填
+                // case xxx:
+        }
+        assert(0);
+        return {};
+        //        return Contact(j["type"],
+        //                       j["id"],
+        //                       j["groupid"],
+        //                       j["nickornamecard"],
+        //                       j["botid"],
+        //                       j["anonymous"]);
     }
 
     void Contact::deserializeWriter(const nlohmann::json &source) {
-        _type = static_cast<contactType>(source["type"]);
+        _type = static_cast<ContactType>(source["type"]);
         _id = source["id"];
-        _groupid = source["groupid"];
-        _nickOrNameCard = source["nickornamecard"];
-        _botid = source["botid"];
-        _anonymous = source["anonymous"];
+        //        _groupid = source["groupid"];
+        //        _nickOrNameCard = source["nickornamecard"];
+        //        _botid = source["botid"];
+        //        _anonymous = source["anonymous"];
     }
 
-    Contact::operator ContactWithSendSupport() const {
-        return {type(), id(), groupid(), nickOrNameCard(), botid(), _anonymous};
-    }
+    //    Contact::operator ContactWithSendSupport() const {
+    //        return {type(), id(),
+    //                //groupid(), nickOrNameCard(), botid(), _anonymous
+    //        };
+    //    }
 
-    MessageSource ContactWithSendSupport::sendMsg0(const std::string &msg, int retryTime, bool miraicode) const {
+    MessageSource ContactWithSendSupport::sendMsg0(std::string msg, int retryTime, bool miraicode) const {
         if (msg.empty()) {
             throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
         }
-        std::string re = LowLevelAPI::send0(msg, this->toJson(), retryTime, miraicode,
+        std::string re = LowLevelAPI::send0(std::move(msg), this->toJson(), retryTime, miraicode,
                                             "reach a error area, Contact::SendMiraiCode");
         MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
     }
 
-    MessageSource ContactWithSendSupport::quoteAndSend0(const std::string &msg, MessageSource ms) {
+    MessageSource ContactWithSendSupport::quoteAndSend0(const std::string &msg, const MessageSource &ms) {
         json obj;
         json sign;
         obj["messageSource"] = ms.serializeToString();
         obj["msg"] = msg;
         sign["MiraiCode"] = true;
-        sign["groupid"] = this->groupid();
+        // sign["groupid"] = this->groupid();
         obj["sign"] = sign.dump();
         std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
         MIRAICP_ERROR_HANDLE(re, "");
