@@ -68,8 +68,6 @@ namespace MiraiCP {
     public:
         eventTypes::Types getEventType() const override { return T::get_event_type(); }
 
-        // TODO: 考虑设置一个Bot全局变量，此处存储一个Bot指针，减少无用构造.
-
         /// 该事件接受的机器人
         Bot bot;
 
