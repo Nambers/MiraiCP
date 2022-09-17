@@ -113,7 +113,7 @@ namespace MiraiCP {
                                                             j["source"].get<std::string>()))));
                 break;
             }
-            case eventTypes::GroupInviteEvent:
+            case eventTypes::GroupInviteEvent: {
                 //群聊邀请
                 Event::broadcast<GroupInviteEvent>(
                         GroupInviteEvent(
@@ -124,7 +124,8 @@ namespace MiraiCP {
                                 j["source"]["groupname"],
                                 j["source"]["groupid"]));
                 break;
-            case eventTypes::NewFriendRequestEvent:
+            }
+            case eventTypes::NewFriendRequestEvent: {
                 //好友
                 Event::broadcast<NewFriendRequestEvent>(
                         NewFriendRequestEvent(
@@ -135,8 +136,8 @@ namespace MiraiCP {
                                 j["source"]["fromnick"],
                                 j["source"]["message"]));
                 break;
-            case eventTypes::MemberJoinEvent:
-                //新成员加入
+            }
+            case eventTypes::MemberJoinEvent: { //新成员加入
                 Event::broadcast<MemberJoinEvent>(
                         MemberJoinEvent(
                                 j["group"]["botid"],
@@ -145,7 +146,8 @@ namespace MiraiCP {
                                 Contact::deserialize<Group>(j["group"]),
                                 j["inviterid"]));
                 break;
-            case eventTypes::MemberLeaveEvent:
+            }
+            case eventTypes::MemberLeaveEvent: {
                 //群成员退出
                 Event::broadcast<MemberLeaveEvent>(MemberLeaveEvent(
                         j["group"]["botid"],
@@ -154,7 +156,8 @@ namespace MiraiCP {
                         Contact::deserialize<Group>(j["group"]),
                         j["operatorid"]));
                 break;
-            case eventTypes::RecallEvent:
+            }
+            case eventTypes::RecallEvent: {
                 Event::broadcast<RecallEvent>(RecallEvent(
                         j["botid"],
                         j["etype"],
@@ -165,14 +168,16 @@ namespace MiraiCP {
                         j["internalids"],
                         j["groupid"]));
                 break;
-            case eventTypes::BotJoinGroupEvent:
+            }
+            case eventTypes::BotJoinGroupEvent: {
                 Event::broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
                         j["group"]["botid"],
                         j["etype"],
                         Contact::deserialize<Group>(j["group"]),
                         j["inviterid"]));
                 break;
-            case eventTypes::GroupTempMessageEvent:
+            }
+            case eventTypes::GroupTempMessageEvent: {
                 Event::broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
                         j["group"]["botid"],
                         Contact::deserialize<Group>(j["group"]),
@@ -180,21 +185,26 @@ namespace MiraiCP {
                         MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>()))
                                 .plus(MessageSource::deserializeFromString(j["source"]))));
                 break;
-            case eventTypes::TimeOutEvent:
+            }
+            case eventTypes::TimeOutEvent: {
                 Event::broadcast(TimeOutEvent(j["msg"]));
                 break;
-            case eventTypes::BotOnlineEvent:
+            }
+            case eventTypes::BotOnlineEvent: {
                 Event::broadcast(BotOnlineEvent(j["botid"]));
                 break;
-            case eventTypes::NudgeEvent:
+            }
+            case eventTypes::NudgeEvent: {
                 Event::broadcast(NudgeEvent(Contact::deserialize(j["from"]),
                                             Contact::deserialize(j["target"]),
                                             Contact::deserialize(j["subject"]),
                                             j["botid"]));
                 break;
-            case eventTypes::BotLeaveEvent:
+            }
+            case eventTypes::BotLeaveEvent: {
                 Event::broadcast(BotLeaveEvent(j["groupid"], j["botid"]));
                 break;
+            }
             case eventTypes::MemberJoinRequestEvent: {
                 std::optional<Group> a = std::nullopt;
                 std::optional<Member> b = std::nullopt;
@@ -216,8 +226,9 @@ namespace MiraiCP {
                 CommandManager::commandManager[j["bindId"]]->onCommand(std::move(c), Bot(j["botid"]), MessageChain::deserializationFromMessageSourceJson((j.contains("message") ? j["message"].get<std::string>() : ""), false));
                 break;
             }
-            default:
+            default: {
                 throw APIException("Unreachable code", MIRAICP_EXCEPTION_WHERE);
+            }
         }
     }
 } // namespace MiraiCP
