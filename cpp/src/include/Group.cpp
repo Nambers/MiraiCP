@@ -15,8 +15,8 @@
 //
 
 #include "Group.h"
-#include "KtOperation.h"
 #include "Exception.h"
+#include "KtOperation.h"
 #include "LowLevelAPI.h"
 #include "Member.h"
 #include "Tools.h"
@@ -103,10 +103,7 @@ namespace MiraiCP {
         return Tools::StringToVector(std::move(re));
     }
 
-    Group::Group(QQID groupid, QQID botid) : ContactWithSendSupport() {
-        this->_type = MIRAI_GROUP;
-        this->_id = groupid;
-        this->_botid = botid;
+    Group::Group(QQID groupid, QQID botid) : ContactWithSendSupport(groupid, botid, MIRAI_GROUP) {
         refreshInfo();
     }
 
@@ -120,8 +117,8 @@ namespace MiraiCP {
     void Group::refreshInfo() {
         std::string re = LowLevelAPI::getInfoSource(this->toString());
         LowLevelAPI::info tmp = LowLevelAPI::info0(re);
-        this->_nickOrNameCard = std::move(tmp.nickornamecard);
-        this->_avatarUrl = std::move(tmp.avatarUrl);
+        // this->_nickOrNameCard = std::move(tmp.nickornamecard);
+        // this->_avatarUrl = std::move(tmp.avatarUrl);
         nlohmann::json j = nlohmann::json::parse(re)["setting"];
         this->setting.name = j["name"];
         this->setting.isMuteAll = j["isMuteAll"];

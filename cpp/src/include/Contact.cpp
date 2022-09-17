@@ -24,22 +24,23 @@
 namespace MiraiCP {
     using json = nlohmann::json;
 
-//    Contact Contact::deserialize(const std::string &source) {
-//        json j;
-//        try {
-//            j = json::parse(source);
-//        } catch (json::parse_error &e) {
-//            Logger::logger.error("json序列化错误 Contact::deserializationFromString");
-//            Logger::logger.error(source);
-//            Logger::logger.error(e.what());
-//        }
-//        return Contact::deserialize(j);
-//    }
+    //    Contact Contact::deserialize(const std::string &source) {
+    //        json j;
+    //        try {
+    //            j = json::parse(source);
+    //        } catch (json::parse_error &e) {
+    //            Logger::logger.error("json序列化错误 Contact::deserializationFromString");
+    //            Logger::logger.error(source);
+    //            Logger::logger.error(e.what());
+    //        }
+    //        return Contact::deserialize(j);
+    //    }
 
     std::shared_ptr<Contact> Contact::deserialize(nlohmann::json j) {
         uint8_t thistype = j["type"];
         switch (thistype) {
-            case MIRAI_FRIEND:
+            case MIRAI_FRIEND: {
+            }
                 // TODO(Antares): 返回实际子类对象的指针
                 //  没有的field就不要构造，比如anonymous，Friend没有就不要往里面填
                 // case xxx:
@@ -121,7 +122,7 @@ namespace MiraiCP {
         return MessageSource::deserializeFromString(re);
     }
 
-    ContactWithSendSupport::ContactWithSendSupport(int type, QQID id, QQID gid, const std::string &name, QQID botid,
-                                                   bool anonymous) : Contact(type, id, gid, name, botid, anonymous) {}
+    ContactWithSendSupport::ContactWithSendSupport(QQID id, QQID botid, ContactType type) : Contact(id, botid, type) {}
+    //Contact(type, id, gid, name, botid, anonymous) {}
 
 } // namespace MiraiCP

@@ -32,7 +32,7 @@ namespace MiraiCP {
         void refreshInfo(Contact *c) override {
             auto bot = dynamic_cast<Bot *>(c);
             nlohmann::json j;
-            j["source"] = Contact(4, 0, 0, "", c->id()).toString();
+            j["source"] = Contact(0, c->id(), MIRAI_OTHERTYPE).toString();
             LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, j));
             bot->_avatarUrl = tmp.avatarUrl;
             bot->_nickOrNameCard = tmp.nickornamecard;
@@ -89,7 +89,7 @@ namespace MiraiCP {
         _InternalBot->request_refresh(this);
     }
 
-    Bot::Bot(QQID in_id) : Contact(4, 0, 0, "", in_id), _InternalBot(get_bot(in_id)), id(in_id) {
+    Bot::Bot(QQID in_id) : Contact(0, in_id, MIRAI_OTHERTYPE), _InternalBot(get_bot(in_id)), id(in_id) {
         _InternalBot->force_refresh();
     }
 
