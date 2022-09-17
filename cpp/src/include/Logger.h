@@ -58,7 +58,7 @@ namespace MiraiCP {
             Action action;
         };
 
-        Handler loggerhandler;
+        std::shared_ptr<Handler> loggerhandler;
 
     private:
         static std::string constructString() {
@@ -84,11 +84,20 @@ namespace MiraiCP {
             return val.toMiraiCode() + constructString(std::forward<T>(val1)...);
         }
 
+        void create_loggerhandler() {
+            loggerhandler.reset(new Handler);
+        }
+
     protected:
         /// @brief 日志底层实现封装
         /// @param log 日志内容
         /// @param level 日志等级
         virtual void log_interface(const string &log, int level) = 0;
+
+        void handler_trigger(string log, int level) {
+            if (!loggerhandler) create_loggerhandler();
+            if (loggerhandler->enable && loggerhandler->action) loggerhandler->action(std::move(log), level);
+        }
 
     public:
         ///发送普通(info级日志)
@@ -113,14 +122,16 @@ namespace MiraiCP {
         /// @param action 执行的操作
         /// @see Logger::handler
         void registerHandle(Action action) {
-            this->loggerhandler.action = std::move(action);
+            if (!this->loggerhandler) create_loggerhandler();
+            this->loggerhandler->action = std::move(action);
         }
 
         /// @brief 设置handler的启用状态
         /// @param state 状态，启用或者关闭
         /// @doxygenEg{1012, logger.cpp, 启用或关闭日志}
         void setHandleState(bool state) {
-            this->loggerhandler.enable = state;
+            if (!this->loggerhandler) create_loggerhandler();
+            this->loggerhandler->enable = state;
         }
     };
 
@@ -143,13 +154,13 @@ namespace MiraiCP {
     public:
         QQID id;
 
-    protected:
-        void log_interface(const std::string &content, int level) override;
-
     public:
         IdLogger(QQID id, Logger *l) : id(id) {
             this->loggerhandler = l->loggerhandler;
         }
+
+    protected:
+        void log_interface(const std::string &content, int level) override;
     };
 } // namespace MiraiCP
 
