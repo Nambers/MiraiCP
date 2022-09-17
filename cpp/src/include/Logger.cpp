@@ -24,12 +24,12 @@ namespace MiraiCP {
     Logger Logger::logger;
 
     void Logger::log_interface(const std::string &content, int level) {
-        if (loggerhandler.enable && loggerhandler.action) loggerhandler.action(content, level);
+        handler_trigger(content, level);
         LibLoader::LoaderApi::loggerInterface(content, ("plugin/" + MiraiCP::CPPPlugin::config.getName()), -1, level);
     }
 
     void IdLogger::log_interface(const std::string &content, int level) {
-        if (loggerhandler.enable && loggerhandler.action) loggerhandler.action(content, level);
+        handler_trigger(content, level);
         LibLoader::LoaderApi::loggerInterface(content, "", static_cast<long long>(id), level);
     }
 } // namespace MiraiCP
