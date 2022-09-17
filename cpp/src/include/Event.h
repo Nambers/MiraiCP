@@ -17,6 +17,8 @@
 #ifndef MIRAICP_PRO_EVENT_H
 #define MIRAICP_PRO_EVENT_H
 
+#include <utility>
+
 #include "Bot.h"
 #include "Friend.h"
 #include "Group.h"
@@ -110,9 +112,9 @@ namespace MiraiCP {
         /// 信息
         MessageChain message;
 
-        GroupMessageEvent(QQID botid, const Group &group, const Member &sender,
-                          MessageChain mc) : BotEvent(botid), group(group),
-                                             sender(sender), message(std::move(mc)){};
+        GroupMessageEvent(QQID botid, Group group, Member sender,
+                          MessageChain mc) : BotEvent(botid), group(std::move(group)),
+                                             sender(std::move(sender)), message(std::move(mc)){};
 
         /*!
          * @brief 取群聊下一个消息(群聊与本事件一样)
@@ -219,12 +221,13 @@ namespace MiraiCP {
         std::string source;
         /// 发起人昵称
         std::string inviterNick;
-        /// 发起人id
-        QQID inviterid = 0;
         /// 被邀请进的组
         std::string groupName;
         /// 群号
         QQID groupid = 0;
+        /// 发起人id
+        QQID inviterid = 0;
+
 
         static void operation0(const std::string &source, QQID botid, bool accept);
 
@@ -245,10 +248,10 @@ namespace MiraiCP {
          * @param groupName 群聊名称
          * @param groupid 群号
          */
-        GroupInviteEvent(QQID botid, const std::string &source, const std::string &inviterNick,
-                         QQID inviterid, const std::string &groupName, QQID groupid)
-            : BotEvent(botid), source(source), inviterNick(inviterNick), inviterid(inviterid), groupName(groupName),
-              groupid(groupid) {}
+        GroupInviteEvent(QQID botid, std::string source, std::string inviterNick,
+                         QQID inviterid, std::string groupName, QQID groupid)
+            : BotEvent(botid), source(std::move(source)), inviterNick(std::move(inviterNick)), groupName(std::move(groupName)),
+              groupid(groupid), inviterid(inviterid) {}
     };
 
     /// 好友申请事件声明
@@ -293,12 +296,18 @@ namespace MiraiCP {
          * @param nick 对方昵称
          * @param message 申请理由
          */
-        NewFriendRequestEvent(QQID botid, const std::string &source,
+        NewFriendRequestEvent(QQID botid,
+                              std::string source,
                               QQID fromid,
-                              QQID fromgroupid, const std::string &nick,
-                              const std::string &message)
-            : BotEvent(botid), source(source), fromid(fromid), fromgroupid(fromgroupid), nick(nick),
-              message(message) {}
+                              QQID fromgroupid,
+                              std::string nick,
+                              std::string message)
+            : BotEvent(botid),
+              source(std::move(source)),
+              fromid(fromid),
+              fromgroupid(fromgroupid),
+              nick(std::move(nick)),
+              message(std::move(message)) {}
     };
 
     /// 新群成员加入
@@ -352,19 +361,18 @@ namespace MiraiCP {
         }
 
     public:
-        /*!
-        * @brief 事件类型
-        *           1 - 被踢出
-        *           2 - 主动退出
-        */
-        int type = 0;
         /// 退出的成员q号
         QQID memberid;
         /// 目标群
         Group group;
         /// 操作人, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
         QQID operaterid;
-
+        /*!
+        * @brief 事件类型
+        *           1 - 被踢出
+        *           2 - 主动退出
+        */
+        int type = 0;
         /*!
          * @brief 群成员离开
          * @param botid
@@ -373,11 +381,11 @@ namespace MiraiCP {
          * @param group 群
          * @param operaterid 操作人id, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
          */
-        MemberLeaveEvent(QQID botid, int type, QQID memberid,
+        MemberLeaveEvent(QQID botid,  QQID memberid,
                          Group group,
-                         QQID operaterid) : BotEvent(botid), type(type), memberid(memberid),
+                         QQID operaterid,int type) : BotEvent(botid), memberid(memberid),
                                             group(std::move(group)),
-                                            operaterid(operaterid) {}
+                                            operaterid(operaterid), type(type) {}
     };
 
     /// 撤回信息
@@ -430,12 +438,12 @@ namespace MiraiCP {
         }
 
     public:
-        /// 1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
-        int type;
         /// 进入的群
         Group group;
         /// 当type=2时存在，为邀请人，否则为空，调用可能会报错
         QQID inviterid;
+        /// 1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
+        int type;
 
         /*!
          * @brief bot加入群
@@ -444,9 +452,14 @@ namespace MiraiCP {
          * @param group 加入的群
          * @param inviter 邀请人
          */
-        BotJoinGroupEvent(QQID botid, int type, Group group,
-                          QQID inviter)
-            : BotEvent(botid), type(type), group(std::move(group)), inviterid(inviter) {}
+        BotJoinGroupEvent(QQID botid,
+                          Group group,
+                          QQID inviter,
+                          int type)
+            : BotEvent(botid),
+              group(std::move(group)),
+              inviterid(inviter),
+              type(type) {}
     };
 
     /// 群临时会话
@@ -566,7 +579,9 @@ namespace MiraiCP {
         /// @attension 收到这个事件时已经退出该群, 可能取不到相关信息
         QQID groupid;
 
-        BotLeaveEvent(QQID g, QQID botid) : BotEvent(botid), groupid(g) {}
+        BotLeaveEvent(QQID ingroupid, QQID botid)
+            : BotEvent(botid),
+              groupid(ingroupid) {}
     };
 
     /// 申请加群事件, bot需为管理员或者群主

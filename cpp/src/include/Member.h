@@ -25,12 +25,10 @@ namespace MiraiCP {
      * @doxygenEg{1013, member.cpp, 群成员操作}
      */
     class Member : public ContactWithSendSupport, INudgeSupport {
-    private:
         friend class Contact;
 
-        explicit Member() = default;
+    private:
         QQID _groupid;
-        QQID _botid;
         std::string _nickOrNameCard;
         std::string _avatarUrl;
         bool _anonymous;
@@ -42,7 +40,14 @@ namespace MiraiCP {
         ///     - MEMBER群成员 为 0
         /// @note 上面那些变量在constants.h中有定义
         unsigned int permission = 0;
+        /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
+        bool isAnonymous;
 
+    private:
+        explicit Member() = default;
+
+
+    public:
         /// @brief 更改群成员权限
         /// @param admin 如果为true为更改到管理员
         /// @param env
@@ -54,15 +59,12 @@ namespace MiraiCP {
         /// @param botid 机器人id
         explicit Member(QQID qqid, QQID groupid, QQID botid);
 
-//        explicit Member(const Contact &c) : Contact(c) {
-//            if (c.type() != 3)
-//                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 3(member)", MIRAICP_EXCEPTION_WHERE);
-//            this->isAnonymous = this->_anonymous;
-//            refreshInfo();
-//        };
-
-        /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
-        bool isAnonymous;
+        //        explicit Member(const Contact &c) : Contact(c) {
+        //            if (c.type() != 3)
+        //                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 3(member)", MIRAICP_EXCEPTION_WHERE);
+        //            this->isAnonymous = this->_anonymous;
+        //            refreshInfo();
+        //        };
 
         /// 重新获取(刷新)群成员信息
         void refreshInfo();

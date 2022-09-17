@@ -30,11 +30,6 @@ namespace MiraiCP {
     private:
         friend class Contact;
 
-        /*!
-         * @brief 群聊类的内部构造函数，不可使用
-         */
-        explicit Group() = default;
-
     public: // nested classes and structs
         /// 群公告参数
         class AnnouncementParams {
@@ -140,24 +135,27 @@ namespace MiraiCP {
             std::string id;
         };
 
-
     public: // attrs
         /// 群设置
         GroupSetting setting;
 
-
     public: // constructors
+        /*!
+         * @brief 群聊类的内部构造函数，不可使用
+         */
+        explicit Group() = default;
+
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
         /// @param botid 机器人id
         /// @doxygenEg{1007, group.cpp, 从群号构建群对象}
         Group(QQID groupid, QQID botid);
 
-//        explicit Group(const Contact &c) : Contact(c) {
-//            if (c.type() != 2)
-//                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 2(group)", MIRAICP_EXCEPTION_WHERE);
-//            refreshInfo();
-//        }
+        //        explicit Group(const Contact &c) : Contact(c) {
+        //            if (c.type() != 2)
+        //                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 2(group)", MIRAICP_EXCEPTION_WHERE);
+        //            refreshInfo();
+        //        }
 
 
     public: // methods

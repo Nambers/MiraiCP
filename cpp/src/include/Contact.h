@@ -24,13 +24,13 @@
 
 namespace MiraiCP {
 
-    enum ContactType : uint8_t {
+    enum ContactType {
         MIRAI_CONTACT = 0,
         MIRAI_FRIEND = 1,
         MIRAI_GROUP = 2,
-        MIRAI_MEMBER = 4,
+        MIRAI_MEMBER = 3,
         // bot
-        MIRAI_OTHERTYPE = 128,
+        MIRAI_OTHERTYPE = 4,
     };
 
     class ContactWithSendSupport;
@@ -42,6 +42,7 @@ namespace MiraiCP {
     class Contact {
     protected: // attrs
         QQID _id;
+        QQID _botid;
         ContactType _type;
 
         //        QQID _groupid;
@@ -50,9 +51,7 @@ namespace MiraiCP {
         //        QQID _botid;
         //        bool _anonymous = false;
 
-    public:
-        // constructors
-
+    private:
         /*!
          * @brief 无参初始化Contact类型
          * @internal 一般在MiraiCP内部构造
@@ -60,16 +59,17 @@ namespace MiraiCP {
         Contact() {
             this->_type = MIRAI_CONTACT;
             this->_id = 0;
+            this->_botid = 0;
             //            this->_groupid = 0;
             //            this->_nickOrNameCard = "";
-            //            this->_botid = 0;
         }
 
+    public:
         /*!
          * @brief 初始化Contact类型
          * @note dev: 子类应调用该函数进行初始化
          */
-        Contact(QQID id, ContactType tp) : _id(id), _type(tp) {}
+        Contact(QQID id, QQID inbotid, ContactType tp) : _id(id), _botid(inbotid), _type(tp) {}
 
         /*!
          * @brief 构造contact类型
@@ -113,6 +113,9 @@ namespace MiraiCP {
         ///     - 当当前type为Member时，为群成员id
         QQID id() const { return this->_id; }
 
+        /// 所属bot
+        QQID botid() const { return this->_botid; };
+
         /// @brief 当type为3的时候存在，否则为0，可以看作补充id
         ///     - 当当前type为1(Friend)时，为0
         ///     - 当当前type为2(Group)时，为0
@@ -126,8 +129,7 @@ namespace MiraiCP {
         /// 头像url地址
         // std::string avatarUrl() const { return this->_avatarUrl; };
 
-        /// 所属bot
-        // QQID botid() const { return this->_botid; };
+
 
     public: // serialization
         /// 序列化到json对象
@@ -178,6 +180,15 @@ namespace MiraiCP {
     };
 
     class ContactWithSendSupport : public Contact {
+    public:
+        ContactWithSendSupport() = default;
+
+        ContactWithSendSupport(QQID id,
+                               QQID botid,
+                               ContactType type);
+
+        ~ContactWithSendSupport() override = default;
+
     protected:
         /// 发送语音
         MessageSource sendVoice0(const std::string &path);
@@ -282,7 +293,6 @@ namespace MiraiCP {
             return static_cast<const T &>(*this);
         }
 
-
     private: // private methods
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
@@ -325,13 +335,6 @@ namespace MiraiCP {
         MessageSource quoteAndSend1(MessageChain mc, MessageSource ms) {
             return this->quoteAndSend0(mc.toMiraiCode(), ms);
         }
-
-    public:
-        ContactWithSendSupport() = default;
-
-        ~ContactWithSendSupport() override = default;
-
-        ContactWithSendSupport(int type, QQID id, QQID gid, const std::string &name, QQID botid, bool anonymous);
     };
 
     class INudgeSupport {

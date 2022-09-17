@@ -25,13 +25,19 @@ namespace MiraiCP {
     private:
         friend class Contact;
 
-        explicit Friend() = default;
-
-        QQID _botid;
         std::string _nickOrNameCard;
         std::string _avatarUrl;
 
+        explicit Friend() = default;
+
     public:
+        /*!
+         * @brief 构建好友对象
+         * @param friendid q号
+         * @param botid 对应机器人id
+         */
+        explicit Friend(QQID friendid, QQID botid);
+
         /// 删除好友(delete是C++关键字)
         void deleteFriend();
 
@@ -44,18 +50,11 @@ namespace MiraiCP {
          */
         void sendNudge() override;
 
-        /*!
-         * @brief 构建好友对象
-         * @param friendid q号
-         * @param botid 对应机器人id
-         */
-        explicit Friend(QQID friendid, QQID botid);
-
-//        explicit Friend(const Contact &c) : Contact(c) {
-//            if (c.type() != 1)
-//                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 1(friend)", MIRAICP_EXCEPTION_WHERE);
-//            refreshInfo();
-//        };
+        //        explicit Friend(const Contact &c) : Contact(c) {
+        //            if (c.type() != 1)
+        //                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 1(friend)", MIRAICP_EXCEPTION_WHERE);
+        //            refreshInfo();
+        //        };
     };
 } // namespace MiraiCP
 

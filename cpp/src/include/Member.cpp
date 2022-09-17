@@ -15,19 +15,15 @@
 //
 
 #include "Member.h"
-#include "KtOperation.h"
 #include "Exception.h"
+#include "KtOperation.h"
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
     /*成员类实现*/
     Member::Member(QQID id, QQID groupid, QQID botid)
-            : ContactWithSendSupport() {
-        this->_type = MIRAI_MEMBER;
-        this->_id = id;
-        this->_groupid = groupid;
-        this->_botid = botid;
+        : ContactWithSendSupport(id, botid, MIRAI_MEMBER), _groupid(groupid) {
         refreshInfo();
     }
 

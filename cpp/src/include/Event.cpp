@@ -151,10 +151,10 @@ namespace MiraiCP {
                 //群成员退出
                 Event::broadcast<MemberLeaveEvent>(MemberLeaveEvent(
                         j["group"]["botid"],
-                        j["leavetype"],
                         j["memberid"],
                         Contact::deserialize<Group>(j["group"]),
-                        j["operatorid"]));
+                        j["operatorid"],
+                        j["leavetype"]));
                 break;
             }
             case eventTypes::RecallEvent: {
@@ -172,11 +172,12 @@ namespace MiraiCP {
             case eventTypes::BotJoinGroupEvent: {
                 Event::broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
                         j["group"]["botid"],
-                        j["etype"],
                         Contact::deserialize<Group>(j["group"]),
-                        j["inviterid"]));
+                        j["inviterid"],
+                        j["etype"]));
                 break;
             }
+                ////////////////
             case eventTypes::GroupTempMessageEvent: {
                 Event::broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
                         j["group"]["botid"],
@@ -187,11 +188,11 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::TimeOutEvent: {
-                Event::broadcast(TimeOutEvent(j["msg"]));
+                Event::broadcast(TimeOutEvent(j["msg"].get<std::string>()));
                 break;
             }
             case eventTypes::BotOnlineEvent: {
-                Event::broadcast(BotOnlineEvent(j["botid"]));
+                Event::broadcast(BotOnlineEvent(j["botid"].get<QQID>()));
                 break;
             }
             case eventTypes::NudgeEvent: {
@@ -212,7 +213,7 @@ namespace MiraiCP {
                     a.emplace(Contact::deserialize<Group>(j["group"]));
                 if (j["inviter"]["id"] != 0)
                     b.emplace(Contact::deserialize<Member>(j["inviter"]));
-                Event::broadcast(MemberJoinRequestEvent(a, b, a->botid(), j["requester"], j["requestData"]));
+                Event::broadcast(MemberJoinRequestEvent(a, b, a.botid(), j["requester"], j["requestData"]));
                 break;
             }
             case eventTypes::MessagePreSendEvent: {
