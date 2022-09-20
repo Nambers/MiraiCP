@@ -81,6 +81,15 @@ namespace MiraiCP {
 
         /// from https://www.zhihu.com/question/36642771, delim is regex(ignore last `+`)
         MIRAICP_EXPORT std::vector<std::string> split(const std::string &text, const std::string &delim);
+
+        template<typename T>
+        T json_mover(nlohmann::json &j, const std::string &key) {
+            return std::move(j[key].get_ref<T &>());
+        }
+
+        inline std::string json_stringmover(nlohmann::json &j, const std::string &key) {
+            return json_mover<std::string>(j, key);
+        }
     }; // namespace Tools
 } // namespace MiraiCP
 
