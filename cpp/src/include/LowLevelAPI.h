@@ -33,7 +33,7 @@ namespace MiraiCP {
         /// @brief 取该联系人的一些信息
         /// @param c 该联系人Contact->serializationToString()
         /// @return json格式字符串，待解析
-        static std::string getInfoSource(const std::string &);
+        static std::string getInfoSource( std::string );
 
         /*!
          * @brief 上传图片

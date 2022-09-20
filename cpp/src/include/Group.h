@@ -24,17 +24,40 @@
 
 namespace MiraiCP {
     class Member; // forward declaration
+
+
+    struct GroupData : public GroupRelatedData {
+        struct GroupSetting {
+            /// 群名称
+            std::string name;
+            /// 禁言全部
+            bool isMuteAll{};
+            /// 允许群成员邀请
+            bool isAllowMemberInvite{};
+            /// 自动同意进群
+            bool isAutoApproveEnabled{};
+            /// 允许匿名聊天
+            bool isAnonymousChatEnabled{};
+        };
+        /// 群设置
+        GroupSetting _setting;
+
+        explicit GroupData(QQID in_groupid) : GroupRelatedData(in_groupid) {}
+
+        void deserialize(nlohmann::json in_json) override;
+        void refreshInfo() override;
+    };
+
     /*!
      * @brief 群聊类
      */
-    class Group : public ContactWithSendSupport {
+    class Group : public Contact, public ContactDataHelper<Group, GroupData> {
     private:
         friend class Contact;
 
     public: // nested classes and structs
         /// 群公告参数
-        class AnnouncementParams {
-        public:
+        struct AnnouncementParams {
             /// 发送给新成员
             bool send2new;
             /// 需要确认
@@ -49,18 +72,17 @@ namespace MiraiCP {
             /// 序列化到文本
             nlohmann::json serializeToJson();
 
-//            explicit AnnouncementParams(bool send2New = false, bool requireConfirm = false, bool pinned = false,
-//                                        bool showEditCard = false, bool showPopup = false) : send2new(send2New),
-//                                                                                             requireConfirm(
-//                                                                                                     requireConfirm),
-//                                                                                             pinned(pinned),
-//                                                                                             showEditCard(showEditCard),
-//                                                                                             showPopup(showPopup) {}
+            //            explicit AnnouncementParams(bool send2New = false, bool requireConfirm = false, bool pinned = false,
+            //                                        bool showEditCard = false, bool showPopup = false) : send2new(send2New),
+            //                                                                                             requireConfirm(
+            //                                                                                                     requireConfirm),
+            //                                                                                             pinned(pinned),
+            //                                                                                             showEditCard(showEditCard),
+            //                                                                                             showPopup(showPopup) {}
         };
 
         /// 在线群公告
-        class OnlineAnnouncement {
-        public:
+        struct OnlineAnnouncement {
             /// 内容
             std::string content;
             /// 所属bot
@@ -86,18 +108,17 @@ namespace MiraiCP {
             /// 反序列化
             static OnlineAnnouncement deserializeFromJson(const nlohmann::json &);
 
-//            OnlineAnnouncement(std::string content, AnnouncementParams params,
-//                               QQID groupid, QQID senderid, QQID botid,
-//                               long long int publicationTime, std::string fid, int confirmNum,
-//                               std::string imageid) : content(std::move(content)), botid(botid), params(std::move(params)),
-//                                                             groupid(groupid), senderid(senderid),
-//                                                             publicationTime(publicationTime),
-//                                                             fid(std::move(fid)), confirmNum(confirmNum), imageid(std::move(imageid)) {}
+            //            OnlineAnnouncement(std::string content, AnnouncementParams params,
+            //                               QQID groupid, QQID senderid, QQID botid,
+            //                               long long int publicationTime, std::string fid, int confirmNum,
+            //                               std::string imageid) : content(std::move(content)), botid(botid), params(std::move(params)),
+            //                                                             groupid(groupid), senderid(senderid),
+            //                                                             publicationTime(publicationTime),
+            //                                                             fid(std::move(fid)), confirmNum(confirmNum), imageid(std::move(imageid)) {}
         };
 
         /// 本地(未发送)群公告
-        class OfflineAnnouncement {
-        public:
+        struct OfflineAnnouncement {
             /// 内容
             std::string content;
             /// 公告属性
@@ -106,26 +127,16 @@ namespace MiraiCP {
             /// 发布群公告
             Group::OnlineAnnouncement publishTo(const Group &);
 
-            OfflineAnnouncement(const std::string &content, AnnouncementParams params) : content(content),
-                                                                                         params(params) {}
+            //            OfflineAnnouncement(const std::string &content, AnnouncementParams params) : content(content),
+            //                                                                                         params(params) {}
         };
 
         /**
          * @brief 群设置
-         * @details 使用uploadSetting上传设置，使用refreshInfo同步服务器设定，后面两项由于https://github.com/mamoe/mirai/issues/1307 还不能改
+         * @details 使用uploadSetting上传设置，使用refreshInfo同步服务器设定，后面两项由于 https://github.com/mamoe/mirai/issues/1307 还不能改
          */
-        struct GroupSetting {
-            /// 群名称
-            std::string name;
-            /// 禁言全部
-            bool isMuteAll{};
-            /// 允许群成员邀请
-            bool isAllowMemberInvite{};
-            /// 自动同意进群
-            bool isAutoApproveEnabled{};
-            /// 允许匿名聊天
-            bool isAnonymousChatEnabled{};
-        };
+
+        DECL_GETTER(setting)
 
         /// 群文件的简短描述
         struct file_short_info {
@@ -135,22 +146,20 @@ namespace MiraiCP {
             std::string id;
         };
 
-    public: // attrs
-        /// 群设置
-        GroupSetting setting;
-
-    public: // constructors
+    public:  // attrs
+    private: // constructors
         /*!
          * @brief 群聊类的内部构造函数，不可使用
          */
-        explicit Group() = default;
+        Group() = default;
 
+    public: // constructors
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
         /// @param botid 机器人id
         /// @doxygenEg{1007, group.cpp, 从群号构建群对象}
         Group(QQID groupid, QQID botid);
-
+        Group(nlohmann::json in_json);
         //        explicit Group(const Contact &c) : Contact(c) {
         //            if (c.type() != 2)
         //                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 2(group)", MIRAICP_EXCEPTION_WHERE);
@@ -180,7 +189,6 @@ namespace MiraiCP {
         /// 取群主
         Member getOwner();
 
-
         /// 取群成员
         Member getMember(QQID memberid);
 
@@ -190,7 +198,7 @@ namespace MiraiCP {
         std::vector<OnlineAnnouncement> getAnnouncementsList();
 
         /// 刷新群聊信息
-        void refreshInfo();
+        //void refreshInfo();
 
         void quit();
 

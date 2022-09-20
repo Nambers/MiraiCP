@@ -4,6 +4,8 @@
 
 #include "IMiraiData.h"
 #include "LowLevelAPI.h"
+#include "json.hpp"
+
 
 namespace MiraiCP {
     void IMiraiData::request_refresh() {
@@ -13,7 +15,11 @@ namespace MiraiCP {
         refreshInfo();
     }
 
-    void IMiraiData::force_refresh() {
-         Locker._inited = false;
+    void IMiraiData::force_refresh_nexttime() {
+        Locker._inited = false;
+    }
+
+    std::string IMiraiData::toString() const {
+        return toJson().dump();
     }
 } // namespace MiraiCP

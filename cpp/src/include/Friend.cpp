@@ -15,17 +15,19 @@
 //
 
 #include "Friend.h"
-#include "KtOperation.h"
 #include "Exception.h"
+#include "KtOperation.h"
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
     /*好友类实现*/
-    Friend::Friend(QQID id, QQID botid) : ContactWithSendSupport(id, botid, MIRAI_FRIEND) {
-        refreshInfo();
+    Friend::Friend(QQID id, QQID botid) : Contact(id, botid, MIRAI_FRIEND) {
+        // todo
     }
-
+    Friend::Friend(nlohmann::json in_json) :Contact(in_json){
+        // todo
+    }
     void Friend::deleteFriend() {
         json j;
         j["source"] = this->toString();

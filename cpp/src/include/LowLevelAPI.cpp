@@ -25,7 +25,7 @@ namespace LibLoader::LoaderApi {
 namespace MiraiCP {
     using json = nlohmann::json;
 
-    std::string LowLevelAPI::send0( std::string content, json c, int retryTime, bool miraicode,
+    std::string LowLevelAPI::send0(std::string content, json c, int retryTime, bool miraicode,
                                    const std::string &errorInfo) {
         nlohmann::json j;
         nlohmann::json tmp;
@@ -46,9 +46,8 @@ namespace MiraiCP {
         return re;
     }
 
-    std::string LowLevelAPI::getInfoSource(const std::string &c) {
-        nlohmann::json j;
-        j["source"] = c;
+    std::string LowLevelAPI::getInfoSource(std::string c) {
+        nlohmann::json j{{"source", std::move(c)}};
         return KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
 

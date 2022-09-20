@@ -21,17 +21,35 @@
 
 namespace MiraiCP {
     /*!
+     * @brief Member数据声明
+     */
+    struct MemberData : public GroupRelatedData {
+        typedef IContactData Super;
+
+        /// @brief 权限等级
+        ///     - OWNER群主 为 2
+        ///     - ADMINISTRATOR管理员 为 1
+        ///     - MEMBER群成员 为 0
+        /// @note 上面那些变量在constants.h中有定义
+        unsigned int _permission = 0;
+        /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
+        bool _anonymous = false;
+
+        explicit MemberData(QQID in_groupid) : GroupRelatedData(in_groupid) {}
+
+        void deserialize(nlohmann::json in_json) override;
+        void refreshInfo() override;
+    };
+    /*!
      * @brief 群成员类声明
      * @doxygenEg{1013, member.cpp, 群成员操作}
      */
-    class Member : public ContactWithSendSupport, INudgeSupport {
+    class Member : public Contact, public INudgeSupport, public ContactDataHelper<Member, MemberData> {
         friend class Contact;
 
     private:
-        QQID _groupid;
-        std::string _nickOrNameCard;
-        std::string _avatarUrl;
-        bool _anonymous;
+        //        std::string _nickOrNameCard;
+        //        std::string _avatarUrl;
 
     public:
         /// @brief 权限等级
@@ -39,13 +57,15 @@ namespace MiraiCP {
         ///     - ADMINISTRATOR管理员 为 1
         ///     - MEMBER群成员 为 0
         /// @note 上面那些变量在constants.h中有定义
-        unsigned int permission = 0;
+        //        unsigned int permission = 0;
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
-        bool isAnonymous;
+        //        bool isAnonymous;
 
     private:
-        explicit Member() = default;
-
+        Member() = default;
+    public:
+        explicit Member(nlohmann::json in_json);
+        DECL_GETTER(anonymous)
 
     public:
         /// @brief 更改群成员权限

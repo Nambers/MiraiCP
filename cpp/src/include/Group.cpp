@@ -22,10 +22,20 @@
 #include "Tools.h"
 
 namespace MiraiCP {
+#define LOC_CLASS_NAMESPACE Group
     using json = nlohmann::json;
     std::string Group::MemberListToString() {
         return Tools::VectorToString(getMemberList());
     }
+
+    Group::Group(QQID groupid, QQID botid) : Contact(groupid, botid, MIRAI_GROUP) {
+        // todo
+    }
+
+    Group::Group(json in_json) : Contact(in_json) {
+        // todo
+    }
+
     std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList() {
         json j;
         j["source"] = this->toString();
@@ -101,9 +111,6 @@ namespace MiraiCP {
         return Tools::StringToVector(std::move(re));
     }
 
-    Group::Group(QQID groupid, QQID botid) : ContactWithSendSupport(groupid, botid, MIRAI_GROUP) {
-        refreshInfo();
-    }
 
     void Group::quit() {
         nlohmann::json j;
@@ -112,31 +119,24 @@ namespace MiraiCP {
         KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
 
-    void Group::refreshInfo() {
-        std::string re = LowLevelAPI::getInfoSource(this->toString());
-        LowLevelAPI::info tmp = LowLevelAPI::info0(re);
-        // this->_nickOrNameCard = std::move(tmp.nickornamecard);
-        // this->_avatarUrl = std::move(tmp.avatarUrl);
-        nlohmann::json j = nlohmann::json::parse(re)["setting"];
-        this->setting.name = j["name"];
-        this->setting.isMuteAll = j["isMuteAll"];
-        this->setting.isAllowMemberInvite = j["isAllowMemberInvite"];
-        this->setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
-        this->setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
-    }
+    //    void Group::refreshInfo() {
+    //
+    //    }
 
     void Group::updateSetting() {
         json j;
         json tmp;
-        j["name"] = this->setting.name;
-        j["isMuteAll"] = this->setting.isMuteAll;
-        j["isAllowMemberInvite"] = this->setting.isAllowMemberInvite;
-        j["isAutoApproveEnabled"] = this->setting.isAutoApproveEnabled;
-        j["isAnonymousChatEnabled"] = this->setting.isAnonymousChatEnabled;
+        auto settings = setting();
+        j["name"] = settings.name;
+        j["isMuteAll"] = settings.isMuteAll;
+        j["isAllowMemberInvite"] = settings.isAllowMemberInvite;
+        j["isAutoApproveEnabled"] = settings.isAutoApproveEnabled;
+        j["isAnonymousChatEnabled"] = settings.isAnonymousChatEnabled;
         tmp["source"] = j.dump();
         tmp["contactSource"] = this->toString();
         std::string re = KtOperation::ktOperation(KtOperation::GroupSetting, tmp);
-        refreshInfo();
+        InternalData->force_refresh_nexttime();
+        InternalData->request_refresh();
     }
 
     RemoteFile Group::sendFile(const std::string &path, const std::string &filepath) {
@@ -215,5 +215,21 @@ namespace MiraiCP {
 
     Member Group::operator[](QQID a) {
         return getMember(a);
+    }
+
+    IMPL_GETTER(setting)
+
+#undef LOC_CLASS_NAMESPACE
+    void GroupData::refreshInfo() {
+        std::string re = LowLevelAPI::getInfoSource(this->toString());
+        LowLevelAPI::info tmp = LowLevelAPI::info0(re);
+        this->_nickOrNameCard = std::move(tmp.nickornamecard);
+        this->_avatarUrl = std::move(tmp.avatarUrl);
+        nlohmann::json j = nlohmann::json::parse(re)["setting"];
+        this->_setting.name = Tools::json_stringmover(j, "name");
+        this->_setting.isMuteAll = j["isMuteAll"];
+        this->_setting.isAllowMemberInvite = j["isAllowMemberInvite"];
+        this->_setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
+        this->_setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
     }
 } // namespace MiraiCP
