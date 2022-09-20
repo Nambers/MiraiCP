@@ -19,8 +19,7 @@
 plugins {
     kotlin("multiplatform")
 }
-group = "tech.eritquearcus"
-version = Version.miraiCP
+
 kotlin {
     jvm {
         compilations.all {
@@ -39,18 +38,34 @@ kotlin {
         isMingwX64 -> mingwX64("native")
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
+    nativeTarget.binaries {
+        staticLib {
+            baseName = "foo"
+        }
+    }
+
+
     sourceSets {
         val commonMain by getting {
-            dependencies {
-                implementation("com.google.code.gson:gson:${Version.gson}")
-                implementation("org.json:json:${Version.json}")
-                compileOnly("net.mamoe:mirai-core-api:${Version.mirai}")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.`kotlinx-coroutines-core`}")
-//                classpath("org.jetbrains.kotlin:kotlinx-serialization-json:${Version.`kotlinx-serialization-json`}")
-            }
-            apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+            dependencies {}
         }
-        val jvmMain by getting
-        val nativeMain by getting
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+        val jvmMain by getting {
+            dependencies {
+                implementation(project(":MiraiCP-loader"))
+                implementation(project(":shared"))
+            }
+        }
+        val jvmTest by getting
+        val nativeMain by getting {
+            dependencies {
+                implementation(project(":shared"))
+            }
+        }
+        val nativeTest by getting
     }
 }

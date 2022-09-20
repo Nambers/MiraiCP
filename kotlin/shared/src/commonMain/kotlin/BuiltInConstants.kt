@@ -16,18 +16,10 @@
  *
  */
 
-object Version {
-    const val kotlin = "1.7.10"
-    const val `kotlinx-serialization-json` = "1.4.0"
-    const val `kotlinx-coroutines-core` = "1.6.1"
+package tech.eritquearcus.miraicp.shared
 
-    const val mirai = "2.13.0-dev-d32a8a56"
-    const val miraiCP = "2.12.0-RC2"
-
-    const val shadowJar = "7.1.1"
-    const val mavenCenterPublish = "1.0.0-dev-1"
-    const val json = "20210307"
-    const val gson = "2.8.9"
-    const val jline = "3.21.0"
-    const val jansi = "2.4.0"
+object BuiltInConstants {
+    const val date = "Tue Sep 13 17:42:07 EDT 2022"
+    const val version = "2.12.0-RC2"
+    const val miraiVersion = "2.13.0-dev-d32a8a56"
 }

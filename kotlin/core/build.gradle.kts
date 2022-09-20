@@ -18,6 +18,7 @@
 
 plugins {
     application
+//    kotlin("jvm")
     id("com.github.johnrengelman.shadow")
 }
 

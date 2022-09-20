@@ -31,47 +31,15 @@ import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.ImageType
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.MessageSource
-import org.json.JSONObject
-import java.io.File
-import java.util.concurrent.SynchronousQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
-
-// 执行线程池, 以免阻塞mirai协程的线程池
-private val queue = SynchronousQueue<Runnable>()
-private val cc by lazy {
-    ThreadPoolExecutor(
-        0, PublicShared.maxThread, 60L, TimeUnit.SECONDS, queue
-    )
-}
 
 //suspend inline fun <T, R> T.runInTP(
 //    crossinline block: T.() -> R,
 //): R = runInterruptible(context = cc, block = { block() })
 
 // 广播事件到cpp
-fun event(obj: Any) {
-    cc.submit {
-        CPPLib.Event(if (obj is String) obj else PublicShared.gson.toJson(obj))
-    }
-}
+expect fun event(obj: Any)
 
-fun getLibLoader(pathsInput: List<String>): String {
-    val suffix =
-        File.separator + if (System.getProperty("os.name").contains("Windows")) "libLoader.dll" else "libLoader.so"
-    val paths = pathsInput.plus(System.getProperty("user.dir")).map { it + suffix }
-    paths.forEach { path ->
-        File(path).let {
-            if (it.exists()) return it.absolutePath
-        }
-    }
-    PublicShared.logger.error(
-        "找不到 libLoader 组件于下列位置:\n" +
-        paths.joinToString(prefix = "\t", postfix = "\n") +
-        "请到 MiraiCP release 下载 libLoader 组件并放在以上目录其中一个的位置"
-    )
-    throw IllegalStateException("找不到 libLoader 组件")
-}
+expect fun getLibLoader(pathsInput: List<String>): String
 
 fun Group.toContact(): Config.Contact = Config.Contact(2, this.id, 0, this.name, this.bot.id)
 
@@ -79,25 +47,10 @@ fun Member.toContact(): Config.Contact = Config.Contact(3, this.id, this.group.i
 
 fun Friend.toContact(): Config.Contact = Config.Contact(1, this.id, 0, this.nameCardOrNick, this.bot.id)
 
-fun Contact.toContact(): Config.Contact? = when (this) {
-    is Group -> this.toContact()
-    is Friend -> this.toContact()
-    is Member -> this.toContact()
-    else -> {
-        PublicShared.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:Contact.toContact(), info:${this.javaClass.name}")
-        null
-    }
-}
+expect fun Contact.toContact(): Config.Contact?
 
 // convert mirai Contact type to MiraiCP contact
-fun ContactOrBot.toContact(): Config.Contact? = when (this) {
-    is Contact -> this.toContact()
-    is Bot -> this.asFriend.toContact()
-    else -> {
-        PublicShared.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和本信息以修复此问题, 位置:ContactOrBot.toContact(), info:${this.javaClass.name}")
-        null
-    }
-}
+expect fun ContactOrBot.toContact(): Config.Contact?
 
 internal fun emptyContact(botid: Long): Config.Contact = Config.Contact(0, 0, 0, "", botid)
 
@@ -190,9 +143,6 @@ internal inline fun Config.Contact.withMember(
 fun Config.Contact.withMiraiMember(block: (Bot, Group, NormalMember) -> String): String = withBot { bot ->
     return withMember(bot) { g, m -> block(bot, g, m) }
 }
-
-@Suppress("UNCHECKED_CAST")
-internal fun <T> JSONObject.getOrNull(key: String): T? = if (this.has(key)) (this.get(key) as T) else null
 
 // MiraiCP image info to mirai image
 internal fun Config.ImgInfo.toImage(): Image = Image.newBuilder(this.imageid!!).apply {

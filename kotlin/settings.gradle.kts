@@ -22,9 +22,11 @@ include("shared")
 include("plugin")
 include("loader")
 include("core")
+include("native_try")
 project(":plugin").name = "MiraiCP-plugin"
 project(":loader").name = "MiraiCP-loader"
 project(":core").name = "MiraiCP-core"
+project(":native_try").name = "native_try"
 
 pluginManagement {
     repositories {

@@ -16,10 +16,8 @@
  *
  */
 
-package tech.eritquearcus.miraicp.shared
-
-object BuiltInConstants {
-    const val date = "Sun Sep 11 23:02:13 EDT 2022"
-    const val version = "2.12.0-RC2"
-    const val miraiVersion = "2.13.0-dev-d32a8a56"
+expect object Core {
+    fun main(args: Array<String>)
+    fun login(source: String): String
+    fun load()
 }

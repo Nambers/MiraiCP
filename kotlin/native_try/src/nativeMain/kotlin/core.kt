@@ -15,19 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import kotlinx.coroutines.runBlocking
+import net.mamoe.mirai.BotFactory
+import net.mamoe.mirai.alsoLogin
 
-object Version {
-    const val kotlin = "1.7.10"
-    const val `kotlinx-serialization-json` = "1.4.0"
-    const val `kotlinx-coroutines-core` = "1.6.1"
+actual object Core {
+    actual fun main(args: Array<String>) {
 
-    const val mirai = "2.13.0-dev-d32a8a56"
-    const val miraiCP = "2.12.0-RC2"
+    }
 
-    const val shadowJar = "7.1.1"
-    const val mavenCenterPublish = "1.0.0-dev-1"
-    const val json = "20210307"
-    const val gson = "2.8.9"
-    const val jline = "3.21.0"
-    const val jansi = "2.4.0"
+    actual fun login(source: String): String {
+        runBlocking {
+            BotFactory.newBot(111, "").alsoLogin()
+        }
+        return ""
+    }
+
+    actual fun load() {
+
+    }
 }

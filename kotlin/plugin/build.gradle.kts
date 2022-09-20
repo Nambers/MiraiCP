@@ -36,6 +36,7 @@ import kotlinx.serialization.decodeFromHexString
  */
 
 plugins {
+//    kotlin("jvm")
     id("net.mamoe.mirai-console")
     id("me.him188.maven-central-publish")
     `maven-publish`
