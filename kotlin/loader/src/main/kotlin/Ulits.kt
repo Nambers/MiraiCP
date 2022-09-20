@@ -19,6 +19,8 @@
 package tech.eritquearcus.miraicp.loader
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.EventPriority
@@ -31,7 +33,8 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.shared.CPPConfig
 import tech.eritquearcus.miraicp.shared.CPPEvent
 import tech.eritquearcus.miraicp.shared.PublicShared
-import tech.eritquearcus.miraicp.shared.event
+import tech.eritquearcus.miraicp.shared.PublicSharedData
+import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 
 internal fun String.decodeHex(): ByteArray {
     check(length % 2 == 0) { "Must have an even length" }
@@ -52,7 +55,7 @@ fun CPPConfig.LoaderConfig.Account.login() {
         "PHONE" -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
         null -> BotConfiguration.MiraiProtocol.ANDROID_PHONE
         else -> {
-            PublicShared.logger.warning("Warning: 登录协议无效, 应为PAD/WATCH/PHONE/IPAD/MACOS其中一个,使用默认的PHONE进行登录")
+            PublicSharedData.logger.warning("Warning: 登录协议无效, 应为PAD/WATCH/PHONE/IPAD/MACOS其中一个,使用默认的PHONE进行登录")
             BotConfiguration.MiraiProtocol.ANDROID_PHONE
         }
     }
@@ -62,13 +65,13 @@ fun CPPConfig.LoaderConfig.Account.login() {
         "NONE" -> BotConfiguration.HeartbeatStrategy.NONE
         null -> BotConfiguration.HeartbeatStrategy.STAT_HB
         else -> {
-            PublicShared.logger.warning("Warning: 心跳策略无效, 应为STAT_HB/REGISTER/None其中一个，使用默认的STAT_HB登录")
+            PublicSharedData.logger.warning("Warning: 心跳策略无效, 应为STAT_HB/REGISTER/None其中一个，使用默认的STAT_HB登录")
             BotConfiguration.HeartbeatStrategy.STAT_HB
         }
     }
-    PublicShared.logger.info("登录bot:${this.id}")
-    PublicShared.logger.info("协议:${p.name}")
-    PublicShared.logger.info("心跳策略:${h.name}")
+    PublicSharedData.logger.info("登录bot:${this.id}")
+    PublicSharedData.logger.info("协议:${p.name}")
+    PublicSharedData.logger.info("心跳策略:${h.name}")
     val b = if (this.md5 == null || !this.md5!!) {
         BotFactory.newBot(this.id, this.passwords) {
             fileBasedDeviceInfo()
@@ -84,7 +87,7 @@ fun CPPConfig.LoaderConfig.Account.login() {
     }
     b.eventChannel.subscribeAlways<BotOnlineEvent> {
         event(
-            PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
+            Json.encodeToString(CPPEvent.BotOnline(this.bot.id))
         )
     }
     runBlocking {
@@ -92,8 +95,8 @@ fun CPPConfig.LoaderConfig.Account.login() {
     }
     b.eventChannel.subscribeAlways<MessageEvent>(priority = EventPriority.HIGH) {
         if (this is FriendMessageEvent)// friend
-            PublicShared.logger.info("${this.sender.nameCardOrNick}(${this.sender.id}) -> ${this.message.contentToString()}")
-        else PublicShared.logger.info("[${this.bot.getGroup(this.subject.id)!!.name}(${this.subject.id})] ${this.sender.nameCardOrNick}(${this.sender.id}) -> ${this.message.contentToString()}")
+            PublicSharedData.logger.info("${this.sender.nameCardOrNick}(${this.sender.id}) -> ${this.message.contentToString()}")
+        else PublicSharedData.logger.info("[${this.bot.getGroup(this.subject.id)!!.name}(${this.subject.id})] ${this.sender.nameCardOrNick}(${this.sender.id}) -> ${this.message.contentToString()}")
     }
     PublicShared.onEnable(b.eventChannel)
 }

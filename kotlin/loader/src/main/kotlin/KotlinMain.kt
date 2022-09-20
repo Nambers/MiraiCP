@@ -25,10 +25,7 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
-import tech.eritquearcus.miraicp.shared.BuiltInConstants
-import tech.eritquearcus.miraicp.shared.CPPConfig
-import tech.eritquearcus.miraicp.shared.CPPLib
-import tech.eritquearcus.miraicp.shared.PublicShared
+import tech.eritquearcus.miraicp.shared.*
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
 import java.io.File
 import kotlin.system.exitProcess
@@ -54,16 +51,16 @@ object KotlinMain {
         Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
         PublicShared.init(logger)
-        PublicShared.cachePath = File("cache")
-        if (PublicShared.cachePath.exists()) PublicShared.cachePath.deleteRecursively()
-        PublicShared.cachePath.mkdir()
+        PublicSharedData.cachePath = File("cache").toMiraiCPFile()
+        if (PublicSharedData.cachePath.exists()) PublicSharedData.cachePath.deleteRecursively()
+        PublicSharedData.cachePath.mkdir()
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
         logger.info("⭐MiraiCP-plugin 版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
-        PublicShared.commandReg = LoaderCommandHandlerImpl()
+        PublicSharedData.commandReg = LoaderCommandHandlerImpl()
         if (c.advanceConfig != null && c.advanceConfig!!.maxThread != null) {
-            if (c.advanceConfig!!.maxThread!! <= 0) PublicShared.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
-            else PublicShared.maxThread = c.advanceConfig!!.maxThread!!
+            if (c.advanceConfig!!.maxThread!! <= 0) PublicSharedData.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
+            else PublicSharedData.maxThread = c.advanceConfig!!.maxThread!!
         }
         val tmp = if (c.advanceConfig?.libLoaderPath != null) {
             val tmp2 = File(c.advanceConfig?.libLoaderPath!!)

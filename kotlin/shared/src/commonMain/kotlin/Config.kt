@@ -18,10 +18,12 @@
 
 package tech.eritquearcus.miraicp.shared
 
+import kotlinx.serialization.Serializable
 import net.mamoe.mirai.message.data.ForwardMessage
 import net.mamoe.mirai.message.data.RawForwardMessage
 
 object Config {
+    @Serializable
     data class Contact(
         val type: Int,
         val id: Long,
@@ -31,16 +33,20 @@ object Config {
         val anonymous: Boolean = false
     )
 
+    @Serializable
     data class SendRequest(
         val contact: Contact, val content: String
     )
 
+    @Serializable
     data class ForwardMessageJson(
         val type: Int, val id: Long, val groupid: Long, val display: ForwardedMessageDisplay?, val content: Content
     ) {
+        @Serializable
         data class Content(
             val value: List<Value>
         ) {
+            @Serializable
             data class Value(
                 val isForwardedMessage: Boolean?,
                 val name: String,
@@ -53,6 +59,7 @@ object Config {
     }
 
     // Announcement params
+    @Serializable
     data class AP(
         val sendToNewMember: Boolean = false,
         /** 置顶. 可以有多个置顶公告 */
@@ -65,6 +72,7 @@ object Config {
         val requireConfirmation: Boolean = false,
     )
 
+    @Serializable
     data class OnlineA(
         val content: String,
         val fid: String,
@@ -78,14 +86,17 @@ object Config {
     )
 
     // Announcement identify
+    @Serializable
     data class IdentifyA(
         val botid: Long, val groupid: Long, val type: Int, val fid: String?
     )
 
+    @Serializable
     data class BriefOfflineA(
         val content: String, val params: AP
     )
 
+    @Serializable
     data class GroupSetting(
         val name: String,
         val isMuteAll: Boolean,
@@ -94,16 +105,19 @@ object Config {
         val isAnonymousChatEnabled: Boolean
     )
 
+    @Serializable
     data class ContactInfo(
         val nickornamecard: String,
         val avatarUrl: String,
         val setting: GroupSetting = GroupSetting("", false, false, false, false)
     )
 
+    @Serializable
     data class DInfo(
         val url: String, val md5: String, val sha1: String
     )
 
+    @Serializable
     data class FInfo(
         val size: Long,
         val uploaderid: Long,
@@ -112,7 +126,8 @@ object Config {
         val lastmodifytime: Long,
     )
 
-    data class FileInfo(
+    @Serializable
+    data class FileInfoOut(
         val id: String,
         val internalid: Int = 0,
         val name: String = "",
@@ -121,6 +136,7 @@ object Config {
         val finfo: FInfo
     )
 
+    @Serializable
     data class ImgInfo(
         val size: Long,
         val width: Int,
@@ -131,12 +147,74 @@ object Config {
         val type: Int? = null
     )
 
+    @Serializable
     data class Message(
         val messageSource: String
     )
 
+    @Serializable
     data class ForwardedMessageDisplay(
         val brief: String, val preview: List<String>, val source: String, val summary: String, val title: String
+    )
+
+    @Serializable
+    data class FileInfoIn(
+        val path: String?,
+        val id: String?,
+        val filepath: String?
+    )
+
+    @Serializable
+    data class Log(
+        val id: Long,
+        val log: String,
+        val name: String?
+    )
+
+    @Serializable
+    data class VoiceInfoIn(
+        val path: String
+    )
+
+    @Serializable
+    data class Operation(
+        val type: Int,
+        val data: Data
+    ) {
+        @Serializable
+        data class Data(
+            val source: String?,
+            val miraiCode: Boolean?,
+            val quit: Boolean?,
+            val announcement: Boolean?,
+            val fileName: String?,
+            val botid: Long?,
+            val contactSource: String?,
+            val time: Long?,
+            val message: String?,
+            val text: String?,
+            val messageSource: String?,
+            val msg: String?,
+            val sign: String?,
+            val identify: String?,
+            val halt: Boolean?,
+            val admin: Boolean?,
+            val command: String?,
+            val newName: String?,
+            val size: Long,
+            val width: Int,
+            val height: Int,
+            val md5: String?,
+            val url: String?,
+            val imageid: String?,
+            val type: Int?
+        )
+    }
+
+    @Serializable
+    data class QuoteSign(
+        val MiraiCode: Boolean,
+        val groupid: Long
     )
 }
 
@@ -149,22 +227,26 @@ class DisplayS(private val s: Config.ForwardedMessageDisplay) : ForwardMessage.D
 }
 
 object CPPConfig {
+    @Serializable
     data class cppPath(
         val path: String, val dependencies: List<String>?
     )
 
+    @Serializable
     data class AdvanceConfig(
-        val maxThread: Int?,
-        val libLoaderPath: String?
+        val maxThread: Int?, val libLoaderPath: String?
     )
 
+    @Serializable
     data class PluginConfig(
         val pluginConfig: List<cppPath>, val advanceConfig: AdvanceConfig?
     )
 
+    @Serializable
     data class LoaderConfig(
         val accounts: List<Account>?, val cppPaths: List<cppPath>, val advanceConfig: AdvanceConfig?
     ) {
+        @Serializable
         data class Account(
             val id: Long,
             val passwords: String,
@@ -179,6 +261,7 @@ object CPPConfig {
 
 object CPPEvent {
     //消息事件
+    @Serializable
     data class GroupMessage(
         val group: Config.Contact,
         val member: Config.Contact,
@@ -187,14 +270,17 @@ object CPPEvent {
         val type: Int = 1
     )
 
+    @Serializable
     data class PrivateMessage(
         val friend: Config.Contact, val message: String, val source: String, val type: Int = 2
     )
 
+    @Serializable
     data class GroupInvite(
         val source: GroupInviteSource, val request: String, val type: Int = 3
     ) {
         //群邀请
+        @Serializable
         data class GroupInviteSource(
             val botid: Long,
             val eventid: Long,
@@ -205,14 +291,17 @@ object CPPEvent {
         )
     }
 
+    @Serializable
     data class Request(
         val text: String, val accept: Boolean, val botid: Long, val ban: Boolean?
     )
 
     //好友邀请
+    @Serializable
     data class NewFriendRequest(
         val source: NewFriendRequestSource, val request: String, val type: Int = 4
     ) {
+        @Serializable
         data class NewFriendRequestSource(
             val botid: Long,
             val eventid: Long,
@@ -224,9 +313,9 @@ object CPPEvent {
     }
 
     //群成员加入
+    @Serializable
     data class MemberJoin(
-        val group: Config.Contact, val member: Config.Contact,
-        /*
+        val group: Config.Contact, val member: Config.Contact,/*
     invite - 1
     active - 2
     retrieve - 3
@@ -237,9 +326,9 @@ object CPPEvent {
     )
 
     //群成员退出
+    @Serializable
     data class MemberLeave(
-        val group: Config.Contact, val memberid: Long,
-        /*
+        val group: Config.Contact, val memberid: Long,/*
     kick - 1
     quit - 2
      */
@@ -249,6 +338,7 @@ object CPPEvent {
     )
 
     //撤回
+    @Serializable
     data class RecallEvent(
         val etype: Int,
         val authorid: Long,
@@ -261,10 +351,12 @@ object CPPEvent {
         val type: Int = 7
     )
 
+    @Serializable
     data class BotJoinGroup(
         val etype: Int, val group: Config.Contact, val inviterid: Long, val type: Int = 8
     )
 
+    @Serializable
     data class GroupTempMessage(
         val group: Config.Contact,
         val member: Config.Contact,
@@ -273,14 +365,17 @@ object CPPEvent {
         val type: Int = 9
     )
 
+    @Serializable
     data class TimeOutEvent(
         val msg: String, val type: Int = 10
     )
 
+    @Serializable
     data class BotOnline(
         val botid: Long, val type: Int = 11
     )
 
+    @Serializable
     data class NugdeEvent(
         val from: Config.Contact,
         val target: Config.Contact,
@@ -289,12 +384,14 @@ object CPPEvent {
         val type: Int = 12
     )
 
+    @Serializable
     data class BotLeaveEvent(
         val groupid: Long, val botid: Long,
         //val leavetype: Int TODO(见Mirai源码, 目前BotLeave还不稳定)
         val type: Int = 13
     )
 
+    @Serializable
     data class MemberJoinRequestEvent(
         val group: Config.Contact,
         val inviter: Config.Contact,
@@ -303,19 +400,20 @@ object CPPEvent {
         val type: Int = 14
     )
 
+    @Serializable
     data class MessagePreSendEvent(
         val target: Config.Contact, val botid: Long, val message: String, val type: Int = 15
     )
     // type = 16, ExceptionEvent
     // type = 17, Command
 
+    @Serializable
     data class LibLoaderEvent(
-        val name: String,
-        val content: String? = null,
-        val type: Int = 1000
+        val name: String, val content: String? = null, val type: Int = 1000
     )
 }
 
+@Serializable
 data class PluginConfig(
     val id: String,
     val author: String,

@@ -19,19 +19,17 @@
 package tech.eritquearcus.miraicp.shared
 
 import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.ContactOrBot
 
-actual fun event(obj: Any) {
-}
+actual object PublicSharedMultiplatform {
+    actual suspend fun uploadImgAndId(
+        file: String,
+        temp: Contact,
+        err1: String,
+        err2: String
+    ): String {
+        TODO("Not yet implemented")
+    }
 
-actual fun getLibLoader(pathsInput: List<String>): String {
-    TODO("Not yet implemented")
-}
-
-actual fun Contact.toContact(): Config.Contact? {
-    TODO("Not yet implemented")
-}
-
-actual fun ContactOrBot.toContact(): Config.Contact? {
-    TODO("Not yet implemented")
+    actual fun onDisable() {
+    }
 }

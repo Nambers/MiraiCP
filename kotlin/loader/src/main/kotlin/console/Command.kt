@@ -19,13 +19,19 @@
 package tech.eritquearcus.miraicp.loader.console
 
 import com.google.gson.Gson
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.login
-import tech.eritquearcus.miraicp.shared.*
+import tech.eritquearcus.miraicp.shared.CPPEvent
+import tech.eritquearcus.miraicp.shared.CPPLibMultiplatform
+import tech.eritquearcus.miraicp.shared.Command2C
+import tech.eritquearcus.miraicp.shared.PublicSharedData
+import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
@@ -84,9 +90,9 @@ object Command {
         }
     }
 
-    private fun unknown(order: String) = PublicShared.logger.error("未知命令: '$order', 输入 \"help\" 获取命令帮助")
+    private fun unknown(order: String) = PublicSharedData.logger.error("未知命令: '$order', 输入 \"help\" 获取命令帮助")
 
-    private fun error(order: String, reason: String) = PublicShared.logger.error("命令错误: '$order', $reason")
+    private fun error(order: String, reason: String) = PublicSharedData.logger.error("命令错误: '$order', $reason")
 
     private fun pureOrder(order: String) {
         when (order) {
@@ -162,7 +168,7 @@ object Command {
         }?.let { it ->
             val mc = MessageChainBuilder()
             order.drop(1).forEach { mc.append(PlainText(it)) }
-            val tmp = PublicShared.gson.toJson(
+            val tmp = Json.encodeToString(
                 Command2C(
                     null,
                     0,
@@ -170,7 +176,7 @@ object Command {
                     it.bid
                 )
             )
-            CPPLib.Event(tmp)
+            CPPLibMultiplatform.Event(tmp)
             return true
         }
         return false

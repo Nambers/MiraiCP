@@ -73,7 +73,7 @@ object PluginMain : KotlinPlugin(
             }
         }.readText(), CPPConfig.PluginConfig::class.java)
         if (config.advanceConfig != null && config.advanceConfig!!.maxThread != null) {
-            if (config.advanceConfig!!.maxThread!! <= 0) PublicShared.logger.error("配置错误: 配置项AdvanceConfig.maxThread的值应该>=0, 使用默认值")
+            if (config.advanceConfig!!.maxThread!! <= 0) PublicSharedData.logger.error("配置错误: 配置项AdvanceConfig.maxThread的值应该>=0, 使用默认值")
             else PublicShared.maxThread = config.advanceConfig!!.maxThread!!
         }
         val tmp = if (config.advanceConfig?.libLoaderPath != null) {

@@ -42,11 +42,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.google.code.gson:gson:${Version.gson}")
-                implementation("org.json:json:${Version.json}")
-                compileOnly("net.mamoe:mirai-core-api:${Version.mirai}")
+                implementation("net.mamoe:mirai-core-api:${Version.mirai}")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.`kotlinx-coroutines-core`}")
 //                classpath("org.jetbrains.kotlin:kotlinx-serialization-json:${Version.`kotlinx-serialization-json`}")
+                implementation("io.ktor:ktor-utils:2.0.1")
             }
             apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
         }

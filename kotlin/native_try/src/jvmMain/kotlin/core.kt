@@ -43,7 +43,7 @@ actual object Core {
         try {
             gson.fromJson(source, CPPConfig.LoaderConfig.Account::class.java).login()
         } catch (e: Exception) {
-            PublicShared.logger.error("登录失败, 原因: " + e.message + " cause: " + e.cause)
+            PublicSharedData.logger.error("登录失败, 原因: " + e.message + " cause: " + e.cause)
             return if (e.message.isNullOrBlank()) "unknown reason" else e.message!!
         }
         return "200"

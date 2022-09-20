@@ -33,6 +33,7 @@ import org.jline.terminal.TerminalBuilder
 import org.jline.terminal.impl.AbstractWindowsTerminal
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.shared.PublicShared
+import tech.eritquearcus.miraicp.shared.PublicSharedData
 import java.time.LocalDateTime
 import kotlin.system.exitProcess
 
@@ -75,16 +76,16 @@ object Console {
                 val re = try {
                     lineReader.readLine(prompt)
                 } catch (e: InterruptedException) {
-                    PublicShared.logger.error(e)
+                    PublicSharedData.logger.error(e)
                     return@launch
                 } catch (e: CancellationException) {
-                    PublicShared.logger.error(e)
+                    PublicSharedData.logger.error(e)
                     return@launch
                 } catch (e: UserInterruptException) {
-                    PublicShared.logger.info("Closing MiraiCP...")
+                    PublicSharedData.logger.info("Closing MiraiCP...")
                     Bot.instances.forEach {
                         it.closeAndJoin()
-                        PublicShared.logger.info("Bot ${it.id} closed")
+                        PublicSharedData.logger.info("Bot ${it.id} closed")
                     }
                     PublicShared.onDisable()
                     exitProcess(0)

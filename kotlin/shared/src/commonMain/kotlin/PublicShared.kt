@@ -18,11 +18,13 @@
 
 package tech.eritquearcus.miraicp.shared
 
-import com.google.gson.Gson
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import net.mamoe.mirai.Bot
@@ -47,39 +49,43 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
-import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
-import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.OverFileSizeMaxException
-import org.json.JSONObject
-//import java.io.File
-//import java.util.*
-import kotlin.concurrent.schedule
+import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
+import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
+import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.toContact
+import kotlin.native.concurrent.ThreadLocal
 
+expect object PublicSharedMultiplatform {
+    suspend fun uploadImgAndId(file: String, temp: Contact, err1: String, err2: String): String
+    fun onDisable()
+}
+
+@ThreadLocal
+object PublicSharedData {
+    var maxThread: Int = Int.MAX_VALUE
+    lateinit var logger: MiraiLogger
+    lateinit var commandReg: CommandHandler
+    var cachePath: MiraiCPFile = MiraiCPFiles.create("")
+}
 
 object PublicShared {
-    internal val json by lazy {
+    val json by lazy {
         Json {
             Mirai
             serializersModule = MessageSerializers.serializersModule
             ignoreUnknownKeys = true
         }
     }
-    private var friend_cache = ArrayList<NormalMember>(0)
-    val gson: Gson = Gson()
-    lateinit var logger: MiraiLogger
-    const val now_tag = "v${BuiltInConstants.version}"
+    private val friend_cache = ArrayList<NormalMember>(0)
     private val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
-    var cachePath: File = File("")
-    var maxThread = Integer.MAX_VALUE
-    lateinit var commandReg: CommandHandler
-
+    const val now_tag = "v${BuiltInConstants.version}"
     fun init(l: MiraiLogger) {
         logger = l
     }
 
-    fun exit(){
+    fun exit() {
         onDisable()
         logger.info("Closing MiraiCP...")
         Bot.instances.forEach {
@@ -108,7 +114,7 @@ object PublicShared {
             } catch (e: TimeoutCancellationException) {
                 return@runBlocking "E1"
             }
-            gson.toJson(
+            Json.encodeToString(
                 Config.Message(
                     json.encodeToString(
                         MessageSerializers.serializersModule.serializer(), e[MessageSource]!!
@@ -225,15 +231,15 @@ object PublicShared {
                     f.delete()
                     return "done"
                 }
-                gson.toJson(Config.ContactInfo(f.nick, f.avatarUrl))
+                Json.encodeToString(Config.ContactInfo(f.nick, f.avatarUrl))
             }
             2 -> c.withGroup(bot, "取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}") { g ->
-                if (annoucment) return gson.toJson(g.announcements.toList().map { it.toOnlineA() })
+                if (annoucment) return Json.encodeToString(g.announcements.toList().map { it.toOnlineA() })
                 if (quit) {
                     g.quit()
                     return "done"
                 }
-                gson.toJson(
+                Json.encodeToString(
                     Config.ContactInfo(
                         g.name, g.avatarUrl, Config.GroupSetting(
                             g.name,
@@ -248,17 +254,18 @@ object PublicShared {
             3 -> friend_cache.firstOrNull { a ->
                 a.id == c.id && a.group.id == c.groupid
             }?.let {
-                gson.toJson(Config.ContactInfo(it.nameCardOrNick, it.avatarUrl))
+                Json.encodeToString(Config.ContactInfo(it.nameCardOrNick, it.avatarUrl))
             } ?: let {
                 c.withMember(
                     bot,
                     "取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}",
                     "取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}"
                 ) { _, m ->
-                    gson.toJson(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
+                    Json.encodeToString(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
                 }
             }
-            4 -> gson.toJson(Config.ContactInfo(bot.nick, bot.avatarUrl))
+
+            4 -> Json.encodeToString(Config.ContactInfo(bot.nick, bot.avatarUrl))
             else -> "EA"
         }
     }
@@ -266,42 +273,23 @@ object PublicShared {
     //取群成员列表
     fun queryML(c: Config.Contact): String = c.withBot { bot ->
         c.withGroup(bot) { g ->
-            gson.toJson(g.members.map { it.id })
+            Json.encodeToString(g.members.map { it.id })
         }
     }
 
     fun queryBFL(bid: Long): String = withBot(bid) { bot ->
-        gson.toJson(bot.friends.map {
+        Json.encodeToString(bot.friends.map {
             it.id
         })
     }
 
     fun queryBGL(bid: Long): String = withBot(bid) { bot ->
-        gson.toJson(bot.groups.map { it.id })
+        Json.encodeToString(bot.groups.map { it.id })
     }
 
     //图片部分实现
-    private suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String =
-        try {
-            val img = File(file).uploadAsImage(temp)
-            gson.toJson(
-                Config.ImgInfo(
-                    img.size,
-                    img.width,
-                    img.height,
-                    gson.toJson(img.md5),
-                    img.queryUrl(),
-                    img.imageId,
-                    img.imageType.ordinal
-                )
-            )
-        } catch (e: OverFileSizeMaxException) {
-            logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-            err1
-        } catch (e: NullPointerException) {
-            logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-            err2
-        }
+    suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String =
+        PublicSharedMultiplatform.uploadImgAndId(file, temp, err1, err2)
 
     suspend fun uploadImg(file: String, c: Config.Contact): String = c.withBot { bot ->
         when (c.type) {
@@ -332,9 +320,9 @@ object PublicShared {
                 this.height = height ?: 0
                 this.type = ImageType.values()[type ?: ImageType.UNKNOWN.ordinal]
             }.build()
-            gson.toJson(
+            Json.encodeToString(
                 Config.ImgInfo(
-                    md5 = gson.toJson(tmp.md5),
+                    md5 = Json.encodeToString(tmp.md5),
                     size = tmp.size,
                     url = tmp.queryUrl(),
                     width = tmp.width,
@@ -363,12 +351,14 @@ object PublicShared {
     }
 
     //禁言
-    suspend fun mute(time: Int, c: Config.Contact): String = c.withBot { bot ->
+    suspend fun mute(time: Long, c: Config.Contact): String = c.withBot { bot ->
         c.withMember(
-            bot, "禁言找不到对应群组，位置K-mute()，gid:${c.groupid}", "禁言找不到对应群成员，位置K-mute()，id:${c.id}, gid:${c.id}"
+            bot,
+            "禁言找不到对应群组，位置K-mute()，gid:${c.groupid}",
+            "禁言找不到对应群成员，位置K-mute()，id:${c.id}, gid:${c.id}"
         ) { _, member ->
             try {
-                if (time > 0) member.mute(time)
+                if (time > 0) member.mute(time.toInt())
                 else member.unmute()
             } catch (e: PermissionDeniedException) {
                 logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:${c.groupid}，目标成员id:${c.id}")
@@ -381,8 +371,8 @@ object PublicShared {
         }
     }
 
-    suspend fun uploadVoice(path: String, c: Config.Contact): String = c.withBot { bot ->
-        val file = File(path)
+    suspend fun uploadVoice(source: String, c: Config.Contact): String = c.withBot { bot ->
+        val file = MiraiCPFiles.create(Json.decodeFromString<Config.VoiceInfoIn>(source).path)
         if (!file.exists() || !file.isFile || !(file.extension == "amr" || file.extension == "silk")) {
             logger.error("上传的语言文件需为.amr / .silk文件, 位置: KUploadVoice")
             return "E1"
@@ -406,8 +396,8 @@ object PublicShared {
     }
 
     private suspend fun fileInfo0(temp: AbsoluteFile): String {
-        return gson.toJson(
-            Config.FileInfo(
+        return Json.encodeToString(
+            Config.FileInfoOut(
                 id = temp.id,
                 name = temp.name,
                 path = temp.absolutePath,
@@ -421,7 +411,7 @@ object PublicShared {
 
     suspend fun sendFile(path: String, file: String, c: Config.Contact): String = c.withBot { bot ->
         c.withGroup(bot, "找不到对应群组，位置K-uploadfile()，gid:${c.id}") { group ->
-            val f = File(file)
+            val f = MiraiCPFiles.create(file)
             if (!f.exists() || !f.isFile) {
                 return "E2"
             }
@@ -524,7 +514,7 @@ object PublicShared {
     }
 
     private fun buildForwardMsg(text: String, bid: Long, display: Config.ForwardedMessageDisplay?): ForwardMessage {
-        val t = Gson().fromJson(text, Config.ForwardMessageJson.Content::class.java)
+        val t = Json.decodeFromString<Config.ForwardMessageJson.Content>(text)
         val a = mutableListOf<ForwardMessage.Node>()
         t.value.forEach {
             if (it.isForwardedMessage != true) a.add(
@@ -541,14 +531,16 @@ object PublicShared {
 
     //构建聊天记录
     suspend fun sendForwardMsg(text: String, bid: Long): String = withBot(bid) { bot ->
-        val t = Gson().fromJson(text, Config.ForwardMessageJson::class.java)
+        val t = Json.decodeFromString<Config.ForwardMessageJson>(text)
         val c: Contact = when (t.type) {
             1 -> bot.getFriend(t.id) ?: let {
                 return "EF"
             }
+
             2 -> bot.getGroup(t.id) ?: let {
                 return "EG"
             }
+
             3 -> (bot.getGroup(t.id) ?: let {
                 return "EM"
             })[t.groupid] ?: let {
@@ -557,7 +549,7 @@ object PublicShared {
             else -> return "EA"
         }
         val tmp = try {
-            buildForwardMsg(gson.toJson(t.content), bid, t.display)
+            buildForwardMsg(Json.encodeToString(t.content), bid, t.display)
         } catch (err: IllegalStateException) {
             return@withBot err.message!!
         }
@@ -569,8 +561,10 @@ object PublicShared {
     suspend fun accpetFriendRequest(info: String, botid: Long, accept: Boolean, ban: Boolean?): String =
         withBot(botid) { bot ->
             try {
-                if (accept) gson.fromJson(info, RequestEventData.NewFriendRequest::class.java).accept(bot)
-                else gson.fromJson(info, RequestEventData.NewFriendRequest::class.java).reject(bot, ban ?: false)
+                Json.decodeFromString<RequestEventData.NewFriendRequest>(info).apply {
+                    if (accept) accept(bot)
+                    else reject(bot, ban ?: false)
+                }
             } catch (e: IllegalStateException) {
                 return "E"
             }
@@ -579,8 +573,10 @@ object PublicShared {
 
     suspend fun accpetGroupInvite(info: String, botid: Long, accept: Boolean): String = withBot(botid) { bot ->
         try {
-            if (accept) gson.fromJson(info, RequestEventData.BotInvitedJoinGroupRequest::class.java).accept(bot)
-            else gson.fromJson(info, RequestEventData.BotInvitedJoinGroupRequest::class.java).reject(bot)
+            Json.decodeFromString<RequestEventData.BotInvitedJoinGroupRequest>(info).apply {
+                if (accept) accept(bot)
+                else reject(bot)
+            }
         } catch (e: IllegalStateException) {
             return "E"
         }
@@ -590,8 +586,8 @@ object PublicShared {
     suspend fun sendWithQuote(messageSource: String, msg: String, sign: String): String {
         val source =
             json.decodeFromString(MessageSerializers.serializersModule.serializer<MessageSource>(), messageSource)
-        val obj = JSONObject(sign)
-        val message = if (obj.getBoolean("MiraiCode")) {
+        val obj = Json.decodeFromString<Config.QuoteSign>(sign)
+        val message = if (obj.MiraiCode) {
             MiraiCode.deserializeMiraiCode(msg)
         } else {
             PlainText(msg)
@@ -615,12 +611,12 @@ object PublicShared {
             }
 
             MessageSourceKind.TEMP -> {
-                val tmp = bot.getGroup(obj.getLong("groupid")) ?: let {
-                    logger.error("找不到群,位置:K-sendWithQuote,gid:${obj.getLong("groupid")}")
+                val tmp = bot.getGroup(obj.groupid) ?: let {
+                    logger.error("找不到群,位置:K-sendWithQuote,gid:${obj.groupid}")
                     return "EM"
                 }
                 tmp[source.fromId] ?: let {
-                    logger.error("找不到群成员,位置:K-sendWithQuote,gid:${obj.getLong("groupid")}, id:${source.fromId}")
+                    logger.error("找不到群成员,位置:K-sendWithQuote,gid:${obj.groupid}, id:${source.fromId}")
                     return "EMM"
                 }
             }
@@ -635,7 +631,7 @@ object PublicShared {
 
     fun groupSetting(c: Config.Contact, source: String): String = c.withBot {
         c.withGroup(it) { group ->
-            val root = gson.fromJson(source, Config.GroupSetting::class.java)
+            val root = Json.decodeFromString<Config.GroupSetting>(source)
             try {
                 group.name = root.name
                 group.settings.isMuteAll = root.isMuteAll
@@ -674,7 +670,7 @@ object PublicShared {
                     requireConfirmation = a.params.requireConfirmation
                 }).let {
                     return try {
-                        gson.toJson(it.publishTo(g).toOnlineA())
+                        Json.encodeToString(it.publishTo(g).toOnlineA())
                     } catch (e: PermissionDeniedException) {
                         "EP"
                     }
@@ -684,9 +680,9 @@ object PublicShared {
 
     //定时任务
     fun scheduling(time: Long, msg: String): String {
-        Timer("Timer", true).schedule(time) {
-            event(CPPEvent.TimeOutEvent(msg))
-        }
+//        Timer("Timer", true).schedule(time) {
+//            event(CPPEvent.TimeOutEvent(msg))
+//        }
         return "Y"
     }
 
@@ -731,7 +727,7 @@ object PublicShared {
 
     suspend fun memberJoinRequest(source: String, b: Boolean, botid: Long, msg: String): String =
         withBot(botid) { bot ->
-            return gson.fromJson(source, RequestEventData.MemberJoinRequest::class.java).let {
+            return Json.decodeFromString<RequestEventData.MemberJoinRequest>(source).let {
                 if (b) it.accept(bot)
                 else it.reject(bot, msg)
                 "Y"
@@ -751,7 +747,7 @@ object PublicShared {
         "s"
     }
 
-    fun onDisable() = CPPLib.PluginDisable()
+    fun onDisable() = PublicSharedMultiplatform.onDisable()
 
     @MiraiExperimentalApi
     fun onEnable(eventChannel: EventChannel<Event>) {
@@ -760,7 +756,7 @@ object PublicShared {
             //好友信息
             event(
                 CPPEvent.PrivateMessage(
-                    this.sender.toContact(), this.message.serializeToMiraiCode(), json.encodeToString(
+                    this.sender.toContact()!!, this.message.serializeToMiraiCode(), json.encodeToString(
                         MessageSerializers.serializersModule.serializer(), this.message[MessageSource]!!
                     )
                 )
@@ -776,7 +772,7 @@ object PublicShared {
             )
             event(
                 CPPEvent.GroupMessage(
-                    this.group.toContact(),
+                    this.group.toContact()!!,
                     Config.Contact(
                         3, this.sender.id, this.group.id, this.senderName, this.bot.id, (this.sender is AnonymousMember)
                     ),
@@ -792,7 +788,7 @@ object PublicShared {
             friend_cache.add(this.member)
             event(
                 CPPEvent.MemberLeave(
-                    this.group.toContact(),
+                    this.group.toContact()!!,
                     this.member.id,
                     1,
                     if (this.operator?.id == null) this.bot.id else this.operator!!.id
@@ -805,7 +801,7 @@ object PublicShared {
             friend_cache.add(this.member)
             event(
                 CPPEvent.MemberLeave(
-                    this.group.toContact(), this.member.id, 2, this.member.id
+                    this.group.toContact()!!, this.member.id, 2, this.member.id
                 )
 
             )
@@ -814,7 +810,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MemberJoinEvent.Retrieve> {
             event(
                 CPPEvent.MemberJoin(
-                    this.group.toContact(),
+                    this.group.toContact()!!,
                     Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                     3,
                     this.member.id
@@ -825,7 +821,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MemberJoinEvent.Active> {
             event(
                 CPPEvent.MemberJoin(
-                    this.group.toContact(),
+                    this.group.toContact()!!,
                     Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                     2,
                     this.member.id
@@ -836,7 +832,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MemberJoinEvent.Invite> {
             event(
                 CPPEvent.MemberJoin(
-                    this.group.toContact(),
+                    this.group.toContact()!!,
                     Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                     1,
                     this.invitor.id
@@ -850,7 +846,7 @@ object PublicShared {
                 CPPEvent.NewFriendRequest(
                     CPPEvent.NewFriendRequest.NewFriendRequestSource(
                         this.bot.id, this.eventId, this.message, this.fromId, this.fromGroupId, this.fromNick
-                    ), gson.toJson(this.toRequestEventData())
+                    ), Json.encodeToString(this.toRequestEventData())
                 )
 
             )
@@ -889,7 +885,7 @@ object PublicShared {
         eventChannel.subscribeAlways<BotJoinGroupEvent.Invite> {
             event(
                 CPPEvent.BotJoinGroup(
-                    1, this.group.toContact(), this.invitor.id
+                    1, this.group.toContact()!!, this.invitor.id
                 )
 
             )
@@ -897,7 +893,7 @@ object PublicShared {
         eventChannel.subscribeAlways<BotJoinGroupEvent.Active> {
             event(
                 CPPEvent.BotJoinGroup(
-                    2, this.group.toContact(), 0
+                    2, this.group.toContact()!!, 0
                 )
 
             )
@@ -905,7 +901,7 @@ object PublicShared {
         eventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve> {
             event(
                 CPPEvent.BotJoinGroup(
-                    3, this.group.toContact(), 0
+                    3, this.group.toContact()!!, 0
                 )
 
             )
@@ -916,7 +912,7 @@ object PublicShared {
                 CPPEvent.GroupInvite(
                     CPPEvent.GroupInvite.GroupInviteSource(
                         this.bot.id, this.eventId, this.invitorId, this.groupId, this.groupName, this.invitorNick
-                    ), gson.toJson(this.toRequestEventData())
+                    ), Json.encodeToString(this.toRequestEventData())
                 )
 
             )
@@ -925,8 +921,8 @@ object PublicShared {
             //群临时会话
             event(
                 CPPEvent.GroupTempMessage(
-                    this.group.toContact(),
-                    this.sender.toContact(),
+                    this.group.toContact()!!,
+                    this.sender.toContact()!!,
                     this.message.serializeToMiraiCode(),
                     json.encodeToString(
                         MessageSerializers.serializersModule.serializer(), this.source
@@ -960,7 +956,7 @@ object PublicShared {
                     this.group?.toContact() ?: emptyContact(this.bot.id),
                     this.invitor?.toContact() ?: emptyContact(this.bot.id),
                     this.fromId,
-                    gson.toJson(this.toRequestEventData())
+                    Json.encodeToString(this.toRequestEventData())
                 )
             )
         }
