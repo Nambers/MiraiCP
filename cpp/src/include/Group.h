@@ -20,6 +20,7 @@
 #include "Contact.h"
 
 #include <json_fwd.hpp>
+#include <utility>
 
 namespace MiraiCP {
     class Member; // forward declaration
@@ -48,13 +49,13 @@ namespace MiraiCP {
             /// 序列化到文本
             nlohmann::json serializeToJson();
 
-            explicit AnnouncementParams(bool send2New = false, bool requireConfirm = false, bool pinned = false,
-                                        bool showEditCard = false, bool showPopup = false) : send2new(send2New),
-                                                                                             requireConfirm(
-                                                                                                     requireConfirm),
-                                                                                             pinned(pinned),
-                                                                                             showEditCard(showEditCard),
-                                                                                             showPopup(showPopup) {}
+//            explicit AnnouncementParams(bool send2New = false, bool requireConfirm = false, bool pinned = false,
+//                                        bool showEditCard = false, bool showPopup = false) : send2new(send2New),
+//                                                                                             requireConfirm(
+//                                                                                                     requireConfirm),
+//                                                                                             pinned(pinned),
+//                                                                                             showEditCard(showEditCard),
+//                                                                                             showPopup(showPopup) {}
         };
 
         /// 在线群公告
@@ -64,8 +65,6 @@ namespace MiraiCP {
             std::string content;
             /// 所属bot
             QQID botid;
-            /// 公告属性
-            AnnouncementParams params;
             /// 所在群id
             QQID groupid;
             /// 发送者id
@@ -74,11 +73,12 @@ namespace MiraiCP {
             long long publicationTime;
             /// 唯一识别属性
             std::string fid;
-            /// 如果需要确认，即为确认的人数
-            int confirmNum;
             /// 图片id, 如果不存在即为空
             std::string imageid;
-
+            /// 如果需要确认，即为确认的人数
+            int confirmNum;
+            /// 公告属性
+            AnnouncementParams params;
             /// 删除当前群公告
             /// @throw BotException
             void deleteThis();
@@ -86,13 +86,13 @@ namespace MiraiCP {
             /// 反序列化
             static OnlineAnnouncement deserializeFromJson(const nlohmann::json &);
 
-            OnlineAnnouncement(const std::string &content, AnnouncementParams &params,
-                               QQID groupid, QQID senderid, QQID botid,
-                               long long int publicationTime, const std::string &fid, int confirmNum,
-                               const std::string &imageid) : content(content), botid(botid), params(params),
-                                                             groupid(groupid), senderid(senderid),
-                                                             publicationTime(publicationTime),
-                                                             fid(fid), confirmNum(confirmNum), imageid(imageid) {}
+//            OnlineAnnouncement(std::string content, AnnouncementParams params,
+//                               QQID groupid, QQID senderid, QQID botid,
+//                               long long int publicationTime, std::string fid, int confirmNum,
+//                               std::string imageid) : content(std::move(content)), botid(botid), params(std::move(params)),
+//                                                             groupid(groupid), senderid(senderid),
+//                                                             publicationTime(publicationTime),
+//                                                             fid(std::move(fid)), confirmNum(confirmNum), imageid(std::move(imageid)) {}
         };
 
         /// 本地(未发送)群公告

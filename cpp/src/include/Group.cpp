@@ -75,22 +75,20 @@ namespace MiraiCP {
     }
 
     Group::OnlineAnnouncement Group::OnlineAnnouncement::deserializeFromJson(const json &j) {
-        Group::AnnouncementParams ap(
-                j["params"]["sendToNewMember"],
-                j["params"]["requireConfirmation"],
-                j["params"]["isPinned"],
-                j["params"]["showEditCard"],
-                j["params"]["showPopup"]);
-        return Group::OnlineAnnouncement(
+        return Group::OnlineAnnouncement{
                 j["content"],
-                ap,
+                j["botid"],
                 j["groupid"],
                 j["senderid"],
-                j["botid"],
                 j["time"],
                 j["fid"],
+                j["imageid"],
                 j["confirmationNum"],
-                j["imageid"]);
+                {j["params"]["sendToNewMember"],
+                 j["params"]["requireConfirmation"],
+                 j["params"]["isPinned"],
+                 j["params"]["showEditCard"],
+                 j["params"]["showPopup"]}};
     }
 
     std::vector<unsigned long long> Group::getMemberList() {
