@@ -27,6 +27,7 @@
 #include "ForwardedMessage.h"
 #include "Friend.h"
 #include "Group.h"
+#include "IMiraiData.h"
 #include "KtOperation.h"
 #include "Logger.h"
 #include "LowLevelAPI.h"
