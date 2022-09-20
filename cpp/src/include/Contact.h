@@ -17,11 +17,15 @@
 #ifndef MIRAICP_PRO_CONTACT_H
 #define MIRAICP_PRO_CONTACT_H
 
+
+#include "IMiraiData.h"
+#include "KtOperation.h"
+#include "LowLevelAPI.h"
 #include "MessageChain.h"
 
-#include <json_fwd.hpp>
-#include <string>
 
+#include <json.hpp>
+#include <string>
 namespace MiraiCP {
 
     enum ContactType {
@@ -32,19 +36,33 @@ namespace MiraiCP {
         // bot
         MIRAI_OTHERTYPE = 4,
     };
+    struct IContactData : public IMiraiData {
+        std::string _nickOrNameCard;
+        std::string _avatarUrl;
+        QQID _id;
+        QQID _botid;
+        ContactType _type = MIRAI_CONTACT;
 
-    class ContactWithSendSupport;
+        void deserialize(nlohmann::json in_json) override;
+        nlohmann::json toJson() const override;
+        void refreshInfo() override;
+    };
 
+    struct GroupRelatedData : public IContactData {
+        QQID _groupid;
+        nlohmann::json toJson() const override;
+        explicit GroupRelatedData(QQID in_groupid) : _groupid(in_groupid) {}
+    };
     /*!
     * @brief group, friend, member的父类
     * @doxygenEg{1002, message.cpp, 发送以及回复群消息}
     */
     class Contact {
-    protected: // attrs
-        QQID _id;
-        QQID _botid;
-        ContactType _type;
-
+        template<typename ClassType, typename InternalDataType>
+        friend class ContactDataHelper;
+        // attrs
+    protected:
+        std::shared_ptr<IContactData> InternalData;
         //        QQID _groupid;
         //        std::string _nickOrNameCard;
         //        std::string _avatarUrl;
@@ -54,22 +72,29 @@ namespace MiraiCP {
     private:
         /*!
          * @brief 无参初始化Contact类型
-         * @internal 一般在MiraiCP内部构造
+         * @internal 禁止使用
          */
-        Contact() {
-            this->_type = MIRAI_CONTACT;
-            this->_id = 0;
-            this->_botid = 0;
-            //            this->_groupid = 0;
-            //            this->_nickOrNameCard = "";
-        }
+        Contact() = delete;
+
+        //        Contact() {
+        //            //            this->_type = MIRAI_CONTACT;
+        //            //            this->_id = 0;
+        //            //            this->_botid = 0;
+        //            //            this->_groupid = 0;
+        //            //            this->_nickOrNameCard = "";
+        //        }
+        // Contact(nlohmann::json in_json);
+    protected:
+        Contact(QQID in_id, QQID in_botid, ContactType in_type);
+        Contact(const nlohmann::json &in_json);
 
     public:
         /*!
          * @brief 初始化Contact类型
          * @note dev: 子类应调用该函数进行初始化
          */
-        Contact(QQID id, QQID inbotid, ContactType tp) : _id(id), _botid(inbotid), _type(tp) {}
+        // Contact(QQID id, QQID inbotid, ContactType tp) : _id(id), _botid(inbotid), _type(tp) {}
+
 
         /*!
          * @brief 构造contact类型
@@ -105,16 +130,16 @@ namespace MiraiCP {
         ///     - ContactType::Friend 好友
         ///     - ContactType::Group 群聊
         ///     - ContactType::Member 群成员
-        ContactType type() const { return this->_type; }
+        ContactType type() const; //{ return this->_type; }
 
         /// @brief id在全部情况存在
         ///     - 当当前type为Friend时，为好友id
         ///     - 当当前type为Group时，为群id
         ///     - 当当前type为Member时，为群成员id
-        QQID id() const { return this->_id; }
+        QQID id() const { return InternalData->_id; }
 
         /// 所属bot
-        QQID botid() const { return this->_botid; };
+        QQID botid() const { return InternalData->_botid; };
 
         /// @brief 当type为3的时候存在，否则为0，可以看作补充id
         ///     - 当当前type为1(Friend)时，为0
@@ -124,76 +149,10 @@ namespace MiraiCP {
         // QQID groupid() const { return this->_groupid; }
 
         /// 群名称，群成员群名片，或好友昵称
-        // std::string nickOrNameCard() const { return this->_nickOrNameCard; };
+        std::string nickOrNameCard() const { return InternalData->_nickOrNameCard; };
 
         /// 头像url地址
-        // std::string avatarUrl() const { return this->_avatarUrl; };
-
-
-
-    public: // serialization
-        /// 序列化到json对象
-        virtual nlohmann::json toJson() const { return {}; } //{
-                                                             //            nlohmann::json j;
-                                                             //            j["type"] = type();
-                                                             //            j["id"] = id();
-                                                             //            j["groupid"] = groupid();
-                                                             //            j["nickornamecard"] = nickOrNameCard();
-                                                             //            j["botid"] = botid();
-                                                             //            return j;
-                                                             //        }
-        /// @deprecated since v2.8.1, use `this->toJson()`
-        ShouldNotUse("use toJson") nlohmann::json serialization() const;
-
-        /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
-        /// @see Contact::fromString()
-        std::string toString() const {
-            return this->toJson().dump();
-        }
-        /// @deprecated since v2.8.1, use `this->toString()`
-        ShouldNotUse("use toString") std::string serializationToString() const = delete;
-        /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
-        // ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source);
-
-        /// 反序列化成bot，可以通过serializationToString序列化，利于保存
-        /// @see Contact::serializationToString()
-        /// @param source 序列化后的文本
-        /// @throw APIException
-        //        static Contact deserialize(const std::string &source);
-        //
-        static std::shared_ptr<Contact> deserialize(nlohmann::json source);
-
-        // for derived class
-        template<class T>
-        static T deserialize(const nlohmann::json &source) {
-            static_assert(std::is_base_of_v<Contact, T>, "Cannot deserialize class that isn't base on Contact");
-            T contactObject = T();
-            contactObject.deserializeWriter(source);
-            contactObject.refreshInfo();
-            return contactObject;
-        }
-
-        explicit operator ContactWithSendSupport() const;
-
-    private: // serialization
-        void deserializeWriter(const nlohmann::json &source);
-    };
-
-    class ContactWithSendSupport : public Contact {
-    public:
-        ContactWithSendSupport() = default;
-
-        ContactWithSendSupport(QQID id,
-                               QQID botid,
-                               ContactType type);
-
-        ~ContactWithSendSupport() override = default;
-
-    protected:
-        /// 发送语音
-        MessageSource sendVoice0(const std::string &path);
-
-    public:
+        std::string avatarUrl() const { return InternalData->_avatarUrl; };
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, true, env)`
         ShouldNotUse("Use sendMessage") MessageSource
                 sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
@@ -269,6 +228,82 @@ namespace MiraiCP {
         ShouldNotUse("Use sendMessage") MessageSource
                 sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
 
+
+        //        template<class T>
+        //        T &to() {
+        //            static_assert(std::is_base_of_v<Contact, T>);
+        //            return static_cast<T &>(*this);
+        //        }
+        //
+        //        template<class T>
+        //        const T &to_const() const {
+        //            static_assert(std::is_base_of_v<Contact, T>);
+        //            return static_cast<const T &>(*this);
+        //        }
+
+    private: // private methods
+        MessageSource quoteAndSend0(const std::string &msg, const MessageSource &ms);
+
+        template<class T>
+        MessageSource quoteAndSend1(T s, MessageSource ms) {
+            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+            return this->quoteAndSend0(s.toMiraiCode(), ms);
+        }
+
+        MessageSource quoteAndSend1(std::string s, MessageSource ms) {
+            return this->quoteAndSend0(s, ms);
+        }
+
+        MessageSource quoteAndSend1(MessageChain mc, MessageSource ms) {
+            return this->quoteAndSend0(mc.toMiraiCode(), ms);
+        }
+
+
+    public: // serialization
+        /// 序列化到json对象
+        virtual nlohmann::json toJson() const { return {}; } //{
+                                                             //            nlohmann::json j;
+                                                             //            j["type"] = type();
+                                                             //            j["id"] = id();
+                                                             //            j["groupid"] = groupid();
+                                                             //            j["nickornamecard"] = nickOrNameCard();
+                                                             //            j["botid"] = botid();
+                                                             //            return j;
+                                                             //        }
+        /// @deprecated since v2.8.1, use `this->toJson()`
+        ShouldNotUse("use toJson") nlohmann::json serialization() const;
+
+        /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
+        /// @see Contact::fromString()
+        std::string toString() const {
+            return this->toJson().dump();
+        }
+        /// @deprecated since v2.8.1, use `this->toString()`
+        ShouldNotUse("use toString") std::string serializationToString() const = delete;
+        /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
+        // ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source);
+
+        /// 反序列化成bot，可以通过serializationToString序列化，利于保存
+        /// @see Contact::serializationToString()
+        /// @param source 序列化后的文本
+        /// @throw APIException
+        //        static Contact deserialize(const std::string &source);
+        //
+        static std::shared_ptr<Contact> deserialize(nlohmann::json source);
+
+        // for derived class
+        template<class T>
+        static T deserialize(nlohmann::json source) {
+            static_assert(std::is_base_of_v<Contact, T>, "Cannot deserialize class that isn't base on Contact");
+            //            T contactObject = T();
+            //            contactObject.deserializeWriter(source);
+            //            contactObject.refreshInfo();
+            //            return contactObject;
+            return T(std::move(source));
+        }
+
+        // explicit operator ContactWithSendSupport() const;
+
         /*!
         * @brief 上传本地图片，务必要用绝对路径
         * 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
@@ -277,26 +312,34 @@ namespace MiraiCP {
         * -可能抛出UploadException异常代表路径无效或大小大于30MB
         * -可能抛出MemberException找不到群或群成员
         */
-        Image uploadImg(const std::string &path) const;
-
-        FlashImage uploadFlashImg(const std::string &path) const;
-
-        template<class T>
-        T &to() {
-            static_assert(std::is_base_of_v<Contact, T>);
-            return static_cast<T &>(*this);
+        Image uploadImg(const std::string &path) const {
+            std::string re = LowLevelAPI::uploadImg0(path, toString());
+            if (re == "E2")
+                throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
+            return Image::deserialize(re);
         }
 
-        template<class T>
-        const T &to_const() const {
-            static_assert(std::is_base_of_v<Contact, T>);
-            return static_cast<const T &>(*this);
+        FlashImage uploadFlashImg(const std::string &path) const {
+            std::string re = LowLevelAPI::uploadImg0(path, toString());
+            if (re == "E2")
+                throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
+            return FlashImage::deserialize(re);
         }
 
-    private: // private methods
+        /// 发送语音
+        MessageSource sendVoice0(const std::string &path) const;
+
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsg0(std::string msg, int retryTime, bool miraicode = false) const;
+        MessageSource sendMsg0(std::string msg, int retryTime, bool miraicode = false) const {
+            if (msg.empty()) {
+                throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
+            }
+            std::string re = LowLevelAPI::send0(std::move(msg), InternalData->toJson(), retryTime, miraicode,
+                                                "reach a error area, Contact::SendMiraiCode");
+            MIRAICP_ERROR_HANDLE(re, "");
+            return MessageSource::deserializeFromString(re);
+        }
 
         template<class T>
         MessageSource send1(T msg, int retryTime) {
@@ -319,23 +362,22 @@ namespace MiraiCP {
         MessageSource send1(const char *msg, int retryTime) {
             return sendMsg0(std::string(msg), retryTime, false);
         }
+    };
 
-        MessageSource quoteAndSend0(const std::string &msg, const MessageSource &ms);
+    template<typename ClassType, typename InternalDataType>
+    class ContactDataHelper {
+    public:
+        using json = nlohmann::json;
+        typedef Contact Super;
+        typedef InternalDataType DataType;
 
-        template<class T>
-        MessageSource quoteAndSend1(T s, MessageSource ms) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return this->quoteAndSend0(s.toMiraiCode(), ms);
-        }
-
-        MessageSource quoteAndSend1(std::string s, MessageSource ms) {
-            return this->quoteAndSend0(s, ms);
-        }
-
-        MessageSource quoteAndSend1(MessageChain mc, MessageSource ms) {
-            return this->quoteAndSend0(mc.toMiraiCode(), ms);
+        DataType *GetDataInternal() {
+            auto kls_ptr = static_cast<ClassType *>(this);
+            assert(kls_ptr->InternalData != nullptr);
+            return static_cast<DataType *>(kls_ptr->InternalData.get());
         }
     };
+
 
     class INudgeSupport {
     public:

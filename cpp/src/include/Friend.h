@@ -21,14 +21,18 @@
 
 namespace MiraiCP {
     /// 好友类声明
-    class Friend : public ContactWithSendSupport, INudgeSupport {
-    private:
+    class Friend : public Contact, public INudgeSupport {
         friend class Contact;
 
+    public:
+        typedef IContactData InternalDataType;
+
+    private:
         std::string _nickOrNameCard;
         std::string _avatarUrl;
 
-        explicit Friend() = default;
+    private:
+        Friend() = default;
 
     public:
         /*!
@@ -36,8 +40,10 @@ namespace MiraiCP {
          * @param friendid q号
          * @param botid 对应机器人id
          */
-        explicit Friend(QQID friendid, QQID botid);
+        Friend(QQID friendid, QQID botid);
+        explicit Friend(nlohmann::json in_json);
 
+    public:
         /// 删除好友(delete是C++关键字)
         void deleteFriend();
 

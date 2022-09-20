@@ -207,10 +207,10 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::MemberJoinRequestEvent: {
-                std::optional<Group> a = std::nullopt;
+                Group a = Contact::deserialize<Group>(j["group"]);
                 std::optional<Member> b = std::nullopt;
-                if (j["group"]["id"] != 0)
-                    a.emplace(Contact::deserialize<Group>(j["group"]));
+//                if (j["group"]["id"] != 0)
+//                    a.emplace(Contact::deserialize<Group>(j["group"]));
                 if (j["inviter"]["id"] != 0)
                     b.emplace(Contact::deserialize<Member>(j["inviter"]));
                 Event::broadcast(MemberJoinRequestEvent(a, b, a.botid(), j["requester"], j["requestData"]));

@@ -27,14 +27,14 @@
 namespace MiraiCP {
     class Friend;      // forward declaration
     class Group;       // forward declaration
-    class InternalBot; // forward declaration
+    struct InternalBot; // forward declaration
 
     /// 当前bot账号信息
     class Bot : Contact {
-        friend class InternalBot;
+        friend struct InternalBot;
 
     private:
-        std::shared_ptr<InternalBot> _InternalBot;
+        std::shared_ptr<InternalBot> InternalData;
 
     public:
         /// 该botid

@@ -20,41 +20,50 @@
 #include "LowLevelAPI.h"
 
 namespace MiraiCP {
+#define LOC_CLASS_NAMESPACE Member
     using json = nlohmann::json;
     /*成员类实现*/
     Member::Member(QQID id, QQID groupid, QQID botid)
-        : ContactWithSendSupport(id, botid, MIRAI_MEMBER), _groupid(groupid) {
+        : Contact(id, botid, MIRAI_MEMBER) {
+        // todo
         refreshInfo();
     }
-
-    void Member::refreshInfo() {
-        this->isAnonymous = this->_anonymous;
-        if (isAnonymous)
-            return;
-        std::string temp = LowLevelAPI::getInfoSource(this->toString());
-        if (temp == "E1")
-            throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
-        if (temp == "E2")
-            throw MemberException(2, MIRAICP_EXCEPTION_WHERE);
-        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
-        this->_nickOrNameCard = tmp.nickornamecard;
-        this->_avatarUrl = tmp.avatarUrl;
-        this->permission = getPermission();
-        if (temp == "E1") {
-            throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
-        }
-        if (temp == "E2") {
-            throw MemberException(2, MIRAICP_EXCEPTION_WHERE);
-        }
+    Member::Member(nlohmann::json in_json) : Contact(in_json) {
+        // todo
     }
-
-    unsigned int Member::getPermission() const {
-        if (isAnonymous) return 0;
-        json j;
-        j["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::QueryM, j);
-        return stoi(re);
-    }
+    IMPL_GETTER(anonymous)
+    //
+    //    void Member::refreshInfo() {
+    //        this->isAnonymous = this->_anonymous;
+    //        if (isAnonymous)
+    //            return;
+    //        std::string temp = LowLevelAPI::getInfoSource(this->toString());
+    //        if (temp == "E1")
+    //            throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
+    //        if (temp == "E2")
+    //            throw MemberException(2, MIRAICP_EXCEPTION_WHERE);
+    //        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
+    //        this->_nickOrNameCard = tmp.nickornamecard;
+    //        this->_avatarUrl = tmp.avatarUrl;
+    //        if (isAnonymous) {
+    //            this->permission = 0;
+    //        } else {
+    //            json j;
+    //            j["contactSource"] = this->toString();
+    //            std::string re = KtOperation::ktOperation(KtOperation::QueryM, j);
+    //            this->permission = stoi(re);
+    //        }
+    //        if (temp == "E1") {
+    //            throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
+    //        }
+    //        if (temp == "E2") {
+    //            throw MemberException(2, MIRAICP_EXCEPTION_WHERE);
+    //        }
+    //    }
+    //
+    //    unsigned int Member::getPermission() const {
+    //        if (isAnonymous) return 0;
+    //    }
 
     void Member::mute(int time) {
         json j;
@@ -73,7 +82,7 @@ namespace MiraiCP {
     }
 
     void Member::modifyAdmin(bool admin) {
-        if (isAnonymous) return;
+        if (anonymous()) return;
         json j;
         j["admin"] = admin;
         j["contactSource"] = this->toString();
@@ -82,7 +91,7 @@ namespace MiraiCP {
     }
 
     void Member::changeNameCard(std::string_view newName) {
-        if (isAnonymous) return;
+        if (anonymous()) return;
         json j;
         j["contactSource"] = this->toString();
         j["newName"] = newName;
@@ -91,12 +100,46 @@ namespace MiraiCP {
     }
 
     void Member::sendNudge() {
-        if (isAnonymous) return;
+        if (anonymous()) return;
         json j;
         j["contactSource"] = this->toString();
         std::string re = KtOperation::ktOperation(KtOperation::SendNudge, j);
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone", MIRAICP_EXCEPTION_WHERE);
     }
+    void Member::refreshInfo() {
+        InternalData->request_refresh();
+    }
 
+
+    void MemberData::deserialize(nlohmann::json in_json) {
+        _groupid = in_json["groupid"];
+        _anonymous = in_json["anonymous"].get<bool>();
+        IContactData::deserialize(in_json);
+    }
+
+    void MemberData::refreshInfo() {
+        if (_anonymous) return;
+
+        auto tempserialize = toString();
+        std::string result = LowLevelAPI::getInfoSource(tempserialize);
+
+        if (result == "E1")
+            throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
+        if (result == "E2")
+            throw MemberException(2, MIRAICP_EXCEPTION_WHERE);
+
+        {
+            LowLevelAPI::info tmp = LowLevelAPI::info0(result);
+            this->_nickOrNameCard = tmp.nickornamecard;
+            this->_avatarUrl = tmp.avatarUrl;
+        }
+
+        {
+            json j{{"contactSource", std::move(tempserialize)}};
+            _permission = stoi(KtOperation::ktOperation(KtOperation::QueryM, std::move(j)));
+        }
+    }
+
+#undef LOC_CLASS_NAMESPACE
 } // namespace MiraiCP
