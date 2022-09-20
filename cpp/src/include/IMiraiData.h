@@ -15,7 +15,7 @@ namespace MiraiCP {
     private:
         struct MiraiDataLocker final {
             std::shared_mutex _mtx;
-            std::atomic_bool _inited = false;
+            std::atomic<bool> _inited = false;
         };
 
     protected:
