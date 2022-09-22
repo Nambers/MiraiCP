@@ -25,7 +25,7 @@ import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.command.SimpleCommand
 import tech.eritquearcus.miraicp.PluginMain
 import tech.eritquearcus.miraicp.shared.CPPEvent
-import tech.eritquearcus.miraicp.shared.event
+import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 
 object PluginList : SimpleCommand(
     PluginMain,

@@ -40,12 +40,27 @@ expect object UlitsMultiPlatform {
     // 广播事件到cpp
     fun <T> event(value: T, obj: SerializationStrategy<T>? = null)
     fun getLibLoader(pathsInput: List<String>): String
-    fun Contact.toContact(): Config.Contact?
-
-    // convert mirai Contact type to MiraiCP contact
-    fun ContactOrBot.toContact(): Config.Contact?
 }
 
+fun Contact.toContact(): Config.Contact? = when (this) {
+    is Group -> this.toContact()
+    is Friend -> this.toContact()
+    is Member -> this.toContact()
+    else -> {
+        PublicSharedData.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:Contact.toContact(), info:${this}")
+        null
+    }
+}
+
+// convert mirai Contact type to MiraiCP contact
+fun ContactOrBot.toContact(): Config.Contact? = when (this) {
+    is Contact -> this.toContact()
+    is Bot -> this.asFriend.toContact()
+    else -> {
+        PublicSharedData.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和本信息以修复此问题, 位置:ContactOrBot.toContact(), info:$this")
+        null
+    }
+}
 
 fun Group.toContact(): Config.Contact = Config.Contact(2, this.id, 0, this.name, this.bot.id)
 

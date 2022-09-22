@@ -18,27 +18,7 @@
 
 package tech.eritquearcus.miraicp.shared
 
-import kotlinx.serialization.SerializationStrategy
-import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.ContactOrBot
-
-//suspend inline fun <T, R> T.runInTP(
-//    crossinline block: T.() -> R,
-//): R = runInterruptible(context = cc, block = { block() })
-actual object UlitsMultiPlatform {
-    actual fun <T> event(value: T, obj: SerializationStrategy<T>?) {
+actual object PublicSharedMultiplatform {
+    actual fun onDisable() {
     }
-
-    actual fun getLibLoader(pathsInput: List<String>): String {
-        TODO("Not yet implemented")
-    }
-
-    actual fun Contact.toContact(): Config.Contact? {
-        TODO("Not yet implemented")
-    }
-
-    actual fun ContactOrBot.toContact(): Config.Contact? {
-        TODO("Not yet implemented")
-    }
-
 }

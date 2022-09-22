@@ -34,9 +34,9 @@ kotlin {
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
     val nativeTarget = when {
-        hostOs == "Mac OS X" -> macosX64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        isMingwX64 -> mingwX64("native")
+        hostOs == "Mac OS X" -> macosX64("unix")
+        hostOs == "Linux" -> linuxX64("unix")
+        isMingwX64 -> mingwX64("win")
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
     sourceSets {
@@ -50,6 +50,11 @@ kotlin {
             apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
         }
         val jvmMain by getting
-        val nativeMain by getting
+        val unixMain = maybeCreate("unixMain").apply {
+            this.dependsOn(commonMain)
+        }
+        val winMain = maybeCreate("winMain").apply {
+            this.dependsOn(commonMain)
+        }
     }
 }

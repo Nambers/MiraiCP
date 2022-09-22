@@ -49,16 +49,15 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
+import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
-import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.toContact
 import kotlin.native.concurrent.ThreadLocal
 
 expect object PublicSharedMultiplatform {
-    suspend fun uploadImgAndId(file: String, temp: Contact, err1: String, err2: String): String
     fun onDisable()
 }
 
@@ -288,8 +287,28 @@ object PublicShared {
     }
 
     //图片部分实现
-    suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String =
-        PublicSharedMultiplatform.uploadImgAndId(file, temp, err1, err2)
+    suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String = try {
+        val f = MiraiCPFiles.create(file).toExternalResource()
+        val img = f.uploadAsImage(temp)
+        f.close()
+        Json.encodeToString(
+            Config.ImgInfo(
+                img.size,
+                img.width,
+                img.height,
+                Json.encodeToString(img.md5),
+                img.queryUrl(),
+                img.imageId,
+                img.imageType.ordinal
+            )
+        )
+    } catch (e: OverFileSizeMaxException) {
+        logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
+        err1
+    } catch (e: NullPointerException) {
+        logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
+        err2
+    }
 
     suspend fun uploadImg(file: String, c: Config.Contact): String = c.withBot { bot ->
         when (c.type) {

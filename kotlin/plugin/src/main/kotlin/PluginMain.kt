@@ -19,6 +19,8 @@
 package tech.eritquearcus.miraicp
 
 import com.google.gson.Gson
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -29,6 +31,7 @@ import tech.eritquearcus.miraicp.console.CommandHandlerImpl
 import tech.eritquearcus.miraicp.console.registerCommands
 import tech.eritquearcus.miraicp.shared.*
 import tech.eritquearcus.miraicp.shared.BuiltInConstants.version
+import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 import java.io.File
 
 object PluginMain : KotlinPlugin(
@@ -45,15 +48,15 @@ object PluginMain : KotlinPlugin(
         registerCommands()
         val l = MiraiLogger.Factory.create(this::class, "MiraiCP")
         PublicShared.init(l)
-        PublicShared.cachePath = this.dataFolder.resolve("cache")
-        if (PublicShared.cachePath.exists()) {
-            PublicShared.cachePath.deleteRecursively()
+        PublicSharedData.cachePath = this.dataFolder.resolve("cache").toMiraiCPFile()
+        if (PublicSharedData.cachePath.exists()) {
+            PublicSharedData.cachePath.deleteRecursively()
         }
-        PublicShared.cachePath.mkdir()
+        PublicSharedData.cachePath.mkdir()
         l.info("⭐MiraiCP启动中⭐")
         l.info("⭐github地址:https://github.com/Nambers/MiraiCP")
         l.info("⭐MiraiCP-loader 版本: $version, 构建时间: ${BuiltInConstants.date}")
-        PublicShared.commandReg = CommandHandlerImpl()
+        PublicSharedData.commandReg = CommandHandlerImpl()
         val config = Gson().fromJson(File("${dataFolder.absoluteFile}/miraicp.json").apply {
             if (!this.exists() || !this.isFile) {
                 l.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
@@ -74,7 +77,7 @@ object PluginMain : KotlinPlugin(
         }.readText(), CPPConfig.PluginConfig::class.java)
         if (config.advanceConfig != null && config.advanceConfig!!.maxThread != null) {
             if (config.advanceConfig!!.maxThread!! <= 0) PublicSharedData.logger.error("配置错误: 配置项AdvanceConfig.maxThread的值应该>=0, 使用默认值")
-            else PublicShared.maxThread = config.advanceConfig!!.maxThread!!
+            else PublicSharedData.maxThread = config.advanceConfig!!.maxThread!!
         }
         val tmp = if (config.advanceConfig?.libLoaderPath != null) {
             val tmp2 = File(config.advanceConfig?.libLoaderPath!!)
@@ -106,7 +109,7 @@ object PluginMain : KotlinPlugin(
         logger.info("⭐已成功启动MiraiCP⭐")
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
             event(
-                PublicShared.gson.toJson(CPPEvent.BotOnline(this.bot.id))
+                Json.encodeToString(CPPEvent.BotOnline(this.bot.id))
             )
         }
         PublicShared.onEnable(GlobalEventChannel.parentScope(this))

@@ -18,12 +18,7 @@
 
 package tech.eritquearcus.miraicp.shared
 
-import tech.eritquearcus.miraicp.shared.CPPLibMultiplatform.PluginDisable
-
 actual object PublicSharedMultiplatform {
-
     actual fun onDisable() {
-        PluginDisable()
     }
-
 }

@@ -20,8 +20,6 @@ package tech.eritquearcus.miraicp.shared
 
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
-import net.mamoe.mirai.Bot
-import net.mamoe.mirai.contact.*
 import java.io.File
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -61,24 +59,4 @@ actual object UlitsMultiPlatform {
         )
         throw IllegalStateException("找不到 libLoader 组件")
     }
-
-    actual fun Contact.toContact(): Config.Contact? = when (this) {
-        is Group -> this.toContact()
-        is Friend -> this.toContact()
-        is Member -> this.toContact()
-        else -> {
-            PublicSharedData.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:Contact.toContact(), info:${this.javaClass.name}")
-            null
-        }
-    }
-
-    actual fun ContactOrBot.toContact(): Config.Contact? = when (this) {
-        is Contact -> this.toContact()
-        is Bot -> this.asFriend.toContact()
-        else -> {
-            PublicSharedData.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和本信息以修复此问题, 位置:ContactOrBot.toContact(), info:${this.javaClass.name}")
-            null
-        }
-    }
-
 }

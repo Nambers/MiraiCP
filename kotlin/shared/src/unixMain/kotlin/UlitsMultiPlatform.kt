@@ -18,18 +18,16 @@
 
 package tech.eritquearcus.miraicp.shared
 
-import net.mamoe.mirai.contact.Contact
+import kotlinx.serialization.SerializationStrategy
 
-actual object PublicSharedMultiplatform {
-    actual suspend fun uploadImgAndId(
-        file: String,
-        temp: Contact,
-        err1: String,
-        err2: String
-    ): String {
-        TODO("Not yet implemented")
+//suspend inline fun <T, R> T.runInTP(
+//    crossinline block: T.() -> R,
+//): R = runInterruptible(context = cc, block = { block() })
+actual object UlitsMultiPlatform {
+    actual fun <T> event(value: T, obj: SerializationStrategy<T>?) {
     }
 
-    actual fun onDisable() {
+    actual fun getLibLoader(pathsInput: List<String>): String {
+        TODO("Not yet implemented")
     }
 }

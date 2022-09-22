@@ -18,9 +18,16 @@
 
 package tech.eritquearcus.miraicp.shared
 
+import kotlinx.serialization.SerializationStrategy
 
-actual object MiraiCPFiles {
-    actual fun create(path: String): MiraiCPFile {
+//suspend inline fun <T, R> T.runInTP(
+//    crossinline block: T.() -> R,
+//): R = runInterruptible(context = cc, block = { block() })
+actual object UlitsMultiPlatform {
+    actual fun <T> event(value: T, obj: SerializationStrategy<T>?) {
+    }
+
+    actual fun getLibLoader(pathsInput: List<String>): String {
         TODO("Not yet implemented")
     }
 }
