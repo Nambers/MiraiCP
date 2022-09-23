@@ -92,7 +92,7 @@ static_assert(false, "Unsupported platform");
 
 // ShouldNotUse
 #if MIRAICP_MSVC
-#pragma warning (error:4996)
+#pragma warning(error : 4996)
 #define ShouldNotUse(msg) [[deprecated(msg)]]
 #elif MIRAICP_GCC
 #define ShouldNotUse(msg) [[deprecated(msg)]] __attribute__((error(msg)))
@@ -158,11 +158,11 @@ static_assert(false, "Unsupported platform");
 
 
 // getter
-// need to define LOC_CLASS_NAMESPACE to the class first!
+// need to define macro LOC_CLASS_NAMESPACE to the class first!
 
-#define DECL_GETTER(attr) decltype(DataType::_##attr) attr();
-#define IMPL_GETTER(attr) \
-    decltype(LOC_CLASS_NAMESPACE::DataType::_##attr) LOC_CLASS_NAMESPACE::attr(){ \
+#define DECL_GETTER(attr) const decltype(DataType::_##attr) &attr();
+#define IMPL_GETTER(attr)                                                                 \
+    const decltype(LOC_CLASS_NAMESPACE::DataType::_##attr& LOC_CLASS_NAMESPACE::attr(){ \
         InternalData->request_refresh(); \
         std::shared_lock<std::shared_mutex> local_lck(InternalData->get_mutex()); \
         return GetDataInternal()->_##attr;\
