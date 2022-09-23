@@ -24,13 +24,6 @@ namespace MiraiCP {
     class Friend : public Contact, public INudgeSupport , public ContactDataHelper<Friend, IContactData>{
         friend class Contact;
 
-    private:
-        std::string _nickOrNameCard;
-        std::string _avatarUrl;
-
-    private:
-        // Friend() = default;
-
     public:
         /*!
          * @brief 构建好友对象
@@ -45,20 +38,12 @@ namespace MiraiCP {
         /// @note delete是C++关键字
         void deleteFriend();
 
-        // void refreshInfo();
-
         /*!
          * @brief 发送戳一戳
          * @warning 发送戳一戳的前提是登录该bot的协议是android_phone/ipad, 否则抛出IllegalStateException
          * @throw MiraiCP::BotException, MiraiCP::IllegalStateException
          */
         void sendNudge() override;
-
-        //        explicit Friend(const Contact &c) : Contact(c) {
-        //            if (c.type() != 1)
-        //                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 1(friend)", MIRAICP_EXCEPTION_WHERE);
-        //            refreshInfo();
-        //        };
     };
 } // namespace MiraiCP
 

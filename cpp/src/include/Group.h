@@ -39,7 +39,10 @@ namespace MiraiCP {
             /// 允许匿名聊天
             bool isAnonymousChatEnabled{};
         };
-        /// 群设置
+        /**
+         * @brief 群设置
+         * @details 使用 Group::updateSetting 上传设置，后面两项由于 https://github.com/mamoe/mirai/issues/1307 还不能改
+         */
         GroupSetting _setting;
 
         explicit GroupData(QQID in_groupid) : GroupRelatedData(in_groupid) {}
@@ -131,11 +134,6 @@ namespace MiraiCP {
             //                                                                                         params(params) {}
         };
 
-        /**
-         * @brief 群设置
-         * @details 使用uploadSetting上传设置，使用refreshInfo同步服务器设定，后面两项由于 https://github.com/mamoe/mirai/issues/1307 还不能改
-         */
-
         DECL_GETTER(setting)
 
         /// 群文件的简短描述
@@ -146,13 +144,6 @@ namespace MiraiCP {
             std::string id;
         };
 
-    public:  // attrs
-    private: // constructors
-        /*!
-         * @brief 群聊类的内部构造函数，不可使用
-         */
-        Group() = default;
-
     public: // constructors
         ///  @brief 构建以群号构建群对象
         /// @param groupid 群号
@@ -160,12 +151,6 @@ namespace MiraiCP {
         /// @doxygenEg{1007, group.cpp, 从群号构建群对象}
         Group(QQID groupid, QQID botid);
         Group(nlohmann::json in_json);
-        //        explicit Group(const Contact &c) : Contact(c) {
-        //            if (c.type() != 2)
-        //                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 2(group)", MIRAICP_EXCEPTION_WHERE);
-        //            refreshInfo();
-        //        }
-
 
     public: // methods
         /**
