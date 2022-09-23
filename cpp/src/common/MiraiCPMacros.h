@@ -167,5 +167,7 @@ static_assert(false, "Unsupported platform");
         std::shared_lock<std::shared_mutex> local_lck(InternalData->get_mutex()); \
         return GetDataInternal()->_##attr;\
     }
+#define INLINE_GETTER(attr) \
+    const auto &attr() { return GetDataInternal()->_##attr; }
 
 #endif //MIRAICP_PRO_MIRAICPMACROS_H
