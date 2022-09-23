@@ -23,17 +23,44 @@
 
 namespace MiraiCP {
 #define LOC_CLASS_NAMESPACE Group
+
     using json = nlohmann::json;
+
     std::string Group::MemberListToString() {
         return Tools::VectorToString(getMemberList());
     }
 
-    Group::Group(QQID groupid, QQID botid) : Contact(groupid, botid, MIRAI_GROUP) {
-        // todo
+    auto GetGroupFromPool(QQID groupid, QQID botid) noexcept {
+        static std::unordered_map<QQID, std::unordered_map<QQID, std::shared_ptr<Group::DataType>>> Pool;
+        auto &Val = Pool[botid][groupid];
+        if (!Val) {
+            Val = std::make_shared<Group::DataType>(groupid);
+            Val->_botid = botid;
+            Val->_id = groupid;
+            Val->_type = MIRAI_GROUP;
+        }
+        return Val;
     }
 
-    Group::Group(json in_json) : Contact(in_json) {
-        // todo
+    auto GetGroupFromPool(const json &in_json) {
+        try {
+            return GetGroupFromPool(in_json["groupid"], in_json["botid"]);
+        } catch (const nlohmann::detail::exception &) {
+            throw IllegalArgumentException("构造Group时传入的json异常", MIRAICP_EXCEPTION_WHERE);
+        }
+    }
+
+    Group::Group(QQID groupid, QQID botid) : Contact(GetGroupFromPool(groupid, botid)) {
+        forceRefreshNexttime();
+    }
+
+    Group::Group(json in_json) : Contact(GetGroupFromPool(in_json)) {
+        auto ActualDataPtr = GetDataInternal();
+        assert(ActualDataPtr != nullptr);
+        ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
+        else
+            forceRefreshNexttime();
     }
 
     std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList() {
@@ -47,6 +74,7 @@ namespace MiraiCP {
         }
         return oa;
     }
+
     void Group::OnlineAnnouncement::deleteThis() {
         json j, i;
         i["botid"] = this->botid;
@@ -111,17 +139,12 @@ namespace MiraiCP {
         return Tools::StringToVector(std::move(re));
     }
 
-
     void Group::quit() {
         nlohmann::json j;
         j["source"] = this->toString();
         j["quit"] = true;
         KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
-
-    //    void Group::refreshInfo() {
-    //
-    //    }
 
     void Group::updateSetting() {
         json j;
@@ -231,5 +254,10 @@ namespace MiraiCP {
         this->_setting.isAllowMemberInvite = j["isAllowMemberInvite"];
         this->_setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
         this->_setting.isAnonymousChatEnabled = j["isAnonymousChatEnabled"];
+    }
+    
+    void GroupData::deserialize(nlohmann::json in_json) {
+        _groupid = in_json["groupid"];
+        IContactData::deserialize(std::move(in_json));
     }
 } // namespace MiraiCP

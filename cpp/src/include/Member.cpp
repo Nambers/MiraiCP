@@ -25,7 +25,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
 
 
-    auto GetMemberFromPool(QQID id, QQID groupid, QQID botid) {
+    auto GetMemberFromPool(QQID id, QQID groupid, QQID botid) noexcept {
         using Tools::idpair;
         static std::unordered_map<idpair, std::unordered_map<QQID, std::shared_ptr<Member::DataType>>> Pool;
         idpair pr{botid, groupid};
@@ -46,18 +46,26 @@ namespace MiraiCP {
             throw IllegalArgumentException("构造Member时传入的json异常", MIRAICP_EXCEPTION_WHERE);
         }
     }
-    /*成员类实现*/
+
     Member::Member(QQID id, QQID groupid, QQID botid)
         : Contact(GetMemberFromPool(id, botid, MIRAI_MEMBER)) {
         forceRefreshNexttime();
     }
+
     Member::Member(nlohmann::json in_json) : Contact(GetMemberFromPool(in_json)) {
         auto ActualDataPtr = GetDataInternal();
         assert(ActualDataPtr != nullptr);
         ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+
+        bool needrefresh = false;
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
         else
-            forceRefreshNexttime();
+            needrefresh = true;
+        if (in_json.contains("anonymous")) ActualDataPtr->_anonymous = in_json["anonymous"].get<bool>();
+        else
+            needrefresh = true;
+
+        if (needrefresh) forceRefreshNexttime();
     }
 
     IMPL_GETTER(anonymous)
@@ -145,7 +153,7 @@ namespace MiraiCP {
     void MemberData::deserialize(nlohmann::json in_json) {
         _groupid = in_json["groupid"];
         _anonymous = in_json["anonymous"].get<bool>();
-        IContactData::deserialize(in_json);
+        IContactData::deserialize(std::move(in_json));
     }
 
     void MemberData::refreshInfo() {

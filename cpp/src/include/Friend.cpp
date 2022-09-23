@@ -22,7 +22,7 @@
 
 namespace MiraiCP {
     using json = nlohmann::json;
-    auto GetFriendPool(QQID id, QQID botid) {
+    auto GetFriendPool(QQID id, QQID botid) noexcept {
         static std::unordered_map<QQID, std::unordered_map<QQID, std::shared_ptr<Friend::DataType>>> Pool;
         auto &val = Pool[botid][id];
         if (!val) {
@@ -34,7 +34,7 @@ namespace MiraiCP {
         return val;
     }
 
-    auto GetFriendPool(const nlohmann::json &in_json) {
+    auto GetFriendPool(const json &in_json) {
         try {
             return GetFriendPool(in_json["id"], in_json["botid"]);
         } catch (const nlohmann::detail::exception &e) {
@@ -63,16 +63,16 @@ namespace MiraiCP {
         KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
 
-//    void Friend::refreshInfo() {
-//        InternalData->request_refresh();
-//        //        std::string temp = LowLevelAPI::getInfoSource(this->toString());
-//        //        if (temp == "E1") {
-//        //            throw FriendException(MIRAICP_EXCEPTION_WHERE);
-//        //        }
-//        //        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
-//        //        this->_nickOrNameCard = tmp.nickornamecard;
-//        //        this->_avatarUrl = tmp.avatarUrl;
-//    }
+    //    void Friend::refreshInfo() {
+    //        InternalData->request_refresh();
+    //        //        std::string temp = LowLevelAPI::getInfoSource(this->toString());
+    //        //        if (temp == "E1") {
+    //        //            throw FriendException(MIRAICP_EXCEPTION_WHERE);
+    //        //        }
+    //        //        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
+    //        //        this->_nickOrNameCard = tmp.nickornamecard;
+    //        //        this->_avatarUrl = tmp.avatarUrl;
+    //    }
 
     void Friend::sendNudge() {
         json j;
