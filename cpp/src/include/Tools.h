@@ -110,12 +110,11 @@ template<>
 struct std::hash<MiraiCP::Tools::idpair> {
     using idpair = MiraiCP::Tools::idpair;
     size_t operator()(const idpair in_pair) const {
-        constexpr static size_t initval = 14695981039346656037ULL; // see: type_traits.h (MSVC)
         auto First = reinterpret_cast<const char *>(&in_pair);
-        auto Val = initval;
+        size_t Val = 14695981039346656037ULL; // see: type_traits.h (MSVC)
         for (size_t Idx = 0; Idx < sizeof(idpair); ++Idx) {
             Val ^= static_cast<size_t>(First[Idx]);
-            Val *= _FNV_prime;
+            Val *= 1099511628211ULL; // see: type_traits.h (MSVC)
         }
         return Val;
     }
