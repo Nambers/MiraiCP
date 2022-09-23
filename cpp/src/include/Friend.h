@@ -21,18 +21,15 @@
 
 namespace MiraiCP {
     /// 好友类声明
-    class Friend : public Contact, public INudgeSupport {
+    class Friend : public Contact, public INudgeSupport , public ContactDataHelper<Friend, IContactData>{
         friend class Contact;
-
-    public:
-        typedef IContactData InternalDataType;
 
     private:
         std::string _nickOrNameCard;
         std::string _avatarUrl;
 
     private:
-        Friend() = default;
+        // Friend() = default;
 
     public:
         /*!
