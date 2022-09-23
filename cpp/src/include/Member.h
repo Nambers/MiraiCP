@@ -61,8 +61,6 @@ namespace MiraiCP {
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
         //        bool isAnonymous;
 
-    private:
-        Member() = default;
     public:
         explicit Member(nlohmann::json in_json);
         DECL_GETTER(anonymous)
@@ -87,7 +85,7 @@ namespace MiraiCP {
         //        };
 
         /// 重新获取(刷新)群成员信息
-        void refreshInfo();
+        // void refreshInfo();
 
         /// 发送语音
         MessageSource sendVoice(const std::string &path) {

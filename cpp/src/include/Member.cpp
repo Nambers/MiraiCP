@@ -18,19 +18,48 @@
 #include "Exception.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
+#include "Tools.h"
 
 namespace MiraiCP {
 #define LOC_CLASS_NAMESPACE Member
     using json = nlohmann::json;
+
+
+    auto GetMemberFromPool(QQID id, QQID groupid, QQID botid) {
+        using Tools::idpair;
+        static std::unordered_map<idpair, std::unordered_map<QQID, std::shared_ptr<Member::DataType>>> Pool;
+        idpair pr{botid, groupid};
+        auto &Val = Pool[pr][id];
+        if (!Val) {
+            Val = std::make_shared<Member::DataType>(groupid);
+            Val->_id = id;
+            Val->_botid = botid;
+            Val->_type = MIRAI_MEMBER;
+        }
+        return Val;
+    }
+
+    auto GetMemberFromPool(const json &in_json) {
+        try {
+            return GetMemberFromPool(in_json["id"], in_json["groupid"], in_json["botid"]);
+        } catch (const nlohmann::detail::exception &) {
+            throw IllegalArgumentException("构造Member时传入的json异常", MIRAICP_EXCEPTION_WHERE);
+        }
+    }
     /*成员类实现*/
     Member::Member(QQID id, QQID groupid, QQID botid)
-        : Contact(id, botid, MIRAI_MEMBER) {
-        // todo
-        refreshInfo();
+        : Contact(GetMemberFromPool(id, botid, MIRAI_MEMBER)) {
+        forceRefreshNexttime();
     }
-    Member::Member(nlohmann::json in_json) : Contact(in_json) {
-        // todo
+    Member::Member(nlohmann::json in_json) : Contact(GetMemberFromPool(in_json)) {
+        auto ActualDataPtr = GetDataInternal();
+        assert(ActualDataPtr != nullptr);
+        ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
+        else
+            forceRefreshNexttime();
     }
+
     IMPL_GETTER(anonymous)
     //
     //    void Member::refreshInfo() {
@@ -79,6 +108,7 @@ namespace MiraiCP {
         j["message"] = reason;
         j["contactSource"] = this->toString();
         KtOperation::ktOperation(KtOperation::KickM, j);
+        forceRefreshNexttime();
     }
 
     void Member::modifyAdmin(bool admin) {
@@ -87,7 +117,7 @@ namespace MiraiCP {
         j["admin"] = admin;
         j["contactSource"] = this->toString();
         KtOperation::ktOperation(KtOperation::ModifyAdmin, j);
-        refreshInfo();
+        forceRefreshNexttime();
     }
 
     void Member::changeNameCard(std::string_view newName) {
@@ -96,7 +126,7 @@ namespace MiraiCP {
         j["contactSource"] = this->toString();
         j["newName"] = newName;
         KtOperation::ktOperation(KtOperation::ChangeNameCard, j);
-        refreshInfo();
+        forceRefreshNexttime();
     }
 
     void Member::sendNudge() {
@@ -107,10 +137,10 @@ namespace MiraiCP {
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone", MIRAICP_EXCEPTION_WHERE);
     }
-    void Member::refreshInfo() {
-        InternalData->request_refresh();
-    }
 
+    //    void Member::refreshInfo() {
+    //        InternalData->request_refresh();
+    //    }
 
     void MemberData::deserialize(nlohmann::json in_json) {
         _groupid = in_json["groupid"];

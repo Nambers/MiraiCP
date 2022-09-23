@@ -130,26 +130,48 @@ namespace MiraiCP {
         /// @note dev: 避免直接使用 InternalData ，请使用该接口操作 InternalData 指针
         void SetInternalData(std::shared_ptr<IContactData> Data) { InternalData = std::move(Data); }
 
+        /// @brief 尝试一次数据刷新
+        /// @note 不一定会进行刷新，一般为内部调用。强制刷新请使用 forceRefreshInfo()
+        /// @see forceRefreshInfo
+        void refreshInfo() {
+            InternalData->request_refresh();
+        }
+
+        /// @brief 强制下次refreshInfo()调用时刷新数据
+        /// @note 尽可能调用该函数，避免不必要的刷新
+        /// @see refreshInfo
+        void forceRefreshNexttime() {
+            InternalData->force_refresh_nexttime();
+        }
+
+        /// @brief 强制数据刷新
+        /// @note 频繁刷新可能会有性能损耗
+        /// @see refreshInfo, forceRefreshNexttime
+        void forceRefreshInfo() {
+            forceRefreshNexttime();
+            refreshInfo();
+        }
+
         /// @brief 当前对象类型
         /// @see ContactType
-        ///     - ContactType::Friend 好友
-        ///     - ContactType::Group 群聊
-        ///     - ContactType::Member 群成员
-        ContactType type() const; //{ return this->_type; }
+        ///     - ContactType::MIRAI_FRIEND 好友
+        ///     - ContactType::MIRAI_GROUP 群聊
+        ///     - ContactType::MIRAI_MEMBER 群成员
+        ContactType type() const { return InternalData->_type; }
 
         /// @brief id在全部情况存在
-        ///     - 当当前type为Friend时，为好友id
-        ///     - 当当前type为Group时，为群id
-        ///     - 当当前type为Member时，为群成员id
+        ///     - 当前type为Friend时，为好友id
+        ///     - 当前type为Group时，为群id
+        ///     - 当前type为Member时，为群成员id
         QQID id() const { return InternalData->_id; }
 
         /// 所属bot
         QQID botid() const { return InternalData->_botid; };
 
         /// @brief 当type为3的时候存在，否则为0，可以看作补充id
-        ///     - 当当前type为1(Friend)时，为0
-        ///     - 当当前type为2(Group)时，为0
-        ///     - 当当前type为3(Member)时，为群号
+        ///     - 当前type为1(Friend)时，为0
+        ///     - 当前type为2(Group)时，为0
+        ///     - 当前type为3(Member)时，为群号
         /// @attention 当当前type为2(Group)时，为0，不为群号，id才是群号
         // QQID groupid() const { return this->_groupid; }
 

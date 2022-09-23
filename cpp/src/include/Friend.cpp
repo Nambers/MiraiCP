@@ -44,7 +44,7 @@ namespace MiraiCP {
 
     /*好友类实现*/
     Friend::Friend(QQID id, QQID botid) : Contact(GetFriendPool(id, botid)) {
-        InternalData->request_refresh();
+        forceRefreshNexttime(); //InternalData->request_refresh();
     }
 
     Friend::Friend(nlohmann::json in_json) : Contact(GetFriendPool(in_json)) {
@@ -53,7 +53,7 @@ namespace MiraiCP {
         ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
         else
-            InternalData->request_refresh();
+            forceRefreshNexttime();
     }
 
     void Friend::deleteFriend() {
@@ -63,15 +63,16 @@ namespace MiraiCP {
         KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
 
-    void Friend::refreshInfo() {
-        std::string temp = LowLevelAPI::getInfoSource(this->toString());
-        if (temp == "E1") {
-            throw FriendException(MIRAICP_EXCEPTION_WHERE);
-        }
-        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
-        this->_nickOrNameCard = tmp.nickornamecard;
-        this->_avatarUrl = tmp.avatarUrl;
-    }
+//    void Friend::refreshInfo() {
+//        InternalData->request_refresh();
+//        //        std::string temp = LowLevelAPI::getInfoSource(this->toString());
+//        //        if (temp == "E1") {
+//        //            throw FriendException(MIRAICP_EXCEPTION_WHERE);
+//        //        }
+//        //        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
+//        //        this->_nickOrNameCard = tmp.nickornamecard;
+//        //        this->_avatarUrl = tmp.avatarUrl;
+//    }
 
     void Friend::sendNudge() {
         json j;

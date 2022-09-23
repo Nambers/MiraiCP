@@ -96,7 +96,7 @@ namespace MiraiCP {
         InternalData->request_refresh();
     }
 
-    Bot::Bot(QQID in_id) : Contact(0, in_id, MIRAI_OTHERTYPE), InternalData(get_bot(in_id)), id(in_id) {
+    Bot::Bot(QQID in_id) : InternalData(get_bot(in_id)), id(in_id) {
         InternalData->force_refresh_nexttime();
     }
 
