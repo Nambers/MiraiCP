@@ -76,13 +76,15 @@ namespace MiraiCP {
     //        //        _anonymous = source["anonymous"];
     //    }
 
-    Contact::Contact(const nlohmann::json &in_json)
-        : Contact(in_json["id"], in_json["groupid"], static_cast<ContactType>(in_json["type"])) {
-        // todo
-    }
-    Contact::Contact(QQID in_id, QQID in_botid, ContactType in_type) {
-        // todo
-    }
+    //    Contact::Contact(const nlohmann::json &in_json)
+    //        : Contact(in_json["id"], in_json["groupid"], static_cast<ContactType>(in_json["type"])) {
+    //        // todo
+    //    }
+    //    Contact::Contact(QQID in_id, QQID in_botid, ContactType in_type) {
+    //        // todo
+    //    }
+
+
     MessageSource Contact::sendVoice0(const std::string &path) const {
         json j;
         json source;

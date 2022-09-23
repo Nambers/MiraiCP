@@ -83,10 +83,11 @@ namespace MiraiCP {
         //            //            this->_groupid = 0;
         //            //            this->_nickOrNameCard = "";
         //        }
-        // Contact(nlohmann::json in_json);
+
     protected:
-        Contact(QQID in_id, QQID in_botid, ContactType in_type);
-        Contact(const nlohmann::json &in_json);
+        explicit Contact(std::shared_ptr<IContactData> Data) {
+            SetInternalData(std::move(Data));
+        }
 
     public:
         /*!
@@ -124,6 +125,10 @@ namespace MiraiCP {
         bool operator==(const Contact &c) const {
             return this->id() == c.id();
         }
+
+        /// @brief 设置内部数据指针
+        /// @note dev: 避免直接使用 InternalData ，请使用该接口操作 InternalData 指针
+        void SetInternalData(std::shared_ptr<IContactData> Data) { InternalData = std::move(Data); }
 
         /// @brief 当前对象类型
         /// @see ContactType
@@ -365,8 +370,7 @@ namespace MiraiCP {
     };
 
     template<typename ClassType, typename InternalDataType>
-    class ContactDataHelper {
-    public:
+    struct ContactDataHelper {
         using json = nlohmann::json;
         typedef Contact Super;
         typedef InternalDataType DataType;

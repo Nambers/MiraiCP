@@ -18,16 +18,44 @@
 #include "Exception.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
+#include "Tools.h"
 
 namespace MiraiCP {
     using json = nlohmann::json;
+    auto GetFriendPool(QQID id, QQID botid) {
+        static std::unordered_map<QQID, std::unordered_map<QQID, std::shared_ptr<Friend::DataType>>> Pool;
+        auto &val = Pool[botid][id];
+        if (!val) {
+            val = std::make_shared<Friend::DataType>();
+            val->_id = id;
+            val->_botid = botid;
+            val->_type = MIRAI_FRIEND;
+        }
+        return val;
+    }
+
+    auto GetFriendPool(const nlohmann::json &in_json) {
+        try {
+            return GetFriendPool(in_json["id"], in_json["botid"]);
+        } catch (const nlohmann::detail::exception &e) {
+            throw IllegalArgumentException("构造Friend时传入的json异常", MIRAICP_EXCEPTION_WHERE);
+        }
+    }
+
     /*好友类实现*/
-    Friend::Friend(QQID id, QQID botid) : Contact(id, botid, MIRAI_FRIEND) {
-        // todo
+    Friend::Friend(QQID id, QQID botid) : Contact(GetFriendPool(id, botid)) {
+        InternalData->request_refresh();
     }
-    Friend::Friend(nlohmann::json in_json) :Contact(in_json){
-        // todo
+
+    Friend::Friend(nlohmann::json in_json) : Contact(GetFriendPool(in_json)) {
+        auto ActualDataPtr = GetDataInternal();
+        assert(ActualDataPtr != nullptr);
+        ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
+        else
+            InternalData->request_refresh();
     }
+
     void Friend::deleteFriend() {
         json j;
         j["source"] = this->toString();
