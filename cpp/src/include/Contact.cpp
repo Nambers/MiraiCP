@@ -115,8 +115,7 @@ namespace MiraiCP {
         _avatarUrl = json_stringmover(in_json, "avatarUrl");
     }
 
-    void IContactData::
-            refreshInfo() {
+    void IContactData::refreshInfo() {
         // default to Friend
         std::string temp = LowLevelAPI::getInfoSource(this->toString());
         if (temp == "E1") {
