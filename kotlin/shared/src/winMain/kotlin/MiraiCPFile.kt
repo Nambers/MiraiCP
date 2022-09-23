@@ -18,9 +18,11 @@
 
 package tech.eritquearcus.miraicp.shared
 
+import io.ktor.utils.io.core.*
 import io.ktor.utils.io.errors.*
 import kotlinx.cinterop.*
 import net.mamoe.mirai.utils.ExternalResource
+import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import platform.posix.*
 import platform.windows.*
 
@@ -85,7 +87,7 @@ class MiraiCPFileImplNative(private val path: String) : MiraiCPFile {
     }
 
     override fun toExternalResource(): ExternalResource {
-        TODO("Not yet implemented")
+        return readAllText(this.absolutePath).toExternalResource()
     }
 
     override fun deleteRecursively(): Boolean {
@@ -102,6 +104,27 @@ class MiraiCPFileImplNative(private val path: String) : MiraiCPFile {
 
 actual object MiraiCPFiles {
     actual fun create(path: String): MiraiCPFile {
-        TODO("Not yet implemented")
+        return MiraiCPFileImplNative(path)
     }
+}
+
+fun readAllText(filePath: String): ByteArray {
+    val returnBuffer = StringBuilder()
+    val file = fopen(filePath, "r") ?: throw IllegalArgumentException("Cannot open input file $filePath")
+
+    try {
+        memScoped {
+            val readBufferLength = 64 * 1024
+            val buffer = allocArray<ByteVar>(readBufferLength)
+            var line = fgets(buffer, readBufferLength, file)?.toKString()
+            while (line != null) {
+                returnBuffer.append(line)
+                line = fgets(buffer, readBufferLength, file)?.toKString()
+            }
+        }
+    } finally {
+        fclose(file)
+    }
+
+    return returnBuffer.toString().toByteArray()
 }

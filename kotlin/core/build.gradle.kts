@@ -17,38 +17,58 @@
  */
 
 plugins {
-    application
-//    kotlin("jvm")
-    id("com.github.johnrengelman.shadow")
+    kotlin("multiplatform")
 }
 
-application {
-    mainClass.set("tech.eritquearcus.miraicp.core.Core")
-}
-
-dependencies{
-    testImplementation(kotlin("test"))
-    implementation(project(":MiraiCP-loader"))
-    implementation(project(":shared"))
-}
-
-group = "tech.eritquearcus"
-version = Version.miraiCP
-tasks {
-    shadowJar {
-        dependsOn(getByPath(":fillingConstants"))
-        archiveBaseName.set("MiraiCP-core")
-        archiveClassifier.set("")
-        archiveVersion.set(Version.miraiCP)
-        manifest {
-            attributes["Description"] = "MiraiCP-Core"
-            attributes["Built-By"] = "Eritque arcus"
-            attributes["Implementation-Version"] = Version.miraiCP
-            attributes["Created-By"] = "Gradle " + gradle.gradleVersion
-            attributes["Build-Kotlin"] = Version.kotlin
+kotlin {
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+        withJava()
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
         }
     }
-}
-tasks.test {
-    useJUnitPlatform()
+    val hostOs = System.getProperty("os.name")
+    val isMingwX64 = hostOs.startsWith("Windows")
+    val nativeTarget = when {
+        hostOs == "Mac OS X" -> macosX64("native")
+        hostOs == "Linux" -> linuxX64("native")
+        isMingwX64 -> mingwX64("native")
+        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+    }
+    print(hostOs)
+    nativeTarget.binaries {
+        sharedLib {
+            baseName = "foo"
+        }
+        staticLib {
+            baseName = "foo"
+        }
+    }
+
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(project(":shared"))
+                implementation("net.mamoe:mirai-core:${Version.mirai}")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.`kotlinx-coroutines-core`}")
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+        val jvmMain by getting {
+            dependencies {
+                implementation(project(":MiraiCP-loader"))
+            }
+        }
+        val jvmTest by getting
+        val nativeMain by getting
+        val nativeTest by getting
+    }
 }

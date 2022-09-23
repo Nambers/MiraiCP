@@ -15,31 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-package tech.eritquearcus.miraicp.core
-
-import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
-import tech.eritquearcus.miraicp.loader.KotlinMain
-import tech.eritquearcus.miraicp.loader.console.Console
-import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
-import tech.eritquearcus.miraicp.loader.login
 import tech.eritquearcus.miraicp.shared.*
-import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
-import java.io.File
+import kotlin.native.internal.NativePtr
 
-object Core {
-    @JvmStatic
-    fun main(args: Array<String>) {
+actual object Core {
+    actual fun main(args: Array<String>) {
         println("请勿直接打开miraicp-core组件, 请使用loader组件")
     }
 
     @OptIn(MiraiExperimentalApi::class)
-    @JvmStatic
-    fun login(source: String): String {
+    actual fun login(source: String): String {
         try {
             Json.decodeFromString<CPPConfig.LoaderConfig.Account>(source).login()
         } catch (e: Exception) {
@@ -49,30 +38,23 @@ object Core {
         return "200"
     }
 
-    @JvmStatic
-    fun load() {
-        KotlinMain.job.start()
-        Console
+    actual fun load() {
+//        KotlinMain.job.start()
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
         PublicShared.init(logger)
-        PublicSharedData.cachePath = File("cache").toMiraiCPFile()
+        PublicSharedData.cachePath = MiraiCPFiles.create("cache")
         if (PublicSharedData.cachePath.exists()) PublicSharedData.cachePath.deleteRecursively()
         PublicSharedData.cachePath.mkdir()
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
-        logger.info("⭐当前MiraiCP版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
-        KotlinMain.loginAccount = emptyList()
-        PublicSharedData.commandReg = LoaderCommandHandlerImpl()
-        CPPLib.init(null) {
-            enroll()
-        }
+        logger.info("⭐当前MiraiCP版本: ${PublicShared.now_tag}, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
+//        KotlinMain.loginAccount = emptyList()
+//        PublicSharedData.commandReg = LoaderCommandHandlerImpl()
+        CPPLib.init(null) {}
         logger.info("⭐已成功加载MiraiCP⭐")
-        Console.listen()
-        KotlinMain.coroutineScope.launch {
-            while (true) {
-            }
-        }
     }
 
-    private external fun enroll(): Void
+    fun initEvent(nativePtr: NativePtr) {
+        CPPLibMultiplatform.eventPtr = nativePtr
+    }
 }

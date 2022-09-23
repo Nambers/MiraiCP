@@ -45,7 +45,7 @@ allprojects {
 }
 subprojects {
     this.allprojects.forEach {
-        if (it.name != "shared" && it.name != "native_try") {
+        if (it.name != "shared" && it.name != "MiraiCP-core") {
             it.apply(plugin = "org.jetbrains.kotlin.jvm")
             it.dependencies {
                 implementation("com.google.code.gson:gson:${Version.gson}")
@@ -64,7 +64,7 @@ tasks {
     register("fillingConstants") {
         group = "build"
         doFirst {
-            File(projectDir, "shared/src/main/kotlin/BuiltInConstants.kt")
+            File(projectDir, "shared/src/commonMain/kotlin/BuiltInConstants.kt")
                 .let {
                     println("write to ${it.absolutePath}")
                     it.writeText(

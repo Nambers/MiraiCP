@@ -17,8 +17,13 @@
  */
 
 package tech.eritquearcus.miraicp.shared
+import kotlin.native.concurrent.ThreadLocal
+import kotlin.native.internal.NativePtr
 
+@ThreadLocal
 actual object CPPLibMultiplatform {
+    // libLoader eventHandler ptr address
+    lateinit var eventPtr: NativePtr
     actual fun init(
         libPath: List<String>?,
         cfgPath: String?,

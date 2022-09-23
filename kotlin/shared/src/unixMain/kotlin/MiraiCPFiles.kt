@@ -15,23 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import kotlinx.coroutines.runBlocking
-import net.mamoe.mirai.BotFactory
-import net.mamoe.mirai.alsoLogin
 
-actual object Core {
-    actual fun main(args: Array<String>) {
+package tech.eritquearcus.miraicp.shared
 
-    }
-
-    actual fun login(source: String): String {
-        runBlocking {
-            BotFactory.newBot(111, "").alsoLogin()
-        }
-        return ""
-    }
-
-    actual fun load() {
-
+actual object MiraiCPFiles {
+    actual fun create(path: String): MiraiCPFile {
+        TODO("Not yet implemented")
     }
 }

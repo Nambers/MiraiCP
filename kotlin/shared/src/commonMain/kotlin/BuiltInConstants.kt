@@ -19,7 +19,7 @@
 package tech.eritquearcus.miraicp.shared
 
 object BuiltInConstants {
-    const val date = "Tue Sep 13 17:42:07 EDT 2022"
+    const val date = "Fri Sep 23 10:26:13 EDT 2022"
     const val version = "2.12.0-RC2"
     const val miraiVersion = "2.13.0-dev-d32a8a56"
 }
