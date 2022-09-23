@@ -41,10 +41,11 @@ namespace MiraiCP {
         explicit Friend(nlohmann::json in_json);
 
     public:
-        /// 删除好友(delete是C++关键字)
+        /// @brief 删除好友
+        /// @note delete是C++关键字
         void deleteFriend();
 
-        void refreshInfo();
+        // void refreshInfo();
 
         /*!
          * @brief 发送戳一戳

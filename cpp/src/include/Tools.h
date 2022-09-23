@@ -27,7 +27,6 @@
 
 namespace MiraiCP {
     /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
-    /// @class Tools
     namespace Tools {
         /*!
          * @brief 替换全部在一个字符串中.
@@ -90,8 +89,35 @@ namespace MiraiCP {
         inline std::string json_stringmover(nlohmann::json &j, const std::string &key) {
             return json_mover<std::string>(j, key);
         }
+
+        /// @brief id pair工具结构体声明，仅内部使用
+        /// @note dev: 为保证可读性请仅在局部作用域使用，且使用聚合初始化
+        struct idpair {
+            QQID id1;
+            QQID id2;
+
+            bool operator==(const idpair &other) const {
+                return id1 == other.id1 && id2 == other.id2;
+            }
+        };
+
+
     }; // namespace Tools
 } // namespace MiraiCP
 
-
+/// @brief id pair工具结构体散列特化，用于unordered_map
+template<>
+struct std::hash<MiraiCP::Tools::idpair> {
+    using idpair = MiraiCP::Tools::idpair;
+    size_t operator()(const idpair in_pair) const {
+        constexpr static size_t initval = 14695981039346656037ULL; // see: type_traits.h (MSVC)
+        auto First = reinterpret_cast<const char *>(&in_pair);
+        auto Val = initval;
+        for (size_t Idx = 0; Idx < sizeof(idpair); ++Idx) {
+            Val ^= static_cast<size_t>(First[Idx]);
+            Val *= _FNV_prime;
+        }
+        return Val;
+    }
+};
 #endif //MIRAICP_PRO_TOOLS_H

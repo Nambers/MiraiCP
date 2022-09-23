@@ -30,12 +30,11 @@ namespace MiraiCP {
     struct InternalBot; // forward declaration
 
     /// 当前bot账号信息
-    class Bot : Contact {
+    class Bot {
         friend struct InternalBot;
 
     private:
         std::shared_ptr<InternalBot> InternalData;
-
     public:
         /// 该botid
         QQID id;
