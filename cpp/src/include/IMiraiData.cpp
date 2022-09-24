@@ -5,7 +5,7 @@
 #include "IMiraiData.h"
 #include "LowLevelAPI.h"
 #include "json.hpp"
-
+#include <mutex>
 
 namespace MiraiCP {
     void IMiraiData::request_refresh() {
