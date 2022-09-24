@@ -38,6 +38,8 @@ class MiraiCPFileImpl(val file: File) : MiraiCPFile {
 
     override fun exists(): Boolean = file.exists()
 
+    override fun delete(): Boolean = file.delete()
+
     override fun toExternalResource(): ExternalResource = file.toExternalResource()
 }
 

@@ -24,6 +24,8 @@ interface MiraiCPFile {
     val isFile: Boolean
     val extension: String
     val absolutePath: String
+
+    fun delete(): Boolean
     fun exists(): Boolean
     fun toExternalResource(): ExternalResource
     fun deleteRecursively(): Boolean

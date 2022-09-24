@@ -26,7 +26,7 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import platform.posix.*
 import platform.windows.*
 
-fun <R> MiraiCPFileImplNative.useStat(block: (stat) -> R): R? {
+fun <R> MiraiCPFile.useStat(block: (stat) -> R): R? {
     memScoped {
         val stat = alloc<stat>()
         val ret = stat(absolutePath, stat.ptr)
@@ -64,8 +64,8 @@ private fun ShortArray.toKStringFromUtf16(len: Int): String {
     return chars.concatToString()
 }
 
-public inline infix fun UInt.flag(flag: Int): Boolean = this and flag.toUInt() != 0u
-class MiraiCPFileImplNative(private val path: String) : MiraiCPFile {
+inline infix fun UInt.flag(flag: Int): Boolean = this and flag.toUInt() != 0u
+class MiraiCPFileWinImpl(private val path: String) : MiraiCPFile {
     companion object {
         private val ROOT_REGEX = Regex("""^([a-zA-z]+:[/\\])""")
         private const val SEPARATOR = '\\'
@@ -90,8 +90,26 @@ class MiraiCPFileImplNative(private val path: String) : MiraiCPFile {
         return readAllText(this.absolutePath).toExternalResource()
     }
 
+    override fun delete(): Boolean {
+        return if (isFile) {
+            DeleteFileW(absolutePath) != 0
+        } else {
+            RemoveDirectoryW(absolutePath) != 0
+        }
+    }
+
+    private val deleteFile =
+        staticCFunction<CPointer<ByteVarOf<Byte>>?, CPointer<stat>?, Int, CPointer<FTW>?, Int> { pathPtr, _, _, _ ->
+            val path = pathPtr!!.toKString()
+            if (remove(path) < 0) {
+                -1
+            } else {
+                0
+            }
+        }
+
     override fun deleteRecursively(): Boolean {
-        TODO("Not yet implemented")
+        return nftw(absolutePath, deleteFile, 10, FTW_DEPTH or FTW_MOUNT or FTW_PHYS) >= 0
     }
 
     override fun mkdir(): Boolean {
@@ -104,7 +122,7 @@ class MiraiCPFileImplNative(private val path: String) : MiraiCPFile {
 
 actual object MiraiCPFiles {
     actual fun create(path: String): MiraiCPFile {
-        return MiraiCPFileImplNative(path)
+        return MiraiCPFileWinImpl(path)
     }
 }
 
