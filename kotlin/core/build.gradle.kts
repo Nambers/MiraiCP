@@ -50,9 +50,9 @@ kotlin {
             sharedLib {
                 baseName = "foo"
             }
-//            staticLib {
-//                baseName = "foo"
-//            }
+            staticLib {
+                baseName = "foo"
+            }
         }
     }
 
