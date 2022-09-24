@@ -775,7 +775,7 @@ object PublicShared {
             //好友信息
             event(
                 CPPEvent.PrivateMessage(
-                    this.sender.toContact()!!, this.message.serializeToMiraiCode(), json.encodeToString(
+                    this.sender.toContact(), this.message.serializeToMiraiCode(), json.encodeToString(
                         MessageSerializers.serializersModule.serializer(), this.message[MessageSource]!!
                     )
                 )
@@ -791,7 +791,7 @@ object PublicShared {
             )
             event(
                 CPPEvent.GroupMessage(
-                    this.group.toContact()!!,
+                    this.group.toContact(),
                     Config.Contact(
                         3, this.sender.id, this.group.id, this.senderName, this.bot.id, (this.sender is AnonymousMember)
                     ),
@@ -807,7 +807,7 @@ object PublicShared {
             friend_cache.add(this.member)
             event(
                 CPPEvent.MemberLeave(
-                    this.group.toContact()!!,
+                    this.group.toContact(),
                     this.member.id,
                     1,
                     if (this.operator?.id == null) this.bot.id else this.operator!!.id
@@ -820,7 +820,7 @@ object PublicShared {
             friend_cache.add(this.member)
             event(
                 CPPEvent.MemberLeave(
-                    this.group.toContact()!!, this.member.id, 2, this.member.id
+                    this.group.toContact(), this.member.id, 2, this.member.id
                 )
 
             )
@@ -829,7 +829,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MemberJoinEvent.Retrieve> {
             event(
                 CPPEvent.MemberJoin(
-                    this.group.toContact()!!,
+                    this.group.toContact(),
                     Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                     3,
                     this.member.id
@@ -840,7 +840,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MemberJoinEvent.Active> {
             event(
                 CPPEvent.MemberJoin(
-                    this.group.toContact()!!,
+                    this.group.toContact(),
                     Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                     2,
                     this.member.id
@@ -851,7 +851,7 @@ object PublicShared {
         eventChannel.subscribeAlways<MemberJoinEvent.Invite> {
             event(
                 CPPEvent.MemberJoin(
-                    this.group.toContact()!!,
+                    this.group.toContact(),
                     Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
                     1,
                     this.invitor.id
@@ -904,7 +904,7 @@ object PublicShared {
         eventChannel.subscribeAlways<BotJoinGroupEvent.Invite> {
             event(
                 CPPEvent.BotJoinGroup(
-                    1, this.group.toContact()!!, this.invitor.id
+                    1, this.group.toContact(), this.invitor.id
                 )
 
             )
@@ -912,7 +912,7 @@ object PublicShared {
         eventChannel.subscribeAlways<BotJoinGroupEvent.Active> {
             event(
                 CPPEvent.BotJoinGroup(
-                    2, this.group.toContact()!!, 0
+                    2, this.group.toContact(), 0
                 )
 
             )
@@ -920,7 +920,7 @@ object PublicShared {
         eventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve> {
             event(
                 CPPEvent.BotJoinGroup(
-                    3, this.group.toContact()!!, 0
+                    3, this.group.toContact(), 0
                 )
 
             )
@@ -940,8 +940,8 @@ object PublicShared {
             //群临时会话
             event(
                 CPPEvent.GroupTempMessage(
-                    this.group.toContact()!!,
-                    this.sender.toContact()!!,
+                    this.group.toContact(),
+                    this.sender.toContact(),
                     this.message.serializeToMiraiCode(),
                     json.encodeToString(
                         MessageSerializers.serializersModule.serializer(), this.source

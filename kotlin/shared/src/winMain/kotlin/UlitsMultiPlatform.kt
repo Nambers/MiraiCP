@@ -20,14 +20,13 @@ package tech.eritquearcus.miraicp.shared
 
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
-import net.mamoe.mirai.utils.cast
 
 //suspend inline fun <T, R> T.runInTP(
 //    crossinline block: T.() -> R,
 //): R = runInterruptible(context = cc, block = { block() })
 actual object UlitsMultiPlatform {
     actual fun <T> event(value: T, obj: SerializationStrategy<T>?) {
-        CPPLibMultiplatform.eventPtr.cast<((String) -> Unit)>()(
+        CPPLibMultiplatform.eventPtr(
             if (value is String) value else Json.encodeToString(
                 obj!!,
                 value

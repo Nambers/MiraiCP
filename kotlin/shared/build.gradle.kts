@@ -45,7 +45,6 @@ kotlin {
                 implementation("net.mamoe:mirai-core-api:${Version.mirai}")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.`kotlinx-coroutines-core`}")
 //                classpath("org.jetbrains.kotlin:kotlinx-serialization-json:${Version.`kotlinx-serialization-json`}")
-                implementation("io.ktor:ktor-utils:2.0.1")
             }
             apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
         }

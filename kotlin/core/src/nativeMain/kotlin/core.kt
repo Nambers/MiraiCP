@@ -20,7 +20,6 @@ import kotlinx.serialization.json.Json
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.shared.*
-import kotlin.native.internal.NativePtr
 
 actual object Core {
     actual fun main(args: Array<String>) {
@@ -54,7 +53,7 @@ actual object Core {
         logger.info("⭐已成功加载MiraiCP⭐")
     }
 
-    fun initEvent(nativePtr: NativePtr) {
+    fun initEvent(nativePtr: (String) -> Unit) {
         CPPLibMultiplatform.eventPtr = nativePtr
     }
 }

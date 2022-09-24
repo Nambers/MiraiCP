@@ -21,6 +21,7 @@ package tech.eritquearcus.miraicp.shared
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.serializer
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.event.EventPriority
@@ -28,6 +29,7 @@ import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.EventCancelledException
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.event.nextEvent
+import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.ImageType
 import net.mamoe.mirai.message.data.MessageChain
@@ -178,7 +180,7 @@ internal inline fun sendWithCatch(block: () -> MessageSource): String {
     } catch (e: EventCancelledException) {
         return "EC"
     }
-    return PublicShared.json.encodeToString(MessageSource.Serializer, s)
+    return PublicShared.json.encodeToString(MessageSerializers.serializersModule.serializer(), s)
 }
 
 internal suspend inline fun <reified E : MessageEvent> nextMessage(
