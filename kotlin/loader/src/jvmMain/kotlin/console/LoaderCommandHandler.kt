@@ -16,10 +16,25 @@
  *
  */
 
-package tech.eritquearcus.miraicp.shared
+package tech.eritquearcus.miraicp.loader.console
 
-object BuiltInConstants {
-    const val date = "Sun Sep 25 12:34:45 EDT 2022"
-    const val version = "2.12.0-RC2"
-    const val miraiVersion = "2.13.0-dev-d32a8a56"
+import tech.eritquearcus.miraicp.shared.CommandHandler
+
+data class CommandBrief(
+    val name: String,
+    val pid: Int,
+    val bid: Int,
+    val sName: List<String>
+)
+
+class LoaderCommandHandlerImpl : CommandHandler {
+    override fun register(c: tech.eritquearcus.miraicp.shared.Command): String {
+        val cb = CommandBrief(c.primaryName, c.pluginId, c.bindId, c.secondName)
+        when (c.override) {
+            true -> Command.preCommand.add(cb)
+            false -> Command.lastCommand.add(cb)
+        }
+        Command.message.add(c.primaryName to (c.usage ?: (c.description ?: "null")))
+        return "true"
+    }
 }

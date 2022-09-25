@@ -16,14 +16,14 @@
  *
  */
 
-package tech.eritquearcus.miraicp.shared
+package tech.eritquearcus.miraicp.uilts
 
 import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import java.io.File
 
 fun File.toMiraiCPFile() = MiraiCPFiles.create(this)
-class MiraiCPFileImpl(val file: File) : MiraiCPFile {
+class MiraiCPFileImpl(private val file: File) : MiraiCPFile {
     override val isFile: Boolean
         get() = file.isFile
     override val extension: String

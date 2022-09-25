@@ -17,41 +17,76 @@
  */
 
 plugins {
-    application
-    kotlin("jvm")
-    id("com.github.johnrengelman.shadow")
+    kotlin("multiplatform")
 }
 
-application {
-    mainClass.set("tech.eritquearcus.miraicp.loader.KotlinMainKt")
-    // mainClassName = "tech.eritquearcus.miraicp.loader.KotlinMainKt"
-}
-
-tasks {
-    shadowJar{
-        dependsOn(getByPath(":fillingConstants"))
-        archiveBaseName.set("MiraiCP-loader")
-        archiveClassifier.set("")
-        archiveVersion.set(Version.miraiCP)
-        manifest {
-            attributes["Description"] = "MiraiCP-Loader"
-            attributes["Built-By"] = "Eritque arcus"
-            attributes["Implementation-Version"] = Version.miraiCP
-            attributes["Created-By"] = "Gradle " + gradle.gradleVersion
-            attributes["Build-Kotlin"] = Version.kotlin
+kotlin {
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+        withJava()
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
         }
     }
+    val hostOs = System.getProperty("os.name")
+    val isMingwX64 = hostOs.startsWith("Windows")
+    val nativeTarget = when {
+        hostOs == "Mac OS X" -> macosX64("native")
+        hostOs == "Linux" -> linuxX64("native")
+        isMingwX64 -> mingwX64("native")
+        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+    }
+    nativeTarget.binaries {
+        executable {
+            this.entryPoint = "tech.eritquearcus.miraicp.loader"
+        }
+    }
+    sourceSets {
+        val commonMain by getting {
+            apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+            dependencies {
+                implementation(project(":shared"))
+                implementation(project(":utils"))
+                implementation("net.mamoe:mirai-core:${Version.mirai}")
+                implementation("net.mamoe:mirai-core-api:${Version.mirai}")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.`kotlinx-coroutines-core`}")
+                implementation("io.ktor:ktor-utils:2.1.1")
+            }
+        }
+
+        val jvmMain by getting {
+            apply(plugin = "com.github.johnrengelman.shadow")
+            apply(plugin = "application")
+            dependencies {
+                implementation("org.fusesource.jansi:jansi:${Version.jansi}")
+                implementation("org.jline:jline:${Version.jline}")
+                api("net.mamoe:mirai-logging-log4j2:${Version.mirai}")
+            }
+            project.setProperty("mainClassName", "tech.eritquearcus.miraicp.loader.KotlinMainKt")
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+        val nativeMain by getting
+    }
 }
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    dependsOn(":fillingConstants")
+    archiveBaseName.set("MiraiCP-loader")
+    archiveClassifier.set("")
+    archiveVersion.set(Version.miraiCP)
+    manifest {
+        attributes["Description"] = "MiraiCP-Loader"
+        attributes["Built-By"] = "Eritque arcus"
+        attributes["Implementation-Version"] = Version.miraiCP
+        attributes["Created-By"] = "Gradle " + gradle.gradleVersion
+        attributes["Build-Kotlin"] = Version.kotlin
+    }
+}
+
 version = Version.miraiCP
 description = "Loader version for MiraiCP"
-dependencies {
-    testImplementation(kotlin("test"))
-    implementation(project(":shared"))
-    implementation("net.mamoe", "mirai-core", Version.mirai)
-    implementation("org.fusesource.jansi", "jansi", Version.jansi)
-    implementation("org.jline", "jline", Version.jline)
-    api("net.mamoe", "mirai-logging-log4j2", Version.mirai)
-}
-tasks.test {
-    useJUnitPlatform()
-}

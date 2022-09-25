@@ -16,25 +16,36 @@
  *
  */
 
-package tech.eritquearcus.miraicp.shared
-
-import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.json.Json
-
-//suspend inline fun <T, R> T.runInTP(
-//    crossinline block: T.() -> R,
-//): R = runInterruptible(context = cc, block = { block() })
-actual object UlitsMultiPlatform {
-    actual fun <T> event(value: T, obj: SerializationStrategy<T>?) {
-        CPPLibMultiplatform.eventPtr(
-            if (value is String) value else Json.encodeToString(
-                obj!!,
-                value
-            )
-        )
+plugins {
+    kotlin("multiplatform")
+}
+group = "tech.eritquearcus"
+version = Version.miraiCP
+kotlin {
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+        withJava()
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
+        }
     }
+    val hostOs = System.getProperty("os.name")
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                compileOnly("net.mamoe:mirai-core-api:${Version.mirai}")
+            }
+        }
+        val commonTest by getting
 
-    actual fun getLibLoader(pathsInput: List<String>): String {
-        return ""
+        val jvmMain by getting
+        if (hostOs == "Mac OS X") {
+            macosX64("unix")
+        } else {
+            linuxX64("unix")
+        }
+        mingwX64("win")
     }
 }

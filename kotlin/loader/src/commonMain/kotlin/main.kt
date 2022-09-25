@@ -15,10 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package tech.eritquearcus.miraicp.loader
 
-package tech.eritquearcus.miraicp.shared
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 
-actual object PublicSharedMultiplatform {
-    actual fun onDisable() {
-    }
+object MainData {
+    val job = Job()
+    val coroutineScope = CoroutineScope(job)
 }
+
+expect object Main {
+    fun main(j: String, path: String)
+}
+
+expect fun main(args: Array<String>)

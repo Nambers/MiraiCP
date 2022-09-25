@@ -33,28 +33,24 @@ kotlin {
     }
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
-//    when {
-//        hostOs == "Mac OS X" -> macosX64("native")
-//        hostOs == "Linux" -> linuxX64("native")
-//        isMingwX64 -> mingwX64("native")
-//        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-//    }
+    when {
+        hostOs == "Mac OS X" -> macosX64("native")
+        hostOs == "Linux" -> linuxX64("native")
+        isMingwX64 -> mingwX64("native")
+        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+    }
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("net.mamoe:mirai-core-api:${Version.mirai}")
+                implementation(project(":utils"))
+                compileOnly("net.mamoe:mirai-core-api:${Version.mirai}")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.`kotlinx-coroutines-core`}")
-//                classpath("org.jetbrains.kotlin:kotlinx-serialization-json:${Version.`kotlinx-serialization-json`}")
+                implementation("io.ktor:ktor-utils:2.1.1")
             }
             apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
         }
 
         val jvmMain by getting
-        if (hostOs == "Mac OS X") {
-            macosX64("unix")
-        } else {
-            linuxX64("unix")
-        }
-        mingwX64("win")
+        val nativeMain by getting
     }
 }

@@ -16,22 +16,12 @@
  *
  */
 
-package tech.eritquearcus.miraicp.shared
+package tech.eritquearcus.miraicp.loader
 
-import net.mamoe.mirai.utils.ExternalResource
-
-interface MiraiCPFile {
-    val isFile: Boolean
-    val extension: String
-    val absolutePath: String
-
-    fun delete(): Boolean
-    fun exists(): Boolean
-    fun toExternalResource(): ExternalResource
-    fun deleteRecursively(): Boolean
-    fun mkdir(): Boolean
+actual object Main {
+    actual fun main(j: String, path: String) {
+    }
 }
 
-expect object MiraiCPFiles {
-    fun create(path: String): MiraiCPFile
+actual fun main(args: Array<String>) {
 }

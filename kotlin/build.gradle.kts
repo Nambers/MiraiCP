@@ -43,20 +43,6 @@ allprojects {
         }
     }
 }
-subprojects {
-    this.allprojects.forEach {
-        if (it.name != "shared" && it.name != "MiraiCP-core") {
-            it.apply(plugin = "org.jetbrains.kotlin.jvm")
-            it.dependencies {
-                implementation("com.google.code.gson:gson:${Version.gson}")
-                implementation("org.json:json:${Version.json}")
-                compileOnly("net.mamoe:mirai-core-api:${Version.mirai}")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.`kotlinx-coroutines-core`}")
-            }
-        }
-    }
-
-}
 group = "tech.eritquearcus"
 version = Version.miraiCP
 

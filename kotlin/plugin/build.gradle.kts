@@ -36,7 +36,7 @@ import kotlinx.serialization.decodeFromHexString
  */
 
 plugins {
-//    kotlin("jvm")
+    kotlin("jvm")
     id("net.mamoe.mirai-console")
     id("me.him188.maven-central-publish")
     `maven-publish`
@@ -92,5 +92,9 @@ mavenCentralPublish {
     }
 }
 dependencies {
+    implementation("com.google.code.gson:gson:${Version.gson}")
+    implementation("org.json:json:${Version.json}")
+    compileOnly("net.mamoe:mirai-core-api:${Version.mirai}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.`kotlinx-coroutines-core`}")
     implementation(project(":shared"))
 }

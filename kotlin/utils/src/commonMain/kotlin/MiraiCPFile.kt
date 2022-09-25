@@ -16,17 +16,22 @@
  *
  */
 
-package tech.eritquearcus.miraicp.shared
-import kotlin.native.concurrent.ThreadLocal
+package tech.eritquearcus.miraicp.uilts
 
-@ThreadLocal
-actual object CPPLibMultiplatform {
-    // libLoader eventHandler ptr address
-    lateinit var eventPtr: (String) -> Unit
-    actual fun init(
-        libPath: List<String>?,
-        cfgPath: String?,
-        callback: () -> Unit
-    ) {
-    }
+import net.mamoe.mirai.utils.ExternalResource
+
+public interface MiraiCPFile {
+    val isFile: Boolean
+    val extension: String
+    val absolutePath: String
+
+    fun delete(): Boolean
+    fun exists(): Boolean
+    fun toExternalResource(): ExternalResource
+    fun deleteRecursively(): Boolean
+    fun mkdir(): Boolean
+}
+
+public expect object MiraiCPFiles {
+    fun create(path: String): MiraiCPFile
 }

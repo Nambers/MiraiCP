@@ -16,10 +16,8 @@
  *
  */
 
-package tech.eritquearcus.miraicp.shared
+package tech.eritquearcus.miraicp.loader
 
-object BuiltInConstants {
-    const val date = "Sun Sep 25 12:34:45 EDT 2022"
-    const val version = "2.12.0-RC2"
-    const val miraiVersion = "2.13.0-dev-d32a8a56"
+fun main() {
+    main(emptyArray())
 }

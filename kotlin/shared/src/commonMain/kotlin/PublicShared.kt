@@ -55,6 +55,8 @@ import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
+import tech.eritquearcus.miraicp.uilts.MiraiCPFile
+import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 import kotlin.native.concurrent.ThreadLocal
 
 expect object PublicSharedMultiplatform {
