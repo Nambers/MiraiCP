@@ -18,14 +18,13 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
-import com.google.gson.Gson
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.MiraiExperimentalApi
-import tech.eritquearcus.miraicp.loader.KotlinMain
+import tech.eritquearcus.miraicp.loader.Main
 import tech.eritquearcus.miraicp.loader.login
 import tech.eritquearcus.miraicp.shared.CPPEvent
 import tech.eritquearcus.miraicp.shared.CPPLibMultiplatform
@@ -96,7 +95,7 @@ object Command {
 
     private fun pureOrder(order: String) {
         when (order) {
-            "exit" -> KotlinMain.exit()
+            "exit" -> Main.exit()
             "help" -> printHelp()
             "status" -> {
                 val s = Duration.between(Console.start, LocalDateTime.now()).seconds
@@ -110,9 +109,8 @@ object Command {
                 )
             }
 
-            "accountList", "aList" -> KotlinMain.loginAccount.let { acs ->
-                val gson = Gson()
-                acs.forEach { println(gson.toJson(it)) }
+            "accountList", "aList" -> Main.loginAccount.let { acs ->
+                acs.forEach { println(Json.encodeToString(it)) }
             }
 
             "pluginList", "pList" -> {
@@ -129,7 +127,7 @@ object Command {
 
     @OptIn(MiraiExperimentalApi::class)
     private fun login(id: Long) =
-        KotlinMain.loginAccount.first { it.id == id && (it.logined == null || it.logined == false) }.login()
+        Main.loginAccount.first { it.id == id && (it.logined == null || it.logined == false) }.login()
 
     private fun oneParamOrder(order: List<String>, re: List<String>) {
         when (order[0]) {

@@ -23,7 +23,6 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import net.mamoe.mirai.Bot
-import net.mamoe.mirai.utils.MiraiInternalApi
 import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
 import org.jline.reader.UserInterruptException
@@ -31,13 +30,12 @@ import org.jline.reader.impl.completer.NullCompleter
 import org.jline.terminal.Terminal
 import org.jline.terminal.TerminalBuilder
 import org.jline.terminal.impl.AbstractWindowsTerminal
-import tech.eritquearcus.miraicp.loader.KotlinMain
+import tech.eritquearcus.miraicp.loader.MainData
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import java.time.LocalDateTime
 import kotlin.system.exitProcess
 
-@OptIn(MiraiInternalApi::class)
 object Console {
     val start: LocalDateTime = LocalDateTime.now() // 当前日期和时间
 
@@ -71,7 +69,7 @@ object Console {
     private const val prompt = "> "
 
     fun listen() {
-        KotlinMain.coroutineScope.launch(CoroutineName("Console Command")) {
+        MainData.coroutineScope.launch(CoroutineName("Console Command")) {
             while (isActive) {
                 val re = try {
                     lineReader.readLine(prompt)

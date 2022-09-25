@@ -49,8 +49,7 @@ kotlin {
             dependencies {
                 implementation(project(":shared"))
                 implementation(project(":utils"))
-                implementation("net.mamoe:mirai-core:${Version.mirai}")
-                implementation("net.mamoe:mirai-core-api:${Version.mirai}")
+                compileOnly("net.mamoe:mirai-core-api:${Version.mirai}")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.`kotlinx-coroutines-core`}")
                 implementation("io.ktor:ktor-utils:2.1.1")
             }
@@ -60,6 +59,7 @@ kotlin {
             apply(plugin = "com.github.johnrengelman.shadow")
             apply(plugin = "application")
             dependencies {
+                implementation("net.mamoe:mirai-core:${Version.mirai}")
                 implementation("org.fusesource.jansi:jansi:${Version.jansi}")
                 implementation("org.jline:jline:${Version.jline}")
                 api("net.mamoe:mirai-logging-log4j2:${Version.mirai}")
@@ -71,7 +71,11 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
-        val nativeMain by getting
+        val nativeMain by getting {
+            dependencies {
+                implementation("net.mamoe:mirai-core:${Version.mirai}")
+            }
+        }
     }
 }
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

@@ -20,7 +20,6 @@ package tech.eritquearcus.miraicp.loader
 
 
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.MainData.job
@@ -46,7 +45,7 @@ actual object Main {
     @OptIn(MiraiExperimentalApi::class)
     actual fun main(j: String, path: String) {
         job.start()
-        val c = Json.decodeFromString<CPPConfig.LoaderConfig>(j)
+        val c = json.decodeFromString<CPPConfig.LoaderConfig>(j)
         loginAccount = c.accounts ?: emptyList()
         Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")

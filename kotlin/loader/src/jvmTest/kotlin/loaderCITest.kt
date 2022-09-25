@@ -18,8 +18,8 @@
 
 package tech.eritquearcus.miraicp.loader
 
-import tech.eritquearcus.miraicp.loader.KotlinMain.alive
-import tech.eritquearcus.miraicp.loader.KotlinMain.job
+import tech.eritquearcus.miraicp.loader.Main.alive
+import tech.eritquearcus.miraicp.loader.MainData.job
 import tech.eritquearcus.miraicp.loader.console.Jline3AppenderImpl
 import tech.eritquearcus.miraicp.shared.PublicShared
 import java.io.File
@@ -52,7 +52,7 @@ class LoaderCITest {
             println(it)
             text.add(it)
         }
-        KotlinMain.exit = {
+        Main.exit = {
             PublicShared.exit()
             job.cancel()
             alive = false

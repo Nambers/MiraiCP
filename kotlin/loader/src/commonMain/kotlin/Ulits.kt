@@ -36,6 +36,10 @@ import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 
+val json = Json {
+    ignoreUnknownKeys = true
+
+}
 internal fun String.decodeHex(): ByteArray {
     check(length % 2 == 0) { "Must have an even length" }
     return chunked(2).map { it.toInt(16).toByte() }.toByteArray()
@@ -99,4 +103,11 @@ fun CPPConfig.LoaderConfig.Account.login() {
         else PublicSharedData.logger.info("[${this.bot.getGroup(this.subject.id)!!.name}(${this.subject.id})] ${this.sender.nameCardOrNick}(${this.sender.id}) -> ${this.message.contentToString()}")
     }
     PublicShared.onEnable(b.eventChannel)
+}
+
+sealed class OptionalProperty<out T> {
+
+    object NotPresent : OptionalProperty<Nothing>()
+
+    data class Present<T>(val value: T) : OptionalProperty<T>()
 }
