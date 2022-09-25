@@ -26,6 +26,7 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import platform.posix.*
 import platform.windows.*
 
+// from https://github.com/mamoe/mirai/blob/dev/mirai-core-utils/src/mingwX64Main/kotlin/MiraiFileImpl.kt
 fun <R> MiraiCPFile.useStat(block: (stat) -> R): R? {
     memScoped {
         val stat = alloc<stat>()
@@ -87,7 +88,25 @@ class MiraiCPFileWinImpl(private val path: String) : MiraiCPFile {
     }
 
     override fun toExternalResource(): ExternalResource {
-        return readAllText(this.absolutePath).toExternalResource()
+        // from https://www.nequalsonelifestyle.com/2020/11/16/kotlin-native-file-io/
+        val returnBuffer = StringBuilder()
+        val file = fopen(absolutePath, "r") ?: throw IllegalArgumentException("Cannot open input file $absolutePath")
+
+        try {
+            memScoped {
+                val readBufferLength = 64 * 1024
+                val buffer = allocArray<ByteVar>(readBufferLength)
+                var line = fgets(buffer, readBufferLength, file)?.toKString()
+                while (line != null) {
+                    returnBuffer.append(line)
+                    line = fgets(buffer, readBufferLength, file)?.toKString()
+                }
+            }
+        } finally {
+            fclose(file)
+        }
+
+        return returnBuffer.toString().toByteArray().toExternalResource()
     }
 
     override fun delete(): Boolean {
@@ -121,28 +140,5 @@ class MiraiCPFileWinImpl(private val path: String) : MiraiCPFile {
 }
 
 actual object MiraiCPFiles {
-    actual fun create(path: String): MiraiCPFile {
-        return MiraiCPFileWinImpl(path)
-    }
-}
-
-fun readAllText(filePath: String): ByteArray {
-    val returnBuffer = StringBuilder()
-    val file = fopen(filePath, "r") ?: throw IllegalArgumentException("Cannot open input file $filePath")
-
-    try {
-        memScoped {
-            val readBufferLength = 64 * 1024
-            val buffer = allocArray<ByteVar>(readBufferLength)
-            var line = fgets(buffer, readBufferLength, file)?.toKString()
-            while (line != null) {
-                returnBuffer.append(line)
-                line = fgets(buffer, readBufferLength, file)?.toKString()
-            }
-        }
-    } finally {
-        fclose(file)
-    }
-
-    return returnBuffer.toString().toByteArray()
+    actual fun create(path: String): MiraiCPFile = MiraiCPFileWinImpl(path)
 }

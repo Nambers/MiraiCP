@@ -25,6 +25,7 @@ import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import platform.posix.*
 
+// from https://github.com/mamoe/mirai/blob/dev/mirai-core-utils/src/unixMain/kotlin/MiraiFileImpl.kt
 private fun readlink(path: String): String = memScoped {
     val len = realpath(path, null)
     if (len != null) {
@@ -72,6 +73,7 @@ class MiraiCPFileUnixImpl(val path: String) : MiraiCPFile {
     }
 
     override fun toExternalResource(): ExternalResource {
+        // from https://www.nequalsonelifestyle.com/2020/11/16/kotlin-native-file-io/
         val returnBuffer = StringBuilder()
         val file = fopen(absolutePath, "r") ?: throw IllegalArgumentException("Cannot open input file $absolutePath")
 
@@ -107,12 +109,12 @@ class MiraiCPFileUnixImpl(val path: String) : MiraiCPFile {
     }
 
     override fun mkdir(): Boolean {
-        TODO("Not yet implemented")
+        @Suppress("UnnecessaryOptInAnnotation") // bug
+        @OptIn(UnsafeNumber::class)
+        return (mkdir("$absolutePath/", "755".toUShort(8).convert()).convert<Int>() == 0)
     }
 }
 
 actual object MiraiCPFiles {
-    actual fun create(path: String): MiraiCPFile {
-        TODO("Not yet implemented")
-    }
+    actual fun create(path: String): MiraiCPFile = MiraiCPFileUnixImpl(path)
 }
