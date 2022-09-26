@@ -103,45 +103,36 @@ namespace MiraiCP {
     //    }
 
     void Member::mute(int time) {
-        json j;
-        j["time"] = time;
-        j["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::MuteM, j);
+        json j{{"time", time}, {"contactSource", toString()}};
+        std::string re = KtOperation::ktOperation(KtOperation::MuteM, std::move(j));
         if (re == "E4")
             throw MuteException(MIRAICP_EXCEPTION_WHERE);
     }
 
     void Member::kick(const std::string &reason) {
-        json j;
-        j["message"] = reason;
-        j["contactSource"] = this->toString();
-        KtOperation::ktOperation(KtOperation::KickM, j);
+        json j{{"message", reason}, {"contactSource", toString()}};
+        KtOperation::ktOperation(KtOperation::KickM, std::move(j));
         forceRefreshNexttime();
     }
 
     void Member::modifyAdmin(bool admin) {
         if (anonymous()) return;
-        json j;
-        j["admin"] = admin;
-        j["contactSource"] = this->toString();
-        KtOperation::ktOperation(KtOperation::ModifyAdmin, j);
+        json j{{"admin", admin}, {"contactSource", toString()}};
+        KtOperation::ktOperation(KtOperation::ModifyAdmin, std::move(j));
         forceRefreshNexttime();
     }
 
     void Member::changeNameCard(std::string_view newName) {
         if (anonymous()) return;
-        json j;
-        j["contactSource"] = this->toString();
-        j["newName"] = newName;
-        KtOperation::ktOperation(KtOperation::ChangeNameCard, j);
+        json j{{"contactSource", toString()}, {"newName", newName}};
+        KtOperation::ktOperation(KtOperation::ChangeNameCard, std::move(j));
         forceRefreshNexttime();
     }
 
     void Member::sendNudge() {
         if (anonymous()) return;
-        json j;
-        j["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, j);
+        json j{{"contactSource", toString()}};
+        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, std::move(j));
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone", MIRAICP_EXCEPTION_WHERE);
     }

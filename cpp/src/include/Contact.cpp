@@ -86,12 +86,10 @@ namespace MiraiCP {
 
 
     MessageSource Contact::sendVoice0(const std::string &path) const {
-        json j;
-        json source;
-        source["path"] = path;
-        j["source"] = source.dump();
-        j["contactSource"] = toString();
-        std::string re = KtOperation::ktOperation(KtOperation::Voice, j);
+
+        json source{{"path", path}};
+        json j{{"source", source.dump()}, {"contactSource", toString()}};
+        std::string re = KtOperation::ktOperation(KtOperation::Voice, std::move(j));
         if (re == "E1") {
             throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在", MIRAICP_EXCEPTION_WHERE);
         } else if (re == "E2") {
@@ -141,14 +139,10 @@ namespace MiraiCP {
         return result;
     }
     MessageSource Contact::quoteAndSend0(const std::string &msg, const MessageSource &ms) {
-        json obj;
-        json sign;
-        obj["messageSource"] = ms.serializeToString();
-        obj["msg"] = msg;
-        sign["MiraiCode"] = true;
+        json sign{{"MiraiCode", true}};
         // sign["groupid"] = this->groupid();
-        obj["sign"] = sign.dump();
-        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
+        json obj{{"messageSource", ms.serializeToString()}, {"msg", msg}, {"sign", sign.dump()}};
+        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, std::move(obj));
         MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
     }

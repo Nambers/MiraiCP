@@ -25,20 +25,14 @@ namespace MiraiCP {
     Event Event::processor;
 
     void GroupInviteEvent::operation0(const std::string &source, QQID botid, bool accept) {
-        nlohmann::json j;
-        j["text"] = source;
-        j["accept"] = accept;
-        j["botid"] = botid;
-        std::string re = KtOperation::ktOperation(KtOperation::Gioperation, j);
+        nlohmann::json j{{"text", source}, {"accept", accept}, {"botid", botid}};
+        std::string re = KtOperation::ktOperation(KtOperation::Gioperation, std::move(j));
         if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
     }
 
     MessageChain PrivateMessageEvent::nextMessage(long time, bool halt) const {
-        json j;
-        j["contactSource"] = this->sender.toString();
-        j["time"] = time;
-        j["halt"] = halt;
-        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, j);
+        json j{{"contactSource", this->sender.toString()}, {"time", time}, {"halt", halt}};
+        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, std::move(j));
         if (r == "E1")
             throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
@@ -46,11 +40,8 @@ namespace MiraiCP {
     }
 
     MessageChain GroupMessageEvent::nextMessage(long time, bool halt) const {
-        json j;
-        j["contactSource"] = this->group.toString();
-        j["time"] = time;
-        j["halt"] = halt;
-        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, j);
+        json j{{"contactSource", this->group.toString()}, {"time", time}, {"halt", halt}};
+        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, std::move(j));
         if (r == "E1")
             throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
@@ -58,11 +49,8 @@ namespace MiraiCP {
     }
 
     MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt) const {
-        json j;
-        j["contactSource"] = this->sender.toString();
-        j["time"] = time;
-        j["halt"] = halt;
-        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, j);
+        json j{{"contactSource", this->sender.toString()}, {"time", time}, {"halt", halt}};
+        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, std::move(j));
         if (r == "E1")
             throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
@@ -70,22 +58,14 @@ namespace MiraiCP {
     }
 
     void NewFriendRequestEvent::operation0(const std::string &source, QQID botid, bool accept, bool ban) {
-        nlohmann::json j;
-        j["text"] = source;
-        j["accept"] = accept;
-        j["botid"] = botid;
-        j["ban"] = ban;
-        std::string re = KtOperation::ktOperation(KtOperation::Nfroperation, j);
+        nlohmann::json j{{"text", source}, {"accept", accept}, {"botid", botid}, {"ban", ban}};
+        std::string re = KtOperation::ktOperation(KtOperation::Nfroperation, std::move(j));
         if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
     }
 
     void MemberJoinRequestEvent::operate(std::string_view s, QQID botid, bool sign, const std::string &msg) {
-        nlohmann::json j;
-        j["source"] = s;
-        j["botid"] = botid;
-        j["sign"] = sign;
-        j["msg"] = msg;
-        KtOperation::ktOperation(KtOperation::MemberJoinRequest, j);
+        nlohmann::json j{{"source", s}, {"botid", botid}, {"sign", sign}, {"msg", msg}};
+        KtOperation::ktOperation(KtOperation::MemberJoinRequest, std::move(j));
     }
 
     void Event::incomingEvent(json j, int type) {
@@ -209,8 +189,8 @@ namespace MiraiCP {
             case eventTypes::MemberJoinRequestEvent: {
                 Group a = Contact::deserialize<Group>(j["group"]);
                 std::optional<Member> b = std::nullopt;
-//                if (j["group"]["id"] != 0)
-//                    a.emplace(Contact::deserialize<Group>(j["group"]));
+                //                if (j["group"]["id"] != 0)
+                //                    a.emplace(Contact::deserialize<Group>(j["group"]));
                 if (j["inviter"]["id"] != 0)
                     b.emplace(Contact::deserialize<Member>(j["inviter"]));
                 Event::broadcast(MemberJoinRequestEvent(a, b, a.botid(), j["requester"], j["requestData"]));

@@ -104,4 +104,8 @@ namespace MiraiCP {
         std::shared_lock<std::shared_mutex> _lck(InternalData->get_mutex());
         return InternalData->_avatarUrl;
     }
+
+    QQID Bot::id() const {
+        return InternalData->_id;
+    }
 } // namespace MiraiCP

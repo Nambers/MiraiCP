@@ -32,10 +32,8 @@ namespace MiraiCP {
      * @doxygenEg{1017, schedule.cpp, 定时任务}
      */
     inline void schedule(long time, const std::string &msg) {
-        nlohmann::json j;
-        j["time"] = time;
-        j["msg"] = msg;
-        KtOperation::ktOperation(KtOperation::TimeOut, j);
+        nlohmann::json j{{"time", time}, {"msg", msg}};
+        KtOperation::ktOperation(KtOperation::TimeOut, std::move(j));
     }
 
     /// 注册插件函数, 需要被实现, 类似onStart();
@@ -50,9 +48,6 @@ namespace MiraiCP {
         enrollPlugin(p);
     }
 } // namespace MiraiCP
-
-
-
 
 
 extern "C" {

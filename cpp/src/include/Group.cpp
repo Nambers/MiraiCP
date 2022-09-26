@@ -65,10 +65,8 @@ namespace MiraiCP {
     }
 
     std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList() {
-        json j;
-        j["source"] = this->toString();
-        j["announcement"] = true;
-        std::string re = KtOperation::ktOperation(KtOperation::RefreshInfo, j);
+        json j{{"source", toString()}, {"announcement", true}};
+        std::string re = KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j));
         std::vector<OnlineAnnouncement> oa;
         for (const json &e: json::parse(re)) {
             oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
@@ -77,13 +75,9 @@ namespace MiraiCP {
     }
 
     void Group::OnlineAnnouncement::deleteThis() {
-        json j, i;
-        i["botid"] = this->botid;
-        i["groupid"] = this->groupid;
-        i["fid"] = this->fid;
-        i["type"] = 1;
-        j["identify"] = i.dump();
-        std::string re = KtOperation::ktOperation(KtOperation::Announcement, j);
+        json i{{"botid", botid}, {"groupid", groupid}, {"fid", fid}, {"type", 1}};
+        json j{{"identify", i.dump()}};
+        std::string re = KtOperation::ktOperation(KtOperation::Announcement, std::move(j));
         if (re == "E1")
             throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)", MIRAICP_EXCEPTION_WHERE);
         if (re == "E3")
@@ -91,25 +85,20 @@ namespace MiraiCP {
     }
 
     json Group::AnnouncementParams::serializeToJson() {
-        json j;
-        j["sendToNewMember"] = this->send2new;
-        j["isPinned"] = this->pinned;
-        j["showEditCard"] = this->showEditCard;
-        j["showPopup"] = this->showPopup;
-        j["requireConfirmation"] = this->requireConfirm;
-        return j;
+        return {
+                {"sendToNewMember", send2new},
+                {"isPinned", pinned},
+                {"showEditCard", showEditCard},
+                {"showPopup", showPopup},
+                {"requireConfirmation", requireConfirm}};
     }
 
     Group::OnlineAnnouncement Group::OfflineAnnouncement::publishTo(const Group &g) {
-        json j, i, s;
-        i["botid"] = g.botid();
-        i["groupid"] = g.id();
-        i["type"] = 2;
-        j["identify"] = i.dump();
-        s["content"] = this->content;
-        s["params"] = this->params.serializeToJson();
-        j["source"] = s.dump();
-        std::string re = KtOperation::ktOperation(KtOperation::Announcement, j);
+
+        json i{{"botid", g.botid()}, {"groupid", g.id()}, {"type", 2}};
+        json s{{"content", content}, {"params", params.serializeToJson()}};
+        json j{{"identify", i.dump()}, {"source", s.dump()}};
+        std::string re = KtOperation::ktOperation(KtOperation::Announcement, std::move(j));
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
     }
 
@@ -131,9 +120,8 @@ namespace MiraiCP {
     }
 
     std::vector<unsigned long long> Group::getMemberList() {
-        nlohmann::json j;
-        j["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::QueryML, j);
+        nlohmann::json j{{"contactSource", toString()}};
+        std::string re = KtOperation::ktOperation(KtOperation::QueryML, std::move(j));
         if (re == "E1") {
             throw GroupException(MIRAICP_EXCEPTION_WHERE);
         }
@@ -141,82 +129,57 @@ namespace MiraiCP {
     }
 
     void Group::quit() {
-        nlohmann::json j;
-        j["source"] = this->toString();
-        j["quit"] = true;
-        KtOperation::ktOperation(KtOperation::RefreshInfo, j);
+        nlohmann::json j{{"source", toString()}, {"quit", true}};
+        KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j));
     }
 
     void Group::updateSetting() {
-        json j;
-        json tmp;
         auto settings = setting();
-        j["name"] = settings.name;
-        j["isMuteAll"] = settings.isMuteAll;
-        j["isAllowMemberInvite"] = settings.isAllowMemberInvite;
-        j["isAutoApproveEnabled"] = settings.isAutoApproveEnabled;
-        j["isAnonymousChatEnabled"] = settings.isAnonymousChatEnabled;
-        tmp["source"] = j.dump();
-        tmp["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::GroupSetting, tmp);
+        json j{{"name", std::move(settings.name)}, {"isMuteAll", settings.isMuteAll}, {"isAllowMemberInvite", settings.isAllowMemberInvite}, {"isAutoApproveEnabled", settings.isAutoApproveEnabled}, {"isAnonymousChatEnabled", settings.isAnonymousChatEnabled}};
+        json tmp{{"source", j.dump()}, {"contactSource", toString()}};
+        std::string re = KtOperation::ktOperation(KtOperation::GroupSetting, std::move(tmp));
         InternalData->force_refresh_nexttime();
     }
 
     RemoteFile Group::sendFile(const std::string &path, const std::string &filepath) {
-        json tmp;
-        json source;
-        source["path"] = path;
-        source["filepath"] = filepath;
-        tmp["source"] = source.dump();
-        tmp["contactSource"] = this->toString();
-        std::string callback = KtOperation::ktOperation(KtOperation::SendFile, tmp);
-        if (callback == "E2") throw UploadException("找不到" + filepath + "位置:C-uploadfile", MIRAICP_EXCEPTION_WHERE);
-        if (callback == "E3")
+        json source{{"path", path}, {"filepath", filepath}};
+        json tmp{{"source", source.dump()}, {"contactSource", toString()}};
+        std::string result = KtOperation::ktOperation(KtOperation::SendFile, std::move(tmp));
+        if (result == "E2") throw UploadException("找不到" + filepath + "位置:C-uploadfile", MIRAICP_EXCEPTION_WHERE);
+        if (result == "E3")
             throw UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path, MIRAICP_EXCEPTION_WHERE);
-        return RemoteFile::deserializeFromString(callback);
+        return RemoteFile::deserializeFromString(result);
     }
 
     RemoteFile Group::getFile(const std::string &path, const std::string &id) {
         // source 参数
         if (path.empty() || path == "/")
             return this->getFileById(id);
-        json tmp;
-        json j;
-        tmp["id"] = id;
-        tmp["path"] = path;
-        j["source"] = tmp.dump();
-        j["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::RemoteFileInfo, j);
+        json tmp{{"id", id}, {"path", path}};
+        json j{{"source", tmp.dump()}, {"contactSource", toString()}};
+        std::string re = KtOperation::ktOperation(KtOperation::RemoteFileInfo, std::move(j));
         if (re == "E2") throw RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id, MIRAICP_EXCEPTION_WHERE);
         return RemoteFile::deserializeFromString(re);
     }
 
     RemoteFile Group::getFileById(const std::string &id) {
-        json tmp;
-        json j;
-        tmp["id"] = id;
-        j["source"] = tmp.dump();
-        j["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::RemoteFileInfo, j);
+        json tmp{{"id", id}};
+        json j{{"source", tmp.dump()}, {"contactSource", toString()}};
+        std::string re = KtOperation::ktOperation(KtOperation::RemoteFileInfo, std::move(j));
         if (re == "E1") throw RemoteAssetException("Get error: 文件路径不存在, id:" + id, MIRAICP_EXCEPTION_WHERE);
         return RemoteFile::deserializeFromString(re);
     }
 
     Member Group::getOwner() {
-        json j;
-        j["contactSource"] = this->toString();
-        std::string re = KtOperation::ktOperation(KtOperation::QueryOwner, j);
+        json j{{"contactSource", toString()}};
+        std::string re = KtOperation::ktOperation(KtOperation::QueryOwner, std::move(j));
         return Member(stoi(re), this->id(), this->botid());
     }
 
     std::string Group::getFileListString(const std::string &path) {
-        json temp;
-        json j;
-        temp["id"] = "-1";
-        temp["path"] = path;
-        j["source"] = temp.dump();
-        j["contactSource"] = this->toString();
-        return KtOperation::ktOperation(KtOperation::RemoteFileInfo, j);
+        json temp{{"id", "-1"}, {"path", path}};
+        json j{{"source", temp.dump()}, {"contactSource", toString()}};
+        return KtOperation::ktOperation(KtOperation::RemoteFileInfo, std::move(j));
     }
 
     std::vector<Group::file_short_info> Group::getFileList(const std::string &path) {

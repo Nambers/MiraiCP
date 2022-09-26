@@ -14,10 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "KtOperation.h"
 #include "Exception.h"
 #include "ForwardedMessage.h"
 #include "Group.h"
+#include "KtOperation.h"
 #include "Logger.h"
 #include "Tools.h"
 
@@ -26,15 +26,11 @@ namespace MiraiCP {
     std::string MessageChain::toMiraiCode() const {
         return Tools::VectorToString(this->toMiraiCodeVector(), "");
     }
+
     MessageSource MessageChain::quoteAndSend0(std::string msg, QQID groupid) {
-        json obj;
-        json sign;
-        obj["messageSource"] = this->source->serializeToString();
-        obj["msg"] = std::move(msg);
-        sign["MiraiCode"] = true;
-        sign["groupid"] = groupid;
-        obj["sign"] = sign.dump();
-        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
+        json sign{{"MiraiCode", true}, {"groupid", groupid}};
+        json obj{{"messageSource", source->serializeToString()}, {"msg", std::move(msg)}, {"sign", sign.dump()}};
+        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, std::move(obj));
         return MessageSource::deserializeFromString(re);
     }
 

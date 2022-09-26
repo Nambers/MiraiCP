@@ -63,8 +63,11 @@ namespace MiraiCP {
         /// @brief 群列表string形式返回，利于保存
         std::string GroupListToString() const;
 
-        bool operator==(const Bot &b) const;
+        QQID id() const;
 
+        bool operator==(const Bot &b) const {
+            return id() == b.id();
+        }
     private:
         /*!
          * @brief 刷新bot信息
