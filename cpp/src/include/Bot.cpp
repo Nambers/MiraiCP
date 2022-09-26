@@ -43,36 +43,30 @@ namespace MiraiCP {
         void refreshInfo() override {
             nlohmann::json j{{"source", toString()}};
             LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j)));
-            _avatarUrl = tmp.avatarUrl;
-            _nickOrNameCard = tmp.nickornamecard;
+            _avatarUrl = std::move(tmp.avatarUrl);
+            _nickOrNameCard = std::move(tmp.nickornamecard);
         }
     };
 
-    inline std::unordered_map<QQID, std::shared_ptr<InternalBot>> &getBotPool() {
-        static std::unordered_map<QQID, std::shared_ptr<InternalBot>> BotPool;
-        return BotPool;
-    }
-
-
     inline std::shared_ptr<InternalBot> get_bot(QQID id) {
+        static std::unordered_map<QQID, std::shared_ptr<InternalBot>> BotPool;
         static std::mutex mtx;
         std::lock_guard<std::mutex> lck(mtx);
-        auto &Ptr = getBotPool().try_emplace(id).first->second;
+        auto &Ptr = BotPool.try_emplace(id).first->second;
         if (!Ptr) Ptr = std::make_shared<InternalBot>(id);
         return Ptr;
     }
 
     Group Bot::getGroup(QQID groupid) const {
-        return {groupid, this->id};
+        return {groupid, InternalData->_id};
     }
 
     Friend Bot::getFriend(QQID i) const {
-        return {i, this->id};
+        return {i, InternalData->_id};
     }
 
     std::vector<QQID> Bot::getFriendList() const {
-        nlohmann::json j;
-        j["botid"] = this->id;
+        nlohmann::json j{{"botid", InternalData->_id}};
         std::string temp = KtOperation::ktOperation(KtOperation::QueryBFL, std::move(j));
         return Tools::StringToVector(std::move(temp));
     }
@@ -101,11 +95,13 @@ namespace MiraiCP {
 
     std::string Bot::nick() {
         refreshInfo();
+        std::shared_lock<std::shared_mutex> _lck(InternalData->get_mutex());
         return InternalData->_nickOrNameCard;
     }
 
     std::string Bot::avatarUrl() {
         refreshInfo();
+        std::shared_lock<std::shared_mutex> _lck(InternalData->get_mutex());
         return InternalData->_avatarUrl;
     }
 } // namespace MiraiCP
