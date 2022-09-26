@@ -42,7 +42,7 @@ namespace MiraiCP {
 
         void refreshInfo() override {
             nlohmann::json j{{"source", toString()}};
-            LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, j));
+            LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j)));
             _avatarUrl = tmp.avatarUrl;
             _nickOrNameCard = tmp.nickornamecard;
         }
@@ -73,7 +73,7 @@ namespace MiraiCP {
     std::vector<QQID> Bot::getFriendList() const {
         nlohmann::json j;
         j["botid"] = this->id;
-        std::string temp = KtOperation::ktOperation(KtOperation::QueryBFL, j);
+        std::string temp = KtOperation::ktOperation(KtOperation::QueryBFL, std::move(j));
         return Tools::StringToVector(std::move(temp));
     }
 
@@ -82,9 +82,8 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Bot::getGroupList() const {
-        nlohmann::json j;
-        j["botid"] = this->id;
-        std::string temp = KtOperation::ktOperation(KtOperation::QueryBGL, j);
+        nlohmann::json j{{"botid", InternalData->_id}};
+        std::string temp = KtOperation::ktOperation(KtOperation::QueryBGL, std::move(j));
         return Tools::StringToVector(std::move(temp));
     }
 
@@ -96,7 +95,7 @@ namespace MiraiCP {
         InternalData->request_refresh();
     }
 
-    Bot::Bot(QQID in_id) : InternalData(get_bot(in_id)), id(in_id) {
+    Bot::Bot(QQID in_id) : InternalData(get_bot(in_id)) {
         InternalData->force_refresh_nexttime();
     }
 
