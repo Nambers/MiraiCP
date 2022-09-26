@@ -45,17 +45,16 @@ namespace MiraiCP {
 
     //发送这个聊天记录
     MessageSource ForwardedMessage::sendTo(Contact *c) {
-        json temp;
         json text = c->toJson();
-//        text["id"] = c->id();
-//        text["groupid"] = c->groupid();
-//        text["type"] = c->type();
+        //        text["id"] = c->id();
+        //        text["groupid"] = c->groupid();
+        //        text["type"] = c->type();
         text["content"] = this->nodesToJson();
-        temp["text"] = text.dump();
+        json temp{{"text", text.dump()}};
         // temp["botid"] = c->botid();
         if (display.has_value())
             temp["display"] = display->toJson();
-        std::string re = KtOperation::ktOperation(KtOperation::Buildforward, temp);
+        std::string re = KtOperation::ktOperation(KtOperation::Buildforward, std::move(temp));
         MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
     }

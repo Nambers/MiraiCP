@@ -17,10 +17,11 @@
 #ifndef MIRAICP_PRO_CPPPLUGIN_H
 #define MIRAICP_PRO_CPPPLUGIN_H
 
-#include <utility>
 
 #include "Logger.h"
 #include "PluginConfig.h"
+#include <utility>
+
 
 namespace MiraiCP {
     /// 插件父类
@@ -48,7 +49,6 @@ namespace MiraiCP {
 
         virtual void onDisable() {}
     };
-
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_CPPPLUGIN_H

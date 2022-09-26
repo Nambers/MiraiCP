@@ -232,11 +232,11 @@ namespace MiraiCP {
         static void operation0(const std::string &source, QQID botid, bool accept);
 
         void reject() {
-            GroupInviteEvent::operation0(this->source, this->bot.id, false);
+            GroupInviteEvent::operation0(this->source, this->bot.id(), false);
         }
 
         void accept() {
-            GroupInviteEvent::operation0(this->source, this->bot.id, true);
+            GroupInviteEvent::operation0(this->source, this->bot.id(), true);
         }
 
         /*!
@@ -279,12 +279,12 @@ namespace MiraiCP {
         /// @brief 拒绝好友申请
         /// @param ban - 是否加入黑名单
         void reject(bool ban = false) {
-            NewFriendRequestEvent::operation0(this->source, this->bot.id, false, ban);
+            NewFriendRequestEvent::operation0(this->source, this->bot.id(), false, ban);
         }
 
         /// @brief 接受申请
         void accept() {
-            NewFriendRequestEvent::operation0(this->source, this->bot.id, true);
+            NewFriendRequestEvent::operation0(this->source, this->bot.id(), true);
         }
 
         /*!
@@ -620,12 +620,12 @@ namespace MiraiCP {
 
         /// 通过
         void accept() {
-            operate(this->source, this->bot.id, true);
+            operate(this->source, this->bot.id(), true);
         }
 
         /// 拒绝
         void reject(const std::string &msg) {
-            operate(this->source, this->bot.id, false, msg);
+            operate(this->source, this->bot.id(), false, msg);
         }
     };
 
