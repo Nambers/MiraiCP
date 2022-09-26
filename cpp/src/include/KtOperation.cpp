@@ -22,11 +22,8 @@
 
 namespace MiraiCP::KtOperation {
     std::string ktOperation(operation_set type, nlohmann::json data, bool catchErr, const std::string &errorInfo) {
-        nlohmann::json j;
-        j["type"] = type;
-        j["data"] = std::move(data);
-        auto tmp = j.dump();
-        std::string re = LibLoader::LoaderApi::pluginOperation(tmp);
+        nlohmann::json j{{"type",type},{"data", std::move(data)}};
+        std::string re = LibLoader::LoaderApi::pluginOperation(j.dump());
         if (catchErr) MIRAICP_ERROR_HANDLE(re, errorInfo);
         return re;
     }

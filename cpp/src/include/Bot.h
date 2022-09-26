@@ -18,40 +18,26 @@
 #define MIRAICP_PRO_BOT_H
 
 
-#include "commonTypes.h"
 #include "Contact.h"
+#include "commonTypes.h"
 #include <string>
 #include <vector>
 
 
 namespace MiraiCP {
-    class Friend;      // forward declaration
-    class Group;       // forward declaration
+    class Friend;       // forward declaration
+    class Group;        // forward declaration
     struct InternalBot; // forward declaration
 
     /// 当前bot账号信息
     class Bot {
-        friend struct InternalBot;
-
-    private:
         std::shared_ptr<InternalBot> InternalData;
-    public:
-        /// 该botid
-        QQID id;
-
-    private:
-        void refreshInfo();
 
     public:
-        /*!
-         * @brief 刷新bot信息
-         * @param env
-         */
-        // void refreshInfo();
-
-        /// 用id构建机器人
+        /// 用id构造Bot对象
         explicit Bot(QQID in_id);
 
+    public:
         /// 取好友
         Friend getFriend(QQID i) const;
 
@@ -77,9 +63,14 @@ namespace MiraiCP {
         /// @brief 群列表string形式返回，利于保存
         std::string GroupListToString() const;
 
-        bool operator==(const Bot &b) const {
-            return this->id == b.id;
-        }
+        bool operator==(const Bot &b) const;
+
+    private:
+        /*!
+         * @brief 刷新bot信息
+         * @param env
+         */
+        void refreshInfo();
     };
 } // namespace MiraiCP
 
