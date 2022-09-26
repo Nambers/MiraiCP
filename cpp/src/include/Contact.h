@@ -59,7 +59,7 @@ namespace MiraiCP {
     */
     class Contact {
         template<typename ClassType, typename InternalDataType>
-        friend class ContactDataHelper;
+        friend struct ContactDataHelper;
         // attrs
     protected:
         std::shared_ptr<IContactData> InternalData;
@@ -147,7 +147,7 @@ namespace MiraiCP {
         /// @brief 强制数据刷新
         /// @note 频繁刷新可能会有性能损耗
         /// @see refreshInfo, forceRefreshNexttime
-        void forceRefreshInfo() {
+        void forceRefreshNow() {
             forceRefreshNexttime();
             refreshInfo();
         }
@@ -176,10 +176,10 @@ namespace MiraiCP {
         // QQID groupid() const { return this->_groupid; }
 
         /// 群名称，群成员群名片，或好友昵称
-        std::string nickOrNameCard() const { return InternalData->_nickOrNameCard; };
+        const std::string &nickOrNameCard() const { return InternalData->_nickOrNameCard; };
 
         /// 头像url地址
-        std::string avatarUrl() const { return InternalData->_avatarUrl; };
+        const std::string &avatarUrl() const { return InternalData->_avatarUrl; };
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, true, env)`
         ShouldNotUse("Use sendMessage") MessageSource
                 sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
@@ -288,7 +288,7 @@ namespace MiraiCP {
 
     public: // serialization
         /// 序列化到json对象
-        virtual nlohmann::json toJson() const { return {}; } //{
+        nlohmann::json toJson() const { return InternalData->toJson(); } //{
                                                              //            nlohmann::json j;
                                                              //            j["type"] = type();
                                                              //            j["id"] = id();
@@ -303,7 +303,7 @@ namespace MiraiCP {
         /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
         /// @see Contact::fromString()
         std::string toString() const {
-            return this->toJson().dump();
+            return toJson().dump();
         }
         /// @deprecated since v2.8.1, use `this->toString()`
         ShouldNotUse("use toString") std::string serializationToString() const = delete;
@@ -316,7 +316,7 @@ namespace MiraiCP {
         /// @throw APIException
         //        static Contact deserialize(const std::string &source);
         //
-        static std::shared_ptr<Contact> deserialize(nlohmann::json source);
+        static std::shared_ptr<Contact> deserializeToPointer(nlohmann::json source);
 
         // for derived class
         template<class T>

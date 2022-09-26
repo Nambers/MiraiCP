@@ -58,12 +58,13 @@ namespace MiraiCP {
         ///     - MEMBER群成员 为 0
         /// @note 上面那些变量在constants.h中有定义
         //        unsigned int permission = 0;
-        /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
-        //        bool isAnonymous;
+
 
     public:
         explicit Member(nlohmann::json in_json);
+        /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
         DECL_GETTER(anonymous)
+        INLINE_GETTER(groupid)
 
     public:
         /// @brief 更改群成员权限

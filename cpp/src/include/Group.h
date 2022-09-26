@@ -153,6 +153,10 @@ namespace MiraiCP {
         Group(nlohmann::json in_json);
 
     public: // methods
+        /// @brief 获取groupid
+        /// @note 同 id()
+        INLINE_GETTER(groupid)
+
         /**
          * @brief 更新群设置, 即覆盖服务器上的群设置
          * @details 从服务器拉去群设置用refreshInfo

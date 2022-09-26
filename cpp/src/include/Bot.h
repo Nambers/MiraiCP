@@ -40,7 +40,7 @@ namespace MiraiCP {
         QQID id;
 
     private:
-        void check();
+        void refreshInfo();
 
     public:
         /*!

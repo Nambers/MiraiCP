@@ -41,7 +41,7 @@ namespace MiraiCP {
     //        return Contact::deserialize(j);
     //    }
 
-    std::shared_ptr<Contact> Contact::deserialize(nlohmann::json j) {
+    std::shared_ptr<Contact> Contact::deserializeToPointer(nlohmann::json j) {
         uint8_t thistype = j["type"];
         switch (thistype) {
             case MIRAI_FRIEND: {
