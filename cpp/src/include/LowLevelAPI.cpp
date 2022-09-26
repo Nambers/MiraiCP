@@ -51,10 +51,8 @@ namespace MiraiCP {
         return KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
 
-    std::string LowLevelAPI::uploadImg0(const std::string &path, const std::string &c) {
-        nlohmann::json j;
-        j["fileName"] = path;
-        j["source"] = c;
+    std::string LowLevelAPI::uploadImg0(std::string path, std::string c) {
+        nlohmann::json j{{"fileName", std::move(path)}, {"source", std::move(c)}};
         return KtOperation::ktOperation(KtOperation::UploadImg, j);
     }
 

@@ -41,7 +41,7 @@ namespace MiraiCP {
          * @param c 上传的对象, Contact->serializationToString()
          * @return string 待解析json
          */
-        static std::string uploadImg0(const std::string &, const std::string &);
+        static std::string uploadImg0( std::string ,  std::string );
 
         /// 每个对象的必有信息
         struct info {
