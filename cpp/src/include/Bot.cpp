@@ -92,7 +92,7 @@ namespace MiraiCP {
         return Tools::VectorToString(getGroupList());
     }
 
-    void Bot::check() {
+    void Bot::refreshInfo() {
         InternalData->request_refresh();
     }
 
@@ -101,12 +101,12 @@ namespace MiraiCP {
     }
 
     std::string Bot::nick() {
-        check();
+        refreshInfo();
         return InternalData->_nickOrNameCard;
     }
 
     std::string Bot::avatarUrl() {
-        check();
+        refreshInfo();
         return InternalData->_avatarUrl;
     }
 } // namespace MiraiCP

@@ -196,9 +196,9 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::NudgeEvent: {
-                Event::broadcast(NudgeEvent(Contact::deserialize(j["from"]),
-                                            Contact::deserialize(j["target"]),
-                                            Contact::deserialize(j["subject"]),
+                Event::broadcast(NudgeEvent(Contact::deserializeToPointer(j["from"]),
+                                            Contact::deserializeToPointer(j["target"]),
+                                            Contact::deserializeToPointer(j["subject"]),
                                             j["botid"]));
                 break;
             }
@@ -217,13 +217,13 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::MessagePreSendEvent: {
-                Event::broadcast(MessagePreSendEvent(Contact::deserialize(j["target"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false), j["botid"]));
+                Event::broadcast(MessagePreSendEvent(Contact::deserializeToPointer(j["target"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false), j["botid"]));
                 break;
             }
             case eventTypes::Command: {
                 // command
                 std::shared_ptr<Contact> c;
-                if (j.contains("contact")) c = Contact::deserialize(j["contact"]);
+                if (j.contains("contact")) c = Contact::deserializeToPointer(j["contact"]);
                 CommandManager::commandManager[j["bindId"]]->onCommand(std::move(c), Bot(j["botid"]), MessageChain::deserializationFromMessageSourceJson((j.contains("message") ? j["message"].get<std::string>() : ""), false));
                 break;
             }
