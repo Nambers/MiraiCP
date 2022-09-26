@@ -17,7 +17,10 @@
 #include "LowLevelAPI.h"
 #include "Exception.h"
 #include "KtOperation.h"
+#include "Tools.h"
 #include <utility>
+
+
 namespace LibLoader::LoaderApi {
     const interface_funcs *get_loader_apis();
 }
@@ -27,33 +30,26 @@ namespace MiraiCP {
 
     std::string LowLevelAPI::send0(std::string content, json c, int retryTime, bool miraicode,
                                    const std::string &errorInfo) {
-        nlohmann::json j;
-        nlohmann::json tmp;
-        tmp["content"] = std::move(content);
-        tmp["contact"] = std::move(c);
-        j["source"] = tmp.dump();
-        j["miraiCode"] = miraicode;
-        j["retryTime"] = retryTime;
-        return KtOperation::ktOperation(KtOperation::Send, j, true, errorInfo);
+        nlohmann::json tmp{{"content", std::move(content)}, {"contact", std::move(c)}};
+        nlohmann::json j{{"source", tmp.dump()}, {"miraiCode", miraicode}, {"retryTime", retryTime}};
+        return KtOperation::ktOperation(KtOperation::Send, std::move(j), true, errorInfo);
     }
 
     LowLevelAPI::info LowLevelAPI::info0(const std::string &source) {
-        info re;
         MIRAICP_ERROR_HANDLE(source, "");
-        nlohmann::json j = nlohmann::json::parse(source);
-        re.avatarUrl = j["avatarUrl"];
-        re.nickornamecard = j["nickornamecard"];
-        return re;
+        auto j = nlohmann::json::parse(source);
+        info re{Tools::json_stringmover(j, "nickornamecard"), Tools::json_stringmover(j, "avatarUrl")};
+        return std::move(re);
     }
 
     std::string LowLevelAPI::getInfoSource(std::string c) {
         nlohmann::json j{{"source", std::move(c)}};
-        return KtOperation::ktOperation(KtOperation::RefreshInfo, j);
+        return KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j));
     }
 
     std::string LowLevelAPI::uploadImg0(std::string path, std::string c) {
         nlohmann::json j{{"fileName", std::move(path)}, {"source", std::move(c)}};
-        return KtOperation::ktOperation(KtOperation::UploadImg, j);
+        return KtOperation::ktOperation(KtOperation::UploadImg, std::move(j));
     }
 
     bool checkSafeCall() {
