@@ -59,8 +59,13 @@ target_compile_definitions(MiraiCP_single PUBLIC MIRAICP_LIB_SDK JSON_MultipleHe
 
 # 移植性
 if (WIN32)
-    target_link_libraries(MiraiCP_multi -static)
-    target_link_libraries(MiraiCP_single -static)
+    if (MSVC)
+        target_compile_options(MiraiCP_multi PUBLIC /MT)
+        target_compile_options(MiraiCP_single PUBLIC /MT)
+    else ()
+        target_link_libraries(MiraiCP_multi PUBLIC -static)
+        target_link_libraries(MiraiCP_single PUBLIC -static)
+    endif (MSVC)
 endif (WIN32)
 if (UNIX)
     target_link_libraries(MiraiCP_multi -static-libstdc++ -static-libgcc)
