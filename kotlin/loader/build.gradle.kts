@@ -15,6 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import Version.`kotlinx-coroutines-core`
+import Version.`ktor-ulits`
+import Version.`mirai-core`
+import Version.`mirai-core-api`
 
 plugins {
     kotlin("multiplatform")
@@ -31,11 +35,10 @@ kotlin {
         }
     }
     val hostOs = System.getProperty("os.name")
-    val isMingwX64 = hostOs.startsWith("Windows")
     val nativeTarget = when {
         hostOs == "Mac OS X" -> macosX64("native")
         hostOs == "Linux" -> linuxX64("native")
-        isMingwX64 -> mingwX64("native")
+        hostOs.startsWith("Windows") -> mingwX64("native")
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
     nativeTarget.binaries {
@@ -49,9 +52,9 @@ kotlin {
             dependencies {
                 implementation(project(":shared"))
                 implementation(project(":utils"))
-                compileOnly("net.mamoe:mirai-core-api:${Version.mirai}")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.`kotlinx-coroutines-core`}")
-                implementation("io.ktor:ktor-utils:2.1.1")
+                compileOnly(`mirai-core-api`)
+                implementation(`kotlinx-coroutines-core`)
+                implementation(`ktor-ulits`)
             }
         }
 
@@ -59,7 +62,7 @@ kotlin {
             apply(plugin = "com.github.johnrengelman.shadow")
             apply(plugin = "application")
             dependencies {
-                implementation("net.mamoe:mirai-core:${Version.mirai}")
+                implementation(`mirai-core`)
                 implementation("org.fusesource.jansi:jansi:${Version.jansi}")
                 implementation("org.jline:jline:${Version.jline}")
                 api("net.mamoe:mirai-logging-log4j2:${Version.mirai}")
@@ -73,7 +76,7 @@ kotlin {
         }
         val nativeMain by getting {
             dependencies {
-                implementation("net.mamoe:mirai-core:${Version.mirai}")
+                implementation(`mirai-core`)
             }
         }
     }

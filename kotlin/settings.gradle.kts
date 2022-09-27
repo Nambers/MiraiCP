@@ -21,12 +21,9 @@ rootProject.name = "MiraiCP"
 include("shared")
 include("plugin")
 include("loader")
-// no core anymore
-//include("core")
 include("utils")
 project(":plugin").name = "MiraiCP-plugin"
 project(":loader").name = "MiraiCP-loader"
-//project(":core").name = "MiraiCP-core"
 
 pluginManagement {
     repositories {

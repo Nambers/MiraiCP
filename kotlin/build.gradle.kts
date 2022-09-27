@@ -18,7 +18,7 @@
 import java.util.*
 
 plugins {
-    kotlin("jvm") version Version.kotlin
+    kotlin("jvm") version Version.kotlin apply false
     kotlin("plugin.serialization") version Version.kotlin apply false
     id("com.github.johnrengelman.shadow") version Version.shadowJar apply false
     id("net.mamoe.mirai-console") version Version.mirai apply false
