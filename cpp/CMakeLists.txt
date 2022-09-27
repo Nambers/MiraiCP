@@ -14,14 +14,17 @@ endif ()
 
 # optimize for Release build
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    message("Release mode, enabling maximal optimization, original CXX flags: ${CMAKE_CXX_FLAGS_RELEASE}, \"/RTC1\" will be removed if exists")
+    message("Release mode, enabling maximal optimization")
     if (MSVC)
+        message("original Release CXX flags: ${CMAKE_CXX_FLAGS_RELEASE}, \"/RTC1\" will be removed if exists")
+        message("original CXX flags: ${CMAKE_CXX_FLAGS}, \"/RTC1\" will be removed if exists")
         string(REGEX REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+        string(REGEX REPLACE "/RTC1" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
         add_compile_options(/Ox)
     else ()
         add_compile_options(-O3)
     endif (MSVC)
-endif ()
+endif (CMAKE_BUILD_TYPE STREQUAL "Release")
 
 #
 set(CMAKE_CXX_STANDARD 17) # not working on MSVC
