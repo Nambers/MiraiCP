@@ -26,7 +26,11 @@ target_compile_definitions(Loader PUBLIC MIRAICP_LIB_LOADER JSON_MultipleHeaders
 
 # 移植性
 if (WIN32)
-    target_link_libraries(Loader -static)
+    if (MSVC)
+        target_compile_options(Loader PUBLIC /MT)
+    else ()
+        target_link_libraries(Loader PUBLIC -static)
+    endif (MSVC)
 endif (WIN32)
 if (UNIX)
     target_link_libraries(Loader -static-libstdc++ -static-libgcc)
