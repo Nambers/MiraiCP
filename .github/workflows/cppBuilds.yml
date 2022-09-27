@@ -32,9 +32,9 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
     - name: configure
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DGOOGLE_TEST=OFF ..
     - name: build with msvc
-      run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single
+      run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single --config Release
   windows-mingw-single:
     runs-on: windows-latest
     steps:

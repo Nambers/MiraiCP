@@ -13,7 +13,7 @@ on:
 jobs:
   loadTest:
     uses: ./.github/workflows/loadTest.yml
-  build-libLoader-mingw-4-windows:
+  build-libLoader-msvc-4-windows:
     runs-on: windows-latest
     steps:
     - name: checkout  
@@ -22,14 +22,14 @@ jobs:
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DGOOGLE_TEST=OFF ..
     - name: build with gcc
-      run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target Loader
+      run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --config Release --target Loader
     - name: upload
       uses: actions/upload-artifact@v3
       with:
         name: libLoaderdll
-        path: ./cpp/build/libLoader.dll
+        path: ./cpp/build/Release/libLoader.dll
   build-libLoader-gcc-4-linux:
     runs-on: ubuntu-latest
     steps:
