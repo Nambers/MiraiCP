@@ -163,8 +163,8 @@ static_assert(false, "Unsupported platform");
 #define DECL_GETTER(attr) decltype(DataType::_##attr) attr();
 #define IMPL_GETTER(attr)                                                                 \
     decltype(LOC_CLASS_NAMESPACE::DataType::_##attr) LOC_CLASS_NAMESPACE::attr() { \
-        InternalData->request_refresh();                                                  \
-        std::shared_lock<std::shared_mutex> local_lck(InternalData->get_mutex());         \
+        InternalData->requestRefresh();                                                  \
+        std::shared_lock<std::shared_mutex> local_lck(InternalData->getMutex());         \
         return GetDataInternal()->_##attr;                                                \
     }
 #define INLINE_GETTER(attr) \

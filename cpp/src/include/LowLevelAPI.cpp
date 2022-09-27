@@ -39,7 +39,7 @@ namespace MiraiCP {
         MIRAICP_ERROR_HANDLE(source, "");
         auto j = nlohmann::json::parse(source);
         info re{Tools::json_stringmover(j, "nickornamecard"), Tools::json_stringmover(j, "avatarUrl")};
-        return std::move(re);
+        return re;
     }
 
     std::string LowLevelAPI::getInfoSource(std::string c) {

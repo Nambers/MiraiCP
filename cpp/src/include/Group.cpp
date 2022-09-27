@@ -52,7 +52,7 @@ namespace MiraiCP {
     }
 
     Group::Group(QQID groupid, QQID botid) : Contact(GetGroupFromPool(groupid, botid)) {
-        forceRefreshNexttime();
+        forceRefreshNextTime();
     }
 
     Group::Group(json in_json) : Contact(GetGroupFromPool(in_json)) {
@@ -61,7 +61,7 @@ namespace MiraiCP {
         ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
         else
-            forceRefreshNexttime();
+            forceRefreshNextTime();
     }
 
     std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList() {
@@ -138,7 +138,7 @@ namespace MiraiCP {
         json j{{"name", std::move(settings.name)}, {"isMuteAll", settings.isMuteAll}, {"isAllowMemberInvite", settings.isAllowMemberInvite}, {"isAutoApproveEnabled", settings.isAutoApproveEnabled}, {"isAnonymousChatEnabled", settings.isAnonymousChatEnabled}};
         json tmp{{"source", j.dump()}, {"contactSource", toString()}};
         std::string re = KtOperation::ktOperation(KtOperation::GroupSetting, std::move(tmp));
-        InternalData->force_refresh_nexttime();
+        InternalData->forceRefreshNextTime();
     }
 
     RemoteFile Group::sendFile(const std::string &path, const std::string &filepath) {

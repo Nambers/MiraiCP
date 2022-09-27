@@ -90,7 +90,7 @@ namespace MiraiCP {
 
         /// 发送语音
         MessageSource sendVoice(const std::string &path) {
-            return sendVoice0(path);
+            return sendVoiceImpl(path);
         }
 
         /// 获取权限，会在构造时调用，请使用permission缓存变量

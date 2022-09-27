@@ -85,10 +85,11 @@ namespace MiraiCP {
     //    }
 
 
-    MessageSource Contact::sendVoice0(const std::string &path) const {
+    MessageSource Contact::sendVoiceImpl(const std::string &path) const {
 
         json source{{"path", path}};
-        json j{{"source", source.dump()}, {"contactSource", toString()}};
+        json j{{"source",        source.dump()},
+               {"contactSource", toString()}};
         std::string re = KtOperation::ktOperation(KtOperation::Voice, std::move(j));
         if (re == "E1") {
             throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在", MIRAICP_EXCEPTION_WHERE);

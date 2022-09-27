@@ -202,7 +202,7 @@ namespace MiraiCP {
 
         /// 发送语音
         MessageSource sendVoice(const std::string &path) {
-            return sendVoice0(path);
+            return sendVoiceImpl(path);
         }
 
         /*!

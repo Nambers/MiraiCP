@@ -49,7 +49,7 @@ namespace MiraiCP {
 
     Member::Member(QQID id, QQID groupid, QQID botid)
         : Contact(GetMemberFromPool(id, botid, MIRAI_MEMBER)) {
-        forceRefreshNexttime();
+        forceRefreshNextTime();
     }
 
     Member::Member(nlohmann::json in_json) : Contact(GetMemberFromPool(in_json)) {
@@ -65,7 +65,7 @@ namespace MiraiCP {
         else
             needrefresh = true;
 
-        if (needrefresh) forceRefreshNexttime();
+        if (needrefresh) forceRefreshNextTime();
     }
 
     IMPL_GETTER(anonymous)
@@ -112,21 +112,21 @@ namespace MiraiCP {
     void Member::kick(const std::string &reason) {
         json j{{"message", reason}, {"contactSource", toString()}};
         KtOperation::ktOperation(KtOperation::KickM, std::move(j));
-        forceRefreshNexttime();
+        forceRefreshNextTime();
     }
 
     void Member::modifyAdmin(bool admin) {
         if (anonymous()) return;
         json j{{"admin", admin}, {"contactSource", toString()}};
         KtOperation::ktOperation(KtOperation::ModifyAdmin, std::move(j));
-        forceRefreshNexttime();
+        forceRefreshNextTime();
     }
 
     void Member::changeNameCard(std::string_view newName) {
         if (anonymous()) return;
         json j{{"contactSource", toString()}, {"newName", newName}};
         KtOperation::ktOperation(KtOperation::ChangeNameCard, std::move(j));
-        forceRefreshNexttime();
+        forceRefreshNextTime();
     }
 
     void Member::sendNudge() {
@@ -138,7 +138,7 @@ namespace MiraiCP {
     }
 
     //    void Member::refreshInfo() {
-    //        InternalData->request_refresh();
+    //        InternalData->requestRefresh();
     //    }
 
     void MemberData::deserialize(nlohmann::json in_json) {

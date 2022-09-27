@@ -44,7 +44,7 @@ namespace MiraiCP {
 
     /*好友类实现*/
     Friend::Friend(QQID id, QQID botid) : Contact(GetFriendPool(id, botid)) {
-        forceRefreshNexttime(); //InternalData->request_refresh();
+        forceRefreshNextTime(); //InternalData->requestRefresh();
     }
 
     Friend::Friend(nlohmann::json in_json) : Contact(GetFriendPool(in_json)) {
@@ -53,7 +53,7 @@ namespace MiraiCP {
         ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
         else
-            forceRefreshNexttime();
+            forceRefreshNextTime();
     }
 
     void Friend::deleteFriend() {
@@ -62,7 +62,7 @@ namespace MiraiCP {
     }
 
     //    void Friend::refreshInfo() {
-    //        InternalData->request_refresh();
+    //        InternalData->requestRefresh();
     //        //        std::string temp = LowLevelAPI::getInfoSource(this->toString());
     //        //        if (temp == "E1") {
     //        //            throw FriendException(MIRAICP_EXCEPTION_WHERE);

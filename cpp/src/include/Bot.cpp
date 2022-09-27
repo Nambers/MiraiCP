@@ -86,22 +86,22 @@ namespace MiraiCP {
     }
 
     void Bot::refreshInfo() {
-        InternalData->request_refresh();
+        InternalData->requestRefresh();
     }
 
     Bot::Bot(QQID in_id) : InternalData(get_bot(in_id)) {
-        InternalData->force_refresh_nexttime();
+        InternalData->forceRefreshNextTime();
     }
 
     std::string Bot::nick() {
         refreshInfo();
-        std::shared_lock<std::shared_mutex> _lck(InternalData->get_mutex());
+        std::shared_lock<std::shared_mutex> _lck(InternalData->getMutex());
         return InternalData->_nickOrNameCard;
     }
 
     std::string Bot::avatarUrl() {
         refreshInfo();
-        std::shared_lock<std::shared_mutex> _lck(InternalData->get_mutex());
+        std::shared_lock<std::shared_mutex> _lck(InternalData->getMutex());
         return InternalData->_avatarUrl;
     }
 
