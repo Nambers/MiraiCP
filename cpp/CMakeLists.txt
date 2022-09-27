@@ -1,15 +1,26 @@
 cmake_minimum_required(VERSION 3.10)
 project(MiraiCP_pro LANGUAGES CXX) # MSVC detecting must be after project declaration
 
-if(MSVC)
+if (MSVC)
     message("MSVC detected")
-    # 以utf8编译, for msvc; EHa参数启用标准 C++ stack unwinding; 启用多线程编译
-    add_compile_options(/W4 /utf-8 /EHa /std:c++17 /MP)
+    # 以utf8编译, for msvc; EHa参数启用标准 C++ stack unwinding; 启用多线程编译；禁止无返回值的函数；禁用两个与dll export相关的warning
+    add_compile_options(/W4 /utf-8 /EHa /std:c++17 /MP /we4715 /wd4251 /wd4275)
     # See Warning C4668
     add_compile_definitions(WIN32_LEAN_AND_MEAN)
-else()
-    add_compile_options(-Wall)
-endif()
+else ()
+    # 禁止无返回值的函数
+    add_compile_options(-Wall -Werror=return-type)
+endif ()
+
+# optimize for Release build
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    message("Release mode, enabling maximal optimization")
+    if (MSVC)
+        add_compile_options(/Ox)
+    else ()
+        add_compile_options(-O3)
+    endif (MSVC)
+endif ()
 
 #
 set(CMAKE_CXX_STANDARD 17) # not working on MSVC
