@@ -1,5 +1,17 @@
+// Copyright (c) 2022 - 2022. Eritque arcus and contributors.
 //
-// Created by 60168 on 2022-9-20.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or any later version(in your opinion).
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef MIRAICP_PRO_IMIRAIDATA_H
@@ -10,8 +22,6 @@
 #include <shared_mutex>
 
 namespace MiraiCP {
-    struct IMiraiData;
-
     struct IMiraiData {
     private:
         struct MiraiDataLocker final {
@@ -24,6 +34,7 @@ namespace MiraiCP {
 
     public:
         IMiraiData() = default;
+
         virtual ~IMiraiData() = default;
 
     public:
@@ -41,21 +52,21 @@ namespace MiraiCP {
         /*!
          * @brief 请求一次refresh，但不一定会进行
          */
-        void request_refresh();
+        void requestRefresh();
 
         /*!
          * @brief 强制下次request_refresh()时进行refresh，
          * @note 调用该函数本身不会进行refresh
-         * @see request_refresh
+         * @see requestRefresh
          */
-        void force_refresh_nexttime();
+        void forceRefreshNextTime();
 
         /*!
          * @brief 序列化为string
          */
         std::string toString() const;
 
-        std::shared_mutex &get_mutex() {
+        std::shared_mutex &getMutex() {
             return Locker._mtx;
         }
 

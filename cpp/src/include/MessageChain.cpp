@@ -23,13 +23,17 @@
 
 namespace MiraiCP {
     using json = nlohmann::json;
+
     std::string MessageChain::toMiraiCode() const {
         return Tools::VectorToString(this->toMiraiCodeVector(), "");
     }
 
     MessageSource MessageChain::quoteAndSend0(std::string msg, QQID groupid) {
-        json sign{{"MiraiCode", true}, {"groupid", groupid}};
-        json obj{{"messageSource", source->serializeToString()}, {"msg", std::move(msg)}, {"sign", sign.dump()}};
+        json sign{{"MiraiCode", true},
+                  {"groupid",   groupid}};
+        json obj{{"messageSource", source->serializeToString()},
+                 {"msg",           std::move(msg)},
+                 {"sign",          sign.dump()}};
         std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, std::move(obj));
         return MessageSource::deserializeFromString(re);
     }
@@ -47,7 +51,7 @@ namespace MiraiCP {
                 if (pos - lastPos > 1)
                     mc.add(PlainText(m.substr(lastPos + 1, pos - lastPos - 1))); // plain text
                 size_t back = MessageChain::findEnd(m, pos);
-                if (back == -1) throw IllegalStateException("", MIRAICP_EXCEPTION_WHERE);
+                if (back == (size_t) -1) throw IllegalStateException("", MIRAICP_EXCEPTION_WHERE);
                 std::string tmp = m.substr(pos, back - pos);
                 tmp = Tools::replace(std::move(tmp), "[mirai:", "");
                 size_t i = tmp.find(':'); // first :
@@ -80,7 +84,10 @@ namespace MiraiCP {
                         size_t comma1 = tmp.find(',');
                         size_t comma2 = tmp.find(',', comma1 + 1);
                         size_t comma3 = tmp.find(',', comma2 + 1);
-                        mc.add(RemoteFile(tmp.substr(i + 1, comma1 - i - 1), std::stoi(tmp.substr(comma1 + 1, comma2 - comma1 - 1)), tmp.substr(comma2 + 1, comma3 - comma2 - 1), std::stoll(tmp.substr(comma3 + 1, tmp.length() - comma3 - 1))));
+                        mc.add(RemoteFile(tmp.substr(i + 1, comma1 - i - 1),
+                                          std::stoi(tmp.substr(comma1 + 1, comma2 - comma1 - 1)),
+                                          tmp.substr(comma2 + 1, comma3 - comma2 - 1),
+                                          std::stoll(tmp.substr(comma3 + 1, tmp.length() - comma3 - 1))));
                         break;
                     }
                     case 7:
@@ -122,7 +129,8 @@ namespace MiraiCP {
         if (j.empty()) return mc;
         if (j[0]["type"] == "MessageOrigin") {
             if (j[0]["kind"] == "MUSIC_SHARE") {
-                mc.add(MusicShare(j[1]["kind"], j[1]["title"], j[1]["summary"], j[1]["jumpUrl"], j[1]["pictureUrl"], j[1]["musicUrl"], j[1]["brief"]));
+                mc.add(MusicShare(j[1]["kind"], j[1]["title"], j[1]["summary"], j[1]["jumpUrl"], j[1]["pictureUrl"],
+                                  j[1]["musicUrl"], j[1]["brief"]));
                 return mc;
             }
             mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(j));
@@ -143,7 +151,8 @@ namespace MiraiCP {
                 continue;
             }
             if (node["type"] == "FileMessage") {
-                mc.add(Group(tmp["targetId"].get<QQID>(), tmp["botId"].get<QQID>()).getFileById(node["id"]).plus(node["internalId"]));
+                mc.add(Group(tmp["targetId"].get<QQID>(), tmp["botId"].get<QQID>()).getFileById(node["id"]).plus(
+                        node["internalId"]));
                 continue;
             }
             if (node["type"] == "MarketFace") {

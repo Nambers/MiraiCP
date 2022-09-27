@@ -105,7 +105,7 @@ private:
 
 public:
     // 输出是否为 info 级别
-    explicit OString(bool info) : sbuf(info), std::ostream(&sbuf) {}
+    explicit OString(bool info) : std::ostream(&sbuf), sbuf(info) {}
 
     ~OString() override = default;
 

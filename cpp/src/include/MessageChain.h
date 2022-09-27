@@ -35,7 +35,7 @@ namespace MiraiCP {
             Message() : std::shared_ptr<SingleMessage>() {} // for MSVC compatible, or you will get an error
 
             template<class T>
-            Message(T &&Arg) {
+            Message(T &&Arg) { // NOLINT(google-explicit-constructor)
                 using NoCVRefType = typename std::remove_cv_t<typename std::remove_reference_t<T>>;
 
                 if constexpr (std::is_base_of_v<Super, NoCVRefType>) {
@@ -43,7 +43,9 @@ namespace MiraiCP {
                 } else if constexpr (std::is_base_of_v<SingleMessage, NoCVRefType>) {
                     reset(new NoCVRefType(std::forward<T>(Arg)));
                 } else {
-                    static_assert(std::is_base_of_v<Super, NoCVRefType> || std::is_base_of_v<SingleMessage, NoCVRefType>, "只支持SingleMessage的子类");
+                    static_assert(
+                            std::is_base_of_v<Super, NoCVRefType> || std::is_base_of_v<SingleMessage, NoCVRefType>,
+                            "只支持SingleMessage的子类");
                 }
             }
 
@@ -59,13 +61,18 @@ namespace MiraiCP {
             /// 取指定类型
             /// @throw IllegalArgumentException
             template<class T>
-            T get() const {
+            T getVal() const {
+                // for dev: 不用 get 为了不和shared_ptr重叠
                 static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
                 if (T::type() != this->type())
-                    throw IllegalArgumentException("cannot convert from " + SingleMessage::messageType[this->type()] + " to " + SingleMessage::messageType[T::type()], MIRAICP_EXCEPTION_WHERE);
+                    throw IllegalArgumentException(
+                            "cannot convert from " + SingleMessage::messageType[this->type()] + " to " +
+                            SingleMessage::messageType[T::type()], MIRAICP_EXCEPTION_WHERE);
                 T *re = static_cast<T *>(std::shared_ptr<SingleMessage>::get());
                 if (re == nullptr)
-                    throw IllegalArgumentException("cannot convert from " + SingleMessage::messageType[this->type()] + " to " + SingleMessage::messageType[T::type()], MIRAICP_EXCEPTION_WHERE);
+                    throw IllegalArgumentException(
+                            "cannot convert from " + SingleMessage::messageType[this->type()] + " to " +
+                            SingleMessage::messageType[T::type()], MIRAICP_EXCEPTION_WHERE);
                 return *re;
             }
 
@@ -149,7 +156,7 @@ namespace MiraiCP {
             std::vector<T> re;
             for (auto &&a: *this) {
                 if (a.type() == T::type())
-                    re.emplace_back(a.get<T>());
+                    re.emplace_back(a.getVal<T>());
             }
             return re;
         }
@@ -161,7 +168,7 @@ namespace MiraiCP {
             std::vector<T> re;
             for (auto &&a: *this) {
                 if (func(a))
-                    re.push_back(a.get<T>());
+                    re.push_back(a.getVal<T>());
             }
             return re;
         }
@@ -171,7 +178,7 @@ namespace MiraiCP {
         std::optional<T> first() {
             for (auto &&a: *this)
                 if (a.type() == T::type())
-                    return a.get<T>();
+                    return a.getVal<T>();
             return std::nullopt;
         }
 

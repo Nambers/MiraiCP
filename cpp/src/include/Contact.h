@@ -39,12 +39,14 @@ namespace MiraiCP {
     struct IContactData : public IMiraiData {
         std::string _nickOrNameCard;
         std::string _avatarUrl;
-        QQID _id;
-        QQID _botid;
+        QQID _id{};
+        QQID _botid{};
         ContactType _type = MIRAI_CONTACT;
 
         void deserialize(nlohmann::json in_json) override;
+
         nlohmann::json toJson() const override;
+
         void refreshInfo() override;
     };
 
@@ -59,7 +61,8 @@ namespace MiraiCP {
     */
     class Contact {
         template<typename ClassType, typename InternalDataType>
-        friend struct ContactDataHelper;
+        friend
+        struct ContactDataHelper;
         // attrs
     protected:
         std::shared_ptr<IContactData> InternalData;
@@ -69,7 +72,7 @@ namespace MiraiCP {
         //        QQID _botid;
         //        bool _anonymous = false;
 
-    private:
+    public:
         /*!
          * @brief 无参初始化Contact类型
          * @internal 禁止使用
@@ -134,21 +137,21 @@ namespace MiraiCP {
         /// @note 不一定会进行刷新，一般为内部调用。强制刷新请使用 forceRefreshInfo()
         /// @see forceRefreshInfo
         void refreshInfo() {
-            InternalData->request_refresh();
+            InternalData->requestRefresh();
         }
 
         /// @brief 强制下次refreshInfo()调用时刷新数据
         /// @note 尽可能调用该函数，避免不必要的刷新
         /// @see refreshInfo
-        void forceRefreshNexttime() {
-            InternalData->force_refresh_nexttime();
+        void forceRefreshNextTime() {
+            InternalData->forceRefreshNextTime();
         }
 
         /// @brief 强制数据刷新
         /// @note 频繁刷新可能会有性能损耗
-        /// @see refreshInfo, forceRefreshNexttime
+        /// @see refreshInfo, forceRefreshNextTime
         void forceRefreshNow() {
-            forceRefreshNexttime();
+            forceRefreshNextTime();
             refreshInfo();
         }
 
@@ -180,7 +183,7 @@ namespace MiraiCP {
 
         /// 头像url地址
         const std::string &avatarUrl() const { return InternalData->_avatarUrl; };
-        /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, true, env)`
+        /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsgImpl(msg.toMiraiCode(), retryTime, true, env)`
         ShouldNotUse("Use sendMessage") MessageSource
                 sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
 
@@ -240,18 +243,18 @@ namespace MiraiCP {
         /// @return MessageSource
         template<class T>
         MessageSource sendMessage(T msg, int retryTime = 3) {
-            return this->send1(msg, retryTime);
+            return this->unpackMsg(msg, retryTime);
         }
 
-        /// @deprecated since v2.8.1, use `sendMessage(msg)` or `sendMsg0(msg, retryTime, false, env)`
+        /// @deprecated since v2.8.1, use `sendMessage(msg)` or `sendMsgImpl(msg, retryTime, false, env)`
         ShouldNotUse("Use sendMessage") MessageSource
                 sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
 
-        /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsg0(msg.toMiraiCode(), retryTime, false, env);`
+        /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsgImpl(msg.toMiraiCode(), retryTime, false, env);`
         ShouldNotUse("Use sendMessage") MessageSource
                 sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
 
-        /// @deprecated since v2.8.1, use `sendMessage(Tools::VectorToString(std::move(msg)))` or `sendMsg0(Tools::VectorToString(std::move(msg)), retryTime, false, env);`
+        /// @deprecated since v2.8.1, use `sendMessage(Tools::VectorToString(std::move(msg)))` or `sendMsgImpl(Tools::VectorToString(std::move(msg)), retryTime, false, env);`
         ShouldNotUse("Use sendMessage") MessageSource
                 sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
 
@@ -354,11 +357,11 @@ namespace MiraiCP {
         }
 
         /// 发送语音
-        MessageSource sendVoice0(const std::string &path) const;
+        MessageSource sendVoiceImpl(const std::string &path) const;
 
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsg0(std::string msg, int retryTime, bool miraicode = false) const {
+        MessageSource sendMsgImpl(std::string msg, int retryTime, bool miraicode = false) const {
             if (msg.empty()) {
                 throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
             }
@@ -369,38 +372,38 @@ namespace MiraiCP {
         }
 
         template<class T>
-        MessageSource send1(T msg, int retryTime) {
+        MessageSource unpackMsg(T msg, int retryTime) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return sendMsg0(msg.toMiraiCode(), retryTime, true);
+            return sendMsgImpl(msg.toMiraiCode(), retryTime, true);
         }
 
-        MessageSource send1(MessageChain msg, int retryTime) {
-            return sendMsg0(msg.toMiraiCode(), retryTime, true);
+        MessageSource unpackMsg(MessageChain msg, int retryTime) {
+            return sendMsgImpl(msg.toMiraiCode(), retryTime, true);
         }
 
-        MessageSource send1(MiraiCode msg, int retryTime) {
-            return sendMsg0(msg.toMiraiCode(), retryTime, true);
+        MessageSource unpackMsg(MiraiCode msg, int retryTime) {
+            return sendMsgImpl(msg.toMiraiCode(), retryTime, true);
         }
 
-        MessageSource send1(std::string msg, int retryTime) {
-            return sendMsg0(std::move(msg), retryTime, false);
+        MessageSource unpackMsg(std::string msg, int retryTime) {
+            return sendMsgImpl(std::move(msg), retryTime, false);
         }
 
-        MessageSource send1(const char *msg, int retryTime) {
-            return sendMsg0(std::string(msg), retryTime, false);
+        MessageSource unpackMsg(const char *msg, int retryTime) {
+            return sendMsgImpl(std::string(msg), retryTime, false);
         }
     };
 
     template<typename ClassType, typename InternalDataType>
     struct ContactDataHelper {
         using json = nlohmann::json;
-        typedef Contact Super;
+//        typedef Contact Super;
         typedef InternalDataType DataType;
 
         DataType *GetDataInternal() {
-            auto kls_ptr = static_cast<ClassType *>(this);
-            assert(kls_ptr->InternalData != nullptr);
-            return static_cast<DataType *>(kls_ptr->InternalData.get());
+            auto clz_ptr = static_cast<ClassType *>(this);
+            assert(clz_ptr->InternalData != nullptr);
+            return static_cast<DataType *>(clz_ptr->InternalData.get());
         }
     };
 

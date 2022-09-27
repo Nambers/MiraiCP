@@ -45,6 +45,7 @@ namespace MiraiCP {
         }
 
         MiraiCPString() = default;
+
         // call if _size is set to non-zero
         // allocate memory for str
         void construction();
@@ -55,16 +56,16 @@ namespace MiraiCP {
 
         MiraiCPString(MiraiCPString &&temp) noexcept;
 
-        MiraiCPString(const char *char_str);
+        MiraiCPString(const char *char_str); // NOLINT(google-explicit-constructor)
 
-        MiraiCPString(const std::string &string_str);
+        MiraiCPString(const std::string &string_str); // NOLINT(google-explicit-constructor)
 
         std::string toString() const {
             if (str == nullptr || _size == 0) return {};
             return {str};
         }
 
-        operator std::string() const {
+        operator std::string() const { // NOLINT(google-explicit-constructor)
             return toString();
         }
 
