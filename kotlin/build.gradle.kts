@@ -36,7 +36,7 @@ allprojects {
     tasks {
         withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
             kotlinOptions {
-                freeCompilerArgs += "-Xjvm-default=enable"
+//                freeCompilerArgs += "-Xjvm-default=enable"
                 freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
                 kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
             }

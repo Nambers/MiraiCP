@@ -15,13 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import tech.eritquearcus.miraicp.loader.KotlinMainEntry
 
-package tech.eritquearcus.miraicp.loader
-
-actual object Main {
-    actual fun main(j: String, path: String) {
-    }
-}
-
-actual fun main(args: Array<String>) {
+fun main(args: Array<String>) {
+    KotlinMainEntry.main(args)
 }

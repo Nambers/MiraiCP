@@ -30,11 +30,22 @@ class MiraiCPFileImpl(private val file: File) : MiraiCPFile {
         get() = file.extension
     override val absolutePath: String
         get() = file.absolutePath
+    override val name: String
+        get() = file.name
+    override val pathWithOutName: String
+        get() = file.parent
 
     override fun deleteRecursively(): Boolean = file.deleteRecursively()
 
 
     override fun mkdir(): Boolean = file.mkdir()
+    override fun writeText(text: String) {
+        file.writeText(text)
+    }
+
+    override fun canRead(): Boolean = file.canRead()
+
+    override fun readText(): String = file.readText()
 
     override fun exists(): Boolean = file.exists()
 

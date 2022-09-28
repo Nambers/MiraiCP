@@ -61,6 +61,7 @@ import kotlin.native.concurrent.ThreadLocal
 
 expect object PublicSharedMultiplatform {
     fun onDisable()
+    fun scheduling(time: Long, msg: String)
 }
 
 @ThreadLocal
@@ -289,17 +290,18 @@ object PublicShared {
     }
 
     //图片部分实现
-    suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String = try {
-        val f = MiraiCPFiles.create(file).toExternalResource()
-        val img = f.uploadAsImage(temp)
-        f.close()
-        Json.encodeToString(
-            Config.ImgInfo(
-                img.size,
-                img.width,
-                img.height,
-                Json.encodeToString(img.md5),
-                img.queryUrl(),
+    private suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String =
+        try {
+            val f = MiraiCPFiles.create(file).toExternalResource()
+            val img = f.uploadAsImage(temp)
+            f.close()
+            Json.encodeToString(
+                Config.ImgInfo(
+                    img.size,
+                    img.width,
+                    img.height,
+                    Json.encodeToString(img.md5),
+                    img.queryUrl(),
                 img.imageId,
                 img.imageType.ordinal
             )
@@ -701,9 +703,7 @@ object PublicShared {
 
     //定时任务
     fun scheduling(time: Long, msg: String): String {
-//        Timer("Timer", true).schedule(time) {
-//            event(CPPEvent.TimeOutEvent(msg))
-//        }
+        PublicSharedMultiplatform.scheduling(time, msg)
         return "Y"
     }
 

@@ -24,16 +24,18 @@ import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.MiraiExperimentalApi
-import tech.eritquearcus.miraicp.loader.Main
+import tech.eritquearcus.miraicp.loader.KotlinMainData
+import tech.eritquearcus.miraicp.loader.console.CommandMultiplatform.pureOrder
 import tech.eritquearcus.miraicp.loader.login
 import tech.eritquearcus.miraicp.shared.CPPEvent
-import tech.eritquearcus.miraicp.shared.CPPLibMultiplatform
 import tech.eritquearcus.miraicp.shared.Command2C
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
-import java.io.File
-import java.time.Duration
-import java.time.LocalDateTime
+import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
+
+expect object CommandMultiplatform {
+    fun pureOrder(order: String)
+}
 
 object Command {
     private const val ch = " "
@@ -53,10 +55,10 @@ object Command {
         "reloadPlugin <plugin id>" to "简写reload, 重新加载某个插件"
     )
 
-    private fun printHelp() {
-        val prefixPlaceholder = String(CharArray(
+    fun printHelp() {
+        val prefixPlaceholder = CharArray(
             message.maxOfOrNull { it.first.length }!! + 3
-        ) { ' ' })
+        ) { ' ' }.concatToString()
 
         // From Mamoe Technologies and contributors
         fun printOption(optionName: String, value: String) {
@@ -93,41 +95,41 @@ object Command {
 
     private fun error(order: String, reason: String) = PublicSharedData.logger.error("命令错误: '$order', $reason")
 
-    private fun pureOrder(order: String) {
-        when (order) {
-            "exit" -> Main.exit()
-            "help" -> printHelp()
-            "status" -> {
-                val s = Duration.between(Console.start, LocalDateTime.now()).seconds
-                println(
-                    "该Loader已经持续运行 " + String.format(
-                        "%d:%02d:%02d",
-                        s / 3600,
-                        (s % 3600) / 60,
-                        (s % 60)
-                    ) + " 啦"
-                )
-            }
-
-            "accountList", "aList" -> Main.loginAccount.let { acs ->
-                acs.forEach { println(Json.encodeToString(it)) }
-            }
-
-            "pluginList", "pList" -> {
-                event(CPPEvent.LibLoaderEvent("PluginList"))
-            }
-
-            "disablePluginList", "dList" -> {
-                event(CPPEvent.LibLoaderEvent("DisablePluginList"))
-            }
-
-            else -> lastOneOrMoreParamOrder(listOf(order))
-        }
-    }
+//    private fun pureOrder(order: String) {
+//        when (order) {
+//            "exit" -> KotlinMain.exit()
+//            "help" -> printHelp()
+//            "status" -> {
+//                val s = Duration.between(Console.start, LocalDateTime.now()).seconds
+//                println(
+//                    "该Loader已经持续运行 " + String.format(
+//                        "%d:%02d:%02d",
+//                        s / 3600,
+//                        (s % 3600) / 60,
+//                        (s % 60)
+//                    ) + " 啦"
+//                )
+//            }
+//
+//            "accountList", "aList" -> KotlinMain.loginAccount.let { acs ->
+//                acs.forEach { println(Json.encodeToString(it)) }
+//            }
+//
+//            "pluginList", "pList" -> {
+//                event(CPPEvent.LibLoaderEvent("PluginList"))
+//            }
+//
+//            "disablePluginList", "dList" -> {
+//                event(CPPEvent.LibLoaderEvent("DisablePluginList"))
+//            }
+//
+//            else -> lastOneOrMoreParamOrder(listOf(order))
+//        }
+//    }
 
     @OptIn(MiraiExperimentalApi::class)
     private fun login(id: Long) =
-        Main.loginAccount.first { it.id == id && (it.logined == null || it.logined == false) }.login()
+        KotlinMainData.loginAccount.first { it.id == id && (it.logined == null || it.logined == false) }.login()
 
     private fun oneParamOrder(order: List<String>, re: List<String>) {
         when (order[0]) {
@@ -146,7 +148,7 @@ object Command {
             }
 
             "loadPlugin", "load" -> {
-                val f = File(order[1])
+                val f = MiraiCPFiles.create(order[1])
                 when {
                     !f.isFile || !f.exists() -> {
                         error(order.joinToString(" "), order[1] + "不是一个有效的文件")
@@ -192,7 +194,8 @@ object Command {
                     it.bid
                 )
             )
-            CPPLibMultiplatform.Event(tmp)
+            // 为什么之前直接Event了
+            event(tmp)
             return true
         }
         return false
@@ -202,7 +205,7 @@ object Command {
         return preCommand.matchCommand(order)
     }
 
-    private fun lastOneOrMoreParamOrder(order: List<String>) {
+    fun lastOneOrMoreParamOrder(order: List<String>) {
         if (!lastCommand.matchCommand(order))
             unknown(order.joinToString(" "))
     }

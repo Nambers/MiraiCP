@@ -30,7 +30,7 @@ import org.jline.reader.impl.completer.NullCompleter
 import org.jline.terminal.Terminal
 import org.jline.terminal.TerminalBuilder
 import org.jline.terminal.impl.AbstractWindowsTerminal
-import tech.eritquearcus.miraicp.loader.MainData
+import tech.eritquearcus.miraicp.loader.KotlinMainData
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import java.time.LocalDateTime
@@ -69,7 +69,7 @@ object Console {
     private const val prompt = "> "
 
     fun listen() {
-        MainData.coroutineScope.launch(CoroutineName("Console Command")) {
+        KotlinMainData.coroutineScope.launch(CoroutineName("Console Command")) {
             while (isActive) {
                 val re = try {
                     lineReader.readLine(prompt)

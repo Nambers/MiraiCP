@@ -63,6 +63,18 @@ class MiraiCPFileUnixImpl(val path: String) : MiraiCPFile {
     override val extension: String
         get() = path.substringAfterLast('.', "")
     override val absolutePath: String by lazy { kotlin.run { readlink(path) } }
+    override val name: String
+        get() = absolutePath.substringAfterLast('/', "").ifEmpty { absolutePath }
+    override val pathWithOutName: String
+        get() {
+            val absolutePath = absolutePath
+            val p = absolutePath.substringBeforeLast("/", "")
+            if (p.isEmpty()) {
+                return if (absolutePath.singleOrNull() == '/') "/" // root
+                else "/"
+            }
+            throw IllegalStateException("File path error")
+        }
 
     override fun delete(): Boolean {
         return if (isFile) {
@@ -72,27 +84,7 @@ class MiraiCPFileUnixImpl(val path: String) : MiraiCPFile {
         }
     }
 
-    override fun toExternalResource(): ExternalResource {
-        // from https://www.nequalsonelifestyle.com/2020/11/16/kotlin-native-file-io/
-        val returnBuffer = StringBuilder()
-        val file = fopen(absolutePath, "r") ?: throw IllegalArgumentException("Cannot open input file $absolutePath")
-
-        try {
-            memScoped {
-                val readBufferLength = 64 * 1024
-                val buffer = allocArray<ByteVar>(readBufferLength)
-                var line = fgets(buffer, readBufferLength, file)?.toKString()
-                while (line != null) {
-                    returnBuffer.append(line)
-                    line = fgets(buffer, readBufferLength, file)?.toKString()
-                }
-            }
-        } finally {
-            fclose(file)
-        }
-
-        return returnBuffer.toString().toByteArray().toExternalResource()
-    }
+    override fun toExternalResource(): ExternalResource = readText().toByteArray().toExternalResource()
 
     private val deleteFile =
         staticCFunction<CPointer<ByteVarOf<Byte>>?, CPointer<stat>?, Int, CPointer<FTW>?, Int> { pathPtr, _, _, _ ->
@@ -112,6 +104,42 @@ class MiraiCPFileUnixImpl(val path: String) : MiraiCPFile {
         @Suppress("UnnecessaryOptInAnnotation") // bug
         @OptIn(UnsafeNumber::class)
         return (mkdir("$absolutePath/", "755".toUShort(8).convert()).convert<Int>() == 0)
+    }
+
+    override fun writeText(text: String) {
+        // from https://www.nequalsonelifestyle.com/2020/11/16/kotlin-native-file-io/
+        val file = fopen(absolutePath, "w") ?: throw IllegalArgumentException("Cannot open output file $absolutePath")
+        try {
+            memScoped {
+                if (fputs(text, file) == EOF) throw Error("File write error")
+            }
+        } finally {
+            fclose(file)
+        }
+    }
+
+    override fun canRead(): Boolean = exists() && useStat { it.st_mode.convert<UInt>() flag S_IRUSR } ?: false
+
+    override fun readText(): String {
+        // from https://www.nequalsonelifestyle.com/2020/11/16/kotlin-native-file-io/
+        val returnBuffer = StringBuilder()
+        val file = fopen(absolutePath, "r") ?: throw IllegalArgumentException("Cannot open input file $absolutePath")
+
+        try {
+            memScoped {
+                val readBufferLength = 64 * 1024
+                val buffer = allocArray<ByteVar>(readBufferLength)
+                var line = fgets(buffer, readBufferLength, file)?.toKString()
+                while (line != null) {
+                    returnBuffer.append(line)
+                    line = fgets(buffer, readBufferLength, file)?.toKString()
+                }
+            }
+        } finally {
+            fclose(file)
+        }
+
+        return returnBuffer.toString()
     }
 }
 

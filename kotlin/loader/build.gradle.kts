@@ -42,8 +42,11 @@ kotlin {
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
     nativeTarget.binaries {
+        sharedLib {
+
+        }
         executable {
-            this.entryPoint = "tech.eritquearcus.miraicp.loader"
+//            this.entryPoint = "tech.eritquearcus.miraicp.loader.KotlinMainEntry.main"
         }
     }
     sourceSets {
@@ -52,9 +55,10 @@ kotlin {
             dependencies {
                 implementation(project(":shared"))
                 implementation(project(":utils"))
-                compileOnly(`mirai-core-api`)
+                implementation(`mirai-core-api`)
                 implementation(`kotlinx-coroutines-core`)
                 implementation(`ktor-ulits`)
+                implementation("net.mamoe:mirai-logging-log4j2:${Version.mirai}")
             }
         }
 
@@ -65,9 +69,8 @@ kotlin {
                 implementation(`mirai-core`)
                 implementation("org.fusesource.jansi:jansi:${Version.jansi}")
                 implementation("org.jline:jline:${Version.jline}")
-                api("net.mamoe:mirai-logging-log4j2:${Version.mirai}")
             }
-            project.setProperty("mainClassName", "tech.eritquearcus.miraicp.loader.KotlinMainKt")
+            project.setProperty("mainClassName", "tech.eritquearcus.miraicp.loader.KotlinMainEntry")
         }
         val jvmTest by getting {
             dependencies {
@@ -77,6 +80,7 @@ kotlin {
         val nativeMain by getting {
             dependencies {
                 implementation(`mirai-core`)
+                implementation("com.github.ajalt.mordant:mordant:2.0.0-beta7")
             }
         }
     }

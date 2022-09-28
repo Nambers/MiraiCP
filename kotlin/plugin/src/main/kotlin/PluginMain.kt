@@ -32,6 +32,7 @@ import tech.eritquearcus.miraicp.console.registerCommands
 import tech.eritquearcus.miraicp.shared.*
 import tech.eritquearcus.miraicp.shared.BuiltInConstants.version
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
+import tech.eritquearcus.miraicp.uilts.toMiraiCPFile
 import java.io.File
 
 object PluginMain : KotlinPlugin(

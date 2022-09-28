@@ -19,6 +19,8 @@
 package tech.eritquearcus.miraicp.shared
 
 import tech.eritquearcus.miraicp.shared.CPPLibMultiplatform.PluginDisable
+import java.util.*
+import kotlin.concurrent.schedule
 
 actual object PublicSharedMultiplatform {
 
@@ -26,4 +28,9 @@ actual object PublicSharedMultiplatform {
         PluginDisable()
     }
 
+    actual fun scheduling(time: Long, msg: String) {
+        Timer("Timer", true).schedule(time) {
+            UlitsMultiPlatform.event(CPPEvent.TimeOutEvent(msg))
+        }
+    }
 }

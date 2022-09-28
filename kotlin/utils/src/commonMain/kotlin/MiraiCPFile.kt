@@ -20,16 +20,21 @@ package tech.eritquearcus.miraicp.uilts
 
 import net.mamoe.mirai.utils.ExternalResource
 
-public interface MiraiCPFile {
+interface MiraiCPFile {
     val isFile: Boolean
     val extension: String
     val absolutePath: String
+    val name: String
+    val pathWithOutName: String
 
     fun delete(): Boolean
     fun exists(): Boolean
     fun toExternalResource(): ExternalResource
     fun deleteRecursively(): Boolean
     fun mkdir(): Boolean
+    fun writeText(text: String)
+    fun canRead(): Boolean
+    fun readText(): String
 }
 
 public expect object MiraiCPFiles {

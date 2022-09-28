@@ -40,6 +40,11 @@ kotlin {
         hostOs == "Linux" -> linuxX64("native")
         hostOs.startsWith("Windows") -> mingwX64("native")
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+    }.compilations.all {
+        cinterops {
+            this.maybeCreate("localLibcurl")
+            this.maybeCreate("localOpenssl")
+        }
     }
     sourceSets {
         val commonMain by getting {

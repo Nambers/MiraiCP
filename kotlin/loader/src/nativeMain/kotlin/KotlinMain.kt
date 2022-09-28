@@ -16,54 +16,50 @@
  *
  */
 
-package tech.eritquearcus.miraicp.loader
+@file:Suppress("PackageDirectoryMismatch")
 
+package tech.eritquearcus.miraicp.loader
 
 import kotlinx.serialization.decodeFromString
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
-import tech.eritquearcus.miraicp.loader.KotlinMainData.alive
-import tech.eritquearcus.miraicp.loader.KotlinMainData.job
-import tech.eritquearcus.miraicp.loader.KotlinMainData.loginAccount
-import tech.eritquearcus.miraicp.loader.console.Console
-import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
 import tech.eritquearcus.miraicp.shared.*
-import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
-import tech.eritquearcus.miraicp.uilts.toMiraiCPFile
-import java.io.File
+import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
+import kotlin.native.concurrent.ThreadLocal
 import kotlin.system.exitProcess
 
+@ThreadLocal
 actual object KotlinMain {
     actual val exit: () -> Unit = {
         PublicShared.exit()
-        job.cancel()
-        alive = false
+        KotlinMainData.job.cancel()
+        KotlinMainData.alive = false
         exitProcess(0)
     }
 
     @OptIn(MiraiExperimentalApi::class)
     actual fun main(j: String, path: String) {
-        job.start()
+        KotlinMainData.job.start()
         val c = json.decodeFromString<CPPConfig.LoaderConfig>(j)
-        loginAccount = c.accounts ?: emptyList()
-        Console
+        KotlinMainData.loginAccount = c.accounts ?: emptyList()
+//        Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
         PublicShared.init(logger)
-        PublicSharedData.cachePath = File("cache").toMiraiCPFile()
+        PublicSharedData.cachePath = MiraiCPFiles.create("cache")
         if (PublicSharedData.cachePath.exists()) PublicSharedData.cachePath.deleteRecursively()
         PublicSharedData.cachePath.mkdir()
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
-        logger.info("⭐MiraiCP-plugin 版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
-        PublicSharedData.commandReg = LoaderCommandHandlerImpl()
+        logger.info("⭐MiraiCP-plugin 版本: ${PublicShared.now_tag}, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
+//        PublicSharedData.commandReg = LoaderCommandHandlerImpl()
         if (c.advanceConfig != null && c.advanceConfig!!.maxThread != null) {
             if (c.advanceConfig!!.maxThread!! <= 0) PublicSharedData.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
             else PublicSharedData.maxThread = c.advanceConfig!!.maxThread!!
         }
         val tmp = if (c.advanceConfig?.libLoaderPath != null) {
-            val tmp2 = File(c.advanceConfig?.libLoaderPath!!)
+            val tmp2 = MiraiCPFiles.create(c.advanceConfig?.libLoaderPath!!)
             if (tmp2.exists() && tmp2.name.startsWith("libLoader") && tmp2.isFile)
-                listOf(tmp2.parent)
+                listOf(tmp2.pathWithOutName)
             else {
                 logger.error("AdvanceConfig 中的 libLoaderPath(${c.advanceConfig?.libLoaderPath ?: "\"\""}) 无效或不存在, 使用缺省路径")
                 emptyList()
@@ -81,23 +77,22 @@ actual object KotlinMain {
             // logined = true
         }
         logger.info("⭐已成功加载MiraiCP⭐")
-        Console.listen()
+//        Console.listen()
         // if not logged-in, wait user login in console
-        while (alive) {
+        while (KotlinMainData.alive) {
         }
     }
 }
 
 actual object KotlinMainEntry {
-    @JvmStatic
     actual fun main(args: Array<String>) {
         // config.json path
         val path = "config.json"
-        var f = File(path)
+        var f = MiraiCPFiles.create(path)
         when (args.size) {
             1 -> {
                 if (args[0] == "-g") {
-                    File("config.json").writeText(
+                    MiraiCPFiles.create("config.json").writeText(
                         """
                         {
                           "accounts": [{
@@ -121,12 +116,12 @@ actual object KotlinMainEntry {
                     println("生成成功")
                     exitProcess(0)
                 }
-                f = File(args[0])
+                f = MiraiCPFiles.create(args[0])
                 if (!f.exists() || !f.isFile || !f.canRead()) {
                     println("配置文件路径(${f.absolutePath})读取错误,文件不存在/不是文件/不可读, 使用默认路径(./config.json)重试")
-                    f = File(path)
+                    f = MiraiCPFiles.create(path)
                     if (!f.exists() || !f.isFile || !f.canRead()) {
-                        f = File(path)
+                        f = MiraiCPFiles.create(path)
                         if (!f.exists() || !f.isFile || !f.canRead()) {
                             println("默认配置文件路径(${f.absolutePath})读取错误,文件不存在/不是文件/不可读")
                             println("使用 -g 可以生成config.json模板(java -jar MiraiCP-loader-<version>.jar -g)")
@@ -138,11 +133,11 @@ actual object KotlinMainEntry {
 
             0 -> {
                 if (!f.exists() || !f.isFile || !f.canRead()) {
-                    f = File(path)
+                    f = MiraiCPFiles.create(path)
                     if (!f.exists() || !f.isFile || !f.canRead()) {
                         println("默认配置文件路径(${f.absolutePath})读取错误,文件不存在/不是文件/不可读")
                         println("使用 -g 可以生成config.json模板(java -jar MiraiCP-loader-<version>.jar -g)")
-                        System.`in`.read()
+//                        System.`in`.read()
                         exitProcess(1)
                     }
                 }

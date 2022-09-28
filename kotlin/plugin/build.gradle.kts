@@ -78,6 +78,7 @@ mavenCentralPublish {
     }
 }
 dependencies {
+    implementation(project(":utils"))
     implementation("com.google.code.gson:gson:${Version.gson}")
     implementation("org.json:json:${Version.json}")
     compileOnly(`mirai-core-api`)

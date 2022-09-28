@@ -15,26 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package tech.eritquearcus.miraicp.loader
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import tech.eritquearcus.miraicp.shared.CPPConfig
-import kotlin.native.concurrent.ThreadLocal
+@file:Suppress("PackageDirectoryMismatch")
 
-@ThreadLocal
-object KotlinMainData {
-    val job = Job()
-    val coroutineScope = CoroutineScope(job)
-    lateinit var loginAccount: List<CPPConfig.LoaderConfig.Account>
-    var alive = true
-}
+package tech.eritquearcus.miraicp.loader.console
 
-expect object KotlinMain {
-    val exit: () -> Unit
-    fun main(j: String, path: String)
-}
-
-expect object KotlinMainEntry {
-    fun main(args: Array<String>)
+actual object CommandMultiplatform {
+    actual fun pureOrder(order: String) {
+    }
 }
