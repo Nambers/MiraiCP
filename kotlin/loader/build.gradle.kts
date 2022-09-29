@@ -58,7 +58,6 @@ kotlin {
                 implementation(`mirai-core-api`)
                 implementation(`kotlinx-coroutines-core`)
                 implementation(`ktor-ulits`)
-                implementation("net.mamoe:mirai-logging-log4j2:${Version.mirai}")
             }
         }
 
@@ -68,6 +67,7 @@ kotlin {
             dependencies {
                 implementation(`mirai-core`)
                 implementation("org.fusesource.jansi:jansi:${Version.jansi}")
+                implementation("net.mamoe:mirai-logging-log4j2:${Version.mirai}")
                 implementation("org.jline:jline:${Version.jline}")
             }
             project.setProperty("mainClassName", "tech.eritquearcus.miraicp.loader.KotlinMainEntry")

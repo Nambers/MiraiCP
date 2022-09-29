@@ -19,5 +19,44 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
-class Console {
+import com.github.ajalt.mordant.terminal.Terminal
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import net.mamoe.mirai.Bot
+import tech.eritquearcus.miraicp.loader.KotlinMainData
+import tech.eritquearcus.miraicp.shared.PublicShared
+import tech.eritquearcus.miraicp.shared.PublicSharedData
+import kotlin.system.exitProcess
+
+
+object Console {
+    init {
+        registerFactory()
+    }
+
+    val console = Terminal()
+
+    fun listen() {
+        KotlinMainData.coroutineScope.launch(CoroutineName("Console Command")) {
+            while (isActive) {
+                val re = try {
+                    console.prompt(">")
+                } catch (e: Exception) {
+                    PublicSharedData.logger.info("Closing MiraiCP...")
+                    Bot.instances.forEach {
+                        it.closeAndJoin()
+                        PublicSharedData.logger.info("Bot ${it.id} closed")
+                    }
+                    PublicShared.onDisable()
+                    exitProcess(0)
+                }
+                if (re != null) {
+                    if (re.isEmpty() || re.isBlank()) continue
+                    Command.parse(re)
+                }
+            }
+        }
+    }
+
 }
