@@ -388,7 +388,10 @@ object CPPEvent {
 
     @Serializable
     data class BotJoinGroup(
-        val etype: Int, val group: Config.Contact, val inviterid: Long, val type: Int = 8,
+        val etype: Int,
+        val group: Config.Contact,
+        val inviterid: Long,
+        val type: Int = 8,
     )
 
     @Serializable
@@ -402,12 +405,14 @@ object CPPEvent {
 
     @Serializable
     data class TimeOutEvent(
-        val msg: String, val type: Int = 10,
+        val msg: String,
+        val type: Int = 10,
     )
 
     @Serializable
     data class BotOnline(
-        val botid: Long, val type: Int = 11,
+        val botid: Long,
+        val type: Int = 11,
     )
 
     @Serializable
@@ -421,8 +426,14 @@ object CPPEvent {
 
     @Serializable
     data class BotLeaveEvent(
-        val groupid: Long, val botid: Long,
-        //val leavetype: Int TODO(见Mirai源码, 目前BotLeave还不稳定)
+        val groupid: Long,
+        val botid: Long,
+        /*
+        0 - 主动退出, 部分被踢出情况也会广播此事件
+        1 - 被踢出
+        2 - 机器人因群主解散群而退出群. 操作人一定是群主
+         */
+        val leavetype: Int,
         val type: Int = 13,
     )
 
@@ -437,14 +448,19 @@ object CPPEvent {
 
     @Serializable
     data class MessagePreSendEvent(
-        val target: Config.Contact, val botid: Long, val message: String, val type: Int = 15,
+        val target: Config.Contact,
+        val botid: Long,
+        val message: String,
+        val type: Int = 15,
     )
     // type = 16, ExceptionEvent
     // type = 17, Command
 
     @Serializable
     data class LibLoaderEvent(
-        val name: String, val content: String? = null, val type: Int = 1000,
+        val name: String,
+        val content: String? = null,
+        val type: Int = 1000,
     )
 }
 

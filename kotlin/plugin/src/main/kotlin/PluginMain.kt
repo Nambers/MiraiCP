@@ -18,7 +18,7 @@
 
 package tech.eritquearcus.miraicp
 
-import com.google.gson.Gson
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
@@ -58,12 +58,13 @@ object PluginMain : KotlinPlugin(
         l.info("⭐github地址:https://github.com/Nambers/MiraiCP")
         l.info("⭐MiraiCP-loader 版本: $version, 构建时间: ${BuiltInConstants.date}")
         PublicSharedData.commandReg = CommandHandlerImpl()
-        val config = Gson().fromJson(File("${dataFolder.absoluteFile}/miraicp.json").apply {
-            if (!this.exists() || !this.isFile) {
-                l.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
-                l.error("配置文件应该在(${this.absolutePath}), 并且拥有以下json格式(见https://github.com/Nambers/MiraiCP/blob/master/doc/config.md):")
-                l.error(
-                    """
+        val config =
+            Json.decodeFromString<CPPConfig.PluginConfig>(File("${dataFolder.absoluteFile}/miraicp.json").apply {
+                if (!this.exists() || !this.isFile) {
+                    l.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
+                    l.error("配置文件应该在(${this.absolutePath}), 并且拥有以下json格式(见https://github.com/Nambers/MiraiCP/blob/master/doc/config.md):")
+                    l.error(
+                        """
                     { 
                     "pluginConfig":[
                     {
@@ -72,10 +73,10 @@ object PluginMain : KotlinPlugin(
                     ]
                     }
                 """.trimIndent()
-                )
-                throw IllegalStateException("配置文件不存在, 请写入配置文件并重启 MiraiCP")
-            }
-        }.readText(), CPPConfig.PluginConfig::class.java)
+                    )
+                    throw IllegalStateException("配置文件不存在, 请写入配置文件并重启 MiraiCP")
+                }
+            }.readText())
         if (config.advanceConfig != null && config.advanceConfig!!.maxThread != null) {
             if (config.advanceConfig!!.maxThread!! <= 0) PublicSharedData.logger.error("配置错误: 配置项AdvanceConfig.maxThread的值应该>=0, 使用默认值")
             else PublicSharedData.maxThread = config.advanceConfig!!.maxThread!!
@@ -92,21 +93,6 @@ object PluginMain : KotlinPlugin(
             listOf(dataFolder.absoluteFile.absolutePath, configFolder.absoluteFile.absolutePath).plus(tmp),
             cfgPath = "${dataFolder.absoluteFile}/miraicp.json"
         )
-//            .pluginConfig.forEach { i ->
-//                val d = i.dependencies?.filter { p ->
-//                    File(p).let { f -> f.isFile && f.exists() }
-//                }
-//                val f = File(i.path)
-//                val files = (if (f.isAbsolute)
-//                    listOf(f)
-//                else
-//                    listOf(f, dataFolder.resolve(f), configFolder.resolve(f)))
-//                val re = files.firstOrNull { it.isFile && it.exists() }
-//                if (re == null) {
-//                    l.error(files.joinToString("/") { it.absolutePath } + " 不是一个有效的文件")
-//                } else
-//                    re.loadAsCPPLib(d)
-//            }
         logger.info("⭐已成功启动MiraiCP⭐")
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
             event(

@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import Version.jansi
+import Version.jline
 import Version.`kotlinx-coroutines-core`
 import Version.`ktor-ulits`
 import Version.`mirai-core`
-import Version.`mirai-core-api`
+import Version.`mirai-logging`
+import Version.miraiCP
 
 plugins {
     kotlin("multiplatform")
@@ -42,11 +45,8 @@ kotlin {
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
     nativeTarget.binaries {
-        sharedLib {
-
-        }
         executable {
-//            this.entryPoint = "tech.eritquearcus.miraicp.loader.KotlinMainEntry.main"
+            this.baseName = "MiraiCP-loader-v$miraiCP"
         }
     }
     sourceSets {
@@ -55,7 +55,7 @@ kotlin {
             dependencies {
                 implementation(project(":shared"))
                 implementation(project(":utils"))
-                implementation(`mirai-core-api`)
+                implementation(`mirai-core`)
                 implementation(`kotlinx-coroutines-core`)
                 implementation(`ktor-ulits`)
             }
@@ -65,10 +65,9 @@ kotlin {
             apply(plugin = "com.github.johnrengelman.shadow")
             apply(plugin = "application")
             dependencies {
-                implementation(`mirai-core`)
-                implementation("org.fusesource.jansi:jansi:${Version.jansi}")
-                implementation("net.mamoe:mirai-logging-log4j2:${Version.mirai}")
-                implementation("org.jline:jline:${Version.jline}")
+                implementation(jansi)
+                implementation(`mirai-logging`)
+                implementation(jline)
             }
             project.setProperty("mainClassName", "tech.eritquearcus.miraicp.loader.KotlinMainEntry")
         }
@@ -79,7 +78,6 @@ kotlin {
         }
         val nativeMain by getting {
             dependencies {
-                implementation(`mirai-core`)
                 implementation("com.github.ajalt.mordant:mordant:2.0.0-beta7")
             }
         }

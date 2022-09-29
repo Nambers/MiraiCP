@@ -18,7 +18,7 @@
 
 package tech.eritquearcus.miraicp.loader
 
-import tech.eritquearcus.miraicp.loader.KotlinMain.alive
+import tech.eritquearcus.miraicp.loader.KotlinMainData.alive
 import tech.eritquearcus.miraicp.loader.KotlinMainData.job
 import tech.eritquearcus.miraicp.loader.console.Jline3AppenderImpl
 import tech.eritquearcus.miraicp.shared.PublicShared
@@ -58,7 +58,7 @@ class LoaderCITest {
             alive = false
         }
         println("--- Start Loader CI Test ---")
-        main(arrayOf(f.absolutePath))
+        KotlinMainEntry.main(arrayOf(f.absolutePath))
         val re = text.filter { it.contains("[ERROR]") && !it.contains("Error: 无可登录账号，请检查config.json内容") }
         println("--- Errors: ---")
         re.forEach {

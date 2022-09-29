@@ -32,7 +32,7 @@ import kotlin.system.exitProcess
 
 @ThreadLocal
 actual object KotlinMain {
-    actual val exit: () -> Unit = {
+    actual var exit: () -> Unit = {
         PublicShared.exit()
         KotlinMainData.job.cancel()
         KotlinMainData.alive = false

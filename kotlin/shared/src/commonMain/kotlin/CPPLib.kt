@@ -41,7 +41,6 @@ object CPPLib {
         callback: () -> Unit = {}
     ) = CPPLibMultiplatform.init(libPath, cfgPath, callback)
 
-    //cd shared/build/classes/kotlin/main && javap.exe -s tech.eritquearcus.miraicp.shared.CPP_lib
     fun contact(source: String): Config.Contact = Json.decodeFromString(source)
     suspend fun KSend(source: String, miraiCode: Boolean): String = run {
         val tmp = Json.decodeFromString<Config.SendRequest>(source)

@@ -27,7 +27,6 @@ import net.mamoe.mirai.utils.Services
 import kotlin.reflect.KClass
 
 @MiraiInternalApi
-@Suppress("OVERRIDING_FINAL_MEMBER")
 class MiraiCPLogger(override val identity: String?, override val isEnabled: Boolean = true) : MiraiLogger {
     override fun debug(message: String?) {
         Console.console.println(TextColors.white(message ?: ""))
@@ -71,7 +70,7 @@ class MiraiCPLogger(override val identity: String?, override val isEnabled: Bool
 }
 
 @MiraiInternalApi
-object MiraiLoggerFactoryImpl : MiraiLogger.Factory {
+class MiraiLoggerFactoryImpl : MiraiLogger.Factory {
     override fun create(requester: KClass<*>): MiraiLogger {
         return MiraiCPLogger(identity = requester.simpleName ?: requester.qualifiedName)
     }
@@ -86,7 +85,5 @@ fun registerFactory() {
     Services.register(
         "net.mamoe.mirai.utils.MiraiLogger.Factory",
         "tech.eritquearcus.miraicp.loader.console.MiraiLoggerFactoryImpl"
-    ) {
-
-    }
+    ) { MiraiLoggerFactoryImpl() }
 }

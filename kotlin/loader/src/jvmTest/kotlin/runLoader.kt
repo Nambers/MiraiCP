@@ -19,5 +19,5 @@
 package tech.eritquearcus.miraicp.loader
 
 fun main() {
-    main(emptyArray())
+    KotlinMainEntry.main(emptyArray())
 }

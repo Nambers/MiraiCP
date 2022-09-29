@@ -31,7 +31,7 @@ object KotlinMainData {
 }
 
 expect object KotlinMain {
-    val exit: () -> Unit
+    var exit: () -> Unit
     fun main(j: String, path: String)
 }
 

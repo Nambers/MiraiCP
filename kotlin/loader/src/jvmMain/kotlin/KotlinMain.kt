@@ -34,7 +34,7 @@ import java.io.File
 import kotlin.system.exitProcess
 
 actual object KotlinMain {
-    actual val exit: () -> Unit = {
+    actual var exit: () -> Unit = {
         PublicShared.exit()
         job.cancel()
         alive = false

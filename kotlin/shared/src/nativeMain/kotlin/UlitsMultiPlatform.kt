@@ -21,9 +21,6 @@ package tech.eritquearcus.miraicp.shared
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
 
-//suspend inline fun <T, R> T.runInTP(
-//    crossinline block: T.() -> R,
-//): R = runInterruptible(context = cc, block = { block() })
 actual object UlitsMultiPlatform {
     actual fun <T> event(value: T, obj: SerializationStrategy<T>?) {
         CPPLibMultiplatform.eventPtr(

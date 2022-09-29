@@ -35,7 +35,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                compileOnly("net.mamoe:mirai-core-api:${Version.mirai}")
+                implementation("net.mamoe:mirai-core-api:${Version.mirai}")
             }
         }
         val commonTest by getting

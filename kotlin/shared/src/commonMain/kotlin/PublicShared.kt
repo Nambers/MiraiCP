@@ -964,9 +964,17 @@ object PublicShared {
             )
         }
         eventChannel.subscribeAlways<BotLeaveEvent> {
+            val type = when (this) {
+                is BotLeaveEvent.Active -> 0
+                is BotLeaveEvent.Kick -> 1
+                is BotLeaveEvent.Disband -> 2
+                else -> -1
+            }
             event(
                 CPPEvent.BotLeaveEvent(
-                    this.group.id, this.bot.id
+                    this.group.id,
+                    this.bot.id,
+                    type
                 )
 
             )
