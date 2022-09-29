@@ -30,6 +30,7 @@ object KotlinMainData {
     var alive = true
 }
 
+@ThreadLocal
 expect object KotlinMain {
     var exit: () -> Unit
     fun main(j: String, path: String)

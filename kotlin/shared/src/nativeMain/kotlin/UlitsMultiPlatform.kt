@@ -20,6 +20,7 @@ package tech.eritquearcus.miraicp.shared
 
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
+import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 
 actual object UlitsMultiPlatform {
     actual fun <T> event(value: T, obj: SerializationStrategy<T>?) {
@@ -32,6 +33,19 @@ actual object UlitsMultiPlatform {
     }
 
     actual fun getLibLoader(pathsInput: List<String>): String {
-        return ""
+        val paths = pathsInput
+            .plus(MiraiCPFiles.create("./libLoader.so").absolutePath)
+            .plus(MiraiCPFiles.create("./libLoader.dll").absolutePath)
+        paths.forEach { path ->
+            MiraiCPFiles.create(path).let {
+                if (it.exists()) return it.absolutePath
+            }
+        }
+        PublicSharedData.logger.error(
+            "找不到 libLoader 组件于下列位置:\n" +
+                    paths.joinToString(prefix = "\t", postfix = "\n") +
+                    "请到 MiraiCP release 下载 libLoader 组件并放在以上目录其中一个的位置"
+        )
+        throw IllegalStateException("找不到 libLoader 组件")
     }
 }

@@ -18,16 +18,26 @@
 
 package tech.eritquearcus.miraicp.shared
 
+import platform.windows.HMODULE
+import tech.eritquearcus.miraicp.uilts.Library
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
 actual object CPPLibMultiplatform {
     // libLoader eventHandler ptr address
     lateinit var eventPtr: (String) -> Unit
+    var libPtr: HMODULE? = null
     actual fun init(
         libPath: List<String>?,
         cfgPath: String?,
         callback: () -> Unit
     ) {
+        if (libPath == null) {
+            callback()
+        } else {
+            Library.load(UlitsMultiPlatform.getLibLoader(libPath)) { verify ->
+                verify(BuiltInConstants.version, cfgPath!!)
+            }
+        }
     }
 }

@@ -18,25 +18,28 @@
 
 package tech.eritquearcus.miraicp.uilts
 
-import net.mamoe.mirai.utils.ExternalResource
+import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.wcstr
+import platform.windows.HMODULE
+import platform.windows.LoadLibrary
 
-interface MiraiCPFile {
-    val isFile: Boolean
-    val extension: String
-    val absolutePath: String
-    val name: String
-    val pathWithOutName: String
+actual object Library {
+    var libPtr: HMODULE? = null
+    actual fun load(
+        libPath: String,
+        callVerify: ((version: String, cfgPath: String) -> Unit) -> Unit
+    ) {
+        memScoped {
+            libPtr = LoadLibrary!!(libPath.wcstr.ptr)
+            if (libPtr == null) {
+                // err
+            }
+        }
+        // todo
+    }
 
-    fun delete(): Boolean
-    fun exists(): Boolean
-    fun toExternalResource(): ExternalResource
-    fun deleteRecursively(): Boolean
-    fun mkdir(): Boolean
-    fun writeText(text: String)
-    fun canRead(): Boolean
-    fun readText(): String
-}
-
-expect object MiraiCPFiles {
-    fun create(path: String): MiraiCPFile
+    actual fun event(): (String) -> Unit {
+        TODO("Not yet implemented")
+    }
 }

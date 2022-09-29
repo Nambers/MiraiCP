@@ -18,25 +18,7 @@
 
 package tech.eritquearcus.miraicp.uilts
 
-import net.mamoe.mirai.utils.ExternalResource
-
-interface MiraiCPFile {
-    val isFile: Boolean
-    val extension: String
-    val absolutePath: String
-    val name: String
-    val pathWithOutName: String
-
-    fun delete(): Boolean
-    fun exists(): Boolean
-    fun toExternalResource(): ExternalResource
-    fun deleteRecursively(): Boolean
-    fun mkdir(): Boolean
-    fun writeText(text: String)
-    fun canRead(): Boolean
-    fun readText(): String
-}
-
-expect object MiraiCPFiles {
-    fun create(path: String): MiraiCPFile
+expect object Library {
+    fun load(libPath: String, callVerify: ((version: String, cfgPath: String) -> Unit) -> Unit = { _ -> })
+    fun event(): (String) -> Unit
 }

@@ -19,6 +19,7 @@
 package tech.eritquearcus.miraicp.shared
 
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.getLibLoader
+import tech.eritquearcus.miraicp.uilts.Library
 
 actual object CPPLibMultiplatform {
     actual fun init(
@@ -29,7 +30,7 @@ actual object CPPLibMultiplatform {
         if (libPath == null) {
             callback()
         } else {
-            System.load(getLibLoader(libPath))
+            Library.load(getLibLoader(libPath))
         }
         Verify(BuiltInConstants.version, cfgPath!!)
     }
