@@ -23,6 +23,7 @@ import kotlinx.serialization.json.Json
 import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 
 actual object UlitsMultiPlatform {
+    // todo 线程池
     actual fun <T> event(value: T, obj: SerializationStrategy<T>?) {
         CPPLibMultiplatform.eventPtr(
             if (value is String) value else Json.encodeToString(

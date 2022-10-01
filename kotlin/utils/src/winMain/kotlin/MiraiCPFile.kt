@@ -79,23 +79,7 @@ class MiraiCPFileWinImpl(private val path: String) : MiraiCPFile {
     override val isFile: Boolean
         get() = useStat { it.st_mode.convert<UInt>() flag S_IFREG } ?: false
     override val pathWithOutName: String
-        get() {
-            if (ROOT_REGEX.matchEntire(this.path) != null) return path
-            val absolute = absolutePath
-            val p = absolute.substringBeforeLast(SEPARATOR, "")
-            if (p.isEmpty()) {
-                throw IllegalStateException("File path error")
-            }
-            if (p.lastOrNull() == ':') {
-                return if (absolute.lastIndexOf(SEPARATOR) == p.lastIndex) {
-                    // file is C:/
-                    path
-                } else {
-                    "$p/" // file is C:/xxx
-                }
-            }
-            throw IllegalStateException("File path error2")
-        }
+        get() = if (isFile) absolutePath.substringBeforeLast(SEPARATOR, "") else absolutePath
 
     override fun exists(): Boolean = getFileAttributes() != INVALID_FILE_ATTRIBUTES
 

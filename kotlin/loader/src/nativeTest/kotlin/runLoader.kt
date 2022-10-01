@@ -15,28 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import kotlin.test.Test
 
-package tech.eritquearcus.miraicp.shared
-
-import tech.eritquearcus.miraicp.uilts.Library
-import kotlin.native.concurrent.ThreadLocal
-
-@ThreadLocal
-actual object CPPLibMultiplatform {
-    // libLoader eventHandler ptr address
-    val eventPtr: (String) -> Unit
-        get() = Library.event()
-    actual fun init(
-        libPath: List<String>?,
-        cfgPath: String?,
-        callback: () -> Unit
-    ) {
-        if (libPath == null) {
-            callback()
-        } else {
-            Library.load(UlitsMultiPlatform.getLibLoader(libPath)) { verify ->
-                verify(BuiltInConstants.version, cfgPath!!)
-            }
-        }
+class RunLoader {
+    @Test
+    fun runLoader() {
+        main(arrayOf("../config.json"))
     }
 }

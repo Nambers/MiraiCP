@@ -51,8 +51,7 @@ object CPPLib {
     }
 
     // 日志发送接口
-//    @JvmStatic
-    fun KSendLog(log: String, level: Int) {
+    fun sendLog(log: String, level: Int) {
         val j = Json.decodeFromString<Config.Log>(log)
         if (j.id == -1L) when (level) {
             0 -> PublicShared.basicSendLog(j.log, j.id, j.name!!)
@@ -149,8 +148,7 @@ object CPPLib {
     }
 
     // 通用接口
-//    @JvmStatic
-    fun KOperation(content: String): String = runBlocking {
+    fun operation(content: String): String = runBlocking {
         try {
             val j = Json.decodeFromString<Config.Operation>(content)
             val root = j.data

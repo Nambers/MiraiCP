@@ -23,9 +23,11 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.wcstr
 import platform.windows.HMODULE
 import platform.windows.LoadLibrary
+import kotlin.native.concurrent.ThreadLocal
 
+@ThreadLocal
 actual object Library {
-    var libPtr: HMODULE? = null
+    private var libPtr: HMODULE? = null
     actual fun load(
         libPath: String,
         callVerify: ((version: String, cfgPath: String) -> Unit) -> Unit
@@ -40,6 +42,7 @@ actual object Library {
     }
 
     actual fun event(): (String) -> Unit {
-        TODO("Not yet implemented")
+        // todo
+        return {}
     }
 }

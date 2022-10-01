@@ -20,7 +20,45 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import tech.eritquearcus.miraicp.loader.KotlinMain
+import tech.eritquearcus.miraicp.loader.KotlinMainData
+import tech.eritquearcus.miraicp.loader.console.Command.lastOneOrMoreParamOrder
+import tech.eritquearcus.miraicp.loader.console.Command.printHelp
+import tech.eritquearcus.miraicp.shared.CPPEvent
+import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
+
 actual object CommandMultiplatform {
     actual fun pureOrder(order: String) {
+        when (order) {
+            "exit" -> KotlinMain.exit()
+            "help" -> printHelp()
+            "status" -> {
+//                val s = Duration.between(Console.start, LocalDateTime.now()).seconds
+//                println(
+//                    "该Loader已经持续运行 " + String.format(
+//                        "%d:%02d:%02d",
+//                        s / 3600,
+//                        (s % 3600) / 60,
+//                        (s % 60)
+//                    ) + " 啦"
+//                )
+            }
+
+            "accountList", "aList" -> KotlinMainData.loginAccount.let { acs ->
+                acs.forEach { println(Json.encodeToString(it)) }
+            }
+
+            "pluginList", "pList" -> {
+                event(CPPEvent.LibLoaderEvent("PluginList"))
+            }
+
+            "disablePluginList", "dList" -> {
+                event(CPPEvent.LibLoaderEvent("DisablePluginList"))
+            }
+
+            else -> lastOneOrMoreParamOrder(listOf(order))
+        }
     }
 }

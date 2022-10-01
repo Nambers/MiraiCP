@@ -41,10 +41,12 @@ actual object KotlinMain {
 
     @OptIn(MiraiExperimentalApi::class)
     actual fun main(j: String, path: String) {
+        @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") // 必要
+        net.mamoe.mirai._MiraiInstance.set(net.mamoe.mirai.internal.MiraiImpl())
         KotlinMainData.job.start()
+        Console
         val c = json.decodeFromString<CPPConfig.LoaderConfig>(j)
         KotlinMainData.loginAccount = c.accounts ?: emptyList()
-        Console
         val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
         PublicShared.init(logger)
         PublicSharedData.cachePath = MiraiCPFiles.create("cache")

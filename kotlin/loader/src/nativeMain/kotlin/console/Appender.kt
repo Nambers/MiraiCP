@@ -20,70 +20,79 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
-import com.github.ajalt.mordant.rendering.TextColors
-import net.mamoe.mirai.utils.MiraiInternalApi
-import net.mamoe.mirai.utils.MiraiLogger
-import net.mamoe.mirai.utils.Services
-import kotlin.reflect.KClass
+//class MiraiCPLogger(override val identity: String?, override val isEnabled: Boolean = true) : MiraiLogger {
+//    enum class Level {
+//        INFO,
+//        ERR,
+//        WARN,
+//        DEBUG,
+//    }
+//
+//    private fun color(str: String?, co: Level): String =
+//        when (co) {
+//            Level.INFO -> TextColors.green
+//            Level.ERR -> TextColors.red
+//            Level.WARN -> TextColors.yellow
+//            Level.DEBUG -> TextColors.white
+//        }(str ?: "")
+//
+//    override fun debug(message: String?) {
+//        Console.console.println(color(message ?: "", Level.DEBUG))
+//    }
+//
+//    override fun debug(message: String?, e: Throwable?) {
+//        Console.console.println(color(message + e?.getStackTrace()?.joinToString("\n"), Level.DEBUG))
+//    }
+//
+//    override fun error(message: String?) {
+//        Console.console.println(color(message ?: "", Level.ERR))
+//    }
+//
+//    override fun error(message: String?, e: Throwable?) {
+//        Console.console.println(color(message + e?.getStackTrace()?.joinToString("\n"), Level.ERR))
+//    }
+//
+//    override fun info(message: String?) {
+//        Console.console.println(color(message ?: "", Level.INFO))
+//    }
+//
+//    override fun info(message: String?, e: Throwable?) {
+//        Console.console.println(color(message + e?.getStackTrace()?.joinToString("\n"), Level.INFO))
+//    }
+//
+//    override fun verbose(message: String?) {
+//        Console.console.println(color(message ?: "", Level.DEBUG))
+//    }
+//
+//    override fun verbose(message: String?, e: Throwable?) {
+//        Console.console.println(color(message + e?.getStackTrace()?.joinToString("\n"), Level.DEBUG))
+//    }
+//
+//    override fun warning(message: String?) {
+//        Console.console.println(color(message ?: "", Level.WARN))
+//    }
+//
+//    override fun warning(message: String?, e: Throwable?) {
+//        Console.console.println(color(message + e?.getStackTrace()?.joinToString("\n"), Level.WARN))
+//    }
+//}
+//
+//object MiraiLoggerFactoryImpl : MiraiLogger.Factory {
+//    override fun create(requester: KClass<*>): MiraiLogger {
+//        return MiraiCPLogger(identity = requester.simpleName ?: requester.qualifiedName)
+//    }
+//
+//    override fun create(requester: KClass<*>, identity: String?): MiraiLogger {
+//        return MiraiCPLogger(identity ?: requester.simpleName ?: requester.qualifiedName)
+//    }
+//}
 
-@MiraiInternalApi
-class MiraiCPLogger(override val identity: String?, override val isEnabled: Boolean = true) : MiraiLogger {
-    override fun debug(message: String?) {
-        Console.console.println(TextColors.white(message ?: ""))
-    }
-
-    override fun debug(message: String?, e: Throwable?) {
-        Console.console.println(TextColors.white(message ?: ""))
-    }
-
-    override fun error(message: String?) {
-        Console.console.println(TextColors.red(message ?: ""))
-    }
-
-    override fun error(message: String?, e: Throwable?) {
-        Console.console.println(TextColors.red(((message ?: "") + e?.getStackTrace()?.joinToString("\n"))))
-    }
-
-    override fun info(message: String?) {
-        Console.console.println(TextColors.white(message ?: ""))
-    }
-
-    override fun info(message: String?, e: Throwable?) {
-        Console.console.println(TextColors.white(message ?: ""))
-    }
-
-    override fun verbose(message: String?) {
-        Console.console.println(TextColors.white(message ?: ""))
-    }
-
-    override fun verbose(message: String?, e: Throwable?) {
-        Console.console.println(TextColors.white(message ?: ""))
-    }
-
-    override fun warning(message: String?) {
-        Console.console.println(TextColors.yellow(message ?: ""))
-    }
-
-    override fun warning(message: String?, e: Throwable?) {
-        Console.console.println(TextColors.yellow(message ?: ""))
-    }
-}
-
-@MiraiInternalApi
-class MiraiLoggerFactoryImpl : MiraiLogger.Factory {
-    override fun create(requester: KClass<*>): MiraiLogger {
-        return MiraiCPLogger(identity = requester.simpleName ?: requester.qualifiedName)
-    }
-
-    override fun create(requester: KClass<*>, identity: String?): MiraiLogger {
-        return MiraiCPLogger(identity ?: requester.simpleName ?: requester.qualifiedName)
-    }
-}
-
-@OptIn(MiraiInternalApi::class)
 fun registerFactory() {
-    Services.register(
-        "net.mamoe.mirai.utils.MiraiLogger.Factory",
-        "tech.eritquearcus.miraicp.loader.console.MiraiLoggerFactoryImpl"
-    ) { MiraiLoggerFactoryImpl() }
+//    Services.register(
+//        MiraiLogger.Factory::class.qualifiedName!!,
+//        MiraiLoggerFactoryImpl::class.qualifiedName!!
+//    ) {
+//        println("call registered")
+//        MiraiLoggerFactoryImpl
+//    }
 }

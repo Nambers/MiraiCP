@@ -15,28 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-package tech.eritquearcus.miraicp.shared
-
-import tech.eritquearcus.miraicp.uilts.Library
-import kotlin.native.concurrent.ThreadLocal
-
-@ThreadLocal
-actual object CPPLibMultiplatform {
-    // libLoader eventHandler ptr address
-    val eventPtr: (String) -> Unit
-        get() = Library.event()
-    actual fun init(
-        libPath: List<String>?,
-        cfgPath: String?,
-        callback: () -> Unit
-    ) {
-        if (libPath == null) {
-            callback()
-        } else {
-            Library.load(UlitsMultiPlatform.getLibLoader(libPath)) { verify ->
-                verify(BuiltInConstants.version, cfgPath!!)
-            }
+class PathTest {
+    private fun <T, K> List<T>.testExpects(lis: List<K>, func: (K) -> T) {
+        assertEquals(this.size, lis.size)
+        for (a in this.indices) {
+            assertEquals(this[a], func(lis[a]))
         }
+    }
+
+    @Test
+    fun pathWithoutName() {
+        listOf("C:\\", "C:\\")
+            .testExpects(listOf("C:/a.a", "C:\\aa")) {
+                MiraiCPFiles.create(it).pathWithOutName
+            }
+    }
+
+    @Test
+    fun isFile() {
+        listOf(true, false)
+            .testExpects(listOf("test.exe", "C:\\")) {
+                MiraiCPFiles.create(it).isFile
+            }
     }
 }

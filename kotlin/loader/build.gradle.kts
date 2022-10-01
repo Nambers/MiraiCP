@@ -61,6 +61,12 @@ kotlin {
             }
         }
 
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+
         val jvmMain by getting {
             apply(plugin = "com.github.johnrengelman.shadow")
             apply(plugin = "application")
@@ -81,21 +87,22 @@ kotlin {
                 implementation("com.github.ajalt.mordant:mordant:2.0.0-beta7")
             }
         }
+        val nativeTest by getting
     }
 }
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     dependsOn(":fillingConstants")
     archiveBaseName.set("MiraiCP-loader")
     archiveClassifier.set("")
-    archiveVersion.set(Version.miraiCP)
+    archiveVersion.set(miraiCP)
     manifest {
         attributes["Description"] = "MiraiCP-Loader"
         attributes["Built-By"] = "Eritque arcus"
-        attributes["Implementation-Version"] = Version.miraiCP
+        attributes["Implementation-Version"] = miraiCP
         attributes["Created-By"] = "Gradle " + gradle.gradleVersion
         attributes["Build-Kotlin"] = Version.kotlin
     }
 }
 
-version = Version.miraiCP
+version = miraiCP
 description = "Loader version for MiraiCP"

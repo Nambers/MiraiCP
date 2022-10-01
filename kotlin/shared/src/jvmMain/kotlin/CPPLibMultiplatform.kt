@@ -18,6 +18,8 @@
 
 package tech.eritquearcus.miraicp.shared
 
+import tech.eritquearcus.miraicp.shared.CPPLib.operation
+import tech.eritquearcus.miraicp.shared.CPPLib.sendLog
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.getLibLoader
 import tech.eritquearcus.miraicp.uilts.Library
 
@@ -34,6 +36,14 @@ actual object CPPLibMultiplatform {
         }
         Verify(BuiltInConstants.version, cfgPath!!)
     }
+
+    @Suppress("unused")
+    @JvmStatic
+    fun KSendLog(log: String, level: Int) = sendLog(log, level)
+
+    @Suppress("unused")
+    @JvmStatic
+    fun KOperation(content: String): String = operation(content)
 
     external fun Verify(version: String, cfgPath: String): Void
     external fun Event(content: String): Void

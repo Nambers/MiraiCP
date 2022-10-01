@@ -38,7 +38,11 @@ kotlin {
                 implementation("net.mamoe:mirai-core-api:${Version.mirai}")
             }
         }
-        val commonTest by getting
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
 
         val jvmMain by getting
         if (hostOs == "Mac OS X") {
