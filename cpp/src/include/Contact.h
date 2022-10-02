@@ -48,21 +48,26 @@ namespace MiraiCP {
         nlohmann::json toJson() const override;
 
         void refreshInfo() override;
+
+        // todo(Antares): 用于quoteandsend，名字重新命名一下
+        virtual nlohmann::json getSign() const;
     };
 
     struct GroupRelatedData : public IContactData {
+        typedef IContactData Super;
         QQID _groupid;
         nlohmann::json toJson() const override;
         explicit GroupRelatedData(QQID in_groupid) : _groupid(in_groupid) {}
+        nlohmann::json getSign() const override;
     };
+
     /*!
     * @brief group, friend, member的父类
     * @doxygenEg{1002, message.cpp, 发送以及回复群消息}
     */
     class Contact {
         template<typename ClassType, typename InternalDataType>
-        friend
-        struct ContactDataHelper;
+        friend struct ContactDataHelper;
         // attrs
     protected:
         std::shared_ptr<IContactData> InternalData;
@@ -157,18 +162,21 @@ namespace MiraiCP {
 
         /// @brief 当前对象类型
         /// @see ContactType
+        /// @note dev: 不会修改，不需要锁
         ///     - ContactType::MIRAI_FRIEND 好友
         ///     - ContactType::MIRAI_GROUP 群聊
         ///     - ContactType::MIRAI_MEMBER 群成员
         ContactType type() const { return InternalData->_type; }
 
-        /// @brief id在全部情况存在
+        /// @brief id 在全部情况存在
+        /// @note dev: 不会修改，不需要锁
         ///     - 当前type为Friend时，为好友id
         ///     - 当前type为Group时，为群id
         ///     - 当前type为Member时，为群成员id
         QQID id() const { return InternalData->_id; }
 
         /// 所属bot
+        /// @note dev: 不会修改，不需要锁
         QQID botid() const { return InternalData->_botid; };
 
         /// @brief 当type为3的时候存在，否则为0，可以看作补充id
@@ -178,11 +186,7 @@ namespace MiraiCP {
         /// @attention 当当前type为2(Group)时，为0，不为群号，id才是群号
         // QQID groupid() const { return this->_groupid; }
 
-        /// 群名称，群成员群名片，或好友昵称
-        const std::string &nickOrNameCard() const { return InternalData->_nickOrNameCard; };
 
-        /// 头像url地址
-        const std::string &avatarUrl() const { return InternalData->_avatarUrl; };
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsgImpl(msg.toMiraiCode(), retryTime, true, env)`
         ShouldNotUse("Use sendMessage") MessageSource
                 sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
@@ -197,8 +201,8 @@ namespace MiraiCP {
          * @param ms 回复的信息的MessageSource
          * @note 可以改MessageSource里的内容, 客户端在发送的时候并不会校验MessageSource的内容正确性(比如改originalMessage来改引用的文本的内容, 或者改id来定位到其他信息)
          */
-        template<class T>
-        MessageSource quoteAndSendMessage(T s, MessageSource ms) {
+        template<typename T>
+        MessageSource quoteAndSendMessage(const T &s, MessageSource ms) {
             return this->quoteAndSend1(s, ms);
         }
 
@@ -212,9 +216,9 @@ namespace MiraiCP {
          * - SingleMessage的各种派生类
          * - MessageChain
          */
-        template<class... T>
-        MessageSource quoteAndSendMessage(MessageSource ms, T... val) {
-            return this->quoteAndSendMessage(MessageChain(val...), std::move(ms));
+        template<typename... T>
+        MessageSource quoteAndSendMessage(const MessageSource &ms, T &&...val) {
+            return this->quoteAndSend1(MessageChain(std::forward<T>(val)...), ms);
         }
 
         /*!
@@ -227,9 +231,9 @@ namespace MiraiCP {
          * @param msg 内容
          * @return MessageSource
          */
-        template<class... T>
-        MessageSource sendMessage(T... msg) {
-            return this->sendMessage(MessageChain(msg...));
+        template<typename... T>
+        MessageSource sendMessage(T &&...msg) {
+            return this->sendMessage(MessageChain(std::forward<T>(msg)...));
         }
 
         /// @brief 发送一条Message
@@ -241,22 +245,22 @@ namespace MiraiCP {
         /// @param msg Message
         /// @param retryTime 重试次数
         /// @return MessageSource
-        template<class T>
-        MessageSource sendMessage(T msg, int retryTime = 3) {
-            return this->unpackMsg(msg, retryTime);
+        template<typename T>
+        MessageSource sendMessage(T &&msg, int retryTime = 3) {
+            return this->unpackMsg(std::forward<T>(msg), retryTime);
         }
 
         /// @deprecated since v2.8.1, use `sendMessage(msg)` or `sendMsgImpl(msg, retryTime, false, env)`
-        ShouldNotUse("Use sendMessage") MessageSource
-                sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage")
+                MessageSource sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsgImpl(msg.toMiraiCode(), retryTime, false, env);`
-        ShouldNotUse("Use sendMessage") MessageSource
-                sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage")
+                MessageSource sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(Tools::VectorToString(std::move(msg)))` or `sendMsgImpl(Tools::VectorToString(std::move(msg)), retryTime, false, env);`
-        ShouldNotUse("Use sendMessage") MessageSource
-                sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
+        ShouldNotUse("Use sendMessage")
+                MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
 
 
         //        template<class T>
@@ -272,34 +276,31 @@ namespace MiraiCP {
         //        }
 
     private: // private methods
-        MessageSource quoteAndSend0(const std::string &msg, const MessageSource &ms);
+        MessageSource quoteAndSend0(std::string msg, const MessageSource &ms);
 
-        template<class T>
-        MessageSource quoteAndSend1(T s, MessageSource ms) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+        MessageSource quoteAndSend1(const SingleMessage &s, const MessageSource &ms) {
             return this->quoteAndSend0(s.toMiraiCode(), ms);
         }
 
-        MessageSource quoteAndSend1(std::string s, MessageSource ms) {
+        MessageSource quoteAndSend1(const std::string &s, const MessageSource &ms) {
             return this->quoteAndSend0(s, ms);
         }
 
-        MessageSource quoteAndSend1(MessageChain mc, MessageSource ms) {
+        MessageSource quoteAndSend1(const MessageChain &mc, const MessageSource &ms) {
             return this->quoteAndSend0(mc.toMiraiCode(), ms);
         }
-
 
     public: // serialization
         /// 序列化到json对象
         nlohmann::json toJson() const { return InternalData->toJson(); } //{
-                                                             //            nlohmann::json j;
-                                                             //            j["type"] = type();
-                                                             //            j["id"] = id();
-                                                             //            j["groupid"] = groupid();
-                                                             //            j["nickornamecard"] = nickOrNameCard();
-                                                             //            j["botid"] = botid();
-                                                             //            return j;
-                                                             //        }
+                                                                         //            nlohmann::json j;
+                                                                         //            j["type"] = type();
+                                                                         //            j["id"] = id();
+                                                                         //            j["groupid"] = groupid();
+                                                                         //            j["nickornamecard"] = nickOrNameCard();
+                                                                         //            j["botid"] = botid();
+                                                                         //            return j;
+                                                                         //        }
         /// @deprecated since v2.8.1, use `this->toJson()`
         ShouldNotUse("use toJson") nlohmann::json serialization() const;
 
@@ -313,12 +314,8 @@ namespace MiraiCP {
         /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
         // ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source);
 
-        /// 反序列化成bot，可以通过serializationToString序列化，利于保存
-        /// @see Contact::serializationToString()
+        /// 反序列化成Contact智能指针
         /// @param source 序列化后的文本
-        /// @throw APIException
-        //        static Contact deserialize(const std::string &source);
-        //
         static std::shared_ptr<Contact> deserializeToPointer(nlohmann::json source);
 
         // for derived class
@@ -332,8 +329,6 @@ namespace MiraiCP {
             return T(std::move(source));
         }
 
-        // explicit operator ContactWithSendSupport() const;
-
         /*!
         * @brief 上传本地图片，务必要用绝对路径
         * 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
@@ -342,62 +337,37 @@ namespace MiraiCP {
         * -可能抛出UploadException异常代表路径无效或大小大于30MB
         * -可能抛出MemberException找不到群或群成员
         */
-        Image uploadImg(const std::string &path) const {
-            std::string re = LowLevelAPI::uploadImg0(path, toString());
-            if (re == "E2")
-                throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
-            return Image::deserialize(re);
-        }
+        Image uploadImg(const std::string &path) const;
 
-        FlashImage uploadFlashImg(const std::string &path) const {
-            std::string re = LowLevelAPI::uploadImg0(path, toString());
-            if (re == "E2")
-                throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
-            return FlashImage::deserialize(re);
-        }
+        FlashImage uploadFlashImg(const std::string &path) const;
 
+    protected:
         /// 发送语音
-        MessageSource sendVoiceImpl(const std::string &path) const;
+        MessageSource sendVoiceImpl(std::string path) const;
 
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsgImpl(std::string msg, int retryTime, bool miraicode = false) const {
-            if (msg.empty()) {
-                throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
-            }
-            std::string re = LowLevelAPI::send0(std::move(msg), InternalData->toJson(), retryTime, miraicode,
-                                                "reach a error area, Contact::SendMiraiCode");
-            MIRAICP_ERROR_HANDLE(re, "");
-            return MessageSource::deserializeFromString(re);
-        }
+        MessageSource sendMsgImpl(std::string msg, int retryTime, bool miraicode = false) const;
 
-        template<class T>
-        MessageSource unpackMsg(T msg, int retryTime) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
+        MessageSource unpackMsg(const SingleMessage &msg, int retryTime) const {
             return sendMsgImpl(msg.toMiraiCode(), retryTime, true);
         }
 
-        MessageSource unpackMsg(MessageChain msg, int retryTime) {
-            return sendMsgImpl(msg.toMiraiCode(), retryTime, true);
-        }
-
-        MessageSource unpackMsg(MiraiCode msg, int retryTime) {
-            return sendMsgImpl(msg.toMiraiCode(), retryTime, true);
-        }
-
-        MessageSource unpackMsg(std::string msg, int retryTime) {
+        MessageSource unpackMsg(std::string msg, int retryTime) const {
             return sendMsgImpl(std::move(msg), retryTime, false);
         }
 
-        MessageSource unpackMsg(const char *msg, int retryTime) {
+        MessageSource unpackMsg(const char *msg, int retryTime) const {
             return sendMsgImpl(std::string(msg), retryTime, false);
         }
     };
 
+    /// @brief Contact类型的数据接口模板类
+    /// @note dev: 任何操作内部数据的行为在此处定义。Contact只处理 InternalData 这个 shared_ptr 本身
     template<typename ClassType, typename InternalDataType>
     struct ContactDataHelper {
         using json = nlohmann::json;
-//        typedef Contact Super;
+        //        typedef Contact Super;
         typedef InternalDataType DataType;
 
         DataType *GetDataInternal() {
@@ -405,6 +375,22 @@ namespace MiraiCP {
             assert(clz_ptr->InternalData != nullptr);
             return static_cast<DataType *>(clz_ptr->InternalData.get());
         }
+
+        /// 群名称，群成员群名片，或好友昵称
+        std::string nickOrNameCard() const {
+            auto dataPtr = GetDataInternal();
+            dataPtr->requestRefresh();
+            std::shared_lock<std::shared_mutex> local_lck(dataPtr->getMutex());
+            return dataPtr->_nickOrNameCard;
+        };
+
+        /// 头像url地址
+        std::string avatarUrl() const {
+            auto dataPtr = GetDataInternal();
+            dataPtr->requestRefresh();
+            std::shared_lock<std::shared_mutex> local_lck(dataPtr->getMutex());
+            return dataPtr->_avatarUrl;
+        };
     };
 
 

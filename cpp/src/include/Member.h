@@ -64,8 +64,8 @@ namespace MiraiCP {
         explicit Member(nlohmann::json in_json);
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
         DECL_GETTER(anonymous)
+        // DECL_GETTER(permission)
         INLINE_GETTER(groupid)
-
     public:
         /// @brief 更改群成员权限
         /// @param admin 如果为true为更改到管理员
@@ -85,12 +85,9 @@ namespace MiraiCP {
         //            refreshInfo();
         //        };
 
-        /// 重新获取(刷新)群成员信息
-        // void refreshInfo();
-
         /// 发送语音
-        MessageSource sendVoice(const std::string &path) {
-            return sendVoiceImpl(path);
+        MessageSource sendVoice(std::string path) {
+            return sendVoiceImpl(std::move(path));
         }
 
         /// 获取权限，会在构造时调用，请使用permission缓存变量
@@ -101,23 +98,29 @@ namespace MiraiCP {
          * 禁言当前对象，单位是秒，最少0秒最大30天，如果为0或者为负则unmute
          * @throws BotException, MuteException
         */
-        void mute(int time);
+        void mute(long long sec) const;
+
+        /*!
+         * 使用现代C++时间禁言对象，可以是任意时间，传参时会被自动转换为秒
+         * @throws BotException, MuteException
+        */
+        void mute(std::chrono::seconds time) const {
+            mute(time.count());
+        }
 
         /// 取消禁言
         /// @throws BotException, MuteException
-        void unMute() {
+        void unMute() const {
             mute(0);
         }
 
         /*! 踢出这个群成员
         * @param reason - 原因
         */
-        void kick(const std::string &reason);
+        void kick(std::string reason);
 
         /// At一个群成员
-        At at() {
-            return At(this->id());
-        }
+        At at() { return At(this->id()); }
 
         /// 更改群名片
         /// @throw MiraiCP::BotException 如果没权限时

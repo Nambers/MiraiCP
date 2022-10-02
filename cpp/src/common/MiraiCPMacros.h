@@ -156,16 +156,17 @@ static_assert(false, "Unsupported platform");
 #endif
 #endif
 
+// data locker
+#define MIRAICP_DATALOCK std::shared_lock<std::shared_mutex> TOKEN_PASTE(local_lck_, __LINE__)(InternalData->getMutex())
 
 // getter
 // need to define macro LOC_CLASS_NAMESPACE to the class first!
-
 #define DECL_GETTER(attr) decltype(DataType::_##attr) attr();
-#define IMPL_GETTER(attr)                                                                 \
+#define IMPL_GETTER(attr)                                                          \
     decltype(LOC_CLASS_NAMESPACE::DataType::_##attr) LOC_CLASS_NAMESPACE::attr() { \
-        InternalData->requestRefresh();                                                  \
-        std::shared_lock<std::shared_mutex> local_lck(InternalData->getMutex());         \
-        return GetDataInternal()->_##attr;                                                \
+        InternalData->requestRefresh();                                            \
+        MIRAICP_DATALOCK;                                                          \
+        return GetDataInternal()->_##attr;                                         \
     }
 #define INLINE_GETTER(attr) \
     auto attr() { return GetDataInternal()->_##attr; }

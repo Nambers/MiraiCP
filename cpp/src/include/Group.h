@@ -201,8 +201,8 @@ namespace MiraiCP {
         RemoteFile sendFile(const std::string &path, const std::string &filepath);
 
         /// 发送语音
-        MessageSource sendVoice(const std::string &path) {
-            return sendVoiceImpl(path);
+        MessageSource sendVoice( std::string path) {
+            return sendVoiceImpl(std::move(path));
         }
 
         /*!

@@ -102,15 +102,15 @@ namespace MiraiCP {
     //        if (isAnonymous) return 0;
     //    }
 
-    void Member::mute(int time) {
-        json j{{"time", time}, {"contactSource", toString()}};
+    void Member::mute(long long sec) const {
+        json j{{"time", sec}, {"contactSource", toString()}};
         std::string re = KtOperation::ktOperation(KtOperation::MuteM, std::move(j));
         if (re == "E4")
             throw MuteException(MIRAICP_EXCEPTION_WHERE);
     }
 
-    void Member::kick(const std::string &reason) {
-        json j{{"message", reason}, {"contactSource", toString()}};
+    void Member::kick(std::string reason) {
+        json j{{"message", std::move(reason)}, {"contactSource", toString()}};
         KtOperation::ktOperation(KtOperation::KickM, std::move(j));
         forceRefreshNextTime();
     }
