@@ -65,16 +65,8 @@ class MiraiCPFileUnixImpl(val path: String) : MiraiCPFile {
     override val absolutePath: String by lazy { kotlin.run { readlink(path) } }
     override val name: String
         get() = absolutePath.substringAfterLast('/', "").ifEmpty { absolutePath }
-    override val pathWithOutName: String
-        get() {
-            val absolutePath = absolutePath
-            val p = absolutePath.substringBeforeLast("/", "")
-            if (p.isEmpty()) {
-                return if (absolutePath.singleOrNull() == '/') "/" // root
-                else "/"
-            }
-            throw IllegalStateException("File path error")
-        }
+    override val parentPath: String
+        get() = absolutePath.substringBeforeLast('/', "")
 
     override fun delete(): Boolean {
         return if (isFile) {
@@ -89,7 +81,21 @@ class MiraiCPFileUnixImpl(val path: String) : MiraiCPFile {
     private val deleteFile =
         staticCFunction<CPointer<ByteVarOf<Byte>>?, CPointer<stat>?, Int, CPointer<FTW>?, Int> { pathPtr, _, _, _ ->
             val path = pathPtr!!.toKString()
-            if (remove(path) < 0) {
+            val ree = memScoped {
+                val stat = alloc<stat>()
+                val ret = stat(path, stat.ptr)
+                if (ret == 0) {
+                    return@memScoped stat.st_mode.convert<UInt>() flag S_IFREG
+                } else {
+                    throw IllegalStateException("delete err: stat return != 0")
+                }
+            }
+            val re = if (ree) {
+                remove(path)
+            } else {
+                rmdir(path)
+            }
+            if (re < 0) {
                 -1
             } else {
                 0

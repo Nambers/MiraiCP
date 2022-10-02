@@ -21,11 +21,20 @@ package tech.eritquearcus.miraicp.uilts
 import net.mamoe.mirai.utils.ExternalResource
 
 interface MiraiCPFile {
+    // this instance is file or not
     val isFile: Boolean
+
+    // the file extension
     val extension: String
+
+    // absolute path of this instance
     val absolutePath: String
+
+    // name(like aaa.bbb) with extension
     val name: String
-    val pathWithOutName: String
+
+    // parent absolute path
+    val parentPath: String
 
     fun delete(): Boolean
     fun exists(): Boolean

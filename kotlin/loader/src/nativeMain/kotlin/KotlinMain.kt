@@ -63,7 +63,7 @@ actual object KotlinMain {
         val tmp = if (c.advanceConfig?.libLoaderPath != null) {
             val tmp2 = MiraiCPFiles.create(c.advanceConfig?.libLoaderPath!!)
             if (tmp2.exists() && tmp2.name.startsWith("libLoader") && tmp2.isFile)
-                listOf(tmp2.pathWithOutName)
+                listOf(tmp2.parentPath)
             else {
                 logger.error("AdvanceConfig 中的 libLoaderPath(${c.advanceConfig?.libLoaderPath ?: "\"\""}) 无效或不存在, 使用缺省路径")
                 emptyList()

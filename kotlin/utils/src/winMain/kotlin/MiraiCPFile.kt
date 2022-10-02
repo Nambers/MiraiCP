@@ -27,10 +27,10 @@ import platform.posix.*
 import platform.windows.*
 
 // from https://github.com/mamoe/mirai/blob/dev/mirai-core-utils/src/mingwX64Main/kotlin/MiraiFileImpl.kt
-fun <R> MiraiCPFile.useStat(block: (stat) -> R): R? {
+fun <R> MiraiCPFile.useStat(absPath: String? = null, block: (stat) -> R): R? {
     memScoped {
         val stat = alloc<stat>()
-        val ret = stat(absolutePath, stat.ptr)
+        val ret = stat(absPath ?: absolutePath, stat.ptr)
         if (ret != 0) return null
         return block(stat)
     }
@@ -78,8 +78,8 @@ class MiraiCPFileWinImpl(private val path: String) : MiraiCPFile {
 
     override val isFile: Boolean
         get() = useStat { it.st_mode.convert<UInt>() flag S_IFREG } ?: false
-    override val pathWithOutName: String
-        get() = if (isFile) absolutePath.substringBeforeLast(SEPARATOR, "") else absolutePath
+    override val parentPath: String
+        get() = absolutePath.substringBeforeLast(SEPARATOR, "")
 
     override fun exists(): Boolean = getFileAttributes() != INVALID_FILE_ATTRIBUTES
 
@@ -106,7 +106,21 @@ class MiraiCPFileWinImpl(private val path: String) : MiraiCPFile {
     private val deleteFile =
         staticCFunction<CPointer<ByteVarOf<Byte>>?, CPointer<stat>?, Int, CPointer<FTW>?, Int> { pathPtr, _, _, _ ->
             val path = pathPtr!!.toKString()
-            if (remove(path) < 0) {
+            val ree = memScoped {
+                val stat = alloc<stat>()
+                val ret = stat(path, stat.ptr)
+                if (ret == 0) {
+                    return@memScoped stat.st_mode.convert<UInt>() flag S_IFREG
+                } else {
+                    throw IllegalStateException("delete err: stat return != 0")
+                }
+            }
+            val re = if (ree) {
+                remove(path)
+            } else {
+                rmdir(path)
+            }
+            if (re < 0) {
                 -1
             } else {
                 0

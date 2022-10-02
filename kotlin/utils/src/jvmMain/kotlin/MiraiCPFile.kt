@@ -32,8 +32,8 @@ class MiraiCPFileImpl(private val file: File) : MiraiCPFile {
         get() = file.absolutePath
     override val name: String
         get() = file.name
-    override val pathWithOutName: String
-        get() = file.parent
+    override val parentPath: String
+        get() = file.parentFile.absolutePath
 
     override fun deleteRecursively(): Boolean = file.deleteRecursively()
 
