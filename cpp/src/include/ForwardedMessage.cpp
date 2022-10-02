@@ -69,7 +69,7 @@ namespace MiraiCP {
                     nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(a["messageChain"], false), a["time"]);
                 }
             }
-        } catch (json::exception &e) {
+        } catch (const json::exception &) {
             throw APIException("ForwardedMessage格式化异常", MIRAICP_EXCEPTION_WHERE);
         }
 

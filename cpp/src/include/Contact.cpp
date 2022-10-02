@@ -85,10 +85,9 @@ namespace MiraiCP {
     //    }
 
 
-    MessageSource Contact::sendVoiceImpl(const std::string &path) const {
-
-        json source{{"path", path}};
-        json j{{"source",        source.dump()},
+    MessageSource Contact::sendVoiceImpl(std::string path) const {
+        json source{{"path", std::move(path)}};
+        json j{{"source", source.dump()},
                {"contactSource", toString()}};
         std::string re = KtOperation::ktOperation(KtOperation::Voice, std::move(j));
         if (re == "E1") {
@@ -98,15 +97,6 @@ namespace MiraiCP {
         }
         return MessageSource::deserializeFromString(re);
     }
-
-    //    Contact::operator ContactWithSendSupport() const {
-    //        return {type(), id(),
-    //                //groupid(), nickOrNameCard(), botid(), _anonymous
-    //        };
-    //    }
-
-    // ContactWithSendSupport::ContactWithSendSupport(QQID id, QQID botid, ContactType type) : Contact(id, botid, type) {}
-    //Contact(type, id, gid, name, botid, anonymous) {}
 
     void IContactData::deserialize(nlohmann::json in_json) {
         using Tools::json_stringmover;
@@ -134,16 +124,50 @@ namespace MiraiCP {
         //            j["botid"] = botid();
     }
 
+    nlohmann::json IContactData::getSign() const {
+        return {{"MiraiCode", true}};
+    }
+
     nlohmann::json GroupRelatedData::toJson() const {
         auto result = IContactData::toJson();
         result["groupid"] = _groupid;
         return result;
     }
-    MessageSource Contact::quoteAndSend0(const std::string &msg, const MessageSource &ms) {
-        json sign{{"MiraiCode", true}};
-        // sign["groupid"] = this->groupid();
-        json obj{{"messageSource", ms.serializeToString()}, {"msg", msg}, {"sign", sign.dump()}};
+
+    nlohmann::json GroupRelatedData::getSign() const {
+        auto ans = Super::getSign();
+        ans["groupid"] = _groupid;
+        return ans;
+    }
+
+    MessageSource Contact::quoteAndSend0(std::string msg, const MessageSource &ms) {
+        json sign = InternalData->getSign();
+        json obj{{"messageSource", ms.serializeToString()}, {"msg", std::move(msg)}, {"sign", sign.dump()}};
         std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, std::move(obj));
+        MIRAICP_ERROR_HANDLE(re, "");
+        return MessageSource::deserializeFromString(re);
+    }
+
+    Image Contact::uploadImg(const std::string &path) const {
+        std::string re = LowLevelAPI::uploadImg0(path, toString());
+        if (re == "E2")
+            throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
+        return Image::deserialize(re);
+    }
+
+    FlashImage Contact::uploadFlashImg(const std::string &path) const  {
+        std::string re = LowLevelAPI::uploadImg0(path, toString());
+        if (re == "E2")
+            throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
+        return FlashImage::deserialize(re);
+    }
+
+    MessageSource Contact::sendMsgImpl(std::string msg, int retryTime, bool miraicode) const {
+        if (msg.empty()) {
+            throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
+        }
+        std::string re = LowLevelAPI::send0(std::move(msg), InternalData->toJson(), retryTime, miraicode,
+                                            "reach a error area, Contact::SendMiraiCode");
         MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
     }
