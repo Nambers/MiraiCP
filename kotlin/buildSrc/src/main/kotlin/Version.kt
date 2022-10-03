@@ -33,4 +33,5 @@ object Version {
     const val jline = "org.jline:jline:3.21.0"
     const val jansi = "org.fusesource.jansi:jansi:2.4.0"
     const val `ktor-ulits` = "io.ktor:ktor-utils:2.1.1"
+    const val mordant = "com.github.ajalt.mordant:mordant:2.0.0-beta7"
 }

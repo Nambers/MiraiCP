@@ -57,7 +57,7 @@ object PluginMain : KotlinPlugin(
             Json.decodeFromString<CPPConfig.PluginConfig>(File("${dataFolder.absoluteFile}/miraicp.json").apply {
                 if (!this.exists() || !this.isFile) {
                     PublicSharedData.logger.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
-                    PublicSharedData.logger.error("配置文件应该在(${this.absolutePath}), 并且拥有以下json格式(见https://github.com/Nambers/MiraiCP/blob/master/doc/config.md):")
+                    PublicSharedData.logger.error("配置文件应该在(${this.absolutePath}), 并且拥有以下json格式(见https://github.com/Nambers/MiraiCP/blob/main/doc/config.md):")
                     PublicSharedData.logger.error(
                         """
                     { 

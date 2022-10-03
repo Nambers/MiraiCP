@@ -27,6 +27,7 @@ import tech.eritquearcus.miraicp.loader.KotlinMainData
 import tech.eritquearcus.miraicp.loader.console.Command.lastOneOrMoreParamOrder
 import tech.eritquearcus.miraicp.loader.console.Command.printHelp
 import tech.eritquearcus.miraicp.shared.CPPEvent
+import tech.eritquearcus.miraicp.shared.PublicSharedData
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 
 actual object CommandMultiplatform {
@@ -35,6 +36,7 @@ actual object CommandMultiplatform {
             "exit" -> KotlinMain.exit()
             "help" -> printHelp()
             "status" -> {
+                PublicSharedData.logger.info("Not imply")
 //                val s = Duration.between(Console.start, LocalDateTime.now()).seconds
 //                println(
 //                    "该Loader已经持续运行 " + String.format(

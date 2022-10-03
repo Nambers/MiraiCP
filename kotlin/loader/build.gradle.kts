@@ -22,6 +22,7 @@ import Version.`ktor-ulits`
 import Version.`mirai-core`
 import Version.`mirai-logging`
 import Version.miraiCP
+import Version.mordant
 
 plugins {
     kotlin("multiplatform")
@@ -84,7 +85,7 @@ kotlin {
         }
         val nativeMain by getting {
             dependencies {
-                implementation("com.github.ajalt.mordant:mordant:2.0.0-beta7")
+                implementation(mordant)
             }
         }
         val nativeTest by getting
