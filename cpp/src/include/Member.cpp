@@ -150,7 +150,7 @@ namespace MiraiCP {
     void MemberData::refreshInfo() {
         if (_anonymous) return;
 
-        auto tempserialize = toString();
+        auto tempserialize = internalToString();
         std::string result = LowLevelAPI::getInfoSource(tempserialize);
 
         if (result == "E1")

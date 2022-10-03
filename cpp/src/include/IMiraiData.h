@@ -30,7 +30,7 @@ namespace MiraiCP {
         };
 
     protected:
-        MiraiDataLocker Locker;
+        mutable MiraiDataLocker Locker;
 
     public:
         IMiraiData() = default;
@@ -39,14 +39,25 @@ namespace MiraiCP {
 
     public:
         /*!
-         * @brief 将json数据读入，由子类实现
+         * @brief 转为json，内部由子类实现，带锁
+         */
+        nlohmann::json toJson() const;
+
+    protected:
+        /*!
+         * @brief 将json数据读入，由子类实现，无锁
          */
         virtual void deserialize(nlohmann::json in_json) = 0;
 
         /*!
-         * @brief 转为json，由子类实现
+         * @brief 转为json，由子类实现，无锁
          */
-        virtual nlohmann::json toJson() const = 0;
+        virtual nlohmann::json internalToJson() const = 0;
+
+        /*!
+         * @brief 转为json，由internalToJson() 的具体实现决定，无锁
+         */
+        nlohmann::json internalToString() const;
 
     public:
         /*!
@@ -62,7 +73,7 @@ namespace MiraiCP {
         void forceRefreshNextTime();
 
         /*!
-         * @brief 序列化为string
+         * @brief 序列化为string，带锁
          */
         std::string toString() const;
 

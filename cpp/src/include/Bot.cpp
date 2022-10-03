@@ -36,12 +36,12 @@ namespace MiraiCP {
 
         void deserialize(nlohmann::json in_json) override {} // should never be called
 
-        nlohmann::json toJson() const override {
+        nlohmann::json internalToJson() const override {
             return {{"botid", _id}, {"type", MIRAI_OTHERTYPE}};
         }
 
         void refreshInfo() override {
-            nlohmann::json j{{"source", toString()}};
+            nlohmann::json j{{"source", internalToString()}};
             LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j)));
             _avatarUrl = std::move(tmp.avatarUrl);
             _nickOrNameCard = std::move(tmp.nickornamecard);

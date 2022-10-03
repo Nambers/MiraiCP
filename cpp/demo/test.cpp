@@ -46,6 +46,7 @@ public:
             Logger::logger.info("d");
             a.group.sendMessage("a");
             // c.changeNameCard(a.message.toMiraiCode());
+            Logger::logger.info(a.group.avatarUrl());
         });
         for (auto &&pluginid: LoaderApi::showAllPluginId()) {
             Logger::logger.info("pluginid: " + pluginid);
