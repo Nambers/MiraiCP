@@ -93,10 +93,9 @@ object MiraiLoggerFactoryImpl : MiraiLogger.Factory {
 }
 
 fun registerFactory() {
-    MiraiLogger.Factory.INSTANCE
     Services.register(
-        MiraiLogger.Factory::class.qualifiedName!!,
-        MiraiLoggerFactoryImpl::class.qualifiedName!!
+        "net.mamoe.mirai.utils.MiraiLogger.Factory",
+        "tech.eritquearcus.miraicp.loader.console.MiraiLoggerFactoryImpl"
     ) {
         println("call registered")
         MiraiLoggerFactoryImpl

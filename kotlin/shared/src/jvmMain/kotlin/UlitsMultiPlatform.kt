@@ -21,26 +21,14 @@ package tech.eritquearcus.miraicp.shared
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
 import java.io.File
-import java.util.concurrent.SynchronousQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 
 //suspend inline fun <T, R> T.runInTP(
 //    crossinline block: T.() -> R,
 //): R = runInterruptible(context = cc, block = { block() })
 actual object UlitsMultiPlatform {
-    // 执行线程池, 以免阻塞mirai协程的线程池
-    private val queue = SynchronousQueue<Runnable>()
-    private val cc by lazy {
-        ThreadPoolExecutor(
-            0, PublicSharedData.maxThread, 60L, TimeUnit.SECONDS, queue
-        )
-    }
 
     actual fun <T> event(value: T, obj: SerializationStrategy<T>?) {
-        cc.submit {
-            CPPLibMultiplatform.Event(if (value is String) value else Json.encodeToString(obj!!, value))
-        }
+        CPPLibMultiplatform.Event(if (value is String) value else Json.encodeToString(obj!!, value))
     }
 
     actual fun getLibLoader(pathsInput: List<String>): String {

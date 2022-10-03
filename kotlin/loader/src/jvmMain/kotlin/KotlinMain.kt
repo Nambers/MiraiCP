@@ -21,15 +21,12 @@ package tech.eritquearcus.miraicp.loader
 
 import kotlinx.serialization.decodeFromString
 import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.KotlinMainData.alive
 import tech.eritquearcus.miraicp.loader.KotlinMainData.job
 import tech.eritquearcus.miraicp.loader.KotlinMainData.loginAccount
 import tech.eritquearcus.miraicp.loader.console.Console
-import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
 import tech.eritquearcus.miraicp.shared.*
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
-import tech.eritquearcus.miraicp.uilts.toMiraiCPFile
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -47,25 +44,17 @@ actual object KotlinMain {
         val c = json.decodeFromString<CPPConfig.LoaderConfig>(j)
         loginAccount = c.accounts ?: emptyList()
         Console
-        val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
-        PublicShared.init(logger)
-        PublicSharedData.cachePath = File("cache").toMiraiCPFile()
         if (PublicSharedData.cachePath.exists()) PublicSharedData.cachePath.deleteRecursively()
         PublicSharedData.cachePath.mkdir()
-        logger.info("⭐MiraiCP启动中⭐")
-        logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
-        logger.info("⭐MiraiCP-plugin 版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
-        PublicSharedData.commandReg = LoaderCommandHandlerImpl()
-        if (c.advanceConfig != null && c.advanceConfig!!.maxThread != null) {
-            if (c.advanceConfig!!.maxThread!! <= 0) PublicSharedData.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
-            else PublicSharedData.maxThread = c.advanceConfig!!.maxThread!!
-        }
+        PublicSharedData.logger.info("⭐MiraiCP启动中⭐")
+        PublicSharedData.logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
+        PublicSharedData.logger.info("⭐MiraiCP-plugin 版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
         val tmp = if (c.advanceConfig?.libLoaderPath != null) {
             val tmp2 = File(c.advanceConfig?.libLoaderPath!!)
             if (tmp2.exists() && tmp2.name.startsWith("libLoader") && tmp2.isFile)
                 listOf(tmp2.parent)
             else {
-                logger.error("AdvanceConfig 中的 libLoaderPath(${c.advanceConfig?.libLoaderPath ?: "\"\""}) 无效或不存在, 使用缺省路径")
+                PublicSharedData.logger.error("AdvanceConfig 中的 libLoaderPath(${c.advanceConfig?.libLoaderPath ?: "\"\""}) 无效或不存在, 使用缺省路径")
                 emptyList()
             }
         } else emptyList()
@@ -73,13 +62,13 @@ actual object KotlinMain {
 
         CPPLib.init(libPath = tmp, cfgPath = path)
         if (c.accounts == null || c.accounts!!.isEmpty()) {
-            logger.error("Error: 无可登录账号，请检查config.json内容")
+            PublicSharedData.logger.error("Error: 无可登录账号，请检查config.json内容")
             exit()
         }
         c.accounts?.filter { it.autoLogin == true }?.forEach {
             it.login()
         }
-        logger.info("⭐已成功加载MiraiCP⭐")
+        PublicSharedData.logger.info("⭐已成功加载MiraiCP⭐")
         Console.listen()
         // if not logged-in, wait user login in console
         while (alive) {

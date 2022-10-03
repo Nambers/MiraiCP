@@ -95,38 +95,6 @@ object Command {
 
     private fun error(order: String, reason: String) = PublicSharedData.logger.error("命令错误: '$order', $reason")
 
-//    private fun pureOrder(order: String) {
-//        when (order) {
-//            "exit" -> KotlinMain.exit()
-//            "help" -> printHelp()
-//            "status" -> {
-//                val s = Duration.between(Console.start, LocalDateTime.now()).seconds
-//                println(
-//                    "该Loader已经持续运行 " + String.format(
-//                        "%d:%02d:%02d",
-//                        s / 3600,
-//                        (s % 3600) / 60,
-//                        (s % 60)
-//                    ) + " 啦"
-//                )
-//            }
-//
-//            "accountList", "aList" -> KotlinMain.loginAccount.let { acs ->
-//                acs.forEach { println(Json.encodeToString(it)) }
-//            }
-//
-//            "pluginList", "pList" -> {
-//                event(CPPEvent.LibLoaderEvent("PluginList"))
-//            }
-//
-//            "disablePluginList", "dList" -> {
-//                event(CPPEvent.LibLoaderEvent("DisablePluginList"))
-//            }
-//
-//            else -> lastOneOrMoreParamOrder(listOf(order))
-//        }
-//    }
-
     @OptIn(MiraiExperimentalApi::class)
     private fun login(id: Long) =
         KotlinMainData.loginAccount.first { it.id == id && (it.logined == null || it.logined == false) }.login()

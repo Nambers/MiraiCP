@@ -28,7 +28,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import net.mamoe.mirai.Bot
-import net.mamoe.mirai.Mirai
 import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.contact.announcement.OfflineAnnouncement
 import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
@@ -64,16 +63,20 @@ expect object PublicSharedMultiplatform {
 }
 
 object PublicSharedData {
-    var maxThread: Int = Int.MAX_VALUE
-    lateinit var logger: MiraiLogger
+    val logger: MiraiLogger by lazy {
+        MiraiLogger.Factory.create(this::class, "MiraiCP")
+    }
+
+    // cannot modify after init
     lateinit var commandReg: CommandHandler
-    var cachePath: MiraiCPFile = MiraiCPFiles.create("")
+    val cachePath: MiraiCPFile by lazy {
+        MiraiCPFiles.create("cache")
+    }
 }
 
 object PublicShared {
     val json by lazy {
         Json {
-            Mirai
             serializersModule = MessageSerializers.serializersModule
             ignoreUnknownKeys = true
         }
@@ -81,9 +84,6 @@ object PublicShared {
     private val friend_cache = ArrayList<NormalMember>(0)
     private val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     const val now_tag = "v${BuiltInConstants.version}"
-    fun init(l: MiraiLogger) {
-        logger = l
-    }
 
     fun exit() {
         onDisable()

@@ -250,7 +250,7 @@ object CPPConfig {
 
     @Serializable
     data class AdvanceConfig(
-        val maxThread: Int? = null,
+//        val maxThread: Int? = null,
         val libLoaderPath: String? = null,
     )
 

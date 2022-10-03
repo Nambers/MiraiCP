@@ -41,9 +41,9 @@ object Console {
         KotlinMainData.coroutineScope.launch(CoroutineName("Console Command")) {
             while (isActive) {
                 val re = try {
-                    console.prompt(">")
+                    console.prompt(">", promptSuffix = " ")
                 } catch (e: Exception) {
-                    PublicSharedData.logger.info("Closing MiraiCP...")
+                    PublicSharedData.logger.info("Closing MiraiCP because exception raised...", e)
                     Bot.instances.forEach {
                         it.closeAndJoin()
                         PublicSharedData.logger.info("Bot ${it.id} closed")

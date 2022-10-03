@@ -22,7 +22,6 @@ package tech.eritquearcus.miraicp.loader
 
 import kotlinx.serialization.decodeFromString
 import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiLogger
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
 import tech.eritquearcus.miraicp.shared.*
@@ -47,19 +46,12 @@ actual object KotlinMain {
         Console
         val c = json.decodeFromString<CPPConfig.LoaderConfig>(j)
         KotlinMainData.loginAccount = c.accounts ?: emptyList()
-        val logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
-        PublicShared.init(logger)
-        PublicSharedData.cachePath = MiraiCPFiles.create("cache")
         if (PublicSharedData.cachePath.exists()) PublicSharedData.cachePath.deleteRecursively()
         PublicSharedData.cachePath.mkdir()
         logger.info("⭐MiraiCP启动中⭐")
         logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
         logger.info("⭐MiraiCP-plugin 版本: ${PublicShared.now_tag}, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
         PublicSharedData.commandReg = LoaderCommandHandlerImpl()
-        if (c.advanceConfig != null && c.advanceConfig!!.maxThread != null) {
-            if (c.advanceConfig!!.maxThread!! <= 0) PublicSharedData.logger.error("配置错误: AdvanceConfig下maxThread项值应该>=0, 使用默认值")
-            else PublicSharedData.maxThread = c.advanceConfig!!.maxThread!!
-        }
         val tmp = if (c.advanceConfig?.libLoaderPath != null) {
             val tmp2 = MiraiCPFiles.create(c.advanceConfig?.libLoaderPath!!)
             if (tmp2.exists() && tmp2.name.startsWith("libLoader") && tmp2.isFile)
