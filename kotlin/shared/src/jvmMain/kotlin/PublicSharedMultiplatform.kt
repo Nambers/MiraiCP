@@ -16,20 +16,21 @@
  *
  */
 
-enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "MiraiCP"
-include("shared")
-include("plugin")
-include("loader")
-include("utils")
-project(":plugin").name = "MiraiCP-plugin"
-project(":loader").name = "MiraiCP-loader"
+package tech.eritquearcus.miraicp.shared
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        // mirai snapshot
-        maven("https://repo.mirai.mamoe.net/snapshots")
+import tech.eritquearcus.miraicp.shared.CPPLibMultiplatform.PluginDisable
+import java.util.*
+import kotlin.concurrent.schedule
+
+actual object PublicSharedMultiplatform {
+
+    actual fun onDisable() {
+        PluginDisable()
+    }
+
+    actual fun scheduling(time: Long, msg: String) {
+        Timer("Timer", true).schedule(time) {
+            UlitsMultiPlatform.event(CPPEvent.TimeOutEvent(msg))
+        }
     }
 }

@@ -16,20 +16,25 @@
  *
  */
 
-enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "MiraiCP"
-include("shared")
-include("plugin")
-include("loader")
-include("utils")
-project(":plugin").name = "MiraiCP-plugin"
-project(":loader").name = "MiraiCP-loader"
+package tech.eritquearcus.miraicp.shared
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        // mirai snapshot
-        maven("https://repo.mirai.mamoe.net/snapshots")
+import tech.eritquearcus.miraicp.uilts.Library
+
+actual object CPPLibMultiplatform {
+    // libLoader eventHandler ptr address
+    val eventPtr: (String) -> Unit
+        get() = Library.event()
+    actual fun init(
+        libPath: List<String>?,
+        cfgPath: String?,
+        callback: () -> Unit
+    ) {
+        if (libPath == null) {
+            callback()
+        } else {
+            Library.load(UlitsMultiPlatform.getLibLoader(libPath)) { verify ->
+                verify(BuiltInConstants.version, cfgPath!!)
+            }
+        }
     }
 }

@@ -16,20 +16,33 @@
  *
  */
 
-enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "MiraiCP"
-include("shared")
-include("plugin")
-include("loader")
-include("utils")
-project(":plugin").name = "MiraiCP-plugin"
-project(":loader").name = "MiraiCP-loader"
+package tech.eritquearcus.miraicp.uilts
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        // mirai snapshot
-        maven("https://repo.mirai.mamoe.net/snapshots")
+import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.wcstr
+import platform.windows.HMODULE
+import platform.windows.LoadLibrary
+import kotlin.native.concurrent.ThreadLocal
+
+@ThreadLocal
+actual object Library {
+    private var libPtr: HMODULE? = null
+    actual fun load(
+        libPath: String,
+        callVerify: ((version: String, cfgPath: String) -> Unit) -> Unit
+    ) {
+        memScoped {
+            libPtr = LoadLibrary!!(libPath.wcstr.ptr)
+            if (libPtr == null) {
+                // err
+            }
+        }
+        // todo
+    }
+
+    actual fun event(): (String) -> Unit {
+        // todo
+        return {}
     }
 }

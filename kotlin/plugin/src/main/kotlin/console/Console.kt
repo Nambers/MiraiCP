@@ -25,7 +25,7 @@ import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.command.SimpleCommand
 import tech.eritquearcus.miraicp.PluginMain
 import tech.eritquearcus.miraicp.shared.CPPEvent
-import tech.eritquearcus.miraicp.shared.event
+import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 
 object PluginList : SimpleCommand(
     PluginMain,
@@ -121,11 +121,11 @@ object UnloadPlugin : SimpleCommand(
 object ReloadPlugin : SimpleCommand(
     PluginMain,
     "reloadPlugin", "reload",
-    description = "加载一个未被加载过的MiraiCP插件(简写: reload)"
+    description = "重新加载一个未被加载过的MiraiCP插件(简写: reload)"
 ) {
     @Handler
     fun ConsoleCommandSender.load(id: String) {
-        event(CPPEvent.LibLoaderEvent("reloadPlugin", id))
+        event(CPPEvent.LibLoaderEvent("ReloadPlugin", id))
     }
 }
 
@@ -135,5 +135,6 @@ fun registerCommands() {
     CommandManager.registerCommand(EnablePlugin)
     CommandManager.registerCommand(DisablePluginList)
     CommandManager.registerCommand(LoadPlugin)
+    CommandManager.registerCommand(UnloadPlugin)
     CommandManager.registerCommand(ReloadPlugin)
 }

@@ -15,21 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package tech.eritquearcus.miraicp.loader
 
-enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "MiraiCP"
-include("shared")
-include("plugin")
-include("loader")
-include("utils")
-project(":plugin").name = "MiraiCP-plugin"
-project(":loader").name = "MiraiCP-loader"
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import tech.eritquearcus.miraicp.shared.CPPConfig
+import kotlin.native.concurrent.ThreadLocal
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        // mirai snapshot
-        maven("https://repo.mirai.mamoe.net/snapshots")
-    }
+@ThreadLocal
+object KotlinMainData {
+    val job = Job()
+    val coroutineScope = CoroutineScope(job)
+    lateinit var loginAccount: List<CPPConfig.LoaderConfig.Account>
+    var alive = true
+}
+
+@ThreadLocal
+expect object KotlinMain {
+    var exit: () -> Unit
+    fun main(j: String, path: String)
+}
+
+expect object KotlinMainEntry {
+    fun main(args: Array<String>)
 }

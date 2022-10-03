@@ -18,7 +18,7 @@
 import java.util.*
 
 plugins {
-    kotlin("jvm") version Version.kotlin
+    kotlin("jvm") version Version.kotlin apply false
     kotlin("plugin.serialization") version Version.kotlin apply false
     id("com.github.johnrengelman.shadow") version Version.shadowJar apply false
     id("net.mamoe.mirai-console") version Version.mirai apply false
@@ -36,20 +36,11 @@ allprojects {
     tasks {
         withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
             kotlinOptions {
-                freeCompilerArgs += "-Xjvm-default=enable"
+//                freeCompilerArgs += "-Xjvm-default=enable"
                 freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
                 kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
             }
         }
-    }
-}
-subprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-    dependencies {
-        implementation("com.google.code.gson", "gson", Version.gson)
-        implementation("org.json", "json", Version.json)
-        compileOnly("net.mamoe", "mirai-core-api", Version.mirai)
-        implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", Version.`kotlinx-coroutines-core`)
     }
 }
 group = "tech.eritquearcus"
@@ -59,7 +50,7 @@ tasks {
     register("fillingConstants") {
         group = "build"
         doFirst {
-            File(projectDir, "shared/src/main/kotlin/BuiltInConstants.kt")
+            File(projectDir, "shared/src/commonMain/kotlin/BuiltInConstants.kt")
                 .let {
                     println("write to ${it.absolutePath}")
                     it.writeText(

@@ -15,42 +15,95 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import Version.jansi
+import Version.jline
+import Version.`kotlinx-coroutines-core`
+import Version.`ktor-ulits`
+import Version.`mirai-core`
+import Version.`mirai-logging`
+import Version.miraiCP
+import Version.mordant
 
 plugins {
-    application
-    id("com.github.johnrengelman.shadow")
+    kotlin("multiplatform")
 }
 
-application {
-    mainClass.set("tech.eritquearcus.miraicp.loader.KotlinMainKt")
-    // mainClassName = "tech.eritquearcus.miraicp.loader.KotlinMainKt"
-}
-
-tasks {
-    shadowJar{
-        dependsOn(getByPath(":fillingConstants"))
-        archiveBaseName.set("MiraiCP-loader")
-        archiveClassifier.set("")
-        archiveVersion.set(Version.miraiCP)
-        manifest {
-            attributes["Description"] = "MiraiCP-Loader"
-            attributes["Built-By"] = "Eritque arcus"
-            attributes["Implementation-Version"] = Version.miraiCP
-            attributes["Created-By"] = "Gradle " + gradle.gradleVersion
-            attributes["Build-Kotlin"] = Version.kotlin
+kotlin {
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+        withJava()
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
         }
     }
+    val hostOs = System.getProperty("os.name")
+    val nativeTarget = when {
+        hostOs == "Mac OS X" -> macosX64("native")
+        hostOs == "Linux" -> linuxX64("native")
+        hostOs.startsWith("Windows") -> mingwX64("native")
+        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+    }
+    nativeTarget.binaries {
+        executable {
+            this.baseName = "MiraiCP-loader-v$miraiCP"
+        }
+    }
+    sourceSets {
+        val commonMain by getting {
+            apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+            dependencies {
+                implementation(project(":shared"))
+                implementation(project(":utils"))
+                implementation(`mirai-core`)
+                implementation(`kotlinx-coroutines-core`)
+                implementation(`ktor-ulits`)
+            }
+        }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+
+        val jvmMain by getting {
+            apply(plugin = "com.github.johnrengelman.shadow")
+            apply(plugin = "application")
+            dependencies {
+                implementation(jansi)
+                implementation(`mirai-logging`)
+                implementation(jline)
+            }
+            project.setProperty("mainClassName", "tech.eritquearcus.miraicp.loader.KotlinMainEntry")
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+        val nativeMain by getting {
+            dependencies {
+                implementation(mordant)
+            }
+        }
+        val nativeTest by getting
+    }
 }
-version = Version.miraiCP
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    dependsOn(":fillingConstants")
+    archiveBaseName.set("MiraiCP-loader")
+    archiveClassifier.set("")
+    archiveVersion.set(miraiCP)
+    manifest {
+        attributes["Description"] = "MiraiCP-Loader"
+        attributes["Built-By"] = "Eritque arcus"
+        attributes["Implementation-Version"] = miraiCP
+        attributes["Created-By"] = "Gradle " + gradle.gradleVersion
+        attributes["Build-Kotlin"] = Version.kotlin
+    }
+}
+
+version = miraiCP
 description = "Loader version for MiraiCP"
-dependencies {
-    testImplementation(kotlin("test"))
-    implementation(project(":shared"))
-    implementation("net.mamoe", "mirai-core", Version.mirai)
-    implementation("org.fusesource.jansi", "jansi", Version.jansi)
-    implementation("org.jline", "jline", Version.jline)
-    api("net.mamoe", "mirai-logging-log4j2", Version.mirai)
-}
-tasks.test {
-    useJUnitPlatform()
-}
