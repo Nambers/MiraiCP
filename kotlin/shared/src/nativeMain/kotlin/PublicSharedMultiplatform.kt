@@ -19,6 +19,9 @@
 package tech.eritquearcus.miraicp.shared
 
 import kotlinx.coroutines.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import tech.eritquearcus.miraicp.uilts.Library.event
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.native.concurrent.ensureNeverFrozen
 
@@ -46,6 +49,7 @@ private class Timer(val time: Long, val msg: String) {
 
 actual object PublicSharedMultiplatform {
     actual fun onDisable() {
+        event()(Json.encodeToString(CPPEvent.LibLoaderEvent("OnDisable")))
     }
 
     actual fun scheduling(time: Long, msg: String) {

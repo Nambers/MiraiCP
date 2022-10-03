@@ -76,7 +76,6 @@ fun CPPConfig.LoaderConfig.Account.login() {
     PublicSharedData.logger.info("登录bot:${this.id}")
     PublicSharedData.logger.info("协议:${p.name}")
     PublicSharedData.logger.info("心跳策略:${h.name}")
-    PublicSharedData.logger.info("a")
     val b = if (this.md5 == null || !this.md5!!) {
         BotFactory.newBot(this.id, this.passwords) {
             fileBasedDeviceInfo()
@@ -90,22 +89,18 @@ fun CPPConfig.LoaderConfig.Account.login() {
             this.heartbeatStrategy = h
         }
     }
-    PublicSharedData.logger.info("a")
     b.eventChannel.subscribeAlways<BotOnlineEvent> {
         event(
             Json.encodeToString(CPPEvent.BotOnline(this.bot.id))
         )
     }
-    PublicSharedData.logger.info("a")
     runBlocking {
         b.login()
     }
-    PublicSharedData.logger.info("a")
     b.eventChannel.subscribeAlways<MessageEvent>(priority = EventPriority.HIGH) {
         if (this is FriendMessageEvent)// friend
             PublicSharedData.logger.info("${this.sender.nameCardOrNick}(${this.sender.id}) -> ${this.message.contentToString()}")
         else PublicSharedData.logger.info("[${this.bot.getGroup(this.subject.id)!!.name}(${this.subject.id})] ${this.sender.nameCardOrNick}(${this.sender.id}) -> ${this.message.contentToString()}")
     }
-    PublicSharedData.logger.info("a")
     PublicShared.onEnable(b.eventChannel)
 }

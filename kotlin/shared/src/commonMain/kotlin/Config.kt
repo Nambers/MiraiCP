@@ -463,14 +463,3 @@ object CPPEvent {
         val type: Int = 1000,
     )
 }
-
-@Serializable
-data class PluginConfig(
-    val id: String,
-    val author: String,
-    val description: String,
-    val name: String,
-    val time: String,
-    val version: String,
-    val MiraiCPversion: String,
-)

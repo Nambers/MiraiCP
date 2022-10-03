@@ -78,7 +78,6 @@ actual object KotlinMain {
         }
         c.accounts?.filter { it.autoLogin == true }?.forEach {
             it.login()
-            // logined = true
         }
         logger.info("⭐已成功加载MiraiCP⭐")
         Console.listen()

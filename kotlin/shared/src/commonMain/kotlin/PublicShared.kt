@@ -57,14 +57,12 @@ import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 import tech.eritquearcus.miraicp.uilts.MiraiCPFile
 import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
-import kotlin.native.concurrent.ThreadLocal
 
 expect object PublicSharedMultiplatform {
     fun onDisable()
     fun scheduling(time: Long, msg: String)
 }
 
-@ThreadLocal
 object PublicSharedData {
     var maxThread: Int = Int.MAX_VALUE
     lateinit var logger: MiraiLogger
