@@ -126,7 +126,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnvManager::setGvm(vm);
     JNIEnvManager::setEnv(env);
     // 注册native方法
-    if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLib", method_table, 3)) {
+    if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLibMultiplatform", method_table, 3)) {
         return JNI_ERR;
     }
     return JNI_VERSION_1_8;

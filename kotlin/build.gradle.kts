@@ -28,8 +28,8 @@ allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven("https://maven.aliyun.com/repository/central") // 阿里云国内代理仓库
         gradlePluginPortal()
+        maven("https://maven.aliyun.com/repository/central") // 阿里云国内代理仓库
         // mirai snapshot
         maven("https://repo.mirai.mamoe.net/snapshots")
     }

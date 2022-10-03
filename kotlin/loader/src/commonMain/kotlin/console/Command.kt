@@ -19,7 +19,6 @@
 package tech.eritquearcus.miraicp.loader.console
 
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import net.mamoe.mirai.message.data.PlainText
@@ -29,6 +28,7 @@ import tech.eritquearcus.miraicp.loader.console.CommandMultiplatform.pureOrder
 import tech.eritquearcus.miraicp.loader.login
 import tech.eritquearcus.miraicp.shared.CPPEvent
 import tech.eritquearcus.miraicp.shared.Command2C
+import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
@@ -154,7 +154,7 @@ object Command {
         }?.let { it ->
             val mc = MessageChainBuilder()
             order.drop(1).forEach { mc.append(PlainText(it)) }
-            val tmp = Json.encodeToString(
+            val tmp = json.encodeToString(
                 Command2C(
                     null,
                     0,

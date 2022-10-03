@@ -25,7 +25,7 @@ namespace LibLoader::JNIEnvs {
     // functions
     void loadConfigClass() {
         auto env = getEnv();
-        Class_cpplib = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/shared/CPPLib")));
+        Class_cpplib = reinterpret_cast<jclass>(env->NewGlobalRef(env->FindClass("tech/eritquearcus/miraicp/shared/CPPLibMultiplatform")));
         koper = env->GetStaticMethodID(Class_cpplib, "KOperation", "(Ljava/lang/String;)Ljava/lang/String;");
     }
 

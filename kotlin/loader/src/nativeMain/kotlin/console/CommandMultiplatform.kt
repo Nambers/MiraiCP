@@ -21,7 +21,6 @@
 package tech.eritquearcus.miraicp.loader.console
 
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.KotlinMainData
 import tech.eritquearcus.miraicp.loader.console.Command.lastOneOrMoreParamOrder
@@ -49,7 +48,7 @@ actual object CommandMultiplatform {
             }
 
             "accountList", "aList" -> KotlinMainData.loginAccount.let { acs ->
-                acs.forEach { println(Json.encodeToString(it)) }
+                acs.forEach { println(json.encodeToString(it)) }
             }
 
             "pluginList", "pList" -> {

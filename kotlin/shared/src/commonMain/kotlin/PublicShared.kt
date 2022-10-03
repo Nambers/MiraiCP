@@ -79,6 +79,7 @@ object PublicShared {
         Json {
             serializersModule = MessageSerializers.serializersModule
             ignoreUnknownKeys = true
+            encodeDefaults = true
         }
     }
     private val friend_cache = ArrayList<NormalMember>(0)
@@ -114,7 +115,7 @@ object PublicShared {
             } catch (e: TimeoutCancellationException) {
                 return@runBlocking "E1"
             }
-            Json.encodeToString(
+            json.encodeToString(
                 Config.Message(
                     json.encodeToString(
                         MessageSerializers.serializersModule.serializer(), e[MessageSource]!!
@@ -231,15 +232,15 @@ object PublicShared {
                     f.delete()
                     return "done"
                 }
-                Json.encodeToString(Config.ContactInfo(f.nick, f.avatarUrl))
+                json.encodeToString(Config.ContactInfo(f.nick, f.avatarUrl))
             }
             2 -> c.withGroup(bot, "取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}") { g ->
-                if (annoucment) return Json.encodeToString(g.announcements.toList().map { it.toOnlineA() })
+                if (annoucment) return json.encodeToString(g.announcements.toList().map { it.toOnlineA() })
                 if (quit) {
                     g.quit()
                     return "done"
                 }
-                Json.encodeToString(
+                json.encodeToString(
                     Config.ContactInfo(
                         g.name, g.avatarUrl, Config.GroupSetting(
                             g.name,
@@ -254,18 +255,18 @@ object PublicShared {
             3 -> friend_cache.firstOrNull { a ->
                 a.id == c.id && a.group.id == c.groupid
             }?.let {
-                Json.encodeToString(Config.ContactInfo(it.nameCardOrNick, it.avatarUrl))
+                json.encodeToString(Config.ContactInfo(it.nameCardOrNick, it.avatarUrl))
             } ?: let {
                 c.withMember(
                     bot,
                     "取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}",
                     "取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}"
                 ) { _, m ->
-                    Json.encodeToString(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
+                    json.encodeToString(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
                 }
             }
 
-            4 -> Json.encodeToString(Config.ContactInfo(bot.nick, bot.avatarUrl))
+            4 -> json.encodeToString(Config.ContactInfo(bot.nick, bot.avatarUrl))
             else -> "EA"
         }
     }
@@ -273,18 +274,18 @@ object PublicShared {
     //取群成员列表
     fun queryML(c: Config.Contact): String = c.withBot { bot ->
         c.withGroup(bot) { g ->
-            Json.encodeToString(g.members.map { it.id })
+            json.encodeToString(g.members.map { it.id })
         }
     }
 
     fun queryBFL(bid: Long): String = withBot(bid) { bot ->
-        Json.encodeToString(bot.friends.map {
+        json.encodeToString(bot.friends.map {
             it.id
         })
     }
 
     fun queryBGL(bid: Long): String = withBot(bid) { bot ->
-        Json.encodeToString(bot.groups.map { it.id })
+        json.encodeToString(bot.groups.map { it.id })
     }
 
     //图片部分实现
@@ -293,17 +294,17 @@ object PublicShared {
             val f = MiraiCPFiles.create(file).toExternalResource()
             val img = f.uploadAsImage(temp)
             f.close()
-            Json.encodeToString(
+            json.encodeToString(
                 Config.ImgInfo(
                     img.size,
                     img.width,
                     img.height,
-                    Json.encodeToString(img.md5),
+                    json.encodeToString(img.md5),
                     img.queryUrl(),
-                img.imageId,
-                img.imageType.ordinal
+                    img.imageId,
+                    img.imageType.ordinal
+                )
             )
-        )
     } catch (e: OverFileSizeMaxException) {
         logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
         err1
@@ -341,9 +342,9 @@ object PublicShared {
                 this.height = height ?: 0
                 this.type = ImageType.values()[type ?: ImageType.UNKNOWN.ordinal]
             }.build()
-            Json.encodeToString(
+            json.encodeToString(
                 Config.ImgInfo(
-                    md5 = Json.encodeToString(tmp.md5),
+                    md5 = json.encodeToString(tmp.md5),
                     size = tmp.size,
                     url = tmp.queryUrl(),
                     width = tmp.width,
@@ -393,7 +394,7 @@ object PublicShared {
     }
 
     suspend fun uploadVoice(source: String, c: Config.Contact): String = c.withBot { bot ->
-        val file = MiraiCPFiles.create(Json.decodeFromString<Config.VoiceInfoIn>(source).path)
+        val file = MiraiCPFiles.create(json.decodeFromString<Config.VoiceInfoIn>(source).path)
         if (!file.exists() || !file.isFile || !(file.extension == "amr" || file.extension == "silk")) {
             logger.error("上传的语言文件需为.amr / .silk文件, 位置: KUploadVoice")
             return "E1"
@@ -417,7 +418,7 @@ object PublicShared {
     }
 
     private suspend fun fileInfo0(temp: AbsoluteFile): String {
-        return Json.encodeToString(
+        return json.encodeToString(
             Config.FileInfoOut(
                 id = temp.id,
                 name = temp.name,
@@ -535,7 +536,7 @@ object PublicShared {
     }
 
     private fun buildForwardMsg(text: String, bid: Long, display: Config.ForwardedMessageDisplay?): ForwardMessage {
-        val t = Json.decodeFromString<Config.ForwardMessageJson.Content>(text)
+        val t = json.decodeFromString<Config.ForwardMessageJson.Content>(text)
         val a = mutableListOf<ForwardMessage.Node>()
         t.value.forEach {
             if (it.isForwardedMessage != true) a.add(
@@ -552,7 +553,7 @@ object PublicShared {
 
     //构建聊天记录
     suspend fun sendForwardMsg(text: String, bid: Long): String = withBot(bid) { bot ->
-        val t = Json.decodeFromString<Config.ForwardMessageJson>(text)
+        val t = json.decodeFromString<Config.ForwardMessageJson>(text)
         val c: Contact = when (t.type) {
             1 -> bot.getFriend(t.id) ?: let {
                 return "EF"
@@ -570,7 +571,7 @@ object PublicShared {
             else -> return "EA"
         }
         val tmp = try {
-            buildForwardMsg(Json.encodeToString(t.content), bid, t.display)
+            buildForwardMsg(json.encodeToString(t.content), bid, t.display)
         } catch (err: IllegalStateException) {
             return@withBot err.message!!
         }
@@ -582,7 +583,7 @@ object PublicShared {
     suspend fun accpetFriendRequest(info: String, botid: Long, accept: Boolean, ban: Boolean?): String =
         withBot(botid) { bot ->
             try {
-                Json.decodeFromString<RequestEventData.NewFriendRequest>(info).apply {
+                json.decodeFromString<RequestEventData.NewFriendRequest>(info).apply {
                     if (accept) accept(bot)
                     else reject(bot, ban ?: false)
                 }
@@ -594,7 +595,7 @@ object PublicShared {
 
     suspend fun accpetGroupInvite(info: String, botid: Long, accept: Boolean): String = withBot(botid) { bot ->
         try {
-            Json.decodeFromString<RequestEventData.BotInvitedJoinGroupRequest>(info).apply {
+            json.decodeFromString<RequestEventData.BotInvitedJoinGroupRequest>(info).apply {
                 if (accept) accept(bot)
                 else reject(bot)
             }
@@ -607,7 +608,7 @@ object PublicShared {
     suspend fun sendWithQuote(messageSource: String, msg: String, sign: String): String {
         val source =
             json.decodeFromString(MessageSerializers.serializersModule.serializer<MessageSource>(), messageSource)
-        val obj = Json.decodeFromString<Config.QuoteSign>(sign)
+        val obj = json.decodeFromString<Config.QuoteSign>(sign)
         val message = if (obj.MiraiCode) {
             MiraiCode.deserializeMiraiCode(msg)
         } else {
@@ -652,7 +653,7 @@ object PublicShared {
 
     fun groupSetting(c: Config.Contact, source: String): String = c.withBot {
         c.withGroup(it) { group ->
-            val root = Json.decodeFromString<Config.GroupSetting>(source)
+            val root = json.decodeFromString<Config.GroupSetting>(source)
             try {
                 group.name = root.name
                 group.settings.isMuteAll = root.isMuteAll
@@ -691,7 +692,7 @@ object PublicShared {
                     requireConfirmation = a.params.requireConfirmation
                 }).let {
                     return try {
-                        Json.encodeToString(it.publishTo(g).toOnlineA())
+                        json.encodeToString(it.publishTo(g).toOnlineA())
                     } catch (e: PermissionDeniedException) {
                         "EP"
                     }
@@ -746,7 +747,7 @@ object PublicShared {
 
     suspend fun memberJoinRequest(source: String, b: Boolean, botid: Long, msg: String): String =
         withBot(botid) { bot ->
-            return Json.decodeFromString<RequestEventData.MemberJoinRequest>(source).let {
+            return json.decodeFromString<RequestEventData.MemberJoinRequest>(source).let {
                 if (b) it.accept(bot)
                 else it.reject(bot, msg)
                 "Y"
@@ -865,7 +866,7 @@ object PublicShared {
                 CPPEvent.NewFriendRequest(
                     CPPEvent.NewFriendRequest.NewFriendRequestSource(
                         this.bot.id, this.eventId, this.message, this.fromId, this.fromGroupId, this.fromNick
-                    ), Json.encodeToString(this.toRequestEventData())
+                    ), json.encodeToString(this.toRequestEventData())
                 )
 
             )
@@ -931,7 +932,7 @@ object PublicShared {
                 CPPEvent.GroupInvite(
                     CPPEvent.GroupInvite.GroupInviteSource(
                         this.bot.id, this.eventId, this.invitorId, this.groupId, this.groupName, this.invitorNick
-                    ), Json.encodeToString(this.toRequestEventData())
+                    ), json.encodeToString(this.toRequestEventData())
                 )
 
             )
@@ -983,7 +984,7 @@ object PublicShared {
                     this.group?.toContact() ?: emptyContact(this.bot.id),
                     this.invitor?.toContact() ?: emptyContact(this.bot.id),
                     this.fromId,
-                    Json.encodeToString(this.toRequestEventData())
+                    json.encodeToString(this.toRequestEventData())
                 )
             )
         }
