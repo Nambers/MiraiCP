@@ -45,7 +45,7 @@ namespace MiraiCP {
 
         void deserialize(nlohmann::json in_json) override;
 
-        nlohmann::json toJson() const override;
+        nlohmann::json internalToJson() const override;
 
         void refreshInfo() override;
 
@@ -56,7 +56,7 @@ namespace MiraiCP {
     struct GroupRelatedData : public IContactData {
         typedef IContactData Super;
         QQID _groupid;
-        nlohmann::json toJson() const override;
+        nlohmann::json internalToJson() const override;
         explicit GroupRelatedData(QQID in_groupid) : _groupid(in_groupid) {}
         nlohmann::json getSign() const override;
     };
@@ -301,8 +301,8 @@ namespace MiraiCP {
                                                                          //            j["botid"] = botid();
                                                                          //            return j;
                                                                          //        }
-        /// @deprecated since v2.8.1, use `this->toJson()`
-        ShouldNotUse("use toJson") nlohmann::json serialization() const;
+        /// @deprecated since v2.8.1, use `this->internalToJson()`
+        ShouldNotUse("use internalToJson") nlohmann::json serialization() const;
 
         /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
         /// @see Contact::fromString()
@@ -366,16 +366,24 @@ namespace MiraiCP {
     /// @note dev: 任何操作内部数据的行为在此处定义。Contact只处理 InternalData 这个 shared_ptr 本身
     template<typename ClassType, typename InternalDataType>
     struct ContactDataHelper {
-        using json = nlohmann::json;
-        //        typedef Contact Super;
         typedef InternalDataType DataType;
 
-        DataType *GetDataInternal() {
-            auto clz_ptr = static_cast<ClassType *>(this);
+    protected:
+        using json = nlohmann::json;
+        typedef Contact Super;
+
+        /// @brief 获取指向的数据的裸指针，实际取内容时必须通过该函数，否则可能会取不到。
+        /// @note dev: 该函数不可以由外部调用，为了让getter正常地拥有const语义，
+        ///  该函数使用const qualifier，但返回非const的指针类型。
+        ///  若允许外部调用可能造成数据问题。
+        /// @see IMPL_GETTER, INLINE_GETTER
+        DataType *GetDataInternal() const {
+            auto clz_ptr = static_cast<const ClassType *>(this);
             assert(clz_ptr->InternalData != nullptr);
             return static_cast<DataType *>(clz_ptr->InternalData.get());
         }
 
+    public:
         /// 群名称，群成员群名片，或好友昵称
         std::string nickOrNameCard() const {
             auto dataPtr = GetDataInternal();

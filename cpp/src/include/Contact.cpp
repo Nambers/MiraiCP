@@ -106,7 +106,7 @@ namespace MiraiCP {
 
     void IContactData::refreshInfo() {
         // default to Friend
-        std::string temp = LowLevelAPI::getInfoSource(this->toString());
+        std::string temp = LowLevelAPI::getInfoSource(internalToString());
         if (temp == "E1") {
             throw FriendException(MIRAICP_EXCEPTION_WHERE);
         }
@@ -115,7 +115,7 @@ namespace MiraiCP {
         this->_avatarUrl = tmp.avatarUrl;
     }
 
-    nlohmann::json IContactData::toJson() const {
+    nlohmann::json IContactData::internalToJson() const {
         return {{"nickornamecard", _nickOrNameCard}, {"id", _id}, {"botid", _botid}, {"type", _type}};
         // j["type"] = type();
         //            j["id"] = id();
@@ -128,8 +128,8 @@ namespace MiraiCP {
         return {{"MiraiCode", true}};
     }
 
-    nlohmann::json GroupRelatedData::toJson() const {
-        auto result = IContactData::toJson();
+    nlohmann::json GroupRelatedData::internalToJson() const {
+        auto result = IContactData::internalToJson();
         result["groupid"] = _groupid;
         return result;
     }

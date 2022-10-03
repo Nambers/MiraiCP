@@ -59,7 +59,8 @@ namespace MiraiCP {
         auto ActualDataPtr = GetDataInternal();
         assert(ActualDataPtr != nullptr);
         ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
-        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
+        if (in_json.contains("avatarUrl"))
+            ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
         else
             forceRefreshNextTime();
     }
@@ -94,7 +95,6 @@ namespace MiraiCP {
     }
 
     Group::OnlineAnnouncement Group::OfflineAnnouncement::publishTo(const Group &g) {
-
         json i{{"botid", g.botid()}, {"groupid", g.id()}, {"type", 2}};
         json s{{"content", content}, {"params", params.serializeToJson()}};
         json j{{"identify", i.dump()}, {"source", s.dump()}};
@@ -135,7 +135,12 @@ namespace MiraiCP {
 
     void Group::updateSetting() {
         auto settings = setting();
-        json j{{"name", std::move(settings.name)}, {"isMuteAll", settings.isMuteAll}, {"isAllowMemberInvite", settings.isAllowMemberInvite}, {"isAutoApproveEnabled", settings.isAutoApproveEnabled}, {"isAnonymousChatEnabled", settings.isAnonymousChatEnabled}};
+        json j{
+                {"name", std::move(settings.name)},
+                {"isMuteAll", settings.isMuteAll},
+                {"isAllowMemberInvite", settings.isAllowMemberInvite},
+                {"isAutoApproveEnabled", settings.isAutoApproveEnabled},
+                {"isAnonymousChatEnabled", settings.isAnonymousChatEnabled}};
         json tmp{{"source", j.dump()}, {"contactSource", toString()}};
         std::string re = KtOperation::ktOperation(KtOperation::GroupSetting, std::move(tmp));
         InternalData->forceRefreshNextTime();
@@ -205,9 +210,8 @@ namespace MiraiCP {
 
     IMPL_GETTER(setting)
 
-#undef LOC_CLASS_NAMESPACE
     void GroupData::refreshInfo() {
-        std::string re = LowLevelAPI::getInfoSource(this->toString());
+        std::string re = LowLevelAPI::getInfoSource(internalToString());
         LowLevelAPI::info tmp = LowLevelAPI::info0(re);
         this->_nickOrNameCard = std::move(tmp.nickornamecard);
         this->_avatarUrl = std::move(tmp.avatarUrl);
@@ -223,4 +227,6 @@ namespace MiraiCP {
         _groupid = in_json["groupid"];
         IContactData::deserialize(std::move(in_json));
     }
+
+#undef LOC_CLASS_NAMESPACE
 } // namespace MiraiCP

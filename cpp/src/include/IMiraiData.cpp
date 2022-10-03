@@ -34,4 +34,13 @@ namespace MiraiCP {
     std::string IMiraiData::toString() const {
         return toJson().dump();
     }
+
+    nlohmann::json IMiraiData::toJson() const {
+        std::shared_lock<std::shared_mutex> lck(Locker._mtx);
+        return internalToJson();
+    }
+
+    nlohmann::json IMiraiData::internalToString() const {
+        return internalToJson().dump();
+    }
 } // namespace MiraiCP
