@@ -23,24 +23,22 @@ namespace MiraiCP {
     using json = nlohmann::json;
 
     json ForwardedMessage::nodesToJson() {
-        json value;
+        auto value = json::array();
         for (const ForwardedNode &node: nodes) {
-            json temp;
-            temp["id"] = node.id;
-            temp["time"] = node.time;
+            json temp{{"id", node.id}, {"time", node.time}, {"name", node.name}};
             if (node.isForwarded()) {
                 temp["isForwardedMessage"] = true;
                 temp["message"] = std::get<std::shared_ptr<ForwardedMessage>>(node.message)->nodesToJson().dump();
                 if (display.has_value())
                     temp["display"] = display->toJson();
-            } else
+            } else{
                 temp["message"] = std::get<MessageChain>(node.message).toMiraiCode();
-            temp["name"] = node.name;
+            }
             value.emplace_back(std::move(temp));
         }
-        json tmp = this->sendmsg;
-        tmp["value"] = std::move(value);
-        return tmp;
+        json tmp2 = this->sendmsg;
+        tmp2["value"] = std::move(value);
+        return tmp2;
     }
 
     //发送这个聊天记录
