@@ -45,7 +45,15 @@ actual object CPPLibMultiplatform {
     @JvmStatic
     fun KOperation(content: String): String = operation(content)
 
+    @JvmStatic
+    @JvmName("Verify")
     external fun Verify(version: String, cfgPath: String): Void
+
+    @JvmStatic
+    @JvmName("Event")
     external fun Event(content: String): Void
+
+    @JvmStatic
+    @JvmName("PluginDisable")
     external fun PluginDisable(): Void
 }

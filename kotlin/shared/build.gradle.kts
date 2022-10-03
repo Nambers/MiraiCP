@@ -50,7 +50,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":utils"))
-                compileOnly(`mirai-core-api`)
+                implementation(`mirai-core-api`)
                 implementation(`kotlinx-coroutines-core`)
                 implementation(`ktor-ulits`)
             }

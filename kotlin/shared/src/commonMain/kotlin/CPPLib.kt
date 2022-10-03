@@ -21,7 +21,7 @@ package tech.eritquearcus.miraicp.shared
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import tech.eritquearcus.miraicp.shared.PublicShared.json
 
 expect object CPPLibMultiplatform {
     fun init(
@@ -41,9 +41,9 @@ object CPPLib {
         callback: () -> Unit = {}
     ) = CPPLibMultiplatform.init(libPath, cfgPath, callback)
 
-    fun contact(source: String): Config.Contact = Json.decodeFromString(source)
+    fun contact(source: String): Config.Contact = json.decodeFromString(source)
     suspend fun KSend(source: String, miraiCode: Boolean): String = run {
-        val tmp = Json.decodeFromString<Config.SendRequest>(source)
+        val tmp = json.decodeFromString<Config.SendRequest>(source)
         return when (miraiCode) {
             false -> PublicShared.sendMsg(tmp.content, tmp.contact)
             true -> PublicShared.sendMiraiCode(tmp.content, tmp.contact)
@@ -52,7 +52,7 @@ object CPPLib {
 
     // 日志发送接口
     fun sendLog(log: String, level: Int) {
-        val j = Json.decodeFromString<Config.Log>(log)
+        val j = json.decodeFromString<Config.Log>(log)
         if (j.id == -1L) when (level) {
             0 -> PublicShared.basicSendLog(j.log, j.id, j.name!!)
             1 -> PublicShared.sendWarning(j.log, j.id, j.name!!)
@@ -66,14 +66,14 @@ object CPPLib {
     }
 
     suspend fun KSendFile(source: String, contactSource: String): String = run {
-        val t = Json.decodeFromString<Config.FileInfoIn>(source)
+        val t = json.decodeFromString<Config.FileInfoIn>(source)
         PublicShared.sendFile(
             t.path!!, t.filepath!!, contact(contactSource)
         )
     }
 
     suspend fun KRemoteFileInfo(source: String, contactSource: String): String = run {
-        val t = Json.decodeFromString<Config.FileInfoIn>(source)
+        val t = json.decodeFromString<Config.FileInfoIn>(source)
         return if (t.path != null) PublicShared.remoteFileInfo(
             t.path, t.id!!, contact(contactSource)
         )
@@ -82,18 +82,18 @@ object CPPLib {
 
     // new friend request operation
     suspend fun KNfroperation(text: String): String = run {
-        val tmp = Json.decodeFromString<CPPEvent.Request>(text)
+        val tmp = json.decodeFromString<CPPEvent.Request>(text)
         PublicShared.accpetFriendRequest(tmp.text, tmp.botid, tmp.accept, tmp.ban)
     }
 
     // Group invite operation
     suspend fun KGioperation(text: String): String = run {
-        val tmp = Json.decodeFromString<CPPEvent.Request>(text)
+        val tmp = json.decodeFromString<CPPEvent.Request>(text)
         PublicShared.accpetGroupInvite(tmp.text, tmp.botid, tmp.accept)
     }
 
     suspend fun KAnnouncement(identify: String, source: String?): String =
-        Json.decodeFromString<Config.IdentifyA>(identify).let { i ->
+        json.decodeFromString<Config.IdentifyA>(identify).let { i ->
             return when (i.type) {
                 1 -> {
                     PublicShared.deleteOnlineAnnouncement(i)
@@ -101,7 +101,7 @@ object CPPLib {
 
                 2 -> {
                     PublicShared.publishOfflineAnnouncement(
-                        i, Json.decodeFromString<Config.BriefOfflineA>(source!!)
+                        i, json.decodeFromString<Config.BriefOfflineA>(source!!)
                     )
                 }
 
@@ -111,7 +111,7 @@ object CPPLib {
             }
         }
 
-    suspend fun kQueryImgInfo(source: String): String = Json.decodeFromString<Config.ImgInfo>(source).let {
+    suspend fun kQueryImgInfo(source: String): String = json.decodeFromString<Config.ImgInfo>(source).let {
         PublicShared.queryImgInfo(it.imageid!!, it.size, it.width, it.height, it.type)
     }
 
@@ -150,7 +150,7 @@ object CPPLib {
     // 通用接口
     fun operation(content: String): String = runBlocking {
         try {
-            val j = Json.decodeFromString<Config.Operation>(content)
+            val j = json.decodeFromString<Config.Operation>(content)
             val root = j.data
             when (j.type) {
                 /// 撤回信息
@@ -215,11 +215,11 @@ object CPPLib {
                 )
                 /// 好友申请事件
                 Operation_code.Nfroperation.ordinal -> KNfroperation(
-                    Json.encodeToString(root)
+                    json.encodeToString(root)
                 )
                 /// 群聊邀请事件
                 Operation_code.Gioperation.ordinal -> KGioperation(
-                    Json.encodeToString(root)
+                    json.encodeToString(root)
                 )
                 /// 回复(引用并发送)
                 Operation_code.SendWithQuote.ordinal -> PublicShared.sendWithQuote(
@@ -249,14 +249,14 @@ object CPPLib {
                 )
 
                 Operation_code.ImageUploaded.ordinal -> PublicShared.isUploaded(
-                    Json.decodeFromString<Config.ImgInfo>(
+                    json.decodeFromString<Config.ImgInfo>(
                         root.toString()
                     ), root.botid!!
                 )
 
                 Operation_code.CommandReg.ordinal -> {
                     PublicSharedData.commandReg.register(
-                        Json.decodeFromString<Command>(
+                        json.decodeFromString<Command>(
                             root.command!!
                         )
                     )

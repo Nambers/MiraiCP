@@ -19,7 +19,6 @@
 package tech.eritquearcus.miraicp.console
 
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.mamoe.mirai.console.command.CommandManager
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.RawCommand
@@ -27,6 +26,7 @@ import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import tech.eritquearcus.miraicp.PluginMain
 import tech.eritquearcus.miraicp.shared.*
+import tech.eritquearcus.miraicp.shared.PublicShared.json
 
 class CommandHandlerImpl : CommandHandler {
     override fun register(c: Command): String {
@@ -41,7 +41,7 @@ class CommandHandlerImpl : CommandHandler {
             var pluginId: Int = -1
             var bindId: Int = -1
             override suspend fun CommandSender.onCommand(args: MessageChain) {
-                val tmp = Json.encodeToString(
+                val tmp = json.encodeToString(
                     Command2C(
                         this.user?.toContact(),
                         this.bot?.id ?: 0,

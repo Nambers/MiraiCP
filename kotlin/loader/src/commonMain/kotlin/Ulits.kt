@@ -20,7 +20,6 @@ package tech.eritquearcus.miraicp.loader
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.EventPriority
@@ -33,13 +32,10 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.shared.CPPConfig
 import tech.eritquearcus.miraicp.shared.CPPEvent
 import tech.eritquearcus.miraicp.shared.PublicShared
+import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 
-val json = Json {
-    ignoreUnknownKeys = true
-
-}
 internal fun String.decodeHex(): ByteArray {
     check(length % 2 == 0) { "Must have an even length" }
     return chunked(2).map { it.toInt(16).toByte() }.toByteArray()
@@ -91,7 +87,7 @@ fun CPPConfig.LoaderConfig.Account.login() {
     }
     b.eventChannel.subscribeAlways<BotOnlineEvent> {
         event(
-            Json.encodeToString(CPPEvent.BotOnline(this.bot.id))
+            json.encodeToString(CPPEvent.BotOnline(this.bot.id))
         )
     }
     runBlocking {

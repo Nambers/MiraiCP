@@ -20,7 +20,6 @@ package tech.eritquearcus.miraicp
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -54,7 +53,7 @@ object PluginMain : KotlinPlugin(
         PublicSharedData.logger.info("⭐MiraiCP-loader 版本: $version, 构建时间: ${BuiltInConstants.date}")
         PublicSharedData.commandReg = CommandHandlerImpl()
         val config =
-            Json.decodeFromString<CPPConfig.PluginConfig>(File("${dataFolder.absoluteFile}/miraicp.json").apply {
+            json.decodeFromString<CPPConfig.PluginConfig>(File("${dataFolder.absoluteFile}/miraicp.json").apply {
                 if (!this.exists() || !this.isFile) {
                     PublicSharedData.logger.error("配置文件(${this.absolutePath})不存在或错误，将结束加载")
                     PublicSharedData.logger.error("配置文件应该在(${this.absolutePath}), 并且拥有以下json格式(见https://github.com/Nambers/MiraiCP/blob/main/doc/config.md):")
@@ -87,7 +86,7 @@ object PluginMain : KotlinPlugin(
         logger.info("⭐已成功启动MiraiCP⭐")
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
             event(
-                Json.encodeToString(CPPEvent.BotOnline(this.bot.id))
+                json.encodeToString(CPPEvent.BotOnline(this.bot.id))
             )
         }
         PublicShared.onEnable(GlobalEventChannel.parentScope(this))
