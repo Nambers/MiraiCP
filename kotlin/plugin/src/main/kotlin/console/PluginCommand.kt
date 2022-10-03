@@ -18,6 +18,8 @@
 
 package tech.eritquearcus.miraicp.console
 
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.mamoe.mirai.console.command.CommandManager
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.RawCommand
@@ -39,7 +41,7 @@ class CommandHandlerImpl : CommandHandler {
             var pluginId: Int = -1
             var bindId: Int = -1
             override suspend fun CommandSender.onCommand(args: MessageChain) {
-                val tmp = PublicShared.gson.toJson(
+                val tmp = Json.encodeToString(
                     Command2C(
                         this.user?.toContact(),
                         this.bot?.id ?: 0,
@@ -47,7 +49,7 @@ class CommandHandlerImpl : CommandHandler {
                         bindId
                     )
                 )
-                CPPLib.Event(tmp)
+                CPPLibMultiplatform.Event(tmp)
             }
         }
         a::preFixOption.set(c.preFixOption)

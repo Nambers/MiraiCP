@@ -16,20 +16,36 @@
  *
  */
 
-enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "MiraiCP"
-include("shared")
-include("plugin")
-include("loader")
-include("utils")
-project(":plugin").name = "MiraiCP-plugin"
-project(":loader").name = "MiraiCP-loader"
+package tech.eritquearcus.miraicp.uilts
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        // mirai snapshot
-        maven("https://repo.mirai.mamoe.net/snapshots")
-    }
+import net.mamoe.mirai.utils.ExternalResource
+
+interface MiraiCPFile {
+    // this instance is file or not
+    val isFile: Boolean
+
+    // the file extension
+    val extension: String
+
+    // absolute path of this instance
+    val absolutePath: String
+
+    // name(like aaa.bbb) with extension
+    val name: String
+
+    // parent absolute path
+    val parentPath: String
+
+    fun delete(): Boolean
+    fun exists(): Boolean
+    fun toExternalResource(): ExternalResource
+    fun deleteRecursively(): Boolean
+    fun mkdir(): Boolean
+    fun writeText(text: String)
+    fun canRead(): Boolean
+    fun readText(): String
+}
+
+expect object MiraiCPFiles {
+    fun create(path: String): MiraiCPFile
 }

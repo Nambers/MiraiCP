@@ -16,20 +16,16 @@
  *
  */
 
-enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "MiraiCP"
-include("shared")
-include("plugin")
-include("loader")
-include("utils")
-project(":plugin").name = "MiraiCP-plugin"
-project(":loader").name = "MiraiCP-loader"
+package tech.eritquearcus.miraicp.uilts
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        // mirai snapshot
-        maven("https://repo.mirai.mamoe.net/snapshots")
+actual object Library {
+    actual fun load(
+        libPath: String,
+        callVerify: ((version: String, cfgPath: String) -> Unit) -> Unit
+    ) {
+        System.load(libPath)
     }
+
+    // unused
+    actual fun event(): (String) -> Unit = {}
 }

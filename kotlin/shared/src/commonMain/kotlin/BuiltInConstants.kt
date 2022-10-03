@@ -16,20 +16,10 @@
  *
  */
 
-enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "MiraiCP"
-include("shared")
-include("plugin")
-include("loader")
-include("utils")
-project(":plugin").name = "MiraiCP-plugin"
-project(":loader").name = "MiraiCP-loader"
+package tech.eritquearcus.miraicp.shared
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        // mirai snapshot
-        maven("https://repo.mirai.mamoe.net/snapshots")
-    }
+object BuiltInConstants {
+    const val date = "Sun Oct 02 23:07:18 EDT 2022"
+    const val version = "2.12.0-RC2"
+    const val miraiVersion = "2.13.0-dev-d32a8a56"
 }

@@ -15,9 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import Version.`kotlinx-coroutines-core`
-import Version.`ktor-ulits`
-import Version.`mirai-core-api`
 
 plugins {
     kotlin("multiplatform")
@@ -35,29 +32,24 @@ kotlin {
         }
     }
     val hostOs = System.getProperty("os.name")
-    when {
-        hostOs == "Mac OS X" -> macosX64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        hostOs.startsWith("Windows") -> mingwX64("native")
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }.compilations.all {
-        cinterops {
-            this.maybeCreate("localLibcurl")
-            this.maybeCreate("localOpenssl")
-        }
-    }
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":utils"))
-                compileOnly(`mirai-core-api`)
-                implementation(`kotlinx-coroutines-core`)
-                implementation(`ktor-ulits`)
+                implementation("net.mamoe:mirai-core-api:${Version.mirai}")
             }
-            apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
         }
 
         val jvmMain by getting
-        val nativeMain by getting
+        if (hostOs == "Mac OS X") {
+            macosX64("unix")
+        } else {
+            linuxX64("unix")
+        }
+        mingwX64("win")
     }
 }

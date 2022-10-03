@@ -16,20 +16,25 @@
  *
  */
 
-enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "MiraiCP"
-include("shared")
-include("plugin")
-include("loader")
-include("utils")
-project(":plugin").name = "MiraiCP-plugin"
-project(":loader").name = "MiraiCP-loader"
+package tech.eritquearcus.miraicp.loader.console
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        // mirai snapshot
-        maven("https://repo.mirai.mamoe.net/snapshots")
+import tech.eritquearcus.miraicp.shared.CommandHandler
+
+data class CommandBrief(
+    val name: String,
+    val pid: Int,
+    val bid: Int,
+    val sName: List<String>
+)
+
+class LoaderCommandHandlerImpl : CommandHandler {
+    override fun register(c: tech.eritquearcus.miraicp.shared.Command): String {
+        val cb = CommandBrief(c.primaryName, c.pluginId, c.bindId, c.secondName)
+        when (c.override) {
+            true -> Command.preCommand.add(cb)
+            false -> Command.lastCommand.add(cb)
+        }
+        Command.message.add(c.primaryName to (c.usage ?: (c.description ?: "null")))
+        return "true"
     }
 }
