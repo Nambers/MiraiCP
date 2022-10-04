@@ -434,6 +434,7 @@ object CPPEvent {
         2 - 机器人因群主解散群而退出群. 操作人一定是群主
          */
         val leavetype: Int,
+        val operatorid: Long,
         val type: Int = 13,
     )
 

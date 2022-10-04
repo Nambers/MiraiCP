@@ -973,9 +973,9 @@ object PublicShared {
                 CPPEvent.BotLeaveEvent(
                     this.group.id,
                     this.bot.id,
-                    type
-                )
-
+                    type,
+                    if(type == 1) (this as BotLeaveEvent.Kick).operator.id else -1L
+                    )
             )
         }
         eventChannel.subscribeAlways<MemberJoinRequestEvent> {
