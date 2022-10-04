@@ -574,14 +574,30 @@ namespace MiraiCP {
             return eventTypes::Types::BotLeaveEvent;
         }
 
+        /// 事件类型
+        enum class EventType {
+            /// 主动退出
+            Active = 0,
+            /// 被踢出
+            Kick,
+            /// 群被解散
+            Disband
+        };
+
     public:
         /// 退出的群
         /// @attension 收到这个事件时已经退出该群, 可能取不到相关信息
         QQID groupid;
+        EventType type;
+        std::optional<QQID> operatorId = std::nullopt;
 
-        BotLeaveEvent(QQID ingroupid, QQID botid)
-            : BotEvent(botid),
-              groupid(ingroupid) {}
+        BotLeaveEvent(QQID ingroupid, QQID botid, int type, QQID operatorId)
+                : BotEvent(botid),
+                  groupid(ingroupid), type(static_cast<EventType>(type)) {
+            if (operatorId != -1) {
+                this->operatorId = operatorId;
+            }
+        }
     };
 
     /// 申请加群事件, bot需为管理员或者群主

@@ -183,7 +183,7 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::BotLeaveEvent: {
-                Event::broadcast(BotLeaveEvent(j["groupid"], j["botid"]));
+                Event::broadcast(BotLeaveEvent(j["groupid"], j["botid"], j["type"], j["operatorid"]));
                 break;
             }
             case eventTypes::MemberJoinRequestEvent: {
