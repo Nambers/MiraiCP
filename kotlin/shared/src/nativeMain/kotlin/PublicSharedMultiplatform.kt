@@ -19,23 +19,19 @@
 package tech.eritquearcus.miraicp.shared
 
 import kotlinx.coroutines.*
-import kotlinx.serialization.encodeToString
-import tech.eritquearcus.miraicp.uilts.Library.event
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.native.concurrent.ensureNeverFrozen
 
 private class Timer(val time: Long, val msg: String) {
-    private var timer: Job
+    private var timer: Job = CoroutineScope(EmptyCoroutineContext).launch {
+        for (i in 0..time / 10) {
+            if (!isActive) return@launch
+            delay(10)
+        }
+        UlitsMultiPlatform.event(CPPEvent.TimeOutEvent(msg))
+    }
 
     init {
-        ensureNeverFrozen()
-        timer = CoroutineScope(EmptyCoroutineContext).launch {
-            for (i in 0..time / 10) {
-                if (!isActive) return@launch
-                delay(10)
-            }
-            UlitsMultiPlatform.event(CPPEvent.TimeOutEvent(msg))
-        }
+//        ensureNeverFrozen()
     }
 
     val isCancelled
@@ -48,7 +44,7 @@ private class Timer(val time: Long, val msg: String) {
 
 actual object PublicSharedMultiplatform {
     actual fun onDisable() {
-        event()(json.encodeToString(CPPEvent.LibLoaderEvent("OnDisable")))
+//        event()(json.encodeToString(CPPEvent.LibLoaderEvent("OnDisable")))
     }
 
     actual fun scheduling(time: Long, msg: String) {
