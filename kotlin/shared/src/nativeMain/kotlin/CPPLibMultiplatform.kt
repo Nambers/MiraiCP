@@ -17,13 +17,15 @@
  */
 
 package tech.eritquearcus.miraicp.shared
-
-import tech.eritquearcus.miraicp.uilts.Library
+import tech.eritquearcus.MiraiCP.Event
+import tech.eritquearcus.MiraiCP.Verify
 
 actual object CPPLibMultiplatform {
     // libLoader eventHandler ptr address
-    val eventPtr: (String) -> Unit
-        get() = Library.event()
+    fun eventPtr(str: String) {
+        Event(str)
+    }
+
     actual fun init(
         libPath: List<String>?,
         cfgPath: String?,
@@ -32,9 +34,7 @@ actual object CPPLibMultiplatform {
         if (libPath == null) {
             callback()
         } else {
-            Library.load(UlitsMultiPlatform.getLibLoader(libPath)) { verify ->
-                verify(BuiltInConstants.version, cfgPath!!)
-            }
+            Verify(BuiltInConstants.version, cfgPath!!)
         }
     }
 }

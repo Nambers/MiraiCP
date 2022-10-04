@@ -23,6 +23,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -75,11 +76,13 @@ object PublicSharedData {
 }
 
 object PublicShared {
+    @OptIn(ExperimentalSerializationApi::class)
     val json by lazy {
         Json {
             serializersModule = MessageSerializers.serializersModule
             ignoreUnknownKeys = true
             encodeDefaults = true
+            explicitNulls = false
         }
     }
     private val friend_cache = ArrayList<NormalMember>(0)
