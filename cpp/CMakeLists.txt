@@ -130,6 +130,7 @@ endif (UNIX)
 
 add_subdirectory(src/include)
 add_subdirectory(src/libloader)
+add_subdirectory(src/native)
 if (GOOGLE_TEST)
     message(STATUS "loading test")
     add_subdirectory(src/tests)

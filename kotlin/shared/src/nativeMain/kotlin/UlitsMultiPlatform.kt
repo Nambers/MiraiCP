@@ -20,7 +20,6 @@ package tech.eritquearcus.miraicp.shared
 
 import kotlinx.serialization.encodeToString
 import tech.eritquearcus.miraicp.shared.PublicShared.json
-import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 
 actual object UlitsMultiPlatform {
     actual inline fun <reified T> event(value: T) {
@@ -28,20 +27,8 @@ actual object UlitsMultiPlatform {
         CPPLibMultiplatform.eventPtr(if (value is String) value else json.encodeToString(value))
     }
 
+    @Deprecated("", level = DeprecationLevel.HIDDEN)
     actual fun getLibLoader(pathsInput: List<String>): String {
-        val paths = pathsInput
-            .plus(MiraiCPFiles.create("./libLoader.so").absolutePath)
-            .plus(MiraiCPFiles.create("./libLoader.dll").absolutePath)
-        paths.forEach { path ->
-            MiraiCPFiles.create(path).let {
-                if (it.exists()) return it.absolutePath
-            }
-        }
-        PublicSharedData.logger.error(
-            "找不到 libLoader 组件于下列位置:\n" +
-                    paths.joinToString(prefix = "\t", postfix = "\n") +
-                    "请到 MiraiCP release 下载 libLoader 组件并放在以上目录其中一个的位置"
-        )
-        throw IllegalStateException("找不到 libLoader 组件")
+        return ""
     }
 }

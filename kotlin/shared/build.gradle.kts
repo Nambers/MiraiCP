@@ -44,6 +44,10 @@ kotlin {
         cinterops {
             this.maybeCreate("localLibcurl")
             this.maybeCreate("localOpenssl")
+            val localMiraiCP by creating {
+                headers(project.file("src/nativeInterop/cinterop/MiraiCP.h"))
+                packageName("tech.eritquearcus.MiraiCP")
+            }
         }
     }
     sourceSets {
