@@ -129,7 +129,6 @@ endif (UNIX)
 # -- end --
 
 add_subdirectory(src/include)
-add_subdirectory(src/miraicp-core)
 add_subdirectory(src/libloader)
 if (GOOGLE_TEST)
     message(STATUS "loading test")
