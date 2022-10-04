@@ -18,7 +18,7 @@
 
 package tech.eritquearcus.miraicp.shared
 
-import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.encodeToString
 import tech.eritquearcus.miraicp.shared.PublicShared.json
 import java.io.File
 
@@ -27,8 +27,9 @@ import java.io.File
 //): R = runInterruptible(context = cc, block = { block() })
 actual object UlitsMultiPlatform {
 
-    actual fun <T> event(value: T, obj: SerializationStrategy<T>?) {
-        CPPLibMultiplatform.Event(if (value is String) value else json.encodeToString(obj!!, value))
+    actual inline fun <reified T> event(value: T) {
+        println("event:" + if (value is String) value else json.encodeToString(value))
+        CPPLibMultiplatform.Event(if (value is String) value else json.encodeToString(value))
     }
 
     actual fun getLibLoader(pathsInput: List<String>): String {

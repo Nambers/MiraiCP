@@ -20,7 +20,6 @@ package tech.eritquearcus.miraicp.shared
 
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
-import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.serializer
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.*
@@ -40,7 +39,7 @@ import net.mamoe.mirai.message.data.MessageSource
 //): R = runInterruptible(context = cc, block = { block() })
 expect object UlitsMultiPlatform {
     // 广播事件到cpp
-    fun <T> event(value: T, obj: SerializationStrategy<T>? = null)
+    actual inline fun <reified T> event(value: T)
     fun getLibLoader(pathsInput: List<String>): String
 }
 
