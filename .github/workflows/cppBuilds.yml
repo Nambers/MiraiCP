@@ -47,18 +47,6 @@ jobs:
       run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
     - name: build with gcc
       run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single
-  ubuntu-gcc-core:
-    runs-on: ubuntu-latest
-    steps:
-    - name: checkout  
-      uses: actions/checkout@v2
-    - name: configure
-      env:
-        cc: gcc
-        cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
-    - name: build with gcc
-      run: cd cpp/build && make MiraiCP_core
   windows-mingw-libLoader:
     runs-on: windows-latest
     steps:
