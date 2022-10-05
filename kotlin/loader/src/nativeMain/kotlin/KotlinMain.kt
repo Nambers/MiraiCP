@@ -24,6 +24,7 @@ import kotlinx.serialization.decodeFromString
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
+import tech.eritquearcus.miraicp.loader.console.registerFactory
 import tech.eritquearcus.miraicp.shared.*
 import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
@@ -45,7 +46,8 @@ actual object KotlinMain {
         @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") // 必要
         net.mamoe.mirai._MiraiInstance.set(net.mamoe.mirai.internal.MiraiImpl())
         KotlinMainData.job.start()
-        Console
+        Console.console.println("Hihihi")
+        registerFactory()
         val c = json.decodeFromString<CPPConfig.LoaderConfig>(j)
         KotlinMainData.loginAccount = c.accounts ?: emptyList()
         if (PublicSharedData.cachePath.exists()) PublicSharedData.cachePath.deleteRecursively()
