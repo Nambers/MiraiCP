@@ -31,10 +31,6 @@ import kotlin.system.exitProcess
 
 
 object Console {
-    init {
-        registerFactory()
-    }
-
     val console = Terminal()
 
     fun listen() {

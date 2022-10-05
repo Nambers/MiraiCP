@@ -39,8 +39,6 @@ namespace LibLoader {
 /// 1. 设置全局变量
 /// 2. 开启loader线程并获取插件入口函数的返回值
 jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
-    using json = nlohmann::json;
-
     JNIEnvManager::setEnv(env);
 
     //初始化日志模块
