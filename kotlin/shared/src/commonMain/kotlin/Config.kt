@@ -26,9 +26,9 @@ object Config {
     @Serializable
     data class Contact(
         val type: Int,
-        val id: Long,
-        val groupid: Long,
-        val nickornamecard: String,
+        val id: Long? = null,
+        val groupid: Long? = null,
+        val nickornamecard: String? = null,
         val botid: Long,
         val anonymous: Boolean = false,
     )
