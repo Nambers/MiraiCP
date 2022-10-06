@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import kotlin.test.Test
 
-class RunLoader {
-    @Test
-    fun runLoader() {
-        main(arrayOf("../config.json"))
-    }
-}
+// Test 好像会自动让 Console prompt 输入
+//class RunLoaderNative {
+//    @Test
+//    fun runLoaderNative() {
+//        main(arrayOf("../config.json"))
+//    }
+//}
