@@ -23,6 +23,7 @@ package tech.eritquearcus.miraicp.loader.console
 import com.github.ajalt.mordant.rendering.TextColors
 import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.Services
+import net.mamoe.mirai.utils.currentTimeFormatted
 import kotlin.reflect.KClass
 
 class MiraiCPLogger(override val identity: String?, override val isEnabled: Boolean = true) : MiraiLogger {
@@ -39,7 +40,9 @@ class MiraiCPLogger(override val identity: String?, override val isEnabled: Bool
             Level.ERR -> TextColors.red
             Level.WARN -> TextColors.yellow
             Level.DEBUG -> TextColors.white
-        }(str ?: "")
+        }(processStr(str ?: "", co))
+
+    private fun processStr(message: String, co: Level) = "${currentTimeFormatted()} ${co.name}/$identity: $message"
 
     override fun debug(message: String?) {
         Console.console.println(color(message ?: "", Level.DEBUG))
