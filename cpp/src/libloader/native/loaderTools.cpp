@@ -15,10 +15,9 @@
 //
 
 #include "loaderTools.h"
-#include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "commonTools.h"
-#include <utf8.h>
+#include "utf8.h"
 // for std::setw
 #include <iomanip>
 // for ostringstream
@@ -26,7 +25,8 @@
 
 
 namespace LibLoader {
-    std::pair<std::vector<std::string>, std::vector<PluginAuthority>> collect_plugins(const std::string &cfgPath, nlohmann::json j) {
+    std::pair<std::vector<std::string>, std::vector<PluginAuthority>>
+    collect_plugins(const std::string &cfgPath, nlohmann::json j) {
         std::vector<std::string> paths;
         std::vector<PluginAuthority> authorities;
         try {
@@ -46,7 +46,8 @@ namespace LibLoader {
 
                     if (v.contains("authority")) {
                         // change this if you want to support multiple authorities
-                        authority = v["authority"].get<unsigned long long>() ? PLUGIN_AUTHORITY_ADMIN : PLUGIN_AUTHORITY_NORMAL;
+                        authority = v["authority"].get<unsigned long long>() ? PLUGIN_AUTHORITY_ADMIN
+                                                                             : PLUGIN_AUTHORITY_NORMAL;
                     }
 
                     authorities.emplace_back(authority);
@@ -57,38 +58,6 @@ namespace LibLoader {
             return {};
         }
         return {std::move(paths), std::move(authorities)};
-    }
-
-    std::string jstring2str(jstring jStr) {
-        if (!jStr) {
-            return "";
-        }
-
-        const jchar *jCharPointer = JNIEnvs::getEnv()->GetStringChars(jStr, nullptr);
-        MIRAICP_DEFER(JNIEnvs::getEnv()->ReleaseStringChars(jStr, jCharPointer););
-        std::u16string s = reinterpret_cast<const char16_t *>(jCharPointer);
-
-        if (s.length() == 0) {
-            return "";
-        }
-        std::string x;
-        utf8::utf16to8(s.begin(), s.end(), std::back_inserter(x));
-        return x;
-    }
-
-    jstring str2jstring(const char *cstr) {
-        if (!cstr) {
-            logger.warning("警告:str2jstring传入空字符串");
-        }
-        std::string str(cstr);
-        std::vector<unsigned short> utf16line;
-        utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
-        auto *c = new jchar[utf16line.size()];
-        MIRAICP_DEFER(delete[] c;);
-        for (int i = 0; i < utf16line.size(); i++) {
-            c[i] = utf16line[i];
-        }
-        return JNIEnvs::getEnv()->NewString((jchar *) c, (jsize) utf16line.size());
     }
 
     void FormatPluginListInfo(const MiraiCP::PluginConfig &plugin_config, int *charNum, std::vector<std::string> &out) {

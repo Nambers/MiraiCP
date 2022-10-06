@@ -19,6 +19,7 @@
 
 
 #include "LoaderPluginConfig.h"
+#include <jni.h>
 #include <fstream>
 #include <string>
 #include <thread>

@@ -285,9 +285,8 @@ namespace LibLoader {
 
     /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用且仅调用一次
     /// 实际的入口，id_plugin_list 必须在这里初始化
-    void registerAllPlugin(jstring _cfgPath) noexcept {
+    void registerAllPlugin(const std::string &cfgPath) noexcept {
         // 获取cfg文件路径并读取
-        std::string cfgPath = jstring2str(_cfgPath);
         nlohmann::json j = readJsonFile(cfgPath);
 
         // 读取全部path
