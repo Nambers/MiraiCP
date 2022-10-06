@@ -23,7 +23,6 @@ package tech.eritquearcus.miraicp.loader.console
 import com.github.ajalt.mordant.rendering.TextColors
 import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.Services
-import tech.eritquearcus.miraicp.shared.CPPLibMultiplatform
 import kotlin.reflect.KClass
 
 class MiraiCPLogger(override val identity: String?, override val isEnabled: Boolean = true) : MiraiLogger {
@@ -94,14 +93,10 @@ object MiraiLoggerFactoryImpl : MiraiLogger.Factory {
 }
 
 fun registerFactory() {
-    println("call registered1")
-    MiraiLoggerFactoryImpl.create(CPPLibMultiplatform::class).error("!!!")
-    assert("net.mamoe.mirai.utils.MiraiLogger.Factory" == MiraiLogger.Factory::class.qualifiedName!!)
     Services.register(
-        "net.mamoe.mirai.utils.MiraiLogger.Factory",
-        "tech.eritquearcus.miraicp.loader.console.MiraiLoggerFactoryImpl"
+        MiraiLogger.Factory::class.qualifiedName!!,
+        MiraiLoggerFactoryImpl::class.qualifiedName!!
     ) {
-        println("call registered")
         MiraiLoggerFactoryImpl
     }
 }
