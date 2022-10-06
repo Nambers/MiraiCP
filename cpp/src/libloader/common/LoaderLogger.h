@@ -18,17 +18,16 @@
 #define MIRAICP_PRO_LOADERLOGGER_H
 
 
-#include <jni.h>
 #include <string>
 #include <vector>
 
-
+struct _jmethodID;
 namespace LibLoader {
     class LoaderLogger {
         using string = std::string;
 
     public:
-        jmethodID logMethod = nullptr;
+        _jmethodID *logMethod;
 
         void init();
 

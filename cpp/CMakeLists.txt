@@ -45,7 +45,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
 file(GLOB MIRAICP_CPP_PATH ${SRC_PATH}/include/*.cpp)
 file(GLOB MIRAICP_COMMON_PATH ${SRC_PATH}/common/*.cpp)
-file(GLOB LOADER_PATH ${SRC_PATH}/libloader/*.cpp)
 option(GOOGLE_TEST "GOOGLE_TEST" ON)
 
 # -- automatic add include --
@@ -130,7 +129,6 @@ endif (UNIX)
 
 add_subdirectory(src/include)
 add_subdirectory(src/libloader)
-add_subdirectory(src/native)
 if (GOOGLE_TEST)
     message(STATUS "loading test")
     add_subdirectory(src/tests)

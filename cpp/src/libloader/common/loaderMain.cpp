@@ -15,7 +15,6 @@
 //
 
 #include "loaderMain.h"
-#include "JNIEnvManager.h"
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"

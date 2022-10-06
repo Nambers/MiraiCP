@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "loaderTools.h"
+#include "common/loaderTools.h"
 #include <gtest/gtest.h>
 
 

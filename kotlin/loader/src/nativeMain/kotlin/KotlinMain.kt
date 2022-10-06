@@ -21,6 +21,7 @@
 package tech.eritquearcus.miraicp.loader
 
 import kotlinx.serialization.decodeFromString
+import net.mamoe.mirai.internal.initMirai
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
@@ -44,8 +45,7 @@ actual object KotlinMain {
     @OptIn(MiraiExperimentalApi::class)
     actual fun main(j: String, path: String) {
         registerFactory()
-        @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") // 必要
-        net.mamoe.mirai._MiraiInstance.set(net.mamoe.mirai.internal.MiraiImpl())
+        initMirai()
         KotlinMainData.job.start()
         val c = json.decodeFromString<CPPConfig.LoaderConfig>(j)
         KotlinMainData.loginAccount = c.accounts ?: emptyList()

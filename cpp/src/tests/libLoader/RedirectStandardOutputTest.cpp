@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "LoaderLogger.h"
+#include "common/LoaderLogger.h"
 #include "MiraiCPMacros.h"
 #include "EnvMocker.h"
 #include "redirectCout.h"
