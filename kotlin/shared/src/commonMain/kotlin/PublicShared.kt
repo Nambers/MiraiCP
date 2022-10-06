@@ -85,7 +85,7 @@ object PublicShared {
             explicitNulls = false
         }
     }
-    private val friend_cache = ArrayList<NormalMember>(0)
+    val friend_cache = ArrayList<NormalMember>(0)
     private val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     const val now_tag = "v${BuiltInConstants.version}"
 
@@ -164,42 +164,35 @@ object PublicShared {
     //发送消息部分实现 MiraiCode
 
     private suspend fun send0(message: Message, c: Config.Contact): String = withBot(c.botid) { AIbot ->
-        val r = kotlin.run {
-            when (c.type) {
-                1 -> {
-                    logger.info("Send message for(${c.id}) is $message")
-                    AIbot.getFriend(c.id) ?: let {
-                        logger.error("发送消息找不到好友，位置:K-Send()，id:${c.id}")
-                        return@withBot "EF"
-                    }
+        return when (c.type) {
+            1 -> {
+                logger.info("Send message for(${c.id}) is $message")
+                c.withFriend(AIbot, "发送消息找不到好友，位置:K-Send()，id:${c.id}") {
+                    sendWithCatch { it.sendMessage(message).source }
                 }
-                2 -> {
-                    logger.info("Send message for Group(${c.id}) is $message")
-                    AIbot.getGroup(c.id) ?: let {
-                        logger.error("发送群消息异常找不到群组，位置K-SendG，gid:${c.id}")
-                        return@withBot "EG"
-                    }
-                }
-                3 -> {
-                    logger.info("Send message for a member(${c.id}) is $message")
-                    for (a in friend_cache) {
-                        if (a.id == c.id && a.group.id == c.groupid) {
-                            return@run a
-                        }
-                    }
-                    val g = AIbot.getGroup(c.groupid) ?: let {
-                        logger.error("发送消息找不到群聊，位置K-Send()，id:${c.groupid}")
-                        return@withBot "EM"
-                    }
-                    g[c.id] ?: let {
-                        logger.error("发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupid}")
-                        return@withBot "EMM"
-                    }
-                }
-                else -> return@withBot "EA"
+
             }
+
+            2 -> {
+                logger.info("Send message for Group(${c.id}) is $message")
+                c.withGroup(AIbot, "发送群消息异常找不到群组，位置K-SendG，gid:${c.id}") {
+                    sendWithCatch { it.sendMessage(message).source }
+                }
+            }
+
+            3 -> {
+                logger.info("Send message for a member(${c.id}) is $message")
+                c.withMember(
+                    AIbot,
+                    "发送消息找不到群聊，位置K-Send()，id:${c.groupid}",
+                    "发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupid}"
+                ) { _, m ->
+                    sendWithCatch { m.sendMessage(message).source }
+                }
+            }
+
+            else -> "EA"
         }
-        sendWithCatch { r.sendMessage(message).source }
     }
 
     suspend fun sendMsg(message: String, c: Config.Contact): String = send0(message.toPlainText().toMessageChain(), c)
@@ -403,8 +396,16 @@ object PublicShared {
             return "E1"
         }
         val cc = when (c.type) {
-            1 -> bot.getFriend(c.id) ?: let { logger.error("上传语音找不到好友, id:${c.id}"); return "EF" }
-            2 -> bot.getGroup(c.id) ?: let { logger.error("上传语音找不到群聊, gid:${c.id}"); return "EG" }
+            1 -> {
+                require(c.id != null) { "id is required to upload voice" }
+                bot.getFriend(c.id) ?: let { logger.error("上传语音找不到好友, id:${c.id}"); return "EF" }
+            }
+
+            2 -> {
+                require(c.id != null) { "id is required to upload voice for group" }
+                bot.getGroup(c.id) ?: let { logger.error("上传语音找不到群聊, gid:${c.id}"); return "EG" }
+            }
+
             else -> return "EA"
         }
         return file.toExternalResource().use {
@@ -787,12 +788,6 @@ object PublicShared {
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
             //群消息
-            logger.error(
-                "a" + json.encodeToString(
-                    MessageSerializers.serializersModule.serializer(),
-                    this.message[MessageSource]!!
-                )
-            )
             event(
                 CPPEvent.GroupMessage(
                     this.group.toContact(),

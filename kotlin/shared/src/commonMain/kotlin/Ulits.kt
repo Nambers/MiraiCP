@@ -99,6 +99,7 @@ internal inline fun withFriend(bot: Bot, friendid: Long, Err: String = "", block
 }
 
 internal inline fun Config.Contact.withFriend(bot: Bot, Err: String = "", block: (Friend) -> String): String {
+    require(this.id != null) { "id required to construct a friend, please contact MiraiCP" }
     val f = bot.getFriend(this.id)
     if (f == null) {
         if (Err != "") PublicSharedData.logger.error(Err)
@@ -117,6 +118,8 @@ internal inline fun withGroup(bot: Bot, groupid: Long, Err: String = "", block: 
 }
 
 internal inline fun Config.Contact.withGroup(bot: Bot, Err: String = "", block: (Group) -> String): String {
+    require(this.id != null) { "id is required to construct a group, please contact MiraiCP" }
+    require(this.groupid != null) { "groupid id is required to construct a group, please contact MiraiCP" }
     val g = if (this.type == 2) bot.getGroup(this.id) else bot.getGroup(this.groupid)
     if (g == null) {
         if (Err != "") PublicSharedData.logger.error(Err)
@@ -144,10 +147,17 @@ internal inline fun withMember(
 internal inline fun Config.Contact.withMember(
     bot: Bot, Err1: String = "", Err2: String = "", block: (Group, NormalMember) -> String
 ): String {
+    require(this.groupid != null) { "groupid is required to construct member, plz contact MiraiCP" }
+    require(this.id != null) { "id is required to construct a member, plz contact MiraiCP" }
     val group = bot.getGroup(this.groupid)
     if (group == null) {
         if (Err1 != "") PublicSharedData.logger.error(Err1)
         return "EM"
+    }
+    for (a in PublicShared.friend_cache) {
+        if (a.id == this.id && a.group.id == this.groupid) {
+            return block(group, a)
+        }
     }
     val m = group[this.id]
     if (m == null) {
