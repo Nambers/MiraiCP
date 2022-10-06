@@ -18,15 +18,17 @@
 #include <stdio.h>
 
 extern "C" {
-    __declspec(dllexport) void Verify(const char *a, const char *b) {
-        printf("call Verify(%s, %s)\n", a, b);
-    }
+__declspec(dllexport) void
+Verify(const char *a, const char *b, const char *(*oper)(const char *), void (*log)(const char *, int)) {
+    printf("call Verify(%s, %s)aa\n", a, b);
+    log("test", 1);
+}
 
-    __declspec(dllexport) void Event(const char *a) {
-        printf("call Event(%s)\n", a);
-    }
+__declspec(dllexport) void Event(const char *a) {
+    printf("call Event(%s)\n", a);
+}
 
-    __declspec(dllexport) void PluginDisable() {
-        printf("call disable\n");
-    }
+__declspec(dllexport) void PluginDisable() {
+    printf("call disable\n");
+}
 }

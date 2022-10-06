@@ -19,6 +19,6 @@
 #define MIRAICP_PRO_MIRAICP_H
 
 void Event(const char*);
-void Verify(const char*, const char*);
+void Verify(const char*, const char*, const char* (*)(const char*), void (*)(const char*, int));
 void PluginDisable();
 #endif //MIRAICP_PRO_MIRAICP_H
