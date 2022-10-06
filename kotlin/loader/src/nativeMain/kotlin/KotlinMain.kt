@@ -43,11 +43,10 @@ actual object KotlinMain {
 
     @OptIn(MiraiExperimentalApi::class)
     actual fun main(j: String, path: String) {
+        registerFactory()
         @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") // 必要
         net.mamoe.mirai._MiraiInstance.set(net.mamoe.mirai.internal.MiraiImpl())
         KotlinMainData.job.start()
-        Console.console.println("Hihihi")
-        registerFactory()
         val c = json.decodeFromString<CPPConfig.LoaderConfig>(j)
         KotlinMainData.loginAccount = c.accounts ?: emptyList()
         if (PublicSharedData.cachePath.exists()) PublicSharedData.cachePath.deleteRecursively()
