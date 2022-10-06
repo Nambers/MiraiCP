@@ -17,13 +17,28 @@
  */
 
 package tech.eritquearcus.miraicp.shared
+import kotlinx.cinterop.*
 import tech.eritquearcus.MiraiCP.Event
 import tech.eritquearcus.MiraiCP.Verify
+import tech.eritquearcus.miraicp.shared.CPPLib.operation
+import tech.eritquearcus.miraicp.shared.CPPLib.sendLog
 
 actual object CPPLibMultiplatform {
     // libLoader eventHandler ptr address
     fun eventPtr(str: String) {
         Event(str)
+    }
+
+    private val koper = staticCFunction<CPointer<ByteVar>?, CPointer<ByteVar>?> { input ->
+        memScoped {
+            operation(input?.toKStringFromUtf8() ?: "").cstr.getPointer(this)
+        }
+    }
+
+    private val log = staticCFunction<CPointer<ByteVar>?, Int, Unit> { input, level ->
+        memScoped {
+            sendLog(input?.toKStringFromUtf8() ?: "", level)
+        }
     }
 
     actual fun init(
@@ -34,7 +49,9 @@ actual object CPPLibMultiplatform {
         if (libPath == null) {
             callback()
         } else {
-            Verify(BuiltInConstants.version, cfgPath!!)
+            memScoped{
+                Verify(BuiltInConstants.version, cfgPath!!, koper, log)
+            }
         }
     }
 }
