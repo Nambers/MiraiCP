@@ -17,24 +17,24 @@
 
 #include <cstdio>
 #include "ktInterface.h"
+#include "MiraiCPMacros.h"
 
 LoaderAPIs::LogFunc LoaderAPIs::log = nullptr;
 LoaderAPIs::OperFunc LoaderAPIs::oper = nullptr;
 extern "C" {
-__declspec(dllexport) void
-Verify(const char *a, const char *b, const char *(*oper)(const char *), void (*log)(const char *, int)) {
+MIRAICP_EXPORT void Verify(const char *a, const char *b, const char *(*oper)(const char *), void (*log)(const char *, int)) {
     printf("call Verify(%s, %s)\n", a, b);
     LoaderAPIs::log = log;
     LoaderAPIs::oper = oper;
     VerifyImpl(a, b);
 }
 
-__declspec(dllexport) void Event(const char *a) {
+MIRAICP_EXPORT void Event(const char *a) {
     printf("call Event(%s)\n", a);
     EventImpl(a);
 }
 
-__declspec(dllexport) void PluginDisable() {
+MIRAICP_EXPORT void PluginDisable() {
     PluginDisableImpl();
 }
 }
