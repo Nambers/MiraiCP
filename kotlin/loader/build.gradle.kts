@@ -18,7 +18,6 @@
 import Version.jansi
 import Version.jline
 import Version.`kotlinx-coroutines-core`
-import Version.`ktor-ulits`
 import Version.`mirai-core`
 import Version.`mirai-logging`
 import Version.miraiCP
@@ -58,7 +57,6 @@ kotlin {
                 implementation(project(":utils"))
                 implementation(`mirai-core`)
                 implementation(`kotlinx-coroutines-core`)
-                implementation(`ktor-ulits`)
             }
         }
 
