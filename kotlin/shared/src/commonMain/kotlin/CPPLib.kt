@@ -101,7 +101,7 @@ object CPPLib {
 
                 2 -> {
                     PublicShared.publishOfflineAnnouncement(
-                        i, json.decodeFromString<Config.BriefOfflineA>(source!!)
+                        i, json.decodeFromString(source!!)
                     )
                 }
 
@@ -230,7 +230,7 @@ object CPPLib {
                     root.identify!!, root.source
                 )
                 /// 定时任务
-//                Operation_code.Timer.ordinal -> PublicShared.scheduling(root.time!!, root.msg!!)
+                Operation_code.Timer.ordinal -> PublicShared.scheduling(root.time!!, root.msg!!)
                 /// 发送戳一戳
                 Operation_code.Nudge.ordinal -> PublicShared.sendNudge(
                     contact(root.contactSource!!)

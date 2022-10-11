@@ -44,6 +44,12 @@ actual object KotlinMain {
 
     @OptIn(MiraiExperimentalApi::class)
     actual fun main(j: String, path: String) {
+        // import net.mamoe.mirai.utils.setSystemProp
+//        setSystemProp("mirai.network.handler.cancellation.trace", "true")
+//        setSystemProp("mirai.network.show.all.components", "true")
+//        setSystemProp("mirai.network.packet.logger", "true")
+//        setSystemProp("mirai.network.show.packet.details", "true")
+//        setSystemProp("mirai.jce.deserializer.debug", "true")
         registerFactory()
         initMirai()
         KotlinMainData.job.start()

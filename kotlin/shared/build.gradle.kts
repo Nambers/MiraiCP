@@ -16,8 +16,8 @@
  *
  */
 import Version.`kotlinx-coroutines-core`
-import Version.`ktor-ulits`
 import Version.`mirai-core-api`
+import Version.`mirai-core-utils`
 
 plugins {
     kotlin("multiplatform")
@@ -55,8 +55,8 @@ kotlin {
             dependencies {
                 implementation(project(":utils"))
                 implementation(`mirai-core-api`)
+                implementation(`mirai-core-utils`)
                 implementation(`kotlinx-coroutines-core`)
-                implementation(`ktor-ulits`)
             }
             apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
         }

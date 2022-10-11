@@ -23,8 +23,9 @@ object Version {
     const val shadowJar = "7.1.2"
     const val `kotlinx-coroutines-core` = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 
-    const val mirai = "2.13.0-dev-d32a8a56"
+    const val mirai = "2.13.0-RC2-dev-7eac75bb"
     const val `mirai-core-api` = "net.mamoe:mirai-core-api:${mirai}"
+    const val `mirai-core-utils` = "net.mamoe:mirai-core-utils:${mirai}"
     const val `mirai-console` = "net.mamoe:mirai-console:${mirai}"
     const val `mirai-core` = "net.mamoe:mirai-core:${mirai}"
     const val `mirai-logging` = "net.mamoe:mirai-logging-log4j2:${mirai}"
@@ -32,6 +33,5 @@ object Version {
     const val mavenCenterPublish = "1.0.0"
     const val jline = "org.jline:jline:3.21.0"
     const val jansi = "org.fusesource.jansi:jansi:2.4.0"
-    const val `ktor-ulits` = "io.ktor:ktor-utils:2.1.1"
     const val mordant = "com.github.ajalt.mordant:mordant:2.0.0-beta7"
 }

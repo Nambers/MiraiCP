@@ -18,7 +18,6 @@
 
 package tech.eritquearcus.miraicp.shared
 
-import io.ktor.utils.io.core.*
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
@@ -53,6 +52,7 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.OverFileSizeMaxException
+import net.mamoe.mirai.utils.use
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 import tech.eritquearcus.miraicp.uilts.MiraiCPFile
