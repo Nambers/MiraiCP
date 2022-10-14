@@ -147,7 +147,7 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::TimeOutEvent: {
-                Event::broadcast(TimeOutEvent(j["msg"].get<std::string>()));
+                Event::broadcast(TimeOutEvent(Tools::json_stringmover(j, "msg")));
                 break;
             }
             case eventTypes::BotOnlineEvent: {
@@ -155,14 +155,11 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::NudgeEvent: {
-                Event::broadcast(NudgeEvent(Contact::deserializeToPointer(j["from"]),
-                                            Contact::deserializeToPointer(j["target"]),
-                                            Contact::deserializeToPointer(j["subject"]),
-                                            j["botid"]));
+                Event::broadcast(NudgeEvent(std::move(j)));
                 break;
             }
             case eventTypes::BotLeaveEvent: {
-                Event::broadcast(BotLeaveEvent(j["groupid"], j["botid"], j["type"], j["operatorid"]));
+                Event::broadcast(BotLeaveEvent(std::move(j)));
                 break;
             }
             case eventTypes::MemberJoinRequestEvent: {
@@ -224,5 +221,17 @@ namespace MiraiCP {
                                                                      sender(Contact::deserialize<Member>(Tools::json_jsonmover(j, "member"))),
                                                                      message(MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>()))
                                                                                      .plus(MessageSource::deserializeFromString(j["source"]))) {
+    }
+    NudgeEvent::NudgeEvent(nlohmann::json j) : BotEvent(j["botid"]),
+                                               from(Contact::deserializeToPointer(Tools::json_jsonmover(j, "from"))),
+                                               target(Contact::deserializeToPointer(Tools::json_jsonmover(j, "target"))),
+                                               subject(Contact::deserializeToPointer(Tools::json_jsonmover(j, "subject"))) {
+    }
+    BotLeaveEvent::BotLeaveEvent(nlohmann::json j) : BotEvent(j["botid"]),
+                                                     groupid(j["groupid"]), type(j["type"].get<EventType>()) {
+        QQID val = j["operatorid"];
+        if (val != -1) {
+            this->operatorId = val;
+        }
     }
 } // namespace MiraiCP

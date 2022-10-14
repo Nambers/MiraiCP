@@ -566,11 +566,12 @@ namespace MiraiCP {
         /// 发送的环境, 可能为Group / Friend
         std::shared_ptr<Contact> subject;
 
-        NudgeEvent(std::shared_ptr<Contact> c, std::shared_ptr<Contact> target, std::shared_ptr<Contact> subject, QQID botid)
-            : BotEvent(botid),
-              from(std::move(c)),
-              target(std::move(target)),
-              subject(std::move(subject)) {}
+//        NudgeEvent(std::shared_ptr<Contact> c, std::shared_ptr<Contact> target, std::shared_ptr<Contact> subject, QQID botid)
+//            : BotEvent(botid),
+//              from(std::move(c)),
+//              target(std::move(target)),
+//              subject(std::move(subject)) {}
+        explicit NudgeEvent(nlohmann::json j);
     };
 
     /// 机器人退群事件
@@ -599,13 +600,15 @@ namespace MiraiCP {
         EventType type;
         std::optional<QQID> operatorId = std::nullopt;
 
-        BotLeaveEvent(QQID ingroupid, QQID botid, int type, QQID operatorId)
-            : BotEvent(botid),
-              groupid(ingroupid), type(static_cast<EventType>(type)) {
-            if (operatorId != -1) {
-                this->operatorId = operatorId;
-            }
-        }
+        //        BotLeaveEvent(QQID ingroupid, QQID botid, int type, QQID operatorId)
+        //            : BotEvent(botid),
+        //              groupid(ingroupid), type(static_cast<EventType>(type)) {
+        //            if (operatorId != -1) {
+        //                this->operatorId = operatorId;
+        //            }
+        //        }
+
+        explicit BotLeaveEvent(nlohmann::json j);
     };
 
     /// 申请加群事件, bot需为管理员或者群主
