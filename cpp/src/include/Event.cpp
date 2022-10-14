@@ -88,6 +88,7 @@ namespace MiraiCP {
         std::string re = KtOperation::ktOperation(KtOperation::Nfroperation, std::move(j));
         if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
     }
+
     NewFriendRequestEvent::NewFriendRequestEvent(nlohmann::json j) : BotEvent(j["source"]["botid"]),
                                                                      source(Tools::json_stringmover(j, "request")),
                                                                      fromid(j["source"]["fromid"]),
@@ -133,33 +134,16 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::RecallEvent: {
-                Event::broadcast<RecallEvent>(RecallEvent(
-                        j["botid"],
-                        j["etype"],
-                        j["time"],
-                        j["authorid"],
-                        j["operatorid"],
-                        j["ids"],
-                        j["internalids"],
-                        j["groupid"]));
+                Event::broadcast(RecallEvent(std::move(j)));
                 break;
             }
             case eventTypes::BotJoinGroupEvent: {
-                Event::broadcast<BotJoinGroupEvent>(BotJoinGroupEvent(
-                        j["group"]["botid"],
-                        Contact::deserialize<Group>(j["group"]),
-                        j["inviterid"],
-                        j["etype"]));
+                Event::broadcast(BotJoinGroupEvent(std::move(j)));
                 break;
             }
                 ////////////////
             case eventTypes::GroupTempMessageEvent: {
-                Event::broadcast<GroupTempMessageEvent>(GroupTempMessageEvent(
-                        j["group"]["botid"],
-                        Contact::deserialize<Group>(j["group"]),
-                        Contact::deserialize<Member>(j["member"]),
-                        MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>()))
-                                .plus(MessageSource::deserializeFromString(j["source"]))));
+                Event::broadcast(GroupTempMessageEvent(std::move(j)));
                 break;
             }
             case eventTypes::TimeOutEvent: {
@@ -220,5 +204,25 @@ namespace MiraiCP {
                                                            group(Contact::deserialize<Group>(Tools::json_jsonmover(j, "group"))),
                                                            operaterid(j["operatorid"]),
                                                            type(j["leavetype"]) {
+    }
+    RecallEvent::RecallEvent(nlohmann::json j) : BotEvent(j["botid"]),
+                                                 type(j["etype"]),
+                                                 time(j["time"]),
+                                                 authorid(j["authorid"]),
+                                                 operatorid(j["operatorid"]),
+                                                 ids(Tools::json_stringmover(j, "ids")),
+                                                 internalids(Tools::json_stringmover(j, "internalids")),
+                                                 groupid(j["groupid"]) {
+    }
+    BotJoinGroupEvent::BotJoinGroupEvent(nlohmann::json j) : BotEvent(j["group"]["botid"]),
+                                                             group(Contact::deserialize<Group>(Tools::json_jsonmover(j, "group"))),
+                                                             inviterid(j["inviterid"]),
+                                                             type(j["etype"]) {
+    }
+    GroupTempMessageEvent::GroupTempMessageEvent(nlohmann::json j) : BotEvent(j["group"]["botid"]),
+                                                                     group(Contact::deserialize<Group>(Tools::json_jsonmover(j, "group"))),
+                                                                     sender(Contact::deserialize<Member>(Tools::json_jsonmover(j, "member"))),
+                                                                     message(MessageChain::deserializationFromMessageSourceJson(json::parse(j["message"].get<std::string>()))
+                                                                                     .plus(MessageSource::deserializeFromString(j["source"]))) {
     }
 } // namespace MiraiCP
