@@ -102,6 +102,13 @@ namespace MiraiCP {
         KtOperation::ktOperation(KtOperation::MemberJoinRequest, std::move(j));
     }
 
+    MemberJoinRequestEvent::MemberJoinRequestEvent(nlohmann::json j) : BotEvent(j["group"]["botid"]),
+                                                                       source(j["requestData"]),
+                                                                       group(Contact::deserialize<Group>(j["group"])),
+                                                                       inviter(j["inviter"]["id"] != 0 ? std::optional<Member>(Contact::deserialize<Member>(j["inviter"])) : std::optional<Member>(std::nullopt)),
+                                                                       requesterId(j["requester"]) {
+    }
+
     void Event::incomingEvent(json j, int type) {
         switch (type) {
             case eventTypes::GroupMessageEvent: {
@@ -163,24 +170,21 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::MemberJoinRequestEvent: {
-                Group a = Contact::deserialize<Group>(j["group"]);
-                std::optional<Member> b = std::nullopt;
-                //                if (j["group"]["id"] != 0)
-                //                    a.emplace(Contact::deserialize<Group>(j["group"]));
-                if (j["inviter"]["id"] != 0)
-                    b.emplace(Contact::deserialize<Member>(j["inviter"]));
-                Event::broadcast(MemberJoinRequestEvent(a, b, a.botid(), j["requester"], j["requestData"]));
+                Event::broadcast(MemberJoinRequestEvent(std::move(j)));
                 break;
             }
             case eventTypes::MessagePreSendEvent: {
-                Event::broadcast(MessagePreSendEvent(Contact::deserializeToPointer(j["target"]), MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false), j["botid"]));
+                Event::broadcast(MessagePreSendEvent(std::move(j)));
                 break;
             }
             case eventTypes::Command: {
                 // command
-                std::shared_ptr<Contact> c;
-                if (j.contains("contact")) c = Contact::deserializeToPointer(j["contact"]);
-                CommandManager::commandManager[j["bindId"]]->onCommand(std::move(c), Bot(j["botid"]), MessageChain::deserializationFromMessageSourceJson((j.contains("message") ? j["message"].get<std::string>() : ""), false));
+                CommandManager::commandManager[j["bindId"]]->onCommand(
+                        j.contains("contact") ? Contact::deserializeToPointer(Tools::json_jsonmover(j, "contact")) : nullptr,
+                        Bot(j["botid"]),
+                        MessageChain::deserializationFromMessageSourceJson(
+                                j.contains("message") ? j["message"].get<std::string>() : "",
+                                false));
                 break;
             }
             default: {
@@ -233,5 +237,9 @@ namespace MiraiCP {
         if (val != -1) {
             this->operatorId = val;
         }
+    }
+    MessagePreSendEvent::MessagePreSendEvent(nlohmann::json j) : BotEvent(j["botid"]),
+                                                                 target(Contact::deserializeToPointer(Tools::json_jsonmover(j, "target"))),
+                                                                 message(MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false)) {
     }
 } // namespace MiraiCP
