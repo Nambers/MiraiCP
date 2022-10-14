@@ -88,6 +88,13 @@ namespace MiraiCP {
         std::string re = KtOperation::ktOperation(KtOperation::Nfroperation, std::move(j));
         if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
     }
+    NewFriendRequestEvent::NewFriendRequestEvent(nlohmann::json j) : BotEvent(j["source"]["botid"]),
+                                                                     source(Tools::json_stringmover(j, "request")),
+                                                                     fromid(j["source"]["fromid"]),
+                                                                     fromgroupid(j["source"]["fromgroupid"]),
+                                                                     nick(Tools::json_stringmover(j["source"], "fromnick")),
+                                                                     message(Tools::json_stringmover(j["source"], "message")) {
+    }
 
     void MemberJoinRequestEvent::operate(std::string_view s, QQID botid, bool sign, const std::string &msg) {
         nlohmann::json j{{"source", s}, {"botid", botid}, {"sign", sign}, {"msg", msg}};
@@ -113,34 +120,16 @@ namespace MiraiCP {
             }
             case eventTypes::NewFriendRequestEvent: {
                 //好友
-                Event::broadcast<NewFriendRequestEvent>(
-                        NewFriendRequestEvent(
-                                j["source"]["botid"],
-                                j["request"],
-                                j["source"]["fromid"],
-                                j["source"]["fromgroupid"],
-                                j["source"]["fromnick"],
-                                j["source"]["message"]));
+                Event::broadcast(NewFriendRequestEvent(std::move(j)));
                 break;
             }
             case eventTypes::MemberJoinEvent: { //新成员加入
-                Event::broadcast<MemberJoinEvent>(
-                        MemberJoinEvent(
-                                j["group"]["botid"],
-                                j["jointype"],
-                                Contact::deserialize<Member>(j["member"]),
-                                Contact::deserialize<Group>(j["group"]),
-                                j["inviterid"]));
+                Event::broadcast(MemberJoinEvent(std::move(j)));
                 break;
             }
             case eventTypes::MemberLeaveEvent: {
                 //群成员退出
-                Event::broadcast<MemberLeaveEvent>(MemberLeaveEvent(
-                        j["group"]["botid"],
-                        j["memberid"],
-                        Contact::deserialize<Group>(j["group"]),
-                        j["operatorid"],
-                        j["leavetype"]));
+                Event::broadcast(MemberLeaveEvent(std::move(j)));
                 break;
             }
             case eventTypes::RecallEvent: {
@@ -217,5 +206,19 @@ namespace MiraiCP {
                 throw APIException("Unreachable code", MIRAICP_EXCEPTION_WHERE);
             }
         }
+    }
+
+    MemberJoinEvent::MemberJoinEvent(nlohmann::json j) : BotEvent(j["group"]["botid"]),
+                                                         type(joinType(j["jointype"].get<int>())),
+                                                         member(Contact::deserialize<Member>(Tools::json_jsonmover(j, "member"))),
+                                                         group(Contact::deserialize<Group>(Tools::json_jsonmover(j, "group"))),
+                                                         inviterid(j["inviterid"]) {
+    }
+
+    MemberLeaveEvent::MemberLeaveEvent(nlohmann::json j) : BotEvent(j["group"]["botid"]),
+                                                           memberid(j["memberid"]),
+                                                           group(Contact::deserialize<Group>(Tools::json_jsonmover(j, "group"))),
+                                                           operaterid(j["operatorid"]),
+                                                           type(j["leavetype"]) {
     }
 } // namespace MiraiCP
