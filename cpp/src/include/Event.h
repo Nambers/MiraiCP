@@ -298,18 +298,19 @@ namespace MiraiCP {
          * @param nick 对方昵称
          * @param message 申请理由
          */
-        NewFriendRequestEvent(QQID botid,
-                              std::string source,
-                              QQID fromid,
-                              QQID fromgroupid,
-                              std::string nick,
-                              std::string message)
-            : BotEvent(botid),
-              source(std::move(source)),
-              fromid(fromid),
-              fromgroupid(fromgroupid),
-              nick(std::move(nick)),
-              message(std::move(message)) {}
+        //        NewFriendRequestEvent(QQID botid,
+        //                              std::string source,
+        //                              QQID fromid,
+        //                              QQID fromgroupid,
+        //                              std::string nick,
+        //                              std::string message)
+        //            : BotEvent(botid),
+        //              source(std::move(source)),
+        //              fromid(fromid),
+        //              fromgroupid(fromgroupid),
+        //              nick(std::move(nick)),
+        //              message(std::move(message)) {}
+        explicit NewFriendRequestEvent(nlohmann::json j);
     };
 
     /// 新群成员加入
@@ -349,10 +350,11 @@ namespace MiraiCP {
          * @param group 群组
          * @param inviterid 邀请群成员id，如果不存在和member id参数一致
          */
-        MemberJoinEvent(QQID botid, int type, const Member &member, const Group &group,
-                        QQID inviterid) : BotEvent(botid), type(joinType(type)), member(member),
-                                          group(group),
-                                          inviterid(inviterid) {}
+        //        MemberJoinEvent(QQID botid, int type, const Member &member, const Group &group,
+        //                        QQID inviterid) : BotEvent(botid), type(joinType(type)), member(member),
+        //                                          group(group),
+        //                                          inviterid(inviterid) {}
+        explicit MemberJoinEvent(nlohmann::json j);
     };
 
     /// 群成员离开
@@ -383,11 +385,12 @@ namespace MiraiCP {
          * @param group 群
          * @param operaterid 操作人id, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
          */
-        MemberLeaveEvent(QQID botid, QQID memberid,
-                         Group group,
-                         QQID operaterid, int type) : BotEvent(botid), memberid(memberid),
-                                                      group(std::move(group)),
-                                                      operaterid(operaterid), type(type) {}
+        //        MemberLeaveEvent(QQID botid, QQID memberid,
+        //                         Group group,
+        //                         QQID operaterid, int type) : BotEvent(botid), memberid(memberid),
+        //                                                      group(std::move(group)),
+        //                                                      operaterid(operaterid), type(type) {}
+        explicit MemberLeaveEvent(nlohmann::json j);
     };
 
     /// 撤回信息
