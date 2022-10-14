@@ -46,7 +46,7 @@ namespace MiraiCP {
         /// @param a vector
         /// @return string
         template<typename T>
-        std::string VectorToString(const std::vector<T> &a, const std::string &separator = ",") {
+        inline std::string VectorToString(const std::vector<T> &a, const std::string &separator = ",") {
             std::stringstream ss;
             for (auto it = a.begin(); it != a.end(); ++it) {
                 if (it != a.begin()) ss << separator;
@@ -81,13 +81,24 @@ namespace MiraiCP {
         /// from https://www.zhihu.com/question/36642771, delim is regex(ignore last `+`)
         MIRAICP_EXPORT std::vector<std::string> split(const std::string &text, const std::string &delim);
 
+        /// @brief 从json中移动数据，被移动的数据使用后就不再存在，主要用于std::string和json
         template<typename T>
-        T json_mover(nlohmann::json &j, const std::string &key) {
+        inline T json_mover(nlohmann::json &j, const std::string &key) {
             return std::move(j[key].get_ref<T &>());
+        }
+
+        /// @brief 从json中移动数据，被移动的数据使用后就不再存在，json特化
+        template<>
+        inline nlohmann::json json_mover(nlohmann::json &j, const std::string &key) {
+            return std::move(j[key]);
         }
 
         inline std::string json_stringmover(nlohmann::json &j, const std::string &key) {
             return json_mover<std::string>(j, key);
+        }
+
+        inline nlohmann::json json_jsonmover(nlohmann::json &j, const std::string &key){
+            return json_mover<nlohmann::json>(j, key);
         }
 
         /// @brief id pair工具结构体声明，仅内部使用
