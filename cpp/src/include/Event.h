@@ -82,7 +82,7 @@ namespace MiraiCP {
     };
 
     /// MessageEvent类型的抽象接口，用于Message类型多态实现
-    class MessageEvent {
+    class IMessageEvent {
     public:
         /// 获取当前聊天，可能是群，私聊，或群临时回话
         virtual Contact *chat() = 0;
@@ -98,7 +98,7 @@ namespace MiraiCP {
      * @brief 群消息事件声明
      * @doxygenEg{1003, group.cpp, 取群聊下一条消息}
      */
-    class GroupMessageEvent : public BotEvent<GroupMessageEvent>, public MessageEvent {
+    class GroupMessageEvent : public BotEvent<GroupMessageEvent>, public IMessageEvent {
     public:
         static eventTypes::Types get_event_type() {
             return eventTypes::Types::GroupMessageEvent;
@@ -158,7 +158,7 @@ namespace MiraiCP {
      * @detail 私聊消息事件类声明
      * @doxygenEg{1004, group.cpp, 取好友下一条信息}
      */
-    class PrivateMessageEvent : public BotEvent<PrivateMessageEvent>, public MessageEvent {
+    class PrivateMessageEvent : public BotEvent<PrivateMessageEvent>, public IMessageEvent {
     public:
         static eventTypes::Types get_event_type() {
             return eventTypes::Types::PrivateMessageEvent;
@@ -470,7 +470,7 @@ namespace MiraiCP {
     };
 
     /// 群临时会话
-    class GroupTempMessageEvent : public BotEvent<GroupTempMessageEvent>, public MessageEvent {
+    class GroupTempMessageEvent : public BotEvent<GroupTempMessageEvent>, public IMessageEvent {
     public:
         static eventTypes::Types get_event_type() {
             return eventTypes::Types::GroupTempMessageEvent;
