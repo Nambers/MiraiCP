@@ -427,12 +427,13 @@ namespace MiraiCP {
          * @param internalids 消息源internalids
          * @param groupid
          */
-        RecallEvent(QQID botid, int type, int time, QQID authorid,
-                    QQID operatorid, std::string ids, std::string internalids,
-                    QQID groupid) : BotEvent(botid), type(type), time(time), authorid(authorid),
-                                    operatorid(operatorid), ids(std::move(ids)),
-                                    internalids(std::move(internalids)),
-                                    groupid(groupid) {}
+        //        RecallEvent(QQID botid, int type, int time, QQID authorid,
+        //                    QQID operatorid, std::string ids, std::string internalids,
+        //                    QQID groupid) : BotEvent(botid), type(type), time(time), authorid(authorid),
+        //                                    operatorid(operatorid), ids(std::move(ids)),
+        //                                    internalids(std::move(internalids)),
+        //                                    groupid(groupid) {}
+        explicit RecallEvent(nlohmann::json j);
     };
 
     /// 机器人进入某群
@@ -457,14 +458,15 @@ namespace MiraiCP {
          * @param group 加入的群
          * @param inviter 邀请人
          */
-        BotJoinGroupEvent(QQID botid,
-                          Group group,
-                          QQID inviter,
-                          int type)
-            : BotEvent(botid),
-              group(std::move(group)),
-              inviterid(inviter),
-              type(type) {}
+        //        BotJoinGroupEvent(QQID botid,
+        //                          Group group,
+        //                          QQID inviter,
+        //                          int type)
+        //            : BotEvent(botid),
+        //              group(std::move(group)),
+        //              inviterid(inviter),
+        //              type(type) {}
+        explicit BotJoinGroupEvent(nlohmann::json j);
     };
 
     /// 群临时会话
@@ -490,11 +492,12 @@ namespace MiraiCP {
          * @param message 消息
          * @param messageSource 消息源
          */
-        GroupTempMessageEvent(QQID botid, Group group, Member sender,
-                              MessageChain message) : BotEvent(botid),
-                                                      group(std::move(group)),
-                                                      sender(std::move(sender)),
-                                                      message(std::move(message)) {}
+        //        GroupTempMessageEvent(QQID botid, Group group, Member sender,
+        //                              MessageChain message) : BotEvent(botid),
+        //                                                      group(std::move(group)),
+        //                                                      sender(std::move(sender)),
+        //                                                      message(std::move(message)) {}
+        explicit GroupTempMessageEvent(nlohmann::json j);
 
     public:
         Contact *chat() override {
