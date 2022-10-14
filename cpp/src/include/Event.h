@@ -566,11 +566,11 @@ namespace MiraiCP {
         /// 发送的环境, 可能为Group / Friend
         std::shared_ptr<Contact> subject;
 
-//        NudgeEvent(std::shared_ptr<Contact> c, std::shared_ptr<Contact> target, std::shared_ptr<Contact> subject, QQID botid)
-//            : BotEvent(botid),
-//              from(std::move(c)),
-//              target(std::move(target)),
-//              subject(std::move(subject)) {}
+        //        NudgeEvent(std::shared_ptr<Contact> c, std::shared_ptr<Contact> target, std::shared_ptr<Contact> subject, QQID botid)
+        //            : BotEvent(botid),
+        //              from(std::move(c)),
+        //              target(std::move(target)),
+        //              subject(std::move(subject)) {}
         explicit NudgeEvent(nlohmann::json j);
     };
 
@@ -633,18 +633,18 @@ namespace MiraiCP {
 
     public:
         /// 申请的群, 如果不存在就表明广播这个事件的时候机器人已经退出该群
-        std::optional<Group> group;
+        Group group;
         /// 邀请人, 如果不存在表明这个邀请人退出了群或没有邀请人为主动进群
         std::optional<Member> inviter;
         /// 申请人id
         QQID requesterId;
 
     public:
-        MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, QQID requesterId,
-                               std::string source)
-            : BotEvent(botid), source(std::move(source)), group(std::move(g)), inviter(std::move(i)),
-              requesterId(requesterId){};
-
+        //        MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, QQID requesterId,
+        //                               std::string source)
+        //            : BotEvent(botid), source(std::move(source)), group(std::move(g)), inviter(std::move(i)),
+        //              requesterId(requesterId){};
+        explicit MemberJoinRequestEvent(nlohmann::json j);
         /// 通过
         void accept() {
             operate(this->source, this->bot.id(), true);
@@ -672,7 +672,8 @@ namespace MiraiCP {
         /// 消息
         MessageChain message;
 
-        explicit MessagePreSendEvent(std::shared_ptr<Contact> c, MessageChain mc, QQID botid) : BotEvent(botid), target(std::move(c)), message(std::move(mc)) {}
+        //MessagePreSendEvent(std::shared_ptr<Contact> c, MessageChain mc, QQID botid) : BotEvent(botid), target(std::move(c)), message(std::move(mc)) {}
+        explicit MessagePreSendEvent(nlohmann::json j);
     };
 
     class MiraiCPExceptionBase; // forward declaration
