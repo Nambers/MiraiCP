@@ -22,14 +22,19 @@
 #include <shared_mutex>
 
 namespace MiraiCP {
+    /// 声明 Contact 类数据安全锁接口以及部分实现的抽象类
     struct IMiraiData {
     private:
+        /// 锁
         struct MiraiDataLocker final {
+            /// 该数据是否上锁
             std::shared_mutex _mtx;
+            /// 该数据是否已经初始化
             std::atomic<bool> _inited = false;
         };
 
     protected:
+        /// 锁实例
         mutable MiraiDataLocker Locker;
 
     public:
@@ -38,53 +43,43 @@ namespace MiraiCP {
         virtual ~IMiraiData() = default;
 
     public:
-        /*!
-         * @brief 转为json，内部由子类实现，带锁
-         */
+        /// 转为json, 由子类实现, 多线程安全(带锁)
         nlohmann::json toJson() const;
 
     protected:
-        /*!
-         * @brief 将json数据读入，由子类实现，无锁
-         */
+        /// 读入json数据, 由子类实现, 无锁
         virtual void deserialize(nlohmann::json in_json) = 0;
 
-        /*!
-         * @brief 转为json，由子类实现，无锁
-         */
+        /// 转为json, 由子类实现, 无锁
         virtual nlohmann::json internalToJson() const = 0;
 
-        /*!
-         * @brief 转为json，由internalToJson() 的具体实现决定，无锁
+        /**
+         * 转为json，internalToJson 的具体实现决定, 无锁
+         * @see internalToJson
          */
         nlohmann::json internalToString() const;
 
     public:
-        /*!
-         * @brief 请求一次refresh，但不一定会进行
-         */
+        /// 请求一次刷新数据, 但不保证会进行
         void requestRefresh();
 
         /*!
-         * @brief 强制下次request_refresh()时进行refresh，
-         * @note 调用该函数本身不会进行refresh
+         * @brief 确保下次调用 requestRefresh 时刷新数据
+         * @note 调用该函数本身不会刷新数据
          * @see requestRefresh
          */
         void forceRefreshNextTime();
 
-        /*!
-         * @brief 序列化为string，带锁
-         */
+        /// 序列化为string, 带锁
         std::string toString() const;
 
+        /// 获取锁
         std::shared_mutex &getMutex() {
             return Locker._mtx;
         }
 
     private:
-        /*!
-         * @brief 刷新数据，由子类实现
-         */
+        /// 刷新数据, 由子类实现
         virtual void refreshInfo() = 0;
     };
 } // namespace MiraiCP

@@ -34,14 +34,25 @@ namespace MiraiCP {
         std::shared_ptr<InternalBot> InternalData;
 
     public:
-        /// 用id构造Bot对象
+        /**
+         * 用 id 构造 Bot 对象
+         * @param in_id Bot 的 qq id
+         */
         explicit Bot(QQID in_id);
 
     public:
-        /// 取好友
+        /**
+         * 取 Bot 下对应 id 的好友
+         * @param i 好友的 qq id
+         * @return 好友对象
+         */
         Friend getFriend(QQID i) const;
 
-        /// 取群聊
+        /**
+         * 取群聊
+         * @param groupid 群聊的 id
+         * @return 群聊对象
+         */
         Group getGroup(QQID groupid) const;
 
         /// @brief 昵称
@@ -63,6 +74,7 @@ namespace MiraiCP {
         /// @brief 群列表string形式返回，利于保存
         std::string GroupListToString() const;
 
+        /// Bot 的 id
         QQID id() const;
 
         bool operator==(const Bot &b) const {

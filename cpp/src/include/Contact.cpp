@@ -124,7 +124,7 @@ namespace MiraiCP {
         //            j["botid"] = botid();
     }
 
-    nlohmann::json IContactData::getSign() const {
+    nlohmann::json IContactData::getQuoteSign() const {
         return {{"MiraiCode", true}};
     }
 
@@ -138,15 +138,17 @@ namespace MiraiCP {
         return result;
     }
 
-    nlohmann::json GroupRelatedData::getSign() const {
-        auto ans = Super::getSign();
+    nlohmann::json GroupRelatedData::getQuoteSign() const {
+        auto ans = Super::getQuoteSign();
         ans["groupid"] = _groupid;
         return ans;
     }
 
     MessageSource Contact::quoteAndSend0(std::string msg, const MessageSource &ms) {
-        json sign = InternalData->getSign();
-        json obj{{"messageSource", ms.serializeToString()}, {"msg", std::move(msg)}, {"sign", sign.dump()}};
+        json sign = InternalData->getQuoteSign();
+        json obj{{"messageSource", ms.serializeToString()},
+                 {"msg",           std::move(msg)},
+                 {"sign",          sign.dump()}};
         std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, std::move(obj));
         MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
