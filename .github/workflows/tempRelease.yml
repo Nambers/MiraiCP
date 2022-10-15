@@ -99,8 +99,6 @@ jobs:
       run: chmod -R 777 *
     - name: Build plugin
       run:  cd ./main/kotlin/ && ./gradlew MiraiCP-plugin:buildPlugin --warning-mode all --info --stacktrace
-    - name: Build core
-      run:  cd ./main/kotlin/ && ./gradlew MiraiCP-core:shadowJar --warning-mode all --info --stacktrace
     - name: Build loader
       run:  cd ./main/kotlin/ && ./gradlew MiraiCP-loader:shadowJar --warning-mode all --info --stacktrace
     - name: configure
@@ -111,7 +109,7 @@ jobs:
     - name: build with gcc
       run: cd ./main/cpp/build && make generateSingleHeaders
     - name: moveCPP
-      run: rm -rf ./tr/${{ github.event.inputs.v }} && mkdir ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/src/single_include/MiraiCP/MiraiCP.hpp" ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/src/single_include/MiraiCP/MiraiCP.cpp" ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/src/miraicp-core/core.cpp" ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/src/miraicp-core/core.h" ./tr/${{ github.event.inputs.v }}
+      run: rm -rf ./tr/${{ github.event.inputs.v }} && mkdir ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/src/single_include/MiraiCP/MiraiCP.hpp" ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/src/single_include/MiraiCP/MiraiCP.cpp" ./tr/${{ github.event.inputs.v }}
     - name: moveKt
       run: ls -1 ./main/kotlin/loader/build/libs/MiraiCP-loader-*.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} && ls -1 ./main/kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai2.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} && ls -1 ./main/kotlin/core/build/libs/MiraiCP-core-*.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }}
     #name: print
