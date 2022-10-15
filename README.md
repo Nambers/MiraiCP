@@ -20,7 +20,7 @@
   * [特性](#特性)
   * [CI Test status](#ci-test-status)
 * [使用声明](#使用声明)
-* [使用流程:](#使用流程)
+* [使用流程](#使用流程)
 * [更新方式](#更新方式)
   * [直接拉取](#直接拉取)
   * [手动替换](#手动替换)
@@ -100,9 +100,9 @@
 可直接在模板`clone`下来的文件夹中`git stash`, `git fetch`, `git pull`, `git stash pop` 直接从上游拉取代码, 然后再在本项目的`release`中下载最新对应的jar组件和中间件替换旧的
 
 ## 手动替换
-0. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载loader/plugin/core的jar文件和中间件并替换
+0. 从[最新release](https://github.com/Nambers/MiraiCP/releases) 中下载loader/plugin的jar文件和中间件并替换
 
-1. 从各自的模板项目中下载 `MiraiCP.hpp`, `MiraiCP.cpp`, 以及如果是`MiraiCP-core`项目的`core.h`, `core.cpp`, 替换原本的文件
+1. 从各自的模板项目中下载 `MiraiCP.hpp`, `MiraiCP.cpp`, 替换原本的文件
 
 # 交流方式
 
