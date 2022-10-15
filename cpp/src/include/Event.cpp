@@ -143,7 +143,7 @@ namespace MiraiCP {
     BotLeaveEvent::BotLeaveEvent(nlohmann::json j) : BotEvent(j["botid"]),
                                                      groupid(j["groupid"]), type(j["type"].get<EventType>()) {
         QQID val = j["operatorid"];
-        if (val != -1) {
+        if (val != (QQID) -1) {
             this->operatorId = val;
         }
     }

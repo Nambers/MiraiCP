@@ -26,41 +26,65 @@
 
 #include <json.hpp>
 #include <string>
-namespace MiraiCP {
 
+namespace MiraiCP {
+    /// Contact 类型
     enum ContactType {
         MIRAI_CONTACT = 0,
+        /// 好友
         MIRAI_FRIEND = 1,
+        /// 群聊
         MIRAI_GROUP = 2,
+        /// 群成员
         MIRAI_MEMBER = 3,
-        // bot
+        /// bot
         MIRAI_OTHERTYPE = 4,
     };
+
+    /// Contact 内部储存数据抽象类
     struct IContactData : public IMiraiData {
+        /// 昵称或者群名片
         std::string _nickOrNameCard;
+        /// 头像 url
         std::string _avatarUrl;
+        /// id
         QQID _id{};
+        /// 所属的 bot 的 id
         QQID _botid{};
+        /// Contact 类型
         ContactType _type = MIRAI_CONTACT;
 
-        void deserialize(nlohmann::json in_json) override;
+        void deserialize(nlohmann::json inJson) override;
 
         nlohmann::json internalToJson() const override;
 
+        /// 刷新数据
         void refreshInfo() override;
 
-        void updateJson(nlohmann::json &json_to_update) const;
+        /**
+         * 更新传入 json 中的数据, 在调用后, 原 json 数据会被更新
+         * @param jsonToUpdate 需更新的 json 数据
+         * @see nlohmann::update
+         */
+        void updateJson(nlohmann::json &jsonToUpdate) const;
 
-        // todo(Antares): 用于quoteandsend，名字重新命名一下
-        virtual nlohmann::json getSign() const;
+        /**
+         * 获取 QuoteSign
+         * @see Contact::quoteAndSend0
+         */
+        virtual nlohmann::json getQuoteSign() const;
     };
 
     struct GroupRelatedData : public IContactData {
         typedef IContactData Super;
+        /// group id
         QQID _groupid;
+
         nlohmann::json internalToJson() const override;
+
         explicit GroupRelatedData(QQID in_groupid) : _groupid(in_groupid) {}
-        nlohmann::json getSign() const override;
+
+        nlohmann::json getQuoteSign() const override;
     };
 
     /*!
@@ -72,12 +96,8 @@ namespace MiraiCP {
         friend struct ContactDataHelper;
         // attrs
     protected:
+        /// 内部数据
         std::shared_ptr<IContactData> InternalData;
-        //        QQID _groupid;
-        //        std::string _nickOrNameCard;
-        //        std::string _avatarUrl;
-        //        QQID _botid;
-        //        bool _anonymous = false;
 
     public:
         /*!
@@ -86,114 +106,85 @@ namespace MiraiCP {
          */
         Contact() = delete;
 
-        //        Contact() {
-        //            //            this->_type = MIRAI_CONTACT;
-        //            //            this->_id = 0;
-        //            //            this->_botid = 0;
-        //            //            this->_groupid = 0;
-        //            //            this->_nickOrNameCard = "";
-        //        }
-
     protected:
         explicit Contact(std::shared_ptr<IContactData> Data) {
             SetInternalData(std::move(Data));
         }
 
     public:
-        /*!
-         * @brief 初始化Contact类型
-         * @note dev: 子类应调用该函数进行初始化
-         */
-        // Contact(QQID id, QQID inbotid, ContactType tp) : _id(id), _botid(inbotid), _type(tp) {}
-
-
-        /*!
-         * @brief 构造contact类型
-         * @param type 类型
-         *  @see Contact::type()
-         * @param id ID
-         *  @see Contact::id()
-         * @param gid 是member的时候是群id，否则为0
-         *  @see Contact::groupid
-         * @param name 群名片或昵称或群名
-         *  @see Contact::name()
-         * @param botid 对应的botid
-         */
-        //        explicit Contact(int type, QQID id, QQID gid, const std::string &name, QQID botid, bool anonymous = false) {
-        //            if (type < 0 || type > 4) throw APIException("Contact::type incorrect", MIRAICP_EXCEPTION_WHERE);
-        //            this->_type = static_cast<ContactType>(type);
-        //            this->_id = id;
-        //            this->_groupid = gid;
-        //            this->_nickOrNameCard = name;
-        //            this->_botid = botid;
-        //            this->_anonymous = anonymous;
-        //        };
-
-        // destructor
+        /// 虚类 destructor
         virtual ~Contact() = default;
 
         bool operator==(const Contact &c) const {
             return this->id() == c.id();
         }
 
-        /// @brief 设置内部数据指针
-        /// @note dev: 避免直接使用 InternalData ，请使用该接口操作 InternalData 指针
+        /**
+         * @brief 设置内部数据指针
+         * @note dev: 避免直接使用 InternalData, 请使用该接口操作 InternalData 指针
+         */
         void SetInternalData(std::shared_ptr<IContactData> Data) { InternalData = std::move(Data); }
 
-        /// @brief 尝试一次数据刷新
-        /// @note 不一定会进行刷新，一般为内部调用。强制刷新请使用 forceRefreshInfo()
-        /// @see forceRefreshInfo
+        /**
+         * @brief 尝试一次数据刷新
+         * @note 不保证进行刷新, 一般为内部调用. 强制刷新请使用 forceRefreshInfo()
+         * @see forceRefreshInfo
+         */
         void refreshInfo() {
             InternalData->requestRefresh();
         }
 
-        /// @brief 强制下次refreshInfo()调用时刷新数据
-        /// @note 尽可能调用该函数，避免不必要的刷新
-        /// @see refreshInfo
+        /**
+         * @brief 强制下次 refreshInfo() 调用时刷新数据
+         * @note 尽可能调用该函数, 避免不必要的刷新
+         * @see refreshInfo
+         */
         void forceRefreshNextTime() {
             InternalData->forceRefreshNextTime();
         }
 
-        /// @brief 强制数据刷新
-        /// @note 频繁刷新可能会有性能损耗
-        /// @see refreshInfo, forceRefreshNextTime
+        /**
+         * @brief 强制数据刷新
+         * @note 频繁刷新可能会有性能损耗
+         * @see refreshInfo, forceRefreshNextTime
+         */
         void forceRefreshNow() {
             forceRefreshNextTime();
             refreshInfo();
         }
 
-        /// @brief 当前对象类型
-        /// @see ContactType
-        /// @note dev: 不会修改，不需要锁
-        ///     - ContactType::MIRAI_FRIEND 好友
-        ///     - ContactType::MIRAI_GROUP 群聊
-        ///     - ContactType::MIRAI_MEMBER 群成员
+        /**
+         * @brief 当前对象类型
+         * @see ContactType
+         * @note dev: 不会修改, 不需要锁
+         *     - ContactType::MIRAI_FRIEND 好友
+         *     - ContactType::MIRAI_GROUP 群聊
+         *     - ContactType::MIRAI_MEMBER 群成员
+         */
         ContactType type() const { return InternalData->_type; }
 
-        /// @brief id 在全部情况存在
-        /// @note dev: 不会修改，不需要锁
-        ///     - 当前type为Friend时，为好友id
-        ///     - 当前type为Group时，为群id
-        ///     - 当前type为Member时，为群成员id
+        /**
+         * @brief id 在全部情况存在
+         * @note dev: 不会修改，不需要锁
+         *      - 当前type为Friend时，为好友id
+         *      - 当前type为Group时，为群id
+         *      - 当前type为Member时，为群成员id
+         * @see MIRAI_CONTACT
+         */
         QQID id() const { return InternalData->_id; }
 
-        /// 所属bot
-        /// @note dev: 不会修改，不需要锁
+        /**
+         * 所属bot
+         * @note dev: 不会修改，不需要锁
+         */
         QQID botid() const { return InternalData->_botid; };
-
-        /// @brief 当type为3的时候存在，否则为0，可以看作补充id
-        ///     - 当前type为1(Friend)时，为0
-        ///     - 当前type为2(Group)时，为0
-        ///     - 当前type为3(Member)时，为群号
-        /// @attention 当当前type为2(Group)时，为0，不为群号，id才是群号
-        // QQID groupid() const { return this->_groupid; }
 
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsgImpl(msg.toMiraiCode(), retryTime, true, env)`
-        ShouldNotUse("Use sendMessage") MessageSource
-                sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
+//        ShouldNotUse("Use sendMessage") MessageSource
+//        sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
 
-        /*!
+        /**
          * @brief 回复并发送
          * @param s 内容
          * @detail 支持以下类型传入
@@ -208,7 +199,7 @@ namespace MiraiCP {
             return this->quoteAndSend1(s, ms);
         }
 
-        /*!
+        /**
          * @brief 回复并发送
          * @param s 内容
          * @param groupid 如果是来源于TempGroupMessage就要提供(因为要找到那个Member)
@@ -223,7 +214,7 @@ namespace MiraiCP {
             return this->quoteAndSend1(MessageChain(std::forward<T>(val)...), ms);
         }
 
-        /*!
+        /**
          * @brief 发送信息
          * @tparam T 类型
          * 支持:
@@ -238,44 +229,33 @@ namespace MiraiCP {
             return this->sendMessage(MessageChain(std::forward<T>(msg)...));
         }
 
-        /// @brief 发送一条Message
-        /// @detail 支持
-        /// - std::string: 相当于发送PlainText(str)
-        /// - MiraiCode 相当于发送反序列化MiraiCode后的
-        /// - 各种SingleMessage的派生类
-        /// - MessageChain
-        /// @param msg Message
-        /// @param retryTime 重试次数
-        /// @return MessageSource
+        /**
+         * @brief 发送一条Message
+         * @detail 支持
+         *  - std::string: 相当于发送PlainText(str)
+         *  - MiraiCode 相当于发送反序列化MiraiCode后的
+         *  - 各种SingleMessage的派生类
+         *  - MessageChain
+         *  @param msg Message
+         *  @param retryTime 重试次数
+         *  @return MessageSource
+         */
         template<typename T>
         MessageSource sendMessage(T &&msg, int retryTime = 3) {
             return this->unpackMsg(std::forward<T>(msg), retryTime);
         }
 
         /// @deprecated since v2.8.1, use `sendMessage(msg)` or `sendMsgImpl(msg, retryTime, false, env)`
-        ShouldNotUse("Use sendMessage")
-                MessageSource sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
+//        ShouldNotUse("Use sendMessage")
+//        MessageSource sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsgImpl(msg.toMiraiCode(), retryTime, false, env);`
-        ShouldNotUse("Use sendMessage")
-                MessageSource sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
+//        ShouldNotUse("Use sendMessage")
+//        MessageSource sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
 
         /// @deprecated since v2.8.1, use `sendMessage(Tools::VectorToString(std::move(msg)))` or `sendMsgImpl(Tools::VectorToString(std::move(msg)), retryTime, false, env);`
-        ShouldNotUse("Use sendMessage")
-                MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
-
-
-        //        template<class T>
-        //        T &to() {
-        //            static_assert(std::is_base_of_v<Contact, T>);
-        //            return static_cast<T &>(*this);
-        //        }
-        //
-        //        template<class T>
-        //        const T &to_const() const {
-        //            static_assert(std::is_base_of_v<Contact, T>);
-        //            return static_cast<const T &>(*this);
-        //        }
+//        ShouldNotUse("Use sendMessage")
+//        MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
 
     private: // private methods
         MessageSource quoteAndSend0(std::string msg, const MessageSource &ms);
@@ -294,28 +274,23 @@ namespace MiraiCP {
 
     public: // serialization
         /// 序列化到json对象
-        nlohmann::json toJson() const { return InternalData->toJson(); } //{
-                                                                         //            nlohmann::json j;
-                                                                         //            j["type"] = type();
-                                                                         //            j["id"] = id();
-                                                                         //            j["groupid"] = groupid();
-                                                                         //            j["nickornamecard"] = nickOrNameCard();
-                                                                         //            j["botid"] = botid();
-                                                                         //            return j;
-                                                                         //        }
-        /// 将数据序列化进已有的json对象，覆盖原有数据
+        nlohmann::json toJson() const { return InternalData->toJson(); }
+
+        /// 将数据序列化进已有的json对象, 覆盖原有数据
         void updateJson(nlohmann::json &j) const { InternalData->updateJson(j); }
 
         /// @deprecated since v2.8.1, use `this->internalToJson()`
-        ShouldNotUse("use internalToJson") nlohmann::json serialization() const;
+//        ShouldNotUse("use internalToJson") nlohmann::json serialization() const;
 
-        /// 序列化成文本，可以通过deserializationFromString反序列化，利于保存
-        /// @see Contact::fromString()
+        /**
+         * 序列化成文本, 可以通过deserializationFromString反序列化, 利于保存
+         * @see Contact::fromString()
+         */
         std::string toString() const {
             return toJson().dump();
         }
         /// @deprecated since v2.8.1, use `this->toString()`
-        ShouldNotUse("use toString") std::string serializationToString() const = delete;
+        // ShouldNotUse("use toString") std::string serializationToString() const = delete;
         /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
         // ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source);
 
@@ -327,14 +302,10 @@ namespace MiraiCP {
         template<class T>
         static T deserialize(nlohmann::json source) {
             static_assert(std::is_base_of_v<Contact, T>, "Cannot deserialize class that isn't base on Contact");
-            //            T contactObject = T();
-            //            contactObject.deserializeWriter(source);
-            //            contactObject.refreshInfo();
-            //            return contactObject;
             return T(std::move(source));
         }
 
-        /*!
+        /**
         * @brief 上传本地图片，务必要用绝对路径
         * 由于mirai要区分图片发送对象，所以使用本函数上传的图片只能发到群
         * @attention 最大支持图片大小为30MB
@@ -375,13 +346,13 @@ namespace MiraiCP {
 
     protected:
         using json = nlohmann::json;
-        typedef Contact Super;
 
-        /// @brief 获取指向的数据的裸指针，实际取内容时必须通过该函数，否则可能会取不到。
-        /// @note dev: 该函数不可以由外部调用，为了让getter正常地拥有const语义，
-        ///  该函数使用const qualifier，但返回非const的指针类型。
-        ///  若允许外部调用可能造成数据问题。
-        /// @see IMPL_GETTER, INLINE_GETTER
+        /**
+         * @brief 获取指向的数据的裸指针，实际取内容时必须通过该函数，否则可能会取不到。
+         * @note dev: 为了让getter正常地拥有const语义, 该函数不可以由外部调用.
+         *  该函数使用const qualifier, 但返回非const的指针类型. 若允许外部调用可能造成数据问题。
+         * @see IMPL_GETTER, INLINE_GETTER
+         */
         DataType *GetDataInternal() const {
             auto clz_ptr = static_cast<const ClassType *>(this);
             assert(clz_ptr->InternalData != nullptr);
