@@ -48,7 +48,7 @@ namespace MiraiCP {
     }
 
     Member::Member(QQID id, QQID groupid, QQID botid)
-        : Contact(GetMemberFromPool(id, botid, MIRAI_MEMBER)) {
+        : Contact(GetMemberFromPool(id, groupid, botid)) {
         forceRefreshNextTime();
     }
 
