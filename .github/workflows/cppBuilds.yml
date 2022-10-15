@@ -14,60 +14,117 @@ on:
   workflow_dispatch:
 
 jobs:
-  ubuntu-gcc-single:
-    runs-on: ubuntu-latest
+  single:
+    name: "build MiraiCP-single (${{ matrix.os }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
+        include:
+          - os: windows-latest
+            targetName: mingwX64
+          - os: ubuntu-latest
+            targetName: linuxX64
+    env:
+      isWindows: ${{ startsWith(matrix.os, 'windows') }}
+      isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
-    - name: checkout
-      uses: actions/checkout@v2
-    - name: configure
-      env:
-        cc: gcc
-        cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
-    - name: build with gcc
-      run: cd cpp/build && make generateSingleHeaders && make MiraiCP_single
-  windows-msvc-single:
-    runs-on: windows-latest
-    steps:
-    - name: checkout
-      uses: actions/checkout@v2
-    - name: configure
-      run: mkdir cpp/build && cd cpp/build && cmake -DGOOGLE_TEST=OFF ..
-    - name: build with msvc
-      run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single --config Release
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: configure
+        env:
+          cc: gcc
+          cxx: g++
+        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
+
+      - if: ${{ env.isUbuntu == 'true' }}
+        name: build with gcc ubuntu
+        run: cd cpp/build && make generateSingleHeaders && make MiraiCP_single
+      
+      - if: ${{ env.isWindows == 'true' }}
+        name: build with gcc win
+        run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single --config Release
+
   windows-mingw-single:
     runs-on: windows-latest
     steps:
-    - name: checkout  
-      uses: actions/checkout@v2
-    - name: configure
-      env:
-        cc: gcc
-        cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
-    - name: build with gcc
-      run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single
-  windows-mingw-libLoader:
-    runs-on: windows-latest
+      - name: checkout  
+        uses: actions/checkout@v2
+      - name: configure
+        env:
+          cc: gcc
+          cxx: g++
+        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
+      - name: build with gcc
+        run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single
+
+  libLoader:
+    name: "build MiraiCP-libLoader (${{ matrix.os }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
+        include:
+          - os: windows-latest
+            targetName: mingwX64
+          - os: ubuntu-latest
+            targetName: linuxX64
+    env:
+      isWindows: ${{ startsWith(matrix.os, 'windows') }}
+      isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
-    - name: checkout  
-      uses: actions/checkout@v2
-    - name: configure
-      env:
-        cc: gcc
-        cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
-    - name: build with gcc
-      run: cd ./cpp && cmake --build build --target Loader
-  ubuntu-gcc-libLoader:
-    runs-on: ubuntu-latest
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: configure
+        env:
+          cc: gcc
+          cxx: g++
+        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
+
+      - if: ${{ env.isUbuntu == 'true' }}
+        name: build with gcc ubuntu
+        run: cd cpp/build && make Loader
+      
+      - if: ${{ env.isWindows == 'true' }}
+        name: build with gcc win
+        run: cd ./cpp && cmake --build build --target Loader
+
+  libLoader-native:
+    name: "build Native (${{ matrix.os }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
+        include:
+          - os: windows-latest
+            targetName: mingwX64
+          - os: ubuntu-latest
+            targetName: linuxX64
+    env:
+      isWindows: ${{ startsWith(matrix.os, 'windows') }}
+      isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
-    - name: checkout
-      uses: actions/checkout@v2
-    - name: configure
-      env:
-        cc: gcc
-        cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
-    - name: build with gcc
-      run: cd cpp/build && make Loader
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: configure
+        env:
+          cc: gcc
+          cxx: g++
+        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
+
+      - if: ${{ env.isUbuntu == 'true' }}
+        name: build with gcc ubuntu
+        run: cd cpp/build && make LoaderNative
+      
+      - if: ${{ env.isWindows == 'true' }}
+        name: build with gcc win
+        run: cd cpp && cmake --build build --target LoaderNative

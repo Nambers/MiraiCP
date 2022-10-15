@@ -42,8 +42,7 @@ kotlin {
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }.compilations.all {
         cinterops {
-            this.maybeCreate("localLibcurl")
-            this.maybeCreate("localOpenssl")
+            this.maybeCreate("localOpenSSL&Curl")
             val localMiraiCP by creating {
                 headers(project.file("src/nativeInterop/cinterop/MiraiCP.h"))
                 packageName("tech.eritquearcus.MiraiCP")

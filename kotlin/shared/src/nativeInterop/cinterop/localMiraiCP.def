@@ -1,1 +1,4 @@
-linkerOpts  = -LF:/Git/mirai/MiraiCP/cpp/cmake-build-debug/src/libloader/native -l LoaderNative
+linkerOpts  = -LF:/Git/mirai/MiraiCP/cpp/cmake-build-debug/src/libloader/native \
+                -L C:/ \
+                -L / \
+                -l LoaderNative
