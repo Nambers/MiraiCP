@@ -1,7 +1,0 @@
-headers = openssl/ssl.h openssl/crypto.h
-headerFilter = openssl/*
-
-compilerOpts = -ID:/vcpkg/packages/openssl_x64-windows/include \
-                -I/usr/include/openssl/
-
-linkerOpts  = -LD:/vcpkg/packages/openssl_x64-windows/lib

@@ -1,5 +1,0 @@
-headers = curl/curl.h
-headerFilter = curl/*
-
-compilerOpts = -ID:/vcpkg/packages/curl_x64-windows/include
-linkerOpts  = -LD:/vcpkg/packages/curl_x64-windows/lib
