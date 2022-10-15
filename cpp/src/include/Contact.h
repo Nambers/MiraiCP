@@ -49,6 +49,8 @@ namespace MiraiCP {
 
         void refreshInfo() override;
 
+        void updateJson(nlohmann::json &json_to_update) const;
+
         // todo(Antares): 用于quoteandsend，名字重新命名一下
         virtual nlohmann::json getSign() const;
     };
@@ -301,6 +303,9 @@ namespace MiraiCP {
                                                                          //            j["botid"] = botid();
                                                                          //            return j;
                                                                          //        }
+        /// 将数据序列化进已有的json对象，覆盖原有数据
+        void updateJson(nlohmann::json &j) const { InternalData->updateJson(j); }
+
         /// @deprecated since v2.8.1, use `this->internalToJson()`
         ShouldNotUse("use internalToJson") nlohmann::json serialization() const;
 
