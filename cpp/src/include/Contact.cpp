@@ -128,6 +128,10 @@ namespace MiraiCP {
         return {{"MiraiCode", true}};
     }
 
+    void IContactData::updateJson(json &json_to_update) const {
+        json_to_update.update(toJson(), true);
+    }
+
     nlohmann::json GroupRelatedData::internalToJson() const {
         auto result = IContactData::internalToJson();
         result["groupid"] = _groupid;
@@ -155,7 +159,7 @@ namespace MiraiCP {
         return Image::deserialize(re);
     }
 
-    FlashImage Contact::uploadFlashImg(const std::string &path) const  {
+    FlashImage Contact::uploadFlashImg(const std::string &path) const {
         std::string re = LowLevelAPI::uploadImg0(path, toString());
         if (re == "E2")
             throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);

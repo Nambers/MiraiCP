@@ -31,7 +31,7 @@ namespace MiraiCP {
                 temp["message"] = std::get<std::shared_ptr<ForwardedMessage>>(node.message)->nodesToJson().dump();
                 if (display.has_value())
                     temp["display"] = display->toJson();
-            } else{
+            } else {
                 temp["message"] = std::get<MessageChain>(node.message).toMiraiCode();
             }
             value.emplace_back(std::move(temp));
@@ -44,12 +44,9 @@ namespace MiraiCP {
     //发送这个聊天记录
     MessageSource ForwardedMessage::sendTo(Contact *c) {
         json text = c->toJson();
-        //        text["id"] = c->id();
-        //        text["groupid"] = c->groupid();
-        //        text["type"] = c->type();
         text["content"] = this->nodesToJson();
         json temp{{"text", text.dump()}};
-        // temp["botid"] = c->botid();
+        temp["botid"] = c->botid();
         if (display.has_value())
             temp["display"] = display->toJson();
         std::string re = KtOperation::ktOperation(KtOperation::Buildforward, std::move(temp));
@@ -74,7 +71,6 @@ namespace MiraiCP {
         return {std::move(nodes), ForwardedMessageDisplayStrategy::defaultStrategy()};
     }
 
-
     OnlineForwardedMessage OnlineForwardedMessage::deserializationFromMessageSourceJson(const json &j) {
         std::vector<ForwardedNode> nodes;
 
@@ -87,7 +83,7 @@ namespace MiraiCP {
                 }
             }
 
-        } catch (json::parse_error &e) {
+        } catch (const json::parse_error &) {
             throw APIException("OnlineForwardedMessage格式化异常", MIRAICP_EXCEPTION_WHERE);
         }
 
@@ -111,15 +107,15 @@ namespace MiraiCP {
     */
 
     bool OnlineForwardedMessage::operator==(const OnlineForwardedMessage &m) const {
-        if (this->nodelist.size() != m.nodelist.size()) return false;
+        if (this->nodes.size() != m.nodes.size()) return false;
 
         int i = 0;
-        return std::all_of(this->nodelist.begin(), this->nodelist.end(), [&i, &m](const auto &n) {
+        return std::all_of(this->nodes.begin(), this->nodes.end(), [&i, &m](const auto &n) {
             return n.message == m[i++].message;
         });
     }
 
     ForwardedMessage OnlineForwardedMessage::toForwardedMessage(std::optional<ForwardedMessageDisplayStrategy> display) const {
-        return {this->nodelist, std::move(display)};
+        return {this->nodes, std::move(display)};
     }
 } // namespace MiraiCP

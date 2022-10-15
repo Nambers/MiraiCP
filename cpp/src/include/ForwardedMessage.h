@@ -27,6 +27,7 @@ namespace MiraiCP {
     class Contact;
     class ForwardedMessage;
 
+
     /// 转发信息显示策略, 目前好像只在转发信息内的转发信息生效
     class ForwardedMessageDisplayStrategy {
         using string = std::string;
@@ -100,20 +101,40 @@ namespace MiraiCP {
         bool isForwarded() const { return isForwardedMessage; }
     };
 
+    class BaseForwardedMessage {
+    protected:
+        /// 每条信息
+        std::vector<ForwardedNode> nodes;
+
+    protected:
+        explicit BaseForwardedMessage(std::vector<ForwardedNode> inNodes) : nodes(std::move(inNodes)) {}
+
+    public:
+        virtual ~BaseForwardedMessage() = default;
+
+        ForwardedNode &operator[](int i) {
+            return nodes[i];
+        }
+
+        const ForwardedNode &operator[](int i) const {
+            return nodes[i];
+        }
+    };
+
     /*!转发消息, 由ForwardNode组成
      * @see class ForwardedNode
      * @doxygenEg{1005, forwardMessage.cpp, 构建聊天记录}
      */
-    class ForwardedMessage {
+    class ForwardedMessage : public BaseForwardedMessage {
     private:
         /// json except value
         nlohmann::json sendmsg;
 
     public:
-        /// 每条信息
-        std::vector<ForwardedNode> nodes;
         /// 显示策略
         std::optional<ForwardedMessageDisplayStrategy> display = std::nullopt;
+
+        ~ForwardedMessage() override = default;
 
     public:
         /*!
@@ -122,7 +143,8 @@ namespace MiraiCP {
         */
         ForwardedMessage(std::initializer_list<ForwardedNode> nodes, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy()) : ForwardedMessage(std::vector(nodes), std::move(display)) {}
 
-        ForwardedMessage(std::vector<ForwardedNode> nodes, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy()) : nodes(std::move(nodes)), display(std::move(display)) {}
+        ForwardedMessage(std::vector<ForwardedNode> inNodes, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy())
+            : BaseForwardedMessage(std::move(inNodes)), display(std::move(display)) {}
 
     public:
         void add(const ForwardedNode &a) { this->nodes.push_back(a); }
@@ -139,10 +161,6 @@ namespace MiraiCP {
         }
 
     public:
-        ForwardedNode &operator[](int index) { return nodes[index]; }
-
-        const ForwardedNode &operator[](int index) const { return nodes[index]; }
-
         ForwardedMessage operator+(const ForwardedNode &a) { return this->plus(a); }
 
     public:
@@ -150,17 +168,20 @@ namespace MiraiCP {
     };
 
     /// 接收到的转发消息, 发送用 MiraiCP::ForwardedMessage
-    class OnlineForwardedMessage : public SingleMessage {
+    class OnlineForwardedMessage : public SingleMessage, public BaseForwardedMessage {
     public:
-        /// 里面每条信息
-        std::vector<ForwardedNode> nodelist;
         /// 用展示出来ServiceMessage
         ServiceMessage origin;
         // unknown 用途, 有一些情况下没有
         // std::optional<std::string> resourceId;
 
     public:
-        explicit OnlineForwardedMessage(nlohmann::json o, /*std::optional<std::string> rid,*/ std::vector<ForwardedNode> nodes) : SingleMessage(OnlineForwardedMessage::type(), ""), nodelist(std::move(nodes)), /*resourceId(std::move(rid)),*/ origin(ServiceMessage(o["serviceId"], o["content"])) {}
+        explicit OnlineForwardedMessage(nlohmann::json o, /*std::optional<std::string> rid,*/ std::vector<ForwardedNode> nodes)
+            : SingleMessage(OnlineForwardedMessage::type(), ""),
+              BaseForwardedMessage(std::move(nodes)),
+              /*resourceId(std::move(rid)),*/
+              origin(ServiceMessage(o["serviceId"], o["content"])) {}
+        ~OnlineForwardedMessage() override = default;
 
     public:
         /// 转ForwardedMessage
@@ -173,14 +194,6 @@ namespace MiraiCP {
         }
 
     public:
-        ForwardedNode &operator[](int i) {
-            return nodelist[i];
-        }
-
-        const ForwardedNode &operator[](int i) const {
-            return nodelist[i];
-        }
-
         bool operator==(const OnlineForwardedMessage &m) const;
 
     public:
