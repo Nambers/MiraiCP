@@ -22,7 +22,21 @@
 namespace MiraiCP {
     using json = nlohmann::json;
 
-    json ForwardedMessage::nodesToJson() {
+    ForwardedNode::ForwardedNode(QQID id, std::string name, ForwardedMessage _message, int t, std::optional<ForwardedMessageDisplayStrategy> display)
+        : id(id), name(std::move(name)),
+          message(std::make_shared<ForwardedMessage>(std::move(_message))),
+          time(t), isForwardedMessage(true), display(std::move(display)) {}
+
+    bool BaseForwardedMessage::operator==(const BaseForwardedMessage &m) const {
+        if (this->nodes.size() != m.nodes.size()) return false;
+
+        int i = 0;
+        return std::all_of(this->nodes.begin(), this->nodes.end(), [&i, &m](const auto &n) {
+            return n.message == m[i++].message;
+        });
+    }
+
+    json ForwardedMessage::nodesToJson() { // NOLINT(misc-no-recursion)
         auto value = json::array();
         for (const ForwardedNode &node: nodes) {
             json temp{{"id", node.id}, {"time", node.time}, {"name", node.name}};
@@ -68,7 +82,7 @@ namespace MiraiCP {
             throw APIException("ForwardedMessage格式化异常", MIRAICP_EXCEPTION_WHERE);
         }
 
-        return {std::move(nodes), ForwardedMessageDisplayStrategy::defaultStrategy()};
+        return ForwardedMessage(std::move(nodes));
     }
 
     OnlineForwardedMessage OnlineForwardedMessage::deserializationFromMessageSourceJson(const json &j) {
@@ -93,29 +107,7 @@ namespace MiraiCP {
         // return OnlineForwardedMessage(j[0]["origin"], std::nullopt, std::move(nodes));
     }
 
-    ForwardedNode::ForwardedNode(QQID id, std::string name, ForwardedMessage _message, int t, std::optional<ForwardedMessageDisplayStrategy> display)
-        : id(id), name(std::move(name)),
-          message(std::make_shared<ForwardedMessage>(std::move(_message))),
-          time(t), isForwardedMessage(true), display(std::move(display)) {}
-
-    /*
-    ForwardedNode::ForwardedNode(Contact *c, MessageChain message, int t) : id(c->id()), name(c->nickOrNameCard()),
-                                                                            message(std::move(message)),
-                                                                            time(t) {}
-
-    ForwardedNode::ForwardedNode(QQID id, std::string name, ForwardedMessage &message, int t) : id(id), name(std::move(name)), forwardedMsg(&message), time(t) {}
-    */
-
-    bool OnlineForwardedMessage::operator==(const OnlineForwardedMessage &m) const {
-        if (this->nodes.size() != m.nodes.size()) return false;
-
-        int i = 0;
-        return std::all_of(this->nodes.begin(), this->nodes.end(), [&i, &m](const auto &n) {
-            return n.message == m[i++].message;
-        });
-    }
-
     ForwardedMessage OnlineForwardedMessage::toForwardedMessage(std::optional<ForwardedMessageDisplayStrategy> display) const {
-        return {this->nodes, std::move(display)};
+        return ForwardedMessage(this->nodes, std::move(display));
     }
 } // namespace MiraiCP

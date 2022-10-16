@@ -108,6 +108,8 @@ namespace MiraiCP {
 
     protected:
         explicit BaseForwardedMessage(std::vector<ForwardedNode> inNodes) : nodes(std::move(inNodes)) {}
+        BaseForwardedMessage(const BaseForwardedMessage &) = default;
+        BaseForwardedMessage(BaseForwardedMessage &&) = default;
 
     public:
         virtual ~BaseForwardedMessage() = default;
@@ -119,6 +121,21 @@ namespace MiraiCP {
         const ForwardedNode &operator[](int i) const {
             return nodes[i];
         }
+
+        void add(ForwardedNode &&a) { this->nodes.emplace_back(std::move(a)); }
+        void add(const ForwardedNode &a) { this->nodes.push_back(a); }
+
+        auto &operator+=(const ForwardedNode &a) {
+            this->add(a);
+            return *this;
+        }
+
+        auto &operator+=(ForwardedNode &&a) {
+            this->add(std::move(a));
+            return *this;
+        }
+
+        bool operator==(const BaseForwardedMessage &m) const;
     };
 
     /*!转发消息, 由ForwardNode组成
@@ -141,27 +158,21 @@ namespace MiraiCP {
         *@brief 构建一条聊天记录
         *@details 第一个参数是聊天记录发生的地方, 然后是每条信息
         */
-        ForwardedMessage(std::initializer_list<ForwardedNode> nodes, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy()) : ForwardedMessage(std::vector(nodes), std::move(display)) {}
+        ForwardedMessage(std::initializer_list<ForwardedNode> nodes, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy())
+            : ForwardedMessage(std::vector(nodes), std::move(display)) {}
 
-        ForwardedMessage(std::vector<ForwardedNode> inNodes, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy())
+        explicit ForwardedMessage(std::vector<ForwardedNode> inNodes, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy())
             : BaseForwardedMessage(std::move(inNodes)), display(std::move(display)) {}
 
-    public:
-        void add(const ForwardedNode &a) { this->nodes.push_back(a); }
+        ForwardedMessage(const ForwardedMessage &) = default;
+        ForwardedMessage(ForwardedMessage &&) = default;
 
+    public:
         /// 发送给群或好友或群成员
         MessageSource sendTo(Contact *c);
 
         nlohmann::json nodesToJson();
 
-        ForwardedMessage plus(const ForwardedNode &a) {
-            ForwardedMessage tmp(*this);
-            tmp.nodes.push_back(a);
-            return tmp;
-        }
-
-    public:
-        ForwardedMessage operator+(const ForwardedNode &a) { return this->plus(a); }
 
     public:
         static ForwardedMessage deserializationFromMessageSourceJson(const nlohmann::json &j);
@@ -181,6 +192,8 @@ namespace MiraiCP {
               BaseForwardedMessage(std::move(nodes)),
               /*resourceId(std::move(rid)),*/
               origin(ServiceMessage(o["serviceId"], o["content"])) {}
+        OnlineForwardedMessage(const OnlineForwardedMessage &) = default;
+        OnlineForwardedMessage(OnlineForwardedMessage &&) = default;
         ~OnlineForwardedMessage() override = default;
 
     public:
@@ -194,8 +207,6 @@ namespace MiraiCP {
         }
 
     public:
-        bool operator==(const OnlineForwardedMessage &m) const;
-
     public:
         static int type() { return -4; }
 
