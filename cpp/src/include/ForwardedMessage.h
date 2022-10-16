@@ -151,8 +151,6 @@ namespace MiraiCP {
         /// 显示策略
         std::optional<ForwardedMessageDisplayStrategy> display = std::nullopt;
 
-        ~ForwardedMessage() override = default;
-
     public:
         /*!
         *@brief 构建一条聊天记录
@@ -166,6 +164,7 @@ namespace MiraiCP {
 
         ForwardedMessage(const ForwardedMessage &) = default;
         ForwardedMessage(ForwardedMessage &&) = default;
+        ~ForwardedMessage() override = default;
 
     public:
         /// 发送给群或好友或群成员
