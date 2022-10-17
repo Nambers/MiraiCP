@@ -89,7 +89,7 @@ object CPPLib {
     // Group invite operation
     suspend fun KGioperation(text: String): String = run {
         val tmp = json.decodeFromString<CPPEvent.Request>(text)
-        PublicShared.accpetGroupInvite(tmp.text, tmp.botid, tmp.accept)
+        PublicShared.acceptGroupInvite(tmp.text, tmp.botid, tmp.accept)
     }
 
     suspend fun KAnnouncement(identify: String, source: String?): String =

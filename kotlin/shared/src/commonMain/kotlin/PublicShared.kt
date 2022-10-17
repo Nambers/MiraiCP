@@ -597,7 +597,7 @@ object PublicShared {
             return "Y"
         }
 
-    suspend fun accpetGroupInvite(info: String, botid: Long, accept: Boolean): String = withBot(botid) { bot ->
+    suspend fun acceptGroupInvite(info: String, botid: Long, accept: Boolean): String = withBot(botid) { bot ->
         try {
             json.decodeFromString<RequestEventData.BotInvitedJoinGroupRequest>(info).apply {
                 if (accept) accept(bot)
