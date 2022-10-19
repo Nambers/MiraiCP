@@ -29,7 +29,7 @@
 
 
 > **Tips~**
-> If you are willing to join to develop this project, send email to me (`1930893235@qq.com`) (￣▽￣)"
+> If you are willing to join to develop this project, send email to me (`eritque-arcus At eritque-arcus.tech`) (￣▽￣)"
 # Announcement
 please note:
 
