@@ -19,8 +19,8 @@
 
 
 #include "LoaderPluginConfig.h"
-#include <jni.h>
 #include <fstream>
+#include <jni.h>
 #include <string>
 #include <thread>
 
@@ -31,8 +31,14 @@ namespace LibLoader {
         {
             std::ifstream i;
             i.open(path.c_str(), std::ios::in);
-            i >> j;
-            i.close();
+            MIRAICP_DEFER(i.close(););
+            try {
+                i >> j;
+            } catch (const nlohmann::detail::exception &e) {
+                logger.error("配置文件读入异常，请检查您的配置文件编码方式是否正确，以及是否在路径中使用了中文");
+                logger.error(e.what());
+                std::terminate();
+            }
         }
         return j;
     }
