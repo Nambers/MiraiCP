@@ -53,9 +53,7 @@ jobs:
       uses: coffeebe4code/setup-mingw@v1-beta-2
       with:
         platform: x64
-        version: 11.2.0
-        cygwin: 1
-        static: 0
+        version: 10.2.0
 
     - if: ${{ env.isUbuntu == 'true' }}
       name: build with gcc ubuntu
@@ -156,9 +154,7 @@ jobs:
       uses: coffeebe4code/setup-mingw@v1-beta-2
       with:
         platform: x64
-        version: 11.2.0
-        cygwin: 1
-        static: 0
+        version: 10.2.0
 
     - if: ${{ env.isWindows == 'true' }}
       name: Install OpenSSL & cURL on Windows
