@@ -154,8 +154,13 @@ jobs:
         echo "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     - if: ${{ env.isWindows == 'true' }}
-      name: Install MinGW
-      uses: egor-tensin/setup-mingw@v2
+      name: Install Version Specific MinGW
+      uses: coffeebe4code/setup-mingw@v1-beta-2
+      with:
+        platform: x64
+        version: 11.2.0
+        cygwin: 1
+
 
     - if: ${{ env.isUbuntu == 'true' }}
       name: chmod -R 777 *
