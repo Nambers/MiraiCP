@@ -74,13 +74,13 @@ jobs:
       name: upload
       uses: actions/upload-artifact@v3
       with:
-        name: libLoaderNativelib
-        path: ./cpp/build/src/libloader/native/Debug/libLoaderNative.lib
+        name: libLoaderNativeWin
+        path: ./cpp/build/src/libloader/native/libLoaderNative.a
     - if: ${{ env.isUbuntu == 'true' }}
       name: upload
       uses: actions/upload-artifact@v3
       with:
-        name: libLoaderNativea
+        name: libLoaderNativeLinux
         path: ./cpp/build/src/libloader/native/libLoaderNative.a
 
   build-native:
@@ -183,15 +183,15 @@ jobs:
     - if: ${{ env.isWindows == 'true' }}
       uses: actions/download-artifact@v3
       with:
-        name: libLoaderNativelib
+        name: libLoaderNativeWin
         path: ${{ github.workspace }}
     - if: ${{ env.isUbuntu == 'true' }}
       uses: actions/download-artifact@v3
       with:
-        name: libLoaderNativea
+        name: libLoaderNativeLinux
         path: ${{ github.workspace }}
-    - if: ${{ env.isWindows == 'true' }}
-      name: rename libLoader win
-      run: Rename-Item -Path "${{ github.workspace }}\libLoaderNative.lib" -NewName "LoaderNative.lib"
+    # - if: ${{ env.isWindows == 'true' }}
+    #   name: rename libLoader win
+    #   run: Rename-Item -Path "${{ github.workspace }}\libLoaderNative.lib" -NewName "LoaderNative.lib"
     - name: link native
       run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:linkDebugExecutableNative --warning-mode all --info --stacktrace
