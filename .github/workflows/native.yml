@@ -48,10 +48,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
-      
+
     - if: ${{ env.isWindows == 'true' }}
-      name: upgrade mingw
-      run: choco install mingw
+      name: set mingw version 9.1.0
+      # github workflows in windows is GCC 11, in linux is GCC 9.4.0
+      run: choco install mingw --version=9.4.0 --force
 
     - if: ${{ env.isUbuntu == 'true' }}
       name: build with gcc ubuntu
@@ -149,7 +150,8 @@ jobs:
 
     - if: ${{ env.isWindows == 'true' }}
       name: upgrade mingw
-      run: choco install mingw
+      # github workflows in windows is GCC 11, in linux is GCC 9.4.0
+      run: choco install mingw --version=9.4.0 --force
 
     - if: ${{ env.isWindows == 'true' }}
       name: Install OpenSSL & cURL on Windows
