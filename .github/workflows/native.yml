@@ -9,6 +9,7 @@ on:
       - "kotlin/loader/**"
       - "kotlin/shared/**"
       - "cpp/src/**"
+      - ".github/workflows/native.yml"
   pull_request:
     branches:
       - '*'
@@ -16,6 +17,7 @@ on:
       - "kotlin/loader/**"
       - "kotlin/shared/**"
       - "cpp/src/**"
+      - ".github/workflows/native.yml"
 
 jobs:
   no-job:
