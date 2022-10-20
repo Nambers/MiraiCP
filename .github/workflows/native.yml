@@ -48,12 +48,10 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
+      
     - if: ${{ env.isWindows == 'true' }}
-      name: Install Version Specific MinGW in win
-      uses: coffeebe4code/setup-mingw@v1-beta-2
-      with:
-        platform: x64
-        version: 10.2.0
+      name: upgrade mingw
+      run: choco install mingw
 
     - if: ${{ env.isUbuntu == 'true' }}
       name: build with gcc ubuntu
@@ -150,11 +148,8 @@ jobs:
       continue-on-error: true
 
     - if: ${{ env.isWindows == 'true' }}
-      name: Install Version Specific MinGW in win
-      uses: coffeebe4code/setup-mingw@v1-beta-2
-      with:
-        platform: x64
-        version: 10.2.0
+      name: upgrade mingw
+      run: choco install mingw
 
     - if: ${{ env.isWindows == 'true' }}
       name: Install OpenSSL & cURL on Windows
