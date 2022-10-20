@@ -17,7 +17,7 @@ set_target_properties(LoaderNative PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # https://stackoverflow.com/questions/45114078/get-address-for-symbol-in-current-process-in-windows
-target_compile_definitions(LoaderNative PUBLIC MIRAICP_LIB_LOADER JSON_MultipleHeaders=ON)
+target_compile_definitions(LoaderNative PUBLIC MIRAICP_LIB_LOADER JSON_MultipleHeaders=ON LOADER_NATIVE)
 # target_compile_options(Loader PUBLIC -Wall)
 
 # 移植性
