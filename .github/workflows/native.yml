@@ -48,19 +48,27 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
-    - name: configure
-      env:
-        cc: gcc
-        cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
+    - if: ${{ env.isWindows == 'true' }}
+      name: Install Version Specific MinGW in win
+      uses: coffeebe4code/setup-mingw@v1-beta-2
+      with:
+        platform: x64
+        version: 10.2.0
+        cygwin: 1
 
     - if: ${{ env.isUbuntu == 'true' }}
       name: build with gcc ubuntu
-      run: cd cpp/build && make LoaderNative
+      env:
+        cc: gcc
+        cxx: g++
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF .. && make LoaderNative
     
     - if: ${{ env.isWindows == 'true' }}
       name: build with gcc win
-      run: cd cpp && cmake --build build --target LoaderNative
+      env:
+        cc: gcc
+        cxx: g++
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles" -DGOOGLE_TEST=OFF .. && cd .. && cmake --build build --target LoaderNative
     
     - if: ${{ env.isWindows == 'true' }}
       name: upload
@@ -147,7 +155,7 @@ jobs:
       uses: coffeebe4code/setup-mingw@v1-beta-2
       with:
         platform: x64
-        version: 11.2.0
+        version: 10.2.0
         cygwin: 1
 
     - if: ${{ env.isWindows == 'true' }}
