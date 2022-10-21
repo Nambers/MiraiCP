@@ -28,6 +28,10 @@ const PluginConfig CPPPlugin::config{
                 // 可选：日期
 };
 
+// Member mem("sb");
+Member mem(nlohmann::json{{"id",1234567},{"botid",1245634},{"groupid",123456}});
+Member mem2(123,456,789);
+
 class Main : public CPPPlugin {
 public:
     // 配置插件信息

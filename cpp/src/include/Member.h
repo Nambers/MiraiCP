@@ -30,7 +30,6 @@ namespace MiraiCP {
         ///     - OWNER群主 为 2
         ///     - ADMINISTRATOR管理员 为 1
         ///     - MEMBER群成员 为 0
-        /// @note 上面那些变量在constants.h中有定义
         unsigned int _permission = 0;
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
         bool _anonymous = false;
@@ -47,30 +46,11 @@ namespace MiraiCP {
     class Member : public Contact, public INudgeSupport, public ContactDataHelper<Member, MemberData> {
         friend class Contact;
 
-    private:
-        //        std::string _nickOrNameCard;
-        //        std::string _avatarUrl;
-
     public:
-        /// @brief 权限等级
-        ///     - OWNER群主 为 2
-        ///     - ADMINISTRATOR管理员 为 1
-        ///     - MEMBER群成员 为 0
-        /// @note 上面那些变量在constants.h中有定义
-        //        unsigned int permission = 0;
-
-
-    public:
+        /// @brief 构建群成员对象，一般为内部调用
+        /// @param in_json 内容至少如下：{"id":123, "groupid":456, "botid":789}
+        /// @throw IllegalArgumentException
         explicit Member(nlohmann::json in_json);
-        /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
-        DECL_GETTER(anonymous)
-        // DECL_GETTER(permission)
-        INLINE_GETTER(groupid)
-    public:
-        /// @brief 更改群成员权限
-        /// @param admin 如果为true为更改到管理员
-        /// @param env
-        void modifyAdmin(bool admin);
 
         /// @brief 构建群成员对象
         /// @param qqid 该成员q号
@@ -78,21 +58,24 @@ namespace MiraiCP {
         /// @param botid 机器人id
         explicit Member(QQID qqid, QQID groupid, QQID botid);
 
-        //        explicit Member(const Contact &c) : Contact(c) {
-        //            if (c.type() != 3)
-        //                throw IllegalArgumentException("无法从 type==" + std::to_string(c.type()) + " 转为 type == 3(member)", MIRAICP_EXCEPTION_WHERE);
-        //            this->isAnonymous = this->_anonymous;
-        //            refreshInfo();
-        //        };
+        /// @note dev: avoid unintentional implicit conversion to nlohmann::json
+        Member(bool) = delete;
+
+        /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
+        DECL_GETTER(anonymous)
+        DECL_GETTER(permission)
+        INLINE_GETTER(groupid)
+
+    public:
+        /// @brief 更改群成员权限
+        /// @param admin 如果为true为更改到管理员
+        /// @param env
+        void modifyAdmin(bool admin);
 
         /// 发送语音
         MessageSource sendVoice(std::string path) {
             return sendVoiceImpl(std::move(path));
         }
-
-        /// 获取权限，会在构造时调用，请使用permission缓存变量
-        /// @see Member::permission
-        unsigned int getPermission() const;
 
         /*!
          * 禁言当前对象，单位是秒，最少0秒最大30天，如果为0或者为负则unmute

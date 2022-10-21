@@ -47,6 +47,9 @@ file(GLOB MIRAICP_CPP_PATH ${SRC_PATH}/include/*.cpp)
 file(GLOB MIRAICP_COMMON_PATH ${SRC_PATH}/common/*.cpp)
 option(GOOGLE_TEST "GOOGLE_TEST" ON)
 
+#
+add_compile_definitions(JSON_HAS_CPP_17)
+
 # -- automatic add include --
 if (WIN32)
     execute_process(

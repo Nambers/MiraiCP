@@ -58,11 +58,17 @@ namespace MiraiCP {
     Group::Group(json in_json) : Contact(GetGroupFromPool(in_json)) {
         auto ActualDataPtr = GetDataInternal();
         assert(ActualDataPtr != nullptr);
-        ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
-        if (in_json.contains("avatarUrl"))
-            ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
+
+        bool needRefresh = false;
+
+        if (in_json.contains("nickornamecard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
         else
-            forceRefreshNextTime();
+            needRefresh = true;
+        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
+        else
+            needRefresh = true;
+
+        if (needRefresh) forceRefreshNextTime();
     }
 
     std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList() {
