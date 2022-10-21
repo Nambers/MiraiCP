@@ -179,11 +179,6 @@ namespace MiraiCP {
          */
         QQID botid() const { return InternalData->_botid; };
 
-
-        /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsgImpl(msg.toMiraiCode(), retryTime, true, env)`
-//        ShouldNotUse("Use sendMessage") MessageSource
-//        sendMiraiCode(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) const = delete;
-
         /**
          * @brief 回复并发送
          * @param s 内容
@@ -245,18 +240,6 @@ namespace MiraiCP {
             return this->unpackMsg(std::forward<T>(msg), retryTime);
         }
 
-        /// @deprecated since v2.8.1, use `sendMessage(msg)` or `sendMsgImpl(msg, retryTime, false, env)`
-//        ShouldNotUse("Use sendMessage")
-//        MessageSource sendMsg(const std::string &msg, int retryTime = 3, void *env = nullptr) = delete;
-
-        /// @deprecated since v2.8.1, use `sendMessage(MiraiCode)` or `sendMsgImpl(msg.toMiraiCode(), retryTime, false, env);`
-//        ShouldNotUse("Use sendMessage")
-//        MessageSource sendMsg(const MiraiCode &msg, int retryTime = 3, void *env = nullptr) = delete;
-
-        /// @deprecated since v2.8.1, use `sendMessage(Tools::VectorToString(std::move(msg)))` or `sendMsgImpl(Tools::VectorToString(std::move(msg)), retryTime, false, env);`
-//        ShouldNotUse("Use sendMessage")
-//        MessageSource sendMsg(std::vector<std::string> msg, int retryTime = 3, void *env = nullptr) = delete;
-
     private: // private methods
         MessageSource quoteAndSend0(std::string msg, const MessageSource &ms);
 
@@ -279,9 +262,6 @@ namespace MiraiCP {
         /// 将数据序列化进已有的json对象, 覆盖原有数据
         void updateJson(nlohmann::json &j) const { InternalData->updateJson(j); }
 
-        /// @deprecated since v2.8.1, use `this->internalToJson()`
-//        ShouldNotUse("use internalToJson") nlohmann::json serialization() const;
-
         /**
          * 序列化成文本, 可以通过deserializationFromString反序列化, 利于保存
          * @see Contact::fromString()
@@ -289,10 +269,6 @@ namespace MiraiCP {
         std::string toString() const {
             return toJson().dump();
         }
-        /// @deprecated since v2.8.1, use `this->toString()`
-        // ShouldNotUse("use toString") std::string serializationToString() const = delete;
-        /// @deprecated since v2.8.1, use `Contact::deserialize(source)`
-        // ShouldNotUse("use deserialize") static Contact deserializationFromString(const std::string &source);
 
         /// 反序列化成Contact智能指针
         /// @param source 序列化后的文本
@@ -376,7 +352,6 @@ namespace MiraiCP {
             return dataPtr->_avatarUrl;
         };
     };
-
 
     class INudgeSupport {
     public:

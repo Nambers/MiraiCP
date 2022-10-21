@@ -31,7 +31,14 @@ namespace MiraiCP {
          * @param botid 对应机器人id
          */
         Friend(QQID friendid, QQID botid);
+
+        /// @brief 构建好友对象，一般为内部调用
+        /// @param in_json 内容至少如下：{"id":123, "botid":456}
+        /// @throw IllegalArgumentException
         explicit Friend(nlohmann::json in_json);
+
+        /// @note dev: avoid unintentional implicit conversion to nlohmann::json
+        Friend(bool) = delete;
 
     public:
         /// @brief 删除好友

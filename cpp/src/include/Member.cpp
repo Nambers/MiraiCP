@@ -55,9 +55,10 @@ namespace MiraiCP {
     Member::Member(nlohmann::json in_json) : Contact(GetMemberFromPool(in_json)) {
         auto ActualDataPtr = GetDataInternal();
         assert(ActualDataPtr != nullptr);
-        ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
-
         bool needrefresh = false;
+        if (in_json.contains("nickornamecard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+        else
+            needrefresh = true;
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
         else
             needrefresh = true;
@@ -136,10 +137,6 @@ namespace MiraiCP {
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone", MIRAICP_EXCEPTION_WHERE);
     }
-
-    //    void Member::refreshInfo() {
-    //        InternalData->requestRefresh();
-    //    }
 
     void MemberData::deserialize(nlohmann::json in_json) {
         _groupid = in_json["groupid"];

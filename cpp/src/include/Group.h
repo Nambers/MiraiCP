@@ -150,7 +150,14 @@ namespace MiraiCP {
         /// @param botid 机器人id
         /// @doxygenEg{1007, group.cpp, 从群号构建群对象}
         Group(QQID groupid, QQID botid);
-        Group(nlohmann::json in_json);
+
+        /// @brief 构建群对象，一般为内部调用
+        /// @param in_json 内容至少如下：{"id":123, "botid":456}
+        /// @throw IllegalArgumentException
+        explicit Group(nlohmann::json in_json);
+
+        /// @note dev: avoid unintentional implicit conversion to nlohmann::json
+        Group(bool) = delete;
 
     public: // methods
         /// @brief 获取groupid

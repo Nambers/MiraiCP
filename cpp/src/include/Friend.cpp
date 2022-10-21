@@ -50,10 +50,17 @@ namespace MiraiCP {
     Friend::Friend(nlohmann::json in_json) : Contact(GetFriendPool(in_json)) {
         auto ActualDataPtr = GetDataInternal();
         assert(ActualDataPtr != nullptr);
-        ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+
+        bool needRefresh = false;
+
+        if (in_json.contains("avatarUrl")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+        else
+            needRefresh = true;
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
         else
-            forceRefreshNextTime();
+            needRefresh = true;
+
+        if (needRefresh) forceRefreshNextTime();
     }
 
     void Friend::deleteFriend() {
