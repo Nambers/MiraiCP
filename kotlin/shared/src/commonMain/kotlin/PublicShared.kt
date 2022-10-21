@@ -53,6 +53,7 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import net.mamoe.mirai.utils.use
+import tech.eritquearcus.miraicp.shared.Packets.Utils.toEventData
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 import tech.eritquearcus.miraicp.uilts.MiraiCPFile
@@ -768,54 +769,21 @@ object PublicShared {
 
     @MiraiExperimentalApi
     fun onEnable(eventChannel: EventChannel<Event>) {
-        //配置文件目录 "${dataFolder.absolutePath}/"
         eventChannel.subscribeAlways<FriendMessageEvent> {
-            //好友信息
-            event(
-                CPPEvent.PrivateMessage(
-                    this.sender.toContact(), this.message.serializeToMiraiCode(), json.encodeToString(
-                        MessageSerializers.serializersModule.serializer(), this.message[MessageSource]!!
-                    )
-                )
-            )
+            event(this.toEventData())
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
-            //群消息
-            event(
-                CPPEvent.GroupMessage(
-                    this.group.toContact(),
-                    Config.Contact(
-                        3, this.sender.id, this.group.id, this.senderName, this.bot.id, (this.sender is AnonymousMember)
-                    ),
-                    this.message.serializeToMiraiCode(),
-                    json.encodeToString(
-                        MessageSerializers.serializersModule.serializer(),
-                        this.message[MessageSource]!!
-                    )
-                )
-            )
+            event(this.toEventData())
         }
-        eventChannel.subscribeAlways<MemberLeaveEvent.Kick> {
-            friend_cache.add(this.member)
-            event(
-                CPPEvent.MemberLeave(
-                    this.group.toContact(),
-                    this.member.id,
-                    1,
-                    if (this.operator?.id == null) this.bot.id else this.operator!!.id
-                )
-
-            )
-            friend_cache.remove(this.member)
+        eventChannel.subscribeAlways<GroupTempMessageEvent> {
+            event(this.toEventData())
         }
-        eventChannel.subscribeAlways<MemberLeaveEvent.Quit> {
-            friend_cache.add(this.member)
-            event(
-                CPPEvent.MemberLeave(
-                    this.group.toContact(), this.member.id, 2, this.member.id
-                )
-
-            )
+        eventChannel.subscribeAlways<StrangerMessageEvent> {
+            event(this.toEventData())
+        }
+        eventChannel.subscribeAlways<MemberLeaveEvent> {
+            friend_cache.add(this.member as NormalMember)
+            event(this.toEventData())
             friend_cache.remove(this.member)
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Retrieve> {
@@ -926,19 +894,6 @@ object PublicShared {
                     ), json.encodeToString(this.toRequestEventData())
                 )
 
-            )
-        }
-        eventChannel.subscribeAlways<GroupTempMessageEvent> {
-            //群临时会话
-            event(
-                CPPEvent.GroupTempMessage(
-                    this.group.toContact(),
-                    this.sender.toContact(),
-                    this.message.serializeToMiraiCode(),
-                    json.encodeToString(
-                        MessageSerializers.serializersModule.serializer(), this.source
-                    )
-                )
             )
         }
 
