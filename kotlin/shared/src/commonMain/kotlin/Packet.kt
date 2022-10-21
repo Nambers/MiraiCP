@@ -89,7 +89,7 @@ object Packets {
             }
         }
 
-        private fun <T : Any> BotEvent.eventToJson(event: T, builder: (Outgoing.EventData<T>) -> Unit) =
+        private inline fun <reified T : Any> BotEvent.eventToJson(event: T, builder: (Outgoing.EventData<T>) -> Unit) =
             Json.encodeToString(Outgoing.EventData(event, botId = this.bot.id).also { builder(it) })
 
         private fun MessageEvent.toMessageEventData(): Outgoing.MessageEventData = Outgoing.MessageEventData(
