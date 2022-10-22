@@ -35,7 +35,6 @@ import net.mamoe.mirai.contact.announcement.bot
 import net.mamoe.mirai.contact.announcement.buildAnnouncementParameters
 import net.mamoe.mirai.contact.file.AbsoluteFile
 import net.mamoe.mirai.data.RequestEventData
-import net.mamoe.mirai.data.RequestEventData.Factory.toRequestEventData
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.EventPriority
@@ -45,7 +44,6 @@ import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.isUploaded
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
-import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
@@ -766,20 +764,19 @@ object PublicShared {
     }
 
     fun onDisable() = PublicSharedMultiplatform.onDisable()
-
     @MiraiExperimentalApi
     fun onEnable(eventChannel: EventChannel<Event>) {
         eventChannel.subscribeAlways<FriendMessageEvent> {
-            event(this.toEventData())
+            event(toEventData())
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
-            event(this.toEventData())
+            event(toEventData())
         }
         eventChannel.subscribeAlways<GroupTempMessageEvent> {
-            event(this.toEventData())
+            event(toEventData())
         }
         eventChannel.subscribeAlways<StrangerMessageEvent> {
-            event(this.toEventData())
+            event(toEventData())
         }
         eventChannel.subscribeAlways<MemberLeaveEvent> {
             friend_cache.add(this.member as NormalMember)
@@ -787,158 +784,46 @@ object PublicShared {
             friend_cache.remove(this.member)
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Retrieve> {
-            event(
-                CPPEvent.MemberJoin(
-                    this.group.toContact(),
-                    Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
-                    3,
-                    this.member.id
-                )
-
-            )
+            event(toEventData())
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Active> {
-            event(
-                CPPEvent.MemberJoin(
-                    this.group.toContact(),
-                    Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
-                    2,
-                    this.member.id
-                )
-
-            )
+            event(toEventData())
         }
         eventChannel.subscribeAlways<MemberJoinEvent.Invite> {
-            event(
-                CPPEvent.MemberJoin(
-                    this.group.toContact(),
-                    Config.Contact(3, this.member.id, this.group.id, this.member.nameCardOrNick, this.bot.id),
-                    1,
-                    this.invitor.id
-                )
-
-            )
+            event(toEventData())
         }
         eventChannel.subscribeAlways<NewFriendRequestEvent> {
-            //自动同意好友申请
-            event(
-                CPPEvent.NewFriendRequest(
-                    CPPEvent.NewFriendRequest.NewFriendRequestSource(
-                        this.bot.id, this.eventId, this.message, this.fromId, this.fromGroupId, this.fromNick
-                    ), json.encodeToString(this.toRequestEventData())
-                )
-
-            )
-
+            event(toEventData())
         }
         eventChannel.subscribeAlways<MessageRecallEvent.FriendRecall> {
-            event(
-                CPPEvent.RecallEvent(
-                    1,
-                    this.authorId,
-                    this.operatorId,
-                    this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
-                    this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
-                    this.messageTime,
-                    0,
-                    this.bot.id
-                )
-            )
+            event(toEventData())
         }
         eventChannel.subscribeAlways<MessageRecallEvent.GroupRecall> {
-            event(
-                CPPEvent.RecallEvent(
-                    2,
-                    this.authorId,
-                    this.operator!!.id,
-                    this.messageIds.map { it.toString() }.toTypedArray().contentToString(),
-                    this.messageInternalIds.map { it.toString() }.toTypedArray().contentToString(),
-                    this.messageTime,
-                    this.group.id,
-                    this.bot.id
-                )
-
-            )
-
+            event(toEventData())
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Invite> {
-            event(
-                CPPEvent.BotJoinGroup(
-                    1, this.group.toContact(), this.invitor.id
-                )
-
-            )
+            event(toEventData())
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Active> {
-            event(
-                CPPEvent.BotJoinGroup(
-                    2, this.group.toContact(), 0
-                )
-
-            )
+            event(toEventData())
         }
         eventChannel.subscribeAlways<BotJoinGroupEvent.Retrieve> {
-            event(
-                CPPEvent.BotJoinGroup(
-                    3, this.group.toContact(), 0
-                )
-
-            )
+            event(toEventData())
         }
         eventChannel.subscribeAlways<BotInvitedJoinGroupRequestEvent> {
-            //自动同意加群申请
-            event(
-                CPPEvent.GroupInvite(
-                    CPPEvent.GroupInvite.GroupInviteSource(
-                        this.bot.id, this.eventId, this.invitorId, this.groupId, this.groupName, this.invitorNick
-                    ), json.encodeToString(this.toRequestEventData())
-                )
-
-            )
+            event(toEventData())
         }
-
         eventChannel.subscribeAlways<NudgeEvent> {
-            event(
-                CPPEvent.NugdeEvent(
-                    this.from.toContact() ?: return@subscribeAlways,
-                    this.target.toContact() ?: return@subscribeAlways,
-                    this.subject.toContact() ?: return@subscribeAlways,
-                    this.bot.id
-                )
-
-            )
+            event(toEventData())
         }
         eventChannel.subscribeAlways<BotLeaveEvent> {
-            val type = when (this) {
-                is BotLeaveEvent.Active -> 0
-                is BotLeaveEvent.Kick -> 1
-                is BotLeaveEvent.Disband -> 2
-                else -> -1
-            }
-            event(
-                CPPEvent.BotLeaveEvent(
-                    this.group.id,
-                    this.bot.id,
-                    type,
-                    if(type == 1) (this as BotLeaveEvent.Kick).operator.id else -1L
-                    )
-            )
+            event(toEventData())
         }
         eventChannel.subscribeAlways<MemberJoinRequestEvent> {
-            event(
-                CPPEvent.MemberJoinRequestEvent(
-                    this.group?.toContact() ?: emptyContact(this.bot.id),
-                    this.invitor?.toContact() ?: emptyContact(this.bot.id),
-                    this.fromId,
-                    json.encodeToString(this.toRequestEventData())
-                )
-            )
+            event(toEventData())
         }
         eventChannel.subscribeAlways<MessagePreSendEvent> {
-            val t = this.target.toContact() ?: return@subscribeAlways
-            event(
-                CPPEvent.MessagePreSendEvent(t, this.bot.id, this.message.toMessageChain().serializeToJsonString())
-            )
+            event(toEventData())
         }
     }
 }
