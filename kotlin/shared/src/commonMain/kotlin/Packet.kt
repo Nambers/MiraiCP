@@ -18,6 +18,7 @@
 
 package tech.eritquearcus.miraicp.shared
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -28,6 +29,15 @@ import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.MessageSerializers
 import net.mamoe.mirai.message.data.MessageSource
 
+@OptIn(ExperimentalSerializationApi::class)
+val json by lazy {
+    Json {
+        serializersModule = MessageSerializers.serializersModule
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+        explicitNulls = false
+    }
+}
 object Packets {
     @Serializable
     data class Contact(
@@ -40,9 +50,21 @@ object Packets {
          * 6- Anonymous Member
          */
         val type: Int = -1,
-        val id: Long? = null,
-        val id2: Long? = null,
-        val botId: Long = -1,
+        /**
+         * NotNullable
+         * friendId / GroupId / MemberId / BotId / StrangerId / Anonymous MemberId
+         */
+        val id: Long = -1,
+        /**
+         * NotNullable
+         * GroupId for Member / BotId for other
+         */
+        val id2: Long = -1,
+        /**
+         * Nullable
+         * BotId for Member / null for other
+         */
+        val id3: Long? = null,
     )
 
     object Incoming {
@@ -52,14 +74,24 @@ object Packets {
     object Outgoing {
         @Serializable
         data class MessageEventData(
+            /// MiraiCode for message
             val message: String,
+            /// MessageSource
             val source: String,
         )
 
         @Serializable
         data class MemberLeave(
+            /**
+             * 1 - Kick
+             * 2 - Quit
+             */
             val leaveType: Int,
-            val operator: Contact?,
+            /**
+             * if leaveType == 2, it should be empty
+             * if leaveType = 1, it could be a Member or Bot itself
+             */
+            val operator: Contact? = null,
         )
 
         @Serializable
@@ -73,14 +105,14 @@ object Packets {
     }
 
     object Utils {
-        private fun Group.toContact(): Contact = Contact(2, this.id, 0, this.bot.id)
+        private fun Group.toContact(): Contact = Contact(2, this.id, this.bot.id)
         private fun Member.toContact(): Contact = Contact(3, this.id, this.group.id, this.bot.id)
         private fun AnonymousMember.toContact(): Contact =
             Contact(6, this.id, this.group.id, this.bot.id)
 
-        private fun Friend.toContact(): Contact = Contact(1, this.id, 0, this.bot.id)
-        private fun Bot.toContact(): Contact = Contact(4, this.id, 0, this.id)
-        private fun Stranger.toContact(): Contact = Contact(5, this.id, 0, this.bot.id)
+        private fun Friend.toContact(): Contact = Contact(1, this.id, this.bot.id)
+        private fun Bot.toContact(): Contact = Contact(4, this.id, this.id)
+        private fun Stranger.toContact(): Contact = Contact(5, this.id, this.bot.id)
         private fun net.mamoe.mirai.contact.Contact.toContact(): Contact = when (this) {
             is Group, is Friend, is Member, is Bot, is Stranger, is AnonymousMember -> this.toContact()
             else -> {
@@ -134,9 +166,7 @@ object Packets {
                     1, this.operator?.toContact() ?: this.bot.toContact()
                 )
 
-                is MemberLeaveEvent.Quit -> Outgoing.MemberLeave(
-                    2, null
-                )
+                is MemberLeaveEvent.Quit -> Outgoing.MemberLeave(2)
             }
 
         fun MemberLeaveEvent.toEventData(): String = eventToJson(toMemberLeaveEventData()) {
