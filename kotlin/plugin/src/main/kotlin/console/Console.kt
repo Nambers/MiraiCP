@@ -24,7 +24,7 @@ import net.mamoe.mirai.console.command.CommandManager
 import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.command.SimpleCommand
 import tech.eritquearcus.miraicp.PluginMain
-import tech.eritquearcus.miraicp.shared.CPPEvent
+import tech.eritquearcus.miraicp.shared.Packets
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 
 object PluginList : SimpleCommand(
@@ -34,7 +34,7 @@ object PluginList : SimpleCommand(
 ) {
     @Handler
     fun ConsoleCommandSender.pluginList() {
-        event(CPPEvent.LibLoaderEvent("PluginList"))
+        event(Packets.Outgoing.LibLoaderEvent("PluginList"))
     }
 }
 
@@ -45,7 +45,7 @@ object DisablePlugin : SimpleCommand(
 ) {
     @Handler
     fun ConsoleCommandSender.disable(id: String) {
-        event(CPPEvent.LibLoaderEvent("DisablePlugin", id))
+        event(Packets.Outgoing.LibLoaderEvent("DisablePlugin", id))
 //        try {
 //            PublicShared.cpp.first { it.config.name == name }
 //            (!PublicShared.disablePlugins.contains(name)) && PublicShared.disablePlugins.add(name)
@@ -63,7 +63,7 @@ object EnablePlugin : SimpleCommand(
 ) {
     @Handler
     fun ConsoleCommandSender.enable(id: String) {
-        event(CPPEvent.LibLoaderEvent("EnablePlugin", id))
+        event(Packets.Outgoing.LibLoaderEvent("EnablePlugin", id))
 //        if (PublicShared.disablePlugins.contains(name)) {
 //            PublicShared.disablePlugins.remove(name)
 //            sendMessage("启用${name}成功")
@@ -80,7 +80,7 @@ object DisablePluginList : SimpleCommand(
 ) {
     @Handler
     fun ConsoleCommandSender.dList() {
-        event(CPPEvent.LibLoaderEvent("DisablePluginList"))
+        event(Packets.Outgoing.LibLoaderEvent("DisablePluginList"))
 //        PublicShared.disablePlugins.forEach {
 //            sendMessage(it)
 //        }
@@ -94,7 +94,7 @@ object LoadPlugin : SimpleCommand(
 ) {
     @Handler
     fun ConsoleCommandSender.load(path: String) {
-        event(CPPEvent.LibLoaderEvent("LoadPlugin", path))
+        event(Packets.Outgoing.LibLoaderEvent("LoadPlugin", path))
 //        val f = File(path)
 //        when {
 //            !f.isFile || !f.exists() -> {
@@ -114,7 +114,7 @@ object UnloadPlugin : SimpleCommand(
 ) {
     @Handler
     fun ConsoleCommandSender.load(id: String) {
-        event(CPPEvent.LibLoaderEvent("UnloadPlugin", id))
+        event(Packets.Outgoing.LibLoaderEvent("UnloadPlugin", id))
     }
 }
 
@@ -125,7 +125,7 @@ object ReloadPlugin : SimpleCommand(
 ) {
     @Handler
     fun ConsoleCommandSender.load(id: String) {
-        event(CPPEvent.LibLoaderEvent("ReloadPlugin", id))
+        event(Packets.Outgoing.LibLoaderEvent("ReloadPlugin", id))
     }
 }
 
