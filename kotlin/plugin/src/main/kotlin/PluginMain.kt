@@ -19,7 +19,6 @@
 package tech.eritquearcus.miraicp
 
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -29,6 +28,7 @@ import tech.eritquearcus.miraicp.console.CommandHandlerImpl
 import tech.eritquearcus.miraicp.console.registerCommands
 import tech.eritquearcus.miraicp.shared.*
 import tech.eritquearcus.miraicp.shared.BuiltInConstants.version
+import tech.eritquearcus.miraicp.shared.Packets.Utils.toEventData
 import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 import java.io.File
@@ -86,9 +86,7 @@ object PluginMain : KotlinPlugin(
         )
         logger.info("⭐已成功启动MiraiCP⭐")
         GlobalEventChannel.parentScope(this).subscribeAlways<BotOnlineEvent> {
-            event(
-                json.encodeToString(CPPEvent.BotOnline(this.bot.id))
-            )
+            event(toEventData())
         }
         PublicShared.onEnable(GlobalEventChannel.parentScope(this))
     }

@@ -98,10 +98,20 @@ object Packets {
     )
 
     object Incoming {
-
+        @Serializable
+        data class Request(
+            val text: String,
+            val accept: Boolean,
+            val botid: Long,
+            val ban: Boolean? = null,
+        )
     }
 
     object Outgoing {
+        interface EventPacket {
+            val eventId: Int
+        }
+
         @Serializable
         data class EventData<T>(
             val eventData: T,
@@ -118,18 +128,102 @@ object Packets {
         )
 
         @Serializable
-        class MessageEventData {
+        class BotOnline : EventPacket {
+            override val eventId: Int = 0
+        }
+
+        @Serializable
+        class BotJoinGroup : EventPacket {
+            override val eventId = 1
+
+            /**
+             * 1 - Invite
+             * 2 - Active
+             * 3 - Retrieve
+             */
+            private val eventType: Int
+
+            /// what group the bot join
+            private val group: Contact
+
+            /// who invite the bot
+            private val invitor: Contact?
+
+            @OptIn(MiraiExperimentalApi::class)
+            constructor(event: BotJoinGroupEvent) {
+                group = event.group.toContact()
+                when (event) {
+                    is BotJoinGroupEvent.Invite -> {
+                        eventType = 1
+                        invitor = event.invitor.toContact()
+                    }
+
+                    is BotJoinGroupEvent.Active -> {
+                        eventType = 2
+                        invitor = null
+                    }
+
+                    is BotJoinGroupEvent.Retrieve -> {
+                        eventType = 3
+                        invitor = null
+                    }
+                }
+            }
+        }
+
+        @Serializable
+        class BotInvitedJoinGroupRequest : EventPacket {
+            override val eventId = 2
+
+            /// request serialization data, use to accept or reject
+            private val request: String
+
+            /// eventId, unique for each request
+            private val requestEventId: Long
+
+            /// group name
+            private val groupName: String
+
+            constructor(event: BotInvitedJoinGroupRequestEvent) {
+                val data = event.toRequestEventData()
+                request = json.encodeToString(data)
+                requestEventId = data.eventId
+                groupName = data.groupName
+            }
+        }
+
+        @Serializable
+        class BotLeave : EventPacket {
+            override val eventId = 3
+
+            /**
+             * 1 - Active
+             * 2 - Kick
+             * 3 - Disband
+             */
             val eventType: Int
 
+            @OptIn(MiraiExperimentalApi::class)
+            constructor(event: BotLeaveEvent) {
+                eventType = when (event) {
+                    is BotLeaveEvent.Active -> 1
+                    is BotLeaveEvent.Kick -> 2
+                    is BotLeaveEvent.Disband -> 3
+                }
+            }
+        }
+
+        @Serializable
+        class MessageEventData : EventPacket {
+            override val eventId = 4
+            private val eventType: Int
+
             /// serialization json string of MessageChain without source
-            val message: String
+            private val message: String
 
             /// MessageSource
-            val source: String
+            private val source: String
 
-            companion object {
-                const val eventId = 1
-            }
 
             constructor(event: MessageEvent) {
                 eventType = when (event) {
@@ -155,22 +249,108 @@ object Packets {
         }
 
         @Serializable
-        class MemberLeave {
+        class MessageRecall : EventPacket {
+            override val eventId = 5
+
+            /// unique id for each message
+            private val messageIds: IntArray
+
+            /// unique id for each message
+            private val messageInternalIds: IntArray
+
+            /// when is the message send
+            private val messageTime: Int
+
+            /// who send the message
+            private val author: Contact
+
+            /// recall type
+            private val eventType: Int
+
+            constructor(event: MessageRecallEvent) {
+                messageIds = event.messageIds
+                messageInternalIds = event.messageInternalIds
+                messageTime = event.messageTime
+                when (event) {
+                    is MessageRecallEvent.GroupRecall -> {
+                        author = event.author.toContact()
+                        eventType = 1
+                    }
+
+                    is MessageRecallEvent.FriendRecall -> {
+                        author = event.author.toContact()
+                        eventType = 2
+                    }
+                }
+            }
+        }
+
+        @Serializable
+        class MessagePreSend : EventPacket {
+            override val eventId = 6
+            private val message: String
+
+            constructor(event: MessagePreSendEvent) {
+                message = event.message.toMessageChain().serializeToJsonString()
+            }
+        }
+
+        @Serializable
+        class Nudge : EventPacket {
+            override val eventId = 7
+
+            /// who receive the nudge
+            val target: Contact
+
+            /// text in nudge
+            val action: String
+
+            /// text in nudge
+            val suffix: String
+
+            constructor(event: NudgeEvent) {
+                target = event.target.toContact()
+                action = event.action
+                suffix = event.suffix
+            }
+        }
+
+        @Serializable
+        class NewFriendRequest : EventPacket {
+            override val eventId = 8
+
+            /// request serialization data, use to accept or reject
+            private val request: String
+
+            /// eventId, unique for each request
+            private val requestEventId: Long
+
+            /// message from requester
+            private val message: String
+
+            constructor(event: NewFriendRequestEvent) {
+                val data = event.toRequestEventData()
+                request = json.encodeToString(data)
+                requestEventId = data.eventId
+                message = data.message
+            }
+        }
+
+        @Serializable
+        class MemberLeave : EventPacket {
+            override val eventId = 9
+
             /**
              * 1 - Kick
              * 2 - Quit
              */
-            val eventType: Int
+            private val eventType: Int
 
             /**
              * if leaveType == 2, it should be null
              * if leaveType = 1, it could be a Member or Bot itself
              */
-            val operator: Contact?
-
-            companion object {
-                const val eventId = 1
-            }
+            private val operator: Contact?
 
             constructor(event: MemberLeaveEvent) {
                 when (event) {
@@ -188,16 +368,18 @@ object Packets {
         }
 
         @Serializable
-        class MemberJoin {
+        class MemberJoin : EventPacket {
+            override val eventId = 10
+
             /**
             invite - 1
             active - 2
             retrieve - 3
              */
-            val eventType: Int
+            private val eventType: Int
 
             /// if joinType != 1, it should be null
-            val invitor: Contact?
+            private val invitor: Contact?
 
             constructor(event: MemberJoinEvent) {
                 when (event) {
@@ -220,160 +402,17 @@ object Packets {
         }
 
         @Serializable
-        class NewFriendRequest {
+        class MemberJoinRequest : EventPacket {
+            override val eventId = 11
+
             /// request serialization data, use to accept or reject
-            val request: String
-
-            /// eventId, unique for each request
-            val requestEventId: Long
-
-            /// message from requester
-            val message: String
-
-            constructor(event: NewFriendRequestEvent) {
-                val data = event.toRequestEventData()
-                request = json.encodeToString(data)
-                requestEventId = data.eventId
-                message = data.message
-            }
-        }
-
-        @Serializable
-        class MessageRecall {
-            /// unique id for each message
-            val messageIds: IntArray
-
-            /// unique id for each message
-            val messageInternalIds: IntArray
-
-            /// when is the message send
-            val messageTime: Int
-
-            /// who send the message
-            val author: Contact
-
-            /// recall type
-            val eventType: Int
-
-            constructor(event: MessageRecallEvent) {
-                messageIds = event.messageIds
-                messageInternalIds = event.messageInternalIds
-                messageTime = event.messageTime
-                when (event) {
-                    is MessageRecallEvent.GroupRecall -> {
-                        author = event.author.toContact()
-                        eventType = 1
-                    }
-
-                    is MessageRecallEvent.FriendRecall -> {
-                        author = event.author.toContact()
-                        eventType = 2
-                    }
-                }
-            }
-        }
-
-        @Serializable
-        class BotJoinGroup {
-            /**
-             * 1 - Invite
-             * 2 - Active
-             * 3 - Retrieve
-             */
-            val eventType: Int
-            val group: Contact
-            val invitor: Contact?
-
-            @OptIn(MiraiExperimentalApi::class)
-            constructor(event: BotJoinGroupEvent) {
-                group = event.group.toContact()
-                when (event) {
-                    is BotJoinGroupEvent.Invite -> {
-                        eventType = 1
-                        invitor = event.invitor.toContact()
-                    }
-
-                    is BotJoinGroupEvent.Active -> {
-                        eventType = 2
-                        invitor = null
-                    }
-
-                    is BotJoinGroupEvent.Retrieve -> {
-                        eventType = 3
-                        invitor = null
-                    }
-                }
-            }
-        }
-
-        @Serializable
-        class BotInvitedJoinGroupRequest {
-            /// request serialization data, use to accept or reject
-            val request: String
-
-            /// eventId, unique for each request
-            val requestEventId: Long
-
-            /// group name
-            val groupName: String
-
-            constructor(event: BotInvitedJoinGroupRequestEvent) {
-                val data = event.toRequestEventData()
-                request = json.encodeToString(data)
-                requestEventId = data.eventId
-                groupName = data.groupName
-            }
-        }
-
-        @Serializable
-        class Nudge {
-            /// who receive the nudge
-            val target: Contact
-            val action: String
-            val suffix: String
-
-            constructor(event: NudgeEvent) {
-                target = event.target.toContact()
-                action = event.action
-                suffix = event.suffix
-            }
-        }
-
-        @Serializable
-        class BotLeave {
-            /**
-             * 1 - Active
-             * 2 - Kick
-             * 3 - Disband
-             */
-            val eventType: Int
-
-            @OptIn(MiraiExperimentalApi::class)
-            constructor(event: BotLeaveEvent) {
-                when (event) {
-                    is BotLeaveEvent.Active -> {
-                        eventType = 1
-                    }
-
-                    is BotLeaveEvent.Kick -> {
-                        eventType = 2
-                    }
-
-                    is BotLeaveEvent.Disband -> {
-                        eventType = 3
-                    }
-                }
-            }
-        }
-
-        @Serializable
-        class MemberJoinRequest {
-            /// request serialization data, use to accept or reject
-            val requestData: String
+            private val requestData: String
 
             /// invitor
-            val invitor: Contact?
-            val fromNick: String
+            private val invitor: Contact?
+
+            /// nick of requester
+            private val fromNick: String
 
             constructor(event: MemberJoinRequestEvent) {
                 val data = event.toRequestEventData()
@@ -384,18 +423,20 @@ object Packets {
         }
 
         @Serializable
-        class MessagePreSend {
-            val message: String
-
-            constructor(event: MessagePreSendEvent) {
-                message = event.message.toMessageChain().serializeToJsonString()
-            }
-        }
+        data class LibLoaderEvent(
+            val name: String,
+            val content: String? = null,
+            override val eventId: Int = 1000,
+        ) : EventPacket
     }
 
     object Utils {
-        private inline fun <reified T : Any> BotEvent.eventToJson(event: T, builder: (Outgoing.EventData<T>) -> Unit) =
-            Json.encodeToString(Outgoing.EventData(event, botId = this.bot.id).also { builder(it) })
+        private inline fun <reified T : Outgoing.EventPacket> BotEvent.eventToJson(
+            event: T,
+            builder: (Outgoing.EventData<T>) -> Unit
+        ) =
+            Json.encodeToString(
+                Outgoing.EventData(event, botId = this.bot.id, eventId = event.eventId).also { builder(it) })
 
         fun MessageEvent.toEventData(): String = eventToJson(Outgoing.MessageEventData(this)) {
             when (this) {
@@ -477,17 +518,9 @@ object Packets {
         fun BotLeaveEvent.toEventData(): String = eventToJson(Outgoing.BotLeave(this)) {
             it.subject = this.bot.toContact()
             when (it.eventData.eventType) {
-                1 -> {
-                    it.`object` = this.bot.toContact()
-                }
-
-                2 -> {
-                    it.`object` = (this as BotLeaveEvent.Kick).operator.toContact()
-                }
-
-                3 -> {
-                    it.`object` = (this as BotLeaveEvent.Disband).operator.toContact()
-                }
+                1 -> it.`object` = this.bot.toContact()
+                2 -> it.`object` = (this as BotLeaveEvent.Kick).operator.toContact()
+                3 -> it.`object` = (this as BotLeaveEvent.Disband).operator.toContact()
             }
         }
 
@@ -501,6 +534,11 @@ object Packets {
 
         fun MessagePreSendEvent.toEventData(): String = eventToJson(Outgoing.MessagePreSend(this)) {
             it.subject = this.target.toContact()
+            it.`object` = this.bot.toContact()
+        }
+
+        fun BotOnlineEvent.toEventData(): String = eventToJson(Outgoing.BotOnline()) {
+            it.subject = this.bot.toContact()
             it.`object` = this.bot.toContact()
         }
     }

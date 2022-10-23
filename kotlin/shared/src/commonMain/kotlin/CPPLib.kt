@@ -82,13 +82,13 @@ object CPPLib {
 
     // new friend request operation
     suspend fun KNfroperation(text: String): String = run {
-        val tmp = json.decodeFromString<CPPEvent.Request>(text)
+        val tmp = json.decodeFromString<Packets.Incoming.Request>(text)
         PublicShared.accpetFriendRequest(tmp.text, tmp.botid, tmp.accept, tmp.ban)
     }
 
     // Group invite operation
     suspend fun KGioperation(text: String): String = run {
-        val tmp = json.decodeFromString<CPPEvent.Request>(text)
+        val tmp = json.decodeFromString<Packets.Incoming.Request>(text)
         PublicShared.acceptGroupInvite(tmp.text, tmp.botid, tmp.accept)
     }
 
