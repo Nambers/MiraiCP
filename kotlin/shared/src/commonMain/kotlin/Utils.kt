@@ -189,7 +189,7 @@ internal inline fun sendWithCatch(block: () -> MessageSource): String {
     } catch (e: EventCancelledException) {
         return "EC"
     }
-    return PublicShared.json.encodeToString(MessageSerializers.serializersModule.serializer(), s)
+    return json.encodeToString(MessageSerializers.serializersModule.serializer(), s)
 }
 
 internal suspend inline fun <reified E : MessageEvent> nextMessage(

@@ -21,7 +21,6 @@ package tech.eritquearcus.miraicp.shared
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import tech.eritquearcus.miraicp.shared.PublicShared.json
 
 expect object CPPLibMultiplatform {
     fun init(

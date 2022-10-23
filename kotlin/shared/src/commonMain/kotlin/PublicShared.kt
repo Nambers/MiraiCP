@@ -22,10 +22,8 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.*
@@ -74,15 +72,6 @@ object PublicSharedData {
 }
 
 object PublicShared {
-    @OptIn(ExperimentalSerializationApi::class)
-    val json by lazy {
-        Json {
-            serializersModule = MessageSerializers.serializersModule
-            ignoreUnknownKeys = true
-            encodeDefaults = true
-            explicitNulls = false
-        }
-    }
     val friend_cache = ArrayList<NormalMember>(0)
     private val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     const val now_tag = "v${BuiltInConstants.version}"
