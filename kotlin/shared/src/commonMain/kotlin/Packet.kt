@@ -241,7 +241,7 @@ object Packets {
                     if (it.contains(MessageSource)) it.drop(1)
                     else it
                 })
-                source = PublicShared.json.encodeToString(
+                source = json.encodeToString(
                     MessageSerializers.serializersModule.serializer(),
                     event.message[MessageSource]!!
                 )
