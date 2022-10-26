@@ -69,6 +69,7 @@ class MiraiCPLoginSolver : LoginSolver() {
         } else {
             Console.console.println("url" + requests.fallback!!.url)
             bot.logger.info("正在处理fallBack验证")
+            Console.console.prompt("输入任意值继续")
             requests.fallback!!.solved()
         }
     }
