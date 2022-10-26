@@ -52,6 +52,10 @@ class MiraiCPFileImpl(private val file: File) : MiraiCPFile {
     override fun delete(): Boolean = file.delete()
 
     override fun toExternalResource(): ExternalResource = file.toExternalResource()
+
+    override fun writeByteArray(bytes: ByteArray) {
+        file.writeBytes(bytes)
+    }
 }
 
 actual object MiraiCPFiles {

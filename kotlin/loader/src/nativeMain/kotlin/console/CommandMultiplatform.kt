@@ -25,7 +25,6 @@ import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.KotlinMainData
 import tech.eritquearcus.miraicp.loader.console.Command.lastOneOrMoreParamOrder
 import tech.eritquearcus.miraicp.loader.console.Command.printHelp
-import tech.eritquearcus.miraicp.shared.CPPEvent
 import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
@@ -53,11 +52,11 @@ actual object CommandMultiplatform {
             }
 
             "pluginList", "pList" -> {
-                event(CPPEvent.LibLoaderEvent("PluginList"))
+                event(Packets.Outgoing.LibLoaderEvent("PluginList"))
             }
 
             "disablePluginList", "dList" -> {
-                event(CPPEvent.LibLoaderEvent("DisablePluginList"))
+                event(Packets.Outgoing.LibLoaderEvent("DisablePluginList"))
             }
 
             else -> lastOneOrMoreParamOrder(listOf(order))

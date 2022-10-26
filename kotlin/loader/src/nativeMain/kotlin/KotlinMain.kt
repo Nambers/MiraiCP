@@ -20,6 +20,7 @@
 
 package tech.eritquearcus.miraicp.loader
 
+import MiraiCPLoginSolver
 import kotlinx.serialization.decodeFromString
 import net.mamoe.mirai.internal.initMirai
 import net.mamoe.mirai.utils.MiraiExperimentalApi
@@ -27,7 +28,6 @@ import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
 import tech.eritquearcus.miraicp.loader.console.registerFactory
 import tech.eritquearcus.miraicp.shared.*
-import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 import kotlin.native.concurrent.ThreadLocal
@@ -78,8 +78,7 @@ actual object KotlinMain {
             exit()
         }
         c.accounts?.filter { it.autoLogin == true }?.forEach {
-            it.login()
-            // logined = true
+            it.login(MiraiCPLoginSolver())
         }
         logger.info("⭐已成功加载MiraiCP⭐")
         Console.listen()

@@ -19,7 +19,6 @@
 package tech.eritquearcus.miraicp.shared
 
 import kotlinx.serialization.encodeToString
-import tech.eritquearcus.miraicp.shared.PublicShared.json
 
 actual object UlitsMultiPlatform {
     actual inline fun <reified T> event(value: T) {

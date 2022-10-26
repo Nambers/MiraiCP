@@ -28,6 +28,7 @@ import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.network.LoginFailedException
 import net.mamoe.mirai.utils.BotConfiguration
+import net.mamoe.mirai.utils.LoginSolver
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.shared.CPPConfig
 import tech.eritquearcus.miraicp.shared.CPPEvent
@@ -45,7 +46,7 @@ internal fun String.decodeHex(): ByteArray {
  * @throws LoginFailedException 正常登录失败时抛出
  */
 @MiraiExperimentalApi
-fun CPPConfig.LoaderConfig.Account.login() {
+fun CPPConfig.LoaderConfig.Account.login(selfLoginSolver: LoginSolver? = LoginSolver.Default) {
     this.logined = true
     val p = when (this.protocol?.uppercase()) {
         "PAD" -> BotConfiguration.MiraiProtocol.ANDROID_PAD
@@ -77,12 +78,14 @@ fun CPPConfig.LoaderConfig.Account.login() {
             fileBasedDeviceInfo()
             this.protocol = p
             this.heartbeatStrategy = h
+            loginSolver = selfLoginSolver
         }
     } else {
         BotFactory.newBot(this.id, this.passwords.decodeHex()) {
             fileBasedDeviceInfo()
             this.protocol = p
             this.heartbeatStrategy = h
+            loginSolver = selfLoginSolver
         }
     }
     b.eventChannel.subscribeAlways<BotOnlineEvent> {
