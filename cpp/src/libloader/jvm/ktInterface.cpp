@@ -45,7 +45,7 @@ jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
     LibLoader::JNIEnvs::initializeMiraiCPLoader();
     MiraiCP::Redirector::start();
 
-    LibLoader::logger.info("⭐libLoader 版本: " + MiraiCP::MiraiCPVersion);
+    LibLoader::logger.info("* libLoader 版本: " + MiraiCP::MiraiCPVersion);
     auto version = "v" + LibLoader::jstring2str(_version);
     if (version != MiraiCP::MiraiCPVersion) {
         LibLoader::logger.warning(
