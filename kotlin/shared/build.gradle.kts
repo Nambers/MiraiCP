@@ -17,6 +17,7 @@
  */
 import Version.`kotlinx-coroutines-core`
 import Version.`mirai-core-api`
+import Version.`mirai-core-mock`
 import Version.`mirai-core-utils`
 
 plugins {
@@ -58,6 +59,11 @@ kotlin {
                 implementation(`kotlinx-coroutines-core`)
             }
             apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(`mirai-core-mock`)
+            }
         }
 
         val jvmMain by getting

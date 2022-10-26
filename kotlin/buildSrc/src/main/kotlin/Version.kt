@@ -24,11 +24,12 @@ object Version {
     const val `kotlinx-coroutines-core` = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 
     const val mirai = "2.13.0-RC2"
-    const val `mirai-core-api` = "net.mamoe:mirai-core-api:${mirai}"
-    const val `mirai-core-utils` = "net.mamoe:mirai-core-utils:${mirai}"
-    const val `mirai-console` = "net.mamoe:mirai-console:${mirai}"
-    const val `mirai-core` = "net.mamoe:mirai-core:${mirai}"
-    const val `mirai-logging` = "net.mamoe:mirai-logging-log4j2:${mirai}"
+    const val `mirai-core-api` = "net.mamoe:mirai-core-api:$mirai"
+    const val `mirai-core-utils` = "net.mamoe:mirai-core-utils:$mirai"
+    const val `mirai-console` = "net.mamoe:mirai-console:$mirai"
+    const val `mirai-core-mock` = "net.mamoe:mirai-core-mock:$mirai"
+    const val `mirai-core` = "net.mamoe:mirai-core:$mirai"
+    const val `mirai-logging` = "net.mamoe:mirai-logging-log4j2:$mirai"
 
     const val mavenCenterPublish = "1.0.0"
     const val jline = "org.jline:jline:3.21.0"

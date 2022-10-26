@@ -124,6 +124,17 @@ class MiraiCPFileUnixImpl(val path: String) : MiraiCPFile {
         }
     }
 
+    override fun writeByteArray(bytes: ByteArray) {
+        val file = fopen(absolutePath, "wb") ?: throw IllegalArgumentException("Cannot open output file $absolutePath")
+        try {
+            memScoped {
+                fwrite(bytes.toCValues(), bytes.size.convert(), 1, file) // write 10 bytes from our buffer
+            }
+        } finally {
+            fclose(file)
+        }
+    }
+
     override fun canRead(): Boolean = exists() && useStat { it.st_mode.convert<UInt>() flag S_IRUSR } ?: false
 
     override fun readText(): String {

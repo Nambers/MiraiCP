@@ -26,7 +26,6 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.loader.KotlinMainData
 import tech.eritquearcus.miraicp.loader.console.CommandMultiplatform.pureOrder
 import tech.eritquearcus.miraicp.loader.login
-import tech.eritquearcus.miraicp.shared.CPPEvent
 import tech.eritquearcus.miraicp.shared.Command2C
 import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.PublicSharedData
@@ -123,25 +122,25 @@ object Command {
                     }
 
                     else -> {
-                        event(CPPEvent.LibLoaderEvent("LoadPlugin", f.absolutePath))
+                        event(Packets.Outgoing.LibLoaderEvent("LoadPlugin", f.absolutePath))
                     }
                 }
             }
 
             "disablePlugin", "disable" -> {
-                event(CPPEvent.LibLoaderEvent("DisablePlugin", order[1]))
+                event(Packets.Outgoing.LibLoaderEvent("DisablePlugin", order[1]))
             }
 
             "enablePlugin", "enable" -> {
-                event(CPPEvent.LibLoaderEvent("EnablePlugin", order[1]))
+                event(Packets.Outgoing.LibLoaderEvent("EnablePlugin", order[1]))
             }
 
             "unloadPlugin", "unload" -> {
-                event(CPPEvent.LibLoaderEvent("UnloadPlugin", order[1]))
+                event(Packets.Outgoing.LibLoaderEvent("UnloadPlugin", order[1]))
             }
 
             "reloadPlugin", "reload" -> {
-                event(CPPEvent.LibLoaderEvent("ReloadPlugin", order[1]))
+                event(Packets.Outgoing.LibLoaderEvent("ReloadPlugin", order[1]))
             }
 
             else -> lastOneOrMoreParamOrder(re)

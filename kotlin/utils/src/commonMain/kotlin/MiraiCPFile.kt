@@ -44,6 +44,7 @@ interface MiraiCPFile {
     fun writeText(text: String)
     fun canRead(): Boolean
     fun readText(): String
+    fun writeByteArray(bytes: ByteArray)
 }
 
 expect object MiraiCPFiles {
