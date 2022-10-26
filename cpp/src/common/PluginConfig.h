@@ -26,18 +26,18 @@ namespace MiraiCP {
     const std::string MiraiCPVersion = "v2.12.0-RC2";
     struct PluginConfig {
         /// @brief 插件id, 要与别人不一样否则报错无法加载(建议用类包格式，如: io.github.nambers)
-        MiraiCPString id;
+        const char *id;
         /// @brief 插件名称
-        MiraiCPString name;
+        const char *name;
         /// @brief 插件版本
-        MiraiCPString version;
+        const char *version;
         /// @brief 插件作者(及联系方式)
-        MiraiCPString author;
+        const char *author;
         /// @brief [optional]插件描述
-        MiraiCPString description = "";
+        const char *description = "";
         /// @brief [optional]构建时间, 默认为__DATE__宏
-        MiraiCPString time = __DATE__;
-        MiraiCPString mversion = MiraiCPVersion.c_str();
+        const char *time = __DATE__;
+        const char *mversion = MiraiCPVersion.c_str();
 
         std::string getId() const {
             return {id};
@@ -57,7 +57,6 @@ namespace MiraiCP {
         std::string getTime() const {
             return {time};
         }
-
         std::string getMVersion() const {
             return {mversion};
         }

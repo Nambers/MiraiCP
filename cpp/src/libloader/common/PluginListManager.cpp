@@ -52,7 +52,7 @@ namespace LibLoader {
                 if (filter(*v)) FormatPluginListInfo(v->config(), charNum, ans);
             } else {
                 FormatPluginListInfo(
-                        MiraiCP::PluginConfig{"(unknown)", v->path, "(unknown)", "(unknown)", "(unknown)", "(unknown)",
+                        MiraiCP::PluginConfig{"(unknown)", v->path.c_str(), "(unknown)", "(unknown)", "(unknown)", "(unknown)",
                                               "(unknown)"}, charNum, ans);
             }
         }
