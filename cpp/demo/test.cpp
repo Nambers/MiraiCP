@@ -20,22 +20,22 @@
 using namespace MiraiCP;
 
 const PluginConfig CPPPlugin::config{
-        "id1",  // 插件id
-        "test", // 插件名称
-        "v1.0", // 插件版本
-        "a",    // 插件作者
-                // 可选：插件描述
-                // 可选：日期
+        "id1",          // 插件id
+        "test",         // 插件名称
+        "v1.0",         // 插件版本
+        "a",            // 插件作者
+        "测试中文描述", // 可选：插件描述
+                        // 可选：日期
 };
 
-// Member mem("sb");
-Member mem(nlohmann::json{{"id",1234567},{"botid",1245634},{"groupid",123456}});
-Member mem2(123,456,789);
+// 测试全局变量构造
+Member mem(nlohmann::json{{"id", 1234567}, {"botid", 1245634}, {"groupid", 123456}});
+Member mem2(123, 456, 789);
 
 class Main : public CPPPlugin {
 public:
     // 配置插件信息
-    Main() : CPPPlugin() {} // 此处填写配置已deprecated
+    Main() : CPPPlugin() {}
     ~Main() override = default;
 
 public:
