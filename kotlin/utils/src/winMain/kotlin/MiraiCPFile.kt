@@ -150,15 +150,30 @@ class MiraiCPFileWinImpl(private val path: String) : MiraiCPFile {
         }
     }
 
-    override fun writeByteArray(text: ByteArray) {
+    override fun writeByteArray(bytes: ByteArray) {
         val file = fopen(absolutePath, "wb") ?: throw IllegalArgumentException("Cannot open output file $absolutePath")
         try {
             memScoped {
-                fwrite(text.toCValues(), text.size.convert(), 1, file) // write 10 bytes from our buffer
+                fwrite(bytes.toCValues(), bytes.size.convert(), 1, file)
             }
         } finally {
             fclose(file)
         }
+    }
+
+    override fun readByteArray(): ByteArray {
+        val file = fopen(absolutePath, "rb") ?: throw IllegalArgumentException("Cannot open input file $absolutePath")
+        val size = useStat { it.st_size.convert<Int>() }
+            ?: throw IllegalArgumentException("Cannot get file size $absolutePath")
+        val buffer = ByteArray(size)
+        try {
+            memScoped {
+                fread(buffer.refTo(0), size.convert(), 1, file) // read 10 bytes to our buffer
+            }
+        } finally {
+            fclose(file)
+        }
+        return buffer
     }
 
     override fun canRead(): Boolean = exists() && useStat { it.st_mode.convert<UInt>() flag S_IRUSR } ?: false

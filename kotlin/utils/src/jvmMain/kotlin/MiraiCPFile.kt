@@ -22,7 +22,6 @@ import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import java.io.File
 
-fun File.toMiraiCPFile() = MiraiCPFiles.create(this)
 class MiraiCPFileImpl(private val file: File) : MiraiCPFile {
     override val isFile: Boolean
         get() = file.isFile
@@ -53,9 +52,9 @@ class MiraiCPFileImpl(private val file: File) : MiraiCPFile {
 
     override fun toExternalResource(): ExternalResource = file.toExternalResource()
 
-    override fun writeByteArray(bytes: ByteArray) {
-        file.writeBytes(bytes)
-    }
+    override fun writeByteArray(bytes: ByteArray) = file.writeBytes(bytes)
+
+    override fun readByteArray(): ByteArray = file.readBytes()
 }
 
 actual object MiraiCPFiles {
