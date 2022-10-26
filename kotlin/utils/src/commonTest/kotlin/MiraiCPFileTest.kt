@@ -19,7 +19,7 @@ import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 import kotlin.random.Random
 import kotlin.test.*
 
-class PathTest {
+class MiraiCPFileTest {
     private val filesForTests = "./src/commonTest/kotlin/FilesForTest"
     private fun <T, K> List<T>.testExpects(lis: List<K>, func: (K) -> T) {
         assertEquals(this.size, lis.size)
@@ -139,5 +139,16 @@ class PathTest {
             .testExpects(listOf("$filesForTests/isFile", "$filesForTests/dir.dir")) {
                 MiraiCPFiles.create(it).parentPath
             }
+    }
+
+    @Test
+    fun testByteArray() {
+        val file1 = MiraiCPFiles.create("$filesForTests/test.png")
+        val file2 = MiraiCPFiles.create("$filesForTests/test2.png")
+        if (file2.exists()) {
+            file2.delete()
+        }
+        file2.writeByteArray(file1.readByteArray())
+        assertTrue(file1.readByteArray().contentEquals(file2.readByteArray()))
     }
 }
