@@ -45,8 +45,7 @@ namespace MiraiCP {
 
     auto GetGroupFromPool(const json &in_json) {
         try {
-            // todo(Antares): group 的 in_json 的 groupid 项是空值就很离谱，上游这里为什么这样设计？
-            return GetGroupFromPool(in_json["id"], in_json["botid"]);
+            return GetGroupFromPool(in_json["id"], in_json["id2"]);
         } catch (const nlohmann::detail::exception &) {
             throw IllegalArgumentException("构造Group时传入的json异常", MIRAICP_EXCEPTION_WHERE);
         }

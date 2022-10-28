@@ -266,12 +266,17 @@ namespace MiraiCP {
         /// @attention 本方法并不会自动附加MessageSource到MessageChain, 需要用.plus方法自行附加
         static MessageChain deserializationFromMessageSourceJson(nlohmann::json j, bool origin = true);
 
+        /// 从 Message json中构建MessageChain, 常用于Incoming message
+        /// @attention 本方法并不会自动附加MessageSource到MessageChain, 需要用.plus方法自行附加
+        static MessageChain deserializationFromMessageJson(const nlohmann::json &j);
+
     private: // private methods
         void constructMessages() {}
 
         template<class T1, class... T2>
         void constructMessages(T1 &&h, T2 &&...args) {
-            static_assert(std::is_base_of_v<SingleMessage, typename std::remove_reference_t<T1>>, "只支持SingleMessage子类");
+            static_assert(std::is_base_of_v<SingleMessage, typename std::remove_reference_t<T1>>,
+                          "只支持SingleMessage子类");
             emplace_back(std::forward<T1>(h));
             constructMessages(std::forward<T2>(args)...);
         }

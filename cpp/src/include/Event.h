@@ -28,38 +28,72 @@
 namespace MiraiCP {
     /// Event 工厂
     namespace eventTypes {
+//        enum Types {
+//            BaseEvent [[maybe_unused]], // 0
+//            GroupMessageEvent,          // 1
+//            PrivateMessageEvent,        // 2
+//            GroupInviteEvent,           // 3
+//            NewFriendRequestEvent,      // 4
+//            MemberJoinEvent,            // 5
+//            MemberLeaveEvent,           // 6
+//            RecallEvent,                // 7
+//            BotJoinGroupEvent,          // 8
+//            GroupTempMessageEvent,      // 9
+//            TimeOutEvent,               // 10
+//            BotOnlineEvent,             // 11
+//            NudgeEvent,                 // 12
+//            BotLeaveEvent,              // 13
+//            MemberJoinRequestEvent,     // 14
+//            MessagePreSendEvent,        // 15
+//            MiraiCPExceptionEvent,      // 16
+//            Command,                    // 17
+//            count,                      // 事件在此位置前定义，此时count为事件种类数
+//            error                       // 出现问题时使用此enum
+//        };
         enum Types {
-            BaseEvent [[maybe_unused]], // 0
-            GroupMessageEvent,          // 1
-            PrivateMessageEvent,        // 2
-            GroupInviteEvent,           // 3
-            NewFriendRequestEvent,      // 4
-            MemberJoinEvent,            // 5
-            MemberLeaveEvent,           // 6
-            RecallEvent,                // 7
-            BotJoinGroupEvent,          // 8
-            GroupTempMessageEvent,      // 9
-            TimeOutEvent,               // 10
-            BotOnlineEvent,             // 11
-            NudgeEvent,                 // 12
-            BotLeaveEvent,              // 13
-            MemberJoinRequestEvent,     // 14
-            MessagePreSendEvent,        // 15
-            MiraiCPExceptionEvent,      // 16
-            Command,                    // 17
+            BaseEvent [[maybe_unused]] = -1,
+            BotOnlineEvent,
+            BotJoinGroupEvent,
+            GroupInviteEvent,
+            BotLeaveEvent,
+            MessageEvent,
+            RecallEvent,
+            MessagePreSendEvent,
+            NudgeEvent,
+            NewFriendRequestEvent,
+            MemberLeaveEvent,
+            MemberJoinEvent,
+            MemberJoinRequestEvent,
+            TimeOutEvent, // TODO
+            MiraiCPExceptionEvent = 16,      // 16 todo 暂时保持
+            Command = 17,                    // 17
             count,                      // 事件在此位置前定义，此时count为事件种类数
             error                       // 出现问题时使用此enum
         };
     }
 
+    class BaseEventData {
+    public:
+        std::shared_ptr<Contact> subject = nullptr;
+        std::shared_ptr<Contact> object = nullptr;
+        QQID subjectId = -1;
+        QQID objectId = -1;
+        QQID botId = -1;
+        nlohmann::json eventData;
+
+        explicit BaseEventData(nlohmann::json j);
+    };
+
     /// Event抽象父类
     class MiraiCPEvent {
     public:
         MiraiCPEvent() = default;
+
         virtual ~MiraiCPEvent() = default;
 
     public:
         static eventTypes::Types get_event_type() { return eventTypes::Types::error; }
+
         virtual eventTypes::Types getEventType() const = 0;
     };
 
@@ -84,14 +118,28 @@ namespace MiraiCP {
     /// MessageEvent类型的抽象接口，用于Message类型多态实现
     class IMessageEvent {
     public:
+        enum MessageEventType {
+            PrivateMessageEvent,
+            GroupMessageEvent,
+            GroupTempMessageEvent,
+            StrangerMessageEvent,
+        };
+
         /// 获取当前聊天，可能是群，私聊，或群临时回话
         virtual Contact *chat() = 0;
+
         /// 获取当前聊天，可能是群，私聊，或群临时回话
         virtual Contact *from() = 0;
+
         virtual MessageChain *getMessageChain() = 0;
+
         virtual const Contact *chat() const = 0;
+
         virtual const Contact *from() const = 0;
+
         virtual const MessageChain *getMessageChain() const = 0;
+
+        virtual MessageEventType getMessageEventType() const = 0;
     };
 
     /*!
@@ -101,7 +149,7 @@ namespace MiraiCP {
     class GroupMessageEvent : public BotEvent<GroupMessageEvent>, public IMessageEvent {
     public:
         static eventTypes::Types get_event_type() {
-            return eventTypes::Types::GroupMessageEvent;
+            return eventTypes::Types::MessageEvent;
         }
 
     public:
@@ -133,13 +181,17 @@ namespace MiraiCP {
          */
         MessageChain senderNextMessage(long time = -1, bool halt = true) const;
 
+        MessageEventType getMessageEventType() const override { return IMessageEvent::GroupMessageEvent; }
+
     public:
         Contact *chat() override {
             return &group;
         }
+
         const Contact *chat() const override {
             return &group;
         }
+
         Contact *from() override {
             return &sender;
         }
@@ -161,7 +213,7 @@ namespace MiraiCP {
     class PrivateMessageEvent : public BotEvent<PrivateMessageEvent>, public IMessageEvent {
     public:
         static eventTypes::Types get_event_type() {
-            return eventTypes::Types::PrivateMessageEvent;
+            return eventTypes::Types::MessageEvent;
         }
 
     public:
@@ -188,13 +240,17 @@ namespace MiraiCP {
          */
         MessageChain nextMessage(long time = -1, bool halt = true) const;
 
+        MessageEventType getMessageEventType() const override { return IMessageEvent::PrivateMessageEvent; }
+
     public:
         Contact *chat() override {
             return &sender;
         }
+
         const Contact *chat() const override {
             return &sender;
         }
+
         Contact *from() override {
             return &sender;
         }
@@ -473,7 +529,7 @@ namespace MiraiCP {
     class GroupTempMessageEvent : public BotEvent<GroupTempMessageEvent>, public IMessageEvent {
     public:
         static eventTypes::Types get_event_type() {
-            return eventTypes::Types::GroupTempMessageEvent;
+            return eventTypes::Types::MessageEvent;
         }
 
     public:
@@ -499,13 +555,17 @@ namespace MiraiCP {
         //                                                      message(std::move(message)) {}
         explicit GroupTempMessageEvent(nlohmann::json j);
 
+        MessageEventType getMessageEventType() const override { return IMessageEvent::GroupTempMessageEvent; }
+
     public:
         Contact *chat() override {
             return &sender;
         }
+
         const Contact *chat() const override {
             return &sender;
         }
+
         Contact *from() override {
             return &sender;
         }
