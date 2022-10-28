@@ -38,7 +38,7 @@ namespace MiraiCP {
             : std::thread(
                       [lambda_func = std::forward<Callable>(func)](auto &&...argss) {
                           try {
-                              const char *thread_name = CPPPlugin::config.id.copyToCharPtr();
+                              const char *thread_name = CPPPlugin::config.id;
                               platform_set_thread_name(platform_thread_self(), thread_name);
                               delete[] thread_name;
                               lambda_func(std::forward<decltype(argss)>(argss)...);
