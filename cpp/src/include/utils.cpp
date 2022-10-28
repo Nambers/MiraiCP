@@ -129,7 +129,7 @@ MIRAICP_EXPORT int FUNC_EVENT(const MiraiCP::MiraiCPString &c) {
             MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("Json格式错误：没有type这一field或这一field不是数字类型");)
             return PLUGIN_NORMAL;
         }
-        type = j["type"].get<int>();
+        type = j["eventId"].get<int>();
         if (type != eventTypes::Command && Event::noRegistered(type)) return PLUGIN_NORMAL;
     } catch (...) {
         MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("Json格式错误：解析json时遇到无法预料的异常");)

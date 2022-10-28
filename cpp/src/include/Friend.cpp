@@ -37,7 +37,7 @@ namespace MiraiCP {
 
     auto GetFriendPool(const json &in_json) {
         try {
-            return GetFriendPool(in_json["id"], in_json["botid"]);
+            return GetFriendPool(in_json["id"], in_json["id2"]);
         } catch (const nlohmann::detail::exception &) {
             throw IllegalArgumentException("构造Friend时传入的json异常", MIRAICP_EXCEPTION_WHERE);
         }

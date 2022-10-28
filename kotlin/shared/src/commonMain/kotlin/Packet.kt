@@ -113,7 +113,7 @@ object Packets {
         }
 
         @Serializable
-        data class EventData<T>(
+        data class EventData<T: EventPacket>(
             val eventData: T,
             val eventId: Int = -1,
             // nullable
