@@ -28,6 +28,7 @@ import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
 import tech.eritquearcus.miraicp.loader.console.registerFactory
 import tech.eritquearcus.miraicp.shared.*
+import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 import kotlin.native.concurrent.ThreadLocal
