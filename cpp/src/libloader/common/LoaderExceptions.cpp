@@ -35,24 +35,6 @@ namespace LibLoader {
     PluginLoadException::PluginLoadException(const string &_pluginPath, string _filename, int _lineNum)
         : LoaderExceptionCRTP(_pluginPath + " 加载失败", std::move(_filename), _lineNum) {}
 
-    SymbolResolveException::SymbolResolveException(const string &_pluginPath, SymbolType Type, string _filename, int _lineNum)
-        : LoaderExceptionCRTP(_pluginPath + " 寻找符号失败，类型：" + SymbolTypeToString(Type), std::move(_filename), _lineNum) {}
-
-    LoaderBaseException::string SymbolResolveException::SymbolTypeToString(SymbolType Type) {
-        switch (Type) {
-            case Entrance:
-                return "插件入口";
-            case Exit:
-                return "插件出口";
-            case Event:
-                return "事件函数";
-            case Config:
-                return "插件配置函数";
-            default:
-                throw LoaderException("无法到达的代码", MIRAICP_EXCEPTION_WHERE);
-        }
-    }
-
     PluginAlreadyLoadedException::PluginAlreadyLoadedException(const LoaderBaseException::string &id, LoaderBaseException::string _filename, int _lineNum)
         : LoaderExceptionCRTP("尝试加载已经被加载的插件：" + id, std::move(_filename), _lineNum) {}
 

@@ -95,23 +95,6 @@ namespace LibLoader {
         static string exceptionType() { return "PluginLoadException"; }
     };
 
-    class SymbolResolveException : public LoaderExceptionCRTP<SymbolResolveException> {
-    public:
-        enum SymbolType : uint8_t {
-            Entrance,
-            Exit,
-            Event,
-            Config
-        };
-
-    public:
-        SymbolResolveException(const string &_pluginPath, SymbolType, string _filename, int _lineNum);
-
-        static string exceptionType() { return "SymbolResolveException"; }
-
-    private:
-        static string SymbolTypeToString(SymbolType);
-    };
 
     class PluginAlreadyLoadedException : public LoaderExceptionCRTP<PluginAlreadyLoadedException> {
     public:

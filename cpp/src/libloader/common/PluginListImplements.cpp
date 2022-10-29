@@ -28,9 +28,9 @@
 
 
 #if MIRAICP_WINDOWS
+#include "utf8.h"
 #include <filesystem>
 #include <windows.h>
-#include "utf8.h"
 // https://stackoverflow.com/questions/1387064/how-to-get-the-error-message-from-the-error-code-returned-by-getlasterror
 //Returns the last Win32 error, in string format. Returns an empty string if there is no error.
 std::string GetLastErrorAsString() {
@@ -67,6 +67,46 @@ namespace LibLoader {
         plugin_info_func_ptr pluginAddr;
     };
 
+    class SymbolResolveException : public LoaderExceptionCRTP<SymbolResolveException> {
+    public:
+        enum SymbolType : uint8_t {
+            Entrance,
+            Exit,
+            Event,
+            Config
+        };
+
+    public:
+        SymbolResolveException(const string &_pluginPath, SymbolType Type, string _filename, int _lineNum)
+            : LoaderExceptionCRTP(_pluginPath + " 寻找符号失败，类型：" + SymbolTypeToString(Type), std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "SymbolResolveException"; }
+
+    private:
+        static string SymbolTypeToString(SymbolType Type) {
+            switch (Type) {
+                case Entrance:
+                    return "插件入口";
+                case Exit:
+                    return "插件出口";
+                case Event:
+                    return "事件函数";
+                case Config:
+                    return "插件配置函数";
+                default:
+                    throw LoaderException("无法到达的代码", MIRAICP_EXCEPTION_WHERE);
+            }
+        }
+    };
+
+    class InfoNotCompleteException : public LoaderExceptionCRTP<InfoNotCompleteException> {
+    public:
+        InfoNotCompleteException(const string &_pluginPath, string _filename, int _lineNum)
+            : LoaderExceptionCRTP("无法加载位于" + _pluginPath + "的插件：其插件信息填写不完整，请检查四项必填内容是否已经填写", std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "InfoNotCompleteException"; }
+    };
+
     ////////////////////////////////////
     /// 这部分是一些工具函数、对象
 
@@ -81,6 +121,10 @@ namespace LibLoader {
 
     void callEntranceFuncNormal(plugin_entrance_func_ptr func) {
         func(normal_interfaces);
+    }
+
+    inline bool checkPluginInfoValid(plugin_info_func_ptr info_ptr) {
+        return info_ptr().isValid();
     }
 
     /// 测试符号存在性，并返回event func的地址。return {nullptr, nullptr} 代表符号测试未通过，
@@ -98,6 +142,8 @@ namespace LibLoader {
 
         auto pluginInfo = (plugin_info_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(PLUGIN_INFO));
         if (!pluginInfo) throw SymbolResolveException(path, SymbolResolveException::Config, MIRAICP_EXCEPTION_WHERE);
+
+        if (!checkPluginInfoValid(pluginInfo)) throw InfoNotCompleteException(path, MIRAICP_EXCEPTION_WHERE);
 
         return {event_addr, pluginInfo};
     }

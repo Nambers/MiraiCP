@@ -26,13 +26,13 @@ namespace MiraiCP {
     inline const std::string MiraiCPVersion = "v2.12.0-RC2";
     struct PluginConfig {
         /// @brief 插件id, 要与别人不一样否则报错无法加载(建议用类包格式，如: io.github.nambers)
-        const char *id;
+        const char *id = nullptr;
         /// @brief 插件名称
-        const char *name;
+        const char *name = nullptr;
         /// @brief 插件版本
-        const char *version;
+        const char *version = nullptr;
         /// @brief 插件作者(及联系方式)
-        const char *author;
+        const char *author = nullptr;
         /// @brief [optional]插件描述
         const char *description = "";
         /// @brief [optional]构建时间, 默认为__DATE__宏
@@ -59,6 +59,10 @@ namespace MiraiCP {
         }
         std::string getMVersion() const {
             return {mversion};
+        }
+
+        [[nodiscard]] bool isValid() const {
+            return id && name && version && author;
         }
 
         nlohmann::json serialize();
