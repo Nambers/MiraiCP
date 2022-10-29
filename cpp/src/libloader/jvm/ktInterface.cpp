@@ -37,8 +37,6 @@ namespace LibLoader {
     std::thread loaderThread;
 } // namespace LibLoader
 
-
-
 void VerifyImpl(JSTRING _version, JSTRING _cfgPath) {
     //初始化日志模块
     MiraiCP::Redirector::start();
@@ -58,40 +56,15 @@ void VerifyImpl(JSTRING _version, JSTRING _cfgPath) {
     LibLoader::loaderThread = std::thread(LibLoader::LoaderMain::loaderMain);
 }
 
-#ifndef LOADER_NATIVE
-/// 实际初始化函数
-/// 1. 设置全局变量
-/// 2. 开启loader线程并获取插件入口函数的返回值
-JRETURNTYPE Verify(JNIEnv *env, jobject, JSTRING _version, JSTRING _cfgPath) {
-    JNIEnvManager::setEnv(env);
-
-    //初始化日志模块
-    LibLoader::JNIEnvs::initializeMiraiCPLoader();
-
-    VerifyImpl(_version, _cfgPath);
-
-    return nullptr;
-}
-#endif
-
-/// 事件广播，由kt（主）线程调用
-/// 广播过程中应当锁住 plugin list，以防止内存访问冲突
-/// 广播给插件的过程中由插件线程完成所有任务
-/// 插件线程无法给plugin list加锁，因为插件端只能向loader线程发送某个任务的申请
-/// loader线程可能会尝试获取 plugin list 的锁，
-/// 但Event函数在派发任务后是会立刻退出并释放锁的，
-/// 不会造成死锁
-jobject Event(JNIEnv *env, jobject, jstring content) {
+void EventImpl(JSTRING content) {
     static std::string str;
 
-    JNIEnvManager::setEnv(env);
-
     std::lock_guard lk(LibLoader::PluginListManager::getLock());
-    str = LibLoader::jstring2str(content);
+    str = J_TO_STD_STRING(content);
 
     if (str.find(R"("type":1000)") != std::string::npos) {
         LibLoader::builtInCommand(str);
-        return nullptr;
+        return;
     }
 
     // static lambda，不可以捕获参数！str被声明为static了会被自动捕获
@@ -104,14 +77,44 @@ jobject Event(JNIEnv *env, jobject, jstring content) {
     };
 
     LibLoader::PluginListManager::run_over_pluginlist(broadcast_func);
+}
+
+void PluginDisableImpl() {
+    LibLoader::LoaderMain::loaderExit();
+    LibLoader::loaderThread.join();
+}
+
+#ifndef LOADER_NATIVE
+/// 实际初始化函数
+/// 1. 设置全局变量
+/// 2. 开启loader线程并获取插件入口函数的返回值
+jobject Verify(JNIEnv *env, jobject, JSTRING _version, JSTRING _cfgPath) {
+    JNIEnvManager::setEnv(env);
+
+    //初始化日志模块
+    LibLoader::JNIEnvs::initializeMiraiCPLoader();
+
+    VerifyImpl(_version, _cfgPath);
 
     return nullptr;
 }
 
+/// 事件广播，由kt（主）线程调用
+/// 广播过程中应当锁住 plugin list，以防止内存访问冲突
+/// 广播给插件的过程中由插件线程完成所有任务
+/// 插件线程无法给plugin list加锁，因为插件端只能向loader线程发送某个任务的申请
+/// loader线程可能会尝试获取 plugin list 的锁，
+/// 但Event函数在派发任务后是会立刻退出并释放锁的，
+/// 不会造成死锁
+jobject Event(JNIEnv *env, jobject, jstring content) {
+    SET_ENV(env);
+    EventImpl(content);
+    return nullptr;
+}
+
 jobject PluginDisable(JNIEnv *env, jobject) {
-    JNIEnvManager::setEnv(env);
-    LibLoader::LoaderMain::loaderExit();
-    LibLoader::loaderThread.join();
+    SET_ENV(env);
+    PluginDisableImpl();
     return nullptr;
 }
 
@@ -142,3 +145,4 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     }
     return JNI_VERSION_1_8;
 }
+#endif

@@ -10,12 +10,13 @@
 #define JRETURNVAL
 #define JSTRING const char *
 #define J_TO_STD_STRING std::string
-
+#define SET_ENV(x)
 #else
 #define JRETURNTYPE jobject
 #define JRETURNVAL nullptr
 #define JSTRING jstring
 #define J_TO_STD_STRING LibLoader::jstring2str
+#define SET_ENV(x) JNIEnvManager::setEnv(x)
 #endif
 
 #endif //MIRAICP_PRO_LOADERMACRO_H
