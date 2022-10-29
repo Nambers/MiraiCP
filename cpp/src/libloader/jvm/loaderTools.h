@@ -17,10 +17,9 @@
 #ifndef MIRAICP_PRO_LOADERTOOLS_H
 #define MIRAICP_PRO_LOADERTOOLS_H
 
-
+#include "LoaderMacro.h"
 #include "LoaderPluginConfig.h"
 #include <fstream>
-#include <jni.h>
 #include <string>
 #include <thread>
 
@@ -54,9 +53,11 @@ namespace LibLoader {
 
     std::pair<std::vector<std::string>, std::vector<PluginAuthority>> collect_plugins(const std::string &cfgPath, nlohmann::json j);
 
+#ifndef LOADER_NATIVE
     std::string jstring2str(jstring jStr);
 
     jstring str2jstring(const char *cstr);
+#endif
 } // namespace LibLoader
 
 #endif //MIRAICP_PRO_LOADERTOOLS_H
