@@ -16,17 +16,18 @@
 
 /// 本文件的全部函数实现都是kt线程调用的函数
 
-
 #include "ktInterface.h"
-
 #include "LoaderLogger.h"
+#include "MiraiCPMacros.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
 #include "eventHandle.h"
 #include "loaderMain.h"
 #include "redirectCout.h"
 
-#ifndef LOADER_NATIVE
+#ifdef LOADER_NATIVE
+#include <cstdio>
+#else
 #include "JNIEnvs.h"
 #include "LoaderMacro.h"
 #include "loaderTools.h"
@@ -84,7 +85,28 @@ void PluginDisableImpl() {
     LibLoader::loaderThread.join();
 }
 
-#ifndef LOADER_NATIVE
+#ifdef LOADER_NATIVE
+LoaderAPIs::LogFunc LoaderAPIs::log = nullptr;
+LoaderAPIs::OperFunc LoaderAPIs::oper = nullptr;
+
+extern "C" {
+MIRAICP_EXPORT void Verify(const char *a, const char *b, const char *(*oper)(const char *), void (*log)(const char *, int)) {
+    printf("call Verify(%s, %s)\n", a, b);
+    LoaderAPIs::log = log;
+    LoaderAPIs::oper = oper;
+    VerifyImpl(a, b);
+}
+
+MIRAICP_EXPORT void Event(const char *a) {
+    printf("call Event(%s)\n", a);
+    EventImpl(a);
+}
+
+MIRAICP_EXPORT void PluginDisable() {
+    PluginDisableImpl();
+}
+}
+#else
 /// 实际初始化函数
 /// 1. 设置全局变量
 /// 2. 开启loader线程并获取插件入口函数的返回值
