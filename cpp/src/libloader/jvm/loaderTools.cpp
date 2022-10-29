@@ -59,37 +59,6 @@ namespace LibLoader {
         return {std::move(paths), std::move(authorities)};
     }
 
-    std::string jstring2str(jstring jStr) {
-        if (!jStr) {
-            return "";
-        }
-
-        const jchar *jCharPointer = JNIEnvs::getEnv()->GetStringChars(jStr, nullptr);
-        MIRAICP_DEFER(JNIEnvs::getEnv()->ReleaseStringChars(jStr, jCharPointer););
-        std::u16string s = reinterpret_cast<const char16_t *>(jCharPointer);
-
-        if (s.length() == 0) {
-            return "";
-        }
-        std::string x;
-        utf8::utf16to8(s.begin(), s.end(), std::back_inserter(x));
-        return x;
-    }
-
-    jstring str2jstring(const char *cstr) {
-        if (!cstr) {
-            logger.warning("警告:str2jstring传入空字符串");
-        }
-        std::string str(cstr);
-        std::vector<unsigned short> utf16line;
-        utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
-        auto *c = new jchar[utf16line.size()];
-        MIRAICP_DEFER(delete[] c;);
-        for (int i = 0; i < utf16line.size(); i++) {
-            c[i] = utf16line[i];
-        }
-        return JNIEnvs::getEnv()->NewString((jchar *) c, (jsize) utf16line.size());
-    }
 
     void FormatPluginListInfo(const MiraiCP::PluginConfig &plugin_config, int *charNum, std::vector<std::string> &out) {
         CASStrong(charNum[0], strlen(plugin_config.id) + 1);
@@ -124,4 +93,38 @@ namespace LibLoader {
         }
         return out.str();
     }
+
+#ifndef LOADER_NATIVE
+    std::string jstring2str(jstring jStr) {
+        if (!jStr) {
+            return "";
+        }
+
+        const jchar *jCharPointer = JNIEnvs::getEnv()->GetStringChars(jStr, nullptr);
+        MIRAICP_DEFER(JNIEnvs::getEnv()->ReleaseStringChars(jStr, jCharPointer););
+        std::u16string s = reinterpret_cast<const char16_t *>(jCharPointer);
+
+        if (s.length() == 0) {
+            return "";
+        }
+        std::string x;
+        utf8::utf16to8(s.begin(), s.end(), std::back_inserter(x));
+        return x;
+    }
+
+    jstring str2jstring(const char *cstr) {
+        if (!cstr) {
+            logger.warning("警告:str2jstring传入空字符串");
+        }
+        std::string str(cstr);
+        std::vector<unsigned short> utf16line;
+        utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
+        auto *c = new jchar[utf16line.size()];
+        MIRAICP_DEFER(delete[] c;);
+        for (int i = 0; i < utf16line.size(); i++) {
+            c[i] = utf16line[i];
+        }
+        return JNIEnvs::getEnv()->NewString((jchar *) c, (jsize) utf16line.size());
+    }
+#endif
 } // namespace LibLoader
