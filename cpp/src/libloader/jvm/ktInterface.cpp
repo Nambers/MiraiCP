@@ -18,16 +18,19 @@
 
 
 #include "ktInterface.h"
-#include "JNIEnvs.h"
+
 #include "LoaderLogger.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
 #include "eventHandle.h"
 #include "loaderMain.h"
-#include "loaderTools.h"
 #include "redirectCout.h"
-#include <iostream>
 
+#ifndef LOADER_NATIVE
+#include "JNIEnvs.h"
+#include "LoaderMacro.h"
+#include "loaderTools.h"
+#endif
 
 namespace LibLoader {
     void registerAllPlugin(const std::string &) noexcept;
@@ -35,33 +38,41 @@ namespace LibLoader {
 } // namespace LibLoader
 
 
-/// 实际初始化函数
-/// 1. 设置全局变量
-/// 2. 开启loader线程并获取插件入口函数的返回值
-jobject Verify(JNIEnv *env, jobject, jstring _version, jstring _cfgPath) {
-    JNIEnvManager::setEnv(env);
 
+void VerifyImpl(JSTRING _version, JSTRING _cfgPath) {
     //初始化日志模块
-    LibLoader::JNIEnvs::initializeMiraiCPLoader();
     MiraiCP::Redirector::start();
 
-    LibLoader::logger.info("* libLoader 版本: " + MiraiCP::MiraiCPVersion);
-    auto version = "v" + LibLoader::jstring2str(_version);
+    LibLoader::logger.info("⭐libLoader 版本: " + MiraiCP::MiraiCPVersion);
+    auto version = "v" + J_TO_STD_STRING(_version);
     if (version != MiraiCP::MiraiCPVersion) {
         LibLoader::logger.warning(
                 "libLoader(" + MiraiCP::MiraiCPVersion + ")版本和MiraiCP启动器(" + version + ")不一致, 建议更新至最新");
     }
 
     // 测试有效的插件
-    auto cfgPath = LibLoader::jstring2str(_cfgPath);
-    LibLoader::registerAllPlugin(cfgPath);
+    LibLoader::registerAllPlugin(J_TO_STD_STRING(_cfgPath));
 
     // 激活插件。创建loader thread。
     // loader thread中创建多线程加载所有插件，调用入口函数
     LibLoader::loaderThread = std::thread(LibLoader::LoaderMain::loaderMain);
+}
+
+#ifndef LOADER_NATIVE
+/// 实际初始化函数
+/// 1. 设置全局变量
+/// 2. 开启loader线程并获取插件入口函数的返回值
+JRETURNTYPE Verify(JNIEnv *env, jobject, JSTRING _version, JSTRING _cfgPath) {
+    JNIEnvManager::setEnv(env);
+
+    //初始化日志模块
+    LibLoader::JNIEnvs::initializeMiraiCPLoader();
+
+    VerifyImpl(_version, _cfgPath);
 
     return nullptr;
 }
+#endif
 
 /// 事件广播，由kt（主）线程调用
 /// 广播过程中应当锁住 plugin list，以防止内存访问冲突
