@@ -40,7 +40,6 @@ namespace MiraiCP {
                           try {
                               const char *thread_name = CPPPlugin::config.id;
                               platform_set_thread_name(platform_thread_self(), thread_name);
-                              delete[] thread_name;
                               lambda_func(std::forward<decltype(argss)>(argss)...);
                           } catch (MiraiCPExceptionBase &e) {
                               e.raise();
