@@ -22,20 +22,13 @@
 
 
 // EXPORT functions
-LOADER_EXPORT JRETURNTYPE DECL_EXPORT_NAME(Verify)(J_ARGS, JSTRING, JSTRING);
+LOADER_EXPORT JRETURNTYPE DECL_EXPORT_NAME(Verify)(J_ARGS_AND_STRING, JSTRING);
 
-LOADER_EXPORT JRETURNTYPE DECL_EXPORT_NAME(Event)(J_ARGS, JSTRING);
+LOADER_EXPORT JRETURNTYPE DECL_EXPORT_NAME(Event)(J_ARGS_AND_STRING);
 
 LOADER_EXPORT JRETURNTYPE DECL_EXPORT_NAME(PluginDisable)(J_ARGS);
 
-#ifdef LOADER_NATIVE
-namespace LoaderAPIs {
-    using LogFunc = void (*)(const char *, int);
-    using OperFunc = const char *(*)(const char *);
-    extern LogFunc log;
-    extern OperFunc oper;
-};
-#else
+#ifndef LOADER_NATIVE
 int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *gMethods, int numMethods);
 
 const JNINativeMethod method_table[]{

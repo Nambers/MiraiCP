@@ -86,8 +86,12 @@ void PluginDisableImpl() {
 }
 
 #ifdef LOADER_NATIVE
-LoaderAPIs::LogFunc LoaderAPIs::log = nullptr;
-LoaderAPIs::OperFunc LoaderAPIs::oper = nullptr;
+namespace LoaderAPIs {
+    using LogFunc = void (*)(const char *, int);
+    using OperFunc = const char *(*)(const char *);
+    LogFunc log = nullptr;
+    OperFunc oper = nullptr;
+}
 
 extern "C" {
 MIRAICP_EXPORT void Verify(const char *a, const char *b, const char *(*oper)(const char *), void (*log)(const char *, int)) {
