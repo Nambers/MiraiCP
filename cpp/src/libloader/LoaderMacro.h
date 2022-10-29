@@ -14,6 +14,7 @@
 #define LOADER_EXPORT
 #define DECL_EXPORT_NAME(x) x##Impl
 #define J_ARGS
+#define J_ARGS_AND_STRING JSTRING
 #else
 #include <jni.h>
 #define JRETURNTYPE jobject
@@ -24,6 +25,7 @@
 #define LOADER_EXPORT JNIEXPORT
 #define DECL_EXPORT_NAME(x) x
 #define J_ARGS JNIEnv *, jobject
+#define J_ARGS_AND_STRING JNIEnv *, jobject, JSTRING
 #endif
 
 #endif //MIRAICP_PRO_LOADERMACRO_H
