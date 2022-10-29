@@ -20,12 +20,21 @@
 #include <json.hpp>
 
 
+#ifdef LOADER_NATIVE
+namespace LoaderAPIs {
+    using LogFunc = void (*)(const char *, int);
+    extern LogFunc log;
+}; // namespace LoaderAPIs
+#endif
+
 namespace LibLoader {
     static const std::string LoaderName = "MiraiCP/LibLoader";
     LibLoader::LoaderLogger logger;
 
     void LoaderLogger::init() {
+#ifndef LOADER_NATIVE
         logMethod = JNIEnvs::getEnv()->GetStaticMethodID(JNIEnvs::Class_cpplib, "KSendLog", "(Ljava/lang/String;I)V");
+#endif
     }
 
     void LoaderLogger::info(const string &msg) const {
@@ -45,7 +54,11 @@ namespace LibLoader {
                 {"id", id},
                 {"log", content}};
         if (!name.empty()) j["name"] = std::move(name);
+#ifdef LOADER_NATIVE
+        LoaderAPIs::log(j.dump().c_str(), level);
+#else
         auto env = JNIEnvs::getEnv();
         env->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, LibLoader::str2jstring(j.dump().c_str()), (jint) (level));
+#endif
     }
 } // namespace LibLoader
