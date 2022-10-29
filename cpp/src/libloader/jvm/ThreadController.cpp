@@ -19,7 +19,6 @@
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
 #include "PlatformThreading.h"
-#include "PluginListManager.h"
 #include "commonTools.h"
 
 
@@ -81,7 +80,10 @@ namespace LibLoader {
     void ThreadController::threadWorker::run() {
         // clean up at function end
         // try to detach this thread from JVM
-        MIRAICP_DEFER(busy = false; JNIEnvManager::detach(););
+        MIRAICP_DEFER(busy = false;);
+#ifndef LOADER_NATIVE
+        MIRAICP_DEFER(JNIEnvManager::detach(););
+#endif
 
         // set thread name so the debugger can see the plugin id from binding thread
         platform_set_thread_name(platform_thread_self(), pluginid.c_str());
