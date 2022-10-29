@@ -131,13 +131,13 @@ MIRAICP_EXPORT void FUNC_EVENT(const MiraiCP::MiraiCPString &c) {
 /// 获取 Plugin Info
 /// 如果未正确定义，插件无法正确加载
 /// 该函数不可调用loader api；因为会在入口函数调用前先调用，loader api未初始化
-MIRAICP_EXPORT const MiraiCP::PluginConfig &PLUGIN_INFO() {
+MIRAICP_EXPORT const MiraiCP::PluginConfig *PLUGIN_INFO() {
     static_assert(std::is_same_v<decltype(&PLUGIN_INFO), LibLoader::plugin_info_func_ptr>);
 
-    if (MiraiCP::CPPPlugin::config.getId().empty())
-        throw std::exception();
+    //    if (MiraiCP::CPPPlugin::config.getId().empty())
+    //        throw std::exception();
 
-    return MiraiCP::CPPPlugin::config;
+    return &MiraiCP::CPPPlugin::config; // never nullptr
 }
 }
 //结束对接JNI接口代码

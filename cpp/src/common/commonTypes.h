@@ -19,9 +19,9 @@
 // don't create cpp for this header
 
 
+#include "MiraiCPMacros.h"
 #include "PluginConfig.h"
 #include "loaderApiInternal.h"
-#include "MiraiCPMacros.h"
 
 
 namespace LibLoader {
@@ -33,7 +33,7 @@ namespace LibLoader {
     /// @see @macro FUNC_EXIT
     typedef void (*plugin_func_ptr)();
     /// @see @macro PLUGIN_INFO
-    typedef const MiraiCP::PluginConfig &(*plugin_info_func_ptr)();
+    typedef const MiraiCP::PluginConfig *(*plugin_info_func_ptr)();
 } // namespace LibLoader
 
 
