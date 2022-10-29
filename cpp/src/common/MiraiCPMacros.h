@@ -75,12 +75,16 @@ static_assert(false, "Unsupported platform");
 
 // compiler
 #define MIRAICP_MSVC 0
+#define MIRAICP_CLANG 0
 #define MIRAICP_GCC 0
 #define MIRAICP_COMPILER_OTHER 0
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) // MSVC
 #undef MIRAICP_MSVC
 #define MIRAICP_MSVC 1
+#elif defined(__clang__) // clang
+#undef MIRAICP_CLANG
+#define MIRAICP_CLANG 1
 #elif defined(__GNUC__) // GNUC, MinGW
 #undef MIRAICP_GCC
 #define MIRAICP_GCC 1
