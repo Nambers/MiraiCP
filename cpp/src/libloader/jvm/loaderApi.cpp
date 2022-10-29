@@ -75,11 +75,15 @@ namespace LibLoader::LoaderApi {
     }
 
     MiraiCPString pluginOperation(const MiraiCPString& s) {
+#ifdef LOADER_NATIVE
+        return {LoaderAPIs::oper(s.copyToCharPtr())};
+#else
         auto env = JNIEnvManager::getEnv();
         auto tmp = jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
                                                                      JNIEnvs::koper,
                                                                      str2jstring(s.copyToCharPtr())));
         return {tmp};
+#endif
     }
 
     void loggerInterface(const MiraiCPString& content, const MiraiCPString& name, long long id, int level) {
