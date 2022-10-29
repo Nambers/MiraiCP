@@ -14,12 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef LOADER_NATIVE
+
 #include "JNIEnvManager.h"
 #include "MiraiCPMacros.h"
-
-
-//std::unordered_map<JNIEnvManager::threadid, JNIEnvManager::ThreadInfo> JNIEnvManager::threadJNIEnvs;
-//std::recursive_mutex JNIEnvManager::mtx;
 
 class JNIEnvManager::ThreadInfo {
     friend class JNIEnvManager;
@@ -83,10 +81,12 @@ void JNIEnvManager::setGvm(JavaVM *_gvm) {
     ThreadInfo::gvm = _gvm;
 }
 
-namespace EnvMocker{
+namespace EnvMocker {
     /// @note dev: this function is only used for tests;
     ///  should never be declared in source headers
     MIRAICP_EXPORT void force_reset_env() {
         thread_info = JNIEnvManager::ThreadInfo();
     }
-}
+} // namespace EnvMocker
+
+#endif //LOADER_NATIVE

@@ -18,6 +18,7 @@
 #ifndef MIRAICP_PRO_JNIENVMANAGER_H
 #define MIRAICP_PRO_JNIENVMANAGER_H
 
+#ifndef LOADER_NATIVE
 
 #include "MiraiCPMacros.h"
 #include <functional>
@@ -64,4 +65,5 @@ public:
     static JNIEnv *getEnv();
 };
 
+#endif //LOADER_NATIVE
 #endif //MIRAICP_PRO_JNIENVMANAGER_H
