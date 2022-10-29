@@ -92,7 +92,9 @@ class OString : public std::ostream {
         }
 
         void record(std::string message) {
-            if (recorder) recorder(std::move(message));
+            if (recorder) [[unlikely]] {
+                recorder(std::move(message));
+            }
         }
     };
 
@@ -132,16 +134,14 @@ std::string OString::OStringBuf::out() {
     result.str("");
 
 #ifdef MIRAICP_LIB_LOADER
-    if (isInfoLevel)
-        LibLoader::logger.info(resultstr);
-    else
-        LibLoader::logger.error(resultstr);
+    auto &localLogger = LibLoader::logger;
 #else
-    if (isInfoLevel)
-        MiraiCP::Logger::logger.info(resultstr);
-    else
-        MiraiCP::Logger::logger.error(resultstr);
+    auto &localLogger = MiraiCP::Logger::logger;
 #endif
+    if (isInfoLevel)
+        localLogger.info(resultstr);
+    else
+        localLogger.error(resultstr);
     return resultstr;
 }
 
