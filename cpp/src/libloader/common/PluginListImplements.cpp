@@ -124,7 +124,7 @@ namespace LibLoader {
     }
 
     inline bool checkPluginInfoValid(plugin_info_func_ptr info_ptr) {
-        return info_ptr().isValid();
+        return info_ptr()->isValid();
     }
 
     /// 测试符号存在性，并返回event func的地址。return {nullptr, nullptr} 代表符号测试未通过，
@@ -162,8 +162,8 @@ namespace LibLoader {
         }
 
         auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(plugin.handle, STRINGIFY(FUNC_ENTRANCE));
-        if (plugin.config().getMVersion() != MiraiCP::MiraiCPVersion) {
-            LibLoader::logger.warning("MiraiCP依赖库版本(" + plugin.config().getMVersion() + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
+        if (plugin.config()->getMVersion() != MiraiCP::MiraiCPVersion) {
+            LibLoader::logger.warning("MiraiCP依赖库版本(" + plugin.config()->getMVersion() + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
         }
 
         plugin.enable();

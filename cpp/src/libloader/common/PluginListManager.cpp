@@ -38,7 +38,7 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans;
         for (auto &&[k, v]: id_plugin_list) {
-            if (v->handle != nullptr) ans.emplace_back(v->config().getId());
+            if (v->handle != nullptr) ans.emplace_back(v->config()->getId());
         }
         return ans;
     }
@@ -49,7 +49,7 @@ namespace LibLoader {
         int charNum[4] = {2 + 1, 12 + 1, 6 + 1, 11 + 1};
         for (auto &&[k, v]: id_plugin_list) {
             if (v->handle != nullptr) {
-                if (filter(*v)) FormatPluginListInfo(v->config(), charNum, ans);
+                if (filter(*v)) FormatPluginListInfo(*v->config(), charNum, ans);
             } else {
                 FormatPluginListInfo(
                         MiraiCP::PluginConfig{"(unknown)", v->path.c_str(), "(unknown)", "(unknown)", "(unknown)", "(unknown)",

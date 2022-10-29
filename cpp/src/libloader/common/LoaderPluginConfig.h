@@ -42,7 +42,7 @@ namespace LibLoader {
                 logger.error("致命错误：插件未加载或已经被卸载，请联系MiraiCP开发者并提供您的历史日志");
                 return "";
             }
-            return config().getId();
+            return config()->getId();
         }
 
         void load(plugin_handle _handle, plugin_event_func_ptr _eventFunc, plugin_info_func_ptr _config) {
