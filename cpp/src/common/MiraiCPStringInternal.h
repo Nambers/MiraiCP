@@ -25,8 +25,10 @@
 
 namespace MiraiCP {
     // this class is used to ensure data consistency between dynamic libs
-    // note: do not use this directly;
+    // note: DO NOT use this directly;
     // always convert to const char* or std::string before using.
+    /// @brief MiraiCP内部传递string数据用
+    /// @note 请勿使用！
     class MIRAICP_EXPORT MiraiCPString final {
         using string = std::string;
 
@@ -40,7 +42,7 @@ namespace MiraiCP {
         decltype(&::std::free) free_this = std_free_ptr; // specify which free() to use; ensure deconstruction is paired to construction
 
     public:
-        bool isEmpty() const {
+        [[nodiscard]] bool isEmpty() const {
             return _size == 0;
         }
 
@@ -60,7 +62,7 @@ namespace MiraiCP {
 
         MiraiCPString(const std::string &string_str); // NOLINT(google-explicit-constructor)
 
-        std::string toString() const {
+        [[nodiscard]] std::string toString() const {
             if (str == nullptr || _size == 0) return {};
             return {str};
         }
@@ -69,9 +71,9 @@ namespace MiraiCP {
             return toString();
         }
 
-        // for safe destruction, DO NOT provide move convert to char*
+        // for safe destruction, DO NOT provide move conversion to char*
         // the return value of this method can always be deleted by delete[] and is never nullptr
-        const char *copyToCharPtr() const;
+        [[nodiscard]] const char *copyToCharPtr() const;
 
         bool operator==(const MiraiCPString &another) const;
 
