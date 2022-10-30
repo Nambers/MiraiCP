@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import Version.`kotlin-test`
 import Version.`kotlinx-coroutines-core`
 import Version.`mirai-core-api`
 import Version.`mirai-core-mock`
@@ -62,6 +63,7 @@ kotlin {
         }
         val jvmTest by getting {
             dependencies {
+                implementation(`kotlin-test`)
                 implementation(`mirai-core-mock`)
             }
         }
