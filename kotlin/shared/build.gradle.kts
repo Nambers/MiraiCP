@@ -61,14 +61,14 @@ kotlin {
             }
             apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
         }
+        val jvmMain by getting
         val jvmTest by getting {
             dependencies {
+                dependsOn(jvmMain)
                 implementation(`kotlin-test`)
                 implementation(`mirai-core-mock`)
             }
         }
-
-        val jvmMain by getting
         val nativeMain by getting
     }
 }

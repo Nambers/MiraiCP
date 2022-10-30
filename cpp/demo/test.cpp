@@ -51,6 +51,7 @@ public:
             a.group.sendMessage("a");
             // c.changeNameCard(a.message.toMiraiCode());
             Logger::logger.info(a.group.avatarUrl());
+            a.bot.getFriend(a.bot.getFriendList()[0]).sendMessage("--test end--");
         });
         for (auto &&pluginid: LoaderApi::showAllPluginId()) {
             Logger::logger.info("pluginid: " + pluginid);
