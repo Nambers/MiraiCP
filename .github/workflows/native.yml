@@ -73,13 +73,13 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: libLoaderNativeWin
-        path: ./cpp/build/src/libloader/native/libLoaderNative.a
+        path: ./cpp/build/
     - if: ${{ env.isUbuntu == 'true' }}
       name: upload
       uses: actions/upload-artifact@v3
       with:
         name: libLoaderNativeLinux
-        path: ./cpp/build/src/libloader/native/libLoaderNative.a
+        path: ./cpp/build/
 
   build-native:
     name: "build Native (${{ matrix.os }})"
