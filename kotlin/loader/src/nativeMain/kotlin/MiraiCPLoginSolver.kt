@@ -37,6 +37,7 @@ class MiraiCPLoginSolver : LoginSolver() {
             bot.logger.info("需要短信验证码, 输入: resendMySMS 重新发送验证码")
             var code = "resendMySMS"
             while (code == "resendMySMS") {
+                bot.logger.info("已发送短信验证码")
                 try {
                     requests.sms!!.requestSms()
                 } catch (e: RetryLaterException) {
@@ -45,7 +46,6 @@ class MiraiCPLoginSolver : LoginSolver() {
                     exitProcess(-1)
                 }
                 code = Console.console.prompt("短信验证码:")!!
-                bot.logger.info("已发送短信验证码")
             }
             requests.sms!!.solved(code)
         } else {
@@ -66,16 +66,5 @@ class MiraiCPLoginSolver : LoginSolver() {
         Console.console.println("Url: $url")
         bot.logger.info("需要滑块验证码")
         return Console.console.prompt("滑块验证码(ticket):")!!
-    }
-
-    @Deprecated(
-        "Please use onSolveDeviceVerification instead",
-        replaceWith = ReplaceWith("onSolveDeviceVerification(bot, url, null)"),
-        level = DeprecationLevel.WARNING
-    )
-    override suspend fun onSolveUnsafeDeviceLoginVerify(bot: Bot, url: String): String {
-        Console.console.println("Url: $url")
-        bot.logger.info("需要UnsafeDeviceLoginVerify验证")
-        return Console.console.prompt("Unsafe验证码:")!!
     }
 }
