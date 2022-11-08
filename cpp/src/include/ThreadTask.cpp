@@ -10,17 +10,12 @@
 #include <shared_mutex>
 
 
-namespace MiraiCP::ThreadTask {
+namespace MiraiCP::ThreadTask::internal {
     // todo(Antares): add verbose log
     using functionType = std::function<void()>;
     using functionPointerType = std::shared_ptr<functionType>;
     using storerType = std::unordered_map<size_t, functionPointerType>;
     using storerIteratorType = storerType::iterator;
-
-    size_t getAutoIncrId() {
-        static std::atomic<size_t> id = 0;
-        return id++;
-    }
 
     inline auto &get_function_storer() {
         static storerType function_storer;
@@ -32,11 +27,23 @@ namespace MiraiCP::ThreadTask {
         return mtx;
     }
 
+    size_t get_auto_incr_id() {
+        static std::atomic<size_t> id = 0;
+        return id++;
+    }
+
     void push_task(size_t id, functionPointerType func) {
+        bool insert;
         {
             std::unique_lock lk(get_mutex());
-            get_function_storer().insert({id, std::move(func)});
+            insert = get_function_storer().insert({id, std::move(func)}).second;
         }
+
+        if (!insert) {
+            Logger::logger.error("Fatal: task id " + std::to_string(id) + " is already taken by another task!");
+            return;
+        }
+
         LibLoader::LoaderApi::pushTaskWithId(task_interface, id);
     }
 
@@ -51,6 +58,8 @@ namespace MiraiCP::ThreadTask {
         }
     }
 
+    /// @note dev: we can't send a std::function object to libLoader,
+    ///  so one appropriate way is that store the function in a data structure and call it in a wrapper function.
     void task_interface(size_t id) {
         static_assert(std::is_same_v<LibLoader::LoaderApi::task_func_with_id, decltype(&task_interface)>);
         storerIteratorType iter;
@@ -67,6 +76,4 @@ namespace MiraiCP::ThreadTask {
         // running task!
         (*fPtr)();
     }
-
-
-} // namespace MiraiCP::ThreadTask
+} // namespace MiraiCP::ThreadTask::internal
