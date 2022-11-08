@@ -36,6 +36,8 @@ public:
     static MiraiCPString showAllPluginId() { return ""; }
     static void enablePluginById(const MiraiCPString &) {}
     static void disablePluginById(const MiraiCPString &) {}
+    static void pushTask(void (*)()) {}
+    static void pushTaskWithId(void (*)(size_t), size_t) {}
     static void enableAllPlugins() {}
     static void disableAllPlugins() {}
     static void loadNewPlugin(const MiraiCPString &, bool) {}
@@ -45,6 +47,8 @@ public:
             pluginOperation,
             loggerInterface,
             showAllPluginId,
+            pushTask,
+            pushTaskWithId,
             enablePluginById,
             disablePluginById,
             enableAllPlugins,
@@ -57,7 +61,7 @@ public:
         MiraiCP::Redirector::start();
         LibLoader::LoaderApi::set_loader_apis(&a);
     }
-    ~LoaderApiMock(){
+    ~LoaderApiMock() {
         MiraiCP::Redirector::reset();
         LibLoader::LoaderApi::reset_loader_apis();
     }
