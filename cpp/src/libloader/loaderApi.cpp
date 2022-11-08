@@ -38,6 +38,23 @@ namespace LoaderAPIs {
 namespace LibLoader::LoaderApi {
     using MiraiCP::MiraiCPString;
     /// interfaces for plugins
+
+    MiraiCPString pluginOperation(const MiraiCPString &s) {
+#ifdef LOADER_NATIVE
+        return {LoaderAPIs::oper(s.copyToCharPtr())}; // todo(Antares): 检查内存是否回收
+#else
+        auto env = JNIEnvManager::getEnv();
+        auto tmp = jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
+                                                                     JNIEnvs::koper,
+                                                                     str2jstring(s.copyToCharPtr())));
+        return {tmp};
+#endif
+    }
+
+    void loggerInterface(const MiraiCPString &content, const MiraiCPString &name, long long id, int level) {
+        logger.call_logger(content, name, id, level);
+    }
+
     MiraiCPString showAllPluginId() {
         return nlohmann::json(PluginListManager::getAllPluginId()).dump();
     }
@@ -78,22 +95,5 @@ namespace LibLoader::LoaderApi {
     void reloadPluginById(const MiraiCPString &id) {
         std::lock_guard lk(task_mtx);
         loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::RELOAD, id));
-    }
-
-
-    MiraiCPString pluginOperation(const MiraiCPString &s) {
-#ifdef LOADER_NATIVE
-        return {LoaderAPIs::oper(s.copyToCharPtr())}; // todo(Antares): 检查内存是否回收
-#else
-        auto env = JNIEnvManager::getEnv();
-        auto tmp = jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
-                                                                     JNIEnvs::koper,
-                                                                     str2jstring(s.copyToCharPtr())));
-        return {tmp};
-#endif
-    }
-
-    void loggerInterface(const MiraiCPString &content, const MiraiCPString &name, long long id, int level) {
-        logger.call_logger(content, name, id, level);
     }
 } // namespace LibLoader::LoaderApi
