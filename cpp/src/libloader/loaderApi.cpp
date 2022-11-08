@@ -61,11 +61,11 @@ namespace LibLoader::LoaderApi {
     }
 
     void pushTask(task_func func) {
-        BS::pool.push_task(func);
+        BS::pool->push_task(func);
     }
 
     void pushTaskWithId(task_func_with_id func, size_t id) {
-        BS::pool.push_task(func, id);
+        BS::pool->push_task(func, id);
     }
 
     void enablePluginById(const MiraiCPString &id) {

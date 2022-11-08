@@ -15,6 +15,7 @@
 //
 
 #include "loaderMain.h"
+#include "BS_thread_pool.hpp"
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
@@ -23,7 +24,6 @@
 #include "PluginListManager.h"
 #include "ThreadController.h"
 #include "redirectCout.h"
-
 
 namespace LibLoader {
     volatile bool LoaderMain::loader_exit = false;
@@ -34,11 +34,15 @@ namespace LibLoader {
         platform_set_thread_name(platform_thread_self(), "libLoader");
         logger.info("libLoader thread start");
 
+        BS::pool = std::make_unique<BS::thread_pool>();
+
         PluginListManager::enableAll();
 
         while (!is_loader_exited()) mainloop();
 
         shutdownLoader();
+
+        BS::pool.reset();
     }
 
     ////////////////////////////////////

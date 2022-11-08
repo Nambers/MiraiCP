@@ -12,20 +12,21 @@
 
 #define BS_THREAD_POOL_VERSION "v3.3.0 (2022-08-03)"
 
-#include <atomic>             // std::atomic
-#include <chrono>             // std::chrono
-#include <condition_variable> // std::condition_variable
-#include <exception>          // std::current_exception
-#include <functional>         // std::bind, std::function, std::invoke
-#include <future>             // std::future, std::promise
-#include <iostream>           // std::cout, std::endl, std::flush, std::ostream
-#include <memory>             // std::make_shared, std::make_unique, std::shared_ptr, std::unique_ptr
-#include <mutex>              // std::mutex, std::scoped_lock, std::unique_lock
-#include <queue>              // std::queue
-#include <thread>             // std::thread
-#include <type_traits>        // std::common_type_t, std::conditional_t, std::decay_t, std::invoke_result_t, std::is_void_v
-#include <utility>            // std::forward, std::move, std::swap
-#include <vector>             // std::vector
+#include "PlatformThreading.h" // platform_set_thread_name, platform_thread_self
+#include <atomic>              // std::atomic
+#include <chrono>              // std::chrono
+#include <condition_variable>  // std::condition_variable
+#include <exception>           // std::current_exception
+#include <functional>          // std::bind, std::function, std::invoke
+#include <future>              // std::future, std::promise
+#include <iostream>            // std::cout, std::endl, std::flush, std::ostream
+#include <memory>              // std::make_shared, std::make_unique, std::shared_ptr, std::unique_ptr
+#include <mutex>               // std::mutex, std::scoped_lock, std::unique_lock
+#include <queue>               // std::queue
+#include <thread>              // std::thread
+#include <type_traits>         // std::common_type_t, std::conditional_t, std::decay_t, std::invoke_result_t, std::is_void_v
+#include <utility>             // std::forward, std::move, std::swap
+#include <vector>              // std::vector
 
 namespace BS {
     /**
@@ -547,6 +548,7 @@ namespace BS {
          * @brief A worker function to be assigned to each thread in the pool. Waits until it is notified by push_task() that a task is available, and then retrieves the task from the queue and executes it. Once the task finishes, the worker notifies wait_for_tasks() in case it is waiting.
          */
         void worker() {
+            platform_set_thread_name(platform_thread_self(), "LoaderWorkerThread");
             while (running) {
                 std::function<void()> task;
                 std::unique_lock<std::mutex> tasks_lock(tasks_mutex);
@@ -622,5 +624,5 @@ namespace BS {
     //                                     End class thread_pool                                     //
     // ============================================================================================= //
 
-    inline thread_pool pool;
+    inline std::unique_ptr<thread_pool> pool;
 } // namespace BS
