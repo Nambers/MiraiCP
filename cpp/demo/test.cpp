@@ -32,6 +32,18 @@ const PluginConfig CPPPlugin::config{
 Member mem(nlohmann::json{{"id", 1234567}, {"botid", 1245634}, {"groupid", 123456}});
 Member mem2(123, 456, 789);
 
+// test
+
+void test_task(std::chrono::seconds sleeptime) {
+    std::this_thread::sleep_for(sleeptime);
+    Logger::logger.info("Wake!");
+}
+
+void test_task2() {
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    Logger::logger.info("Wake2!");
+}
+
 class Main : public CPPPlugin {
 public:
     // 配置插件信息
@@ -51,11 +63,16 @@ public:
             a.group.sendMessage("a");
             // c.changeNameCard(a.message.toMiraiCode());
             Logger::logger.info(a.group.avatarUrl());
-            a.bot.getFriend(a.bot.getFriendList()[0]).sendMessage("--test end--");
+            // 永远不要相信下标，错误示范如下：
+            // a.bot.getFriend(a.bot.getFriendList()[0]).sendMessage("--test end--");
         });
         for (auto &&pluginid: LoaderApi::showAllPluginId()) {
             Logger::logger.info("pluginid: " + pluginid);
         }
+        auto fu = ThreadTask::promiseTask(test_task2);
+        ThreadTask::addTask(test_task2);
+        ThreadTask::addTask(test_task, std::chrono::seconds(5));
+        fu.get();
     }
 
     void onDisable() override {
