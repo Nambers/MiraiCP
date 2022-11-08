@@ -34,13 +34,14 @@ Member mem2(123, 456, 789);
 
 // test
 
-void test_task(std::chrono::seconds sleeptime) {
+size_t test_task(std::chrono::seconds sleeptime) {
     std::this_thread::sleep_for(sleeptime);
     Logger::logger.info("Wake!");
+    return sleeptime.count();
 }
 
 void test_task2() {
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     Logger::logger.info("Wake2!");
 }
 
@@ -66,13 +67,14 @@ public:
             // 永远不要相信下标，错误示范如下：
             // a.bot.getFriend(a.bot.getFriendList()[0]).sendMessage("--test end--");
         });
-        for (auto &&pluginid: LoaderApi::showAllPluginId()) {
-            Logger::logger.info("pluginid: " + pluginid);
-        }
-        auto fu = ThreadTask::promiseTask(test_task2);
+        //        for (auto &&pluginid: LoaderApi::showAllPluginId()) {
+        //            Logger::logger.info("pluginid: " + pluginid);
+        //        }
+        auto fu = ThreadTask::promiseTask(test_task, std::chrono::seconds(2));
         ThreadTask::addTask(test_task2);
-        ThreadTask::addTask(test_task, std::chrono::seconds(5));
-        fu.get();
+        ThreadTask::addTask(test_task, std::chrono::seconds(1));
+        size_t t = fu.get();
+        Logger::logger.info("Get future: " + std::to_string(t));
     }
 
     void onDisable() override {
