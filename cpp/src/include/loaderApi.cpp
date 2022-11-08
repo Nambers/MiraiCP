@@ -67,6 +67,16 @@ namespace LibLoader::LoaderApi {
         return loader_apis->_showAllPluginId();
     }
 
+    void pushTask(task_func func) {
+        checkApi((void *) loader_apis->_pushTask);
+        loader_apis->_pushTask(func);
+    }
+
+    void pushTaskWithId(task_func_with_id func, size_t id) {
+        checkApi((void *) loader_apis->_pushTaskWithId);
+        loader_apis->_pushTaskWithId(func, id);
+    }
+
     void enablePluginById(const MiraiCPString &id) {
         checkApi((void *) loader_apis->_enablePluginById);
         loader_apis->_enablePluginById(id);

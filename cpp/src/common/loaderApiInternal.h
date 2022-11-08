@@ -19,7 +19,6 @@
 
 
 #include "MiraiCPStringInternal.h"
-#include "commonTypes.h"
 
 #ifdef MIRAICP_LIB_LOADER
 constexpr size_t LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
@@ -99,13 +98,14 @@ namespace LibLoader::LoaderApi {
         DECL_API(reloadPluginById) = nullptr;
         static constexpr size_t adminline1 = __LINE__;
         static constexpr size_t admin_api_count = adminline1 - adminline0 - 1;
+        static constexpr size_t api_count = normal_api_count + admin_api_count;
     };
-
 
 #ifdef MIRAICP_LIB_LOADER
     constexpr inline interface_funcs collect_interface_functions(bool admin) {
         constexpr size_t counter = LOADERAPI_H_GET_COUNTER;
-        static_assert(sizeof(interface_funcs) == sizeof(void *) * counter);
+        static_assert(interface_funcs::api_count == counter);
+        static_assert(sizeof(interface_funcs) == sizeof(void *) * counter); // also check pointer size
         if (admin) {
             constexpr size_t line0 = __LINE__;
             interface_funcs t = {
@@ -123,7 +123,8 @@ namespace LibLoader::LoaderApi {
                     reloadPluginById,
             };
             constexpr size_t line1 = __LINE__;
-            static_assert(line1 - line0 == counter + 3);
+            constexpr size_t allapi_construct_number = line1 - line0 - 3;
+            static_assert(allapi_construct_number == counter);
             return t;
         } else {
             constexpr size_t line0 = __LINE__;
@@ -135,7 +136,8 @@ namespace LibLoader::LoaderApi {
                     pushTaskWithId,
             }; // no admin functions
             constexpr size_t line1 = __LINE__;
-            static_assert(line1 - line0 == interface_funcs::line1 - interface_funcs::line0 + 2);
+            constexpr size_t adminapi_construct_number = line1 - line0 - 3;
+            static_assert(adminapi_construct_number == interface_funcs::normal_api_count);
             return t2;
         }
     }
