@@ -22,7 +22,7 @@
 #include "commonTypes.h"
 
 #ifdef MIRAICP_LIB_LOADER
-constexpr int LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
+constexpr size_t LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
 #define LOADERAPI_H_NOTHING(X)
 #define LOADERAPI_H_LOADER_API_INNER(X) LOADERAPI_H_NOTHING(X)
 #define LOADER_API_COUNT LOADERAPI_H_LOADER_API_INNER(__COUNTER__)
@@ -80,32 +80,34 @@ namespace LibLoader::LoaderApi {
 
     // internal usage. do not call this directly in plugins.
     struct interface_funcs {
-        static constexpr int line0 = __LINE__;
-        decltype(&pluginOperation) _pluginOperation;
-        decltype(&loggerInterface) _loggerInterface;
-        decltype(&showAllPluginId) _showAllPluginId;
-        decltype(&pushTask) _pushTask;
-        decltype(&pushTaskWithId) _pushTaskWithId;
-        static constexpr int line1 = __LINE__;
-        // function below can only be called by admin plugins
-        static constexpr int adminline0 = __LINE__;
-        decltype(&enablePluginById) _enablePluginById = nullptr;
-        decltype(&disablePluginById) _disablePluginById = nullptr;
-        decltype(&enableAllPlugins) _enableAllPlugins = nullptr;
-        decltype(&disableAllPlugins) _disableAllPlugins = nullptr;
-        decltype(&loadNewPlugin) _loadNewPlugin = nullptr;
-        decltype(&unloadPluginById) _unloadPluginById = nullptr;
-        decltype(&reloadPluginById) _reloadPluginById = nullptr;
-        static constexpr int adminline1 = __LINE__;
+        static constexpr size_t line0 = __LINE__;
+        DECL_API(pluginOperation);
+        DECL_API(loggerInterface);
+        DECL_API(showAllPluginId);
+        DECL_API(pushTask);
+        DECL_API(pushTaskWithId);
+        static constexpr size_t line1 = __LINE__;
+        static constexpr size_t normal_api_count = line1 - line0 - 1;
+        // apis below can only be called by admin plugins
+        static constexpr size_t adminline0 = __LINE__;
+        DECL_API(enablePluginById) = nullptr;
+        DECL_API(disablePluginById) = nullptr;
+        DECL_API(enableAllPlugins) = nullptr;
+        DECL_API(disableAllPlugins) = nullptr;
+        DECL_API(loadNewPlugin) = nullptr;
+        DECL_API(unloadPluginById) = nullptr;
+        DECL_API(reloadPluginById) = nullptr;
+        static constexpr size_t adminline1 = __LINE__;
+        static constexpr size_t admin_api_count = adminline1 - adminline0 - 1;
     };
 
 
 #ifdef MIRAICP_LIB_LOADER
     constexpr inline interface_funcs collect_interface_functions(bool admin) {
-        constexpr int counter = LOADERAPI_H_GET_COUNTER;
+        constexpr size_t counter = LOADERAPI_H_GET_COUNTER;
         static_assert(sizeof(interface_funcs) == sizeof(void *) * counter);
         if (admin) {
-            constexpr int line0 = __LINE__;
+            constexpr size_t line0 = __LINE__;
             interface_funcs t = {
                     pluginOperation,
                     loggerInterface,
@@ -120,11 +122,11 @@ namespace LibLoader::LoaderApi {
                     unloadPluginById,
                     reloadPluginById,
             };
-            constexpr int line1 = __LINE__;
+            constexpr size_t line1 = __LINE__;
             static_assert(line1 - line0 == counter + 3);
             return t;
         } else {
-            constexpr int line0 = __LINE__;
+            constexpr size_t line0 = __LINE__;
             interface_funcs t2 = {
                     pluginOperation,
                     loggerInterface,
@@ -132,7 +134,7 @@ namespace LibLoader::LoaderApi {
                     pushTask,
                     pushTaskWithId,
             }; // no admin functions
-            constexpr int line1 = __LINE__;
+            constexpr size_t line1 = __LINE__;
             static_assert(line1 - line0 == interface_funcs::line1 - interface_funcs::line0 + 2);
             return t2;
         }

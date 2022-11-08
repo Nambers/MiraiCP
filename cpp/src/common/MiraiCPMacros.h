@@ -175,4 +175,7 @@ static_assert(false, "Unsupported platform");
 #define INLINE_GETTER(attr) \
     auto attr() { return GetDataInternal()->_##attr; }
 
+// api declarer
+#define DECL_API(x) decltype(&x) _##x
+
 #endif //MIRAICP_PRO_MIRAICPMACROS_H
