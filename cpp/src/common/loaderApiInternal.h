@@ -19,7 +19,7 @@
 
 
 #include "MiraiCPStringInternal.h"
-
+#include "commonTypes.h"
 
 #ifdef MIRAICP_LIB_LOADER
 constexpr int LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
@@ -34,6 +34,9 @@ constexpr int LOADERAPI_H_COUNTER_BASE = __COUNTER__ + 1;
 
 // the API defs to be exposed
 namespace LibLoader::LoaderApi {
+    typedef void (*task_func)();
+    typedef void (*task_func_with_id)(size_t);
+
     using MiraiCP::MiraiCPString;
 
     LOADER_API_COUNT
@@ -44,6 +47,14 @@ namespace LibLoader::LoaderApi {
 
     LOADER_API_COUNT
     MiraiCPString showAllPluginId();
+
+    LOADER_API_COUNT
+    void pushTask(task_func);
+
+    LOADER_API_COUNT
+    void pushTaskWithId(task_func_with_id, size_t);
+
+    // Admin api
 
     LOADER_API_COUNT
     void enablePluginById(const MiraiCPString &);
@@ -73,6 +84,8 @@ namespace LibLoader::LoaderApi {
         decltype(&pluginOperation) _pluginOperation;
         decltype(&loggerInterface) _loggerInterface;
         decltype(&showAllPluginId) _showAllPluginId;
+        decltype(&pushTask) _pushTask;
+        decltype(&pushTaskWithId) _pushTaskWithId;
         static constexpr int line1 = __LINE__;
         // function below can only be called by admin plugins
         static constexpr int adminline0 = __LINE__;
@@ -97,6 +110,8 @@ namespace LibLoader::LoaderApi {
                     pluginOperation,
                     loggerInterface,
                     showAllPluginId,
+                    pushTask,
+                    pushTaskWithId, /// end normal apis
                     enablePluginById,
                     disablePluginById,
                     enableAllPlugins,
@@ -114,6 +129,8 @@ namespace LibLoader::LoaderApi {
                     pluginOperation,
                     loggerInterface,
                     showAllPluginId,
+                    pushTask,
+                    pushTaskWithId,
             }; // no admin functions
             constexpr int line1 = __LINE__;
             static_assert(line1 - line0 == interface_funcs::line1 - interface_funcs::line0 + 2);

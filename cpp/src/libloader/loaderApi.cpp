@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "BS_thread_pool.hpp"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "LoaderMacro.h"
@@ -57,6 +58,14 @@ namespace LibLoader::LoaderApi {
 
     MiraiCPString showAllPluginId() {
         return nlohmann::json(PluginListManager::getAllPluginId()).dump();
+    }
+
+    void pushTask(task_func func) {
+        BS::pool.push_task(func);
+    }
+
+    void pushTaskWithId(task_func_with_id func, size_t id) {
+        BS::pool.push_task(func, id);
     }
 
     void enablePluginById(const MiraiCPString &id) {
