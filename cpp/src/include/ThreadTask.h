@@ -23,9 +23,9 @@ namespace MiraiCP::ThreadTask {
     /// @brief 提交一个任务到线程池，参数与构造 std::thread 以及 MiraiCPNewThread 用的参数相同。
     ///  任务在线程池可用时会被立刻执行
     /// @return 对应任务返回类型的 std::future 对象
-    /// @see promiseTask, MiraiCPNewThread
+    /// @see addTask, MiraiCPNewThread
     template<typename F, typename... Args, typename R = std::invoke_result_t<std::decay_t<F>, std::decay_t<Args>...>>
-    std::future<R> addTask(F &&func, Args &&...args) {
+    std::future<R> promiseTask(F &&func, Args &&...args) {
         auto promise = std::make_shared<std::promise<R>>();
         auto future = promise->get_future();
         std::function<R()> taskfunction = std::bind(std::forward<F>(func), std::forward<Args>(args)...);
