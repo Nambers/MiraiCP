@@ -6,9 +6,17 @@ on:
    v:
     required: true
     description: version tag
+    type: string
    pre:
     required: true
     description: pre-release
+    default: false
+    type: boolean 
+   skipTest:
+    description: skip-test
+    type: boolean 
+    default: false
+    required: false
 
 jobs:
   loadTest:
@@ -86,6 +94,7 @@ jobs:
          MESSAGE: ${{ github.event.inputs.v }} # The commit message
     
   publish-release:
+    if: ${{ github.event.inputs.skipTest }}
     needs: loadTest
     runs-on: ubuntu-latest
     steps:

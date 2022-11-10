@@ -6,9 +6,12 @@ on:
    v:
       required: true
       description: version tag
+      type: string
    clean:
      required: false
      description: clean all dev release
+     type: boolean 
+     default: false
 
 jobs:
   build-libLoader-msvc-4-windows:
