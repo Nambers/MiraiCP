@@ -229,8 +229,6 @@ object CPPLib {
                 Operation_code.Announcement.ordinal -> KAnnouncement(
                     root.identify!!, root.source
                 )
-                /// 定时任务
-                Operation_code.Timer.ordinal -> PublicShared.scheduling(root.time!!, root.msg!!)
                 /// 发送戳一戳
                 Operation_code.Nudge.ordinal -> PublicShared.sendNudge(
                     contact(root.contactSource!!)
@@ -249,7 +247,7 @@ object CPPLib {
                 )
 
                 Operation_code.ImageUploaded.ordinal -> PublicShared.isUploaded(
-                    json.decodeFromString<Config.ImgInfo>(
+                    json.decodeFromString(
                         root.toString()
                     ), root.botid!!
                 )

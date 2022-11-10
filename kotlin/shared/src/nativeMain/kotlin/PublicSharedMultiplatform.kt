@@ -18,33 +18,10 @@
 
 package tech.eritquearcus.miraicp.shared
 
-import kotlinx.coroutines.*
 import tech.eritquearcus.MiraiCP.PluginDisable
-import kotlin.coroutines.EmptyCoroutineContext
-
-private class Timer(val time: Long, val msg: String) {
-    private var timer: Job = CoroutineScope(EmptyCoroutineContext).launch {
-        for (i in 0..time / 10) {
-            if (!isActive) return@launch
-            delay(10)
-        }
-        UlitsMultiPlatform.event(CPPEvent.TimeOutEvent(msg))
-    }
-
-    val isCancelled
-        get() = timer.isCancelled
-
-    fun cancel() {
-        timer.cancel()
-    }
-}
 
 actual object PublicSharedMultiplatform {
     actual fun onDisable() {
         PluginDisable()
-    }
-
-    actual fun scheduling(time: Long, msg: String) {
-        Timer(time, msg)
     }
 }
