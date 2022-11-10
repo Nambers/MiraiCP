@@ -18,6 +18,7 @@
 
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.network.RetryLaterException
+import net.mamoe.mirai.network.UnsupportedSmsLoginException
 import net.mamoe.mirai.utils.DeviceVerificationRequests
 import net.mamoe.mirai.utils.DeviceVerificationResult
 import net.mamoe.mirai.utils.LoginSolver
@@ -66,5 +67,14 @@ class MiraiCPLoginSolver : LoginSolver() {
         Console.console.println("Url: $url")
         bot.logger.info("需要滑块验证码")
         return Console.console.prompt("滑块验证码(ticket):")!!
+    }
+
+    @Deprecated(
+        "Please use onSolveDeviceVerification instead",
+        replaceWith = ReplaceWith("onSolveDeviceVerification(bot, url, null)"),
+        level = DeprecationLevel.WARNING
+    )
+    override suspend fun onSolveUnsafeDeviceLoginVerify(bot: Bot, url: String): String? {
+        throw UnsupportedSmsLoginException("This login session requires device verification, but current LoginSolver($this) does not support it. Please override `LoginSolver.onSolveDeviceVerification`.")
     }
 }
