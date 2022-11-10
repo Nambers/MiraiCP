@@ -17,14 +17,14 @@
  */
 
 object Version {
-    const val miraiCP = "2.12.0-RC2"
+    const val miraiCP = "2.13.0-alpha"
     // plugins
     const val kotlin = "1.7.20"
     const val shadowJar = "7.1.2"
     const val `kotlinx-coroutines-core` = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     const val `kotlin-test` = "org.jetbrains.kotlin:kotlin-test:$kotlin"
 
-    const val mirai = "2.13.0"
+    const val mirai = "2.13.0-RC2"
     const val `mirai-core-api` = "net.mamoe:mirai-core-api:$mirai"
     const val `mirai-core-utils` = "net.mamoe:mirai-core-utils:$mirai"
     const val `mirai-console` = "net.mamoe:mirai-console:$mirai"
