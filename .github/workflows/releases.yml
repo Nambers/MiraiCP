@@ -92,6 +92,7 @@ jobs:
          MESSAGE: ${{ github.event.inputs.v }} # The commit message
     
   publish-release:
+    needs: [build-libLoader-msvc-4-windows, build-libLoader-gcc-4-linux]
     runs-on: ubuntu-latest
     steps:
     - name: loadTest
