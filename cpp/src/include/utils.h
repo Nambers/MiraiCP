@@ -25,17 +25,6 @@
 
 
 namespace MiraiCP {
-    /*!
-     * @brief 定时任务, 在一定时间后广播**一次**TimeOutEvent
-     * @param time 在多少毫秒后执行
-     * @param msg 附加的string类型信息
-     * @doxygenEg{1017, schedule.cpp, 定时任务}
-     */
-    inline void schedule(long time, const std::string &msg) {
-        nlohmann::json j{{"time", time}, {"msg", msg}};
-        KtOperation::ktOperation(KtOperation::TimeOut, std::move(j));
-    }
-
     /// 注册插件函数, 需要被实现, 类似onStart();
     void enrollPlugin();
 

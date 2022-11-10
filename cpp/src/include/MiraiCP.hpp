@@ -35,6 +35,7 @@
 #include "MessageSource.h"
 #include "MiraiCPNewThread.h"
 #include "MiraiCode.h"
+#include "Schedule.h"
 #include "SingleMessage.h"
 #include "ThreadTask.h"
 #include "Tools.h"
