@@ -1,15 +1,23 @@
 # Change Log
 
-## 版本名待定
+## v2.13.0-alpha
+> 也不知道为什么就囤了 ~200 commits. ToT  
 
-* 修复上一个版本已知问题：
-  * 插件部分全局变量无法正常构造 [#126](https://github.com/Nambers/MiraiCP/issues/126)
-  * 加载时抛出json异常 [#137](https://github.com/Nambers/MiraiCP/issues/137)
-* 加入线程池支持，现在可以在插件中向libloader提交多线程任务
-* 加入对内存访问异常的处理机制，现在单个插件产生致命错误时不会使整个程序崩溃（仅测试于Linux， Windows）
-* 更改了部分接口与内部实现
++ 修复上一个版本已知问题：
+  + 插件部分全局变量无法正常构造 [#126](https://github.com/Nambers/MiraiCP/issues/126)
+  + 加载时抛出json异常 [#137](https://github.com/Nambers/MiraiCP/issues/137)
++ 加入线程池支持，现在可以在插件中向libloader提交多线程任务
++ 更改了部分接口与内部实现(重构 Contact)
++ 重定向 cerr 和 cout 输出到 logger
++ **删除 MiraiCP-core**
 
-> 注意：此版本与之前版本的插件无法兼容，请重新编译插件
+Internal:
++ 增加 cpp 内 unit test (google test)
++ UnhandledExceptionFilter & sigsev catch: 加入对内存访问异常的处理机制，现在单个插件产生致命错误时不会使整个程序崩溃（仅测试于Linux, Windows）
++ 结构优化
+
+> 注意：此版本与之前版本的插件无法兼容，请重新编译插件  
+> 本次为alpha-dev版, 可能出现一些问题
 
 ## v2.12.0-RC2
 + 修复上一个发行版已知问题:
