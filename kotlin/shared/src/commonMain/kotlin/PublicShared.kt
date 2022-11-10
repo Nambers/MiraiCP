@@ -60,7 +60,6 @@ import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 
 expect object PublicSharedMultiplatform {
     fun onDisable()
-    fun scheduling(time: Long, msg: String)
 }
 
 object PublicSharedData {
@@ -703,12 +702,6 @@ object PublicShared {
                 }
             }
         }
-
-    //定时任务
-    fun scheduling(time: Long, msg: String): String {
-        PublicSharedMultiplatform.scheduling(time, msg)
-        return "Y"
-    }
 
     suspend fun sendNudge(c: Config.Contact): String = c.withBot { bot ->
         return when (c.type) {
