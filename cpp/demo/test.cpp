@@ -67,6 +67,11 @@ public:
             // 永远不要相信下标，错误示范如下：
             // a.bot.getFriend(a.bot.getFriendList()[0]).sendMessage("--test end--");
         });
+        Event::registerEvent<TimeOutEvent>([](TimeOutEvent a) {
+            Logger::logger.info("timeout");
+            Logger::logger.info(a.msg);
+        });
+        schedule(1, "This is a message");
         //        for (auto &&pluginid: LoaderApi::showAllPluginId()) {
         //            Logger::logger.info("pluginid: " + pluginid);
         //        }
@@ -75,6 +80,7 @@ public:
         ThreadTask::addTask(test_task, std::chrono::seconds(1));
         size_t t = fu.get();
         Logger::logger.info("Get future: " + std::to_string(t));
+        //
     }
 
     void onDisable() override {
