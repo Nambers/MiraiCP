@@ -17,6 +17,7 @@ target_include_directories(Loader PUBLIC
 set_target_properties(Loader PROPERTIES
         PREFIX lib
         OUTPUT_NAME Loader
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 target_compile_definitions(Loader PUBLIC MIRAICP_LIB_LOADER JSON_MultipleHeaders=ON)
