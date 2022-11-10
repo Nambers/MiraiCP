@@ -20,6 +20,7 @@ on:
 
 jobs:
   loadTest:
+    if: ${{ !github.event.inputs.skipTest }}
     uses: ./.github/workflows/loadTest.yml
   build-libLoader-msvc-4-windows:
     runs-on: windows-latest
@@ -94,7 +95,6 @@ jobs:
          MESSAGE: ${{ github.event.inputs.v }} # The commit message
     
   publish-release:
-    if: ${{ github.event.inputs.skipTest }}
     needs: loadTest
     runs-on: ubuntu-latest
     steps:
