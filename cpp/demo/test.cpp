@@ -81,6 +81,9 @@ public:
         size_t t = fu.get();
         Logger::logger.info("Get future: " + std::to_string(t));
         //
+        std::use_facet<std::collate<char>>(std::locale());
+        //Tools::StringToVector("123,345,567");
+        //
     }
 
     void onDisable() override {
