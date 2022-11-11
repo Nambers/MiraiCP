@@ -795,7 +795,7 @@ namespace MiraiCP {
         static std::shared_ptr<NodeHandle> registerEvent(std::function<void(EventClass)> callback, priority_level level = 100) {
             static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
-                callback(*dynamic_cast<EventClass *>(p));
+                callback(*static_cast<EventClass *>(p));
                 return false;
             };
             auto t = eventNode(tmp);

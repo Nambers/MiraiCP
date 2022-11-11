@@ -1,45 +1,40 @@
 cmake_minimum_required(VERSION 3.10)
 project(MiraiCP_pro LANGUAGES CXX) # MSVC detecting must be after project declaration
 
+#
+set(CMAKE_CXX_STANDARD 17) # not working on MSVC
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 if (MSVC)
     message("MSVC detected")
     # 以utf8编译, for msvc; EHa参数启用标准 C++ stack unwinding; 启用多线程编译；禁止无返回值的函数；禁用两个与dll export相关的warning
     add_compile_options(/W4 /utf-8 /EHa /std:c++17 /MP /we4715 /wd4251 /wd4275)
     # See Warning C4668
     add_compile_definitions(WIN32_LEAN_AND_MEAN)
+    # Disable RTTI.
+    # string(REGEX REPLACE "/GR" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GR-")
+    message("modified cmake cxx flags: ${CMAKE_CXX_FLAGS}")
 else ()
     # 禁止无返回值的函数
     add_compile_options(-Wall -Werror=return-type)
+    # Disable RTTI.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
+    message("modified cmake cxx flags: ${CMAKE_CXX_FLAGS}")
+    # hide symbol
+    add_link_options(-fvisibility=hidden)
 endif ()
 
 # optimize for Release build
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     message("Release mode, enabling maximal optimization")
     if (MSVC)
-        # todo(Antares): remove these after merged to main
-        message("${CMAKE_CXX_FLAGS}")
-        message("${CMAKE_CXX_FLAGS_DEBUG}")
-        message("${CMAKE_CXX_FLAGS_RELEASE}")
-        message("${CMAKE_CXX_FLAGS_MINSIZEREL}")
-        message("${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-        foreach (flag_var
-                CMAKE_CXX_FLAGS
-                CMAKE_CXX_FLAGS_DEBUG
-                CMAKE_CXX_FLAGS_RELEASE
-                CMAKE_CXX_FLAGS_MINSIZEREL
-                CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-            STRING(REGEX REPLACE "/RTC[^ ]*" "" ${flag_var} "${${flag_var}}")
-        endforeach (flag_var)
         add_compile_options(/Ox)
     else ()
         add_compile_options(-O3)
     endif (MSVC)
 endif (CMAKE_BUILD_TYPE STREQUAL "Release")
-
-#
-set(CMAKE_CXX_STANDARD 17) # not working on MSVC
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
