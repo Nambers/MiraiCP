@@ -23,6 +23,8 @@ namespace LibLoader {
         volatile static bool loader_exit;
 
     private:
+        static void tick() noexcept;
+
         static void mainloop() noexcept;
 
         static void shutdownLoader();
