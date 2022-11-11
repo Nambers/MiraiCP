@@ -32,7 +32,7 @@ if (WIN32)
 endif (WIN32)
 if (UNIX)
     target_link_libraries(Loader -static-libstdc++ -static-libgcc)
-    target_compile_options(Loader PUBLIC -rdynamic)
+    # target_compile_options(Loader PUBLIC -rdynamic)
 endif (UNIX)
 # -- end --
 
@@ -67,6 +67,6 @@ if (WIN32)
 endif (WIN32)
 if (UNIX)
     target_link_libraries(LoaderNative -static-libstdc++ -static-libgcc)
-    target_compile_options(LoaderNative PUBLIC -rdynamic)
+    # target_compile_options(LoaderNative PUBLIC -rdynamic)
 endif (UNIX)
 # -- end --
