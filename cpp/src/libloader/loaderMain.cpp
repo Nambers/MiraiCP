@@ -84,7 +84,11 @@ namespace LibLoader {
 
     ////////////////////////////////////
 
+    void LoaderMain::tick() noexcept {
+    }
+
     void LoaderMain::mainloop() noexcept {
+        tick();
         if (loader_thread_task_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(70));
         else {
             loadertask task;
@@ -139,4 +143,5 @@ namespace LibLoader {
         // 为了删除 Win 下复制的缓存
         PluginListManager::unloadAll();
     }
+
 } // namespace LibLoader
