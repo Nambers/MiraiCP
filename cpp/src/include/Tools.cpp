@@ -31,18 +31,31 @@ namespace MiraiCP::Tools {
         return str;
     }
 
+    inline void split(const std::string &s, std::vector<std::string> &tokens, const std::string &delimiters = ",") {
+        std::string::size_type lastPos = s.find_first_not_of(delimiters, 0);
+        std::string::size_type pos = s.find_first_of(delimiters, lastPos);
+        while (std::string::npos != pos || std::string::npos != lastPos) {
+            tokens.emplace_back(s.substr(lastPos, pos - lastPos));
+            lastPos = s.find_first_not_of(delimiters, pos);
+            pos = s.find_first_of(delimiters, lastPos);
+        }
+    }
+
     std::vector<QQID> StringToVector(std::string temp) {
-        std::vector<QQID> result;
-        temp.erase(temp.begin());
-        temp.pop_back();
-        std::regex ws_re("[,]+");
-        std::vector<std::string> v(std::sregex_token_iterator(temp.begin(), temp.end(), ws_re, -1),
-                                   std::sregex_token_iterator());
-        result.reserve(v.size());
-        std::for_each(v.begin(), v.end(), [&](auto &&s) { result.emplace_back(std::stoull(s)); });
-        // for (auto &&s: v)
-        //     result.emplace_back(std::stoull(s));
-        return result;
+        if (temp.empty()) return {};
+        if (temp[0] == '[' && temp[temp.size() - 1] == ']') {
+            temp.erase(temp.begin());
+            temp.pop_back();
+        }
+
+        std::vector<std::string> strResult;
+        split(temp, strResult);
+        std::vector<QQID> ans;
+        ans.reserve(strResult.size());
+        for (auto &str: strResult) {
+            ans.emplace_back(stoull(str));
+        }
+        return ans;
     }
 
     std::string escapeFromMiraiCode(const std::string &s) {

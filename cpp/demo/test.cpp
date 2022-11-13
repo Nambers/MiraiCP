@@ -53,6 +53,8 @@ public:
 
 public:
     void onEnable() override {
+        std::use_facet<std::collate<char>>(std::locale());
+        //
         Logger::logger.info("loaded");
         // 监听
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
@@ -65,7 +67,7 @@ public:
             // c.changeNameCard(a.message.toMiraiCode());
             Logger::logger.info(a.group.avatarUrl());
             // 永远不要相信下标，错误示范如下：
-            // a.bot.getFriend(a.bot.getFriendList()[0]).sendMessage("--test end--");
+            a.bot.getFriend(a.bot.getFriendList()[0]).sendMessage("--test end--");
         });
         Event::registerEvent<TimeOutEvent>([](TimeOutEvent a) {
             Logger::logger.info("timeout");
@@ -80,10 +82,6 @@ public:
         ThreadTask::addTask(test_task, std::chrono::seconds(1));
         size_t t = fu.get();
         Logger::logger.info("Get future: " + std::to_string(t));
-        //
-        std::use_facet<std::collate<char>>(std::locale());
-        //Tools::StringToVector("123,345,567");
-        //
     }
 
     void onDisable() override {
