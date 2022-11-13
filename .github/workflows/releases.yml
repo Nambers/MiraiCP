@@ -28,7 +28,7 @@ jobs:
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DGOOGLE_TEST=OFF ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with gcc
       run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --config Release --target Loader
     - name: upload
