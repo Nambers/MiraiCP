@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 project(MiraiCP_pro LANGUAGES CXX) # MSVC detecting must be after project declaration
 
 #
