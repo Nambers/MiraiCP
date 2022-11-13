@@ -58,6 +58,10 @@ target_compile_definitions(MiraiCP_single PUBLIC MIRAICP_LIB_SDK JSON_MultipleHe
 # -- end --
 
 # 移植性
+set_target_properties(MiraiCP_multi PROPERTIES LINK_SEARCH_START_STATIC 1)
+set_target_properties(MiraiCP_multi PROPERTIES LINK_SEARCH_END_STATIC 1)
+set_target_properties(MiraiCP_single PROPERTIES LINK_SEARCH_START_STATIC 1)
+set_target_properties(MiraiCP_single PROPERTIES LINK_SEARCH_END_STATIC 1)
 if (WIN32)
     if (MSVC)
         target_compile_options(MiraiCP_multi PUBLIC /MT)

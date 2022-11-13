@@ -23,6 +23,8 @@ set_target_properties(Loader PROPERTIES
 target_compile_definitions(Loader PUBLIC MIRAICP_LIB_LOADER JSON_MultipleHeaders=ON)
 
 # 移植性
+set_target_properties(Loader PROPERTIES LINK_SEARCH_START_STATIC 1)
+set_target_properties(Loader PROPERTIES LINK_SEARCH_END_STATIC 1)
 if (WIN32)
     if (MSVC)
         target_compile_options(Loader PUBLIC /MT)
@@ -67,6 +69,6 @@ if (WIN32)
 endif (WIN32)
 if (UNIX)
     target_link_libraries(LoaderNative -static-libstdc++ -static-libgcc)
-    # target_compile_options(LoaderNative PUBLIC -rdynamic)
+    add_link_options(-fvisibility=hidden)
 endif (UNIX)
 # -- end --
