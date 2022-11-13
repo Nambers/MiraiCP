@@ -93,7 +93,7 @@ jobs:
       
       - if: ${{ env.isWindows == 'true' }}
         name: build with gcc win
-        run: cd ./cpp && cmake --build build --target Loader
+        run: cd ./cpp && cmake --build build --config Release --target Loader
 
   libLoader-native:
     name: "build Native (${{ matrix.os }})"
@@ -127,4 +127,4 @@ jobs:
       
       - if: ${{ env.isWindows == 'true' }}
         name: build with gcc win
-        run: cd cpp && cmake --build build --target LoaderNative
+        run: cd cpp && cmake --build build --config Release --target LoaderNative

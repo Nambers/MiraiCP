@@ -27,14 +27,14 @@ else ()
 endif ()
 
 # optimize for Release build
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
+if (CMAKE_BUILD_TYPE MATCHES ".*Rel.*")
     message("Release mode, enabling maximal optimization")
     if (MSVC)
         add_compile_options(/Ox)
     else ()
         add_compile_options(-O3)
     endif (MSVC)
-endif (CMAKE_BUILD_TYPE STREQUAL "Release")
+endif (CMAKE_BUILD_TYPE MATCHES ".*Rel.*")
 
 #
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
