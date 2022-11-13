@@ -32,10 +32,18 @@ TEST(ToolsTest, vectorToString) {
 }
 
 TEST(ToolsTest, stringToVec) {
-    auto str = "[111,222,333,444]";
-    auto target = Tools::StringToVector(str);
-    std::vector<QQID> expect = {111, 222, 333, 444};
-    ASSERT_EQ(expect, target);
+    {
+        auto str = "[111,222,333,444]";
+        auto target = Tools::StringToVector(str);
+        std::vector<QQID> expect = {111, 222, 333, 444};
+        ASSERT_EQ(expect, target);
+    }
+    {
+        auto str = ",111,222,333,,444,";
+        auto target = Tools::StringToVector(str);
+        std::vector<QQID> expect = {111, 222, 333, 444};
+        ASSERT_EQ(expect, target);
+    }
 }
 
 TEST(ToolsTest, escapeMiraiCode) {
