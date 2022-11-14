@@ -10,7 +10,7 @@ on:
    clean:
      required: false
      description: clean all dev release
-     type: boolean 
+     type: boolean
      default: false
 
 jobs:
