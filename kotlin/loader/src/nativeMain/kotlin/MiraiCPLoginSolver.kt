@@ -46,7 +46,7 @@ class MiraiCPLoginSolver : LoginSolver() {
                     bot.logger.error(e)
                     exitProcess(-1)
                 }
-                code = Console.console.prompt("短信验证码:")!!
+                code = Console.console.prompt("短信验证码")!!.trim()
             }
             requests.sms!!.solved(code)
         } else {
@@ -60,13 +60,13 @@ class MiraiCPLoginSolver : LoginSolver() {
     override suspend fun onSolvePicCaptcha(bot: Bot, data: ByteArray): String {
         MiraiCPFiles.create("verify.jpg").writeByteArray(data)
         bot.logger.info("需要图形验证码")
-        return Console.console.prompt("图形验证码(图片在verify.jpg):")!!
+        return Console.console.prompt("图形验证码(图片在verify.jpg)")!!.trim()
     }
 
     override suspend fun onSolveSliderCaptcha(bot: Bot, url: String): String {
         Console.console.println("Url: $url")
         bot.logger.info("需要滑块验证码")
-        return Console.console.prompt("滑块验证码(ticket):")!!
+        return Console.console.prompt("滑块验证码(ticket)")!!.trim()
     }
 
     @Deprecated(
