@@ -60,6 +60,8 @@ set_target_properties(LoaderNative PROPERTIES
 target_compile_definitions(LoaderNative PUBLIC MIRAICP_LIB_LOADER LOADER_NATIVE JSON_MultipleHeaders=ON)
 
 # 移植性
+set_target_properties(LoaderNative PROPERTIES LINK_SEARCH_START_STATIC 1)
+set_target_properties(LoaderNative PROPERTIES LINK_SEARCH_END_STATIC 1)
 if (WIN32)
     if (MSVC)
         target_compile_options(LoaderNative PUBLIC /MT)
