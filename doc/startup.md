@@ -165,6 +165,9 @@ cmake --build build --config Debug --target MiraiCPPlugin
 
 至此, 构建项目完成
 # Step 2 配置运行环境
+
+> 重要提醒：如果目标部署的系统是Linux，请使用OpenJDK，不要使用Oracle JDK！Oracle JDK有一个很严重的bug（详情见[issue142](https://github.com/Nambers/MiraiCP/issues/142)），可能导致你的插件无法按照预期运行
+
 ## i 选择启动方式
 | 名称 | 特性 | 下一步 |
 | --- | --- | --- |
