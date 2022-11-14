@@ -15,7 +15,7 @@ on:
 
 jobs:
   build-libLoader-msvc-4-windows:
-    if: ${{ !github.event.inputs.clean }}
+    if: ${{ github.event.inputs.clean == false }}
     runs-on: windows-latest
     steps:
     - name: checkout
@@ -33,7 +33,7 @@ jobs:
         name: libLoaderdll
         path: ./cpp/build/Release/libLoader.dll
   build-libLoader-gcc-4-linux:
-    if: ${{ !github.event.inputs.clean }}
+    if: ${{ github.event.inputs.clean == false }}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
@@ -51,7 +51,7 @@ jobs:
         name: libLoaderso
         path: ./cpp/build/libLoader.so
   clean:
-    if: ${{ github.event.inputs.clean }}
+    if: ${{ github.event.inputs.clean == true }}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
@@ -72,7 +72,7 @@ jobs:
         MESSAGE: "clean all" # The commit message
       
   tempRelease:
-    if: ${{ !github.event.inputs.clean }}
+    if: ${{ github.event.inputs.clean == false }}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
