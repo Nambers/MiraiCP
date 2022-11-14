@@ -69,40 +69,6 @@ namespace MiraiCP {
         if (needrefresh) forceRefreshNextTime();
     }
 
-    IMPL_GETTER(anonymous)
-    //
-    //    void Member::refreshInfo() {
-    //        this->isAnonymous = this->_anonymous;
-    //        if (isAnonymous)
-    //            return;
-    //        std::string temp = LowLevelAPI::getInfoSource(this->toString());
-    //        if (temp == "E1")
-    //            throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
-    //        if (temp == "E2")
-    //            throw MemberException(2, MIRAICP_EXCEPTION_WHERE);
-    //        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
-    //        this->_nickOrNameCard = tmp.nickornamecard;
-    //        this->_avatarUrl = tmp.avatarUrl;
-    //        if (isAnonymous) {
-    //            this->permission = 0;
-    //        } else {
-    //            json j;
-    //            j["contactSource"] = this->toString();
-    //            std::string re = KtOperation::ktOperation(KtOperation::QueryM, j);
-    //            this->permission = stoi(re);
-    //        }
-    //        if (temp == "E1") {
-    //            throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
-    //        }
-    //        if (temp == "E2") {
-    //            throw MemberException(2, MIRAICP_EXCEPTION_WHERE);
-    //        }
-    //    }
-    //
-    //    unsigned int Member::getPermission() const {
-    //        if (isAnonymous) return 0;
-    //    }
-
     void Member::mute(long long sec) const {
         json j{{"time", sec}, {"contactSource", toString()}};
         std::string re = KtOperation::ktOperation(KtOperation::MuteM, std::move(j));
@@ -166,6 +132,9 @@ namespace MiraiCP {
             _permission = stoi(KtOperation::ktOperation(KtOperation::QueryM, std::move(j)));
         }
     }
+
+    IMPL_GETTER(anonymous)
+    IMPL_GETTER(permission)
 
 #undef LOC_CLASS_NAMESPACE
 } // namespace MiraiCP
