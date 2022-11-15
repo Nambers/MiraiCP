@@ -15,8 +15,9 @@
 //
 
 #include "MiraiCPMacros.h"
-#include "PlatformThreading.h"
+// -----------------------
 #include "PluginListManager.h"
+#include "commonTools.h"
 
 
 // TODO(Antares): 1. 调用插件出口函数；2. 防止sigsegv重入

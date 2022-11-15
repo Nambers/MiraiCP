@@ -17,15 +17,13 @@
 #ifndef MIRAICP_PRO_CONTACT_H
 #define MIRAICP_PRO_CONTACT_H
 
-
 #include "IMiraiData.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
 #include "MessageChain.h"
-
-
-#include <json.hpp>
+#include <json_fwd.hpp>
 #include <string>
+
 
 namespace MiraiCP {
     /// Contact 类型

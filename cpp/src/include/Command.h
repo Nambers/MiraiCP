@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_COMMAND_H
 #define MIRAICP_PRO_COMMAND_H
 
-
 #include "CPPPlugin.h"
 #include "Exception.h"
 #include "KtOperation.h"

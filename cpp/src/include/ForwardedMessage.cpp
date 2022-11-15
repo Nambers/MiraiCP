@@ -17,7 +17,7 @@
 #include "ForwardedMessage.h"
 #include "Contact.h"
 #include "KtOperation.h"
-#include <utility>
+
 
 namespace MiraiCP {
     using json = nlohmann::json;

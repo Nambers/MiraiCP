@@ -17,11 +17,12 @@
 #ifndef MIRAICP_PRO_MIRAICPNEWTHREAD_H
 #define MIRAICP_PRO_MIRAICPNEWTHREAD_H
 
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "CPPPlugin.h"
 #include "Event.h"
 #include "Exception.h"
 #include "Logger.h"
-#include "MiraiCPMacros.h"
 #include "PlatformThreading.h"
 #include <ostream>
 #include <thread>

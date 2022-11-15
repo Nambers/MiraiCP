@@ -17,9 +17,9 @@
 #ifndef MIRAICP_PRO_LOADERAPI_H
 #define MIRAICP_PRO_LOADERAPI_H
 
-
 #include <string>
 #include <vector>
+
 
 // for plugin usage
 namespace MiraiCP::LoaderApi {

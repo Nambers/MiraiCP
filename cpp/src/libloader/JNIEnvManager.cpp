@@ -16,8 +16,10 @@
 
 #ifndef LOADER_NATIVE
 
-#include "JNIEnvManager.h"
 #include "MiraiCPMacros.h"
+// -----------------------
+#include "JNIEnvManager.h"
+
 
 class JNIEnvManager::ThreadInfo {
     friend class JNIEnvManager;

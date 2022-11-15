@@ -14,12 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "utils.h"
 #include "Event.h"
 #include "Exception.h"
 #include "KtOperation.h"
 #include "Logger.h"
-#include "MiraiCPMacros.h"
 #include "commonTools.h"
 #include "loaderApiInternal.h"
 #include <iostream>

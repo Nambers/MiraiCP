@@ -19,6 +19,7 @@
 #include "json.hpp"
 #include <mutex>
 
+
 namespace MiraiCP {
     void IMiraiData::requestRefresh() {
         if (!MiraiCP::checkSafeCall() || Locker._inited.exchange(true)) return;

@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_FORWARDEDMESSAGE_H
 #define MIRAICP_PRO_FORWARDEDMESSAGE_H
 
-
 #include "MessageChain.h"
 #include <utility>
 #include <variant>

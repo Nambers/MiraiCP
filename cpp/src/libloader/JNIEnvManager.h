@@ -21,6 +21,7 @@
 #ifndef LOADER_NATIVE
 
 #include "MiraiCPMacros.h"
+// -----------------------
 #include <functional>
 #include <jni.h>
 #include <mutex>

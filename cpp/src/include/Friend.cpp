@@ -20,6 +20,7 @@
 #include "LowLevelAPI.h"
 #include "Tools.h"
 
+
 namespace MiraiCP {
     using json = nlohmann::json;
     auto GetFriendPool(QQID id, QQID botid) noexcept {

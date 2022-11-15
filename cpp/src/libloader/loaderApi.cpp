@@ -14,12 +14,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "BS_thread_pool.hpp"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "LoaderMacro.h"
 #include "LoaderTaskQueue.h"
 #include "PluginListManager.h"
+#include "commonTools.h"
 #include "loaderApiInternal.h"
 #include "loaderTools.h"
 #include <mutex>

@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_BOT_H
 #define MIRAICP_PRO_BOT_H
 
-
 #include "Contact.h"
 #include "commonTypes.h"
 #include <string>

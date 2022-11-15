@@ -19,6 +19,7 @@
 
 #include "Contact.h"
 
+
 namespace MiraiCP {
     /// 好友类声明
     class Friend : public Contact, public INudgeSupport , public ContactDataHelper<Friend, IContactData>{
