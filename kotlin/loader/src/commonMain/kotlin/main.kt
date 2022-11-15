@@ -20,9 +20,7 @@ package tech.eritquearcus.miraicp.loader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import tech.eritquearcus.miraicp.shared.CPPConfig
-import kotlin.native.concurrent.ThreadLocal
 
-@ThreadLocal
 object KotlinMainData {
     val job = Job()
     val coroutineScope = CoroutineScope(job)
@@ -30,7 +28,7 @@ object KotlinMainData {
     var alive = true
 }
 
-@ThreadLocal
+
 expect object KotlinMain {
     var exit: () -> Unit
     fun main(j: String, path: String)

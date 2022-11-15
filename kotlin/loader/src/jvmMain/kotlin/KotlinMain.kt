@@ -71,7 +71,7 @@ actual object KotlinMain {
         }
         PublicSharedData.logger.info("⭐已成功加载MiraiCP⭐")
         Console.listen()
-        // if not logged-in, wait user login in console
+        // keep alive
         while (alive) {
         }
     }
