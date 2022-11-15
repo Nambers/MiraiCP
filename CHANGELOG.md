@@ -1,5 +1,11 @@
 # Change Log
 
+## v2.13.0-alpha-2
++ 修复上一个版本已知问题:
+  + 修复 Member 类 impl
+
+> 本次为alpha-dev版, 可能出现一些问题
+
 ## v2.13.0-alpha
 > 也不知道为什么就囤了 ~200 commits. ToT  
 
