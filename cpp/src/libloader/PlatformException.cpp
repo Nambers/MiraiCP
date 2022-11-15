@@ -16,6 +16,7 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
+#include "PlatformThreading.h"
 #include "PluginListManager.h"
 #include "commonTools.h"
 
