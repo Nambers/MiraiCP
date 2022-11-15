@@ -89,8 +89,8 @@ public:
     }
 };
 
-// 绑定当前插件实例，除去new Main以外请不要进行其他操作，
+// 绑定当前插件实例，请不要进行其他操作，
 // 初始化请在onEnable中进行
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }

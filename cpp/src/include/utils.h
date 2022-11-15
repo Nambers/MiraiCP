@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_UTILS_H
 #define MIRAICP_PRO_UTILS_H
 
-
 #include "CPPPlugin.h"
 #include "KtOperation.h"
 #include "PluginConfig.h"
@@ -25,16 +24,19 @@
 
 
 namespace MiraiCP {
-    /// 注册插件函数, 需要被实现, 类似onStart();
+    /// 注册插件函数, 需要被插件实现, 类似onStart();
     void enrollPlugin();
 
     /// 用指针绑定插件
-    inline void enrollPlugin(CPPPlugin *p) {
+    [[deprecated("use enrollPlugin<T> instead")]] inline void enrollPlugin(CPPPlugin *p) {
         CPPPlugin::plugin.reset(p);
     }
 
-    [[deprecated("use enrollPlugin instead")]] inline void enrollPlugin0(CPPPlugin *p) {
-        enrollPlugin(p);
+    /// @note dev: 为防止用户插件crash造成内存泄漏等问题，改为用安全一些的make_unique
+    template<typename T>
+    inline void enrollPlugin() {
+        static_assert(std::is_base_of_v<CPPPlugin, T>, "Enrolling plugin type T should be inherited from CPPPlugin");
+        CPPPlugin::plugin = std::make_unique<T>();
     }
 } // namespace MiraiCP
 
