@@ -31,10 +31,8 @@ import tech.eritquearcus.miraicp.shared.*
 import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
-import kotlin.native.concurrent.ThreadLocal
 import kotlin.system.exitProcess
 
-@ThreadLocal
 actual object KotlinMain {
     actual var exit: () -> Unit = {
         PublicShared.exit()
@@ -83,7 +81,7 @@ actual object KotlinMain {
         }
         logger.info("⭐已成功加载MiraiCP⭐")
         Console.listen()
-        // if not logged-in, wait user login in console
+        // keep alive
         while (KotlinMainData.alive) {
         }
     }
