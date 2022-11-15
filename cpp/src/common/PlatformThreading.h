@@ -24,6 +24,7 @@
 #if MIRAICP_MSVC
 #include <Windows.h>
 #include <processthreadsapi.h>
+#include <string>
 inline void *platform_thread_self() {
     return GetCurrentThread();
 }
