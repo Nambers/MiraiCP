@@ -14,9 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "KtOperation.h"
 #include "Exception.h"
-#include "MiraiCPMacros.h"
 #include "loaderApiInternal.h"
 
 

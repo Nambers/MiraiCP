@@ -20,6 +20,7 @@
 #include "KtOperation.h"
 #include "Tools.h"
 
+
 namespace MiraiCP {
     using json = nlohmann::json;
 

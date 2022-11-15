@@ -106,7 +106,7 @@ static_assert(false, "Unsupported platform");
 
 
 // assert
-#include "cassert"
+#include <cassert>
 #ifndef assert
 #define assert(ignore) ((void) 0)
 #endif
@@ -127,7 +127,6 @@ static_assert(false, "Unsupported platform");
 
 
 // defer tool, works like the defer key word in Golang.
-#include "commonTools.h"
 #define MIRAICP_DEFER(code)                                                   \
     auto TOKEN_PASTE(_defered_statement_wrapper_, __LINE__) = [&]() { code }; \
     CommonTools::MiraiCPDefer TOKEN_PASTE(_defered_object_, __LINE__)(std::move(TOKEN_PASTE(_defered_statement_wrapper_, __LINE__)))

@@ -21,6 +21,7 @@
 #include "Member.h"
 #include "Tools.h"
 
+
 namespace MiraiCP {
 #define LOC_CLASS_NAMESPACE Group
 

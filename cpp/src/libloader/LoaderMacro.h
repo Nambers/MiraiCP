@@ -5,6 +5,10 @@
 #ifndef MIRAICP_PRO_LOADERMACRO_H
 #define MIRAICP_PRO_LOADERMACRO_H
 
+#include "MiraiCPMacros.h"
+// -----------------------
+
+
 #ifdef LOADER_NATIVE
 #define JRETURNTYPE void
 #define JRETURNVAL

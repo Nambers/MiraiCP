@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_PLATFORMTHREADING_H
 
 #include "MiraiCPMacros.h"
+// -----------------------
 
 
 #if MIRAICP_MSVC

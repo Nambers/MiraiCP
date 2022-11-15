@@ -25,6 +25,7 @@
 #include "Member.h"
 #include "Tools.h"
 
+
 namespace MiraiCP {
     using json = nlohmann::json;
 

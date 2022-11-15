@@ -15,17 +15,17 @@
 //
 
 /// 本文件的目的是分离出PluginListManager交互的部分函数实现，方便代码的阅读和维护
-
-#include "PluginListImplements.h"
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
-#include "MiraiCPMacros.h"
+#include "PluginListImplements.h"
 #include "PluginConfig.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
+#include "commonTools.h"
 #include "libOpen.h"
 #include "loaderTools.h"
-
 
 #if MIRAICP_WINDOWS
 #include "utf8.h"

@@ -19,6 +19,7 @@
 
 #include "Contact.h"
 
+
 namespace MiraiCP {
     /*!
      * @brief Member数据声明

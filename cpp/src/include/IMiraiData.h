@@ -21,6 +21,7 @@
 #include <atomic>
 #include <shared_mutex>
 
+
 namespace MiraiCP {
     /// 声明 Contact 类数据安全锁接口以及部分实现的抽象类
     struct IMiraiData {

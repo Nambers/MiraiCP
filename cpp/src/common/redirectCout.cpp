@@ -14,8 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "redirectCout.h"
 #include "MiraiCPMacros.h"
+// -----------------------
+#include "redirectCout.h"
 #include <iostream>
 #include <memory>
 #include <sstream>

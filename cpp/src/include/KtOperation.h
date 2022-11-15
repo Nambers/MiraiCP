@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_KTOPERATION_H
 #define MIRAICP_PRO_KTOPERATION_H
 
-
 #include <json_fwd.hpp>
 
 

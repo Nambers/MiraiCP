@@ -23,9 +23,6 @@
 #include <mutex>
 
 
-
-
-
 namespace LibLoader {
     class PluginListManager {
         typedef std::unordered_map<std::string, std::shared_ptr<LoaderPluginConfig>> PluginList;

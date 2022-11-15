@@ -17,9 +17,9 @@
 #ifndef MIRAICP_PRO_EXCEPTION_H
 #define MIRAICP_PRO_EXCEPTION_H
 
-
-#include "CPPPlugin.h"
 #include "MiraiCPMacros.h"
+// -----------------------
+#include "CPPPlugin.h"
 #include <exception>
 #include <string>
 #include <thread>

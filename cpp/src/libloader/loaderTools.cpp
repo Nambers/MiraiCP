@@ -14,15 +14,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "loaderTools.h"
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "commonTools.h"
+#include "loaderTools.h"
 #include "utf8.h"
-// for std::setw
-#include <iomanip>
-// for ostringstream
-#include <sstream>
+#include <iomanip> // for std::setw
+#include <sstream> // for ostringstream
 
 
 namespace LibLoader {

@@ -17,9 +17,9 @@
 #ifndef MIRAICP_PRO_MESSAGECHAIN_H
 #define MIRAICP_PRO_MESSAGECHAIN_H
 
-
-#include "Exception.h"
 #include "MiraiCPMacros.h"
+// -----------------------
+#include "Exception.h"
 #include "SingleMessage.h"
 #include "commonTools.h"
 

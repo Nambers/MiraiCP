@@ -16,11 +16,13 @@
 
 /// 本文件的全部函数实现都是kt线程调用的函数
 
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "ktInterface.h"
 #include "LoaderLogger.h"
-#include "MiraiCPMacros.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
+#include "commonTools.h"
 #include "eventHandle.h"
 #include "loaderMain.h"
 #include "redirectCout.h"
@@ -88,10 +90,10 @@ void PluginDisableImpl() {
 #ifdef LOADER_NATIVE
 namespace LoaderAPIs {
     using LogFunc = void (*)(const char *, int);
-    using OperFunc = const char *(*)(const char *);
+    using OperFunc = const char *(*) (const char *);
     LogFunc log = nullptr;
     OperFunc oper = nullptr;
-}
+} // namespace LoaderAPIs
 
 extern "C" {
 MIRAICP_EXPORT void Verify(const char *a, const char *b, const char *(*oper)(const char *), void (*log)(const char *, int)) {

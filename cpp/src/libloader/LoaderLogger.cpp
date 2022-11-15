@@ -14,8 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "LoaderLogger.h"
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "JNIEnvs.h"
+#include "LoaderLogger.h"
+#include "commonTools.h"
 #include "loaderTools.h"
 #include <json.hpp>
 

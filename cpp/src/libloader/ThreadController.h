@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_THREADCONTROLLER_H
 #define MIRAICP_PRO_THREADCONTROLLER_H
 
-
 #include "commonTypes.h"
 #include <mutex>
 #include <queue>

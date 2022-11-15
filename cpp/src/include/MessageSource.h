@@ -17,8 +17,8 @@
 #ifndef MIRAICP_PRO_MESSAGESOURCE_H
 #define MIRAICP_PRO_MESSAGESOURCE_H
 
-
 #include "MiraiCPMacros.h"
+// -----------------------
 #include "commonTypes.h"
 #include <string>
 

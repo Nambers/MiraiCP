@@ -17,8 +17,8 @@
 #ifndef MIRAICP_PRO_TOOLS_H
 #define MIRAICP_PRO_TOOLS_H
 
-
 #include "MiraiCPMacros.h"
+// -----------------------
 #include "commonTypes.h"
 #include <sstream>
 #include <string>

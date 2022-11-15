@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_CPPPLUGIN_H
 #define MIRAICP_PRO_CPPPLUGIN_H
 
-
 #include "Logger.h"
 #include "PluginConfig.h"
 #include <utility>
