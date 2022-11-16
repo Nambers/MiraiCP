@@ -26,7 +26,7 @@
 
 
 namespace MiraiCP {
-    /// @brief 工具类声明, 常用的一些转换工具, 如需转码使用std::filesystem
+    /// @brief 工具类声明, 常用的一些转换工具
     namespace Tools {
         /*!
          * @brief 替换全部在一个字符串中.
