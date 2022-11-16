@@ -222,8 +222,7 @@ namespace LibLoader {
         std::error_code ec;
         std::filesystem::remove(actualFile, ec);
         ec.clear();
-        std::filesystem::copy(plugin.path, actualFile, std::filesystem::copy_options::overwrite_existing |
-                                                       std::filesystem::copy_options::update_existing, ec);
+        std::filesystem::copy(plugin.path, actualFile, std::filesystem::copy_options::overwrite_existing, ec);
         if (ec) {
             logger.error("无法复制dll(" + plugin.path + ")到缓存目录(" + actualPath + "), 原因: " + ec.message() + "，请检查是否有别的进程在占用该缓存文件！");
             return nullptr;
