@@ -299,7 +299,7 @@ namespace MiraiCP {
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMsgImpl(std::string msg, int retryTime, bool miraicode = false) const;
 
-        MessageSource unpackMsg(const SingleMessage &msg, int retryTime) const {
+        MessageSource unpackMsg(const MiraiCodeable &msg, int retryTime) const {
             return sendMsgImpl(msg.toMiraiCode(), retryTime, true);
         }
 
