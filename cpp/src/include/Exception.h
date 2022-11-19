@@ -97,7 +97,7 @@ namespace MiraiCP {
     /// @brief 通用MiraiCP异常
     /// @param const string &description, string _filename, int _lineNum
     /// @see MiraiCPExceptionBase
-    MIRAICP_EXPORT typedef MiraiCPExceptionCRTP<MiraiCPExceptionBase> MiraiCPException;
+    class MIRAICP_EXPORT MiraiCPException : public MiraiCPExceptionCRTP<MiraiCPExceptionBase> {};
 
     /// 文件读取异常.
     /// @see MiraiCPExceptionBase
@@ -145,7 +145,7 @@ namespace MiraiCP {
 
     public:
         explicit BotIsBeingMutedException(int t, string _filename, int _lineNum) : MiraiCPExceptionCRTP(
-                "发送信息失败, bot已被禁言, 剩余时间" + std::to_string(t), std::move(_filename), _lineNum),
+                                                                                           "发送信息失败, bot已被禁言, 剩余时间" + std::to_string(t), std::move(_filename), _lineNum),
                                                                                    timeRemain(t) {}
 
         static string exceptionType() { return "BotIsBeingMutedException"; }
