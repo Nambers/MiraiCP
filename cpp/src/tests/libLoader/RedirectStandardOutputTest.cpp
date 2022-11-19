@@ -14,12 +14,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "LoaderLogger.h"
 #include "MiraiCPMacros.h"
+// -----------------------
 #include "EnvMocker.h"
+#include "LoaderLogger.h"
+#include "commonTools.h"
 #include "redirectCout.h"
 #include <gtest/gtest.h>
 #include <string>
+
 
 namespace MiraiCP::Redirector {
     void SetCoutRecorder(void (*recorder)(std::string));
