@@ -38,6 +38,7 @@ static_assert(sizeof(char) == 1, "Please make sure the size of char is 1");
 #define MIRAICP_ANDROID 0
 #define MIRAICP_TERMUX 0
 
+
 // detect platform
 // ref: https://stackoverflow.com/questions/5919996/how-to-detect-reliably-mac-os-x-ios-linux-windows-in-c-preprocessor
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
@@ -141,6 +142,7 @@ static_assert(false, "Unsupported platform");
 #define FUNC_EXIT FUNC_EXIT
 #define PLUGIN_INFO PLUGIN_INFO
 
+
 // error handling
 #ifndef LIBLOADER
 #define MIRAICP_ERROR_HANDLE(x, y) ErrorHandle0(__FILE__, __LINE__, (x), (y))
@@ -157,10 +159,17 @@ static_assert(false, "Unsupported platform");
 #undef MIRAICP_EXPORT
 #define MIRAICP_EXPORT __declspec(dllexport)
 #endif
+#else
+#ifndef GOOGLE_TEST
+#undef MIRAICP_EXPORT
+#define MIRAICP_EXPORT __attribute__((visibility("default")))
 #endif
+#endif
+
 
 // data locker
 #define MIRAICP_DATALOCK std::shared_lock<std::shared_mutex> TOKEN_PASTE(local_lck_, __LINE__)(InternalData->getMutex())
+
 
 // getter
 // need to define macro LOC_CLASS_NAMESPACE to the class first!
@@ -174,7 +183,9 @@ static_assert(false, "Unsupported platform");
 #define INLINE_GETTER(attr) \
     auto attr() { return GetDataInternal()->_##attr; }
 
+
 // api declarer
 #define DECL_API(x) decltype(&x) _##x
+
 
 #endif //MIRAICP_PRO_MIRAICPMACROS_H
