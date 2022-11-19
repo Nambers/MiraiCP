@@ -6,6 +6,7 @@
   * Group类updateSetting，现在改为传入一个setting object（API change）
   * 修复arm架构Linux下不能正常找到插件符号的问题[#145](https://github.com/Nambers/MiraiCP/issues/145)
   * 修复了MiraiCode无法发送的问题
+  * 版本号全局变量构造UB
 
 > 本次为alpha-dev版, 可能出现一些问题
 
