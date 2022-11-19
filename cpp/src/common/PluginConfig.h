@@ -23,7 +23,8 @@
 
 
 namespace MiraiCP {
-    inline const std::string MiraiCPVersion = "v2.13.0-alpha-2";
+    constexpr const char *m_MiraiCPVersion = "v2.13.0-alpha-2";
+    inline const std::string MiraiCPVersion = m_MiraiCPVersion;
 
     struct PluginConfig {
         /// @brief 插件id, 要与别人不一样否则报错无法加载(建议用类包格式，如: io.github.nambers)
@@ -38,7 +39,7 @@ namespace MiraiCP {
         const char *description = "";
         /// @brief [optional]构建时间, 默认为__DATE__宏
         const char *time = __DATE__;
-        const char *mversion = MiraiCPVersion.c_str();
+        const char *mversion = m_MiraiCPVersion;
 
         std::string getId() const {
             return {id};
