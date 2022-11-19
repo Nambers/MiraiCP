@@ -167,9 +167,10 @@ namespace MiraiCP {
         /**
          * @brief 更新群设置, 即覆盖服务器上的群设置
          * @details 从服务器拉去群设置用refreshInfo
+         * @param newSetting 新的设置
          * @see Group::refreshInfo()
          */
-        void updateSetting();
+        void updateSetting(GroupData::GroupSetting newSetting);
 
         /// 取群成员列表
         /// @return vector<long>

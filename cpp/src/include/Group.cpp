@@ -140,14 +140,13 @@ namespace MiraiCP {
         KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j));
     }
 
-    void Group::updateSetting() {
-        auto settings = setting();
+    void Group::updateSetting(GroupData::GroupSetting newSetting) {
         json j{
-                {"name", std::move(settings.name)},
-                {"isMuteAll", settings.isMuteAll},
-                {"isAllowMemberInvite", settings.isAllowMemberInvite},
-                {"isAutoApproveEnabled", settings.isAutoApproveEnabled},
-                {"isAnonymousChatEnabled", settings.isAnonymousChatEnabled}};
+                {"name", std::move(newSetting.name)},
+                {"isMuteAll", newSetting.isMuteAll},
+                {"isAllowMemberInvite", newSetting.isAllowMemberInvite},
+                {"isAutoApproveEnabled", newSetting.isAutoApproveEnabled},
+                {"isAnonymousChatEnabled", newSetting.isAnonymousChatEnabled}};
         json tmp{{"source", j.dump()}, {"contactSource", toString()}};
         std::string re = KtOperation::ktOperation(KtOperation::GroupSetting, std::move(tmp));
         InternalData->forceRefreshNextTime();
