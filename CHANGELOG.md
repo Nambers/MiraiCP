@@ -1,5 +1,14 @@
 # Change Log
 
+## v2.13.0-alpha-3
+
+* 修复上一个版本已知问题：
+  * Group类updateSetting，现在改为传入一个setting object（API change）
+  * 修复arm架构Linux下不能正常找到插件符号的问题[#145](https://github.com/Nambers/MiraiCP/issues/145)
+  * 修复了MiraiCode无法发送的问题
+
+> 本次为alpha-dev版, 可能出现一些问题
+
 ## v2.13.0-alpha-2
 + 修复上一个版本已知问题:
   + 修复 Member 类 impl
