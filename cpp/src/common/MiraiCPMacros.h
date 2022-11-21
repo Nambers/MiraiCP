@@ -14,6 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "bugprone-macro-parentheses"
+
 #ifndef MIRAICP_PRO_MIRAICPMACROS_H
 #define MIRAICP_PRO_MIRAICPMACROS_H
 
@@ -123,7 +126,7 @@ static_assert(false, "Unsupported platform");
 #define TOKEN_PASTE(X, Y) TOKEN_PASTE_INNER(X, Y)
 #define STRINGIFY(A) __STRINGIFY(A)
 #ifndef __STRINGIFY
-#define __STRINGIFY(A) #A
+#define __STRINGIFY(A) #A // NOLINT(bugprone-reserved-identifier)
 #endif
 
 
@@ -188,4 +191,31 @@ static_assert(false, "Unsupported platform");
 #define DECL_API(x) decltype(&x) _##x
 
 
+// operator++ of iterable enum
+#define MIRAICP_ITERABLE_ENUM_OPERATOR_PLUSPLUS \
+    inline Type &operator++(Type &value) {      \
+        value = (Type) ((int) value + 1);       \
+        return value;                           \
+    }                                           \
+    inline Type operator++(Type &value, int) {  \
+        Type result = value;                    \
+        value = (Type) ((int) value + 1);       \
+        return result;                          \
+    }
+
+
+// iterable enum
+#define MIRAICP_ITERABLE_ENUM(BeginAt, First, ...) \
+    enum Type : int {                              \
+        First = BeginAt,                           \
+        ##__VA_ARGS__,                             \
+        Count,                                     \
+        Begin = BeginAt,                           \
+        End = Count,                               \
+    };                                             \
+    MIRAICP_ITERABLE_ENUM_OPERATOR_PLUSPLUS
+
+
 #endif //MIRAICP_PRO_MIRAICPMACROS_H
+
+#pragma clang diagnostic pop

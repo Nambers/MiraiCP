@@ -66,13 +66,15 @@ namespace MiraiCP {
                 static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
                 if (T::type() != this->type())
                     throw IllegalArgumentException(
-                            "cannot convert from " + SingleMessage::messageType[this->type()] + " to " +
-                            SingleMessage::messageType[T::type()], MIRAICP_EXCEPTION_WHERE);
+                            "cannot convert from " + SingleMessage::getTypeString(this->type()) + " to " +
+                                    SingleMessage::getTypeString(T::type()),
+                            MIRAICP_EXCEPTION_WHERE);
                 T *re = static_cast<T *>(std::shared_ptr<SingleMessage>::get());
                 if (re == nullptr)
                     throw IllegalArgumentException(
-                            "cannot convert from " + SingleMessage::messageType[this->type()] + " to " +
-                            SingleMessage::messageType[T::type()], MIRAICP_EXCEPTION_WHERE);
+                            "cannot convert from " + SingleMessage::getTypeString(this->type()) + " to " +
+                                    SingleMessage::getTypeString(T::type()),
+                            MIRAICP_EXCEPTION_WHERE);
                 return *re;
             }
 
