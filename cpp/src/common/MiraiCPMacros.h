@@ -118,7 +118,7 @@ static_assert(false, "Unsupported platform");
 
 // exceptions
 #define MIRAICP_EXCEPTION_WHERE __FILE__, __LINE__
-#define MIRAICP_THROW(x, ...) throw x(##__VA_ARGS__, MIRAICP_EXCEPTION_WHERE)
+#define MIRAICP_THROW(T, ...) throw T(__VA_ARGS__, MIRAICP_EXCEPTION_WHERE)
 
 
 // token paste and stringify
