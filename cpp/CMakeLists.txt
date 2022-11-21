@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (MSVC)
     message("MSVC detected")
-    # 以utf8编译, for msvc; EHa参数启用标准 C++ stack unwinding; 启用多线程编译；禁止无返回值的函数；禁用两个与dll export相关的warning
+    # 以utf8编译, for msvc; EHa参数启用标准 C++ stack unwinding; 启用多线程编译；禁止无返回值的函数；禁止unknown-pragmas warning；禁用两个与dll export相关的warning
     add_compile_options(/W4 /utf-8 /EHa /std:c++17 /MP /we4715 /wd4251 /wd4275 /wd4068 /Zc:__cplusplus)
     # See Warning C4668
     add_compile_definitions(WIN32_LEAN_AND_MEAN)
@@ -17,8 +17,8 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GR-")
     message("modified cmake cxx flags: ${CMAKE_CXX_FLAGS}")
 else ()
-    # 禁止无返回值的函数
-    add_compile_options(-Wall -Werror=return-type)
+    # 禁止无返回值的函数；禁止unknown-pragmas warning
+    add_compile_options(-Wall -Werror=return-type -Wno-unknown-pragmas)
     # Disable RTTI.
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
     message("modified cmake cxx flags: ${CMAKE_CXX_FLAGS}")

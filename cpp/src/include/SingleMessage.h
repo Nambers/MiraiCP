@@ -92,9 +92,14 @@ namespace MiraiCP {
         using Types = SingleMessageType::Type;
         /// MiraiCode类别
         /// @see SingleMessage::messageType
-        int type;
+        int internalType;
         std::string content;
         std::string prefix;
+
+    protected:
+        /// @brief 仅限于让子类允许默认构造，以保证子类可以通过动态判断类型构造
+        /// @note dev: 请勿删除
+        SingleMessage() = default; // NOLINT(cppcoreguidelines-pro-type-member-init)
 
     public:
         static const char *const *messageType;
@@ -108,7 +113,7 @@ namespace MiraiCP {
         /// @param type 消息类型 @see messageType
         /// @param content 内容
         /// @param prefix 前缀, 默认为`:`, 第二个冒号部分的内容, 目前在serviceMesage有使用
-        SingleMessage(int type, std::string content, std::string prefix = ":") : type(type),
+        SingleMessage(int type, std::string content, std::string prefix = ":") : internalType(type),
                                                                                  content(std::move(content)),
                                                                                  prefix(std::move(prefix)) {}
 
@@ -127,11 +132,11 @@ namespace MiraiCP {
 
     public:
         bool operator==(const SingleMessage &m) const {
-            return this->type == m.type && this->toMiraiCode() == m.toMiraiCode();
+            return this->internalType == m.internalType && this->toMiraiCode() == m.toMiraiCode();
         }
 
         bool operator==(SingleMessage *m) const {
-            return this->type == m->type && this->toMiraiCode() == m->toMiraiCode();
+            return this->internalType == m->internalType && this->toMiraiCode() == m->toMiraiCode();
         }
     };
 
@@ -248,6 +253,12 @@ namespace MiraiCP {
          */
         bool isUploaded(QQID botid);
 
+    protected:
+        /// @brief 仅限于让子类允许默认构造，以保证子类可以通过动态判断类型构造
+        /// @note dev: 请勿删除
+        Image() = default; // NOLINT(cppcoreguidelines-pro-type-member-init)
+
+    public:
         /*!
         * @brief 从图片builder构造，适用于服务器上已经有的图片，即接收到的
         * @param imageId 图片id, 必须
@@ -296,11 +307,11 @@ namespace MiraiCP {
         }
 
         explicit FlashImage(const std::string &imageId, size_t size = 0, int width = 0, int height = 0, int type = 0) : Image(imageId, size, width, height, type) {
-            this->SingleMessage::type = 8;
+            this->SingleMessage::internalType = 8;
         }
 
         // todo(Antares): 该构造函数无法实现多态，等下次重构一起处理
-        explicit FlashImage(const Image &img) : Image(img) {}
+        explicit FlashImage(const Image &img);
 
         [[nodiscard]] nlohmann::json toJson() const override;
 

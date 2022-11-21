@@ -53,7 +53,7 @@ namespace MiraiCP {
     //            {9, "MusicShare"}};
 
     QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
-        if (m.type != type()) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.type) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
+        if (m.internalType != type()) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.internalType) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
         source = MessageSource::deserializeFromString(m.content);
     }
 
@@ -70,30 +70,30 @@ namespace MiraiCP {
 
     std::string SingleMessage::toMiraiCode() const {
         // Logger::logger.info("base");
-        if (type > 0)
-            if (type == Types::At_t)
+        if (internalType > 0)
+            if (internalType == Types::At_t)
                 return "[mirai:at:" + content + "] ";
-            else if (type == Types::AtAll_t)
+            else if (internalType == Types::AtAll_t)
                 return "[mirai:atall] ";
             else
-                return "[mirai:" + getTypeString(type) + prefix + Tools::escapeToMiraiCode(content) + "]";
+                return "[mirai:" + getTypeString(internalType) + prefix + Tools::escapeToMiraiCode(content) + "]";
         else
             return content;
     }
 
     PlainText::PlainText(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != type())
+        if (sg.internalType != type())
             throw IllegalArgumentException(
-                    "Cannot convert(" + getTypeString(sg.type) + ") to PlainText", MIRAICP_EXCEPTION_WHERE);
+                    "Cannot convert(" + getTypeString(sg.internalType) + ") to PlainText", MIRAICP_EXCEPTION_WHERE);
         this->content = sg.content;
     }
     nlohmann::json At::toJson() const {
         return {{"key", "at"}, {"content", std::to_string(target)}};
     }
     At::At(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != type())
+        if (sg.internalType != type())
             throw IllegalArgumentException(
-                    "Cannot convert(" + getTypeString(sg.type) + ") to At", MIRAICP_EXCEPTION_WHERE);
+                    "Cannot convert(" + getTypeString(sg.internalType) + ") to At", MIRAICP_EXCEPTION_WHERE);
         this->target = std::stol(sg.content);
     }
     nlohmann::json AtAll::toJson() const {
@@ -119,9 +119,9 @@ namespace MiraiCP {
     }
     LightApp::LightApp(const SingleMessage &sg) : SingleMessage(sg) {
         // todo(Antares): this was originally 3; why?
-        if (sg.type != type())
+        if (sg.internalType != type())
             throw IllegalArgumentException(
-                    "Cannot convert(" + getTypeString(sg.type) + ") to LighApp", MIRAICP_EXCEPTION_WHERE);
+                    "Cannot convert(" + getTypeString(sg.internalType) + ") to LighApp", MIRAICP_EXCEPTION_WHERE);
     }
     std::string LightApp::toMiraiCode() const {
         return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
@@ -133,9 +133,9 @@ namespace MiraiCP {
         return "[mirai:service" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
     }
     ServiceMessage::ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != type())
+        if (sg.internalType != type())
             throw IllegalArgumentException(
-                    "Cannot convert(" + getTypeString(sg.type) + ") to ServiceMessage", MIRAICP_EXCEPTION_WHERE);
+                    "Cannot convert(" + getTypeString(sg.internalType) + ") to ServiceMessage", MIRAICP_EXCEPTION_WHERE);
     }
     nlohmann::json Face::toJson() const {
         return {{"key", "face"}, {"id", id}};
@@ -277,5 +277,15 @@ namespace MiraiCP {
                 j["width"],
                 j["height"],
                 j["type"]);
+    }
+
+    FlashImage::FlashImage(const Image &img) {
+        if (img.internalType == FlashImage::type()) {
+            *this = static_cast<const FlashImage &>(img); // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        } else if (img.internalType == Image::type()) {
+            static_cast<Image &>(*this) = img;
+        } else {
+            MIRAICP_THROW(IllegalArgumentException, "拷贝构造FlashImage时传入参数无法正确转换");
+        }
     }
 } // namespace MiraiCP

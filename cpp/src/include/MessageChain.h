@@ -55,7 +55,7 @@ namespace MiraiCP {
             /// 代表的子类
             /// @see MessageChain::messageType
             int type() const {
-                return (*this)->type;
+                return (*this)->internalType;
             };
 
             /// 取指定类型
@@ -83,11 +83,11 @@ namespace MiraiCP {
             }
 
             bool operator==(const Message &m) const {
-                return (*this)->type == m->type && (*this)->toMiraiCode() == m->toMiraiCode();
+                return (*this)->internalType == m->internalType && (*this)->toMiraiCode() == m->toMiraiCode();
             }
 
             bool operator!=(const Message &m) const {
-                return (*this)->type != m->type || (*this)->toMiraiCode() != m->toMiraiCode();
+                return (*this)->internalType != m->internalType || (*this)->toMiraiCode() != m->toMiraiCode();
             }
         };
     } // namespace internal
