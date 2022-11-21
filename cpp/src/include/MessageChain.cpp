@@ -31,10 +31,10 @@ namespace MiraiCP {
 
     MessageSource MessageChain::quoteAndSend0(std::string msg, QQID groupid) {
         json sign{{"MiraiCode", true},
-                  {"groupid",   groupid}};
+                  {"groupid", groupid}};
         json obj{{"messageSource", source->serializeToString()},
-                 {"msg",           std::move(msg)},
-                 {"sign",          sign.dump()}};
+                 {"msg", std::move(msg)},
+                 {"sign", sign.dump()}};
         std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, std::move(obj));
         return MessageSource::deserializeFromString(re);
     }
@@ -122,10 +122,9 @@ namespace MiraiCP {
         return mc;
     }
 
-    MessageChain MessageChain::deserializationFromMessageSourceJson(const json &tmp, bool origin) {
-        json j = tmp;
+    MessageChain MessageChain::deserializationFromMessageSourceJson(json j, bool origin) {
         if (origin)
-            j = tmp["originalMessage"];
+            j = j["originalMessage"];
         MessageChain mc;
         if (j.empty()) return mc;
         if (j[0]["type"] == "MessageOrigin") {
@@ -137,7 +136,7 @@ namespace MiraiCP {
             mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(j));
             return mc;
         }
-        for (auto node: j) {
+        for (auto &node: j) {
             if (node["type"] == "SimpleServiceMessage") {
                 mc.add(ServiceMessage(node["serviceId"], node["content"]));
                 continue;
@@ -158,9 +157,10 @@ namespace MiraiCP {
             }
             if (node["type"] == "MarketFace") {
                 mc.add(MarketFace(node["delegate"]["faceId"]));
-                break;
+                continue;
             }
             switch (SingleMessage::getKey(node["type"])) {
+                    // todo(Antares): change to enum in each case
                 case -2:
                     mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
                     break;
