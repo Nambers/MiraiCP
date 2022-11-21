@@ -25,6 +25,7 @@
 #include <optional>
 #include <sstream>
 #include <unordered_map>
+#include <utility>
 
 
 namespace MiraiCP {
@@ -351,7 +352,7 @@ namespace MiraiCP {
         explicit OnlineAudio(std::string f, std::array<uint8_t, 16> md5, int size, int codec, int length,
                              std::string url) : SingleMessage(OnlineAudio::type(), ""),
                                                 filename(std::move(f)), url(std::move(url)), size(size), codec(codec),
-                                                length(length), md5(md5) {};
+                                                length(length), md5(md5){};
 
         bool operator==(const OnlineAudio &oa) const {
             return this->md5 == oa.md5;
@@ -446,6 +447,7 @@ namespace MiraiCP {
             return this->id == rf.id;
         }
     };
+
     /// 自带表情
     /// @attention 有些表情会变成PlainText类型和\\xxx 的格式
     class Face : public SingleMessage {
@@ -464,6 +466,7 @@ namespace MiraiCP {
             return this->id == f.id;
         }
     };
+
     /// 一些可以被mirai识别的音乐卡片, 如果不能被mirai识别, 那应该被表现成lightApp类型(可能收费/vip歌曲用lightApp, 免费用MusicShare)
     class MusicShare : public SingleMessage {
     public:
@@ -482,11 +485,26 @@ namespace MiraiCP {
         std::string musicUrl;
         /// 简介, 点进聊天节目前显示的小文字, 一般是`分享`
         std::string brief;
-        std::string toMiraiCode() const override {
+        [[nodiscard]] std::string toMiraiCode() const override {
             return "[mirai:musicshare:" + appName + "," + title + "," + summary + "," + jumpUrl + "," + picUrl + "," + musicUrl + "," + brief + "]";
         }
-        MusicShare(const std::string &appName, const std::string &title, const std::string &summary, const std::string &jumpUrl, const std::string &picUrl, const std::string &musicUrl, const std::string &brief) : SingleMessage(MusicShare::type(), ""), appName(appName), title(title), summary(summary), jumpUrl(jumpUrl), picUrl(picUrl), musicUrl(musicUrl), brief(brief) {}
+        MusicShare(std::string appName,
+                   std::string title,
+                   std::string summary,
+                   std::string jumpUrl,
+                   std::string picUrl,
+                   std::string musicUrl,
+                   std::string brief)
+            : SingleMessage(MusicShare::type(), ""),
+              appName(std::move(appName)),
+              title(std::move(title)),
+              summary(std::move(summary)),
+              jumpUrl(std::move(jumpUrl)),
+              picUrl(std::move(picUrl)),
+              musicUrl(std::move(musicUrl)),
+              brief(std::move(brief)) {}
     };
+
     class MarketFace : public SingleMessage {
     public:
         static int type() { return -5; }
@@ -502,6 +520,7 @@ namespace MiraiCP {
             return this->faceId == mf.faceId;
         }
     };
+
     /// @brief 目前不支持的消息类型, 不支持发送
     class UnSupportMessage : public SingleMessage {
     public:
