@@ -152,8 +152,8 @@ namespace MiraiCP {
                 continue;
             }
             if (node["type"] == "FileMessage") {
-                mc.add(Group(tmp["targetId"].get<QQID>(), tmp["botId"].get<QQID>()).getFileById(node["id"]).plus(
-                        node["internalId"]));
+                // note: RemoteFile::deserializeFromString() uses j["finfo"]["size"], which is different from here.
+                mc.add(RemoteFile(node["id"], node["internalId"], node["name"], node["size"]));
                 continue;
             }
             if (node["type"] == "MarketFace") {
