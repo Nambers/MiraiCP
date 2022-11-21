@@ -31,92 +31,78 @@ namespace MiraiCP {
         re["content"] = this->toMiraiCode();
         return re;
     }
+
     // 静态成员
-    std::unordered_map<int, std::string> SingleMessage::messageType{
-            {-5, "MarketFace"},
-            {-4, "OnlineForwardedMessage"},
-            {-3, "OnlineAudio"},
-            {-2, "QuoteReply"},
-            {-1, "unSupportMessage"},
-            {0, "plainText"},
-            {1, "at"},
-            {2, "atAll"},
-            {3, "image"},
-            {4, "app"},
-            {5, "service"},
-            {6, "file"},
-            {7, "face"},
-            {8, "FlashImage"},
-            {9, "MusicShare"}};
+    const char *const *SingleMessage::messageType = SingleMessageType::messageTypeInternal + 5;
+
+    //    std::unordered_map<int, std::string> SingleMessage::messageType{
+    //            {-5, "MarketFace"},
+    //            {-4, "OnlineForwardedMessage"},
+    //            {-3, "OnlineAudio"},
+    //            {-2, "QuoteReply"},
+    //            {-1, "unSupportMessage"},
+    //            {0, "plainText"},
+    //            {1, "at"},
+    //            {2, "atAll"},
+    //            {3, "image"},
+    //            {4, "app"},
+    //            {5, "service"},
+    //            {6, "file"},
+    //            {7, "face"},
+    //            {8, "FlashImage"},
+    //            {9, "MusicShare"}};
 
     QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
-        if (m.type != -2) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.type) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
+        if (m.type != type()) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.type) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
         source = MessageSource::deserializeFromString(m.content);
     }
-    // 结束静态成员
+
     nlohmann::json PlainText::toJson() const {
-        nlohmann::json j;
-        j["key"] = "plaintext";
-        j["content"] = content;
-        return j;
+        return {{"key", "plaintext"}, {"content", content}};
     }
+
     int SingleMessage::getKey(const std::string &value) {
-        for (const auto &a: messageType) {
-            if (Tools::iequal(a.second, value)) return a.first;
+        for (auto index = Types::Begin; index != Types::End; ++index) {
+            if (Tools::iequal(messageType[index], value)) return index;
         }
-        return -1;
+        return Types::UnsupportedMessage_t; // default to unSupportMessage
     }
+
     std::string SingleMessage::toMiraiCode() const {
         // Logger::logger.info("base");
         if (type > 0)
-            if (type == 1)
+            if (type == Types::At_t)
                 return "[mirai:at:" + content + "] ";
-            else if (type == 2)
+            else if (type == Types::AtAll_t)
                 return "[mirai:atall] ";
             else
-                return "[mirai:" + messageType[type] + this->prefix + Tools::escapeToMiraiCode(content) + "]";
+                return "[mirai:" + getTypeString(type) + prefix + Tools::escapeToMiraiCode(content) + "]";
         else
             return content;
     }
+
     PlainText::PlainText(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != 0)
+        if (sg.type != type())
             throw IllegalArgumentException(
-                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to PlainText", MIRAICP_EXCEPTION_WHERE);
+                    "Cannot convert(" + getTypeString(sg.type) + ") to PlainText", MIRAICP_EXCEPTION_WHERE);
         this->content = sg.content;
     }
     nlohmann::json At::toJson() const {
-        nlohmann::json j;
-        j["key"] = "at";
-        j["content"] = std::to_string(this->target);
-        return j;
+        return {{"key", "at"}, {"content", std::to_string(target)}};
     }
     At::At(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != 1)
+        if (sg.type != type())
             throw IllegalArgumentException(
-                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to At", MIRAICP_EXCEPTION_WHERE);
+                    "Cannot convert(" + getTypeString(sg.type) + ") to At", MIRAICP_EXCEPTION_WHERE);
         this->target = std::stol(sg.content);
     }
     nlohmann::json AtAll::toJson() const {
-        nlohmann::json j;
-        j["key"] = "atall";
-        return j;
+        return {{"key", "atall"}};
     }
     nlohmann::json Image::toJson() const {
-        nlohmann::json j;
-        j["key"] = "image";
-        j["imageid"] = this->id;
-        j["size"] = this->size;
-        j["width"] = this->width;
-        j["height"] = this->height;
-        j["type"] = this->imageType;
-        return j;
+        return {{"key", "image"}, {"imageid", id}, {"size", size}, {"width", width}, {"height", height}, {"type", imageType}};
     }
-    Image::Image(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != 3 && sg.type != 8) throw IllegalArgumentException("传入的SingleMessage应该是Image类型", MIRAICP_EXCEPTION_WHERE);
-        this->id = sg.content;
-        this->size = this->width = this->height = 0;
-        this->imageType = 5;
-    }
+
     bool Image::isUploaded(QQID botid) {
         if (!this->md5.has_value()) this->refreshInfo();
         if (this->size == 0) throw IllegalArgumentException("size不能为0", MIRAICP_EXCEPTION_WHERE);
@@ -126,78 +112,69 @@ namespace MiraiCP {
         return re == "true";
     }
     nlohmann::json FlashImage::toJson() const {
-        nlohmann::json j;
-        j["key"] = "Flashimage";
-        j["imageid"] = this->id;
-        j["size"] = this->size;
-        j["width"] = this->width;
-        j["height"] = this->height;
-        j["type"] = this->imageType;
-        return j;
+        return {{"key", "Flashimage"}, {"imageid", id}, {"size", size}, {"width", width}, {"height", height}, {"type", imageType}};
     }
     nlohmann::json LightApp::toJson() const {
-        nlohmann::json j;
-        j["key"] = "lightapp";
-        j["content"] = this->content;
-        return j;
+        return {{"key", "lightapp"}, {"content", content}};
     }
     LightApp::LightApp(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != 3)
+        // todo(Antares): this was originally 3; why?
+        if (sg.type != type())
             throw IllegalArgumentException(
-                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to LighApp", MIRAICP_EXCEPTION_WHERE);
+                    "Cannot convert(" + getTypeString(sg.type) + ") to LighApp", MIRAICP_EXCEPTION_WHERE);
     }
     std::string LightApp::toMiraiCode() const {
         return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
     }
     nlohmann::json ServiceMessage::toJson() const {
-        nlohmann::json j;
-        j["key"] = "servicemessage";
-        j["content"] = this->content;
-        j["id"] = this->id;
-        return j;
+        return {{"key", "servicemessage"}, {"content", content}, {"id", id}};
     }
     std::string ServiceMessage::toMiraiCode() const {
         return "[mirai:service" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
     }
     ServiceMessage::ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
-        if (sg.type != 4)
+        if (sg.type != type())
             throw IllegalArgumentException(
-                    "Cannot convert(" + MiraiCP::SingleMessage::messageType[sg.type] + ") to ServiceMessage", MIRAICP_EXCEPTION_WHERE);
+                    "Cannot convert(" + getTypeString(sg.type) + ") to ServiceMessage", MIRAICP_EXCEPTION_WHERE);
     }
     nlohmann::json Face::toJson() const {
-        nlohmann::json j;
-        j["key"] = "face";
-        j["id"] = this->id;
-        return j;
+        return {{"key", "face"}, {"id", id}};
     }
     nlohmann::json UnSupportMessage::toJson() const {
-        nlohmann::json j;
-        j["key"] = "unsupportmessage";
-        j["content"] = this->content;
-        return j;
+        return {{"key", "unsupportmessage"}, {"content", content}};
     }
 
     //远程文件(群文件)
-    RemoteFile::RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s, std::string p,
-                           struct Dinfo d, struct Finfo f) : SingleMessage(RemoteFile::type(), i + "," + std::to_string(ii) + "," +
-                                                                                                       Tools::escapeToMiraiCode(std::move(n)) +
-                                                                                                       "," +
-                                                                                                       std::to_string(s)),
-                                                             id(i),
-                                                             internalid(ii),
-                                                             name(std::move(n)),
-                                                             size(s),
-                                                             path(std::move(p)),
-                                                             dinfo(std::move(d)),
-                                                             finfo(f) {}
-    RemoteFile::RemoteFile(const std::string &i, unsigned int ii, std::string n, long long s) : SingleMessage(6, i + "," + std::to_string(ii) + "," +
-                                                                                                                         Tools::escapeToMiraiCode(std::move(n)) +
-                                                                                                                         "," +
-                                                                                                                         std::to_string(s)),
-                                                                                                id(i),
-                                                                                                internalid(ii),
-                                                                                                name(std::move(n)),
-                                                                                                size(s) {}
+    RemoteFile::RemoteFile(
+            const std::string &i,
+            unsigned int ii,
+            std::string n,
+            long long s,
+            std::string p,
+            struct Dinfo d,
+            struct Finfo f)
+        : SingleMessage(
+                  RemoteFile::type(),
+                  i + "," + std::to_string(ii) + "," + Tools::escapeToMiraiCode(n) + "," + std::to_string(s)),
+          id(i),
+          internalid(ii),
+          name(std::move(n)),
+          size(s),
+          path(std::move(p)),
+          dinfo(std::move(d)),
+          finfo(f) {}
+    RemoteFile::RemoteFile(
+            const std::string &i,
+            unsigned int ii,
+            std::string n,
+            long long s)
+        : SingleMessage(
+                  6,
+                  i + "," + std::to_string(ii) + "," + Tools::escapeToMiraiCode(n) + "," + std::to_string(s)),
+          id(i),
+          internalid(ii),
+          name(std::move(n)),
+          size(s) {}
     RemoteFile RemoteFile::deserializeFromString(const std::string &source) {
         json j;
         try {
@@ -241,7 +218,7 @@ namespace MiraiCP {
     RemoteFile RemoteFile::plus(unsigned int ii) {
         RemoteFile tmp(*this);
         tmp.internalid = ii;
-        tmp.content = id + "," + std::to_string(ii) + "," + Tools::escapeToMiraiCode(std::move(name)) + "," +
+        tmp.content = id + "," + std::to_string(ii) + "," + Tools::escapeToMiraiCode(name) + "," +
                       std::to_string(size);
         return tmp;
     }
@@ -261,7 +238,7 @@ namespace MiraiCP {
             j["finfo"]["lastmodifytime"] = this->finfo->lastmodifytime;
         }
         j["id"] = this->id;
-        j["internalid"] = this->internalid;
+        j["internalid"] = this->internalid; // todo(Antares): please check: is "internalid" or "internalId"?
         j["name"] = this->name;
         j["size"] = this->size;
         if (this->path.has_value())
