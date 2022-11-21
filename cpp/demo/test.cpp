@@ -53,30 +53,19 @@ public:
 
 public:
     void onEnable() override {
-        std::use_facet<std::collate<char>>(std::locale());
-        //
-        Logger::logger.info("loaded");
+        Logger::logger.info("loading test plugin!");
         // 监听
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
-            Logger::logger.info("b");
-            auto b = Group(a.group.id(), a.group.botid());
-            Logger::logger.info("c");
-            auto c = b[a.sender.id()];
-            Logger::logger.info("d");
             a.group.sendMessage("a");
-            // c.changeNameCard(a.message.toMiraiCode());
             Logger::logger.info(a.group.avatarUrl());
-            // 永远不要相信下标，错误示范如下：
-            a.bot.getFriend(a.bot.getFriendList()[0]).sendMessage("--test end--");
+            auto r = a.group.getFileById("/e3080b6d-aea9-4d66-9f07-7289cf097cdc");
+            Logger::logger.info("file size: ", r.size);
         });
         Event::registerEvent<TimeOutEvent>([](TimeOutEvent a) {
             Logger::logger.info("timeout");
             Logger::logger.info(a.msg);
         });
         schedule(1, "This is a message");
-        //        for (auto &&pluginid: LoaderApi::showAllPluginId()) {
-        //            Logger::logger.info("pluginid: " + pluginid);
-        //        }
         auto fu = ThreadTask::promiseTask(test_task, std::chrono::seconds(2));
         ThreadTask::addTask(test_task2);
         ThreadTask::addTask(test_task, std::chrono::seconds(1));
