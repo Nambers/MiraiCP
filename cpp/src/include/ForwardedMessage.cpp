@@ -72,10 +72,12 @@ namespace MiraiCP {
         std::vector<ForwardedNode> nodes;
         try {
             for (auto &&a: j) {
-                if (a["messageChain"][0].contains("kind") && a["messageChain"][0]["kind"] == "FORWARD") {
-                    nodes.emplace_back(a["senderId"], a["senderName"], ForwardedMessage::deserializationFromMessageSourceJson(a["messageChain"][1]["nodeList"]), a["time"], ForwardedMessageDisplayStrategy::defaultStrategy());
+                if (a.empty() || !a["messageChain"].is_array() || a["messageChain"].empty()) continue;
+                const json::array_t &messageChainArray = a["messageChain"];
+                if (messageChainArray[0].contains("kind") && messageChainArray[0]["kind"] == "FORWARD") {
+                    nodes.emplace_back(a["senderId"], a["senderName"], ForwardedMessage::deserializationFromMessageSourceJson(messageChainArray[1]["nodeList"]), a["time"], ForwardedMessageDisplayStrategy::defaultStrategy());
                 } else {
-                    nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(a["messageChain"], false), a["time"]);
+                    nodes.emplace_back(a["senderId"], a["senderName"], MessageChain::deserializationFromMessageSourceJson(messageChainArray, false), a["time"]);
                 }
             }
         } catch (const json::exception &) {

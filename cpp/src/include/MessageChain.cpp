@@ -127,16 +127,22 @@ namespace MiraiCP {
             j = j["originalMessage"];
         MessageChain mc;
         if (j.empty()) return mc;
-        if (j[0]["type"] == "MessageOrigin") {
-            if (j[0]["kind"] == "MUSIC_SHARE") {
-                mc.add(MusicShare(j[1]["kind"], j[1]["title"], j[1]["summary"], j[1]["jumpUrl"], j[1]["pictureUrl"],
-                                  j[1]["musicUrl"], j[1]["brief"]));
+
+        if (!j.is_array()) throw IllegalArgumentException(std::string(__func__) + "输入的json应当是数组类型", MIRAICP_EXCEPTION_WHERE);
+        json::array_t jArray = std::move(j);
+        if (jArray[0]["type"] == "MessageOrigin") {
+            if (jArray[0]["kind"] == "MUSIC_SHARE") {
+                if (jArray.size() < 2) throw IllegalArgumentException(std::string(__func__) + "数组长度应至少为2", MIRAICP_EXCEPTION_WHERE);
+
+                mc.add(MusicShare(jArray[1]["kind"], jArray[1]["title"], jArray[1]["summary"], jArray[1]["jumpUrl"], jArray[1]["pictureUrl"],
+                                  jArray[1]["musicUrl"], jArray[1]["brief"]));
                 return mc;
             }
-            mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(j));
+            mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(jArray));
             return mc;
         }
-        for (auto &node: j) {
+
+        for (auto &node: jArray) {
             if (node["type"] == "SimpleServiceMessage") {
                 mc.add(ServiceMessage(node["serviceId"], node["content"]));
                 continue;
@@ -184,8 +190,8 @@ namespace MiraiCP {
                     break;
                 default:
                     Logger::logger.warning(
-                            "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在MessageSource解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: MessageSource:" +
-                            j.dump());
+                            "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在MessageSource解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: node:" +
+                            node.dump());
                     mc.add(UnSupportMessage(node.dump()));
             }
         }
