@@ -1265,7 +1265,11 @@ HTML_EXTRA_STYLESHEET  = ../../miraicpweb/doxygen-awesome-css/doxygen-awesome.cs
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = ../../miraicpweb/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js
+HTML_EXTRA_FILES       = ../../miraicpweb/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
+                         ../../miraicpweb/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
+                         ../../miraicpweb/doxygen-awesome-css/doxygen-awesome-interactive-toc.js \
+                         ../../miraicpweb/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
+                         ../../miraicpweb/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to
@@ -2202,7 +2206,7 @@ ENABLE_PREPROCESSING   = YES
 # The default value is: NO.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-MACRO_EXPANSION        = YES
+MACRO_EXPANSION        = NO
 
 # If the EXPAND_ONLY_PREDEF and MACRO_EXPANSION tags are both set to YES then
 # the macro expansion is limited to the macros specified with the PREDEFINED and
