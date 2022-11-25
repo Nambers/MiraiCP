@@ -38,13 +38,10 @@ namespace MiraiCP {
          */
         MIRAICP_EXPORT std::string replace(std::string str, std::string_view from, std::string_view to);
 
-
-        // TODO(antares): 使用模板的做法稍微有点低效
-        //  提供一个抽象类的<<重载实现或者将该函数改为抽象类的一个方法均可
-
-        /// @brief long long 类型的vector格式化输出
+        /// @brief 任意类型的vector格式化输出
         /// @param a vector
         /// @return string
+        /// @note dev: 尽量避免直接使用，而是使用其特化
         template<typename T>
         inline std::string VectorToString(const std::vector<T> &a, const std::string &separator = ",") {
             std::stringstream ss;
@@ -54,6 +51,34 @@ namespace MiraiCP {
             }
 
             return ss.str();
+        }
+
+        /// @brief unsigned long long 类型的vector格式化输出，VectorToString<T>的特化
+        /// @param a QQID vector
+        /// @return string
+        template<>
+        inline std::string VectorToString(const std::vector<QQID> &a, const std::string &separator) {
+            std::string ss;
+            for (auto it = a.begin(); it != a.end(); ++it) {
+                if (it != a.begin()) ss += separator;
+                ss += std::to_string(*it);
+            }
+
+            return ss;
+        }
+
+        /// @brief string 类型的vector格式化输出，VectorToString<T>的特化
+        /// @param a string vector
+        /// @return string
+        template<>
+        inline std::string VectorToString(const std::vector<std::string> &a, const std::string &separator) {
+            std::string ans;
+            for (auto it = a.begin(); it != a.end(); ++it) {
+                if (it != a.begin()) ans += separator;
+                ans += *it;
+            }
+
+            return ans;
         }
 
         /// @brief 从string格式化到vector
@@ -97,7 +122,7 @@ namespace MiraiCP {
             return json_mover<std::string>(j, key);
         }
 
-        inline nlohmann::json json_jsonmover(nlohmann::json &j, const std::string &key){
+        inline nlohmann::json json_jsonmover(nlohmann::json &j, const std::string &key) {
             return json_mover<nlohmann::json>(j, key);
         }
 
