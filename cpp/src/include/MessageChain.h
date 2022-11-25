@@ -28,25 +28,15 @@ namespace MiraiCP {
     class MessageSource; // forward declaration
 
     namespace internal {
+        /// @brief 为 std::shared_ptr<SingleMessage> 增加功能的封装类
+        /// @note dev: 不可加入其他成员变量
         class Message : public std::shared_ptr<SingleMessage> {
             typedef std::shared_ptr<SingleMessage> Super;
 
-        public:                                             // constructor
-            Message() : std::shared_ptr<SingleMessage>() {} // for MSVC compatible, or you will get an error
-
-            template<class T>
-            Message(T &&Arg) { // NOLINT(google-explicit-constructor)
-                using NoCVRefType = typename std::remove_cv_t<typename std::remove_reference_t<T>>;
-
-                if constexpr (std::is_base_of_v<Super, NoCVRefType>) {
-                    *this = std::forward<T>(Arg);
-                } else if constexpr (std::is_base_of_v<SingleMessage, NoCVRefType>) {
-                    reset(new NoCVRefType(std::forward<T>(Arg)));
-                } else {
-                    static_assert(
-                            std::is_base_of_v<Super, NoCVRefType> || std::is_base_of_v<SingleMessage, NoCVRefType>,
-                            "只支持SingleMessage的子类");
-                }
+        public:
+            template<typename T, typename R = std::enable_if<std::is_base_of_v<SingleMessage, T>>>
+            explicit Message(T msg) {
+                reset(new T(std::move(msg)));
             }
 
             explicit Message(Super msgptr) : Super(std::move(msgptr)) {}
@@ -54,7 +44,7 @@ namespace MiraiCP {
         public:
             /// 代表的子类
             /// @see MessageChain::messageType
-            int type() const {
+            [[nodiscard]] int getType() const {
                 return (*this)->internalType;
             };
 
@@ -64,21 +54,21 @@ namespace MiraiCP {
             T getVal() const {
                 // for dev: 不用 get 为了不和shared_ptr重叠
                 static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-                if (T::type() != this->type())
+                if (T::type() != getType())
                     throw IllegalArgumentException(
-                            "cannot convert from " + SingleMessage::getTypeString(this->type()) + " to " +
+                            "cannot convert from " + SingleMessage::getTypeString(getType()) + " to " +
                                     SingleMessage::getTypeString(T::type()),
                             MIRAICP_EXCEPTION_WHERE);
                 T *re = static_cast<T *>(std::shared_ptr<SingleMessage>::get());
                 if (re == nullptr)
                     throw IllegalArgumentException(
-                            "cannot convert from " + SingleMessage::getTypeString(this->type()) + " to " +
+                            "cannot convert from " + SingleMessage::getTypeString(getType()) + " to " +
                                     SingleMessage::getTypeString(T::type()),
                             MIRAICP_EXCEPTION_WHERE);
                 return *re;
             }
 
-            std::string toMiraiCode() const {
+            [[nodiscard]] std::string toMiraiCode() const {
                 return (*this)->toMiraiCode();
             }
 
@@ -104,7 +94,7 @@ namespace MiraiCP {
     public:
         MessageChain(const MessageChain &_o) = default;
         MessageChain(MessageChain &&_o) = default;
-
+        virtual ~MessageChain() = default;
         /*!
          * @brief 从多个参数构建MessageChain
          * @tparam T 多个传入参数的类型
@@ -157,7 +147,7 @@ namespace MiraiCP {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
             for (auto &&a: *this) {
-                if (a.type() == T::type())
+                if (a.getType() == T::type())
                     re.emplace_back(a.getVal<T>());
             }
             return re;
@@ -165,7 +155,7 @@ namespace MiraiCP {
 
         /// 自定义筛选器
         template<class T>
-        std::vector<T> filter(const std::function<bool(Message)> &func) {
+        std::vector<T> filter(const std::function<bool(const Message &)> &func) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
             for (auto &&a: *this) {
@@ -179,7 +169,7 @@ namespace MiraiCP {
         template<class T>
         std::optional<T> first() {
             for (auto &&a: *this)
-                if (a.type() == T::type())
+                if (a.getType() == T::type())
                     return a.getVal<T>();
             return std::nullopt;
         }
