@@ -26,6 +26,7 @@ namespace MiraiCP {
     public:
         /// 返回MiraiCode
         virtual std::string toMiraiCode() const = 0;
+        virtual ~MiraiCodeable() = default;
     };
 
     /// @brief miraicode字符串
@@ -36,6 +37,8 @@ namespace MiraiCP {
         std::string content;
 
     public:
+        ~MiraiCode() override = default;
+
         /// 输出当前内容, 会自动转码
         std::string toString();
 

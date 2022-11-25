@@ -94,7 +94,7 @@ namespace MiraiCP {
     public:
         MessageChain(const MessageChain &_o) = default;
         MessageChain(MessageChain &&_o) = default;
-        virtual ~MessageChain() = default;
+        ~MessageChain() override = default;
         /*!
          * @brief 从多个参数构建MessageChain
          * @tparam T 多个传入参数的类型
