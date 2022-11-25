@@ -34,13 +34,18 @@ namespace MiraiCP {
             typedef std::shared_ptr<SingleMessage> Super;
 
         public:
-            template<typename T, typename R = std::enable_if<std::is_base_of_v<SingleMessage, T>>>
+#if MIRAICP_MSVC
+            Message() {} // for MSVC compatible, Message should be default constructable. See MessageChain
+#endif
+
+            template<typename T, typename = std::enable_if<std::is_base_of_v<SingleMessage, T>>>
             explicit Message(T msg) {
                 reset(new T(std::move(msg)));
             }
 
-            explicit Message(Super msgptr) : Super(std::move(msgptr)) {}
+            explicit Message(Super msgptr) noexcept : Super(std::move(msgptr)) {}
 
+            // dev: DON'T write copy and move constructors here, otherwise add operator= overloads. See MessageChain
         public:
             /// 代表的子类
             /// @see MessageChain::messageType
