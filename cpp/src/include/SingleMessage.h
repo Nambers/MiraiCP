@@ -30,7 +30,7 @@
 
 namespace MiraiCP {
     // todo(Antares): delete these after the whole refactor is finished
-#define SINGLEMESSAGE_REFACTOR_ASSERTION(x, y) static_assert((x) == (y), "static assertion failed in refactoring code")
+#define SINGLEMESSAGE_REFACTOR_ASSERTION(x, y) static_assert((x) == (y), "static assertion failed when refactoring code")
     namespace SingleMessageType {
         MIRAICP_ITERABLE_ENUM(            // NOLINT(cert-dcl21-cpp)
                 -5,                       // begin at
@@ -48,10 +48,10 @@ namespace MiraiCP {
                 RemoteFile_t,             // 6
                 Face_t,                   // 7
                 FlashImage_t,             // 8
-                MusicShare_t              // 9
+                MusicShare_t              // 9, End = 10
         )
 
-        constexpr static const char *messageTypeInternal[] = {
+        constexpr const char *messageTypeInternal[] = {
                 "MarketFace",             // -5
                 "OnlineForwardedMessage", // -4
                 "OnlineAudio",            // -3
@@ -89,12 +89,14 @@ namespace MiraiCP {
     /// MessageChain的组成部分
     class MIRAICP_EXPORT SingleMessage : public MiraiCodeable {
     public:
+    public:
         using Types = SingleMessageType::Type;
-        /// MiraiCode类别
-        /// @see SingleMessage::messageType
-        int internalType;
+
         std::string content;
         std::string prefix;
+        /// MiraiCode类别
+        /// @see SingleMessage::messageType
+        int internalType = SingleMessageType::UnsupportedMessage_t;
 
     protected:
         /// @brief 仅限于让子类允许默认构造，以保证子类可以通过动态判断类型构造
@@ -102,7 +104,7 @@ namespace MiraiCP {
         SingleMessage() = default; // NOLINT(cppcoreguidelines-pro-type-member-init)
 
     public:
-        static const char *const *messageType;
+        static const char *const *const messageType;
 
         static std::string getTypeString(int type) {
             return messageType[type];
@@ -113,11 +115,12 @@ namespace MiraiCP {
         /// @param type 消息类型 @see messageType
         /// @param content 内容
         /// @param prefix 前缀, 默认为`:`, 第二个冒号部分的内容, 目前在serviceMesage有使用
-        SingleMessage(int type, std::string content, std::string prefix = ":") : internalType(type),
-                                                                                 content(std::move(content)),
-                                                                                 prefix(std::move(prefix)) {}
+        SingleMessage(int inType, std::string content, std::string prefix = ":") noexcept
+            : content(std::move(content)),
+              prefix(std::move(prefix)),
+              internalType(inType) {}
 
-        virtual ~SingleMessage() = default;
+        virtual ~SingleMessage() noexcept = default;
 
     public:
         /// @brief 找对应类型的index key
@@ -145,18 +148,14 @@ namespace MiraiCP {
     public:
         explicit PlainText(const SingleMessage &sg);
 
-        template<typename T>
-        explicit PlainText(const T &a) : SingleMessage(PlainText::type(), ([&a]() -> std::string {
-                                                           // todo (Antares): 构造一个std::stringstream消耗很大，改为T类型实现序列化函数，
-                                                           //  调用 a.serialize，去掉lambda
-                                                           std::stringstream sst;
-                                                           sst << a;
-                                                           return sst.str();
-                                                       })()) {}
+        PlainText(PlainText &&_o) noexcept = default;
 
-        PlainText(PlainText &&_o) noexcept : SingleMessage(PlainText::type(), std::move(_o.content)) {}
+        PlainText(const PlainText &_o) = default;
 
-        PlainText(const PlainText &_o) : SingleMessage(PlainText::type(), _o.content) {}
+        explicit PlainText(std::string inStr) noexcept : SingleMessage(PlainText::type(), std::move(inStr)) {}
+
+        template<typename Stringable, typename = decltype(std::to_string(std::declval<Stringable>()))>
+        explicit PlainText(Stringable val) : SingleMessage(PlainText::type(), std::to_string(val)) {}
 
     public:
         static int type() {
@@ -175,6 +174,9 @@ namespace MiraiCP {
             return this->content == p.content;
         }
     };
+
+    // todo(Antares): 除特殊情况外（子类与基类没有差异）应禁止子类使用父类对象进行构造；或者构造函数直接调用downcast（不安全）
+    //  例如 At(const SingleMessage &) 这样的构造函数不应该出现
 
     /// @
     class At : public SingleMessage {

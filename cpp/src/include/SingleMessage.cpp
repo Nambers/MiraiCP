@@ -33,24 +33,7 @@ namespace MiraiCP {
     }
 
     // 静态成员
-    const char *const *SingleMessage::messageType = SingleMessageType::messageTypeInternal + 5;
-
-    //    std::unordered_map<int, std::string> SingleMessage::messageType{
-    //            {-5, "MarketFace"},
-    //            {-4, "OnlineForwardedMessage"},
-    //            {-3, "OnlineAudio"},
-    //            {-2, "QuoteReply"},
-    //            {-1, "unSupportMessage"},
-    //            {0, "plainText"},
-    //            {1, "at"},
-    //            {2, "atAll"},
-    //            {3, "image"},
-    //            {4, "app"},
-    //            {5, "service"},
-    //            {6, "file"},
-    //            {7, "face"},
-    //            {8, "FlashImage"},
-    //            {9, "MusicShare"}};
+    const char *const*const SingleMessage::messageType = SingleMessageType::messageTypeInternal + 5;
 
     QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
         if (m.internalType != type()) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.internalType) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
