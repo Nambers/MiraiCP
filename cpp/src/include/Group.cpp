@@ -126,7 +126,7 @@ namespace MiraiCP {
                  j["params"]["showPopup"]}};
     }
 
-    std::vector<unsigned long long> Group::getMemberList() {
+    std::vector<QQID> Group::getMemberList() {
         nlohmann::json j{{"contactSource", toString()}};
         std::string re = KtOperation::ktOperation(KtOperation::QueryML, std::move(j));
         if (re == "E1") {

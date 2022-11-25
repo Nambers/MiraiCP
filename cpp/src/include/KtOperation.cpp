@@ -16,16 +16,18 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
-#include "KtOperation.h"
 #include "Exception.h"
+#include "KtOperation.h"
 #include "loaderApiInternal.h"
 
 
 namespace MiraiCP::KtOperation {
     std::string ktOperation(operation_set type, nlohmann::json data, bool catchErr, const std::string &errorInfo) {
-        nlohmann::json j{{"type",type},{"data", std::move(data)}};
+        nlohmann::json j{{"type", type}, {"data", std::move(data)}};
         std::string re = LibLoader::LoaderApi::pluginOperation(j.dump());
-        if (catchErr) MIRAICP_ERROR_HANDLE(re, errorInfo);
+        if (catchErr) {
+            MIRAICP_ERROR_HANDLE(re, errorInfo);
+        }
         return re;
     }
 } // namespace MiraiCP::KtOperation
