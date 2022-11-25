@@ -310,7 +310,6 @@ namespace MiraiCP {
             this->SingleMessage::internalType = 8;
         }
 
-        // todo(Antares): 该构造函数无法实现多态，等下次重构一起处理
         explicit FlashImage(const Image &img);
 
         [[nodiscard]] nlohmann::json toJson() const override;

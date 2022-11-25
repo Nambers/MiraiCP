@@ -29,19 +29,6 @@
 namespace MiraiCP {
     using json = nlohmann::json;
 
-
-    //    Contact Contact::deserialize(const std::string &source) {
-    //        json j;
-    //        try {
-    //            j = json::parse(source);
-    //        } catch (json::parse_error &e) {
-    //            Logger::logger.error("json序列化错误 Contact::deserializationFromString");
-    //            Logger::logger.error(source);
-    //            Logger::logger.error(e.what());
-    //        }
-    //        return Contact::deserialize(j);
-    //    }
-
     std::shared_ptr<Contact> Contact::deserializeToPointer(nlohmann::json j) {
         uint8_t thistype = j["type"];
         switch (thistype) {
@@ -60,31 +47,7 @@ namespace MiraiCP {
         }
 
         return {};
-        //        return Contact(j["type"],
-        //                       j["id"],
-        //                       j["groupid"],
-        //                       j["nickornamecard"],
-        //                       j["botid"],
-        //                       j["anonymous"]);
     }
-
-    //    void Contact::deserializeWriter(const nlohmann::json &source) {
-    //        _type = static_cast<ContactType>(source["type"]);
-    //        _id = source["id"];
-    //        //        _groupid = source["groupid"];
-    //        //        _nickOrNameCard = source["nickornamecard"];
-    //        //        _botid = source["botid"];
-    //        //        _anonymous = source["anonymous"];
-    //    }
-
-    //    Contact::Contact(const nlohmann::json &in_json)
-    //        : Contact(in_json["id"], in_json["groupid"], static_cast<ContactType>(in_json["type"])) {
-    //        // todo
-    //    }
-    //    Contact::Contact(QQID in_id, QQID in_botid, ContactType in_type) {
-    //        // todo
-    //    }
-
 
     MessageSource Contact::sendVoiceImpl(std::string path) const {
         json source{{"path", std::move(path)}};
@@ -118,11 +81,6 @@ namespace MiraiCP {
 
     nlohmann::json IContactData::internalToJson() const {
         return {{"nickornamecard", _nickOrNameCard}, {"id", _id}, {"botid", _botid}, {"type", _type}};
-        // j["type"] = type();
-        //            j["id"] = id();
-        //            j["groupid"] = groupid();
-        //            j["nickornamecard"] = nickOrNameCard();
-        //            j["botid"] = botid();
     }
 
     nlohmann::json IContactData::getQuoteSign() const {

@@ -96,10 +96,10 @@ namespace LoaderAPIs {
 } // namespace LoaderAPIs
 
 extern "C" {
-MIRAICP_EXPORT void Verify(const char *a, const char *b, const char *(*oper)(const char *), void (*log)(const char *, int)) {
+MIRAICP_EXPORT void Verify(const char *a, const char *b, LoaderAPIs::OperFunc inOper, LoaderAPIs::LogFunc inLog) {
     printf("call Verify(%s, %s)\n", a, b);
-    LoaderAPIs::log = log;
-    LoaderAPIs::oper = oper;
+    LoaderAPIs::log = inLog;
+    LoaderAPIs::oper = inOper;
     VerifyImpl(a, b);
 }
 
