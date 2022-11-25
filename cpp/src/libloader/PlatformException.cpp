@@ -21,7 +21,7 @@
 #include "commonTools.h"
 
 
-// TODO(Antares): 1. 调用插件出口函数；2. 防止sigsegv重入
+// TODO(Antares): 处理线程池异常
 #if MIRAICP_WINDOWS
 #include "LoaderLogger.h"
 #include "ThreadController.h"

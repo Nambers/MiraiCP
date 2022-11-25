@@ -50,7 +50,7 @@ thread_local JNIEnvManager::ThreadInfo thread_info;
 /// @brief 为当前线程创建一个env.
 inline JNIEnv *newEnv() {
     JNIEnv *env = nullptr;
-    // todo JNIVersion是否写死
+
     JavaVMAttachArgs args{static_cast<int>(JNI_VERSION_1_8),
                           nullptr,
                           nullptr};
