@@ -36,4 +36,28 @@ namespace MiraiCP {
         ss.str("");
         return result;
     }
+
+    void ErrorHandle0(const std::string &name, int line, const std::string &re, const std::string &ErrorMsg) {
+        if (re == "EF")
+            throw FriendException(name, line);
+        if (re == "EG")
+            throw GroupException(name, line);
+        if (re == "EM")
+            throw MemberException(1, name, line);
+        if (re == "EMM")
+            throw MemberException(2, name, line);
+        if (re == "EB")
+            throw BotException("找不到bot:" + re, name, line);
+        if (re == "EA")
+            throw APIException(ErrorMsg, name, line);
+        if (re == "EC")
+            throw EventCancelledException("发送信息被取消", name, line);
+        if (re == "ET")
+            throw TimeOutException("发送信息超时", name, line);
+        if (re == "EP")
+            throw BotException(name, line);
+        // equal to Tools::start_with
+        if (re.rfind("EBM", 0) == 0)
+            throw BotIsBeingMutedException(std::stoi(re.substr(3)), name, line);
+    }
 } // namespace MiraiCP
