@@ -45,40 +45,40 @@ namespace MiraiCP {
          * @param i 好友的 qq id
          * @return 好友对象
          */
-        Friend getFriend(QQID i) const;
+        [[nodiscard]] Friend getFriend(QQID i) const;
 
         /**
          * 取群聊
          * @param groupid 群聊的 id
          * @return 群聊对象
          */
-        Group getGroup(QQID groupid) const;
+        [[nodiscard]] Group getGroup(QQID groupid) const;
 
         /// @brief 昵称
-        /// @note 并发情形下并不保证能得到正确结果
         std::string nick();
 
         /// @brief 头像下载链接
         std::string avatarUrl();
 
         /// @brief 取好友列表
-        std::vector<QQID> getFriendList() const;
+        [[nodiscard]] std::vector<QQID> getFriendList() const;
 
         /// @brief 好友列表string形式返回，利于保存
-        std::string FriendListToString() const;
+        [[nodiscard]] std::string FriendListToString() const;
 
         /// @brief 取群列表
-        std::vector<QQID> getGroupList() const;
+        [[nodiscard]] std::vector<QQID> getGroupList() const;
 
         /// @brief 群列表string形式返回，利于保存
-        std::string GroupListToString() const;
+        [[nodiscard]] std::string GroupListToString() const;
 
         /// Bot 的 id
-        QQID id() const;
+        [[nodiscard]] QQID id() const;
 
         bool operator==(const Bot &b) const {
             return id() == b.id();
         }
+
     private:
         /*!
          * @brief 刷新bot信息

@@ -26,7 +26,6 @@ namespace MiraiCP {
     class Contact;
     class ForwardedMessage;
 
-
     /// 转发信息显示策略, 目前好像只在转发信息内的转发信息生效
     class ForwardedMessageDisplayStrategy {
         using string = std::string;
@@ -91,11 +90,6 @@ namespace MiraiCP {
         /// @param t - 发送时间，时间戳格式
         ForwardedNode(QQID id, std::string name, ForwardedMessage message, int t, std::optional<ForwardedMessageDisplayStrategy> display = ForwardedMessageDisplayStrategy::defaultStrategy());
 
-        /*
-        ForwardedNode(Contact *c, MessageChain message, int t);
-
-        ForwardedNode(QQID id, std::string name, ForwardedMessage &message, int t);
-        */
     public:
         bool isForwarded() const { return isForwardedMessage; }
     };
@@ -205,8 +199,7 @@ namespace MiraiCP {
         }
 
     public:
-    public:
-        static int type() { return -4; }
+        static int type() { return SingleMessage::Types::OnlineForwardedMessage_t; }
 
         static OnlineForwardedMessage deserializationFromMessageSourceJson(const nlohmann::json &j);
     };

@@ -26,7 +26,7 @@ namespace MiraiCP {
     using json = nlohmann::json;
 
     std::string MessageChain::toMiraiCode() const {
-        return Tools::VectorToString(this->toMiraiCodeVector(), "");
+        return Tools::VectorToString(toMiraiCodeVector(), "");
     }
 
     MessageSource MessageChain::quoteAndSend0(std::string msg, QQID groupid) {
