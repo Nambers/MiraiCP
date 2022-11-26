@@ -44,9 +44,9 @@ val json by lazy {
 }
 object Packets {
     private fun Group.toContact(): Contact = Contact(2, this.id, this.bot.id)
-    private fun Member.toContact(): Contact = Contact(3, this.id, this.group.id, this.bot.id)
+    private fun Member.toContact(): Contact = Contact(3, this.id, this.bot.id, this.group.id)
     private fun AnonymousMember.toContact(): Contact =
-        Contact(6, this.id, this.group.id, this.bot.id)
+        Contact(6, this.id, this.bot.id, this.group.id)
 
     private fun Friend.toContact(): Contact = Contact(1, this.id, this.bot.id)
     private fun Bot.toContact(): Contact = Contact(4, this.id, this.id)
@@ -84,17 +84,17 @@ object Packets {
          * NotNullable
          * friendId / GroupId / MemberId / BotId / StrangerId / Anonymous MemberId
          */
-        val id: Long = -1,
+        val id: Long = 0,
+        /**
+         * NotNullAble
+         * BotId for All
+         */
+        val botId: Long = 0,
         /**
          * NotNullable
-         * GroupId for Member / BotId for other
+         * GroupId for Member
          */
-        val id2: Long = -1,
-        /**
-         * Nullable
-         * BotId for Member / null for other
-         */
-        val id3: Long? = null,
+        val groupId: Long = 0,
     )
 
     object Incoming {
@@ -116,15 +116,9 @@ object Packets {
         data class EventData<T: EventPacket>(
             val eventData: T,
             val eventId: Int = -1,
-            // nullable
-            var subject: Contact? = null,
-            // nullable, if subject is null, this MUST not be null
-            var subjectId: Long? = null,
-            // nullable
-            var `object`: Contact? = null,
-            // nullable, if object is null, this MUST not be null
-            var objectId: Long? = null,
-            val botId: Long = -1,
+            var subject: Contact? = Contact(),
+            var `object`: Contact? = Contact(),
+            val botId: Long = 0,
         )
 
         @Serializable
@@ -184,11 +178,14 @@ object Packets {
             /// group name
             private val groupName: String
 
+            private val invitorNick: String
+
             constructor(event: BotInvitedJoinGroupRequestEvent) {
                 val data = event.toRequestEventData()
                 request = json.encodeToString(data)
                 requestEventId = data.eventId
                 groupName = data.groupName
+                invitorNick = data.invitorNick
             }
         }
 
@@ -436,7 +433,7 @@ object Packets {
             builder: (Outgoing.EventData<T>) -> Unit
         ) =
             Json.encodeToString(
-                Outgoing.EventData(event, botId = this.bot.id, eventId = event.eventId).also { builder(it) })
+                Outgoing.EventData(event, eventId = event.eventId).also { builder(it) })
 
         fun MessageEvent.toEventData(): String = eventToJson(Outgoing.MessageEventData(this)) {
             when (this) {
@@ -477,8 +474,8 @@ object Packets {
         }
 
         fun NewFriendRequestEvent.toEventData(): String = eventToJson(Outgoing.NewFriendRequest(this)) {
-            it.subject = this.fromGroup?.toContact() ?: this.bot.toContact()
-            it.objectId = this.fromId
+            it.subject = this.fromGroup?.toContact() ?: Contact(2, this.fromGroupId, this.bot.id)
+            it.`object` = Contact(1, this.fromId, this.bot.id)
         }
 
         fun MessageRecallEvent.toEventData(): String = eventToJson(Outgoing.MessageRecall(this)) {
@@ -502,11 +499,8 @@ object Packets {
 
         fun BotInvitedJoinGroupRequestEvent.toEventData(): String =
             eventToJson(Outgoing.BotInvitedJoinGroupRequest(this)) {
-                it.subjectId = this.groupId
-                if (invitor != null)
-                    it.subject = invitor!!.toContact()
-                else
-                    it.subjectId = invitorId
+                it.subject = Contact(2, this.groupId, this.bot.id)
+                it.`object` = invitor?.toContact() ?: Contact(1, invitorId, this.bot.id)
             }
 
         fun NudgeEvent.toEventData(): String = eventToJson(Outgoing.Nudge(this)) {
@@ -516,20 +510,17 @@ object Packets {
 
         @OptIn(MiraiExperimentalApi::class)
         fun BotLeaveEvent.toEventData(): String = eventToJson(Outgoing.BotLeave(this)) {
-            it.subject = this.bot.toContact()
+            it.subject = this.group.toContact()
             when (it.eventData.eventType) {
-                1 -> it.`object` = this.bot.toContact()
+                1 -> it.`object` = this.group.botAsMember.toContact()
                 2 -> it.`object` = (this as BotLeaveEvent.Kick).operator.toContact()
                 3 -> it.`object` = (this as BotLeaveEvent.Disband).operator.toContact()
             }
         }
 
         fun MemberJoinRequestEvent.toEventData(): String = eventToJson(Outgoing.MemberJoinRequest(this)) {
-            if (group != null)
-                it.subject = group!!.toContact()
-            else
-                it.subjectId = groupId
-            it.objectId = this.fromId
+            it.subject = group?.toContact() ?: Contact(2, groupId, bot.id)
+            it.`object` = Contact(3, fromId, bot.id, groupId)
         }
 
         fun MessagePreSendEvent.toEventData(): String = eventToJson(Outgoing.MessagePreSend(this)) {
@@ -538,8 +529,8 @@ object Packets {
         }
 
         fun BotOnlineEvent.toEventData(): String = eventToJson(Outgoing.BotOnline()) {
-            it.subject = this.bot.toContact()
-            it.`object` = this.bot.toContact()
+//            it.subject = this.bot.toContact()
+//            it.`object` = this.bot.toContact()
         }
     }
 }

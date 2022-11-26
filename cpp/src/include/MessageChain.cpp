@@ -20,6 +20,7 @@
 #include "KtOperation.h"
 #include "Logger.h"
 #include "Tools.h"
+#include "MessageChain.h"
 
 
 namespace MiraiCP {
@@ -196,5 +197,10 @@ namespace MiraiCP {
             }
         }
         return mc;
+    }
+
+    MessageChain MessageChain::deserializationFromMessageJson(const json &j) {
+        // TODO TODO TODO TODO 重新实现
+        throw "noImpl";
     }
 } // namespace MiraiCP

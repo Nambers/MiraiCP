@@ -138,7 +138,7 @@ MIRAICP_EXPORT int FUNC_EVENT(const MiraiCP::MiraiCPString &c) {
 
     try {
         // core logic
-        Event::incomingEvent(std::move(j), type);
+        Event::incomingEvent(BaseEventData(std::move(j)), type);
     } catch (json::type_error &e) {
         MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("json格式化异常,位置：FUNC_EVENT");
                                         Logger::logger.error(e.what());

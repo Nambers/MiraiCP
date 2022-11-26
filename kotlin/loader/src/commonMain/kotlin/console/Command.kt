@@ -26,11 +26,8 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.loader.KotlinMainData
 import tech.eritquearcus.miraicp.loader.console.CommandMultiplatform.pureOrder
 import tech.eritquearcus.miraicp.loader.login
-import tech.eritquearcus.miraicp.shared.Command2C
-import tech.eritquearcus.miraicp.shared.Packets
-import tech.eritquearcus.miraicp.shared.PublicSharedData
+import tech.eritquearcus.miraicp.shared.*
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
-import tech.eritquearcus.miraicp.shared.json
 import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 
 expect object CommandMultiplatform {
@@ -155,11 +152,14 @@ object Command {
             val mc = MessageChainBuilder()
             order.drop(1).forEach { mc.append(PlainText(it)) }
             val tmp = json.encodeToString(
-                Command2C(
-                    null,
+                CommandWrap(
                     0,
-                    mc.build().serializeToJsonString(),
-                    it.bid
+                    CommandWrap.Command2C(
+                        null,
+                        0,
+                        mc.build().serializeToJsonString(),
+                        it.bid
+                    )
                 )
             )
             // 为什么之前直接Event了
