@@ -41,10 +41,15 @@ data class Command(
     val preFixOption: Boolean
 )
 
-data class Command2C(
-    val contact: Config.Contact?,
-    val botid: Long,
-    val message: String,
-    val bindId: Int,
-    val type: Int = 17,
-)
+data class CommandWrap(
+    val botId: Long,
+    val eventData: Command2C,
+) {
+    data class Command2C(
+        val contact: Config.Contact?,
+        val botid: Long,
+        val message: String,
+        val bindId: Int,
+        val type: Int = 17,
+    )
+}

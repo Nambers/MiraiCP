@@ -27,12 +27,12 @@ namespace MiraiCP {
     Event Event::processor;
 
     GroupMessageEvent::GroupMessageEvent(BaseEventData j) : BotEvent(j.botId),
-                                                            group(*j.subject.get()),
-                                                            sender(Tools::json_jsonmover(j, "object")),
+                                                            group(j.subject->id, j.botId),
+                                                            sender(j.object->id, j.object->groupId, j.botId),
                                                             message(MessageChain::deserializationFromMessageJson(
-                                                                    json::parse(j["message"].get<std::string>()))
+                                                                    json::parse(j.eventData["message"].get<std::string>()))
                                                                             .plus(MessageSource::deserializeFromString(
-                                                                                    j["source"].get<std::string>()))) {
+                                                                                    j.eventData["source"].get<std::string>()))) {
     }
 
     MessageChain GroupMessageEvent::nextMessage(long time, bool halt) const {
@@ -59,13 +59,12 @@ namespace MiraiCP {
                 MessageSource::deserializeFromString(re["messageSource"]));
     }
 
-    PrivateMessageEvent::PrivateMessageEvent(nlohmann::json j) : BotEvent(j["botid"]),
-                                                                 sender(Contact::deserialize<Friend>(
-                                                                         Tools::json_jsonmover(j, "object"))),
-                                                                 message(MessageChain::deserializationFromMessageJson(
-                                                                         json::parse(j["message"].get<std::string>()))
-                                                                                 .plus(MessageSource::deserializeFromString(
-                                                                                         j["source"].get<std::string>()))) {
+    PrivateMessageEvent::PrivateMessageEvent(BaseEventData j) : BotEvent(j.botId),
+                                                                 sender(j.subject->id, j.subject->botId),
+                                                                message(MessageChain::deserializationFromMessageJson(
+                                                                        json::parse(j.eventData["message"].get<std::string>()))
+                                                                                .plus(MessageSource::deserializeFromString(
+                                                                                        j.eventData["source"].get<std::string>()))) {
     }
 
     MessageChain PrivateMessageEvent::nextMessage(long time, bool halt) const {
@@ -79,12 +78,13 @@ namespace MiraiCP {
         return MessageChain::deserializationFromMessageSourceJson(json::parse(re["messageSource"].get<std::string>())).plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
-    GroupInviteEvent::GroupInviteEvent(nlohmann::json j) : BotEvent(j["source"]["botid"]),
-                                                           source(Tools::json_stringmover(j, "request")),
-                                                           inviterNick(Tools::json_stringmover(j["source"], "inviternick")),
-                                                           groupName(Tools::json_stringmover(j["source"], "groupname")),
-                                                           groupid(j["source"]["groupid"]),
-                                                           inviterid(j["source"]["inviterid"]) {
+    GroupInviteEvent::GroupInviteEvent(BaseEventData j) : BotEvent(j.botId),
+                                                           source(Tools::json_stringmover(j.eventData, "request")),
+                                                           invitorNick(Tools::json_stringmover(j.eventData, "invitorNick")),
+                                                           groupName(Tools::json_stringmover(j.eventData, "groupName")),
+                                                           group(j.subject->id, j.subject->botId),
+                                                           invitor(j.object->id, j.object->botId),
+                                                           requestEventId(j.eventData["requestEventId"]) {
     }
 
     void GroupInviteEvent::operation0(const std::string &source, QQID botid, bool accept) {
@@ -93,12 +93,13 @@ namespace MiraiCP {
         if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
     }
 
-    NewFriendRequestEvent::NewFriendRequestEvent(nlohmann::json j) : BotEvent(j["source"]["botid"]),
-                                                                     source(Tools::json_stringmover(j, "request")),
-                                                                     fromid(j["source"]["fromid"]),
-                                                                     fromgroupid(j["source"]["fromgroupid"]),
-                                                                     nick(Tools::json_stringmover(j["source"], "fromnick")),
-                                                                     message(Tools::json_stringmover(j["source"], "message")) {
+    NewFriendRequestEvent::NewFriendRequestEvent(BaseEventData j) : BotEvent(j.botId),
+                                                                     source(Tools::json_stringmover(j.eventData, "request")),
+                                                                     from(j.object->id, j.object->botId),
+                                                                     fromGroup(j.subject == std::nullopt ? std::nullopt : std::optional(Group(j.subject->id, j.subject->botId))),
+                                                                     nick(Tools::json_stringmover(j.eventData["source"], "fromnick")),
+                                                                     message(Tools::json_stringmover(j.eventData["source"], "message")) {
+
     }
 
     void NewFriendRequestEvent::operation0(const std::string &source, QQID botid, bool accept, bool ban) {
@@ -107,70 +108,70 @@ namespace MiraiCP {
         if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
     }
 
-    MemberJoinEvent::MemberJoinEvent(nlohmann::json j) : BotEvent(j["group"]["botid"]),
-                                                         type(joinType(j["jointype"].get<int>())),
-                                                         member(Contact::deserialize<Member>(Tools::json_jsonmover(j, "member"))),
-                                                         group(Contact::deserialize<Group>(Tools::json_jsonmover(j, "group"))),
-                                                         inviterid(j["inviterid"]) {
+    MemberJoinEvent::MemberJoinEvent(BaseEventData j) : BotEvent(j.botId),
+                                                         type(joinType(j.eventData["eventType"].get<int>())),
+                                                         member(j.object->id, j.subject->groupId, j.botId),
+                                                         group(j.subject->id, j.subject->botId),
+                                                         invitor(j.object == std::nullopt ? std::nullopt : std::optional(Member(j.object->id, j.object->groupId, j.object->botId))) {
     }
 
-    MemberLeaveEvent::MemberLeaveEvent(nlohmann::json j) : BotEvent(j["group"]["botid"]),
-                                                           memberid(j["memberid"]),
-                                                           group(Contact::deserialize<Group>(Tools::json_jsonmover(j, "group"))),
-                                                           operaterid(j["operatorid"]),
-                                                           type(j["leavetype"]) {
+    MemberLeaveEvent::MemberLeaveEvent(BaseEventData j) : BotEvent(j.botId),
+                                                           member(j.object->id, j.object->groupId, j.object->botId),
+                                                           group(j.subject->id, j.subject->botId),
+                                                           operater(!j.eventData.contains("operator") ? std::nullopt : std::optional(Member(j.eventData["operator"]["id"], j.eventData["operator"]["groupId"], j.eventData["operator"]["botId"]))),
+                                                           type(j.eventData["type"]){
     }
 
-    RecallEvent::RecallEvent(nlohmann::json j) : BotEvent(j["botid"]),
-                                                 type(j["etype"]),
-                                                 time(j["time"]),
-                                                 authorid(j["authorid"]),
-                                                 operatorid(j["operatorid"]),
-                                                 ids(Tools::json_stringmover(j, "ids")),
-                                                 internalids(Tools::json_stringmover(j, "internalids")),
-                                                 groupid(j["groupid"]) {
+    RecallEvent::FriendRecallEvent::FriendRecallEvent(BaseEventData j) : BotEvent(j.botId),
+                                                 time(j.eventData["messageTime"]),
+                                                 author(j.eventData["author"]["id"], j.eventData["author"]["botId"]),
+                                                 operater(j.object->id, j.object->botId),
+                                                 ids(Tools::json_stringmover(j.eventData, "messageIds")),
+                                                 internalids(Tools::json_stringmover(j.eventData, "messageInternalIds")) {
+    }
+    RecallEvent::MemberRecallEvent::MemberRecallEvent(BaseEventData j) : BotEvent(j.subject->botId),
+                                                time(j.eventData["messageTime"]),
+                                                author(j.eventData["author"]["id"], j.eventData["author"]["groupId"], j.eventData["author"]["botId"]),
+                                                operater(j.object->id, j.object->groupId, j.object->botId),
+                                                ids(Tools::json_stringmover(j.eventData, "messageIds")),
+                                                internalids(Tools::json_stringmover(j.eventData, "messageInternalIds")) {
     }
 
-    BotJoinGroupEvent::BotJoinGroupEvent(nlohmann::json j) : BotEvent(j["group"]["botid"]),
-                                                             group(Contact::deserialize<Group>(
-                                                                     Tools::json_jsonmover(j, "group"))),
-                                                             inviterid(j["inviterid"]),
-                                                             type(j["etype"]) {
+    BotJoinGroupEvent::BotJoinGroupEvent(BaseEventData j) : BotEvent(j.botId),
+                                                             group(j.subject->id, j.subject->botId),
+                                                             invitor(j.eventData.contains("inviter") ? std::optional(Member(j.eventData["inviter"]["id"], j.eventData["inviter"]["groupId"], j.eventData["inviter"]["botId"])) : std::nullopt),
+                                                             type(j.eventData["eventType"]) {
     }
 
-    GroupTempMessageEvent::GroupTempMessageEvent(nlohmann::json j) : BotEvent(j["botid"]),
-                                                                     group(Contact::deserialize<Group>(
-                                                                             Tools::json_jsonmover(j, "subject"))),
-                                                                     sender(Contact::deserialize<Member>(
-                                                                             Tools::json_jsonmover(j, "object"))),
+    GroupTempMessageEvent::GroupTempMessageEvent(BaseEventData j) : BotEvent(j.botId),
+                                                                     group(j.subject->id, j.subject->botId),
+                                                                     sender(j.object->id, j.object->groupId, j.object->botId),
                                                                      message(MessageChain::deserializationFromMessageJson(
-                                                                             json::parse(
-                                                                                     j["message"].get<std::string>()))
+                                                                             json::parse(j.eventData["message"].get<std::string>()))
                                                                                      .plus(MessageSource::deserializeFromString(
-                                                                                             j["source"]))) {
+                                                                                             j.eventData["source"]))) {
     }
-
-    NudgeEvent::NudgeEvent(nlohmann::json j) : BotEvent(j["botid"]),
-                                               from(Contact::deserializeToPointer(Tools::json_jsonmover(j, "from"))),
+    //TODO TODO TODO TODO TODO TODO 设计一个合理的结构, 目前的不能运行
+    NudgeEvent::NudgeEvent(BaseEventData j) : BotEvent(j.botId),
+                                               from(Contact::deserializeToPointer(Tools::json_jsonmover(j.eventData, "from"))),
                                                target(Contact::deserializeToPointer(
-                                                       Tools::json_jsonmover(j, "target"))),
+                                                       Tools::json_jsonmover(j.eventData, "target"))),
                                                subject(Contact::deserializeToPointer(
-                                                       Tools::json_jsonmover(j, "subject"))) {
+                                                       Tools::json_jsonmover(j.eventData, "subject"))) {
     }
 
-    BotLeaveEvent::BotLeaveEvent(nlohmann::json j) : BotEvent(j["botid"]),
-                                                     groupid(j["groupid"]), type(j["type"].get<EventType>()) {
-        QQID val = j["operatorid"];
-        if (val != (QQID) -1) {
-            this->operatorId = val;
-        }
+    BotLeaveEvent::BotLeaveEvent(BaseEventData j) : BotEvent(j.botId),
+                                                     group(j.subject->id, j.subject->botId),
+                                                     type(j.eventData["eventType"]),
+                                                     operater(j.object->id, j.object->groupId,j.object->botId){
     }
 
-    MemberJoinRequestEvent::MemberJoinRequestEvent(nlohmann::json j) : BotEvent(j["group"]["botid"]),
-                                                                       source(j["requestData"]),
-                                                                       group(Contact::deserialize<Group>(j["group"])),
-                                                                       inviter(j["inviter"]["id"] != 0 ? std::optional<Member>(Contact::deserialize<Member>(j["inviter"])) : std::optional<Member>(std::nullopt)),
-                                                                       requesterId(j["requester"]) {
+    MemberJoinRequestEvent::MemberJoinRequestEvent(BaseEventData j) : BotEvent(j.botId),
+                                                                       source(j.eventData["requestData"]),
+                                                                       group(j.subject->id, j.subject->botId),
+                                                                       invitor(j.eventData.contains("invitor") ? std::optional(Member(j.eventData["invitor"]["id"], j.eventData["invitor"]["groupId"], j.eventData["invitor"]["botId"])) : std::nullopt),
+                                                                       from(j.object->id, j.object->groupId, j.object->botId),
+                                                                       fromNick(j.eventData["fromNick"]){
     }
 
     void MemberJoinRequestEvent::operate(std::string_view s, QQID botid, bool sign, const std::string &msg) {
@@ -178,15 +179,16 @@ namespace MiraiCP {
         KtOperation::ktOperation(KtOperation::MemberJoinRequest, std::move(j));
     }
 
-    MessagePreSendEvent::MessagePreSendEvent(nlohmann::json j) : BotEvent(j["botid"]),
-                                                                 target(Contact::deserializeToPointer(Tools::json_jsonmover(j, "target"))),
-                                                                 message(MessageChain::deserializationFromMessageSourceJson(j["message"].get<std::string>(), false)) {
+    // TODO TODO TODO TODO contact 不能用
+    MessagePreSendEvent::MessagePreSendEvent(BaseEventData j) : BotEvent(j.botId),
+                                                                 target(Contact::deserializeToPointer(Tools::json_jsonmover(j.eventData, "target"))),
+                                                                 message(MessageChain::deserializationFromMessageJson(j.eventData["message"].get<std::string>())) {
     }
 
-    void Event::incomingEvent(json j, int type) {
+    void Event::incomingEvent(BaseEventData j, int type) {
         switch (type) {
             case eventTypes::MessageEvent: {
-                switch (j["eventData"]["eventType"].get<int>()) {
+                switch (j.eventData["eventType"].get<int>()) {
                     case IMessageEvent::MessageEventType::GroupMessageEvent: {
                         Event::broadcast(GroupMessageEvent(std::move(j)));
                         break;
@@ -225,7 +227,10 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::RecallEvent: {
-                Event::broadcast(RecallEvent(std::move(j)));
+                if(j.eventData["eventType"] == 1)
+                    Event::broadcast(RecallEvent::FriendRecallEvent(std::move(j)));
+                else
+                    Event::broadcast(RecallEvent::MemberRecallEvent(std::move(j)));
                 break;
             }
             case eventTypes::BotJoinGroupEvent: {
@@ -233,11 +238,12 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::TimeOutEvent: {
-                Event::broadcast(TimeOutEvent(Tools::json_stringmover(j, "msg")));
+                // TODO TODO TODO TODO 适配 timeout
+                Event::broadcast(TimeOutEvent(Tools::json_stringmover(j.eventData, "msg")));
                 break;
             }
             case eventTypes::BotOnlineEvent: {
-                Event::broadcast(BotOnlineEvent(j["botid"].get<QQID>()));
+                Event::broadcast(BotOnlineEvent(j.botId));
                 break;
             }
             case eventTypes::NudgeEvent: {
@@ -258,11 +264,12 @@ namespace MiraiCP {
             }
             case eventTypes::Command: {
                 // command
-                CommandManager::commandManager[j["bindId"]]->onCommand(
-                        j.contains("contact") ? Contact::deserializeToPointer(Tools::json_jsonmover(j, "contact")) : nullptr,
-                        Bot(j["botid"]),
+                // TODO TODO TODO TODO TODO 适配 command
+                CommandManager::commandManager[j.eventData["bindId"]]->onCommand(
+                        j.eventData.contains("contact") ? Contact::deserializeToPointer(Tools::json_jsonmover(j.eventData, "contact")) : nullptr,
+                        Bot(j.eventData["botid"]),
                         MessageChain::deserializationFromMessageSourceJson(
-                                j.contains("message") ? j["message"].get<std::string>() : "",
+                                j.eventData.contains("message") ? j.eventData["message"].get<std::string>() : "",
                                 false));
                 break;
             }
@@ -275,15 +282,21 @@ namespace MiraiCP {
     BaseEventData::BaseEventData(nlohmann::json j) {
         this->botId = j["botId"];
         if (j.contains("subject")) {
-            this->subject = Contact::deserializeToPointer(Tools::json_jsonmover(j, "subject"));
-        } else {
-            this->subjectId = j["subjectId"];
+            this->subject = Contact(Tools::json_jsonmover(j, "subject"));
         }
         if (j.contains("object")) {
-            this->subject = Contact::deserializeToPointer(Tools::json_jsonmover(j, "object"));
-        } else {
-            this->subjectId = j["objectId"];
+            this->object = Contact(Tools::json_jsonmover(j, "object"));
         }
         this->eventData = Tools::json_jsonmover(j, "eventData");
+    }
+
+    BaseEventData::Contact::Contact(nlohmann::json in_json) {
+        if(in_json.empty()){
+            return;
+        }
+        this->botId = in_json["botId"];
+        this->id = in_json["id"];
+        if(in_json.contains("groupId"))
+            this->groupId= in_json["groupId"];
     }
 } // namespace MiraiCP

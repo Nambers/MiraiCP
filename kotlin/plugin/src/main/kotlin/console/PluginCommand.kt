@@ -26,7 +26,6 @@ import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import tech.eritquearcus.miraicp.PluginMain
 import tech.eritquearcus.miraicp.shared.*
-import tech.eritquearcus.miraicp.shared.PublicShared.json
 
 class CommandHandlerImpl : CommandHandler {
     override fun register(c: Command): String {
@@ -42,11 +41,14 @@ class CommandHandlerImpl : CommandHandler {
             var bindId: Int = -1
             override suspend fun CommandSender.onCommand(args: MessageChain) {
                 val tmp = json.encodeToString(
-                    Command2C(
-                        this.user?.toContact(),
+                    CommandWrap(
                         this.bot?.id ?: 0,
-                        args.serializeToJsonString(),
-                        bindId
+                        CommandWrap.Command2C(
+                            this.user?.toContact(),
+                            this.bot?.id ?: 0,
+                            args.serializeToJsonString(),
+                            bindId
+                        )
                     )
                 )
                 CPPLibMultiplatform.Event(tmp)
