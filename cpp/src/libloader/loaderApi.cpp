@@ -22,6 +22,7 @@
 #include "LoaderMacro.h"
 #include "LoaderTaskQueue.h"
 #include "PluginListManager.h"
+#include "Scheduler.h"
 #include "commonTools.h"
 #include "loaderApiInternal.h"
 #include "loaderTools.h"
@@ -69,6 +70,10 @@ namespace LibLoader::LoaderApi {
 
     void pushTaskWithId(task_func_with_id func, size_t id) {
         BS::pool->push_task(func, id);
+    }
+
+    void timer(const MiraiCPString &id, const MiraiCPString &content, size_t time) {
+        Scheduler::timer(id, content, time);
     }
 
     void enablePluginById(const MiraiCPString &id) {
