@@ -451,40 +451,6 @@ namespace BS {
         }
 
         /**
-         * @brief Submit a function with zero or more arguments into the task queue. If the function has a return value, get a future for the eventual returned value. If the function has no return value, get an std::future<void> which can be used to wait until the task finishes. Same as `submit`, but useful if calling `new` operators should be avoided (for example, in CPU-bound tasks).
-         *
-         * @tparam F The type of the function.
-         * @tparam A The types of the zero or more arguments to pass to the function.
-         * @tparam R The return type of the function (can be void).
-         * @param task The function to submit.
-         * @param args The zero or more arguments to pass to the function. Note that if the task is a class member function, the first argument must be a pointer to the object, i.e. &object (or this), followed by the actual arguments.
-         * @return A future to be used later to wait for the function to finish executing and/or obtain its returned value if it has one.
-         */
-        template<typename F, typename... A, typename R = std::invoke_result_t<std::decay_t<F>, std::decay_t<A>...>>
-        [[nodiscard]] std::future<R> submit_with_promise(std::promise<R> *task_promise, F &&task, A &&...args) {
-            auto future = task_promise->get_future();
-            push_task(
-                    [task_promise](auto &&task_inner, auto &&...argss) {
-                        try {
-                            if constexpr (std::is_void_v<R>) {
-                                std::invoke(std::forward<decltype(task_inner)>(task_inner), std::forward<decltype(argss)>(argss)...);
-                                task_promise->set_value();
-                            } else {
-                                task_promise->set_value(std::invoke(std::forward<decltype(task_inner)>(task_inner), std::forward<decltype(argss)>(argss)...));
-                            }
-                        } catch (...) {
-                            try {
-                                task_promise->set_exception(std::current_exception());
-                            } catch (...) {
-                            }
-                        }
-                        delete task_promise;
-                    },
-                    std::forward<F>(task), std::forward<A>(args)...);
-            return future;
-        }
-
-        /**
          * @brief Unpause the pool. The workers will resume retrieving new tasks out of the queue.
          */
         void unpause() {
