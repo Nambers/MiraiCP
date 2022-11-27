@@ -22,8 +22,10 @@
 #include "PlatformThreading.h"
 #include "PluginListImplements.h"
 #include "PluginListManager.h"
+#include "Scheduler.h"
 #include "ThreadController.h"
 #include "redirectCout.h"
+
 
 namespace LibLoader {
     volatile bool LoaderMain::loader_exit = false;
@@ -85,6 +87,8 @@ namespace LibLoader {
     ////////////////////////////////////
 
     void LoaderMain::tick() noexcept {
+        // todo(Antares) finish this
+        Scheduler::popSchedule();
     }
 
     void LoaderMain::mainloop() noexcept {
