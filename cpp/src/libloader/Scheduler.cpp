@@ -37,7 +37,7 @@ namespace LibLoader::Scheduler {
         timerQueue.push(std::move(a));
     }
 
-    inline void sendTimeoutEvent(const std::string &pluginId, std::string content) {
+    inline void sendTimeoutEvent(const std::string &pluginId, std::string content) noexcept {
         //        nlohmann::json j{{"msg", std::move(content)}};
         //        LibLoader::ThreadController::getController()
         //                .submitJob(pluginId, [j = std::move(j)]() {
@@ -46,7 +46,7 @@ namespace LibLoader::Scheduler {
         // todo(Antares): finish this
     }
 
-    void popSchedule() {
+    void popSchedule() noexcept {
         std::lock_guard lk(mtx);
         while (!timerQueue.empty() && timerQueue.top().tp < std::chrono::system_clock::now()) {
             auto task = timerQueue.top();
