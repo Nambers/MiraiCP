@@ -53,6 +53,10 @@ namespace LibLoader::LoaderApi {
     LOADER_API_COUNT
     void pushTaskWithId(task_func_with_id, size_t);
 
+    LOADER_API_COUNT
+    void timer(const MiraiCPString &, const MiraiCPString &, size_t);
+
+
     // Admin api
 
     LOADER_API_COUNT
@@ -85,6 +89,7 @@ namespace LibLoader::LoaderApi {
         DECL_API(showAllPluginId);
         DECL_API(pushTask);
         DECL_API(pushTaskWithId);
+        DECL_API(timer);
         static constexpr size_t line1 = __LINE__;
         static constexpr size_t normal_api_count = line1 - line0 - 1;
         // apis below can only be called by admin plugins
@@ -113,7 +118,8 @@ namespace LibLoader::LoaderApi {
                     loggerInterface,
                     showAllPluginId,
                     pushTask,
-                    pushTaskWithId, /// end normal apis
+                    pushTaskWithId,
+                    timer, /// end normal apis
                     enablePluginById,
                     disablePluginById,
                     enableAllPlugins,
@@ -134,6 +140,7 @@ namespace LibLoader::LoaderApi {
                     showAllPluginId,
                     pushTask,
                     pushTaskWithId,
+                    timer,
             }; // no admin functions
             constexpr size_t line1 = __LINE__;
             constexpr size_t adminapi_construct_number = line1 - line0 - 3;
