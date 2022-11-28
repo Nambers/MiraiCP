@@ -74,15 +74,28 @@ namespace MiraiCP {
 
     class BaseEventData {
     public:
-        class Contact{
+        class BuiltInContact {
         public:
+            /**
+             * 1 - Friend
+             * 2 - Group
+             * 3 - Member
+             * 4 - Bot
+             * 5 - Stranger
+             * 6- Anonymous Member
+             */
+            int type{};
             QQID id{};
             QQID botId{};
             QQID groupId{};
-            explicit Contact(nlohmann::json in_json);
+
+            explicit BuiltInContact(nlohmann::json in_json);
+
+            std::shared_ptr<Contact> toContactPointer();
         };
-        std::optional<Contact> subject = std::nullopt;
-        std::optional<Contact> object = std::nullopt;
+
+        std::optional<BuiltInContact> subject = std::nullopt;
+        std::optional<BuiltInContact> object = std::nullopt;
         QQID botId;
         nlohmann::json eventData;
 

@@ -353,7 +353,7 @@ object Packets {
                 when (event) {
                     is MemberLeaveEvent.Kick -> {
                         eventType = 1
-                        operator = event.operator?.toContact() ?: event.bot.toContact()
+                        operator = event.operator?.toContact() ?: event.group.botAsMember.toContact()
                     }
 
                     is MemberLeaveEvent.Quit -> {
@@ -482,7 +482,7 @@ object Packets {
             when (this) {
                 is MessageRecallEvent.GroupRecall -> {
                     it.subject = this.group.toContact()
-                    it.`object` = this.operator?.toContact() ?: this.bot.toContact()
+                    it.`object` = this.operator?.toContact() ?: this.group.botAsMember.toContact()
                 }
 
                 is MessageRecallEvent.FriendRecall -> {
@@ -494,7 +494,7 @@ object Packets {
 
         fun BotJoinGroupEvent.toEventData(): String = eventToJson(Outgoing.BotJoinGroup(this)) {
             it.subject = this.group.toContact()
-            it.`object` = this.bot.toContact()
+            it.`object` = this.group.botAsMember.toContact()
         }
 
         fun BotInvitedJoinGroupRequestEvent.toEventData(): String =
@@ -525,7 +525,7 @@ object Packets {
 
         fun MessagePreSendEvent.toEventData(): String = eventToJson(Outgoing.MessagePreSend(this)) {
             it.subject = this.target.toContact()
-            it.`object` = this.bot.toContact()
+//            it.`object` = this.bot.toContact()
         }
 
         fun BotOnlineEvent.toEventData(): String = eventToJson(Outgoing.BotOnline()) {
