@@ -151,13 +151,12 @@ namespace MiraiCP {
                                                                                      .plus(MessageSource::deserializeFromString(
                                                                                              j.eventData["source"]))) {
     }
-    //TODO TODO TODO TODO TODO TODO 设计一个合理的结构, 目前的不能运行
+
     NudgeEvent::NudgeEvent(BaseEventData j) : BotEvent(j.botId),
-                                               from(Contact::deserializeToPointer(Tools::json_jsonmover(j.eventData, "from"))),
-                                               target(Contact::deserializeToPointer(
-                                                       Tools::json_jsonmover(j.eventData, "target"))),
-                                               subject(Contact::deserializeToPointer(
-                                                       Tools::json_jsonmover(j.eventData, "subject"))) {
+                                              from(j.object->toContactPointer()),
+                                              target(BaseEventData::BuiltInContact(
+                                                      j.eventData["target"]).toContactPointer()),
+                                              subject(j.subject->toContactPointer()) {
     }
 
     BotLeaveEvent::BotLeaveEvent(BaseEventData j) : BotEvent(j.botId),
@@ -179,10 +178,10 @@ namespace MiraiCP {
         KtOperation::ktOperation(KtOperation::MemberJoinRequest, std::move(j));
     }
 
-    // TODO TODO TODO TODO contact 不能用
     MessagePreSendEvent::MessagePreSendEvent(BaseEventData j) : BotEvent(j.botId),
-                                                                 target(Contact::deserializeToPointer(Tools::json_jsonmover(j.eventData, "target"))),
-                                                                 message(MessageChain::deserializationFromMessageJson(j.eventData["message"].get<std::string>())) {
+                                                                target(j.subject->toContactPointer()),
+                                                                message(MessageChain::deserializationFromMessageJson(
+                                                                        j.eventData["message"].get<std::string>())) {
     }
 
     void Event::incomingEvent(BaseEventData j, int type) {
@@ -282,21 +281,41 @@ namespace MiraiCP {
     BaseEventData::BaseEventData(nlohmann::json j) {
         this->botId = j["botId"];
         if (j.contains("subject")) {
-            this->subject = Contact(Tools::json_jsonmover(j, "subject"));
+            this->subject = BuiltInContact(Tools::json_jsonmover(j, "subject"));
         }
         if (j.contains("object")) {
-            this->object = Contact(Tools::json_jsonmover(j, "object"));
+            this->object = BuiltInContact(Tools::json_jsonmover(j, "object"));
         }
         this->eventData = Tools::json_jsonmover(j, "eventData");
     }
 
-    BaseEventData::Contact::Contact(nlohmann::json in_json) {
-        if(in_json.empty()){
+    BaseEventData::BuiltInContact::BuiltInContact(nlohmann::json in_json) {
+        if (in_json.empty()) {
             return;
         }
         this->botId = in_json["botId"];
         this->id = in_json["id"];
-        if(in_json.contains("groupId"))
-            this->groupId= in_json["groupId"];
+        if (in_json.contains("groupId"))
+            this->groupId = in_json["groupId"];
+        this->type = in_json["type"];
+    }
+
+    std::shared_ptr<Contact> BaseEventData::BuiltInContact::toContactPointer() {
+        switch (this->type) {
+            case 1:
+                return std::make_shared<Friend>(this->id, this->botId);
+            case 2:
+                return std::make_shared<Group>(this->id, this->botId);
+            case 3:
+                return std::make_shared<Member>(this->id, this->groupId, this->botId);
+            case 4:
+                // bot
+            case 5:
+                // todo Implement Stranger (ea)
+            case 6:
+                // todo anonymous member
+            default:
+                throw APIException("Type of builtInContact doesn't match or implement", MIRAICP_EXCEPTION_WHERE);
+        }
     }
 } // namespace MiraiCP
