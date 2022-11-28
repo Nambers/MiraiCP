@@ -147,7 +147,7 @@ static_assert(false, "Unsupported platform");
 
 
 // error handling
-#ifndef LIBLOADER
+#ifdef MIRAICP_LIB_SDK
 #define MIRAICP_ERROR_HANDLE(x, y) ErrorHandle0(__FILE__, __LINE__, (x), (y))
 #endif
 

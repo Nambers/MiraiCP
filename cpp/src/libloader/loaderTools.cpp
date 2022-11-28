@@ -121,7 +121,7 @@ namespace LibLoader {
         utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
         auto *c = new jchar[utf16line.size()];
         MIRAICP_DEFER(delete[] c;);
-        for (int i = 0; i < utf16line.size(); i++) {
+        for (size_t i = 0; i < utf16line.size(); i++) {
             c[i] = utf16line[i];
         }
         return JNIEnvs::getEnv()->NewString((jchar *) c, (jsize) utf16line.size());
