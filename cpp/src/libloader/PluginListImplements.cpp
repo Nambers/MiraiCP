@@ -304,7 +304,7 @@ namespace LibLoader {
     inline void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept {
         std::lock_guard lk(PluginListManager::getLock());
 
-        for (int i = 0; i < paths.size(); ++i) {
+        for (size_t i = 0; i < paths.size(); ++i) {
             auto &path = paths[i];
             auto authority = authorities[i];
 
