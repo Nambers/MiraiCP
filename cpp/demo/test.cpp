@@ -49,7 +49,7 @@ class Main : public CPPPlugin {
 public:
     // 配置插件信息
     Main() : CPPPlugin() {}
-    ~Main() override = default;
+    ~Main() noexcept override = default;
 
 public:
     void onEnable() override {

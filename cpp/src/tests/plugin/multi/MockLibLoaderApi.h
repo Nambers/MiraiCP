@@ -23,7 +23,7 @@ using namespace MiraiCP;
 namespace LibLoader::LoaderApi {
     const interface_funcs *get_loader_apis();
 
-    void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis);
+    void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis) noexcept;
 
     void reset_loader_apis();
 } // namespace LibLoader::LoaderApi
@@ -38,6 +38,7 @@ public:
     static void disablePluginById(const MiraiCPString &) {}
     static void pushTask(void (*)()) {}
     static void pushTaskWithId(void (*)(size_t), size_t) {}
+    static void timer(const MiraiCPString &, const MiraiCPString &, size_t) {}
     static void enableAllPlugins() {}
     static void disableAllPlugins() {}
     static void loadNewPlugin(const MiraiCPString &, bool) {}
@@ -49,6 +50,7 @@ public:
             showAllPluginId,
             pushTask,
             pushTaskWithId,
+            timer,
             enablePluginById,
             disablePluginById,
             enableAllPlugins,

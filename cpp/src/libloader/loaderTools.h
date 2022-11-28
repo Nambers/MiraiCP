@@ -44,7 +44,7 @@ namespace LibLoader {
 
     template<typename Val1, typename Val2>
     inline void CASStrong(Val1 &a, Val2 b) {
-        if (a < b) a = b;
+        if (a < (Val1) b) a = (Val1) b;
     }
 
     void FormatPluginListInfo(const MiraiCP::PluginConfig &plugin_config, int *charNum, std::vector<std::string> &out);
