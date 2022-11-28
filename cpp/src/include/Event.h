@@ -767,7 +767,7 @@ namespace MiraiCP {
         }
 
         /// 清空全部配置
-        static void clear() {
+        static void clear() noexcept {
             for (auto &a: processor._all_events_) a.clear();
         }
 

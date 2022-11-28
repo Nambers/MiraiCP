@@ -121,6 +121,18 @@ static_assert(false, "Unsupported platform");
 #define MIRAICP_THROW(T, ...) throw T(__VA_ARGS__, MIRAICP_EXCEPTION_WHERE)
 
 
+// status codes
+#define PLUGIN_NORMAL 0
+#define PLUGIN_ERROR 1
+
+
+// noexcept statements block
+#define MIRAICP_CRITICAL_NOEXCEPT_BLOCK(statements) \
+    try {                                           \
+        statements                                  \
+    } catch (...) { return PLUGIN_ERROR; }
+
+
 // token paste and stringify
 #define TOKEN_PASTE_INNER(X, Y) X##Y
 #define TOKEN_PASTE(X, Y) TOKEN_PASTE_INNER(X, Y)

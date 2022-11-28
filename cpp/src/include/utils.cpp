@@ -16,13 +16,13 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
-#include "utils.h"
 #include "Event.h"
 #include "Exception.h"
 #include "KtOperation.h"
 #include "Logger.h"
 #include "commonTools.h"
 #include "loaderApiInternal.h"
+#include "utils.h"
 #include <iostream>
 
 
@@ -34,99 +34,129 @@ using json = nlohmann::json;
 namespace LibLoader::LoaderApi {
     const interface_funcs *get_loader_apis();
 
-    MIRAICP_EXPORT void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis);
+    MIRAICP_EXPORT void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis) noexcept;
 
-    MIRAICP_EXPORT void reset_loader_apis();
+    MIRAICP_EXPORT void reset_loader_apis() noexcept;
 } // namespace LibLoader::LoaderApi
 
 extern "C" {
 /// 插件开启入口
-MIRAICP_EXPORT void FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
+MIRAICP_EXPORT int FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
     static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
     using namespace MiraiCP;
 
     Event::clear();
     LibLoader::LoaderApi::set_loader_apis(&funcs);
     assert(LibLoader::LoaderApi::get_loader_apis() != nullptr);
-    Logger::logger.info("开始启动插件: " + MiraiCP::CPPPlugin::config.getId());
+    // logger api is set
 
     try {
+        Logger::logger.info("开始启动插件: " + MiraiCP::CPPPlugin::config.getId());
         enrollPlugin();
         // plugin == nullptr 无插件实例加载
         if (CPPPlugin::plugin != nullptr) {
             CPPPlugin::plugin->onEnable();
         }
     } catch (const MiraiCPExceptionBase &e) {
-        std::cerr.flush();
-        e.raise();
-        Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
-        // throw IllegalStateException(e.what(), e.filename, e.lineNum);
+        try {
+            std::cerr.flush();
+            e.raise();
+            Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
+        } catch (...) {}
+        return PLUGIN_ERROR;
     } catch (const std::exception &e) {
-        std::cerr.flush();
-        Logger::logger.error(e.what());
-        Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
-        // throw IllegalStateException(e.what(), MIRAICP_EXCEPTION_WHERE);
+        try {
+            std::cerr.flush();
+            Logger::logger.error(e.what());
+            Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
+        } catch (...) {}
+        return PLUGIN_ERROR;
     } catch (...) {
-        std::cerr.flush();
-        Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
-        // throw IllegalStateException("", MIRAICP_EXCEPTION_WHERE);
+        try {
+            std::cerr.flush();
+            Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
+        } catch (...) {}
+        return PLUGIN_ERROR;
     }
+    return PLUGIN_NORMAL;
 }
 
 
 /// 插件结束(也可能是暂时的disable)
-MIRAICP_EXPORT void FUNC_EXIT() {
+MIRAICP_EXPORT int FUNC_EXIT() {
     static_assert(std::is_same_v<decltype(&FUNC_EXIT), LibLoader::plugin_func_ptr>);
 
     using namespace MiraiCP;
 
-    Logger::logger.info("开始禁用插件：" + MiraiCP::CPPPlugin::config.getId());
-
+    MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.info("开始禁用插件：" + MiraiCP::CPPPlugin::config.getId());)
     Event::clear();
 
-    if (CPPPlugin::plugin != nullptr) CPPPlugin::plugin->onDisable();
+    MIRAICP_CRITICAL_NOEXCEPT_BLOCK(if (CPPPlugin::plugin != nullptr) CPPPlugin::plugin->onDisable();)
     CPPPlugin::plugin.reset();
 
     // 无法保证用户插件析构函数是否调用api，在plugin.reset()之前不可reset loader api
     LibLoader::LoaderApi::reset_loader_apis();
+
+    return PLUGIN_NORMAL;
 }
 
 
 /// 消息解析分流
 /// env != null, call from jni
-MIRAICP_EXPORT void FUNC_EVENT(const MiraiCP::MiraiCPString &c) {
+/// 除了致命问题，该函数不会返回 ERROR
+MIRAICP_EXPORT int FUNC_EVENT(const MiraiCP::MiraiCPString &c) {
     static_assert(std::is_same_v<decltype(&FUNC_EVENT), LibLoader::plugin_event_func_ptr>);
 
     using namespace MiraiCP;
     std::string content = c;
     json j;
+
     try {
         j = json::parse(content);
     } catch (json::parse_error &e) {
-        Logger::logger.error("消息解析分流：格式化json错误");
-        Logger::logger.error("For debug: " + content);
-        Logger::logger.error(e.what());
-        return;
+        MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("消息解析分流：格式化json错误");
+                                        Logger::logger.error("For debug: " + content);
+                                        Logger::logger.error(e.what());)
+        return PLUGIN_NORMAL;
     }
-    int type = j["type"].get<int>();
 
-    if (type != eventTypes::Command && Event::noRegistered(type)) return;
+    int type;
+
     try {
+        if (!j.is_object() || !j.contains("type") || !j["type"].is_number()) {
+            MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("Json格式错误：没有type这一field或这一field不是数字类型");)
+            return PLUGIN_NORMAL;
+        }
+        type = j["type"].get<int>();
+        if (type != eventTypes::Command && Event::noRegistered(type)) return PLUGIN_NORMAL;
+    } catch (...) {
+        MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("Json格式错误：解析json时遇到无法预料的异常");)
+        return PLUGIN_NORMAL;
+    }
+
+    try {
+        // core logic
         Event::incomingEvent(std::move(j), type);
     } catch (json::type_error &e) {
-        Logger::logger.error("json格式化异常,位置C-Handle");
-        Logger::logger.error(e.what());
-        Logger::logger.error("info:", content);
+        MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("json格式化异常,位置：FUNC_EVENT");
+                                        Logger::logger.error(e.what());
+                                        Logger::logger.error(content);)
+        return PLUGIN_NORMAL;
     } catch (MiraiCPExceptionBase &e) {
-        Event::broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(&e));
-        e.raise();
+        MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Event::broadcast<MiraiCPExceptionEvent>(MiraiCPExceptionEvent(&e));
+                                        e.raise();)
+        return PLUGIN_NORMAL;
     } catch (const std::exception &e) {
-        Logger::logger.error(e.what());
-        Logger::logger.error("info:", content);
+        MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error(e.what());
+                                        Logger::logger.error("info:", content);)
+        return PLUGIN_NORMAL;
+    } catch (...) {
+        // 如果产生了无法处理的异常，直接退出插件，return 非0值
+        // loader端将处理这个异常并直接unload绑定的插件
+        // 如果存在其他线程，可能导致段错误
+        return PLUGIN_ERROR;
     }
-    // 如果产生了无法处理的异常，直接退出插件
-    // loader端将处理这个异常并将绑定的线程结束掉
-    // 如果存在其他线程，可能导致段错误
+    return PLUGIN_NORMAL;
 }
 
 /// 获取 Plugin Info
