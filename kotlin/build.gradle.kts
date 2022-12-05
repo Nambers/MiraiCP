@@ -21,7 +21,7 @@ plugins {
     kotlin("jvm") version Version.kotlin apply false
     kotlin("plugin.serialization") version Version.kotlin apply false
     id("com.github.johnrengelman.shadow") version Version.shadowJar apply false
-    id("net.mamoe.mirai-console") version Version.mirai apply false
+    id("net.mamoe.mirai-console") version 2.13.2 apply false
     id("me.him188.maven-central-publish") version Version.mavenCenterPublish apply false
 }
 allprojects {
