@@ -53,7 +53,8 @@ namespace LibLoader {
             } else {
                 FormatPluginListInfo(
                         MiraiCP::PluginConfig{"(unknown)", v->path.c_str(), "(unknown)", "(unknown)", "(unknown)", "(unknown)",
-                                              "(unknown)"}, charNum, ans);
+                                              "(unknown)"},
+                        charNum, ans);
             }
         }
         return PluginInfoStream(ans, charNum);
@@ -234,5 +235,18 @@ namespace LibLoader {
             unload_plugin(*ptr);
             return;
         }
+    }
+
+    std::string &PluginListManager::threadRunningPluginId() {
+        thread_local static std::string id;
+        return id;
+    }
+
+    std::string PluginListManager::getThreadRunningPluginId() {
+        return threadRunningPluginId();
+    }
+
+    void PluginListManager::setThreadRunningPluginId(std::string inId) {
+        threadRunningPluginId() = std::move(inId);
     }
 } // namespace LibLoader

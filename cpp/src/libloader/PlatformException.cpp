@@ -16,10 +16,10 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
+#include "LoaderTaskQueue.h"
 #include "PlatformThreading.h"
 #include "PluginListManager.h"
 #include "commonTools.h"
-
 
 // TODO(Antares): 处理线程池异常
 #if MIRAICP_WINDOWS
@@ -78,9 +78,10 @@ private:
 #else
 
 #include "LoaderLogger.h"
-#include "ThreadController.h"
 #include <csignal>
 #include <thread>
+
+
 thread_local bool alreadyInHandler;
 // 禁止从其他地方构造
 class [[maybe_unused]] SignalHandle {
@@ -111,11 +112,11 @@ private:
         if (alreadyInHandler) {
             return;
         }
-        auto pluginName = LibLoader::ThreadController::getPluginIdFromThreadId(std::this_thread::get_id());
+        auto pluginName = LibLoader::PluginListManager::getThreadRunningPluginId();
         if (pluginName.empty()) {
             // test the thread name is jvm
             char threadName[80];
-            pthread_getname_np(pthread_self(), threadName, 80);
+            platform_get_thread_name(platform_thread_self(), threadName, 80);
             if (strcmp(threadName, "libLoader") != 0) {
                 getOact().sa_sigaction(a, si, unused);
                 return;
