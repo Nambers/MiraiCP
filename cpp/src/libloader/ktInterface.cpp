@@ -30,6 +30,7 @@
 #ifdef LOADER_NATIVE
 #include <cstdio>
 #else
+#include "BS_thread_pool.hpp"
 #include "JNIEnvs.h"
 #include "LoaderMacro.h"
 #include "loaderTools.h"
@@ -71,15 +72,16 @@ void EventImpl(JSTRING content) {
     }
 
     // static lambda，不可以捕获参数！str被声明为static了会被自动捕获
-    static std::function broadcast_func = [](const LibLoader::LoaderPluginConfig &cfg) {
-        if (cfg.handle && cfg.enabled) {
-            LibLoader::ThreadController::getController().submitJob(cfg.getId(), [&cfg]() {
-                cfg.eventFunc(str);
-            });
-        }
-    };
-
-    LibLoader::PluginListManager::run_over_pluginlist(broadcast_func);
+    BS::pool->parallelize_loop()
+//    static std::function broadcast_func = [](const LibLoader::LoaderPluginConfig &cfg) {
+//        if (cfg.handle && cfg.enabled) {
+//            LibLoader::ThreadController::getController().submitJob(cfg.getId(), [&cfg]() {
+//                cfg.eventFunc(str);
+//            });
+//        }
+//    };
+//
+//    LibLoader::PluginListManager::run_over_pluginlist(broadcast_func);
 }
 
 void PluginDisableImpl() {

@@ -309,13 +309,48 @@ namespace BS {
          * @param num_blocks The maximum number of blocks to split the loop into. The default is to use the number of threads in the pool.
          * @return A multi_future object that can be used to wait for all the blocks to finish. If the loop function returns a value, the multi_future object can also be used to obtain the values returned by each block.
          */
+        template<typename It, typename R = std::invoke_result_t<std::decay_t<decltype(*std::declval<It>())>>>
+        [[nodiscard]] multi_future<R> run_over(It &&begin, It &&end, size_t inSize) {
+            It ptr = begin;
+            if (inSize) {
+                multi_future<R> mf(inSize);
+                {
+                    std::scoped_lock lk(tasks_mutex);
+                    size_t i = 0;
+                    while (ptr != end && i < inSize) {
+                        mf[i++] = submit_nolock(*ptr);
+                    }
+                }
+                return mf;
+            } else {
+                return multi_future<R>();
+            }
+        }
+
+        /**
+         * @brief Parallelize a loop by automatically splitting it into blocks and submitting each block separately to the queue. Returns a multi_future object that contains the futures for all of the blocks.
+         *
+         * @tparam F The type of the function to loop through.
+         * @tparam T1 The type of the first index in the loop. Should be a signed or unsigned integer.
+         * @tparam T2 The type of the index after the last index in the loop. Should be a signed or unsigned integer. If T1 is not the same as T2, a common type will be automatically inferred.
+         * @tparam T The common type of T1 and T2.
+         * @tparam R The return value of the loop function F (can be void).
+         * @param first_index The first index in the loop.
+         * @param index_after_last The index after the last index in the loop. The loop will iterate from first_index to (index_after_last - 1) inclusive. In other words, it will be equivalent to "for (T i = first_index; i < index_after_last; ++i)". Note that if index_after_last == first_index, no blocks will be submitted.
+         * @param loop The function to loop through. Will be called once per block. Should take exactly two arguments: the first index in the block and the index after the last index in the block. loop(start, end) should typically involve a loop of the form "for (T i = start; i < end; ++i)".
+         * @param num_blocks The maximum number of blocks to split the loop into. The default is to use the number of threads in the pool.
+         * @return A multi_future object that can be used to wait for all the blocks to finish. If the loop function returns a value, the multi_future object can also be used to obtain the values returned by each block.
+         */
         template<typename F, typename T1, typename T2, typename T = std::common_type_t<T1, T2>, typename R = std::invoke_result_t<std::decay_t<F>, T, T>>
         [[nodiscard]] multi_future<R> parallelize_loop(const T1 first_index, const T2 index_after_last, F &&loop, const size_t num_blocks = 0) {
             blocks blks(first_index, index_after_last, num_blocks ? num_blocks : thread_count);
             if (blks.get_total_size() > 0) {
                 multi_future<R> mf(blks.get_num_blocks());
-                for (size_t i = 0; i < blks.get_num_blocks(); ++i)
-                    mf[i] = submit(std::forward<F>(loop), blks.start(i), blks.end(i));
+                {
+                    std::scoped_lock lk(tasks_mutex);
+                    for (size_t i = 0; i < blks.get_num_blocks(); ++i)
+                        mf[i] = submit_nolock(std::forward<F>(loop), blks.start(i), blks.end(i));
+                }
                 return mf;
             } else {
                 return multi_future<R>();
@@ -400,6 +435,19 @@ namespace BS {
         }
 
         /**
+         * @brief Same as push_task, but without locking the mutex.
+         */
+        template<typename F, typename... A>
+        void push_task_nolock(F &&task, A &&...args) {
+            std::function<void()> task_function = std::bind(std::forward<F>(task), std::forward<A>(args)...);
+            {
+                tasks.push(std::move(task_function));
+            }
+            ++tasks_total;
+            task_available_cv.notify_one();
+        }
+
+        /**
          * @brief Reset the number of threads in the pool. Waits for all currently running tasks to be completed, then destroys all threads in the pool and creates a new thread pool with the new number of threads. Any tasks that were waiting in the queue before the pool was reset will then be executed by the new threads. If the pool was paused before resetting it, the new pool will be paused as well.
          *
          * @param thread_count_ The number of threads to use. The default value is the total number of hardware threads available, as reported by the implementation. This is usually determined by the number of cores in the CPU. If a core is hyperthreaded, it will count as two threads.
@@ -430,6 +478,34 @@ namespace BS {
             auto task_promise = new std::promise<R>;
             auto future = task_promise->get_future();
             push_task(
+                    [task_promise](auto &&task_inner, auto &&...argss) {
+                        try {
+                            if constexpr (std::is_void_v<R>) {
+                                std::invoke(std::forward<decltype(task_inner)>(task_inner), std::forward<decltype(argss)>(argss)...);
+                                task_promise->set_value();
+                            } else {
+                                task_promise->set_value(std::invoke(std::forward<decltype(task_inner)>(task_inner), std::forward<decltype(argss)>(argss)...));
+                            }
+                        } catch (...) {
+                            try {
+                                task_promise->set_exception(std::current_exception());
+                            } catch (...) {
+                            }
+                        }
+                        delete task_promise;
+                    },
+                    std::forward<F>(task), std::forward<A>(args)...);
+            return future;
+        }
+
+        /**
+         * @brief Same as submit, but without locking mutex.
+         */
+        template<typename F, typename... A, typename R = std::invoke_result_t<std::decay_t<F>, std::decay_t<A>...>>
+        [[nodiscard]] std::future<R> submit_nolock(F &&task, A &&...args) {
+            auto task_promise = new std::promise<R>;
+            auto future = task_promise->get_future();
+            push_task_nolock(
                     [task_promise](auto &&task_inner, auto &&...argss) {
                         try {
                             if constexpr (std::is_void_v<R>) {

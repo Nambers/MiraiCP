@@ -79,6 +79,14 @@ namespace LibLoader {
 
     public:
         static void run_over_pluginlist(const std::function<void(const LoaderPluginConfig &)> &f);
+
+    private:
+        static std::string& threadRunningPluginId();
+
+    public:
+        static std::string getThreadRunningPluginId();
+
+        static void setThreadRunningPluginId(std::string inId);
     };
 } // namespace LibLoader
 

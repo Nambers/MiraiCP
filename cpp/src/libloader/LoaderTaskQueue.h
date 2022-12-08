@@ -18,9 +18,9 @@
 #define MIRAICP_PRO_LOADERTASKQUEUE_H
 
 
+#include <mutex>
 #include <queue>
 #include <string>
-#include <mutex>
 
 namespace LibLoader {
     enum struct LOADER_TASKS {
@@ -40,6 +40,11 @@ namespace LibLoader {
 
     extern std::queue<loadertask> loader_thread_task_queue;
     extern std::recursive_mutex task_mtx;
+
+    inline void sendPluginException(std::string plugin_id) {
+        std::lock_guard lk(task_mtx);
+        loader_thread_task_queue.emplace(LOADER_TASKS::EXCEPTION_PLUGINEND, std::move(plugin_id));
+    }
 } // namespace LibLoader
 
 
