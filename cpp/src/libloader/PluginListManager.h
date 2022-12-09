@@ -42,7 +42,7 @@ namespace LibLoader {
         ~PluginListManager() = delete;
 
     public:
-        /// 为保证一些外部操作是原子操作，允许在外部获取所对象的引用
+        /// 为保证一些外部操作是原子操作，允许在外部获取锁对象的引用
         static auto &getLock() { return pluginlist_mtx; }
 
     public:
@@ -81,12 +81,21 @@ namespace LibLoader {
         static void run_over_pluginlist(const std::function<void(const LoaderPluginConfig &)> &f);
 
     private:
-        static std::string& threadRunningPluginId();
+        static std::string &threadRunningPluginId();
 
     public:
-        static std::string getThreadRunningPluginId();
+        static std::string getThreadRunningPluginId(){
+            return threadRunningPluginId();
+        }
 
-        static void setThreadRunningPluginId(std::string inId);
+        static void setThreadRunningPluginId(std::string inId){
+            threadRunningPluginId() = std::move(inId);
+        }
+
+        static void unsetThreadRunningPluginId() { setThreadRunningPluginId(""); }
+
+    public:
+        static void broadcastToAllEnabledPlugins(const std::shared_ptr<MiraiCP::MiraiCPString> &strPtr);
     };
 } // namespace LibLoader
 
