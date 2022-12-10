@@ -24,11 +24,38 @@
 
 
 namespace LibLoader {
-    plugin_func_ptr get_plugin_disable_ptr(PluginData &plugin);
+    class Plugin : public PluginData {
+        std::shared_mutex _mtx;
 
-    void callEntranceFuncAdmin(plugin_entrance_func_ptr func);
+        plugin_handle loadPluginInternal() noexcept;
 
-    void callEntranceFuncNormal(plugin_entrance_func_ptr func);
+        void enablePluginInternal();
+
+        void disablePluginInternal();
+
+    public:
+        void load_plugin(bool alsoEnablePlugin);
+
+        void enable_plugin();
+
+        void callEntranceFuncAdmin();
+
+        void callEntranceFuncNormal();
+
+        /// 只应被线程池worker调用
+        void pushEvent_worker(const MiraiCP::MiraiCPString& event);
+
+        void unload_plugin();
+
+        void disable_plugin();
+
+    public:
+        static PluginFuncAddrData testSymbolExistance(plugin_handle handle, const std::string &path);
+    };
+
+    plugin_func_ptr get_plugin_disable_ptr(Plugin &plugin);
+
+
 
     /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用一次
     /// 实际的入口，id_plugin_list 必须在这里初始化，该函数只会被调用一次
@@ -36,14 +63,11 @@ namespace LibLoader {
 
     void loadNewPluginByPath(const std::string &_path, bool activateNow);
 
-    void enable_plugin(PluginData &plugin);
 
-    void disable_plugin(PluginData &plugin);
 
-    void load_plugin(PluginData &plugin, bool alsoEnablePlugin);
 
-    void unload_plugin(PluginData &plugin);
 
-    void unload_when_exception(PluginData &plugin);
+
+    void unload_when_exception(Plugin &plugin);
 } // namespace LibLoader
 #endif //MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H
