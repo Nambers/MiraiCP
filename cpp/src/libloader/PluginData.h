@@ -18,8 +18,9 @@
 #define MIRAICP_PRO_PLUGINDATA_H
 
 
-#include "commonTypes.h"
 #include "LoaderLogger.h"
+#include "commonTypes.h"
+#include <shared_mutex>
 
 
 namespace LibLoader {
@@ -28,43 +29,50 @@ namespace LibLoader {
         PLUGIN_AUTHORITY_ADMIN = 1,
     };
 
-    struct PluginData {
+    struct PluginFuncAddrData {
+        plugin_entrance_func_ptr entrance = nullptr;
+        plugin_event_func_ptr eventFunc = nullptr;
+        plugin_func_ptr exit = nullptr;
+        plugin_info_func_ptr configFunc = nullptr;
+
+        void _resetAddrData() {
+            PluginFuncAddrData tmp;
+            std::swap(*this, tmp);
+        }
+    };
+
+    class PluginData : protected PluginFuncAddrData {
+    protected:
         const std::string path;
         plugin_handle handle = nullptr;
-        plugin_event_func_ptr eventFunc = nullptr;
-        plugin_info_func_ptr config = nullptr;
+
         PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;
         bool enabled = false;
-        // std::string actualPath = path;
 
-        const std::string getId() const {
+        [[nodiscard]] std::string _getId() const {
             if (!handle) {
                 logger.error("致命错误：插件未加载或已经被卸载，请联系MiraiCP开发者并提供您的历史日志");
                 return "";
             }
-            return config()->getId();
+            return configFunc()->getId();
         }
 
-        void load(plugin_handle _handle, plugin_event_func_ptr _eventFunc, plugin_info_func_ptr _config) {
+        void _load(plugin_handle _handle, const PluginFuncAddrData &funcAddrs) {
             handle = _handle;
-            eventFunc = _eventFunc;
-            config = _config;
+            *static_cast<PluginFuncAddrData *>(this) = funcAddrs;
         }
 
-        void unload() {
+        void _unload() {
             // cannot modify path
             handle = nullptr;
-            eventFunc = nullptr;
-            config = nullptr;
-            // do not modify authority
-            enabled = false;
+            _resetAddrData();
         }
 
-        void enable() {
+        void _enable() {
             enabled = true;
         }
 
-        void disable() {
+        void _disable() {
             enabled = false;
         }
     };
