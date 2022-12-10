@@ -152,7 +152,7 @@ namespace LibLoader {
 
     // enable的前提是该插件已经被加载进内存，但尚未执行初始化函数，或者执行了Exit
     // 不涉及插件列表的修改；不会修改插件权限
-    void enable_plugin(LoaderPluginConfig &plugin) {
+    void enable_plugin(PluginData &plugin) {
         if (plugin.enabled) {
             throw PluginAlreadyEnabledException(plugin.getId(), MIRAICP_EXCEPTION_WHERE);
         }
@@ -168,7 +168,7 @@ namespace LibLoader {
 
         plugin.enable();
 
-        // dev:注意：plugin虽然被分配在一个固定地址（map中的值是shared_ptr，内部的 LoaderPluginConfig 不会被复制），
+        // dev:注意：plugin虽然被分配在一个固定地址（map中的值是shared_ptr，内部的 PluginData 不会被复制），
         // 但这里引用plugin地址的话，当shared_ptr在某个线程中被释放掉，还是可能会产生段错误
         // 因为我们无法保证getController().addThread()一定会把提交的这个函数在plugin被销毁前处理掉，
         // 这里按引用捕获plugin可能导致段错误！
@@ -182,14 +182,14 @@ namespace LibLoader {
     }
 
     // 不涉及插件列表的修改；不会修改插件权限
-    void disable_plugin(LoaderPluginConfig &plugin) {
+    void disable_plugin(PluginData &plugin) {
         auto disable_func = get_plugin_disable_ptr(plugin);
         if (disable_func == nullptr) return;
         ThreadController::getController().callThreadEnd(plugin.getId(), disable_func);
         plugin.disable();
     }
 
-    plugin_func_ptr get_plugin_disable_ptr(LoaderPluginConfig &plugin) {
+    plugin_func_ptr get_plugin_disable_ptr(PluginData &plugin) {
         if (nullptr == plugin.handle) {
             logger.error("plugin at location " + plugin.path + " is not loaded!");
             return nullptr;
@@ -206,7 +206,7 @@ namespace LibLoader {
         return ptr;
     }
 
-    inline plugin_handle loadPluginInternal(LoaderPluginConfig &plugin) noexcept {
+    inline plugin_handle loadPluginInternal(PluginData &plugin) noexcept {
         auto actualPath = plugin.path;
 #if MIRAICP_WINDOWS
         auto from = std::filesystem::path(plugin.path);
@@ -232,7 +232,7 @@ namespace LibLoader {
     }
 
     // 不涉及插件列表的修改；不会修改插件权限
-    void load_plugin(LoaderPluginConfig &plugin, bool alsoEnablePlugin) {
+    void load_plugin(PluginData &plugin, bool alsoEnablePlugin) {
         if (plugin.handle != nullptr) {
             throw PluginAlreadyLoadedException(plugin.getId(), MIRAICP_EXCEPTION_WHERE);
         }
@@ -255,7 +255,7 @@ namespace LibLoader {
 
     // unload将释放插件的内存
     // 不涉及插件列表的修改；不会修改插件权限
-    void unload_plugin(LoaderPluginConfig &plugin) {
+    void unload_plugin(PluginData &plugin) {
         if (nullptr == plugin.handle) {
             // DON'T CALL getId() if plugin is disabled!!!
             logger.warning("plugin at path: " + plugin.path + " is already unloaded");
@@ -273,7 +273,7 @@ namespace LibLoader {
         plugin.unload();
     }
 
-    void unload_when_exception(LoaderPluginConfig &plugin) {
+    void unload_when_exception(PluginData &plugin) {
         if (nullptr == plugin.handle) {
             logger.warning("plugin at location " + plugin.path + " is already unloaded");
             return;
@@ -290,7 +290,7 @@ namespace LibLoader {
     ////////////////////////////////////
 
     void loadNewPluginByPath(const std::string &_path, bool activateNow) {
-        LoaderPluginConfig cfg{_path};
+        PluginData cfg{_path};
 
         load_plugin(cfg, activateNow);
 
@@ -308,7 +308,7 @@ namespace LibLoader {
             auto &path = paths[i];
             auto authority = authorities[i];
 
-            LoaderPluginConfig cfg{path};
+            PluginData cfg{path};
 
             auto timestamp = std::chrono::system_clock::now();
 
