@@ -18,13 +18,13 @@
 #define MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H
 
 
-#include "LoaderPluginConfig.h"
+#include "PluginData.h"
 #include "commonTypes.h"
 #include <string>
 
 
 namespace LibLoader {
-    plugin_func_ptr get_plugin_disable_ptr(LoaderPluginConfig &plugin);
+    plugin_func_ptr get_plugin_disable_ptr(PluginData &plugin);
 
     void callEntranceFuncAdmin(plugin_entrance_func_ptr func);
 
@@ -36,14 +36,14 @@ namespace LibLoader {
 
     void loadNewPluginByPath(const std::string &_path, bool activateNow);
 
-    void enable_plugin(LoaderPluginConfig &plugin);
+    void enable_plugin(PluginData &plugin);
 
-    void disable_plugin(LoaderPluginConfig &plugin);
+    void disable_plugin(PluginData &plugin);
 
-    void load_plugin(LoaderPluginConfig &plugin, bool alsoEnablePlugin);
+    void load_plugin(PluginData &plugin, bool alsoEnablePlugin);
 
-    void unload_plugin(LoaderPluginConfig &plugin);
+    void unload_plugin(PluginData &plugin);
 
-    void unload_when_exception(LoaderPluginConfig &plugin);
+    void unload_when_exception(PluginData &plugin);
 } // namespace LibLoader
 #endif //MIRAICP_PRO_PLUGINLISTIMPLEMENTS_H

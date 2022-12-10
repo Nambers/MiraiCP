@@ -45,7 +45,7 @@ namespace LibLoader {
         return ans;
     }
 
-    std::string PluginListManager::pluginListInfo(const std::function<bool(const LoaderPluginConfig &)> &filter) {
+    std::string PluginListManager::pluginListInfo(const std::function<bool(const PluginData &)> &filter) {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans = {"id", "name or path", "author", "description", "\n"};
         int charNum[4] = {2 + 1, 12 + 1, 6 + 1, 11 + 1};
@@ -75,7 +75,7 @@ namespace LibLoader {
     /// 总之，addNewPlugin 只是把plugin加入到PluginList中，其他什么都不做
     /// cfg 中已经存储了handle，id等信息
     /// 如果插件id重复则应该取消加载
-    bool PluginListManager::addNewPlugin(LoaderPluginConfig cfg) {
+    bool PluginListManager::addNewPlugin(PluginData cfg) {
         std::lock_guard lk(pluginlist_mtx);
 
         if (cfg.handle == nullptr || cfg.config == nullptr) {
@@ -85,7 +85,7 @@ namespace LibLoader {
         auto id = cfg.getId();
         auto handle = cfg.handle;
         auto path = cfg.path;
-        auto pr = id_plugin_list.insert(std::make_pair(id, std::make_shared<LoaderPluginConfig>(std::move(cfg))));
+        auto pr = id_plugin_list.insert(std::make_pair(id, std::make_shared<PluginData>(std::move(cfg))));
 
         if (!pr.second) {
             logger.error("Plugin with id: " + id + " Already exists");
@@ -133,7 +133,7 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         unloadAll();
 
-        std::vector<std::shared_ptr<LoaderPluginConfig>> cfgs;
+        std::vector<std::shared_ptr<PluginData>> cfgs;
         for (auto &&[k, v]: id_plugin_list) {
             cfgs.emplace_back(v);
         }
@@ -220,7 +220,7 @@ namespace LibLoader {
 
     /// 遍历所有插件，by id（默认是不会by path的，path是用于id变更的特殊情况的备份）
     /// 注意：不会检查插件是否enable，请自行检查
-    void PluginListManager::run_over_pluginlist(const std::function<void(const LoaderPluginConfig &)> &f) {
+    void PluginListManager::run_over_pluginlist(const std::function<void(const PluginData &)> &f) {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
             f(*v);

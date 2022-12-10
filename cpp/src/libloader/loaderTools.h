@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_LOADERTOOLS_H
 
 #include "LoaderMacro.h"
-#include "LoaderPluginConfig.h"
+#include "PluginData.h"
 #include <fstream>
 #include <string>
 #include <thread>

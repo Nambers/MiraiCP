@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MIRAICP_PRO_LOADERPLUGINCONFIG_H
-#define MIRAICP_PRO_LOADERPLUGINCONFIG_H
+#ifndef MIRAICP_PRO_PLUGINDATA_H
+#define MIRAICP_PRO_PLUGINDATA_H
 
 
 #include "commonTypes.h"
@@ -28,7 +28,7 @@ namespace LibLoader {
         PLUGIN_AUTHORITY_ADMIN = 1,
     };
 
-    struct LoaderPluginConfig {
+    struct PluginData {
         const std::string path;
         plugin_handle handle = nullptr;
         plugin_event_func_ptr eventFunc = nullptr;
@@ -69,4 +69,4 @@ namespace LibLoader {
         }
     };
 } // namespace LibLoader
-#endif //MIRAICP_PRO_LOADERPLUGINCONFIG_H
+#endif //MIRAICP_PRO_PLUGINDATA_H

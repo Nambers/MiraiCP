@@ -18,14 +18,14 @@
 #define MIRAICP_PRO_PLUGINLISTMANAGER_H
 
 
-#include "LoaderPluginConfig.h"
+#include "PluginData.h"
 #include "commonTypes.h"
 #include <mutex>
 
 
 namespace LibLoader {
     class PluginListManager {
-        typedef std::unordered_map<std::string, std::shared_ptr<LoaderPluginConfig>> PluginList;
+        typedef std::unordered_map<std::string, std::shared_ptr<PluginData>> PluginList;
 
     private:
         static PluginList id_plugin_list;
@@ -48,7 +48,7 @@ namespace LibLoader {
     public:
         static std::vector<std::string> getAllPluginId();
         // filter == true
-        static std::string pluginListInfo(const std::function<bool(const LoaderPluginConfig &)> &);
+        static std::string pluginListInfo(const std::function<bool(const PluginData &)> &);
         static std::vector<std::string> getAllPluginPath();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
@@ -57,7 +57,7 @@ namespace LibLoader {
         static bool empty() { return id_plugin_list.empty(); }
 
     public: // load
-        static bool addNewPlugin(LoaderPluginConfig cfg);
+        static bool addNewPlugin(PluginData cfg);
 
     public: // unload
         static void unloadById(const std::string &);
@@ -78,7 +78,7 @@ namespace LibLoader {
         static void disableByIdVanilla(const std::string &);
 
     public:
-        static void run_over_pluginlist(const std::function<void(const LoaderPluginConfig &)> &f);
+        static void run_over_pluginlist(const std::function<void(const PluginData &)> &f);
 
     private:
         static std::string &threadRunningPluginId();
