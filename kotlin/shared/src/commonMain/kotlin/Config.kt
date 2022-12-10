@@ -150,12 +150,13 @@ object Config {
     @Serializable
     data class ImgInfo(
         val size: Long,
-        val width: Int,
-        val height: Int,
+        val width: Int?,
+        val height: Int?,
         val md5: String? = null,
         val url: String? = null,
-        val imageid: String? = null,
+        val imageId: String? = null,
         val type: Int? = null,
+        val isEmoji: Boolean? = null,
     )
 
     @Serializable

@@ -27,13 +27,13 @@ namespace MiraiCP {
     using json = nlohmann::json;
     nlohmann::json SingleMessage::toJson() const {
         nlohmann::json re;
-        re["key"] = "miraicode";
+        re["type"] = "miraicode";
         re["content"] = this->toMiraiCode();
         return re;
     }
 
     // 静态成员
-    const char *const*const SingleMessage::messageType = SingleMessageType::messageTypeInternal + 5;
+    const char *const *const SingleMessage::messageType = SingleMessageType::messageTypeInternal + 6;
 
     QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
         if (m.internalType != type()) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.internalType) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
@@ -41,18 +41,18 @@ namespace MiraiCP {
     }
 
     nlohmann::json PlainText::toJson() const {
-        return {{"key", "plaintext"}, {"content", content}};
+        return {{"type",    SingleMessage::messageType[this->internalType]},
+                {"content", content}};
     }
 
     int SingleMessage::getKey(const std::string &value) {
         for (auto index = Types::Begin; index != Types::End; ++index) {
-            if (Tools::iequal(messageType[index], value)) return index;
+            if (Tools::iequal(SingleMessageType::messageTypeInternal[index], value)) return index - 6;
         }
         return Types::UnsupportedMessage_t; // default to unSupportMessage
     }
 
     std::string SingleMessage::toMiraiCode() const {
-        // Logger::logger.info("base");
         if (internalType > 0)
             if (internalType == Types::At_t)
                 return "[mirai:at:" + content + "] ";
@@ -71,7 +71,8 @@ namespace MiraiCP {
         this->content = sg.content;
     }
     nlohmann::json At::toJson() const {
-        return {{"key", "at"}, {"content", std::to_string(target)}};
+        return {{"type",   SingleMessage::messageType[this->internalType]},
+                {"target", std::to_string(target)}};
     }
     At::At(const SingleMessage &sg) : SingleMessage(sg) {
         if (sg.internalType != type())
@@ -80,10 +81,16 @@ namespace MiraiCP {
         this->target = std::stol(sg.content);
     }
     nlohmann::json AtAll::toJson() const {
-        return {{"key", "atall"}};
+        return {{"type", SingleMessage::messageType[this->internalType]}};
     }
     nlohmann::json Image::toJson() const {
-        return {{"key", "image"}, {"imageid", id}, {"size", size}, {"width", width}, {"height", height}, {"type", imageType}};
+        return {{"type",    SingleMessage::messageType[this->internalType]},
+                {"imageId", id},
+                {"size",    size},
+                {"width",   width},
+                {"height",  height},
+                {"type",    imageType},
+                {"isEmoji", isEmoji}};
     }
 
     bool Image::isUploaded(QQID botid) {
@@ -95,10 +102,16 @@ namespace MiraiCP {
         return re == "true";
     }
     nlohmann::json FlashImage::toJson() const {
-        return {{"key", "Flashimage"}, {"imageid", id}, {"size", size}, {"width", width}, {"height", height}, {"type", imageType}};
+        return {{"type",    SingleMessage::messageType[this->internalType]},
+                {"imageId", id},
+                {"size",    size},
+                {"width",   width},
+                {"height",  height},
+                {"type",    imageType}};
     }
     nlohmann::json LightApp::toJson() const {
-        return {{"key", "lightapp"}, {"content", content}};
+        return {{"type",    SingleMessage::messageType[this->internalType]},
+                {"content", content}};
     }
     LightApp::LightApp(const SingleMessage &sg) : SingleMessage(sg) {
         // todo(Antares): this was originally 3; why?
@@ -110,7 +123,9 @@ namespace MiraiCP {
         return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
     }
     nlohmann::json ServiceMessage::toJson() const {
-        return {{"key", "servicemessage"}, {"content", content}, {"id", id}};
+        return {{"type",    SingleMessage::messageType[this->internalType]},
+                {"content", content},
+                {"id",      id}};
     }
     std::string ServiceMessage::toMiraiCode() const {
         return "[mirai:service" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
@@ -121,10 +136,12 @@ namespace MiraiCP {
                     "Cannot convert(" + getTypeString(sg.internalType) + ") to ServiceMessage", MIRAICP_EXCEPTION_WHERE);
     }
     nlohmann::json Face::toJson() const {
-        return {{"key", "face"}, {"id", id}};
+        return {{"type", SingleMessage::messageType[this->internalType]},
+                {"id",   id}};
     }
     nlohmann::json UnSupportMessage::toJson() const {
-        return {{"key", "unsupportmessage"}, {"content", content}};
+        return {{"type",    SingleMessage::messageType[this->internalType]},
+                {"content", content}};
     }
 
     //远程文件(群文件)
@@ -221,7 +238,7 @@ namespace MiraiCP {
             j["finfo"]["lastmodifytime"] = this->finfo->lastmodifytime;
         }
         j["id"] = this->id;
-        j["internalid"] = this->internalid; // todo(Antares): please check: is "internalid" or "internalId"?
+        j["internalid"] = this->internalid;
         j["name"] = this->name;
         j["size"] = this->size;
         if (this->path.has_value())
@@ -241,6 +258,7 @@ namespace MiraiCP {
         this->width = j["width"];
         this->height = j["height"];
         this->imageType = j["type"];
+        this->isEmoji = j["isEmoji"];
     }
 
     Image Image::deserialize(const std::string &str) {

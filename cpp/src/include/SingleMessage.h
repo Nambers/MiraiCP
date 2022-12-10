@@ -32,8 +32,10 @@ namespace MiraiCP {
     // todo(Antares): delete these after the whole refactor is finished
 #define SINGLEMESSAGE_REFACTOR_ASSERTION(x, y) static_assert((x) == (y), "static assertion failed when refactoring code")
     namespace SingleMessageType {
+        // id 小于 0 的是不能直接发送的消息(仅在接收的 MessageChain 里出现)
         MIRAICP_ITERABLE_ENUM(            // NOLINT(cert-dcl21-cpp)
-                -5,                       // begin at
+                -6,                       // begin at
+                MessageSource_t,          // -6
                 MarketFace_t,             // -5
                 OnlineForwardedMessage_t, // -4
                 OnlineAudio_t,            // -3
@@ -52,19 +54,20 @@ namespace MiraiCP {
         )
 
         constexpr const char *messageTypeInternal[] = {
+                "MessageSource",        // -6
                 "MarketFace",             // -5
                 "OnlineForwardedMessage", // -4
                 "OnlineAudio",            // -3
                 "QuoteReply",             // -2
-                "unSupportMessage",       // -1
-                "plainText",              // 0      <-- messageType is here
-                "at",                     // 1
-                "atAll",                  // 2
-                "image",                  // 3
-                "app",                    // 4
-                "service",                // 5
-                "file",                   // 6
-                "face",                   // 7
+                "UnsupportedMessage",       // -1
+                "PlainText",              // 0      <-- messageType is here
+                "At",                     // 1
+                "AtAll",                  // 2
+                "Image",                  // 3
+                "LightApp",               // 4
+                "SimpleServiceMessage",   // 5
+                "FileMessage",            // 6
+                "Face",                   // 7
                 "FlashImage",             // 8
                 "MusicShare",             // 9
         };
@@ -234,6 +237,7 @@ namespace MiraiCP {
         int width;
         /// 长度, 默认0, 单位px
         int height;
+        bool isEmoji;
         /*!
          * @brief 图片类型
          *  - 0 png
@@ -271,13 +275,11 @@ namespace MiraiCP {
         * @detail 图片miraiCode格式例子, `[mirai:image:{图片id}.jpg]`
         * 可以用这个正则表达式找出id `\\[mirai:image:(.*?)\\]`
         */
-        explicit Image(std::string imageId, size_t size = 0, int width = 0, int height = 0, int type = 5)
-            : SingleMessage(Image::type(), std::move(imageId)) {
-            this->id = content; // todo(Antares): 实际上重复的属性
-            this->size = size;
-            this->width = width;
-            this->height = height;
-            this->imageType = type;
+        explicit Image(std::string imageId, size_t size = 0, int width = 0, int height = 0, int type = 5,
+                       bool isEmoji = false)
+                : SingleMessage(Image::type(), std::move(imageId)), id(imageId), size(size), width(width),
+                  height(height), isEmoji(isEmoji), imageType(type) {
+            // todo(Antares): 实际上重复的属性 id 和 content
         }
 
         /// 刷新信息(获取图片下载Url,md5, size)

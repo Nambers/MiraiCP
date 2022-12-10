@@ -42,6 +42,7 @@ import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.isUploaded
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
+import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
@@ -759,6 +760,7 @@ object PublicShared {
             event(toEventData())
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
+            logger.info(this.message.serializeToJsonString())
             event(toEventData())
         }
         eventChannel.subscribeAlways<GroupTempMessageEvent> {
