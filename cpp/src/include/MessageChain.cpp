@@ -200,7 +200,69 @@ namespace MiraiCP {
     }
 
     MessageChain MessageChain::deserializationFromMessageJson(const json &j) {
-        // TODO TODO TODO TODO 重新实现
-        throw "noImpl";
+        MessageChain mc;
+        if (j.empty()) return mc;
+        if (!j.is_array())
+            throw IllegalArgumentException(std::string(__func__) + "输入的json应当是数组类型", MIRAICP_EXCEPTION_WHERE);
+        for (auto &node: j.get<json::array_t>()) {
+            switch (SingleMessage::getKey(node["type"])) {
+                case SingleMessageType::MusicShare_t:
+                    mc.add(MusicShare(node["kind"], node["title"], node["summary"], node["jumpUrl"], node["pictureUrl"],
+                                      node["musicUrl"], node["brief"]));
+                    break;
+                case SingleMessageType::ServiceMessage_t:
+                    mc.add(ServiceMessage(node["serviceId"], node["content"]));
+                    break;
+                case SingleMessageType::LightApp_t:
+                    mc.add(LightApp(node["content"]));
+                    break;
+                case SingleMessageType::OnlineAudio_t:
+                    mc.add(OnlineAudio(node["filename"], node["fileMd5"], node["fileSize"], node["codec"],
+                                       node["length"],
+                                       node["urlForDownload"]));
+                    break;
+                case SingleMessageType::MarketFace_t:
+                    mc.add(MarketFace(node["delegate"]["faceId"]));
+                    break;
+                case SingleMessageType::RemoteFile_t:
+                    // note: RemoteFile::deserializeFromString() uses j["finfo"]["size"], which is different from here.
+                    mc.add(RemoteFile(node["id"], node["internalId"], node["name"], node["size"]));
+                    break;
+                case SingleMessageType::MessageSource_t:
+                    mc.add(MessageSource::deserializeFromString(node.dump()));
+                    break;
+                case SingleMessageType::QuoteReply_t:
+                    mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"])));
+                    break;
+                case SingleMessageType::UnsupportedMessage_t:
+                    mc.add(UnSupportMessage(node["struct"].dump()));
+                    break;
+                case SingleMessageType::PlainText_t:
+                    mc.add(PlainText(node["content"].get<std::string>()));
+                    break;
+                case SingleMessageType::At_t:
+                    mc.add(At(node["target"]));
+                    break;
+                case SingleMessageType::AtAll_t:
+                    mc.add(AtAll());
+                    break;
+                case SingleMessageType::Image_t:
+                    mc.add(Image(node["imageId"], node["size"], node["width"], node["height"], node["imageType"],
+                                 node["isEmoji"]));
+                    break;
+                case SingleMessageType::Face_t:
+                    mc.add(Face(node["id"]));
+                    break;
+                case SingleMessageType::FlashImage_t:
+                    mc.add(FlashImage(node["imageId"]));
+                    break;
+                default:
+                    Logger::logger.warning(
+                            "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在MessageSource解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: node:" +
+                            node.dump());
+                    mc.add(UnSupportMessage(node.dump()));
+            }
+        }
+        return mc;
     }
 } // namespace MiraiCP
