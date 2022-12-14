@@ -20,8 +20,8 @@
 #include "BS_thread_pool.hpp"
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
+#include "Plugin.h"
 #include "PluginConfig.h"
-#include "PluginListImplements.h"
 #include "PluginListManager.h"
 #include "ThreadController.h"
 #include "commonTools.h"
@@ -107,16 +107,16 @@ namespace LibLoader {
     /// 这部分是一些工具函数、对象
 
     /// 该对象的地址将被用于传递给MiraiCP插件
-    constexpr static LoaderApi::interface_funcs interfaces = LoaderApi::collect_interface_functions(true);
+    constexpr static LoaderApi::interface_funcs adminInterfaces = LoaderApi::collect_interface_functions(true);
 
-    constexpr static LoaderApi::interface_funcs normal_interfaces = LoaderApi::collect_interface_functions(false);
+    constexpr static LoaderApi::interface_funcs normalInterfaces = LoaderApi::collect_interface_functions(false);
 
     void Plugin::callEntranceFuncAdmin() {
-        entrance(interfaces);
+        entrance(adminInterfaces);
     }
 
     void Plugin::callEntranceFuncNormal() {
-        entrance(normal_interfaces);
+        entrance(normalInterfaces);
     }
 
     inline bool checkPluginInfoValid(plugin_info_func_ptr info_ptr) {
@@ -146,22 +146,105 @@ namespace LibLoader {
 
     ////////////////////////////////////
 
-    // enable的前提是该插件已经被加载进内存，但尚未执行初始化函数，或者执行了Exit
-    // 不涉及插件列表的修改；不会修改插件权限
-    void Plugin::enable_plugin() {
+    // 将插件加载进内存
+    void Plugin::load_plugin(bool alsoEnablePlugin) {
         std::unique_lock lk(_mtx);
-
-        enablePluginInternal();
+        loadInternal(alsoEnablePlugin);
     }
 
-    // 不涉及插件列表的修改；不会修改插件权限
+    // enable的前提是该插件已经被加载进内存，且满足下列条件之一：
+    // 1. 尚未执行entrance
+    // 2. 最后一次执行过exit后，未执行过entrance
+    void Plugin::enable_plugin() {
+        std::unique_lock lk(_mtx);
+        enableInternal();
+    }
+
+    // enable的前提是该插件已经被加载进内存，之前执行过entrance，且最后一次执行entrance后没有执行过exit
     void Plugin::disable_plugin() {
         std::unique_lock lk(_mtx);
+        disableInternal();
+    }
+
+    // 释放插件对应的内存
+    void Plugin::unload_plugin() {
+        std::unique_lock lk(_mtx);
+        unloadInternal();
+    }
+
+    // 当发生错误时，强制释放插件对应内存
+    void Plugin::unload_when_exception() {
+        std::unique_lock lk(_mtx);
+        unloadWhenExceptionInternal();
+    }
+
+    plugin_handle Plugin::loadNewPlugin(const std::string &path) noexcept {
+        try {
+            auto actualPath = path; // NOLINT(performance-unnecessary-copy-initialization)
+#if MIRAICP_WINDOWS
+            auto from = std::filesystem::path(path);
+            if (!exists(from) || !from.has_extension()) {
+                logger.error("path don't exist or invalid " + path);
+                return nullptr;
+            }
+            auto actualFile = std::filesystem::temp_directory_path().append(
+                    std::to_string(std::hash<std::string>()(path)) + ".dll");
+            actualPath = actualFile.string();
+            // try to del it anyway
+            // works around with https://github.com/msys2/MSYS2-packages/issues/1937
+            std::error_code ec;
+            std::filesystem::remove(actualFile, ec);
+            ec.clear();
+            std::filesystem::copy(path, actualFile, std::filesystem::copy_options::overwrite_existing, ec);
+            if (ec) {
+                logger.error("无法复制dll(" + plugin.path + ")到缓存目录(" + actualPath + "), 原因: " + ec.message() + "，请检查是否有别的进程在占用该缓存文件！");
+                return nullptr;
+            }
+#endif
+            return LoaderApi::libOpen(actualPath);
+        } catch (...) {}
+        return nullptr;
+    }
+
+    ////////////////////////////////////
+
+    void Plugin::enableInternal() {
+        if (handle == nullptr) {
+            throw PluginNotLoadedException(path, MIRAICP_EXCEPTION_WHERE);
+        }
+
+        if (enabled) {
+            throw PluginAlreadyEnabledException(_getId(), MIRAICP_EXCEPTION_WHERE);
+        }
+
+        // auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_ENTRANCE));
+
+        if (configFunc()->getMVersion() != MiraiCP::MiraiCPVersion) {
+            LibLoader::logger.warning("MiraiCP依赖库版本(" + configFunc()->getMVersion() + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
+        }
+
+        _enable();
+
+        BS::pool->push_task([this] {
+            std::shared_lock lk(_mtx);
+            if (nullptr == entrance) {
+                // 并发过快，插件在启用前被卸载了。直接return
+                return;
+            }
+            // todo(Antares): 标记线程工作plugin id，Defer重置线程工作plugin id
+            if (authority == PLUGIN_AUTHORITY_ADMIN)
+                callEntranceFuncAdmin();
+            else
+                callEntranceFuncNormal();
+        });
+    }
+
+    void Plugin::disableInternal() {
         if (exit == nullptr) return;
         _disable();
         BS::pool->push_task([this] {
             std::shared_lock lk(_mtx);
-            if (exit == nullptr) {
+            if (handle == nullptr || exit == nullptr) {
                 // 任务分派过慢
                 // todo(Antares): 打log提示
                 return;
@@ -175,40 +258,31 @@ namespace LibLoader {
         });
     }
 
-    plugin_handle Plugin::loadPluginInternal() noexcept {
-        auto actualPath = path;
-#if MIRAICP_WINDOWS
-        auto from = std::filesystem::path(path);
-        if (!exists(from) || !from.has_extension()) {
-            logger.error("path don't exist or invalid " + path);
-            return nullptr;
+    void Plugin::unloadInternal() {
+        if (nullptr == handle) {
+            // DON'T CALL getId() if plugin is not valid!!!
+            logger.warning("plugin at path: " + path + " is already unloaded");
+            return;
         }
-        auto actualFile = std::filesystem::temp_directory_path().append(
-                std::to_string(std::hash<std::string>()(path)) + ".dll");
-        actualPath = actualFile.string();
-        // try to del it anyway
-        // works around with https://github.com/msys2/MSYS2-packages/issues/1937
-        std::error_code ec;
-        std::filesystem::remove(actualFile, ec);
-        ec.clear();
-        std::filesystem::copy(path, actualFile, std::filesystem::copy_options::overwrite_existing, ec);
-        if (ec) {
-            logger.error("无法复制dll(" + plugin.path + ")到缓存目录(" + actualPath + "), 原因: " + ec.message() + "，请检查是否有别的进程在占用该缓存文件！");
-            return nullptr;
+
+        // first disable it
+        if (enabled) {
+            disableInternal();
         }
-#endif
-        return LoaderApi::libOpen(actualPath);
+
+        // then unload it
+        LoaderApi::libClose(handle);
+
+        _unload();
     }
 
-    // 不涉及插件列表的修改；不会修改插件权限
-    void Plugin::load_plugin(bool alsoEnablePlugin) {
-        std::unique_lock lk(_mtx);
-
+    void Plugin::loadInternal(bool alsoEnablePlugin) {
         if (handle != nullptr) {
             throw PluginAlreadyLoadedException(_getId(), MIRAICP_EXCEPTION_WHERE);
         }
 
-        auto handle = loadPluginInternal();
+        auto handle = loadNewPlugin(path); // nothrow
+
         if (handle == nullptr) {
 #if MIRAICP_WINDOWS
             logger.error(GetLastErrorAsString());
@@ -216,43 +290,27 @@ namespace LibLoader {
             throw PluginLoadException(path, MIRAICP_EXCEPTION_WHERE);
         }
 
-        auto symbols = testSymbolExistance(handle, path);
+        auto symbols = testSymbolExistance(handle, path); // throws
 
-        _load(handle, symbols.event_func, symbols.pluginAddr);
+        _load(handle, symbols);
         _disable();
 
-        if (alsoEnablePlugin) enablePluginInternal();
+        if (alsoEnablePlugin) enableInternal();
     }
 
-    void Plugin::enablePluginInternal() {
-
-        if (enabled) {
-            throw PluginAlreadyEnabledException(_getId(), MIRAICP_EXCEPTION_WHERE);
+    void Plugin::unloadWhenExceptionInternal() {
+        if (nullptr == handle) {
+            logger.warning("plugin at location " + path + " is already unloaded");
+            return;
         }
 
-        if (handle == nullptr) {
-            throw PluginNotLoadedException(path, MIRAICP_EXCEPTION_WHERE);
-        }
+        // first detach the thread
+        // ThreadController::getController().endThread(plugin.getId());
+        // unload it directly since the thread is already down by exception
+        LoaderApi::libClose(handle);
 
-        auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_ENTRANCE));
-        if (config()->getMVersion() != MiraiCP::MiraiCPVersion) {
-            LibLoader::logger.warning("MiraiCP依赖库版本(" + config()->getMVersion() + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
-        }
-
-        _enable();
-
-        BS::pool->push_task([this] {
-            std::shared_lock lk(_mtx);
-            if (!entrance) {
-                // 并发过快，插件在启用前被卸载了。直接return
-                return;
-            }
-            // todo(Antares): 标记线程工作plugin id，Defer重置线程工作plugin id
-            if (authority == PLUGIN_AUTHORITY_ADMIN)
-                callEntranceFuncAdmin();
-            else
-                callEntranceFuncNormal();
-        });
+        _disable();
+        _unload();
     }
 
     void Plugin::pushEvent_worker(const MiraiCP::MiraiCPString &event) {
@@ -273,68 +331,33 @@ namespace LibLoader {
         }
     }
 
-    // unload将释放插件的内存
-    // 不涉及插件列表的修改；不会修改插件权限
-    void Plugin::unload_plugin() {
-        std::unique_lock lk(_mtx);
-        if (nullptr == handle) {
-            // DON'T CALL getId() if plugin is disabled!!!
-            logger.warning("plugin at path: " + path + " is already unloaded");
-            return;
-        }
-
-        // first disable it
-        if (enabled) {
-            disable_plugin();
-        }
-
-        // then unload it
-        LoaderApi::libClose(handle);
-
-        _unload();
-    }
-
-    void unload_when_exception(Plugin &plugin) {
-        if (nullptr == plugin.handle) {
-            logger.warning("plugin at location " + plugin.path + " is already unloaded");
-            return;
-        }
-
-        // first detach the thread
-        ThreadController::getController().endThread(plugin.getId());
-        // unload it directly since the thread is already down by exception
-        LoaderApi::libClose(plugin.handle);
-
-        plugin.disable();
-        plugin.unload();
-    }
     ////////////////////////////////////
 
-    void loadNewPluginByPath(const std::string &_path, bool activateNow) {
-        Plugin cfg{_path};
+    void Plugin::loadNewPluginByPath(const std::string &_path, bool activateNow) {
+        auto pluginPtr = std::make_shared<Plugin>(_path);
 
-        load_plugin(cfg, activateNow);
+        pluginPtr->load_plugin(activateNow);
 
-        PluginListManager::addNewPlugin(std::move(cfg));
+        PluginListManager::addNewPlugin(std::move(pluginPtr));
     }
 
     /// 仅加载并测试所有plugin的符号是否存在
     /// 仅被registerAllPlugin调用，即，在kt（主）线程Verify中会被调用一次
     /// 作用是将所有plugin加入plugin列表
     /// 这一过程必须是原子的
-    inline void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept {
+    void Plugin::loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept {
         std::lock_guard lk(PluginListManager::getLock());
 
         for (size_t i = 0; i < paths.size(); ++i) {
             auto &path = paths[i];
             auto authority = authorities[i];
 
-            Plugin cfg{path};
+            auto newPlugin = std::make_shared<Plugin>(path);
 
             auto timestamp = std::chrono::system_clock::now();
 
             try {
-                load_plugin(cfg, false);
+                newPlugin->load_plugin(false);
             } catch (LoaderBaseException &e) {
                 e.raise();
                 continue;
@@ -345,10 +368,10 @@ namespace LibLoader {
             auto timedelta = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp2 - timestamp).count();
             logger.info("loaded plugin " + path + " in " + std::to_string(timedelta) + "ms");
 
-            cfg.authority = authority;
+            newPlugin->authority = authority;
 
             try {
-                PluginListManager::addNewPlugin(std::move(cfg));
+                PluginListManager::addNewPlugin(std::move(newPlugin));
             } catch (LoaderBaseException &e) {
                 e.raise();
             }
@@ -357,7 +380,7 @@ namespace LibLoader {
 
     /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用且仅调用一次
     /// 实际的入口，id_plugin_list 必须在这里初始化
-    void registerAllPlugin(const std::string &cfgPath) noexcept {
+    void Plugin::registerAllPlugin(const std::string &cfgPath) noexcept {
         // 获取cfg文件路径并读取
         nlohmann::json j = readJsonFile(cfgPath);
 
