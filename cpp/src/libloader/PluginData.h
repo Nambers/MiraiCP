@@ -20,7 +20,6 @@
 
 #include "LoaderLogger.h"
 #include "commonTypes.h"
-#include <shared_mutex>
 
 
 namespace LibLoader {
@@ -33,7 +32,7 @@ namespace LibLoader {
         plugin_entrance_func_ptr entrance = nullptr;
         plugin_event_func_ptr eventFunc = nullptr;
         plugin_func_ptr exit = nullptr;
-        plugin_info_func_ptr configFunc = nullptr;
+        plugin_info_func_ptr infoFunc = nullptr;
 
         void _resetAddrData() {
             PluginFuncAddrData tmp;
@@ -49,12 +48,13 @@ namespace LibLoader {
         PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;
         bool enabled = false;
 
+    protected:
+        explicit PluginData(std::string inPath) : path(std::move(inPath)) {}
+
+    protected:
         [[nodiscard]] std::string _getId() const {
-            if (!handle) {
-                logger.error("致命错误：插件未加载或已经被卸载，请联系MiraiCP开发者并提供您的历史日志");
-                return "";
-            }
-            return configFunc()->getId();
+            assert(infoFunc);
+            return infoFunc()->getId();
         }
 
         void _load(plugin_handle _handle, const PluginFuncAddrData &funcAddrs) {
@@ -75,6 +75,11 @@ namespace LibLoader {
         void _disable() {
             enabled = false;
         }
+
+    public:
+        [[nodiscard]] bool isEnabled() const { return enabled; }
+
+        [[nodiscard]] bool isLoaded() const { return handle != nullptr; }
     };
 } // namespace LibLoader
 #endif //MIRAICP_PRO_PLUGINDATA_H

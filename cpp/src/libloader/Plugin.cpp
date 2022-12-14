@@ -103,6 +103,14 @@ namespace LibLoader {
         static string exceptionType() { return "InfoNotCompleteException"; }
     };
 
+    class PluginHandleInvalidException : public LoaderExceptionCRTP<PluginHandleInvalidException> {
+    public:
+        PluginHandleInvalidException(const string &_pluginPath, string _filename, int _lineNum)
+            : LoaderExceptionCRTP("位于" + _pluginPath + "的插件handle无效！请向开发者提供此错误信息", std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "PluginHandleInvalidException"; }
+    };
+
     ////////////////////////////////////
     /// 这部分是一些工具函数、对象
 
@@ -214,13 +222,14 @@ namespace LibLoader {
         }
 
         if (enabled) {
+            assert(infoFunc);
             throw PluginAlreadyEnabledException(_getId(), MIRAICP_EXCEPTION_WHERE);
         }
 
         // auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_ENTRANCE));
 
-        if (configFunc()->getMVersion() != MiraiCP::MiraiCPVersion) {
-            LibLoader::logger.warning("MiraiCP依赖库版本(" + configFunc()->getMVersion() + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
+        if (infoFunc()->getMVersion() != MiraiCP::MiraiCPVersion) {
+            LibLoader::logger.warning("MiraiCP依赖库版本(" + infoFunc()->getMVersion() + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
         }
 
         _enable();
@@ -244,7 +253,7 @@ namespace LibLoader {
         _disable();
         BS::pool->push_task([this] {
             std::shared_lock lk(_mtx);
-            if (handle == nullptr || exit == nullptr) {
+            if (!checkValid() || exit == nullptr) {
                 // 任务分派过慢
                 // todo(Antares): 打log提示
                 return;
@@ -254,13 +263,16 @@ namespace LibLoader {
             try {
                 ret = exit();
             } catch (...) {}
+
+            assert(infoFunc);
+
             if (ret != 0) logger.error("插件：" + _getId() + "退出时出现错误");
         });
     }
 
     void Plugin::unloadInternal() {
         if (nullptr == handle) {
-            // DON'T CALL getId() if plugin is not valid!!!
+            // DON'T CALL getIdSafe() if plugin is not valid!!!
             logger.warning("plugin at path: " + path + " is already unloaded");
             return;
         }
@@ -278,6 +290,7 @@ namespace LibLoader {
 
     void Plugin::loadInternal(bool alsoEnablePlugin) {
         if (handle != nullptr) {
+            assert(infoFunc);
             throw PluginAlreadyLoadedException(_getId(), MIRAICP_EXCEPTION_WHERE);
         }
 
@@ -305,7 +318,7 @@ namespace LibLoader {
         }
 
         // first detach the thread
-        // ThreadController::getController().endThread(plugin.getId());
+        // ThreadController::getController().endThread(plugin.getIdSafe());
         // unload it directly since the thread is already down by exception
         LoaderApi::libClose(handle);
 
@@ -325,6 +338,9 @@ namespace LibLoader {
             ret = eventFunc(event);
         } catch (...) {
         }
+
+        assert(infoFunc);
+
         if (ret != 0) {
             logger.error("插件：" + _getId() + "出现严重错误");
             // todo(Antares): 发送错误事件
@@ -333,13 +349,6 @@ namespace LibLoader {
 
     ////////////////////////////////////
 
-    void Plugin::loadNewPluginByPath(const std::string &_path, bool activateNow) {
-        auto pluginPtr = std::make_shared<Plugin>(_path);
-
-        pluginPtr->load_plugin(activateNow);
-
-        PluginListManager::addNewPlugin(std::move(pluginPtr));
-    }
 
     /// 仅加载并测试所有plugin的符号是否存在
     /// 仅被registerAllPlugin调用，即，在kt（主）线程Verify中会被调用一次
@@ -394,4 +403,40 @@ namespace LibLoader {
 
         loadsAll(paths, authorities);
     }
+
+    std::string Plugin::getIdSafe() const {
+        std::shared_lock lk(_mtx);
+        if (!checkValid() || infoFunc == nullptr) {
+            throw PluginHandleInvalidException(path, MIRAICP_EXCEPTION_WHERE);
+        }
+
+        return _getId();
+    }
+
+    void formatInternal(const MiraiCP::PluginConfig &plugin_config, std::vector<std::string> &out, size_t (&charNum)[4]) {
+        CASStrong(charNum[0], strlen(plugin_config.id) + 1);
+        CASStrong(charNum[1], strlen(plugin_config.name) + 1);
+        CASStrong(charNum[2], strlen(plugin_config.author) + 1);
+        CASStrong(charNum[3], strlen(plugin_config.description) + 1);
+        out.emplace_back(plugin_config.id);
+        out.emplace_back(plugin_config.name);
+        out.emplace_back(plugin_config.author);
+        out.emplace_back(plugin_config.description);
+        out.emplace_back("\n");
+    }
+
+    void Plugin::formatTo(std::vector<std::string> &out, size_t (&charNum)[4]) {
+        std::shared_lock lk(_mtx);
+        if (!checkLoaded()) formatInternal(MiraiCP::PluginConfig{"(unknown)",
+                                                                path.c_str(),
+                                                                "(unknown)",
+                                                                "(unknown)",
+                                                                "(unknown)",
+                                                                "(unknown)",
+                                                                "(unknown)"},
+                                          out, charNum);
+        formatInternal(*infoFunc(), out, charNum);
+    }
+
+
 } // namespace LibLoader

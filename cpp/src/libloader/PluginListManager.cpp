@@ -18,8 +18,8 @@
 #include "BS_thread_pool.hpp"
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
+#include "Plugin.h"
 #include "PluginConfig.h"
-#include "PluginListImplements.h"
 #include "commonTools.h"
 #include "libOpen.h"
 #include "loaderTools.h"
@@ -32,6 +32,29 @@ namespace LibLoader {
     std::recursive_mutex PluginListManager::pluginlist_mtx;
 
     ////////////////////////////////////
+    // 一个工具函数
+    std::string PluginInfoStream(const std::vector<std::string> &plugin_info, size_t (&charNum)[4]) {
+        std::ostringstream out;
+        out << std::setiosflags(std::ios::left) << "\n";
+        int index = 0;
+        for (const auto &one_plugin_info: plugin_info) {
+            if (index == 0) out << '|';
+            if (one_plugin_info != "\n") {
+                out << std::setfill(' ') << std::setw(int(charNum[index])) << one_plugin_info;
+                out << '|';
+            } else {
+                out << "\n";
+            }
+            index++;
+            if (index == 5) {
+                index = 0;
+                out << std::setw(int(charNum[0] + charNum[1] + charNum[2] + charNum[3] + 4 + 1)) << std::setfill('-') << "";
+                out << "\n";
+            }
+        }
+        return out.str();
+    }
+    ////////////////////////////////////
     /// PluginListController部分
     /// 这部分必须保证每个函数都是原子操作
     /// 如果有第一行不是创建lock_guard对象的请务必检查
@@ -40,24 +63,17 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans;
         for (auto &&[k, v]: id_plugin_list) {
-            if (v->handle != nullptr) ans.emplace_back(v->config()->getId());
+            if (v->checkValid()) ans.emplace_back(v->getIdSafe());
         }
         return ans;
     }
 
-    std::string PluginListManager::pluginListInfo(const std::function<bool(const PluginData &)> &filter) {
+    std::string PluginListManager::pluginListInfo(const std::function<bool(const Plugin &)> &filter) {
         std::lock_guard lk(pluginlist_mtx);
         std::vector<std::string> ans = {"id", "name or path", "author", "description", "\n"};
-        int charNum[4] = {2 + 1, 12 + 1, 6 + 1, 11 + 1};
+        size_t charNum[4] = {2 + 1, 12 + 1, 6 + 1, 11 + 1};
         for (auto &&[k, v]: id_plugin_list) {
-            if (v->handle != nullptr) {
-                if (filter(*v)) FormatPluginListInfo(*v->config(), charNum, ans);
-            } else {
-                FormatPluginListInfo(
-                        MiraiCP::PluginConfig{"(unknown)", v->path.c_str(), "(unknown)", "(unknown)", "(unknown)", "(unknown)",
-                                              "(unknown)"},
-                        charNum, ans);
-            }
+            v->formatTo(ans, charNum);
         }
         return PluginInfoStream(ans, charNum);
     }
@@ -75,17 +91,17 @@ namespace LibLoader {
     /// 总之，addNewPlugin 只是把plugin加入到PluginList中，其他什么都不做
     /// cfg 中已经存储了handle，id等信息
     /// 如果插件id重复则应该取消加载
-    bool PluginListManager::addNewPlugin(PluginData cfg) {
+    bool PluginListManager::addNewPlugin(std::shared_ptr<Plugin> cfg) {
         std::lock_guard lk(pluginlist_mtx);
 
         if (cfg.handle == nullptr || cfg.config == nullptr) {
             throw PluginNotLoadedException(cfg.path, MIRAICP_EXCEPTION_WHERE);
         }
 
-        auto id = cfg.getId();
+        auto id = cfg.getIdSafe();
         auto handle = cfg.handle;
         auto path = cfg.path;
-        auto pr = id_plugin_list.insert(std::make_pair(id, std::make_shared<PluginData>(std::move(cfg))));
+        auto pr = id_plugin_list.insert(std::make_pair(id, std::make_shared<Plugin>(std::move(cfg))));
 
         if (!pr.second) {
             logger.error("Plugin with id: " + id + " Already exists");
@@ -133,7 +149,7 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         unloadAll();
 
-        std::vector<std::shared_ptr<PluginData>> cfgs;
+        std::vector<std::shared_ptr<Plugin>> cfgs;
         for (auto &&[k, v]: id_plugin_list) {
             cfgs.emplace_back(v);
         }
@@ -141,9 +157,9 @@ namespace LibLoader {
         id_plugin_list.clear();
         for (auto &&cfg: cfgs) {
             loadNewPluginByPath(cfg->path, true);
-            auto pr = id_plugin_list.insert(std::make_pair(cfg->getId(), cfg));
+            auto pr = id_plugin_list.insert(std::make_pair(cfg->getIdSafe(), cfg));
             if (!pr.second) {
-                logger.error("插件id: " + cfg->getId() + " 重复加载，将自动unload加载较晚的插件");
+                logger.error("插件id: " + cfg->getIdSafe() + " 重复加载，将自动unload加载较晚的插件");
                 unload_plugin(*cfg);
             }
         }
@@ -164,9 +180,9 @@ namespace LibLoader {
         unload_plugin(cfg);
         load_plugin(cfg, true);
 
-        if (cfg.getId() != it->first) {
-            logger.warning("插件id: " + it->first + " 被修改为: " + cfg.getId());
-            changeKey(it->first, cfg.getId());
+        if (cfg.getIdSafe() != it->first) {
+            logger.warning("插件id: " + it->first + " 被修改为: " + cfg.getIdSafe());
+            changeKey(it->first, cfg.getIdSafe());
         }
     }
 
@@ -220,7 +236,7 @@ namespace LibLoader {
 
     /// 遍历所有插件，by id（默认是不会by path的，path是用于id变更的特殊情况的备份）
     /// 注意：不会检查插件是否enable，请自行检查
-    void PluginListManager::run_over_pluginlist(const std::function<void(const PluginData &)> &f) {
+    void PluginListManager::run_over_pluginlist(const std::function<void(const Plugin &)> &f) {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
             f(*v);
@@ -258,5 +274,13 @@ namespace LibLoader {
                 });
             }
         }
+    }
+
+    void PluginListManager::loadNewPluginByPath(const std::string &_path, bool activateNow) {
+        auto pluginPtr = std::make_shared<Plugin>(_path);
+
+        pluginPtr->load_plugin(activateNow);
+
+        addNewPlugin(std::move(pluginPtr));
     }
 } // namespace LibLoader

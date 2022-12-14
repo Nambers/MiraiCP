@@ -20,13 +20,15 @@
 
 #include "PluginData.h"
 #include "commonTypes.h"
+#include <atomic>
+#include <shared_mutex>
 #include <string>
 
 
 namespace LibLoader {
     class Plugin : public PluginData {
         std::atomic<int> _runCounter = {0};
-        std::shared_mutex _mtx;
+        mutable std::shared_mutex _mtx;
 
     public:
         explicit Plugin(std::string inPath) : PluginData(std::move(inPath)) {}
@@ -69,17 +71,23 @@ namespace LibLoader {
         void pushEvent_worker(const MiraiCP::MiraiCPString &event);
 
     public:
+        [[nodiscard]] bool checkValid() const { return handle != nullptr; }
+        [[nodiscard]] bool checkLoaded() const { return checkValid() && infoFunc != nullptr; }
+
+    public:
+        /// 安全、带锁地获取id
+        [[nodiscard]] std::string getIdSafe() const;
+
+        void formatTo(std::vector<std::string> &, size_t (&charNum)[4]);
+
+    public:
         static PluginFuncAddrData testSymbolExistance(plugin_handle handle, const std::string &path);
 
         /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用一次
         /// 实际的入口，id_plugin_list 必须在这里初始化，该函数只会被调用一次
         static void registerAllPlugin(const std::string &cfgPath) noexcept;
-
-        static void loadNewPluginByPath(const std::string &_path, bool activateNow);
     };
 
-    plugin_func_ptr get_plugin_disable_ptr(Plugin &plugin);
-
-
+    // plugin_func_ptr get_plugin_disable_ptr(Plugin &plugin);
 } // namespace LibLoader
 #endif //MIRAICP_PRO_PLUGIN_H

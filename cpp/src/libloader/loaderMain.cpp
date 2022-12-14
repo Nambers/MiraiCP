@@ -20,10 +20,9 @@
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
 #include "PlatformThreading.h"
-#include "PluginListImplements.h"
+#include "Plugin.h"
 #include "PluginListManager.h"
 #include "Scheduler.h"
-#include "ThreadController.h"
 #include "redirectCout.h"
 
 
@@ -61,7 +60,7 @@ namespace LibLoader {
     }
 
     void loader_loadNewPlugin(const std::string &path, bool activateNow) {
-        loadNewPluginByPath(path, activateNow);
+        PluginListManager::loadNewPluginByPath(path, activateNow);
     }
 
     void loader_unloadPluginById(const std::string &id) {
