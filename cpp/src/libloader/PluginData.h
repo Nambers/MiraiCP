@@ -41,8 +41,10 @@ namespace LibLoader {
     };
 
     class PluginData : protected PluginFuncAddrData {
-    protected:
+    public:
         const std::string path;
+
+    protected:
         plugin_handle handle = nullptr;
 
         PluginAuthority authority = PLUGIN_AUTHORITY_NORMAL;

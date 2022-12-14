@@ -78,7 +78,10 @@ namespace LibLoader {
         /// 安全、带锁地获取id
         [[nodiscard]] std::string getIdSafe() const;
 
+        // 带锁地格式化
         void formatTo(std::vector<std::string> &, size_t (&charNum)[4]);
+
+        void forceCallExit();
 
     public:
         static PluginFuncAddrData testSymbolExistance(plugin_handle handle, const std::string &path);

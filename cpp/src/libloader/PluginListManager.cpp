@@ -91,22 +91,23 @@ namespace LibLoader {
     /// 总之，addNewPlugin 只是把plugin加入到PluginList中，其他什么都不做
     /// cfg 中已经存储了handle，id等信息
     /// 如果插件id重复则应该取消加载
-    bool PluginListManager::addNewPlugin(std::shared_ptr<Plugin> cfg) {
+    bool PluginListManager::addNewPlugin(const std::shared_ptr<Plugin> &pluginPtr) {
         std::lock_guard lk(pluginlist_mtx);
 
-        if (cfg.handle == nullptr || cfg.config == nullptr) {
-            throw PluginNotLoadedException(cfg.path, MIRAICP_EXCEPTION_WHERE);
+        if (!pluginPtr->isLoaded()) {
+            throw PluginNotLoadedException(pluginPtr->path, MIRAICP_EXCEPTION_WHERE);
         }
 
-        auto id = cfg.getIdSafe();
-        auto handle = cfg.handle;
-        auto path = cfg.path;
-        auto pr = id_plugin_list.insert(std::make_pair(id, std::make_shared<Plugin>(std::move(cfg))));
+        // 该函数语境下，插件不会被其他线程访问到，因为获得的Plugin智能指针刚刚被创建，无需考虑锁的问题
+
+        auto id = pluginPtr->getIdSafe();
+
+        auto pr = id_plugin_list.insert(std::make_pair(id, pluginPtr));
 
         if (!pr.second) {
             logger.error("Plugin with id: " + id + " Already exists");
-            LoaderApi::libClose(handle);
-            throw PluginIdDuplicateException(id, pr.first->first, path, MIRAICP_EXCEPTION_WHERE);
+            pluginPtr->unload_plugin();
+            throw PluginIdDuplicateException(id, pr.first->first, pluginPtr->path, MIRAICP_EXCEPTION_WHERE);
         }
 
         return true;
@@ -116,7 +117,7 @@ namespace LibLoader {
     void PluginListManager::unloadAll() {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
-            unload_plugin(*v);
+            v->unload_plugin();
         }
     }
 
@@ -128,7 +129,7 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        unload_plugin(*(it->second));
+        it->second->unload_plugin();
     }
 
     /// 插件异常时的卸载函数，输入插件id，不会修改任何key
@@ -139,7 +140,7 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        unload_when_exception(*(it->second));
+        it->second->unload_when_exception();
     }
 
     /// reload 所有插件。
@@ -160,7 +161,7 @@ namespace LibLoader {
             auto pr = id_plugin_list.insert(std::make_pair(cfg->getIdSafe(), cfg));
             if (!pr.second) {
                 logger.error("插件id: " + cfg->getIdSafe() + " 重复加载，将自动unload加载较晚的插件");
-                unload_plugin(*cfg);
+                cfg->unload_plugin();
             }
         }
     }
@@ -177,8 +178,8 @@ namespace LibLoader {
         }
 
         auto &cfg = *(it->second);
-        unload_plugin(cfg);
-        load_plugin(cfg, true);
+        cfg.unload_plugin();
+        cfg.load_plugin(true);
 
         if (cfg.getIdSafe() != it->first) {
             logger.warning("插件id: " + it->first + " 被修改为: " + cfg.getIdSafe());
@@ -189,7 +190,7 @@ namespace LibLoader {
     void PluginListManager::enableAll() {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
-            enable_plugin(*v);
+            v->enable_plugin();
         }
     }
 
@@ -200,13 +201,13 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        enable_plugin(*(it->second));
+        it->second->enable_plugin();
     }
 
     void PluginListManager::disableAll() {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
-            disable_plugin(*v);
+            v->disable_plugin();
         }
     }
 
@@ -217,7 +218,7 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        disable_plugin(*(it->second));
+        it->second->disable_plugin();
     }
 
     void PluginListManager::disableByIdVanilla(const std::string &id) {
@@ -228,10 +229,7 @@ namespace LibLoader {
             return;
         }
 
-        try {
-            auto exit_ptr = get_plugin_disable_ptr(*(it->second));
-            exit_ptr();
-        } catch (...) {} // do not leak any exception
+        it->second->forceCallExit();
     }
 
     /// 遍历所有插件，by id（默认是不会by path的，path是用于id变更的特殊情况的备份）
@@ -250,7 +248,7 @@ namespace LibLoader {
         auto pr = id_plugin_list.insert(std::make_pair(new_key, ptr));
         if (!pr.second) {
             logger.error("Reload失败！插件id: " + new_key + " 已经被另一个插件占用。当前插件将被unload");
-            unload_plugin(*ptr);
+            ptr->unload_plugin();
             return;
         }
     }
@@ -263,15 +261,16 @@ namespace LibLoader {
     void PluginListManager::broadcastToAllEnabledPlugins(const std::shared_ptr<MiraiCP::MiraiCPString> &strPtr) {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[id, pluginConfig]: id_plugin_list) {
-            if (pluginConfig->enabled) {
+            if (pluginConfig->isEnabled()) {
                 std::shared_ptr<MiraiCP::MiraiCPString> strPtrCopy = strPtr;
-                auto eventPtr = pluginConfig->eventFunc;
-                // 禁止捕获和plugin本身有关的东西，因为不知道谁先运行完
-                BS::pool->push_task([idCopy = id, strPtrCopy = std::move(strPtrCopy), eventPtr]() mutable {
-                    setThreadRunningPluginId(std::move(idCopy));
-                    eventPtr(*strPtrCopy);
-                    unsetThreadRunningPluginId();
-                });
+                pluginConfig->pushEvent_worker(*strPtrCopy);
+                //                auto eventPtr = pluginConfig->eventFunc;
+                //                // 禁止捕获和plugin本身有关的东西，因为不知道谁先运行完
+                //                BS::pool->push_task([idCopy = id, strPtrCopy = std::move(strPtrCopy), eventPtr]() mutable {
+                //                    setThreadRunningPluginId(std::move(idCopy));
+                //                    eventPtr(*strPtrCopy);
+                //                    unsetThreadRunningPluginId();
+                //                });
             }
         }
     }

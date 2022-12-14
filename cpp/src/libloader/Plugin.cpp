@@ -428,14 +428,22 @@ namespace LibLoader {
     void Plugin::formatTo(std::vector<std::string> &out, size_t (&charNum)[4]) {
         std::shared_lock lk(_mtx);
         if (!checkLoaded()) formatInternal(MiraiCP::PluginConfig{"(unknown)",
-                                                                path.c_str(),
-                                                                "(unknown)",
-                                                                "(unknown)",
-                                                                "(unknown)",
-                                                                "(unknown)",
-                                                                "(unknown)"},
-                                          out, charNum);
+                                                                 path.c_str(),
+                                                                 "(unknown)",
+                                                                 "(unknown)",
+                                                                 "(unknown)",
+                                                                 "(unknown)",
+                                                                 "(unknown)"},
+                                           out, charNum);
         formatInternal(*infoFunc(), out, charNum);
+    }
+
+    void Plugin::forceCallExit() {
+        std::shared_lock lk(_mtx);
+        if (!exit) return;
+        try {
+            exit();
+        } catch (...) {} // do not leak any exception
     }
 
 

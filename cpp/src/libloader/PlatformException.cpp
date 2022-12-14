@@ -114,7 +114,7 @@ private:
         }
         auto pluginName = LibLoader::PluginListManager::getThreadRunningPluginId();
         if (pluginName.empty()) {
-            // test the thread name is jvm
+            // test the thread is from jvm
             char threadName[80];
             platform_get_thread_name(platform_thread_self(), threadName, 80);
             if (strcmp(threadName, "libLoader") != 0) {
@@ -127,10 +127,11 @@ private:
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
         LibLoader::PluginListManager::disableByIdVanilla(pluginName);
-        LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 线程终止");
+        LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 插件运行终止");
         LibLoader::sendPluginException(std::move(pluginName));
 
         pthread_cancel(pthread_self());
+        // todo(Antares): 重启被杀死的工作线程，思路：通过给worker线程加入thread_local标记确定线程对应的index，让thread pool重置该位置的线程
     }
 
 private:

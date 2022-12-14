@@ -58,7 +58,7 @@ namespace LibLoader {
         static bool empty() { return id_plugin_list.empty(); }
 
     public: // load
-        static bool addNewPlugin(std::shared_ptr<Plugin> cfg);
+        static bool addNewPlugin(const std::shared_ptr<Plugin>& cfg);
 
     public: // unload
         static void unloadById(const std::string &);
