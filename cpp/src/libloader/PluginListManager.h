@@ -18,14 +18,15 @@
 #define MIRAICP_PRO_PLUGINLISTMANAGER_H
 
 
-#include "PluginData.h"
 #include "commonTypes.h"
 #include <mutex>
 
 
 namespace LibLoader {
+    class Plugin;
+
     class PluginListManager {
-        typedef std::unordered_map<std::string, std::shared_ptr<PluginData>> PluginList;
+        typedef std::unordered_map<std::string, std::shared_ptr<Plugin>> PluginList;
 
     private:
         static PluginList id_plugin_list;
@@ -48,7 +49,7 @@ namespace LibLoader {
     public:
         static std::vector<std::string> getAllPluginId();
         // filter == true
-        static std::string pluginListInfo(const std::function<bool(const PluginData &)> &);
+        static std::string pluginListInfo(const std::function<bool(const Plugin &)> &);
         static std::vector<std::string> getAllPluginPath();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
@@ -57,7 +58,7 @@ namespace LibLoader {
         static bool empty() { return id_plugin_list.empty(); }
 
     public: // load
-        static bool addNewPlugin(PluginData cfg);
+        static bool addNewPlugin(std::shared_ptr<Plugin> cfg);
 
     public: // unload
         static void unloadById(const std::string &);
@@ -78,17 +79,17 @@ namespace LibLoader {
         static void disableByIdVanilla(const std::string &);
 
     public:
-        static void run_over_pluginlist(const std::function<void(const PluginData &)> &f);
+        static void run_over_pluginlist(const std::function<void(const Plugin &)> &f);
 
     private:
         static std::string &threadRunningPluginId();
 
     public:
-        static std::string getThreadRunningPluginId(){
+        static std::string getThreadRunningPluginId() {
             return threadRunningPluginId();
         }
 
-        static void setThreadRunningPluginId(std::string inId){
+        static void setThreadRunningPluginId(std::string inId) {
             threadRunningPluginId() = std::move(inId);
         }
 
@@ -96,6 +97,8 @@ namespace LibLoader {
 
     public:
         static void broadcastToAllEnabledPlugins(const std::shared_ptr<MiraiCP::MiraiCPString> &strPtr);
+
+        static void loadNewPluginByPath(const std::string &_path, bool activateNow);
     };
 } // namespace LibLoader
 

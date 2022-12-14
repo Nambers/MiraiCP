@@ -165,7 +165,7 @@ MIRAICP_EXPORT int FUNC_EVENT(const MiraiCP::MiraiCPString &c) {
 MIRAICP_EXPORT const MiraiCP::PluginConfig *PLUGIN_INFO() {
     static_assert(std::is_same_v<decltype(&PLUGIN_INFO), LibLoader::plugin_info_func_ptr>);
 
-    //    if (MiraiCP::CPPPlugin::config.getId().empty())
+    //    if (MiraiCP::CPPPlugin::config.getIdSafe().empty())
     //        throw std::exception();
 
     return &MiraiCP::CPPPlugin::config; // never nullptr

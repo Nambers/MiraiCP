@@ -47,10 +47,6 @@ namespace LibLoader {
         if (a < (Val1) b) a = (Val1) b;
     }
 
-    void FormatPluginListInfo(const MiraiCP::PluginConfig &plugin_config, int *charNum, std::vector<std::string> &out);
-
-    std::string PluginInfoStream(const std::vector<std::string> &plugin_info, int *charNum);
-
     std::pair<std::vector<std::string>, std::vector<PluginAuthority>> collect_plugins(const std::string &cfgPath, nlohmann::json j);
 
 #ifndef LOADER_NATIVE
