@@ -380,7 +380,7 @@ namespace LibLoader {
             newPlugin->authority = authority;
 
             try {
-                PluginListManager::addNewPlugin(std::move(newPlugin));
+                PluginListManager::addNewPlugin(newPlugin);
             } catch (LoaderBaseException &e) {
                 e.raise();
             }

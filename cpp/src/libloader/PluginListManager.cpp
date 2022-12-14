@@ -263,14 +263,14 @@ namespace LibLoader {
         for (auto &&[id, pluginConfig]: id_plugin_list) {
             if (pluginConfig->isEnabled()) {
                 std::shared_ptr<MiraiCP::MiraiCPString> strPtrCopy = strPtr;
-                pluginConfig->pushEvent_worker(*strPtrCopy);
+                auto pluginConfigCopy = pluginConfig;
                 //                auto eventPtr = pluginConfig->eventFunc;
                 //                // 禁止捕获和plugin本身有关的东西，因为不知道谁先运行完
-                //                BS::pool->push_task([idCopy = id, strPtrCopy = std::move(strPtrCopy), eventPtr]() mutable {
-                //                    setThreadRunningPluginId(std::move(idCopy));
-                //                    eventPtr(*strPtrCopy);
-                //                    unsetThreadRunningPluginId();
-                //                });
+                BS::pool->push_task([idCopy = id, strPtrCopy = std::move(strPtrCopy), pluginConfig = std::move(pluginConfigCopy)]() mutable {
+                    setThreadRunningPluginId(std::move(idCopy));
+                    pluginConfig->pushEvent_worker(*strPtrCopy);
+                    unsetThreadRunningPluginId();
+                });
             }
         }
     }
@@ -280,6 +280,6 @@ namespace LibLoader {
 
         pluginPtr->load_plugin(activateNow);
 
-        addNewPlugin(std::move(pluginPtr));
+        addNewPlugin(pluginPtr);
     }
 } // namespace LibLoader
