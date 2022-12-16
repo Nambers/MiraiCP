@@ -53,6 +53,25 @@ namespace MiraiCP {
                 MusicShare_t              // 9, End = 10
         )
 
+        constexpr const char *miraiCodeNameInternal[] = {
+                "NoExists",
+                "NoExists",
+                "NoExists",
+                "NoExists",
+                "NoExists",
+                "NoExists",
+                "NoExists",
+                "at",
+                "atall",
+                "image",
+                "app",
+                "service",
+                "file",
+                "face",
+                "NoExists",
+                "musicshare"
+        };
+
         constexpr const char *messageTypeInternal[] = {
                 "MessageSource",        // -6
                 "MarketFace",             // -5
@@ -108,6 +127,7 @@ namespace MiraiCP {
 
     public:
         static const char *const *const messageType;
+        static const char *const *const miraiCodeName;
 
         static std::string getTypeString(int type) {
             return messageType[type];
@@ -130,6 +150,13 @@ namespace MiraiCP {
         /// @param value 类型名
         /// @return 如果没找到返回-1
         static int getKey(const std::string &value);
+
+        /**
+         * 寻找对应的 MiraiCode 名称
+         * @param value 名称
+         * @return 如果没找到返回-1
+         */
+        static int getMiraiCodeKey(const std::string &value);
 
     public:
         [[nodiscard]] virtual nlohmann::json toJson() const;
@@ -240,15 +267,15 @@ namespace MiraiCP {
         bool isEmoji;
         /*!
          * @brief 图片类型
-         *  - 0 png
-         *  - 1 bmp
-         *  - 2 jpg
-         *  - 3 gif
-         *  - 4 apng
-         *  - 5 unknown
-         *  默认 5
+         *  - png
+         *  - bmp
+         *  - jpg
+         *  - gif
+         *  - apng
+         *  - unknown
+         *  默认 png
          */
-        int imageType;
+        std::string imageType;
 
         /*!
          * @brief 图片是否已经上传(如果已经上传即表明可以直接用ImageId发送, 如果没有需要手动上传)
@@ -275,10 +302,11 @@ namespace MiraiCP {
         * @detail 图片miraiCode格式例子, `[mirai:image:{图片id}.jpg]`
         * 可以用这个正则表达式找出id `\\[mirai:image:(.*?)\\]`
         */
-        explicit Image(std::string imageId, size_t size = 0, int width = 0, int height = 0, int type = 5,
+        explicit Image(const std::string &imageId, size_t size = 0, int width = 0, int height = 0,
+                       std::string type = "PNG",
                        bool isEmoji = false)
-                : SingleMessage(Image::type(), std::move(imageId)), id(imageId), size(size), width(width),
-                  height(height), isEmoji(isEmoji), imageType(type) {
+                : SingleMessage(Image::type(), imageId), id(imageId), size(size), width(width),
+                  height(height), isEmoji(isEmoji), imageType(std::move(type)) {
             // todo(Antares): 实际上重复的属性 id 和 content
         }
 
@@ -310,7 +338,8 @@ namespace MiraiCP {
             return "[mirai:flash:" + this->id + "]";
         }
 
-        explicit FlashImage(const std::string &imageId, size_t size = 0, int width = 0, int height = 0, int type = 0) : Image(imageId, size, width, height, type) {
+        explicit FlashImage(const std::string &imageId, size_t size = 0, int width = 0, int height = 0,
+                            std::string type = "PNG") : Image(imageId, size, width, height, type) {
             this->SingleMessage::internalType = 8;
         }
 
@@ -547,9 +576,14 @@ namespace MiraiCP {
             SINGLEMESSAGE_REFACTOR_ASSERTION(7, Types::Face_t);
             return Types::Face_t;
         }
+
+        /**
+         * @brief 表情 id
+         */
         int id;
 
         [[nodiscard]] nlohmann::json toJson() const override;
+
         [[nodiscard]] std::string toMiraiCode() const override {
             return "[mirai:face:" + std::to_string(id) + "]";
         }

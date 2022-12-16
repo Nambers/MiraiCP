@@ -57,31 +57,31 @@ namespace MiraiCP {
                 std::string tmp = m.substr(pos, back - pos);
                 tmp = Tools::replace(std::move(tmp), "[mirai:", "");
                 size_t i = tmp.find(':'); // first :
-                int t = SingleMessage::getKey(tmp.substr(0, i));
+                int t = SingleMessage::getMiraiCodeKey(tmp.substr(0, i));
                 switch (t) {
-                    case 0:
+                    case SingleMessageType::PlainText_t:
                         // no miraiCode key is PlainText
                         Logger::logger.error("无法预料的错误, 信息: " + m);
                         break;
-                    case 1:
+                    case SingleMessageType::At_t:
                         mc.add(At(std::stoll(tmp.substr(i + 1, tmp.length() - i - 1))));
                         break;
-                    case 2:
+                    case SingleMessageType::AtAll_t:
                         mc.add(AtAll());
                         break;
-                    case 3:
+                    case SingleMessageType::Image_t:
                         mc.add(Image(tmp.substr(i + 1, tmp.length() - i - 1)));
                         break;
-                    case 4:
+                    case SingleMessageType::LightApp_t:
                         mc.add(LightApp(tmp.substr(i + 1, tmp.length() - i - 1)));
                         break;
-                    case 5: {
+                    case SingleMessageType::ServiceMessage_t: {
                         size_t comma = tmp.find(',');
                         mc.add(ServiceMessage(std::stoi(tmp.substr(i + 1, comma - i - 1)),
                                               tmp.substr(comma + 1, tmp.length() - comma - 1)));
                         break;
                     }
-                    case 6: {
+                    case SingleMessageType::RemoteFile_t: {
                         //[mirai:file:/b53231e8-46dd-11ec-8ba5-5452007bd6c0,102,run.bat,55]
                         size_t comma1 = tmp.find(',');
                         size_t comma2 = tmp.find(',', comma1 + 1);
@@ -92,13 +92,13 @@ namespace MiraiCP {
                                           std::stoll(tmp.substr(comma3 + 1, tmp.length() - comma3 - 1))));
                         break;
                     }
-                    case 7:
+                    case SingleMessageType::Face_t:
                         mc.add(Face(std::stoi(tmp.substr(i + 1, tmp.length() - i - 1))));
                         break;
-                    case 8:
+                    case SingleMessageType::FlashImage_t:
                         mc.add(FlashImage(tmp.substr(i + 1, tmp.length() - i - 1)));
                         break;
-                    case 9: {
+                    case SingleMessageType::MusicShare_t: {
                         //[mirai:musicshare:name,title,summary,jUrl,pUrl,mUrl,brief]
                         auto temp = Tools::split(tmp.substr(i + 1, tmp.length() - i - 1), ",");
                         mc.add(MusicShare(temp[0], temp[1], temp[2], temp[3], temp[4], temp[5], temp[6]));
@@ -232,7 +232,7 @@ namespace MiraiCP {
                     mc.add(MessageSource::deserializeFromString(node.dump()));
                     break;
                 case SingleMessageType::QuoteReply_t:
-                    mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"])));
+                    mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
                     break;
                 case SingleMessageType::UnsupportedMessage_t:
                     mc.add(UnSupportMessage(node["struct"].dump()));
@@ -247,8 +247,9 @@ namespace MiraiCP {
                     mc.add(AtAll());
                     break;
                 case SingleMessageType::Image_t:
-                    mc.add(Image(node["imageId"], node["size"], node["width"], node["height"], node["imageType"],
-                                 node["isEmoji"]));
+                    mc.add(Image(node["imageId"], node["size"].get<size_t>(), node["width"].get<int>(),
+                                 node["height"].get<int>(), node["imageType"],
+                                 node["isEmoji"].get<bool>()));
                     break;
                 case SingleMessageType::Face_t:
                     mc.add(Face(node["id"]));
