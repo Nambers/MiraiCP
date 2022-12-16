@@ -111,7 +111,7 @@ object CPPLib {
         }
 
     suspend fun kQueryImgInfo(source: String): String = json.decodeFromString<Config.ImgInfo>(source).let {
-        PublicShared.queryImgInfo(it.imageid!!, it.size, it.width, it.height, it.type)
+        PublicShared.queryImgInfo(it.imageId!!, it.size, it.width, it.height, it.type)
     }
 
     enum class Operation_code {

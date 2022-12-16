@@ -42,7 +42,7 @@ namespace MiraiCP {
 
     auto GetMemberFromPool(const json &in_json) {
         try {
-            return GetMemberFromPool(in_json["id"], in_json["id2"], in_json["id3"]);
+            return GetMemberFromPool(in_json["id"], in_json["groupId"], in_json["botId"]);
         } catch (const nlohmann::detail::exception &) {
             throw IllegalArgumentException("构造Member时传入的json异常", MIRAICP_EXCEPTION_WHERE);
         }

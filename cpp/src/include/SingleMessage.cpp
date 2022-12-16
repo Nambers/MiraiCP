@@ -34,6 +34,7 @@ namespace MiraiCP {
 
     // 静态成员
     const char *const *const SingleMessage::messageType = SingleMessageType::messageTypeInternal + 6;
+    const char *const *const SingleMessage::miraiCodeName = SingleMessageType::miraiCodeNameInternal + 6;
 
     QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
         if (m.internalType != type()) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.internalType) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
@@ -47,7 +48,14 @@ namespace MiraiCP {
 
     int SingleMessage::getKey(const std::string &value) {
         for (auto index = Types::Begin; index != Types::End; ++index) {
-            if (Tools::iequal(SingleMessageType::messageTypeInternal[index], value)) return index - 6;
+            if (Tools::iequal(SingleMessage::messageType[index], value)) return index;
+        }
+        return Types::UnsupportedMessage_t; // default to unSupportMessage
+    }
+
+    int SingleMessage::getMiraiCodeKey(const std::string &value) {
+        for (auto index = Types::Begin; index != Types::End; ++index) {
+            if (Tools::iequal(SingleMessage::miraiCodeName[index], value)) return index;
         }
         return Types::UnsupportedMessage_t; // default to unSupportMessage
     }
@@ -84,13 +92,13 @@ namespace MiraiCP {
         return {{"type", SingleMessage::messageType[this->internalType]}};
     }
     nlohmann::json Image::toJson() const {
-        return {{"type",    SingleMessage::messageType[this->internalType]},
-                {"imageId", id},
-                {"size",    size},
-                {"width",   width},
-                {"height",  height},
-                {"type",    imageType},
-                {"isEmoji", isEmoji}};
+        return {{"type",      SingleMessage::messageType[this->internalType]},
+                {"imageId",   id},
+                {"size",      size},
+                {"width",     width},
+                {"height",    height},
+                {"imageType", imageType},
+                {"isEmoji",   isEmoji}};
     }
 
     bool Image::isUploaded(QQID botid) {
@@ -102,12 +110,12 @@ namespace MiraiCP {
         return re == "true";
     }
     nlohmann::json FlashImage::toJson() const {
-        return {{"type",    SingleMessage::messageType[this->internalType]},
-                {"imageId", id},
-                {"size",    size},
-                {"width",   width},
-                {"height",  height},
-                {"type",    imageType}};
+        return {{"type",      SingleMessage::messageType[this->internalType]},
+                {"imageId",   id},
+                {"size",      size},
+                {"width",     width},
+                {"height",    height},
+                {"imageType", imageType}};
     }
     nlohmann::json LightApp::toJson() const {
         return {{"type",    SingleMessage::messageType[this->internalType]},

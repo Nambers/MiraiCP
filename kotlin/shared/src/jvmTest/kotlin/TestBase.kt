@@ -58,8 +58,8 @@ open class TestBase {
                 cfgPath.createFileIfNotExists()
                 val result = when {
                     os.contains("win") -> {
-                        libPath = libPath.resolve("build\\src\\libloader\\Debug\\libLoader.dll")
-                        pluginPath = pluginPath.resolve("build\\Debug\\libMiraiCP_multi.dll")
+                        libPath = libPath.resolve("cmake-build-debug\\libLoader.dll")
+                        pluginPath = pluginPath.resolve("cmake-build-debug\\libMiraiCP_multi.dll")
                         "cmd /C \"(if not exist \"build\\\" mkdir build) && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF .. && cd .. && cmake --build build --target Loader && cmake --build build --target MiraiCP_multi\"".runCommand(
                             TestUtils.cppPath
                         )
@@ -73,6 +73,7 @@ open class TestBase {
 
                     else -> null
                 }
+                println(libPath.absolutePath)
                 require(libPath.exists())
                 require(pluginPath.exists())
                 cfgPath.writeText(
