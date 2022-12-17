@@ -446,5 +446,7 @@ namespace LibLoader {
         } catch (...) {} // do not leak any exception
     }
 
-
+    void registerAllPlugin(const std::string &cfgPath) noexcept {
+        Plugin::registerAllPlugin(cfgPath);
+    }
 } // namespace LibLoader

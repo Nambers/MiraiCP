@@ -82,7 +82,7 @@ private:
 #include <thread>
 
 
-thread_local bool alreadyInHandler;
+thread_local bool alreadyInHandler = false;
 // 禁止从其他地方构造
 class [[maybe_unused]] SignalHandle {
     SignalHandle() noexcept {
@@ -117,21 +117,30 @@ private:
             // test the thread is from jvm
             char threadName[80];
             platform_get_thread_name(platform_thread_self(), threadName, 80);
-            if (strcmp(threadName, "libLoader") != 0) {
+            if (strcmp(threadName, "libLoader") == 0) {
+                LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
+                exit(1);
+            } else if (strcmp(threadName, "LoaderWorker") == 0) {
+                // 非插件导致的工作线程致命错误
+                LibLoader::logger.error("libLoader工作线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
+                exit(1);
+            }
+            // todo(Antares): 判断是不是插件调new thread弄出来的线程
+
+            {
                 getOact().sa_sigaction(a, si, unused);
                 return;
             }
-            LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
-            exit(1);
         }
+        // 插件导致的崩溃，卸载该插件
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
         LibLoader::PluginListManager::disableByIdVanilla(pluginName);
         LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 插件运行终止");
         LibLoader::sendPluginException(std::move(pluginName));
 
-        pthread_cancel(pthread_self());
         // todo(Antares): 重启被杀死的工作线程，思路：通过给worker线程加入thread_local标记确定线程对应的index，让thread pool重置该位置的线程
+        pthread_cancel(pthread_self());
     }
 
 private:
