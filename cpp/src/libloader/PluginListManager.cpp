@@ -262,11 +262,10 @@ namespace LibLoader {
         std::lock_guard lk(pluginlist_mtx);
         for (auto &&[id, pluginConfig]: id_plugin_list) {
             if (pluginConfig->isEnabled()) {
-                std::shared_ptr<MiraiCP::MiraiCPString> strPtrCopy = strPtr;
                 auto pluginConfigCopy = pluginConfig;
                 //                auto eventPtr = pluginConfig->eventFunc;
                 //                // 禁止捕获和plugin本身有关的东西，因为不知道谁先运行完
-                BS::pool->push_task([idCopy = id, strPtrCopy = std::move(strPtrCopy), pluginConfig = std::move(pluginConfigCopy)]() mutable {
+                BS::pool->push_task([idCopy = id, strPtrCopy = strPtr, pluginConfig = std::move(pluginConfigCopy)]() mutable {
                     setThreadRunningPluginId(std::move(idCopy));
                     pluginConfig->pushEvent_worker(*strPtrCopy);
                     unsetThreadRunningPluginId();
