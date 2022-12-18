@@ -29,8 +29,16 @@ import java.util.concurrent.TimeUnit
 
 object TestUtils {
     var init = false
-    val path = File("./src/jvmTest/kotlin")
-    val cppPath = File("../../cpp/")
+    val workingDir by lazy{
+        File(System.getenv("libpath"))
+    }
+    val libExtension by lazy{
+        if (System.getProperty("os.name").lowercase().contains("win")) {
+            "dll"
+        } else {
+            "so"
+        }
+    }
     private val botFactory by lazy {
         MockBotFactory.initialize()
         MockBotFactory.newMockBotBuilder()
