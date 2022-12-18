@@ -20,6 +20,7 @@ package tech.eritquearcus.miraicp.shared.test.events
 
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.event.events.GroupMessagePreSendEvent
+import net.mamoe.mirai.message.data.*
 import org.junit.jupiter.api.Test
 import tech.eritquearcus.miraicp.shared.test.TestBase
 import tech.eritquearcus.miraicp.shared.test.TestUtils.eventList
@@ -38,7 +39,21 @@ class Events : TestBase() {
         }
         runBlocking {
             listener
-            member.says("a")
+            member.says(buildMessageChain {
+//                this.add(QuoteReply(mc))
+                this.add(PlainText("IAmPlainText"))
+                val builder = Image.Builder.newBuilder("{01E9451B-70ED-EAE3-B37C-101F1EEBF5B5}.jpg")
+                builder.size = 123
+                builder.type = ImageType.PNG
+                this.add(builder.build())
+                this.add(AtAll)
+                this.add(At(member))
+                this.add(Face(1))
+                this.add(UnsupportedMessage.create("".encodeToByteArray()))
+//                this.add(FileMessage("",1,"",1))
+//                this.add(FlashImage(builder.build()))
+//                this.add(MusicShare(MusicKind.QQMusic, "", "", "", "", ""))
+            })
             waitUntilEnd()
         }
         println(eventList)

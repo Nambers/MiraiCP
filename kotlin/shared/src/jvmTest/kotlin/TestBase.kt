@@ -25,9 +25,11 @@ import net.mamoe.mirai.utils.createFileIfNotExists
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Order
+import org.junit.jupiter.api.fail
 import tech.eritquearcus.miraicp.shared.CPPLib
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.test.TestUtils.runCommand
+import java.io.File
 import java.util.*
 import kotlin.system.exitProcess
 
@@ -49,53 +51,25 @@ open class TestBase {
         @Order(0)
         fun loadCPPLib() {
             if (!TestUtils.init) {
-                require(TestUtils.path.exists())
-                require(TestUtils.cppPath.exists())
-                val os = System.getProperty("os.name").lowercase(Locale.getDefault())
-                var libPath = TestUtils.cppPath
-                var pluginPath = TestUtils.cppPath
-                val cfgPath = TestUtils.path.resolve("file/config.json")
+                println("Currently working dir:" + TestUtils.workingDir)
+                require(TestUtils.workingDir.exists())
+                val cfgPath = TestUtils.workingDir.resolve("testFileFromKt4Mock/config.json")
                 cfgPath.createFileIfNotExists()
-                val result = when {
-                    os.contains("win") -> {
-                        libPath = libPath.resolve("cmake-build-debug\\libLoader.dll")
-                        pluginPath = pluginPath.resolve("cmake-build-debug\\libMiraiCP_multi.dll")
-                        "cmd /C \"(if not exist \"build\\\" mkdir build) && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF .. && cd .. && cmake --build build --target Loader && cmake --build build --target MiraiCP_multi\"".runCommand(
-                            TestUtils.cppPath
-                        )
-                    }
-
-                    os.contains("nix") || os.contains("nux") || os.contains("aix") -> {
-                        "mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF .. && make Loader".runCommand(
-                            TestUtils.cppPath
-                        )
-                    }
-
-                    else -> null
-                }
-                println(libPath.absolutePath)
-                require(libPath.exists())
-                require(pluginPath.exists())
                 cfgPath.writeText(
                     """
 {
-  "advanceConfig": {
-    "libLoaderPath": "${libPath.absolutePath.replace("\\", "/")}"
-  },
   "accounts": [],
   "cppPaths": [
     {
-      "path": "${pluginPath.absolutePath.replace("\\", "/")}"
+      "path": "${TestUtils.workingDir.resolve("libMiraiCP_multi.${TestUtils.libExtension}").absolutePath.replace(File.separator, "/")}"
     }
   ]
 }
     """.trimIndent()
                 )
-                if (result?.contains("err") == true) {
-                    println(result)
-                    exitProcess(-1)
-                }
-                CPPLib.init(listOf(libPath.parent), cfgPath.absolutePath)
+                bot
+                CPPLib.init(listOf(TestUtils.workingDir.absolutePath.replace(File.separator, "/")),
+                    cfgPath.absolutePath)
             }
         }
 
