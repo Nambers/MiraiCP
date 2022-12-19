@@ -111,7 +111,7 @@ object CPPLib {
         }
 
     suspend fun kQueryImgInfo(source: String): String = json.decodeFromString<Config.ImgInfo>(source).let {
-        PublicShared.queryImgInfo(it.imageId!!, it.size, it.width, it.height, it.type)
+        PublicShared.queryImgInfo(it.imageId!!, it.size, it.width, it.height, it.imageType)
     }
 
     enum class Operation_code {
@@ -179,7 +179,7 @@ object CPPLib {
                     root.source!!, root.contactSource!!
                 )
                 /// 查询图片下载地址
-                Operation_code.QueryImgInfo.ordinal -> kQueryImgInfo(root.toString())
+                Operation_code.QueryImgInfo.ordinal -> kQueryImgInfo(json.encodeToString(root))
                 /// 禁言
                 Operation_code.MuteM.ordinal -> PublicShared.mute(
                     root.time!!, contact(root.contactSource!!)

@@ -256,7 +256,9 @@ namespace MiraiCP {
 
     /*图片类实现*/
     void Image::refreshInfo() {
-        std::string re = KtOperation::ktOperation(KtOperation::QueryImgInfo, toJson());
+        auto tempJson = toJson();
+        tempJson.erase("type");
+        std::string re = KtOperation::ktOperation(KtOperation::QueryImgInfo, tempJson);
         if (re == "E1")
             throw RemoteAssetException("图片id格式错误", MIRAICP_EXCEPTION_WHERE);
         json j = json::parse(re);
@@ -265,7 +267,7 @@ namespace MiraiCP {
         this->size = j["size"];
         this->width = j["width"];
         this->height = j["height"];
-        this->imageType = j["type"];
+        this->imageType = j["imageType"];
         this->isEmoji = j["isEmoji"];
     }
 
@@ -276,7 +278,8 @@ namespace MiraiCP {
                 j["size"],
                 j["width"],
                 j["height"],
-                j["type"]);
+                j["imageType"],
+                j["isEmoji"]);
     }
     FlashImage FlashImage::deserialize(const std::string &str) {
         json j = json::parse(str);
@@ -285,7 +288,7 @@ namespace MiraiCP {
                 j["size"],
                 j["width"],
                 j["height"],
-                j["type"]);
+                j["imageType"]);
     }
 
     FlashImage::FlashImage(const Image &img) {

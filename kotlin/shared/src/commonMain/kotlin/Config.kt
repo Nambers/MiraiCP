@@ -155,8 +155,8 @@ object Config {
         val md5: String? = null,
         val url: String? = null,
         val imageId: String? = null,
-        val type: Int? = null,
         val isEmoji: Boolean? = null,
+        val imageType: String? = null,
     )
 
     @Serializable
@@ -221,10 +221,12 @@ object Config {
             val width: Int? = null,
             val height: Int? = null,
             val md5: String? = null,
+            val isEmoji: Boolean? = null,
             val url: String? = null,
-            val imageid: String? = null,
+            val imageId: String? = null,
             val type: Int? = null,
             val accept: Boolean? = null,
+            val imageType: String? = null,
         )
     }
 

@@ -176,7 +176,7 @@ internal fun Config.ImgInfo.toImage(): Image = Image.newBuilder(this.imageId!!).
     this@apply.height = this@toImage.height ?: 0
     this@apply.width = this@toImage.width ?: 0
     this@apply.size = this@toImage.size
-    this@apply.type = ImageType.values()[this@toImage.type ?: ImageType.UNKNOWN.ordinal]
+    this@apply.type = ImageType.valueOf(this@toImage.imageType ?: "UNKNOWN")
     this@apply.isEmoji = this@toImage.isEmoji ?: false
 }.build()
 
