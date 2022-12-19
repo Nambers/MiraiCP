@@ -25,13 +25,10 @@ import net.mamoe.mirai.utils.createFileIfNotExists
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.fail
 import tech.eritquearcus.miraicp.shared.CPPLib
 import tech.eritquearcus.miraicp.shared.PublicShared
-import tech.eritquearcus.miraicp.shared.test.TestUtils.runCommand
 import java.io.File
 import java.util.*
-import kotlin.system.exitProcess
 
 open class TestBase {
     companion object {
@@ -61,7 +58,12 @@ open class TestBase {
   "accounts": [],
   "cppPaths": [
     {
-      "path": "${TestUtils.workingDir.resolve("libMiraiCP_multi.${TestUtils.libExtension}").absolutePath.replace(File.separator, "/")}"
+      "path": "${
+                        TestUtils.workingDir.resolve("libMiraiCP_mock_test.${TestUtils.libExtension}").absolutePath.replace(
+                            File.separator,
+                            "/"
+                        )
+                    }"
     }
   ]
 }

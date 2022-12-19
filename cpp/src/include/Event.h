@@ -812,7 +812,7 @@ namespace MiraiCP {
         static std::shared_ptr<NodeHandle> registerBlockingEvent(std::function<bool(EventClass)> callback, priority_level level = 100) {
             static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
-                return callback(*dynamic_cast<EventClass *>(p));
+                return callback(*static_cast<EventClass *>(p));
             };
             auto t = eventNode(tmp);
             auto ans = t.getHandle();

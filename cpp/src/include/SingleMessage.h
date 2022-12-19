@@ -448,6 +448,8 @@ namespace MiraiCP {
         bool operator==(const QuoteReply &qr) const {
             return this->source == qr.source;
         }
+
+        nlohmann::json toJson() const override;
     };
 
     /// 接收到的音频文件, 发送用`Contact.sendAudio`

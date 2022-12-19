@@ -26,6 +26,30 @@ target_include_directories(MiraiCP_multi PUBLIC ${SDK_INCLUDES_INTERNAL})
 target_compile_definitions(MiraiCP_multi PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
 # -- end --
 
+# -- MiraiCP mock --
+add_library(
+        MiraiCP_mock_test
+        SHARED
+        ${SRC_PATH}/../mockTest/mockTestEntrance.cpp
+        ${SRC_PATH}/../mockTest/mockTests.cpp
+        ${SRC_PATH}/../mockTest/mockTests.h
+        ${MIRAICP_CPP_PATH}
+        ${MIRAICP_COMMON_PATH}
+)
+set_target_properties(
+        MiraiCP_mock_test PROPERTIES
+        PREFIX lib
+        OUTPUT_NAME MiraiCP_mock_test
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+target_include_directories(MiraiCP_mock_test PUBLIC ${SDK_INCLUDES_INTERNAL})
+
+# target_compile_options(MiraiCP_multi PUBLIC -Wall)
+target_compile_definitions(MiraiCP_mock_test PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
+# -- end --
+
 # -- MiraiCP single --
 if (NOT EXISTS "${SRC_PATH}/single_include/MiraiCP/MiraiCP.hpp" OR NOT EXISTS "${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp")
     FILE(WRITE "${SRC_PATH}/single_include/MiraiCP/MiraiCP.hpp" "")
