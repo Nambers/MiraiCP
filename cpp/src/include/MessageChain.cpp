@@ -30,6 +30,13 @@ namespace MiraiCP {
         return Tools::VectorToString(toMiraiCodeVector(), "");
     }
 
+    nlohmann::json MessageChain::toJson() const {
+        nlohmann::json j = nlohmann::json::array();
+        for (auto &&a: *this)
+            j.emplace_back(a->toJson());
+        return j;
+    }
+
     MessageSource MessageChain::quoteAndSend0(std::string msg, QQID groupid) {
         json sign{{"MiraiCode", true},
                   {"groupid", groupid}};
