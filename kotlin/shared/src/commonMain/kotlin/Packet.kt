@@ -416,11 +416,14 @@ object Packets {
             /// nick of requester
             private val fromNick: String
 
+            private val message: String
+
             constructor(event: MemberJoinRequestEvent) {
                 val data = event.toRequestEventData()
                 requestData = json.encodeToString(data)
                 invitor = event.invitor?.toContact()
                 fromNick = event.fromNick
+                message = event.message
             }
         }
 

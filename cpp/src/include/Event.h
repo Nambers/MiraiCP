@@ -634,9 +634,12 @@ namespace MiraiCP {
         Member from;
         /// 申请人昵称
         std::string fromNick;
+        /// 申请信息
+        std::string message;
 
     public:
         explicit MemberJoinRequestEvent(BaseEventData j);
+
         /// 通过
         void accept() {
             operate(this->source, this->bot.id(), true);

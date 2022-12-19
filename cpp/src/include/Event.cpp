@@ -166,11 +166,18 @@ namespace MiraiCP {
     }
 
     MemberJoinRequestEvent::MemberJoinRequestEvent(BaseEventData j) : BotEvent(j.botId),
-                                                                       source(j.eventData["requestData"]),
-                                                                       group(j.subject->id, j.subject->botId),
-                                                                       invitor(j.eventData.contains("invitor") ? std::optional(Member(j.eventData["invitor"]["id"], j.eventData["invitor"]["groupId"], j.eventData["invitor"]["botId"])) : std::nullopt),
-                                                                       from(j.object->id, j.object->groupId, j.object->botId),
-                                                                       fromNick(j.eventData["fromNick"]){
+                                                                      source(j.eventData["requestData"]),
+                                                                      group(j.subject->id, j.subject->botId),
+                                                                      invitor(j.eventData.contains("invitor")
+                                                                              ? std::optional(
+                                                                                      Member(j.eventData["invitor"]["id"],
+                                                                                             j.eventData["invitor"]["groupId"],
+                                                                                             j.eventData["invitor"]["botId"]))
+                                                                              : std::nullopt),
+                                                                      from(j.object->id, j.object->groupId,
+                                                                           j.object->botId),
+                                                                      fromNick(j.eventData["fromNick"]),
+                                                                      message(j.eventData["message"]) {
     }
 
     void MemberJoinRequestEvent::operate(std::string_view s, QQID botid, bool sign, const std::string &msg) {
