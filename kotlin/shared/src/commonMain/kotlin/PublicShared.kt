@@ -61,9 +61,14 @@ expect object PublicSharedMultiplatform {
 }
 
 object PublicSharedData {
-    val logger: MiraiLogger by lazy {
-        MiraiLogger.Factory.create(this::class, "MiraiCP")
-    }
+    var _logger: MiraiLogger? = null
+    val logger: MiraiLogger
+        get() {
+            if (_logger == null) {
+                _logger = MiraiLogger.Factory.create(this::class, "MiraiCP")
+            }
+            return _logger!!
+        }
 
     // cannot modify after init
     lateinit var commandReg: CommandHandler
@@ -74,7 +79,7 @@ object PublicSharedData {
 
 object PublicShared {
     val friend_cache = ArrayList<NormalMember>(0)
-    private val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
+    val logger4plugins: MutableMap<String, MiraiLogger> = mutableMapOf()
     const val now_tag = "v${BuiltInConstants.version}"
 
     fun exit() {

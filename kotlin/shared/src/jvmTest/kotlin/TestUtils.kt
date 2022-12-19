@@ -18,11 +18,13 @@
 package tech.eritquearcus.miraicp.shared.test
 
 import kotlinx.coroutines.delay
-import net.mamoe.mirai.event.Event
-import net.mamoe.mirai.event.GlobalEventChannel
-import net.mamoe.mirai.event.events.FriendMessagePreSendEvent
+import net.mamoe.mirai.event.*
 import net.mamoe.mirai.mock.MockBot
 import net.mamoe.mirai.mock.MockBotFactory
+import net.mamoe.mirai.utils.MiraiInternalApi
+import net.mamoe.mirai.utils.PlatformLogger
+import tech.eritquearcus.miraicp.shared.PublicShared
+import tech.eritquearcus.miraicp.shared.PublicSharedData
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -45,13 +47,29 @@ object TestUtils {
     }
     var filter: (Event) -> Boolean = { true }
     val eventList = mutableListOf<Event>()
-    var end = false
+    val logList = mutableListOf<String>()
+    private var end = false
+    private fun collectLog(log: String) {
+        println(log)
+        logList.add(log)
+        if (log.contains("--test end--")) {
+            end = true
+        }
+    }
+
+    @OptIn(MiraiInternalApi::class)
     val listener by lazy {
+        PublicSharedData._logger = PlatformLogger("", output = { log ->
+            collectLog(log)
+        })
+        PublicShared.logger4plugins.forEach {
+            PublicShared.logger4plugins[it.key] = PlatformLogger(it.value.identity, output = { log ->
+                collectLog(log)
+            })
+        }
         GlobalEventChannel.subscribeAlways<Event> {
             println("Received event: $this")
-            if (this is FriendMessagePreSendEvent && this.message.contentEquals("--test end--"))
-                end = true
-            else if (filter(this))
+            if (filter(this))
                 eventList.add(this)
         }
     }
@@ -81,4 +99,15 @@ object TestUtils {
     }
 
     fun newBot(): MockBot = botFactory.create()
+
+    inline fun <reified T : Event, R> noBroadcast(chan: EventChannel<Event>, block: () -> R): R {
+        val listener = chan.subscribe<T>(priority = EventPriority.HIGHEST) { event ->
+            event.intercept()
+            ListeningStatus.LISTENING
+        }
+        listener.start()
+        val re = block()
+        listener.cancel()
+        return re
+    }
 }

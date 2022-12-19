@@ -40,6 +40,12 @@ namespace MiraiCP {
         if (m.internalType != type()) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.internalType) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
         source = MessageSource::deserializeFromString(m.content);
     }
+    nlohmann::json QuoteReply::toJson() const {
+        nlohmann::json re;
+        re["type"] = "QuoteReply";
+        re["source"] = nlohmann::json::parse(source.source);
+        return re;
+    }
 
     nlohmann::json PlainText::toJson() const {
         return {{"type",    SingleMessage::messageType[this->internalType]},
@@ -149,7 +155,7 @@ namespace MiraiCP {
     }
     nlohmann::json UnSupportMessage::toJson() const {
         return {{"type",    SingleMessage::messageType[this->internalType]},
-                {"content", content}};
+                {"struct", content}};
     }
 
     //远程文件(群文件)
