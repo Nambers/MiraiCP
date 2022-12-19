@@ -224,6 +224,7 @@ object Config {
             val url: String? = null,
             val imageid: String? = null,
             val type: Int? = null,
+            val accept: Boolean? = null,
         )
     }
 
