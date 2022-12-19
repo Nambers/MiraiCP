@@ -280,13 +280,14 @@ object PublicShared {
             f.close()
             json.encodeToString(
                 Config.ImgInfo(
-                    img.size,
-                    img.width,
-                    img.height,
-                    json.encodeToString(img.md5),
-                    img.queryUrl(),
-                    img.imageId,
-                    img.imageType.ordinal
+                    size = img.size,
+                    width = img.width,
+                    height = img.height,
+                    md5 = json.encodeToString(img.md5),
+                    url = img.queryUrl(),
+                    imageId = img.imageId,
+                    imageType = img.imageType.name,
+                    isEmoji = img.isEmoji,
                 )
             )
     } catch (e: OverFileSizeMaxException) {
@@ -318,13 +319,13 @@ object PublicShared {
         }
     }
 
-    suspend fun queryImgInfo(id: String, size: Long?, width: Int?, height: Int?, type: Int?): String {
+    suspend fun queryImgInfo(id: String, size: Long?, width: Int?, height: Int?, imageType: String?): String {
         return try {
             val tmp = Image.newBuilder(id).apply {
                 this.size = size ?: 0L
                 this.width = width ?: 0
                 this.height = height ?: 0
-                this.type = ImageType.values()[type ?: ImageType.UNKNOWN.ordinal]
+                this.type = ImageType.valueOf(imageType ?: "UNKNOWN")
             }.build()
             json.encodeToString(
                 Config.ImgInfo(
@@ -333,7 +334,8 @@ object PublicShared {
                     url = tmp.queryUrl(),
                     width = tmp.width,
                     height = tmp.height,
-                    type = tmp.imageType.ordinal
+                    imageType = tmp.imageType.name,
+                    isEmoji = tmp.isEmoji,
                 )
             )
         } catch (e: IllegalArgumentException) {
