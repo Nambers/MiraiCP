@@ -52,7 +52,12 @@ object Packets {
     private fun Bot.toContact(): Contact = Contact(4, this.id, this.id)
     private fun Stranger.toContact(): Contact = Contact(5, this.id, this.bot.id)
     private fun net.mamoe.mirai.contact.Contact.toContact(): Contact = when (this) {
-        is Group, is Friend, is Member, is Bot, is Stranger, is AnonymousMember -> toContact()
+        is Group -> this.toContact()
+        is Member -> this.toContact()
+        is AnonymousMember -> this.toContact()
+        is Friend -> this.toContact()
+        is Bot -> (this as Bot).toContact()
+        is Stranger -> this.toContact()
         else -> {
             PublicSharedData.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:Contact.toContact(), info:${this}")
             throw IllegalArgumentException("Unknown contact type")

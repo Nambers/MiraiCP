@@ -133,6 +133,8 @@ namespace MiraiCP {
             return tmp;
         }
 
+        nlohmann::json toJson() const;
+
         /// @brief 添加元素
         /// @tparam T 任意的SingleMessage的子类
         /// @param a 添加的值

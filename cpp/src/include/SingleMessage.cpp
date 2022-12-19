@@ -80,7 +80,7 @@ namespace MiraiCP {
     }
     nlohmann::json At::toJson() const {
         return {{"type",   SingleMessage::messageType[this->internalType]},
-                {"target", std::to_string(target)}};
+                {"target", target}};
     }
     At::At(const SingleMessage &sg) : SingleMessage(sg) {
         if (sg.internalType != type())

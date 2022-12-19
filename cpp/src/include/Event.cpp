@@ -279,11 +279,14 @@ namespace MiraiCP {
     }
 
     BaseEventData::BaseEventData(nlohmann::json j) {
-        this->botId = j["botId"];
+        this->botId = 0;
         if (j.contains("subject")) {
+            this->botId = j["subject"]["botId"].get<QQID>();
             this->subject = BuiltInContact(Tools::json_jsonmover(j, "subject"));
+
         }
         if (j.contains("object")) {
+            this->botId = j["object"]["botId"].get<QQID>();
             this->object = BuiltInContact(Tools::json_jsonmover(j, "object"));
         }
         this->eventData = Tools::json_jsonmover(j, "eventData");
