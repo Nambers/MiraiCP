@@ -59,13 +59,13 @@ object TestUtils {
 
     @OptIn(MiraiInternalApi::class)
     val listener by lazy {
-        PublicSharedData._logger = PlatformLogger("", output = { log ->
+        PublicSharedData._logger = PlatformLogger("TestLogger", output = { log ->
             collectLog(log)
-        })
+        }, isColored = false)
         PublicShared.logger4plugins.forEach {
             PublicShared.logger4plugins[it.key] = PlatformLogger(it.value.identity, output = { log ->
                 collectLog(log)
-            })
+            }, isColored = false)
         }
         GlobalEventChannel.subscribeAlways<Event> {
             println("Received event: $this")
