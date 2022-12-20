@@ -43,6 +43,14 @@ open class TestBase {
             bot
         }
 
+        val group by lazy{
+            bot.addGroup(111, "testGr1")
+        }
+
+        val member by lazy{
+            group.addMember(222, "testMem1")
+        }
+
         @JvmStatic
         @BeforeAll
         @Order(0)
