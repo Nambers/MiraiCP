@@ -75,7 +75,7 @@ namespace MiraiCP {
         constexpr const char *messageTypeInternal[] = {
                 "MessageSource",        // -6
                 "MarketFace",             // -5
-                "OnlineForwardedMessage", // -4
+                "ForwardMessage", // -4
                 "OnlineAudio",            // -3
                 "QuoteReply",             // -2
                 "UnsupportedMessage",       // -1

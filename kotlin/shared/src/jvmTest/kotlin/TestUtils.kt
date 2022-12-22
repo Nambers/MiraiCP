@@ -19,6 +19,8 @@ package tech.eritquearcus.miraicp.shared.test
 
 import kotlinx.coroutines.delay
 import net.mamoe.mirai.event.*
+import net.mamoe.mirai.message.data.MessageChain
+import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.mock.MockBot
 import net.mamoe.mirai.mock.MockBotFactory
 import net.mamoe.mirai.utils.MiraiInternalApi
@@ -28,6 +30,7 @@ import tech.eritquearcus.miraicp.shared.PublicSharedData
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlin.test.assertEquals
 
 object TestUtils {
     var init = false
@@ -81,6 +84,16 @@ object TestUtils {
         listener.cancel()
     }
 
+    fun checkMessageChainJsonResultFromLog(mc: MessageChain) {
+        val logs = logList.filter { it.contains("after_serialization:") }
+        assertEquals(1, logs.size)
+        assertEquals(
+            mc.serializeToJsonString(),
+            MessageChain.deserializeFromJsonString(logs[0].substringAfter("after_serialization:"))
+                .serializeToJsonString()
+        )
+    }
+
     fun String.runCommand(workingDir: File): String? {
         return try {
             val parts = this.split("\\s".toRegex())
@@ -107,7 +120,7 @@ object TestUtils {
         }
         listener.start()
         val re = block()
-        listener.cancel()
+        listener.complete()
         return re
     }
 }
