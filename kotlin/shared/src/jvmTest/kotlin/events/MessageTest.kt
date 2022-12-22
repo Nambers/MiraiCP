@@ -21,14 +21,12 @@ package tech.eritquearcus.miraicp.shared.test.events
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
-import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import org.junit.jupiter.api.Test
 import tech.eritquearcus.miraicp.shared.test.TestBase
+import tech.eritquearcus.miraicp.shared.test.TestUtils.checkMessageChainJsonResultFromLog
 import tech.eritquearcus.miraicp.shared.test.TestUtils.listener
-import tech.eritquearcus.miraicp.shared.test.TestUtils.logList
 import tech.eritquearcus.miraicp.shared.test.TestUtils.noBroadcast
 import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
-import kotlin.test.assertEquals
 
 
 class MessageTest : TestBase() {
@@ -57,18 +55,13 @@ class MessageTest : TestBase() {
         }
         member.says(mc)
         waitUntilEnd()
-        val logs = logList.filter { it.contains("after_serialization:") }
-        assertEquals(1, logs.size)
-        assertEquals(mc.serializeToJsonString(),
-            MessageChain.deserializeFromJsonString(logs[0].substringAfter("after_serialization:"))
-                .serializeToJsonString()
-        )
+        checkMessageChainJsonResultFromLog(mc)
     }
 
     @Test
     fun forwardMessageOfSingleMessages() = runBlocking {
         listener
-        val msg = buildForwardMessage(group){
+        val mc = buildForwardMessage(group) {
             this.add(member, PlainText("IAmPlainText"))
             val builder = Image.Builder.newBuilder("{01E9451B-70ED-EAE3-B37C-101F1EEBF5B5}.jpg")
             builder.size = 123
@@ -77,8 +70,37 @@ class MessageTest : TestBase() {
             this.add(member, AtAll)
             this.add(member, At(member))
             this.add(member, Face(1))
-        }
-        member.says(msg)
+        }.toMessageChain()
+        member.says(mc)
         waitUntilEnd()
+        checkMessageChainJsonResultFromLog(mc)
+    }
+
+    @Test
+    fun forwardMessageOfForwardMessages() = runBlocking {
+        listener
+        val mc = buildForwardMessage(group) {
+            this.add(member, PlainText("IAmPlainText"))
+            val builder = Image.Builder.newBuilder("{01E9451B-70ED-EAE3-B37C-101F1EEBF5B5}.jpg")
+            builder.size = 123
+            builder.type = ImageType.PNG
+            this.add(member, builder.build())
+            this.add(member, AtAll)
+            this.add(member, At(member))
+            this.add(member, Face(1))
+            this.add(member, buildForwardMessage(group) {
+                this.add(member, PlainText("IAmPlainText"))
+                val builder2 = Image.Builder.newBuilder("{01E9451B-70ED-EAE3-B37C-101F1EEBF5B5}.jpg")
+                builder2.size = 123
+                builder2.type = ImageType.PNG
+                this.add(member, builder2.build())
+                this.add(member, AtAll)
+                this.add(member, At(member))
+                this.add(member, Face(1))
+            })
+        }.toMessageChain()
+        member.says(mc)
+        waitUntilEnd()
+        checkMessageChainJsonResultFromLog(mc)
     }
 }

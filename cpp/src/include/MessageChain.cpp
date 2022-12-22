@@ -146,7 +146,8 @@ namespace MiraiCP {
                                   jArray[1]["musicUrl"], jArray[1]["brief"]));
                 return mc;
             }
-            mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(jArray));
+            // todo del MessageSource deserialization methods
+//            mc.add(ForwardedMessage::deserializationFromMessageSourceJson(jArray));
             return mc;
         }
 
@@ -236,7 +237,7 @@ namespace MiraiCP {
                     mc.add(RemoteFile(node["id"], node["internalId"], node["name"], node["size"]));
                     break;
                 case SingleMessageType::MessageSource_t:
-                    mc.add(MessageSource::deserializeFromString(node.dump()));
+//                    mc.add(MessageSource::deserializeFromString(node.dump()));
                     break;
                 case SingleMessageType::QuoteReply_t:
                     mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
@@ -263,6 +264,9 @@ namespace MiraiCP {
                     break;
                 case SingleMessageType::FlashImage_t:
                     mc.add(FlashImage(node["imageId"]));
+                    break;
+                case SingleMessageType::OnlineForwardedMessage_t:
+                    mc.add(ForwardedMessage::deserializationFromMessageJson(node));
                     break;
                 default:
                     Logger::logger.warning(
