@@ -23,6 +23,7 @@
 #include "commonTools.h"
 #include "libOpen.h"
 #include "loaderTools.h"
+#include <sstream>
 #include <string>
 #include <utility>
 
