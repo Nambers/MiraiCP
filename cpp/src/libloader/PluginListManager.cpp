@@ -282,4 +282,9 @@ namespace LibLoader {
 
         addNewPlugin(pluginPtr);
     }
+
+    bool PluginListManager::pluginNameLookup(const std::string &_id) {
+        std::lock_guard lk(pluginlist_mtx);
+        return id_plugin_list.find(_id) != id_plugin_list.end();
+    }
 } // namespace LibLoader

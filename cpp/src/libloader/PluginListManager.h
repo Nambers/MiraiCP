@@ -99,6 +99,8 @@ namespace LibLoader {
         static void broadcastToAllEnabledPlugins(const std::shared_ptr<MiraiCP::MiraiCPString> &strPtr);
 
         static void loadNewPluginByPath(const std::string &_path, bool activateNow);
+
+        static bool pluginNameLookup(const std::string &_id);
     };
 } // namespace LibLoader
 

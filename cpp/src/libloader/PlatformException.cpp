@@ -16,12 +16,12 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
+#include "BS_thread_pool.hpp"
 #include "LoaderTaskQueue.h"
 #include "PlatformThreading.h"
 #include "PluginListManager.h"
 #include "commonTools.h"
 
-// TODO(Antares): 处理线程池异常
 #if MIRAICP_WINDOWS
 #include "LoaderLogger.h"
 #include "ThreadController.h"
@@ -50,12 +50,16 @@ public:
                 LibLoader::logger.error("libLoader工作线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
                 exit(1);
             }
-            // todo(Antares): 判断是不是插件调new thread弄出来的线程
 
-            {
+            std::string maybeId = threadName;
+            // 插件列表中查询是否有这个线程名的插件，如果没有则放弃处理，有则卸载
+            if (LibLoader::PluginListManager::pluginNameLookup(maybeId)) {
+                pluginName = std::move(maybeId);
+            } else {
                 return EXCEPTION_CONTINUE_EXECUTION;
             }
         }
+
         // 插件导致的崩溃，卸载该插件
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
@@ -64,7 +68,12 @@ public:
                                 std::to_string(pExceptionPointers->ExceptionRecord->ExceptionCode));
         LibLoader::sendPluginException(std::move(pluginName));
 
-        // todo(Antares): 重启被杀死的工作线程，思路：通过给worker线程加入thread_local标记确定线程对应的index，让thread pool重置该位置的线程
+        size_t threadIndex = BS::thread_pool::getCurrentThreadIndexView();
+        if (threadIndex != -1) {
+            // 是线程池线程
+            BS::pool->resetThreadByIndex(threadIndex);
+        }
+
         TerminateThread(GetCurrentThread(), 1);
         return EXCEPTION_CONTINUE_EXECUTION;
     }
@@ -136,9 +145,12 @@ private:
                 LibLoader::logger.error("libLoader工作线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
                 exit(1);
             }
-            // todo(Antares): 判断是不是插件调new thread弄出来的线程
 
-            {
+            std::string maybeId = threadName;
+            // 插件列表中查询是否有这个线程名的插件，如果没有则放弃处理，有则卸载
+            if (LibLoader::PluginListManager::pluginNameLookup(maybeId)) {
+                pluginName = std::move(maybeId);
+            } else {
                 getOact().sa_sigaction(a, si, unused);
                 return;
             }
@@ -150,7 +162,12 @@ private:
         LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 插件运行终止");
         LibLoader::sendPluginException(std::move(pluginName));
 
-        // todo(Antares): 重启被杀死的工作线程，思路：通过给worker线程加入thread_local标记确定线程对应的index，让thread pool重置该位置的线程
+        size_t threadIndex = BS::thread_pool::getCurrentThreadIndexView();
+        if (threadIndex != -1) {
+            // 是线程池线程
+            BS::pool->resetThreadByIndex(threadIndex);
+        }
+
         pthread_cancel(pthread_self());
     }
 
