@@ -205,7 +205,7 @@ namespace LibLoader {
             ec.clear();
             std::filesystem::copy(path, actualFile, std::filesystem::copy_options::overwrite_existing, ec);
             if (ec) {
-                logger.error("无法复制dll(" + plugin.path + ")到缓存目录(" + actualPath + "), 原因: " + ec.message() + "，请检查是否有别的进程在占用该缓存文件！");
+                logger.error("无法复制dll(" + path + ")到缓存目录(" + actualPath + "), 原因: " + ec.message() + "，请检查是否有别的进程在占用该缓存文件！");
                 return nullptr;
             }
 #endif
@@ -294,7 +294,7 @@ namespace LibLoader {
             throw PluginAlreadyLoadedException(_getId(), MIRAICP_EXCEPTION_WHERE);
         }
 
-        auto handle = loadNewPlugin(path); // nothrow
+        handle = loadNewPlugin(path); // nothrow
 
         if (handle == nullptr) {
 #if MIRAICP_WINDOWS
