@@ -543,6 +543,13 @@ namespace BS {
             waiting = false;
         }
 
+        static size_t getCurrentThreadIndexView() { return getThreadIndex(); }
+
+        /// @brief force reset a thread, only should be called when a deadly problem happen
+        void resetThreadByIndex(size_t index) {
+            threads[index] = std::thread(&thread_pool::worker, this);
+        }
+
     private:
         // ========================
         // Private member functions
@@ -553,7 +560,9 @@ namespace BS {
          */
         void create_threads() {
             running = true;
+            threadIndexCounter = 0;
             for (concurrency_t i = 0; i < thread_count; ++i) {
+                while (threadIndexCounter != i) [[unlikely]] std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 threads[i] = std::thread(&thread_pool::worker, this);
             }
         }
@@ -586,11 +595,21 @@ namespace BS {
             }
         }
 
+        static size_t &getThreadIndex() {
+            static thread_local size_t index = -1;
+            return index;
+        }
+
+        void setThreadIndex() {
+            getThreadIndex() = threadIndexCounter++;
+        }
+
         /**
          * @brief A worker function to be assigned to each thread in the pool. Waits until it is notified by push_task() that a task is available, and then retrieves the task from the queue and executes it. Once the task finishes, the worker notifies wait_for_tasks() in case it is waiting.
          */
         void worker() {
             platform_set_thread_name(platform_thread_self(), "LoaderWorker");
+            setThreadIndex();
             while (running) {
                 std::function<void()> task;
                 std::unique_lock<std::mutex> tasks_lock(tasks_mutex);
@@ -661,6 +680,8 @@ namespace BS {
          * @brief An atomic variable indicating that wait_for_tasks() is active and expects to be notified whenever a task is done.
          */
         std::atomic<bool> waiting = false;
+
+        std::atomic<size_t> threadIndexCounter = 0;
     };
 
     //                                     End class thread_pool                                     //
