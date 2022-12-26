@@ -20,12 +20,11 @@
 // -----------------------
 #include "LoaderLogger.h"
 #include "PluginListManager.h"
-#include "ThreadController.h"
-#include "commonTools.h"
 #include "eventHandle.h"
 #include "ktInterface.h"
 #include "loaderMain.h"
 #include "redirectCout.h"
+#include <thread>
 
 #ifdef LOADER_NATIVE
 #include <cstdio>
