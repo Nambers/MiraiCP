@@ -17,8 +17,11 @@
 #ifndef MIRAICP_PRO_LOADERTOOLS_H
 #define MIRAICP_PRO_LOADERTOOLS_H
 
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "LoaderMacro.h"
 #include "PluginData.h"
+#include "commonTools.h"
 #include <fstream>
 #include <string>
 #include <thread>
