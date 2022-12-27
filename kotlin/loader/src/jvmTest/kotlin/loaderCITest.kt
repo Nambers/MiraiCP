@@ -18,7 +18,7 @@
 
 package tech.eritquearcus.miraicp.loader
 
-import tech.eritquearcus.miraicp.loader.KotlinMainData.alive
+import kotlinx.coroutines.runBlocking
 import tech.eritquearcus.miraicp.loader.KotlinMainData.job
 import tech.eritquearcus.miraicp.loader.console.Jline3AppenderImpl
 import tech.eritquearcus.miraicp.shared.PublicShared
@@ -55,7 +55,9 @@ class LoaderCITest {
         KotlinMain.exit = {
             PublicShared.exit()
             job.cancel()
-            alive = false
+            runBlocking {
+                KotlinMainData.aliveChan.send(Unit)
+            }
         }
         println("--- Start Loader CI Test ---")
         KotlinMainEntry.main(arrayOf(f.absolutePath))
