@@ -20,6 +20,7 @@
 #include <functional>          // std::bind, std::function, std::invoke
 #include <future>              // std::future, std::promise
 #include <iostream>            // std::cout, std::endl, std::flush, std::ostream
+#include <limits>              // std::numeric_limits
 #include <memory>              // std::make_shared, std::make_unique, std::shared_ptr, std::unique_ptr
 #include <mutex>               // std::mutex, std::scoped_lock, std::unique_lock
 #include <queue>               // std::queue
@@ -596,7 +597,8 @@ namespace BS {
         }
 
         static size_t &getThreadIndex() {
-            static thread_local size_t index = 0xffffffffffffffffui64;
+            // for windows compatibility, use parentheses to avoid calling the macro "max"
+            static thread_local size_t index = (std::numeric_limits<size_t>::max)();
             return index;
         }
 
