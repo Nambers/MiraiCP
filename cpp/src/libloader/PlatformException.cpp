@@ -24,7 +24,6 @@
 
 #if MIRAICP_WINDOWS
 #include "LoaderLogger.h"
-#include "ThreadController.h"
 #include <windows.h>
 
 thread_local bool alreadyInHandler;

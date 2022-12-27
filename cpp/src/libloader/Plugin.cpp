@@ -23,7 +23,6 @@
 #include "Plugin.h"
 #include "PluginConfig.h"
 #include "PluginListManager.h"
-#include "ThreadController.h"
 #include "commonTools.h"
 #include "libOpen.h"
 #include "loaderTools.h"
