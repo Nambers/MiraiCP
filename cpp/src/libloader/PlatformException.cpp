@@ -69,7 +69,7 @@ public:
         LibLoader::sendPluginException(std::move(pluginName));
 
         size_t threadIndex = BS::thread_pool::getCurrentThreadIndexView();
-        if (threadIndex != -1) {
+        if (threadIndex != (std::numeric_limits<size_t>::max)()) {
             // 是线程池线程
             BS::pool->resetThreadByIndex(threadIndex);
         }
