@@ -260,11 +260,11 @@ namespace LibLoader {
         });
     }
 
-    void Plugin::disableInternal() {
-        if (exit == nullptr) return;
+    std::shared_ptr<std::future<void>> Plugin::disableInternal() {
+        if (exit == nullptr) return nullptr;
         _disable();
 
-        BS::pool->push_task([this] {
+        return std::make_shared<std::future<void>>(BS::pool->submit([this] {
             std::shared_lock lk(_mtx);
             if (!checkValid() || exit == nullptr) {
                 // 任务分派过慢
@@ -284,7 +284,7 @@ namespace LibLoader {
             assert(infoFunc);
 
             if (ret != 0) logger.error("插件：" + _getId() + "退出时出现错误");
-        });
+        }));
     }
 
     void Plugin::unloadInternal() {
@@ -296,7 +296,10 @@ namespace LibLoader {
 
         // first disable it
         if (enabled) {
-            disableInternal();
+            auto fu = disableInternal();
+            if (fu) {
+                fu->wait();
+            }
         }
 
         // then unload it

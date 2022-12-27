@@ -21,6 +21,7 @@
 #include "PluginData.h"
 #include "commonTypes.h"
 #include <atomic>
+#include <future>
 #include <shared_mutex>
 #include <string>
 
@@ -46,7 +47,7 @@ namespace LibLoader {
     private: // internal, no lock; literally
         void enableInternal();
 
-        void disableInternal();
+        std::shared_ptr<std::future<void>> disableInternal();
 
         void loadInternal(bool alsoEnablePlugin);
 
