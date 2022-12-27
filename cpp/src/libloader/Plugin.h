@@ -55,16 +55,15 @@ namespace LibLoader {
         void unloadWhenExceptionInternal();
 
     public: // external usage, with lock; literally
-        // todo(Antares): 检查完load等用法后重命名
-        void load_plugin(bool alsoEnablePlugin);
+        void loadPlugin(bool alsoEnablePlugin);
 
-        void enable_plugin();
+        void enablePlugin();
 
-        void unload_plugin();
+        void unloadPlugin();
 
-        void disable_plugin();
+        void disablePlugin();
 
-        void unload_when_exception();
+        void unloadWhenException();
 
     public:
         /// 只应被线程池worker调用

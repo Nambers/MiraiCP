@@ -154,7 +154,7 @@ namespace LibLoader {
     ////////////////////////////////////
 
     // 将插件加载进内存
-    void Plugin::load_plugin(bool alsoEnablePlugin) {
+    void Plugin::loadPlugin(bool alsoEnablePlugin) {
         std::unique_lock lk(_mtx);
         loadInternal(alsoEnablePlugin);
     }
@@ -162,25 +162,25 @@ namespace LibLoader {
     // enable的前提是该插件已经被加载进内存，且满足下列条件之一：
     // 1. 尚未执行entrance
     // 2. 最后一次执行过exit后，未执行过entrance
-    void Plugin::enable_plugin() {
+    void Plugin::enablePlugin() {
         std::unique_lock lk(_mtx);
         enableInternal();
     }
 
     // enable的前提是该插件已经被加载进内存，之前执行过entrance，且最后一次执行entrance后没有执行过exit
-    void Plugin::disable_plugin() {
+    void Plugin::disablePlugin() {
         std::unique_lock lk(_mtx);
         disableInternal();
     }
 
     // 释放插件对应的内存
-    void Plugin::unload_plugin() {
+    void Plugin::unloadPlugin() {
         std::unique_lock lk(_mtx);
         unloadInternal();
     }
 
     // 当发生错误时，强制释放插件对应内存
-    void Plugin::unload_when_exception() {
+    void Plugin::unloadWhenException() {
         std::unique_lock lk(_mtx);
         unloadWhenExceptionInternal();
     }
@@ -365,7 +365,7 @@ namespace LibLoader {
 
         if (ret != 0) {
             logger.error("插件：" + _getId() + "出现严重错误");
-            // todo(Antares): 发送错误事件
+            logger.error(event);
         }
     }
 
@@ -388,7 +388,7 @@ namespace LibLoader {
             auto timestamp = std::chrono::system_clock::now();
 
             try {
-                newPlugin->load_plugin(false);
+                newPlugin->loadPlugin(false);
             } catch (LoaderBaseException &e) {
                 e.raise();
                 continue;

@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_LOADERTASKQUEUE_H
 #define MIRAICP_PRO_LOADERTASKQUEUE_H
 
-
 #include <condition_variable>
 #include <mutex>
 #include <queue>

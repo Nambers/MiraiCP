@@ -59,8 +59,4 @@ namespace LibLoader {
             : LoaderExceptionCRTP(
             "插件ID " + id + " 重复：已经被位于 " + conflictPluginPathOld + " 的插件使用；位于 " + conflictPluginPathNew +
             " 的插件将取消加载。请修改插件id后重新编译", std::move(_filename), _lineNum) {}
-
-    IllegalStateException::IllegalStateException(LibLoader::LoaderBaseException::string _filename, int _lineNum)
-            : LoaderExceptionCRTP("到达未预料的位置(filename=" + _filename + ", num=" + std::to_string(_lineNum) + ")",
-                                  std::move(_filename), std::move(_lineNum)) {}
 } // namespace LibLoader

@@ -107,7 +107,7 @@ namespace LibLoader {
 
         if (!pr.second) {
             logger.error("Plugin with id: " + id + " Already exists");
-            pluginPtr->unload_plugin();
+            pluginPtr->unloadPlugin();
             throw PluginIdDuplicateException(id, pr.first->first, pluginPtr->path, MIRAICP_EXCEPTION_WHERE);
         }
 
@@ -118,7 +118,7 @@ namespace LibLoader {
     void PluginListManager::unloadAll() {
         std::shared_lock lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
-            v->unload_plugin();
+            v->unloadPlugin();
         }
     }
 
@@ -130,7 +130,7 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        it->second->unload_plugin();
+        it->second->unloadPlugin();
     }
 
     /// 插件异常时的卸载函数，输入插件id，不会修改任何key
@@ -141,7 +141,7 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        it->second->unload_when_exception();
+        it->second->unloadWhenException();
     }
 
     /// reload 所有插件。
@@ -162,7 +162,7 @@ namespace LibLoader {
             auto pr = id_plugin_list.insert(std::make_pair(cfg->getIdSafe(), cfg));
             if (!pr.second) {
                 logger.error("插件id: " + cfg->getIdSafe() + " 重复加载，将自动unload加载较晚的插件");
-                cfg->unload_plugin();
+                cfg->unloadPlugin();
             }
         }
     }
@@ -179,8 +179,8 @@ namespace LibLoader {
         }
 
         auto &cfg = *(it->second);
-        cfg.unload_plugin();
-        cfg.load_plugin(true);
+        cfg.unloadPlugin();
+        cfg.loadPlugin(true);
 
         if (cfg.getIdSafe() != it->first) {
             logger.warning("插件id: " + it->first + " 被修改为: " + cfg.getIdSafe());
@@ -191,7 +191,7 @@ namespace LibLoader {
     void PluginListManager::enableAll() {
         std::shared_lock lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
-            v->enable_plugin();
+            v->enablePlugin();
         }
     }
 
@@ -202,13 +202,13 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        it->second->enable_plugin();
+        it->second->enablePlugin();
     }
 
     void PluginListManager::disableAll() {
         std::shared_lock lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_list) {
-            v->disable_plugin();
+            v->disablePlugin();
         }
     }
 
@@ -219,7 +219,7 @@ namespace LibLoader {
             logger.error(id + "尚未加载");
             return;
         }
-        it->second->disable_plugin();
+        it->second->disablePlugin();
     }
 
     void PluginListManager::disableByIdVanilla(const std::string &id) {
@@ -248,7 +248,7 @@ namespace LibLoader {
         auto pr = id_plugin_list.insert(std::make_pair(new_key, ptr));
         if (!pr.second) {
             logger.error("Reload失败！插件id: " + new_key + " 已经被另一个插件占用。当前插件将被unload");
-            ptr->unload_plugin();
+            ptr->unloadPlugin();
             return;
         }
     }
@@ -291,7 +291,7 @@ namespace LibLoader {
     void PluginListManager::loadNewPluginByPath(const std::string &_path, bool activateNow) {
         auto pluginPtr = std::make_shared<Plugin>(_path);
 
-        pluginPtr->load_plugin(activateNow);
+        pluginPtr->loadPlugin(activateNow);
 
         addNewPlugin(pluginPtr);
     }
