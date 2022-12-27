@@ -88,6 +88,10 @@ namespace LibLoader {
         PluginListManager::unloadWhenException(id);
     }
 
+    void loader_resetThreadByIndex(const std::string &index){
+        BS::pool->resetThreadByIndex(std::stoull(index));
+    }
+
     ////////////////////////////////////
 
     void tick() noexcept {
@@ -138,6 +142,8 @@ namespace LibLoader {
                     case LOADER_TASKS::EXCEPTION_PLUGINEND:
                         loader_pluginEndByException(task.second);
                         break;
+                    case LOADER_TASKS::RESET_THREAD:
+                        loader_resetThreadByIndex(task.second);
                     default:
                         throw std::exception();
                 }
