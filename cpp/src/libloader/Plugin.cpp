@@ -119,12 +119,12 @@ namespace LibLoader {
 
     constexpr static LoaderApi::interface_funcs normalInterfaces = LoaderApi::collect_interface_functions(false);
 
-    void Plugin::callEntranceFuncAdmin() {
-        entrance(adminInterfaces);
+    int Plugin::callEntranceFuncAdmin() {
+        return entrance(adminInterfaces);
     }
 
-    void Plugin::callEntranceFuncNormal() {
-        entrance(normalInterfaces);
+    int Plugin::callEntranceFuncNormal() {
+        return entrance(normalInterfaces);
     }
 
     inline bool checkPluginInfoValid(plugin_info_func_ptr info_ptr) {
@@ -240,29 +240,47 @@ namespace LibLoader {
                 // 并发过快，插件在启用前被卸载了。直接return
                 return;
             }
-            // todo(Antares): 标记线程工作plugin id，Defer重置线程工作plugin id
-            if (authority == PLUGIN_AUTHORITY_ADMIN)
-                callEntranceFuncAdmin();
-            else
-                callEntranceFuncNormal();
+
+            int ret = -1;
+
+            {
+                PluginListManager::setThreadRunningPluginId(_getId());
+                MIRAICP_DEFER(PluginListManager::unsetThreadRunningPluginId(););
+                try {
+                    if (authority == PLUGIN_AUTHORITY_ADMIN)
+                        ret = callEntranceFuncAdmin();
+                    else
+                        ret = callEntranceFuncNormal();
+                } catch (...) {
+                }
+            }
+
+            if (ret != 0) {
+                logger.error("插件：" + _getId() + "启用时出现错误");
+            }
         });
     }
 
     void Plugin::disableInternal() {
         if (exit == nullptr) return;
         _disable();
+
         BS::pool->push_task([this] {
             std::shared_lock lk(_mtx);
             if (!checkValid() || exit == nullptr) {
                 // 任务分派过慢
-                // todo(Antares): 打log提示
                 return;
             }
-            // todo(Antares): 标记线程工作plugin id，Defer重置线程工作plugin id
+
             int ret = -1;
-            try {
-                ret = exit();
-            } catch (...) {}
+
+            {
+                PluginListManager::setThreadRunningPluginId(_getId());
+                MIRAICP_DEFER(PluginListManager::unsetThreadRunningPluginId(););
+                try {
+                    ret = exit();
+                } catch (...) {}
+            }
 
             assert(infoFunc);
 
@@ -332,11 +350,16 @@ namespace LibLoader {
             // 线程池任务分派过慢。插件此时已经被卸载，直接return
             return;
         }
+
         int ret = -1;
-        // todo(Antares): 标记线程工作plugin id，Defer重置线程工作plugin id
-        try {
-            ret = eventFunc(event);
-        } catch (...) {
+
+        {
+            PluginListManager::setThreadRunningPluginId(_getId());
+            MIRAICP_DEFER(PluginListManager::unsetThreadRunningPluginId(););
+            try {
+                ret = eventFunc(event);
+            } catch (...) {
+            }
         }
 
         assert(infoFunc);
@@ -355,7 +378,7 @@ namespace LibLoader {
     /// 作用是将所有plugin加入plugin列表
     /// 这一过程必须是原子的
     void Plugin::loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept {
-        std::lock_guard lk(PluginListManager::getLock());
+        // std::lock_guard lk(PluginListManager::getLock());
 
         for (size_t i = 0; i < paths.size(); ++i) {
             auto &path = paths[i];
