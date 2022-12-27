@@ -18,11 +18,15 @@
 #define MIRAICP_PRO_LOADERTASKQUEUE_H
 
 
+#include <condition_variable>
 #include <mutex>
 #include <queue>
 #include <string>
 
+
 namespace LibLoader {
+    std::condition_variable &loaderWakeCV();
+
     enum struct LOADER_TASKS {
         ADD_THREAD,
         END_THREAD,
@@ -44,6 +48,7 @@ namespace LibLoader {
     inline void sendPluginException(std::string plugin_id) {
         std::lock_guard lk(task_mtx);
         loader_thread_task_queue.emplace(LOADER_TASKS::EXCEPTION_PLUGINEND, std::move(plugin_id));
+        loaderWakeCV().notify_one();
     }
 } // namespace LibLoader
 

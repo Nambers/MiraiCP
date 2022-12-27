@@ -71,10 +71,14 @@ public:
         ThreadTask::addTask(test_task, std::chrono::seconds(1));
         size_t t = fu.get();
         Logger::logger.info("Get future: " + std::to_string(t));
+        schedule(10, "This is a test message");
+        ////
+        // LoaderApi::disableAllPlugins();
     }
 
     void onDisable() override {
         /*插件结束*/
+        Logger::logger.info("插件正在禁用！");
     }
 };
 
