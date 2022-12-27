@@ -39,9 +39,9 @@ namespace LibLoader {
         static void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept;
 
     private:
-        void callEntranceFuncAdmin();
+        int callEntranceFuncAdmin();
 
-        void callEntranceFuncNormal();
+        int callEntranceFuncNormal();
 
     private: // internal, no lock; literally
         void enableInternal();

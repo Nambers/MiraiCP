@@ -596,7 +596,7 @@ namespace BS {
         }
 
         static size_t &getThreadIndex() {
-            static thread_local size_t index = -1;
+            static thread_local size_t index = 0xffffffffffffffffui64;
             return index;
         }
 

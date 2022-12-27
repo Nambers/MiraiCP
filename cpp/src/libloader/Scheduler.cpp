@@ -37,7 +37,8 @@ namespace LibLoader::Scheduler {
         timerQueue.push(std::move(a));
     }
 
-    inline void sendTimeoutEvent(const std::string &pluginId, std::string content) noexcept {
+    inline void sendTimeoutEvent(const std::string &pluginId, const std::string& content) noexcept {
+        PluginListManager::broadcastToOnePlugin(pluginId, content);
         //        nlohmann::json j{{"msg", std::move(content)}};
         //        LibLoader::ThreadController::getController()
         //                .submitJob(pluginId, [j = std::move(j)]() {
@@ -51,7 +52,7 @@ namespace LibLoader::Scheduler {
         while (!timerQueue.empty() && timerQueue.top().tp < std::chrono::system_clock::now()) {
             auto task = timerQueue.top();
             timerQueue.pop();
-            sendTimeoutEvent(task.pluginId, std::move(task.content));
+            sendTimeoutEvent(task.pluginId, task.content);
         }
     }
 } // namespace LibLoader::Scheduler

@@ -19,7 +19,7 @@
 
 
 #include "commonTypes.h"
-#include <mutex>
+#include <shared_mutex>
 
 
 namespace LibLoader {
@@ -30,10 +30,12 @@ namespace LibLoader {
 
     private:
         static PluginList id_plugin_list;
-        static std::recursive_mutex pluginlist_mtx;
+        static std::shared_mutex pluginlist_mtx;
 
     private:
         static void changeKey(const std::string &key, const std::string &new_key);
+
+        static void changeKeyInternal(const std::string &key, const std::string &new_key);
 
     public:
         static void unloadAll();
@@ -58,7 +60,7 @@ namespace LibLoader {
         static bool empty() { return id_plugin_list.empty(); }
 
     public: // load
-        static bool addNewPlugin(const std::shared_ptr<Plugin>& cfg);
+        static bool addNewPlugin(const std::shared_ptr<Plugin> &cfg);
 
     public: // unload
         static void unloadById(const std::string &);
@@ -96,7 +98,9 @@ namespace LibLoader {
         static void unsetThreadRunningPluginId() { setThreadRunningPluginId(""); }
 
     public:
-        static void broadcastToAllEnabledPlugins(const std::shared_ptr<MiraiCP::MiraiCPString> &strPtr);
+        static void broadcastToAllEnabledPlugins(const MiraiCP::MiraiCPString &strPtr);
+
+        static void broadcastToOnePlugin(const std::string &id, MiraiCP::MiraiCPString str);
 
         static void loadNewPluginByPath(const std::string &_path, bool activateNow);
 
