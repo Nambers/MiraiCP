@@ -29,6 +29,11 @@
 namespace LibLoader {
     volatile bool LoaderMain::loader_exit = false;
 
+    std::condition_variable &loaderWakeCV() {
+        static std::condition_variable cv;
+        return cv;
+    }
+
     /// LoaderMain实现开始
 
     void LoaderMain::loaderMain() {
@@ -85,15 +90,19 @@ namespace LibLoader {
 
     ////////////////////////////////////
 
-    void LoaderMain::tick() noexcept {
-        // todo(Antares) finish this
+    void tick() noexcept {
         Scheduler::popSchedule();
     }
 
+    bool shouldTick() noexcept { return !Scheduler::empty(); }
+
     void LoaderMain::mainloop() noexcept {
+        static std::mutex fakeLock;
+        std::unique_lock fakeUniqueLock(fakeLock);
+        loaderWakeCV().wait(fakeUniqueLock, []() { return shouldTick() || !loader_thread_task_queue.empty(); });
+
         tick();
-        if (loader_thread_task_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(70));
-        else {
+        if (!loader_thread_task_queue.empty()) {
             loadertask task;
             {
                 std::lock_guard lk(task_mtx);
