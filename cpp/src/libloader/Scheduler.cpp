@@ -6,6 +6,7 @@
 #include "PluginListManager.h"
 #include "json.hpp"
 #include <chrono>
+#include <condition_variable>
 #include <mutex>
 #include <queue>
 

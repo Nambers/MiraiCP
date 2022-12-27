@@ -47,7 +47,9 @@ namespace LibLoader::LoaderApi {
 
     MiraiCPString pluginOperation(const MiraiCPString &s) {
 #ifdef LOADER_NATIVE
-        return {LoaderAPIs::oper(s.copyToCharPtr())}; // todo(Antares): 检查内存是否回收
+        auto nCharPtr = s.copyToCharPtr();
+        MIRAICP_DEFER(delete[] nCharPtr;);
+        return {LoaderAPIs::oper(nCharPtr)};
 #else
         auto env = JNIEnvManager::getEnv();
         auto tmp = jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
