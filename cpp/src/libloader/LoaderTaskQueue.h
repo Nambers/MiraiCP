@@ -36,6 +36,7 @@ namespace LibLoader {
         UNLOAD,
         RELOAD,
         EXCEPTION_PLUGINEND,
+        RESET_THREAD,
         TASK_TYPES_COUNT [[maybe_unused]],
     };
 
@@ -47,6 +48,12 @@ namespace LibLoader {
     inline void sendPluginException(std::string plugin_id) {
         std::lock_guard lk(task_mtx);
         loader_thread_task_queue.emplace(LOADER_TASKS::EXCEPTION_PLUGINEND, std::move(plugin_id));
+        loaderWakeCV().notify_one();
+    }
+
+    inline void sendThreadReset(size_t index) {
+        std::lock_guard lk(task_mtx);
+        loader_thread_task_queue.emplace(LOADER_TASKS::EXCEPTION_PLUGINEND, std::to_string(index));
         loaderWakeCV().notify_one();
     }
 } // namespace LibLoader

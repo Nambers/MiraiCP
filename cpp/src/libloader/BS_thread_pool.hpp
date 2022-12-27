@@ -29,6 +29,7 @@
 #include <utility>             // std::forward, std::move, std::swap
 #include <vector>              // std::vector
 
+
 namespace BS {
     /**
  * @brief A convenient shorthand for the type of std::thread::hardware_concurrency(). Should evaluate to unsigned int.
@@ -548,7 +549,12 @@ namespace BS {
 
         /// @brief force reset a thread, only should be called when a deadly problem happen
         void resetThreadByIndex(size_t index) {
-            threads[index] = std::thread(&thread_pool::worker, this);
+            size_t oldThCounter = threadIndexCounter;
+            threadIndexCounter = index;
+            new (&threads[index]) std::thread(&thread_pool::worker, this);
+            while (threadIndexCounter != index + 1)
+                ;
+            threadIndexCounter = oldThCounter;
         }
 
     private:
