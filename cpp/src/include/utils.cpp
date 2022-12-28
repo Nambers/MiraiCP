@@ -88,6 +88,8 @@ MIRAICP_EXPORT int FUNC_EXIT() {
 
     using namespace MiraiCP;
 
+    if (LibLoader::LoaderApi::get_loader_apis() == nullptr) return PLUGIN_NORMAL;
+
     MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.info("开始禁用插件：" + MiraiCP::CPPPlugin::config.getId());)
     Event::clear();
 

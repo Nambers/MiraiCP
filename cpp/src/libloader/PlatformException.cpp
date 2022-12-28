@@ -62,7 +62,6 @@ public:
         // 插件导致的崩溃，卸载该插件
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
-        LibLoader::PluginListManager::disableByIdVanilla(pluginName);
         LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 线程终止, errCod:" +
                                 std::to_string(pExceptionPointers->ExceptionRecord->ExceptionCode));
         LibLoader::sendPluginException(std::move(pluginName));
@@ -157,8 +156,7 @@ private:
         // 插件导致的崩溃，卸载该插件
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
-        LibLoader::PluginListManager::disableByIdVanilla(pluginName);
-        LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 插件运行终止");
+        LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 插件运行终止，信号： SIG" + sigabbrev_np(si->si_signo));
         LibLoader::sendPluginException(std::move(pluginName));
 
         size_t threadIndex = BS::thread_pool::getCurrentThreadIndexView();

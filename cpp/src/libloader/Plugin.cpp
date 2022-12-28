@@ -181,7 +181,9 @@ namespace LibLoader {
 
     // 当发生错误时，强制释放插件对应内存
     void Plugin::unloadWhenException() {
-        std::unique_lock lk(_mtx);
+        // cannot lock; the plugin maybe is in a deadlock state
+        bool locked = _mtx.try_lock();
+        MIRAICP_DEFER(if (locked) _mtx.unlock(););
         unloadWhenExceptionInternal();
     }
 
@@ -338,7 +340,6 @@ namespace LibLoader {
         }
 
         // first detach the thread
-        // ThreadController::getController().endThread(plugin.getIdSafe());
         // unload it directly since the thread is already down by exception
         LoaderApi::libClose(handle);
 

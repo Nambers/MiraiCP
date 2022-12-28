@@ -73,7 +73,7 @@ public:
         Logger::logger.info("Get future: " + std::to_string(t));
         ////
         // LoaderApi::disableAllPlugins();
-        int * p = nullptr;
+        int *p = nullptr;
         *p = 1;
     }
 
