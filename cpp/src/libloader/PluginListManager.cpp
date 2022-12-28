@@ -222,17 +222,6 @@ namespace LibLoader {
         it->second->disablePlugin();
     }
 
-    void PluginListManager::disableByIdVanilla(const std::string &id) {
-        std::shared_lock lk(pluginlist_mtx);
-        auto it = id_plugin_list.find(id);
-        if (it == id_plugin_list.end()) {
-            logger.error(id + "尚未加载");
-            return;
-        }
-
-        it->second->forceCallExit();
-    }
-
     /// 遍历所有插件，by id（默认是不会by path的，path是用于id变更的特殊情况的备份）
     /// 注意：不会检查插件是否enable，请自行检查
     void PluginListManager::run_over_pluginlist(const std::function<void(const Plugin &)> &f) {

@@ -53,7 +53,7 @@ namespace LibLoader {
 
     inline void sendThreadReset(size_t index) {
         std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.emplace(LOADER_TASKS::EXCEPTION_PLUGINEND, std::to_string(index));
+        loader_thread_task_queue.emplace(LOADER_TASKS::RESET_THREAD, std::to_string(index));
         loaderWakeCV().notify_one();
     }
 } // namespace LibLoader
