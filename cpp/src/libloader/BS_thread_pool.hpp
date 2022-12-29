@@ -12,6 +12,7 @@
 
 #define BS_THREAD_POOL_VERSION "v3.3.0 (2022-08-03)"
 
+#include "LoaderLogger.h"
 #include "PlatformThreading.h" // platform_set_thread_name, platform_thread_self
 #include <atomic>              // std::atomic
 #include <chrono>              // std::chrono
@@ -549,8 +550,11 @@ namespace BS {
 
         /// @brief force reset a thread, only should be called when a deadly problem happen
         void resetThreadByIndex(size_t index) {
+            static std::mutex resetThreadMtx;
+            std::lock_guard lk(resetThreadMtx);
             size_t oldThCounter = threadIndexCounter;
             threadIndexCounter = index;
+            LibLoader::logger.warning("resetting thread in pool at index " + std::to_string(index)+" due to a user caused error");
             new (&threads[index]) std::thread(&thread_pool::worker, this);
             while (threadIndexCounter != index + 1)
                 ;
