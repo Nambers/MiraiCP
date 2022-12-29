@@ -17,8 +17,11 @@
 #ifndef MIRAICP_PRO_LOADERTOOLS_H
 #define MIRAICP_PRO_LOADERTOOLS_H
 
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "LoaderMacro.h"
-#include "LoaderPluginConfig.h"
+#include "PluginData.h"
+#include "commonTools.h"
 #include <fstream>
 #include <string>
 #include <thread>
@@ -46,10 +49,6 @@ namespace LibLoader {
     inline void CASStrong(Val1 &a, Val2 b) {
         if (a < (Val1) b) a = (Val1) b;
     }
-
-    void FormatPluginListInfo(const MiraiCP::PluginConfig &plugin_config, int *charNum, std::vector<std::string> &out);
-
-    std::string PluginInfoStream(const std::vector<std::string> &plugin_info, int *charNum);
 
     std::pair<std::vector<std::string>, std::vector<PluginAuthority>> collect_plugins(const std::string &cfgPath, nlohmann::json j);
 

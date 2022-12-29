@@ -16,10 +16,13 @@
 
 #include "eventHandle.h"
 #include "LoaderLogger.h"
+#include "Plugin.h"
 #include "PluginListManager.h"
 
 
 namespace LibLoader {
+    class Plugin;
+
     std::string get_or_empty(nlohmann::json j, const std::string &key) {
         if (j.contains(key)) {
             return j[key];
@@ -36,10 +39,10 @@ namespace LibLoader {
                  LoaderApi::disablePluginById(name);
              }},
             {"DisablePluginList", [](const std::string &name) {
-                 LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::LoaderPluginConfig &c) { return !c.enabled; }));
+                 LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::Plugin &c) { return !c.isEnabled(); }));
              }},
             {"EnablePluginList", [](const std::string &name) {
-                 LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::LoaderPluginConfig &c) { return c.enabled; }));
+                 LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::Plugin &c) { return c.isEnabled(); }));
              }},
             {"ReloadPlugin", [](const std::string &id) {
                  LoaderApi::reloadPluginById(id);
@@ -51,7 +54,7 @@ namespace LibLoader {
                  LoaderApi::unloadPluginById(id);
              }},
             {"PluginList", [](const std::string &name) {
-                 logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::LoaderPluginConfig &) { return true; }));
+                 logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::PluginData &) { return true; }));
              }},
     };
 

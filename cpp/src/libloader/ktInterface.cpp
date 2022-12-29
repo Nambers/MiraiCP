@@ -18,18 +18,18 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
-#include "ktInterface.h"
 #include "LoaderLogger.h"
 #include "PluginListManager.h"
-#include "ThreadController.h"
-#include "commonTools.h"
 #include "eventHandle.h"
+#include "ktInterface.h"
 #include "loaderMain.h"
 #include "redirectCout.h"
+#include <thread>
 
 #ifdef LOADER_NATIVE
 #include <cstdio>
 #else
+#include "BS_thread_pool.hpp"
 #include "JNIEnvs.h"
 #include "LoaderMacro.h"
 #include "loaderTools.h"
@@ -60,26 +60,15 @@ void VerifyImpl(JSTRING _version, JSTRING _cfgPath) {
 }
 
 void EventImpl(JSTRING content) {
-    static std::string str;
-
-    std::lock_guard lk(LibLoader::PluginListManager::getLock());
-    str = J_TO_STD_STRING(content);
+    std::string str = J_TO_STD_STRING(content);
+    auto stringPtr = MiraiCP::MiraiCPString(str);
 
     if (str.find(R"("type":1000)") != std::string::npos) {
         LibLoader::builtInCommand(str);
         return;
     }
 
-    // static lambda，不可以捕获参数！str被声明为static了会被自动捕获
-    static std::function broadcast_func = [](const LibLoader::LoaderPluginConfig &cfg) {
-        if (cfg.handle && cfg.enabled) {
-            LibLoader::ThreadController::getController().submitJob(cfg.getId(), [&cfg]() {
-                cfg.eventFunc(str);
-            });
-        }
-    };
-
-    LibLoader::PluginListManager::run_over_pluginlist(broadcast_func);
+    LibLoader::PluginListManager::broadcastToAllEnabledPlugins(stringPtr);
 }
 
 void PluginDisableImpl() {

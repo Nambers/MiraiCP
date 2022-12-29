@@ -14,7 +14,7 @@ endif (WIN32)
 if (MSVC)
     message("MSVC detected")
     # 以utf8编译, for msvc; EHa参数启用标准 C++ stack unwinding; 启用多线程编译；禁止无返回值的函数；禁止unknown-pragmas warning；禁用两个与dll export相关的warning
-    add_compile_options(/W4 /utf-8 /EHa /std:c++17 /MP /we4715 /wd4251 /wd4275 /wd4068 /Zc:__cplusplus)
+    add_compile_options(/W4 /utf-8 /EHs /std:c++17 /MP /we4715 /wd4251 /wd4275 /wd4068 /Zc:__cplusplus)
     # Disable RTTI.
     # string(REGEX REPLACE "/GR" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GR-")

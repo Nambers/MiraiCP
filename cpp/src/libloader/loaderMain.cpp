@@ -20,15 +20,19 @@
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
 #include "PlatformThreading.h"
-#include "PluginListImplements.h"
+#include "Plugin.h"
 #include "PluginListManager.h"
 #include "Scheduler.h"
-#include "ThreadController.h"
 #include "redirectCout.h"
 
 
 namespace LibLoader {
     volatile bool LoaderMain::loader_exit = false;
+
+    std::condition_variable &loaderWakeCV() {
+        static std::condition_variable cv;
+        return cv;
+    }
 
     /// LoaderMain实现开始
 
@@ -61,7 +65,7 @@ namespace LibLoader {
     }
 
     void loader_loadNewPlugin(const std::string &path, bool activateNow) {
-        loadNewPluginByPath(path, activateNow);
+        PluginListManager::loadNewPluginByPath(path, activateNow);
     }
 
     void loader_unloadPluginById(const std::string &id) {
@@ -84,17 +88,25 @@ namespace LibLoader {
         PluginListManager::unloadWhenException(id);
     }
 
+    void loader_resetThreadByIndex(const std::string &index) {
+        BS::pool->resetThreadByIndex(std::stoull(index));
+    }
+
     ////////////////////////////////////
 
-    void LoaderMain::tick() noexcept {
-        // todo(Antares) finish this
+    void tick() noexcept {
         Scheduler::popSchedule();
     }
 
+    bool shouldTick() noexcept { return !Scheduler::empty(); }
+
     void LoaderMain::mainloop() noexcept {
+        static std::mutex fakeLock;
+        std::unique_lock fakeUniqueLock(fakeLock);
+        loaderWakeCV().wait(fakeUniqueLock, []() { return shouldTick() || !loader_thread_task_queue.empty(); });
+
         tick();
-        if (loader_thread_task_queue.empty()) std::this_thread::sleep_for(std::chrono::milliseconds(70));
-        else {
+        if (!loader_thread_task_queue.empty()) {
             loadertask task;
             {
                 std::lock_guard lk(task_mtx);
@@ -129,6 +141,9 @@ namespace LibLoader {
                         break;
                     case LOADER_TASKS::EXCEPTION_PLUGINEND:
                         loader_pluginEndByException(task.second);
+                        break;
+                    case LOADER_TASKS::RESET_THREAD:
+                        loader_resetThreadByIndex(task.second);
                         break;
                     default:
                         throw std::exception();

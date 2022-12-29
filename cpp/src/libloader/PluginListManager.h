@@ -18,21 +18,24 @@
 #define MIRAICP_PRO_PLUGINLISTMANAGER_H
 
 
-#include "LoaderPluginConfig.h"
 #include "commonTypes.h"
-#include <mutex>
+#include <shared_mutex>
 
 
 namespace LibLoader {
+    class Plugin;
+
     class PluginListManager {
-        typedef std::unordered_map<std::string, std::shared_ptr<LoaderPluginConfig>> PluginList;
+        typedef std::unordered_map<std::string, std::shared_ptr<Plugin>> PluginList;
 
     private:
         static PluginList id_plugin_list;
-        static std::recursive_mutex pluginlist_mtx;
+        static std::shared_mutex pluginlist_mtx;
 
     private:
         static void changeKey(const std::string &key, const std::string &new_key);
+
+        static void changeKeyInternal(const std::string &key, const std::string &new_key);
 
     public:
         static void unloadAll();
@@ -42,13 +45,13 @@ namespace LibLoader {
         ~PluginListManager() = delete;
 
     public:
-        /// 为保证一些外部操作是原子操作，允许在外部获取所对象的引用
+        /// 为保证一些外部操作是原子操作，允许在外部获取锁对象的引用
         static auto &getLock() { return pluginlist_mtx; }
 
     public:
         static std::vector<std::string> getAllPluginId();
         // filter == true
-        static std::string pluginListInfo(const std::function<bool(const LoaderPluginConfig &)> &);
+        static std::string pluginListInfo(const std::function<bool(const Plugin &)> &);
         static std::vector<std::string> getAllPluginPath();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
@@ -57,7 +60,7 @@ namespace LibLoader {
         static bool empty() { return id_plugin_list.empty(); }
 
     public: // load
-        static bool addNewPlugin(LoaderPluginConfig cfg);
+        static bool addNewPlugin(const std::shared_ptr<Plugin> &cfg);
 
     public: // unload
         static void unloadById(const std::string &);
@@ -75,10 +78,31 @@ namespace LibLoader {
         static void disableAll();
         static void disableById(const std::string &);
 
-        static void disableByIdVanilla(const std::string &);
+    public:
+        static void run_over_pluginlist(const std::function<void(const Plugin &)> &f);
+
+    private:
+        static std::string &threadRunningPluginId();
 
     public:
-        static void run_over_pluginlist(const std::function<void(const LoaderPluginConfig &)> &f);
+        static std::string getThreadRunningPluginId() {
+            return threadRunningPluginId();
+        }
+
+        static void setThreadRunningPluginId(std::string inId) {
+            threadRunningPluginId() = std::move(inId);
+        }
+
+        static void unsetThreadRunningPluginId() { setThreadRunningPluginId(""); }
+
+    public:
+        static void broadcastToAllEnabledPlugins(const MiraiCP::MiraiCPString &strPtr);
+
+        static void broadcastToOnePlugin(const std::string &id, MiraiCP::MiraiCPString str);
+
+        static void loadNewPluginByPath(const std::string &_path, bool activateNow);
+
+        static bool pluginNameLookup(const std::string &_id);
     };
 } // namespace LibLoader
 

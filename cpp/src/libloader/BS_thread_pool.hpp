@@ -12,6 +12,7 @@
 
 #define BS_THREAD_POOL_VERSION "v3.3.0 (2022-08-03)"
 
+#include "LoaderLogger.h"
 #include "PlatformThreading.h" // platform_set_thread_name, platform_thread_self
 #include <atomic>              // std::atomic
 #include <chrono>              // std::chrono
@@ -20,6 +21,7 @@
 #include <functional>          // std::bind, std::function, std::invoke
 #include <future>              // std::future, std::promise
 #include <iostream>            // std::cout, std::endl, std::flush, std::ostream
+#include <limits>              // std::numeric_limits
 #include <memory>              // std::make_shared, std::make_unique, std::shared_ptr, std::unique_ptr
 #include <mutex>               // std::mutex, std::scoped_lock, std::unique_lock
 #include <queue>               // std::queue
@@ -27,6 +29,7 @@
 #include <type_traits>         // std::common_type_t, std::conditional_t, std::decay_t, std::invoke_result_t, std::is_void_v
 #include <utility>             // std::forward, std::move, std::swap
 #include <vector>              // std::vector
+
 
 namespace BS {
     /**
@@ -309,13 +312,48 @@ namespace BS {
          * @param num_blocks The maximum number of blocks to split the loop into. The default is to use the number of threads in the pool.
          * @return A multi_future object that can be used to wait for all the blocks to finish. If the loop function returns a value, the multi_future object can also be used to obtain the values returned by each block.
          */
+        template<typename It, typename R = std::invoke_result_t<std::decay_t<decltype(*std::declval<It>())>>>
+        [[nodiscard]] multi_future<R> run_over(It &&begin, It &&end, size_t inSize) {
+            It ptr = begin;
+            if (inSize) {
+                multi_future<R> mf(inSize);
+                {
+                    std::scoped_lock lk(tasks_mutex);
+                    size_t i = 0;
+                    while (ptr != end && i < inSize) {
+                        mf[i++] = submit_nolock(*ptr);
+                    }
+                }
+                return mf;
+            } else {
+                return multi_future<R>();
+            }
+        }
+
+        /**
+         * @brief Parallelize a loop by automatically splitting it into blocks and submitting each block separately to the queue. Returns a multi_future object that contains the futures for all of the blocks.
+         *
+         * @tparam F The type of the function to loop through.
+         * @tparam T1 The type of the first index in the loop. Should be a signed or unsigned integer.
+         * @tparam T2 The type of the index after the last index in the loop. Should be a signed or unsigned integer. If T1 is not the same as T2, a common type will be automatically inferred.
+         * @tparam T The common type of T1 and T2.
+         * @tparam R The return value of the loop function F (can be void).
+         * @param first_index The first index in the loop.
+         * @param index_after_last The index after the last index in the loop. The loop will iterate from first_index to (index_after_last - 1) inclusive. In other words, it will be equivalent to "for (T i = first_index; i < index_after_last; ++i)". Note that if index_after_last == first_index, no blocks will be submitted.
+         * @param loop The function to loop through. Will be called once per block. Should take exactly two arguments: the first index in the block and the index after the last index in the block. loop(start, end) should typically involve a loop of the form "for (T i = start; i < end; ++i)".
+         * @param num_blocks The maximum number of blocks to split the loop into. The default is to use the number of threads in the pool.
+         * @return A multi_future object that can be used to wait for all the blocks to finish. If the loop function returns a value, the multi_future object can also be used to obtain the values returned by each block.
+         */
         template<typename F, typename T1, typename T2, typename T = std::common_type_t<T1, T2>, typename R = std::invoke_result_t<std::decay_t<F>, T, T>>
         [[nodiscard]] multi_future<R> parallelize_loop(const T1 first_index, const T2 index_after_last, F &&loop, const size_t num_blocks = 0) {
             blocks blks(first_index, index_after_last, num_blocks ? num_blocks : thread_count);
             if (blks.get_total_size() > 0) {
                 multi_future<R> mf(blks.get_num_blocks());
-                for (size_t i = 0; i < blks.get_num_blocks(); ++i)
-                    mf[i] = submit(std::forward<F>(loop), blks.start(i), blks.end(i));
+                {
+                    std::scoped_lock lk(tasks_mutex);
+                    for (size_t i = 0; i < blks.get_num_blocks(); ++i)
+                        mf[i] = submit_nolock(std::forward<F>(loop), blks.start(i), blks.end(i));
+                }
                 return mf;
             } else {
                 return multi_future<R>();
@@ -400,6 +438,19 @@ namespace BS {
         }
 
         /**
+         * @brief Same as push_task, but without locking the mutex.
+         */
+        template<typename F, typename... A>
+        void push_task_nolock(F &&task, A &&...args) {
+            std::function<void()> task_function = std::bind(std::forward<F>(task), std::forward<A>(args)...);
+            {
+                tasks.push(std::move(task_function));
+            }
+            ++tasks_total;
+            task_available_cv.notify_one();
+        }
+
+        /**
          * @brief Reset the number of threads in the pool. Waits for all currently running tasks to be completed, then destroys all threads in the pool and creates a new thread pool with the new number of threads. Any tasks that were waiting in the queue before the pool was reset will then be executed by the new threads. If the pool was paused before resetting it, the new pool will be paused as well.
          *
          * @param thread_count_ The number of threads to use. The default value is the total number of hardware threads available, as reported by the implementation. This is usually determined by the number of cores in the CPU. If a core is hyperthreaded, it will count as two threads.
@@ -451,6 +502,34 @@ namespace BS {
         }
 
         /**
+         * @brief Same as submit, but without locking mutex.
+         */
+        template<typename F, typename... A, typename R = std::invoke_result_t<std::decay_t<F>, std::decay_t<A>...>>
+        [[nodiscard]] std::future<R> submit_nolock(F &&task, A &&...args) {
+            auto task_promise = new std::promise<R>;
+            auto future = task_promise->get_future();
+            push_task_nolock(
+                    [task_promise](auto &&task_inner, auto &&...argss) {
+                        try {
+                            if constexpr (std::is_void_v<R>) {
+                                std::invoke(std::forward<decltype(task_inner)>(task_inner), std::forward<decltype(argss)>(argss)...);
+                                task_promise->set_value();
+                            } else {
+                                task_promise->set_value(std::invoke(std::forward<decltype(task_inner)>(task_inner), std::forward<decltype(argss)>(argss)...));
+                            }
+                        } catch (...) {
+                            try {
+                                task_promise->set_exception(std::current_exception());
+                            } catch (...) {
+                            }
+                        }
+                        delete task_promise;
+                    },
+                    std::forward<F>(task), std::forward<A>(args)...);
+            return future;
+        }
+
+        /**
          * @brief Unpause the pool. The workers will resume retrieving new tasks out of the queue.
          */
         void unpause() {
@@ -467,6 +546,21 @@ namespace BS {
             waiting = false;
         }
 
+        static size_t getCurrentThreadIndexView() { return getThreadIndex(); }
+
+        /// @brief force reset a thread, only should be called when a deadly problem happen
+        void resetThreadByIndex(size_t index) {
+            static std::mutex resetThreadMtx;
+            std::lock_guard lk(resetThreadMtx);
+            size_t oldThCounter = threadIndexCounter;
+            threadIndexCounter = index;
+            LibLoader::logger.warning("resetting thread in pool at index " + std::to_string(index)+" due to a user caused error");
+            new (&threads[index]) std::thread(&thread_pool::worker, this);
+            while (threadIndexCounter != index + 1)
+                ;
+            threadIndexCounter = oldThCounter;
+        }
+
     private:
         // ========================
         // Private member functions
@@ -477,7 +571,9 @@ namespace BS {
          */
         void create_threads() {
             running = true;
+            threadIndexCounter = 0;
             for (concurrency_t i = 0; i < thread_count; ++i) {
+                while (threadIndexCounter != i) [[unlikely]] std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 threads[i] = std::thread(&thread_pool::worker, this);
             }
         }
@@ -510,11 +606,22 @@ namespace BS {
             }
         }
 
+        static size_t &getThreadIndex() {
+            // for windows compatibility, use parentheses to avoid calling the macro "max"
+            static thread_local size_t index = (std::numeric_limits<size_t>::max)();
+            return index;
+        }
+
+        void setThreadIndex() {
+            getThreadIndex() = threadIndexCounter++;
+        }
+
         /**
          * @brief A worker function to be assigned to each thread in the pool. Waits until it is notified by push_task() that a task is available, and then retrieves the task from the queue and executes it. Once the task finishes, the worker notifies wait_for_tasks() in case it is waiting.
          */
         void worker() {
-            platform_set_thread_name(platform_thread_self(), "LoaderWorkerThread");
+            platform_set_thread_name(platform_thread_self(), "LoaderWorker");
+            setThreadIndex();
             while (running) {
                 std::function<void()> task;
                 std::unique_lock<std::mutex> tasks_lock(tasks_mutex);
@@ -585,6 +692,8 @@ namespace BS {
          * @brief An atomic variable indicating that wait_for_tasks() is active and expects to be notified whenever a task is done.
          */
         std::atomic<bool> waiting = false;
+
+        std::atomic<size_t> threadIndexCounter = 0;
     };
 
     //                                     End class thread_pool                                     //
