@@ -17,12 +17,15 @@
 #ifndef MIRAICP_PRO_LOADERTASKQUEUE_H
 #define MIRAICP_PRO_LOADERTASKQUEUE_H
 
-
+#include <condition_variable>
+#include <mutex>
 #include <queue>
 #include <string>
-#include <mutex>
+
 
 namespace LibLoader {
+    std::condition_variable &loaderWakeCV();
+
     enum struct LOADER_TASKS {
         ADD_THREAD,
         END_THREAD,
@@ -33,6 +36,7 @@ namespace LibLoader {
         UNLOAD,
         RELOAD,
         EXCEPTION_PLUGINEND,
+        RESET_THREAD,
         TASK_TYPES_COUNT [[maybe_unused]],
     };
 
@@ -40,6 +44,18 @@ namespace LibLoader {
 
     extern std::queue<loadertask> loader_thread_task_queue;
     extern std::recursive_mutex task_mtx;
+
+    inline void sendPluginException(std::string plugin_id) {
+        std::lock_guard lk(task_mtx);
+        loader_thread_task_queue.emplace(LOADER_TASKS::EXCEPTION_PLUGINEND, std::move(plugin_id));
+        loaderWakeCV().notify_one();
+    }
+
+    inline void sendThreadReset(size_t index) {
+        std::lock_guard lk(task_mtx);
+        loader_thread_task_queue.emplace(LOADER_TASKS::RESET_THREAD, std::to_string(index));
+        loaderWakeCV().notify_one();
+    }
 } // namespace LibLoader
 
 

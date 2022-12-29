@@ -29,7 +29,7 @@ namespace LibLoader::LoaderApi {
         loader_apis = apis;
     }
 
-    MIRAICP_EXPORT void reset_loader_apis() noexcept{
+    MIRAICP_EXPORT void reset_loader_apis() noexcept {
         loader_apis = nullptr;
     }
 
@@ -75,6 +75,11 @@ namespace LibLoader::LoaderApi {
     void pushTaskWithId(task_func_with_id func, size_t id) {
         checkApi((void *) loader_apis->_pushTaskWithId);
         loader_apis->_pushTaskWithId(func, id);
+    }
+
+    void timer(const MiraiCPString &id, const MiraiCPString &content, size_t sec) {
+        checkApi((void *) loader_apis->_timer);
+        loader_apis->_timer(id, content, sec);
     }
 
     void enablePluginById(const MiraiCPString &id) {

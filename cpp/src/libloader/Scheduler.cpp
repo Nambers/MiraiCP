@@ -4,9 +4,9 @@
 
 #include "Scheduler.h"
 #include "PluginListManager.h"
-#include "ThreadController.h"
 #include "json.hpp"
 #include <chrono>
+#include <condition_variable>
 #include <mutex>
 #include <queue>
 
@@ -26,6 +26,10 @@ struct std::greater<scheduleTask> {
     }
 };
 
+namespace LibLoader {
+    std::condition_variable &loaderWakeCV();
+}
+
 namespace LibLoader::Scheduler {
     static std::priority_queue<scheduleTask, std::vector<scheduleTask>, std::greater<scheduleTask>> timerQueue; // NOLINT(modernize-use-transparent-functors)
     static std::mutex mtx;
@@ -35,15 +39,12 @@ namespace LibLoader::Scheduler {
         scheduleTask a{scheduleTime, std::move(pluginId), std::move(content)};
         std::lock_guard lk(mtx);
         timerQueue.push(std::move(a));
+        loaderWakeCV().notify_one();
     }
 
-    inline void sendTimeoutEvent(const std::string &pluginId, std::string content) noexcept {
-        //        nlohmann::json j{{"msg", std::move(content)}};
-        //        LibLoader::ThreadController::getController()
-        //                .submitJob(pluginId, [j = std::move(j)]() {
-        //                    cfg.eventFunc(j.dump());
-        //                });
-        // todo(Antares): finish this
+    inline void sendTimeoutEvent(const std::string &pluginId, const std::string &content) noexcept {
+        nlohmann::json j{{"type", 10}, {"msg", content}};
+        PluginListManager::broadcastToOnePlugin(pluginId, j.dump());
     }
 
     void popSchedule() noexcept {
@@ -51,7 +52,11 @@ namespace LibLoader::Scheduler {
         while (!timerQueue.empty() && timerQueue.top().tp < std::chrono::system_clock::now()) {
             auto task = timerQueue.top();
             timerQueue.pop();
-            sendTimeoutEvent(task.pluginId, std::move(task.content));
+            sendTimeoutEvent(task.pluginId, task.content);
         }
+    }
+
+    bool empty() noexcept {
+        return timerQueue.empty();
     }
 } // namespace LibLoader::Scheduler

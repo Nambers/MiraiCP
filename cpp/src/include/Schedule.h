@@ -16,7 +16,7 @@ namespace MiraiCP {
      * @param msg 附加的string类型信息
      * @doxygenEg{1017, Schedule.h, 定时任务}
      */
-    void schedule(size_t sec, std::string msg);
+    void schedule(size_t sec, const std::string &msg);
 
     /*!
      * @brief 定时任务, 在一定时间后广播**一次**TimeOutEvent，chrono重载
@@ -24,7 +24,7 @@ namespace MiraiCP {
      * @param msg 附加的string类型信息
      * @doxygenEg{1017, Schedule.h, 定时任务}
      */
-    void schedule(std::chrono::seconds sec, std::string msg);
+    void schedule(std::chrono::seconds sec, const std::string &msg);
 } // namespace MiraiCP
 
 

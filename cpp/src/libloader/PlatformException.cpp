@@ -16,15 +16,14 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
+#include "BS_thread_pool.hpp"
+#include "LoaderTaskQueue.h"
 #include "PlatformThreading.h"
 #include "PluginListManager.h"
 #include "commonTools.h"
 
-
-// TODO(Antares): 处理线程池异常
 #if MIRAICP_WINDOWS
 #include "LoaderLogger.h"
-#include "ThreadController.h"
 #include <windows.h>
 
 thread_local bool alreadyInHandler;
@@ -36,24 +35,45 @@ public:
         if (alreadyInHandler) {
             return EXCEPTION_CONTINUE_EXECUTION;
         }
-        auto pluginId = LibLoader::ThreadController::getPluginIdFromThreadId(std::this_thread::get_id());
-        if (pluginId.empty()) {
-            // test the thread name is jvm
+        auto pluginName = LibLoader::PluginListManager::getThreadRunningPluginId();
+
+        if (pluginName.empty()) {
+            // test the thread is from jvm
             char threadName[80];
             platform_get_thread_name(platform_thread_self(), threadName, 80);
-            if (strcmp(threadName, "libLoader") != 0) {
+            if (strcmp(threadName, "libLoader") == 0) {
+                LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
+                exit(1);
+            } else if (strcmp(threadName, "LoaderWorker") == 0) {
+                // 非插件导致的工作线程致命错误
+                LibLoader::logger.error("libLoader工作线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
+                exit(1);
+            }
+
+            std::string maybeId = threadName;
+            // 插件列表中查询是否有这个线程名的插件，如果没有则放弃处理，有则卸载
+            if (LibLoader::PluginListManager::pluginNameLookup(maybeId)) {
+                pluginName = std::move(maybeId);
+            } else {
                 return EXCEPTION_CONTINUE_EXECUTION;
             }
-            LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息\n");
-            LibLoader::logger.error("errCod:" + std::to_string(pExceptionPointers->ExceptionRecord->ExceptionCode));
-            exit(1);
         }
+
+        // 插件导致的崩溃，卸载该插件
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
-        LibLoader::PluginListManager::disableByIdVanilla(pluginId);
-        LibLoader::logger.error("插件" + pluginId + "遇到致命错误! 线程终止, errCod:" +
-                                std::to_string(pExceptionPointers->ExceptionRecord->ExceptionCode));
-        LibLoader::sendPluginException(std::move(pluginId)); //
+        char hexTemp[20];
+        sprintf_s(hexTemp, 20, "%lX", pExceptionPointers->ExceptionRecord->ExceptionCode);
+        LibLoader::logger.error("插件 " + pluginName + " 遇到致命错误！工作线程异常终止，ExceptionCode: 0x" + hexTemp);
+        LibLoader::logger.error("请检查您的插件代码，崩溃发生后的任何行为均未定义，MiraiCP将尽可能尝试继续运行");
+        LibLoader::sendPluginException(std::move(pluginName));
+
+        size_t threadIndex = BS::thread_pool::getCurrentThreadIndexView();
+        if (threadIndex != (std::numeric_limits<size_t>::max)()) {
+            // 是线程池线程
+            LibLoader::sendThreadReset(threadIndex);
+        }
+        //
         TerminateThread(GetCurrentThread(), 1);
         return EXCEPTION_CONTINUE_EXECUTION;
     }
@@ -78,10 +98,11 @@ private:
 #else
 
 #include "LoaderLogger.h"
-#include "ThreadController.h"
 #include <csignal>
 #include <thread>
-thread_local bool alreadyInHandler;
+
+
+thread_local bool alreadyInHandler = false;
 // 禁止从其他地方构造
 class [[maybe_unused]] SignalHandle {
     SignalHandle() noexcept {
@@ -111,23 +132,41 @@ private:
         if (alreadyInHandler) {
             return;
         }
-        auto pluginName = LibLoader::ThreadController::getPluginIdFromThreadId(std::this_thread::get_id());
+        auto pluginName = LibLoader::PluginListManager::getThreadRunningPluginId();
         if (pluginName.empty()) {
-            // test the thread name is jvm
+            // test the thread is from jvm
             char threadName[80];
-            pthread_getname_np(pthread_self(), threadName, 80);
-            if (strcmp(threadName, "libLoader") != 0) {
+            platform_get_thread_name(platform_thread_self(), threadName, 80);
+            if (strcmp(threadName, "libLoader") == 0) {
+                LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
+                exit(1);
+            } else if (strcmp(threadName, "LoaderWorker") == 0) {
+                // 非插件导致的工作线程致命错误
+                LibLoader::logger.error("libLoader工作线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
+                exit(1);
+            }
+
+            std::string maybeId = threadName;
+            // 插件列表中查询是否有这个线程名的插件，如果没有则放弃处理，有则卸载
+            if (LibLoader::PluginListManager::pluginNameLookup(maybeId)) {
+                pluginName = std::move(maybeId);
+            } else {
                 getOact().sa_sigaction(a, si, unused);
                 return;
             }
-            LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
-            exit(1);
         }
+        // 插件导致的崩溃，卸载该插件
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
-        LibLoader::PluginListManager::disableByIdVanilla(pluginName);
-        LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 线程终止");
+        LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 插件运行终止，信号： SIG" + sigabbrev_np(si->si_signo));
+        LibLoader::logger.error("请检查您的插件代码，崩溃发生后的任何行为均未定义，MiraiCP将尽可能尝试继续运行");
         LibLoader::sendPluginException(std::move(pluginName));
+
+        size_t threadIndex = BS::thread_pool::getCurrentThreadIndexView();
+        if (threadIndex != (std::numeric_limits<size_t>::max)()) {
+            // 是线程池线程
+            LibLoader::sendThreadReset(threadIndex);
+        }
 
         pthread_cancel(pthread_self());
     }

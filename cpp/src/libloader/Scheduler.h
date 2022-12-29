@@ -15,6 +15,9 @@ namespace LibLoader::Scheduler {
 
     /// @brief 新增一个计时器，对接libLoader API
     void timer(std::string id, std::string content, size_t timeInSec);
+
+    /// @brief 获取schduler是否空
+    bool empty() noexcept;
 } // namespace LibLoader::Scheduler
 
 
