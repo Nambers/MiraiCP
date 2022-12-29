@@ -38,10 +38,10 @@ namespace LibLoader {
             {"DisablePlugin", [](const std::string &name) {
                  LoaderApi::disablePluginById(name);
              }},
-            {"DisablePluginList", [](const std::string &name) {
+            {"DisablePluginList", [](const std::string &) {
                  LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::Plugin &c) { return !c.isEnabled(); }));
              }},
-            {"EnablePluginList", [](const std::string &name) {
+            {"EnablePluginList", [](const std::string &) {
                  LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::Plugin &c) { return c.isEnabled(); }));
              }},
             {"ReloadPlugin", [](const std::string &id) {
@@ -53,7 +53,7 @@ namespace LibLoader {
             {"UnloadPlugin", [](const std::string &id) {
                  LoaderApi::unloadPluginById(id);
              }},
-            {"PluginList", [](const std::string &name) {
+            {"PluginList", [](const std::string &) {
                  logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::PluginData &) { return true; }));
              }},
     };

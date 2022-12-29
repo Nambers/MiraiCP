@@ -74,7 +74,7 @@ namespace LibLoader {
         std::vector<std::string> ans = {"id", "name or path", "author", "description", "\n"};
         size_t charNum[4] = {2 + 1, 12 + 1, 6 + 1, 11 + 1};
         for (auto &&[k, v]: id_plugin_list) {
-            v->formatTo(ans, charNum);
+            if (filter && filter(*v)) v->formatTo(ans, charNum);
         }
         return PluginInfoStream(ans, charNum);
     }
