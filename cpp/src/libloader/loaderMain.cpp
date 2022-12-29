@@ -88,7 +88,7 @@ namespace LibLoader {
         PluginListManager::unloadWhenException(id);
     }
 
-    void loader_resetThreadByIndex(const std::string &index){
+    void loader_resetThreadByIndex(const std::string &index) {
         BS::pool->resetThreadByIndex(std::stoull(index));
     }
 
@@ -144,6 +144,7 @@ namespace LibLoader {
                         break;
                     case LOADER_TASKS::RESET_THREAD:
                         loader_resetThreadByIndex(task.second);
+                        break;
                     default:
                         throw std::exception();
                 }

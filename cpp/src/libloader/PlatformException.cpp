@@ -62,8 +62,10 @@ public:
         // 插件导致的崩溃，卸载该插件
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
-        LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 线程终止, errCod:" +
-                                std::to_string(pExceptionPointers->ExceptionRecord->ExceptionCode));
+        char hexTemp[20];
+        sprintf_s(hexTemp, 20, "%lX", pExceptionPointers->ExceptionRecord->ExceptionCode);
+        LibLoader::logger.error("插件 " + pluginName + " 遇到致命错误！工作线程异常终止，ExceptionCode: 0x" + hexTemp);
+        LibLoader::logger.error("请检查您的插件代码，崩溃发生后的任何行为均未定义，MiraiCP将尽可能尝试继续运行");
         LibLoader::sendPluginException(std::move(pluginName));
 
         size_t threadIndex = BS::thread_pool::getCurrentThreadIndexView();
@@ -157,6 +159,7 @@ private:
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
         LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 插件运行终止，信号： SIG" + sigabbrev_np(si->si_signo));
+        LibLoader::logger.error("请检查您的插件代码，崩溃发生后的任何行为均未定义，MiraiCP将尽可能尝试继续运行");
         LibLoader::sendPluginException(std::move(pluginName));
 
         size_t threadIndex = BS::thread_pool::getCurrentThreadIndexView();
