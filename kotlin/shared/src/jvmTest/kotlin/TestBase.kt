@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -43,12 +43,19 @@ open class TestBase {
             bot
         }
 
-        val group by lazy{
+        val group by lazy {
             bot.addGroup(111, "testGr1")
         }
 
-        val member by lazy{
+        val member by lazy {
             group.addMember(222, "testMem1")
+        }
+
+        @JvmStatic
+        @AfterAll
+        fun end() {
+            PublicShared.onDisable()
+            bot.close()
         }
 
         @JvmStatic
