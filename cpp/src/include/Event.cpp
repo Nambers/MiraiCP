@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -79,12 +79,13 @@ namespace MiraiCP {
     }
 
     GroupInviteEvent::GroupInviteEvent(BaseEventData j) : BotEvent(j.botId),
-                                                           source(Tools::json_stringmover(j.eventData, "request")),
-                                                           invitorNick(Tools::json_stringmover(j.eventData, "invitorNick")),
-                                                           groupName(Tools::json_stringmover(j.eventData, "groupName")),
-                                                           group(j.subject->id, j.subject->botId),
-                                                           invitor(j.object->id, j.object->botId),
-                                                           requestEventId(j.eventData["requestEventId"]) {
+                                                          source(Tools::json_stringmover(j.eventData, "request")),
+                                                          inviterNick(
+                                                                  Tools::json_stringmover(j.eventData, "inviterNick")),
+                                                          groupName(Tools::json_stringmover(j.eventData, "groupName")),
+                                                          group(j.subject->id, j.subject->botId),
+                                                          inviter(j.object->id, j.object->botId),
+                                                          requestEventId(j.eventData["requestEventId"]) {
     }
 
     void GroupInviteEvent::operation0(const std::string &source, QQID botid, bool accept) {
@@ -109,10 +110,12 @@ namespace MiraiCP {
     }
 
     MemberJoinEvent::MemberJoinEvent(BaseEventData j) : BotEvent(j.botId),
-                                                         type(joinType(j.eventData["eventType"].get<int>())),
-                                                         member(j.object->id, j.subject->groupId, j.botId),
-                                                         group(j.subject->id, j.subject->botId),
-                                                         invitor(j.object == std::nullopt ? std::nullopt : std::optional(Member(j.object->id, j.object->groupId, j.object->botId))) {
+                                                        type(joinType(j.eventData["eventType"].get<int>())),
+                                                        member(j.object->id, j.subject->groupId, j.botId),
+                                                        group(j.subject->id, j.subject->botId),
+                                                        inviter(j.object == std::nullopt ? std::nullopt : std::optional(
+                                                                Member(j.object->id, j.object->groupId,
+                                                                       j.object->botId))) {
     }
 
     MemberLeaveEvent::MemberLeaveEvent(BaseEventData j) : BotEvent(j.botId),
@@ -138,9 +141,13 @@ namespace MiraiCP {
     }
 
     BotJoinGroupEvent::BotJoinGroupEvent(BaseEventData j) : BotEvent(j.botId),
-                                                             group(j.subject->id, j.subject->botId),
-                                                             invitor(j.eventData.contains("inviter") ? std::optional(Member(j.eventData["inviter"]["id"], j.eventData["inviter"]["groupId"], j.eventData["inviter"]["botId"])) : std::nullopt),
-                                                             type(j.eventData["eventType"]) {
+                                                            group(j.subject->id, j.subject->botId),
+                                                            inviter(j.eventData.contains("inviter") ? std::optional(
+                                                                    Member(j.eventData["inviter"]["id"],
+                                                                           j.eventData["inviter"]["groupId"],
+                                                                           j.eventData["inviter"]["botId"]))
+                                                                                                    : std::nullopt),
+                                                            type(j.eventData["eventType"]) {
     }
 
     GroupTempMessageEvent::GroupTempMessageEvent(BaseEventData j) : BotEvent(j.botId),
@@ -168,11 +175,11 @@ namespace MiraiCP {
     MemberJoinRequestEvent::MemberJoinRequestEvent(BaseEventData j) : BotEvent(j.botId),
                                                                       source(j.eventData["requestData"]),
                                                                       group(j.subject->id, j.subject->botId),
-                                                                      invitor(j.eventData.contains("invitor")
+                                                                      inviter(j.eventData.contains("inviter")
                                                                               ? std::optional(
-                                                                                      Member(j.eventData["invitor"]["id"],
-                                                                                             j.eventData["invitor"]["groupId"],
-                                                                                             j.eventData["invitor"]["botId"]))
+                                                                                      Member(j.eventData["inviter"]["id"],
+                                                                                             j.eventData["inviter"]["groupId"],
+                                                                                             j.eventData["inviter"]["botId"]))
                                                                               : std::nullopt),
                                                                       from(j.object->id, j.object->groupId,
                                                                            j.object->botId),

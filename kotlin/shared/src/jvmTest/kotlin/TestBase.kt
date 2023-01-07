@@ -22,9 +22,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.createFileIfNotExists
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Order
+import org.junit.jupiter.api.*
 import tech.eritquearcus.miraicp.shared.CPPLib
 import tech.eritquearcus.miraicp.shared.PublicShared
 import java.io.File
@@ -35,7 +33,6 @@ open class TestBase {
         @OptIn(MiraiExperimentalApi::class)
         val bot by lazy {
             val bot = TestUtils.newBot()
-            bot.addFriend(111, "testOver")
             runBlocking {
                 bot.login()
             }
@@ -52,16 +49,8 @@ open class TestBase {
         }
 
         @JvmStatic
-        @AfterAll
-        fun end() {
-            PublicShared.onDisable()
-            bot.close()
-        }
-
-        @JvmStatic
         @BeforeAll
-        @Order(0)
-        fun loadCPPLib() {
+        fun loadCPPLib(): Unit {
             if (!TestUtils.init) {
                 println("Currently working dir:" + TestUtils.workingDir)
                 require(TestUtils.workingDir.exists())
@@ -85,18 +74,29 @@ open class TestBase {
     """.trimIndent()
                 )
                 bot
-                CPPLib.init(listOf(TestUtils.workingDir.absolutePath.replace(File.separator, "/")),
-                    cfgPath.absolutePath)
+                CPPLib.init(
+                    listOf(TestUtils.workingDir.absolutePath.replace(File.separator, "/")),
+                    cfgPath.absolutePath
+                )
+                runBlocking {
+                    delay(1000)
+                }
             }
         }
 
         @JvmStatic
         @AfterAll
-        fun closeBot() {
+        fun endTest() {
             runBlocking {
                 delay(1000)
             }
+            PublicShared.onDisable()
             bot.close()
+        }
+
+        @AfterEach
+        fun clearLog() {
+            TestUtils.logList.clear()
         }
     }
 }

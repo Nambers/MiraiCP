@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -28,47 +28,25 @@
 namespace MiraiCP {
     /// Event 工厂
     namespace eventTypes {
-//        enum Types {
-//            BaseEvent [[maybe_unused]], // 0
-//            GroupMessageEvent,          // 1
-//            PrivateMessageEvent,        // 2
-//            GroupInviteEvent,           // 3
-//            NewFriendRequestEvent,      // 4
-//            MemberJoinEvent,            // 5
-//            MemberLeaveEvent,           // 6
-//            RecallEvent,                // 7
-//            BotJoinGroupEvent,          // 8
-//            GroupTempMessageEvent,      // 9
-//            TimeOutEvent,               // 10
-//            BotOnlineEvent,             // 11
-//            NudgeEvent,                 // 12
-//            BotLeaveEvent,              // 13
-//            MemberJoinRequestEvent,     // 14
-//            MessagePreSendEvent,        // 15
-//            MiraiCPExceptionEvent,      // 16
-//            Command,                    // 17
-//            count,                      // 事件在此位置前定义，此时count为事件种类数
-//            error                       // 出现问题时使用此enum
-//        };
         enum Types {
             BaseEvent [[maybe_unused]] = -1,
-            BotOnlineEvent,
-            BotJoinGroupEvent,
-            GroupInviteEvent,
-            BotLeaveEvent,
-            MessageEvent,
-            RecallEvent,
-            MessagePreSendEvent,
-            NudgeEvent,
-            NewFriendRequestEvent,
-            MemberLeaveEvent,
-            MemberJoinEvent,
-            MemberJoinRequestEvent,
-            TimeOutEvent, // TODO
-            MiraiCPExceptionEvent = 16,      // 16 todo 暂时保持
-            Command = 17,                    // 17
-            count,                      // 事件在此位置前定义，此时count为事件种类数
-            error                       // 出现问题时使用此enum
+            BotOnlineEvent,                 // 0
+            BotJoinGroupEvent,              // 1
+            GroupInviteEvent,               // 2
+            BotLeaveEvent,                  // 3
+            MessageEvent,                   // 4
+            RecallEvent,                    // 5
+            MessagePreSendEvent,            // 6
+            NudgeEvent,                     // 7
+            NewFriendRequestEvent,          // 8
+            MemberLeaveEvent,               // 9
+            MemberJoinEvent,                // 10
+            MemberJoinRequestEvent,         // 11
+            TimeOutEvent,                   // 12
+            MiraiCPExceptionEvent = 16,     // 16 todo 暂时保持
+            Command = 17,                   // 17
+            count,                          // 事件在此位置前定义，此时count为事件种类数
+            error                           // 出现问题时使用此enum
         };
     }
 
@@ -146,7 +124,7 @@ namespace MiraiCP {
         /// 获取当前聊天，可能是群，私聊，或群临时回话
         virtual Contact *chat() = 0;
 
-        /// 获取当前聊天，可能是群，私聊，或群临时回话
+        /// 获取当前聊天的发送人，可能是群成员，私聊的好友，或群临时回话对应的群成员
         virtual Contact *from() = 0;
 
         virtual MessageChain *getMessageChain() = 0;
@@ -294,13 +272,13 @@ namespace MiraiCP {
         /// 事件序列化文本
         std::string source;
         /// 发起人昵称
-        std::string invitorNick;
+        std::string inviterNick;
         /// 被邀请进的组
         std::string groupName;
         /// 群号
         Group group;
         /// 邀请的好友, 如果在邀请后删除好友则为空
-        Friend invitor;
+        Friend inviter;
         /// 本次申请 id
         long requestEventId = 0;
 
@@ -382,7 +360,7 @@ namespace MiraiCP {
         ///目标群
         Group group;
         ///邀请人, 当type = 1时存在，否则则和member变量相同
-        std::optional<Member> invitor;
+        std::optional<Member> inviter;
 
         /*!
          * @brief 新群成员入群事件
@@ -470,7 +448,7 @@ namespace MiraiCP {
         /// 进入的群
         Group group;
         /// 当type=2时存在，为邀请人，否则为空，调用可能会报错
-        std::optional<Member> invitor;
+        std::optional<Member> inviter;
         /// 1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
         int type;
 
@@ -629,7 +607,7 @@ namespace MiraiCP {
         /// 申请的群, 如果不存在就表明广播这个事件的时候机器人已经退出该群
         Group group;
         /// 邀请人, 如果不存在表明这个邀请人退出了群或没有邀请人为主动进群
-        std::optional<Member> invitor;
+        std::optional<Member> inviter;
         /// 申请人
         Member from;
         /// 申请人昵称
