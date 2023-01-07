@@ -29,9 +29,7 @@ namespace MiraiCP {
     struct InternalBot; // forward declaration
 
     /// 当前bot账号信息
-    class Bot {
-        std::shared_ptr<InternalBot> InternalData;
-
+    class Bot: public Contact {
     public:
         /**
          * 用 id 构造 Bot 对象
@@ -72,19 +70,9 @@ namespace MiraiCP {
         /// @brief 群列表string形式返回，利于保存
         [[nodiscard]] std::string GroupListToString() const;
 
-        /// Bot 的 id
-        [[nodiscard]] QQID id() const;
-
         bool operator==(const Bot &b) const {
             return id() == b.id();
         }
-
-    private:
-        /*!
-         * @brief 刷新bot信息
-         * @param env
-         */
-        void refreshInfo();
     };
 } // namespace MiraiCP
 

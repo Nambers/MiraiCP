@@ -320,6 +320,7 @@ namespace MiraiCP {
                 return std::make_shared<Member>(this->id, this->groupId, this->botId);
             case 4:
                 // bot
+                return std::make_shared<Bot>(this->id);
             case 5:
                 // todo Implement Stranger (ea)
             case 6:

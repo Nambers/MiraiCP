@@ -49,12 +49,18 @@ namespace MiraiCP {
         }
     };
 
-    inline std::shared_ptr<InternalBot> get_bot(QQID id) {
-        static std::unordered_map<QQID, std::shared_ptr<InternalBot>> BotPool;
+    inline std::shared_ptr<IContactData> get_bot(QQID id) {
+        static std::unordered_map<QQID, std::shared_ptr<IContactData>> BotPool;
         static std::mutex mtx;
         std::lock_guard<std::mutex> lck(mtx);
         auto &Ptr = BotPool.try_emplace(id).first->second;
-        if (!Ptr) Ptr = std::make_shared<InternalBot>(id);
+        if (!Ptr){
+            Ptr = std::make_shared<IContactData>();
+            Ptr->_id = id;
+            Ptr->_type = MIRAI_BOT;
+            Ptr->_botid = id;
+            Ptr->forceRefreshNextTime();
+        }
         return Ptr;
     }
 
@@ -86,12 +92,7 @@ namespace MiraiCP {
         return Tools::VectorToString(getGroupList());
     }
 
-    void Bot::refreshInfo() {
-        InternalData->requestRefresh();
-    }
-
-    Bot::Bot(QQID in_id) : InternalData(get_bot(in_id)) {
-        InternalData->forceRefreshNextTime();
+    Bot::Bot(QQID in_id): Contact(get_bot(in_id)) {
     }
 
     std::string Bot::nick() {
@@ -104,9 +105,5 @@ namespace MiraiCP {
         refreshInfo();
         std::shared_lock<std::shared_mutex> _lck(InternalData->getMutex());
         return InternalData->_avatarUrl;
-    }
-
-    QQID Bot::id() const {
-        return InternalData->_id;
     }
 } // namespace MiraiCP

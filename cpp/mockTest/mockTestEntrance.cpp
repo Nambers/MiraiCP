@@ -38,6 +38,14 @@ public:
     void onEnable() override {
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
             Message::messageSerialization(a.message);
+            refresh(a);
+            testEnd();
+        });
+        Event::registerEvent<NudgeEvent>([](const NudgeEvent& a) {
+            Logger::logger.info("nudge:" + std::to_string(a.target->id()));
+            testEnd();
+        });
+        Event::registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent a) {
             testEnd();
         });
     }

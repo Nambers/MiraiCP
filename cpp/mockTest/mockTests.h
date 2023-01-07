@@ -22,5 +22,6 @@ namespace MockTests{
     namespace Message{
         void messageSerialization(const MiraiCP::MessageChain&);
     }
+    void refresh(MiraiCP::GroupMessageEvent);
 }
 #endif //MIRAICP_PRO_MOCKTESTS_H

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,6 +21,8 @@ package tech.eritquearcus.miraicp.shared.test.events
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
+import net.mamoe.mirai.mock.utils.broadcastMockEvents
+import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import org.junit.jupiter.api.Test
 import tech.eritquearcus.miraicp.shared.test.TestBase
 import tech.eritquearcus.miraicp.shared.test.TestUtils.checkMessageChainJsonResultFromLog
@@ -102,5 +104,24 @@ class MessageTest : TestBase() {
         member.says(mc)
         waitUntilEnd()
         checkMessageChainJsonResultFromLog(mc)
+    }
+
+    @Test
+    fun voiceMessage() = runBlocking {
+        listener
+        val au = this@MessageTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.toExternalResource().use {
+            bot.uploadOnlineAudio(it)
+        }
+        member.says(au)
+        waitUntilEnd()
+    }
+
+    @Test
+    fun nudge() = runBlocking {
+        listener
+        broadcastMockEvents {
+            bot.nudgedBy(member)
+        }
+        waitUntilEnd()
     }
 }
