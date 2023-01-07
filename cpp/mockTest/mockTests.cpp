@@ -26,4 +26,10 @@ namespace MockTests {
             Logger::logger.info("after_serialization:" + msg.toJson().dump());
         }
     }
+    void refresh(GroupMessageEvent event){
+        Logger::logger.info("refresh:");
+       Logger::logger.info(event.sender.avatarUrl());
+       Logger::logger.info(event.group.avatarUrl());
+       Logger::logger.info(event.bot.avatarUrl());
+    }
 }

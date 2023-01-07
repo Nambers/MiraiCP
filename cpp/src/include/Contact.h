@@ -36,7 +36,8 @@ namespace MiraiCP {
         /// 群成员
         MIRAI_MEMBER = 3,
         /// bot
-        MIRAI_OTHERTYPE = 4,
+        MIRAI_BOT = 4,
+        MIRAI_OTHERTYPE = 5,
     };
 
     /// Contact 内部储存数据抽象类
