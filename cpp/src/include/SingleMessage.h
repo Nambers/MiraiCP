@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -257,19 +257,9 @@ namespace MiraiCP {
             SINGLEMESSAGE_REFACTOR_ASSERTION(3, Types::Image_t);
             return Types::Image_t;
         }
+
         //图片id，样式:` {xxx}.xx `
         std::string id;
-        /// 可为空, 用`refreshInfo`获取
-        std::optional<std::string> md5;
-        /// 可为0, 来源:用`refreshInfo`可能可以获取或者自己填充, 是isUploaded的必须条件, 默认0
-        size_t size;
-        /// 可为空, 用`refreshInfo`获取
-        std::optional<std::string> url;
-        /// 宽度, 默认0, 单位px
-        int width;
-        /// 长度, 默认0, 单位px
-        int height;
-        bool isEmoji;
         /*!
          * @brief 图片类型
          *  - png
@@ -281,6 +271,18 @@ namespace MiraiCP {
          *  默认 png
          */
         std::string imageType;
+        /// 可为空, 用`refreshInfo`获取
+        std::optional<std::string> md5;
+        /// 可为空, 用`refreshInfo`获取
+        std::optional<std::string> url;
+        /// 可为0, 来源:用`refreshInfo`可能可以获取或者自己填充, 是isUploaded的必须条件, 默认0
+        size_t size{};
+        /// 宽度, 默认0, 单位px
+        int width{};
+        /// 长度, 默认0, 单位px
+        int height{};
+        /// 是否为 emoji
+        bool isEmoji{};
 
         /*!
          * @brief 图片是否已经上传(如果已经上传即表明可以直接用ImageId发送, 如果没有需要手动上传)
@@ -310,8 +312,8 @@ namespace MiraiCP {
         explicit Image(const std::string &imageId, size_t size = 0, int width = 0, int height = 0,
                        std::string type = "PNG",
                        bool isEmoji = false)
-                : SingleMessage(Image::type(), imageId), id(imageId), size(size), width(width),
-                  height(height), isEmoji(isEmoji), imageType(std::move(type)) {
+                : SingleMessage(Image::type(), imageId), id(imageId), imageType(std::move(type)), size(size),
+                  width(width), height(height), isEmoji(isEmoji) {
             // todo(Antares): 实际上重复的属性 id 和 content
         }
 
