@@ -103,7 +103,7 @@ namespace LibLoader {
     void LoaderMain::mainloop() noexcept {
         static std::mutex fakeLock;
         std::unique_lock fakeUniqueLock(fakeLock);
-        loaderWakeCV().wait(fakeUniqueLock, []() { return shouldTick() || !loader_thread_task_queue.empty(); });
+        loaderWakeCV().wait(fakeUniqueLock, []() { return is_loader_exited() || shouldTick() || !loader_thread_task_queue.empty(); });
 
         tick();
         if (!loader_thread_task_queue.empty()) {
