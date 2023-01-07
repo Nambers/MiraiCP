@@ -21,7 +21,7 @@ using namespace MiraiCP;
 using namespace MockTests;
 
 const PluginConfig CPPPlugin::config{
-        "id1",          // 插件id
+        "idMockTest",          // 插件id
         "test",         // 插件名称
         "v1.0",         // 插件版本
         "a",            // 插件作者
