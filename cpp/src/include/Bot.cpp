@@ -45,7 +45,7 @@ namespace MiraiCP {
 //            nlohmann::json j{{"source", internalToString()}};
 //            LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j)));
 //            _avatarUrl = std::move(tmp.avatarUrl);
-//            _nickOrNameCard = std::move(tmp.nickornamecard);
+//            _nickOrNameCard = std::move(tmp.nickOrNameCard);
 //        }
 //    };
 

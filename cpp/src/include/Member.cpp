@@ -57,7 +57,7 @@ namespace MiraiCP {
         auto ActualDataPtr = GetDataInternal();
         assert(ActualDataPtr != nullptr);
         bool needrefresh = false;
-        if (in_json.contains("nickornamecard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+        if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickOrNameCard");
         else
             needrefresh = true;
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
@@ -106,7 +106,7 @@ namespace MiraiCP {
     }
 
     void MemberData::deserialize(nlohmann::json in_json) {
-        _groupId = in_json["groupid"];
+        _groupId = in_json["groupId"];
         _anonymous = in_json["anonymous"].get<bool>();
         IContactData::deserialize(std::move(in_json));
     }
@@ -124,7 +124,7 @@ namespace MiraiCP {
 
         {
             LowLevelAPI::info tmp = LowLevelAPI::info0(result);
-            this->_nickOrNameCard = tmp.nickornamecard;
+            this->_nickOrNameCard = tmp.nickOrNameCard;
             this->_avatarUrl = tmp.avatarUrl;
         }
 

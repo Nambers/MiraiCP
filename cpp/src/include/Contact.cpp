@@ -63,18 +63,16 @@ namespace MiraiCP {
 
     void IContactData::deserialize(nlohmann::json in_json) {
         using Tools::json_stringmover;
-        _nickOrNameCard = json_stringmover(in_json, "nickornamecard");
+        _nickOrNameCard = json_stringmover(in_json, "nickOrNameCard");
         _avatarUrl = json_stringmover(in_json, "avatarUrl");
     }
 
     void IContactData::refreshInfo() {
         // default to Friend
         std::string temp = LowLevelAPI::getInfoSource(internalToString());
-        if (temp == "E1") {
-            throw FriendException(MIRAICP_EXCEPTION_WHERE);
-        }
+        MIRAICP_ERROR_HANDLE(temp, "");
         LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
-        this->_nickOrNameCard = tmp.nickornamecard;
+        this->_nickOrNameCard = tmp.nickOrNameCard;
         this->_avatarUrl = tmp.avatarUrl;
     }
 

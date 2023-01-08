@@ -197,8 +197,8 @@ object PublicShared {
     suspend fun sendMiraiCode(message: String, c: Config.Contact): String =
         send0(MiraiCode.deserializeMiraiCode(message), c)
 
-    private fun OnlineAnnouncement.toOnlineA(): Config.OnlineA {
-        return Config.OnlineA(
+    private fun OnlineAnnouncement.toOnlineA(): Packets.Incoming.OnlineAnnouncement {
+        return Packets.Incoming.OnlineAnnouncement(
             this.content,
             this.fid,
             this.parameters.image?.id ?: let { "" },
@@ -207,7 +207,7 @@ object PublicShared {
             this.group.id,
             this.bot.id,
             this.publicationTime,
-            Config.AP(
+            Packets.Incoming.AnnouncementParams(
                 this.parameters.sendToNewMember,
                 this.parameters.isPinned,
                 this.parameters.showEditCard,
@@ -218,51 +218,61 @@ object PublicShared {
     }
 
     @OptIn(MiraiExperimentalApi::class)
-    suspend fun refreshInfo(c: Config.Contact, quit: Boolean, annoucment: Boolean): String = c.withBot { bot ->
-        when (c.type) {
-            1 -> c.withFriend(bot, "找不到对应好友，位置:K-GetNickOrNameCard()，id:${c.id}") { f ->
-                if (quit) {
-                    f.delete()
-                    return "done"
-                }
-                json.encodeToString(Config.ContactInfo(f.nick, f.avatarUrl))
-            }
+    suspend fun refreshInfo(source: String): String =
+        withData(source, Packets.Incoming.RefreshInfo.serializer()) { data ->
+            data.contact.withBot { bot ->
+                when (data.contact.type) {
+                    1 -> data.contact.withFriend(
+                        bot,
+                        "找不到对应好友，位置:K-GetNickOrNameCard()，id:${data.contact.id}"
+                    ) { f ->
+                        if (data.quit) {
+                            f.delete()
+                            return "done"
+                        }
+                        json.encodeToString(Packets.Incoming.RefreshInfo.ContactInfo(f.nick, f.avatarUrl))
+                    }
 
-            2 -> c.withGroup(bot, "取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}") { g ->
-                if (annoucment) return json.encodeToString(g.announcements.toList().map { it.toOnlineA() })
-                if (quit) {
-                    g.quit()
-                    return "done"
-                }
-                json.encodeToString(
-                    Config.ContactInfo(
-                        g.name, g.avatarUrl, Config.GroupSetting(
-                            g.name,
-                            g.settings.isMuteAll,
-                            g.settings.isAllowMemberInvite,
-                            g.settings.isAutoApproveEnabled,
-                            g.settings.isAnonymousChatEnabled
+                    2 -> data.contact.withGroup(
+                        bot,
+                        "取群名称找不到群,位置K-GetNickOrNameCard(), gid:${data.contact.id}"
+                    ) { g ->
+                        if (data.announcement) return json.encodeToString(
+                            g.announcements.toList().map { it.toOnlineA() })
+                        if (data.quit) {
+                            g.quit()
+                            return "done"
+                        }
+                        json.encodeToString(
+                            Packets.Incoming.RefreshInfo.ContactInfo(
+                                g.name, g.avatarUrl, Packets.Incoming.RefreshInfo.ContactInfo.GroupSetting(
+                                    g.name,
+                                    g.settings.isMuteAll,
+                                    g.settings.isAllowMemberInvite,
+                                    g.settings.isAutoApproveEnabled,
+                                    g.settings.isAnonymousChatEnabled
+                                )
+                            )
                         )
-                    )
-                )
-            }
+                    }
 
-            3 -> friend_cache.firstOrNull { a ->
-                a.id == c.id && a.group.id == c.groupid
-            }?.let {
-                json.encodeToString(Config.ContactInfo(it.nameCardOrNick, it.avatarUrl))
-            } ?: let {
-                c.withMember(
-                    bot,
-                    "取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${c.groupid}",
-                    "取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${c.id}, gid:${c.groupid}"
-                ) { _, m ->
-                    json.encodeToString(Config.ContactInfo(m.nameCardOrNick, m.avatarUrl))
+                    3 -> friend_cache.firstOrNull { a ->
+                        a.id == data.contact.id && a.group.id == data.contact.groupId
+                    }?.let {
+                        json.encodeToString(Config.ContactInfo(it.nameCardOrNick, it.avatarUrl))
+                    } ?: let {
+                        data.contact.withMember(
+                            bot,
+                            "取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${data.contact.groupId}",
+                            "取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${data.contact.id}, gid:${data.contact.groupId}"
+                        ) { _, m ->
+                            json.encodeToString(Packets.Incoming.RefreshInfo.ContactInfo(m.nameCardOrNick, m.avatarUrl))
+                        }
+                    }
+
+                    4 -> json.encodeToString(Packets.Incoming.RefreshInfo.ContactInfo(bot.nick, bot.avatarUrl))
+                    else -> "EA"
                 }
-            }
-
-            4 -> json.encodeToString(Config.ContactInfo(bot.nick, bot.avatarUrl))
-            else -> "EA"
         }
     }
 
@@ -299,22 +309,24 @@ object PublicShared {
                     isEmoji = img.isEmoji,
                 )
             )
-    } catch (e: OverFileSizeMaxException) {
-        logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
-        err1
-    } catch (e: NullPointerException) {
-        logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
-        err2
-    }
+        } catch (e: OverFileSizeMaxException) {
+            logger.error("图片文件过大超过30MB,位置:K-uploadImgGroup(),文件名:$file")
+            err1
+        } catch (e: NullPointerException) {
+            logger.error("上传图片文件名异常,位置:K-uploadImgGroup(),文件名:$file")
+            err2
+        }
 
     suspend fun uploadImg(file: String, c: Config.Contact): String = c.withBot { bot ->
         when (c.type) {
             1 -> c.withFriend(bot, "发送图片找不到对应好友,位置:K-uploadImgFriend(),id:${c.id}") { temp ->
                 uploadImgAndId(file, temp)
             }
+
             2 -> c.withGroup(bot, "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.id}") { temp ->
                 uploadImgAndId(file, temp)
             }
+
             3 -> c.withMember(
                 bot,
                 "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.groupid}",
@@ -322,6 +334,7 @@ object PublicShared {
             ) { _, temp1 ->
                 uploadImgAndId(file, temp1, "E3", "E4")
             }
+
             else -> {
                 "EA"
             }
@@ -422,8 +435,8 @@ object PublicShared {
                         "E2"
                     }
                 }
+            }
         }
-    }
 
     private suspend fun fileInfo0(temp: AbsoluteFile): String {
         return json.encodeToString(
@@ -517,7 +530,9 @@ object PublicShared {
     //查询权限
     fun kqueryM(c: Config.Contact): String = c.withBot { bot ->
         c.withMember(
-            bot, "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}", "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.groupid}"
+            bot,
+            "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}",
+            "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.groupid}"
         ) { _, member ->
             return member.permission.level.toString()
         }
@@ -525,7 +540,9 @@ object PublicShared {
 
     suspend fun kkick(message: String, c: Config.Contact): String = c.withBot { bot ->
         c.withMember(
-            bot, "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}", "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.id}"
+            bot,
+            "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}",
+            "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.id}"
         ) { _, member ->
             try {
                 member.kick(message)
@@ -543,50 +560,36 @@ object PublicShared {
         }
     }
 
-    private fun buildForwardMsg(text: String, bid: Long, display: Config.ForwardedMessageDisplay?): ForwardMessage {
-        val t = json.decodeFromString<Config.ForwardMessageJson.Content>(text)
+    private fun buildForwardMsg(
+        nodes: List<Packets.Incoming.SendForwarded.Node>,
+        display: Packets.Incoming.SendForwarded.ForwardedMessageDisplay
+    ): ForwardMessage {
         val a = mutableListOf<ForwardMessage.Node>()
-        t.value.forEach {
-            if (it.isForwardedMessage != true) a.add(
+        nodes.forEach {
+            a.add(
                 ForwardMessage.Node(
-                    it.id, it.time, it.name, MiraiCode.deserializeMiraiCode(it.message)
+                    it.senderId, it.time, it.senderName, MessageChain.deserializeFromJsonString(it.messageChain)
                 )
             )
-            else {
-                a.add(ForwardMessage.Node(it.id, it.time, it.name, buildForwardMsg(it.message, bid, it.display)))
-            }
         }
-        return RawForwardMessage(a).render(if (display != null) DisplayS(display) else ForwardMessage.DisplayStrategy.Default)
+        return RawForwardMessage(a).render(Packets.Incoming.SendForwarded.DisplayS(display))
     }
 
     //构建聊天记录
-    suspend fun sendForwardMsg(text: String, bid: Long): String = withBot(bid) { bot ->
-        val t = json.decodeFromString<Config.ForwardMessageJson>(text)
-        val c: Contact = when (t.type) {
-            1 -> bot.getFriend(t.id) ?: let {
-                return "EF"
+    suspend fun sendForwardMsg(source: String): String =
+        withData(source, Packets.Incoming.SendForwarded.serializer()) { data ->
+            withBot(data.contact.botId) { bot ->
+                val tmp = buildForwardMsg(data.nodes, data.display)
+                val block: suspend (Contact) -> String = { c ->
+                    sendWithCatch {
+                        tmp.sendTo(c).source
+                    }
+                }
+                data.contact.withContact(bot) {
+                    block(it)
+                }
             }
-
-            2 -> bot.getGroup(t.id) ?: let {
-                return "EG"
-            }
-
-            3 -> (bot.getGroup(t.id) ?: let {
-                return "EM"
-            })[t.groupid] ?: let {
-                return "EMM"
-            }
-            else -> return "EA"
         }
-        val tmp = try {
-            buildForwardMsg(json.encodeToString(t.content), bid, t.display)
-        } catch (err: IllegalStateException) {
-            return@withBot err.message!!
-        }
-        sendWithCatch {
-            tmp.sendTo(c).source
-        }
-    }
 
     suspend fun acceptFriendRequest(source: String): String =
         withData(source, Packets.Incoming.FriendOperation.serializer()) { data ->
@@ -632,30 +635,8 @@ object PublicShared {
             val block: suspend (Contact) -> String = { c ->
                 sendWithCatch { c.sendMessage(source.quote() + message).source }
             }
-
-            when (data.contact.type) {
-                1 -> data.contact.withFriend(
-                    bot,
-                    "找不到对应好友，位置K-sendWithQuote，id:${data.contact.id}"
-                ) { block(it) }
-
-                2 -> data.contact.withGroup(
-                    bot,
-                    "找不到对应群组，位置K-sendWithQuote，id:${data.contact.id}"
-                ) { block(it) }
-
-                3 -> data.contact.withMember(
-                    bot,
-                    "找不到对应群组，位置K-sendWithQuote，id:${data.contact.id}",
-                    "找不到对应群成员，位置K-sendWithQuote，id:${data.contact.id}, gid:${data.contact.groupid}"
-                ) { _, member ->
-                    block(member)
-                }
-
-                else -> {
-                    logger.error("类型出错, 位置:K-sendWithQuote, contact:${data.contact}")
-                    "EA"
-                }
+            data.contact.withContact(bot) {
+                block(it)
             }
     }
 
@@ -673,36 +654,44 @@ object PublicShared {
         }
     }
 
-    suspend fun deleteOnlineAnnouncement(a: Config.IdentifyA): String = withBot(a.botid) { bot ->
-        withGroup(bot, a.groupid) { group ->
-            try {
-                group.announcements.delete(a.fid!!).let {
-                    if (!it) return "E1"
-                }
-            } catch (e: PermissionDeniedException) {
-                return "EP"
-            } catch (e: IllegalStateException) {
-                return "E3"
-            }
-            return "Y"
-        }
-    }
+    suspend fun announcementOperation(source: String): String =
+        withData(source, Packets.Incoming.AnnouncementOperation.serializer()) { data ->
+            withBot(data.botId) { bot ->
+                withGroup(bot, data.groupId) { group ->
+                    when (data.type) {
+                        1 -> {
+                            try {
+                                group.announcements.delete(data.fid).let {
+                                    if (!it) return "E1"
+                                }
+                            } catch (e: PermissionDeniedException) {
+                                return "EP"
+                            } catch (e: IllegalStateException) {
+                                return "E3"
+                            }
+                            return "Y"
+                        }
 
-    suspend fun publishOfflineAnnouncement(i: Config.IdentifyA, a: Config.BriefOfflineA): String =
-        withBot(i.botid) { bot ->
-            withGroup(bot, i.groupid) { g ->
-                OfflineAnnouncement.create(a.content, buildAnnouncementParameters {
-                    image = null
-                    sendToNewMember = a.params.sendToNewMember
-                    isPinned = a.params.isPinned
-                    showEditCard = a.params.showEditCard
-                    showPopup = a.params.showPopup
-                    requireConfirmation = a.params.requireConfirmation
-                }).let {
-                    return try {
-                        json.encodeToString(it.publishTo(g).toOnlineA())
-                    } catch (e: PermissionDeniedException) {
-                        "EP"
+                        2 -> {
+                            OfflineAnnouncement.create(data.source!!.content, buildAnnouncementParameters {
+                                image = null
+                                sendToNewMember = data.source.params.sendToNewMember
+                                isPinned = data.source.params.isPinned
+                                showEditCard = data.source.params.showEditCard
+                                showPopup = data.source.params.showPopup
+                                requireConfirmation = data.source.params.requireConfirmation
+                            }).let {
+                                return try {
+                                    json.encodeToString(it.publishTo(group).toOnlineA())
+                                } catch (e: PermissionDeniedException) {
+                                    "EP"
+                                }
+                            }
+                        }
+
+                        else -> {
+                            "EA"
+                        }
                     }
                 }
             }

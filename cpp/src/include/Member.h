@@ -49,7 +49,7 @@ namespace MiraiCP {
 
     public:
         /// @brief 构建群成员对象，一般为内部调用
-        /// @param in_json 内容至少如下：{"id":123, "groupid":456, "botid":789}
+        /// @param in_json 内容至少如下：{"id":123, "groupId":456, "botId":789}
         /// @throw IllegalArgumentException
         explicit Member(nlohmann::json in_json);
 

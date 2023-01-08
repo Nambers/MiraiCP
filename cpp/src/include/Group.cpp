@@ -51,7 +51,7 @@ namespace MiraiCP {
         }
     }
 
-    Group::Group(QQID groupid, QQID botid) : Contact(GetGroupFromPool(groupid, botid)) {
+    Group::Group(QQID groupId, QQID botId) : Contact(GetGroupFromPool(groupId, botId)) {
         forceRefreshNextTime();
     }
 
@@ -61,7 +61,7 @@ namespace MiraiCP {
 
         bool needRefresh = false;
 
-        if (in_json.contains("nickornamecard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+        if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickOrNameCard");
         else
             needRefresh = true;
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
@@ -72,8 +72,8 @@ namespace MiraiCP {
     }
 
     std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList() {
-        json j{{"source", toString()}, {"announcement", true}};
-        std::string re = KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j));
+        json j{{"contact", toJson()}, {"announcement", true}};
+        std::string re = KtOperation::ktOperation(KtOperation::RefreshInfo, j);
         std::vector<OnlineAnnouncement> oa;
         for (const json &e: json::parse(re)) {
             oa.push_back(Group::OnlineAnnouncement::deserializeFromJson(e));
@@ -82,9 +82,8 @@ namespace MiraiCP {
     }
 
     void Group::OnlineAnnouncement::deleteThis() {
-        json i{{"botid", botid}, {"groupid", groupid}, {"fid", fid}, {"type", 1}};
-        json j{{"identify", i.dump()}};
-        std::string re = KtOperation::ktOperation(KtOperation::Announcement, std::move(j));
+        json j{{"botId", botId}, {"groupId", groupId}, {"fid", fid}, {"type", 1}};
+        std::string re = KtOperation::ktOperation(KtOperation::Announcement, j);
         if (re == "E1")
             throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)", MIRAICP_EXCEPTION_WHERE);
         if (re == "E3")
@@ -101,22 +100,21 @@ namespace MiraiCP {
     }
 
     Group::OnlineAnnouncement Group::OfflineAnnouncement::publishTo(const Group &g) {
-        json i{{"botid", g.botid()}, {"groupid", g.id()}, {"type", 2}};
         json s{{"content", content}, {"params", params.serializeToJson()}};
-        json j{{"identify", i.dump()}, {"source", s.dump()}};
-        std::string re = KtOperation::ktOperation(KtOperation::Announcement, std::move(j));
+        json j{{"botId", g.botid()}, {"groupId", g.id()}, {"type", 2}, {"source", s}};
+        std::string re = KtOperation::ktOperation(KtOperation::Announcement, j);
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
     }
 
     Group::OnlineAnnouncement Group::OnlineAnnouncement::deserializeFromJson(const json &j) {
         return Group::OnlineAnnouncement{
                 j["content"],
-                j["botid"],
-                j["groupid"],
-                j["senderid"],
+                j["botId"],
+                j["groupId"],
+                j["senderId"],
                 j["time"],
                 j["fid"],
-                j["imageid"],
+                j["imageId"],
                 j["confirmationNum"],
                 {j["params"]["sendToNewMember"],
                  j["params"]["requireConfirmation"],
@@ -135,8 +133,8 @@ namespace MiraiCP {
     }
 
     void Group::quit() {
-        nlohmann::json j{{"source", toString()}, {"quit", true}};
-        KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j));
+        nlohmann::json j{{"contact", toString()}, {"quit", true}};
+        MIRAICP_ERROR_HANDLE(KtOperation::ktOperation(KtOperation::RefreshInfo, j), "");
     }
 
     void Group::updateSetting(GroupData::GroupSetting newSetting) {
@@ -218,7 +216,7 @@ namespace MiraiCP {
     void GroupData::refreshInfo() {
         std::string re = LowLevelAPI::getInfoSource(internalToString());
         LowLevelAPI::info tmp = LowLevelAPI::info0(re);
-        this->_nickOrNameCard = std::move(tmp.nickornamecard);
+        this->_nickOrNameCard = std::move(tmp.nickOrNameCard);
         this->_avatarUrl = std::move(tmp.avatarUrl);
         nlohmann::json j = nlohmann::json::parse(re)["setting"];
         this->_setting.name = Tools::json_stringmover(j, "name");
@@ -229,7 +227,7 @@ namespace MiraiCP {
     }
 
     void GroupData::deserialize(nlohmann::json in_json) {
-        _groupId = in_json["groupid"];
+        _groupId = in_json["groupId"];
         IContactData::deserialize(std::move(in_json));
     }
 
