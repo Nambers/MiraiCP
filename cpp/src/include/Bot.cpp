@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -73,7 +73,8 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Bot::getFriendList() const {
-        nlohmann::json j{{"contact", this->toJson()}, {"type", 0}};
+        nlohmann::json j{{"contact", this->toJson()},
+                         {"type",    KtOperation::QueryBotListCode::FriendList}};
         std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
     }
@@ -83,7 +84,8 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Bot::getGroupList() const {
-        nlohmann::json j{{"contact", this->toJson()}, {"type", 1}};
+        nlohmann::json j{{"contact", this->toJson()},
+                         {"type",    KtOperation::QueryBotListCode::GroupList}};
         std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
     }

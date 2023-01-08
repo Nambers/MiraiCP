@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -70,7 +70,7 @@ namespace MiraiCP {
         else
             display = ForwardedMessageDisplayStrategy::defaultStrategy();
         std::vector<ForwardedNode> nodes;
-        json j = msg["nodeList"];
+        auto &j = msg["nodeList"];
         if(!j.is_array())
             throw IllegalArgumentException("OnlineForwardedMessage参数异常, 应为 array", MIRAICP_EXCEPTION_WHERE);
         try {

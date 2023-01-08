@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -277,7 +277,7 @@ namespace MiraiCP {
 
         template<class T1, class... T2>
         void constructMessages(T1 &&h, T2 &&...args) {
-            static_assert(std::is_base_of_v<SingleMessage, typename std::remove_reference_t<T1>>,
+            static_assert(std::is_base_of_v<SingleMessage, typename std::decay_t<T1>>,
                           "只支持SingleMessage子类");
             emplace_back(std::forward<T1>(h));
             constructMessages(std::forward<T2>(args)...);

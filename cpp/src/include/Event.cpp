@@ -180,18 +180,20 @@ namespace MiraiCP {
     }
 
     MemberJoinRequestEvent::MemberJoinRequestEvent(BaseEventData j) : BotEvent(j.botId),
-                                                                      source(j.eventData["requestData"]),
+                                                                      source(Tools::json_jsonmover(j.eventData,
+                                                                                                   "requestData")),
                                                                       group(j.subject->id, j.subject->botId),
                                                                       inviter(j.eventData.contains("inviter")
                                                                               ? std::optional(
-                                                                                      Member(j.eventData["inviter"]["id"],
-                                                                                             j.eventData["inviter"]["groupId"],
-                                                                                             j.eventData["inviter"]["botId"]))
+                                                                                      Member(Tools::json_jsonmover(
+                                                                                              j.eventData, "inviter")))
                                                                               : std::nullopt),
                                                                       from(j.object->id, j.object->groupId,
                                                                            j.object->botId),
-                                                                      fromNick(j.eventData["fromNick"]),
-                                                                      message(j.eventData["message"]) {
+                                                                      fromNick(Tools::json_jsonmover(j.eventData,
+                                                                                                     "fromNick")),
+                                                                      message(Tools::json_jsonmover(j.eventData,
+                                                                                                    "message")) {
     }
 
     void MemberJoinRequestEvent::operate(std::string_view s, QQID botid, bool sign, const std::string &msg) {
