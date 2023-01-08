@@ -156,8 +156,8 @@ namespace MiraiCP {
         /// 信息
         MessageChain message;
 
-        //        GroupMessageEvent(QQID botid, Group group, Member sender,
-        //                          MessageChain mc) : BotEvent(botid), group(std::move(group)),
+        //        GroupMessageEvent(QQID botId, Group group, Member sender,
+        //                          MessageChain mc) : BotEvent(botId), group(std::move(group)),
         //                                             sender(std::move(sender)), message(std::move(mc)){};
 
         explicit GroupMessageEvent(BaseEventData j);
@@ -364,14 +364,14 @@ namespace MiraiCP {
 
         /*!
          * @brief 新群成员入群事件
-         * @param botid botid
+         * @param botid botId
          * @param type 类别 @see MemberJoinEvent::type
          * @param member 入群群成员
          * @param group 群组
          * @param inviterid 邀请群成员id，如果不存在和member id参数一致
          */
-        //        MemberJoinEvent(QQID botid, int type, const Member &member, const Group &group,
-        //                        QQID inviterid) : BotEvent(botid), type(joinType(type)), member(member),
+        //        MemberJoinEvent(QQID botId, int type, const Member &member, const Group &group,
+        //                        QQID inviterid) : BotEvent(botId), type(joinType(type)), member(member),
         //                                          group(group),
         //                                          inviterid(inviterid) {}
         explicit MemberJoinEvent(BaseEventData j);
@@ -572,9 +572,9 @@ namespace MiraiCP {
         EventType type;
         Member operater;
 
-        //        BotLeaveEvent(QQID ingroupid, QQID botid, int type, QQID operatorId)
-        //            : BotEvent(botid),
-        //              groupid(ingroupid), type(static_cast<EventType>(type)) {
+        //        BotLeaveEvent(QQID ingroupid, QQID botId, int type, QQID operatorId)
+        //            : BotEvent(botId),
+        //              groupId(ingroupid), type(static_cast<EventType>(type)) {
         //            if (operatorId != -1) {
         //                this->operatorId = operatorId;
         //            }
@@ -645,7 +645,7 @@ namespace MiraiCP {
         /// 消息
         MessageChain message;
 
-        //MessagePreSendEvent(std::shared_ptr<Contact> c, MessageChain mc, QQID botid) : BotEvent(botid), target(std::move(c)), message(std::move(mc)) {}
+        //MessagePreSendEvent(std::shared_ptr<Contact> c, MessageChain mc, QQID botId) : BotEvent(botId), target(std::move(c)), message(std::move(mc)) {}
         explicit MessagePreSendEvent(BaseEventData j);
     };
 

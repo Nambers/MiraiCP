@@ -39,7 +39,7 @@ namespace MiraiCP {
 
     MessageSource MessageChain::quoteAndSend0(std::string msg, QQID groupid) {
         json sign{{"MiraiCode", true},
-                  {"groupid", groupid}};
+                  {"groupId", groupid}};
         json obj{{"messageSource", source->serializeToString()},
                  {"msg", std::move(msg)},
                  {"sign", sign.dump()}};

@@ -42,8 +42,10 @@ namespace MiraiCP {
     json ForwardedMessage::nodesToJson() const { // NOLINT(misc-no-recursion)
         auto value = json::array();
         for (const ForwardedNode &node: nodes) {
-            json temp{{"senderId", node.id}, {"time", node.time}, {"senderName", node.name}};
-            temp["messageChain"] = node.message.toJson();
+            json temp{{"senderId", node.id},
+                      {"time", node.time},
+                      {"senderName", node.name},
+                      {"messageChain", node.message.toJson()}};
             value.emplace_back(std::move(temp));
         }
         return value;
@@ -51,12 +53,10 @@ namespace MiraiCP {
 
     //发送这个聊天记录
     MessageSource ForwardedMessage::sendTo(Contact *c) const{
-        json text = c->toJson();
-        text["content"] = this->nodesToJson();
-        json temp{{"text", text.dump()}};
-        temp["botid"] = c->botid();
-        temp["display"] = display.toJson();
-        std::string re = KtOperation::ktOperation(KtOperation::Buildforward, std::move(temp));
+        json req{{"contact", c->toJson()},
+                 {"display", display.toJson()},
+                 {"nodes", nodesToJson()}};
+        std::string re = KtOperation::ktOperation(KtOperation::Buildforward, req);
         MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
     }

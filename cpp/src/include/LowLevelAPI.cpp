@@ -38,13 +38,13 @@ namespace MiraiCP {
     LowLevelAPI::info LowLevelAPI::info0(const std::string &source) {
         MIRAICP_ERROR_HANDLE(source, "");
         auto j = nlohmann::json::parse(source);
-        info re{Tools::json_stringmover(j, "nickornamecard"), Tools::json_stringmover(j, "avatarUrl")};
+        info re{Tools::json_stringmover(j, "nickOrNameCard"), Tools::json_stringmover(j, "avatarUrl")};
         return re;
     }
 
     std::string LowLevelAPI::getInfoSource(std::string c) {
-        nlohmann::json j{{"source", std::move(c)}};
-        return KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j));
+        nlohmann::json j{{"contact", std::move(c)}};
+        return KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
 
     std::string LowLevelAPI::uploadImg0(std::string path, std::string c) {

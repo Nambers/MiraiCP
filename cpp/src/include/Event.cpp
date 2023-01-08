@@ -290,7 +290,7 @@ namespace MiraiCP {
                 // TODO TODO TODO TODO TODO 适配 command
                 CommandManager::commandManager[j.eventData["bindId"]]->onCommand(
                         j.eventData.contains("contact") ? Contact::deserializeToPointer(Tools::json_jsonmover(j.eventData, "contact")) : nullptr,
-                        Bot(j.eventData["botid"]),
+                        Bot(j.eventData["botId"]),
                         MessageChain::deserializationFromMessageSourceJson(
                                 j.eventData.contains("message") ? j.eventData["message"].get<std::string>() : "",
                                 false));

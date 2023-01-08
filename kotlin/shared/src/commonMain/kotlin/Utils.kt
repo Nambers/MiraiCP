@@ -169,6 +169,36 @@ internal inline fun Packets.Contact.withMember(
     return block(group, m)
 }
 
+internal inline fun Packets.Contact.withContact(
+    bot: Bot,
+    errPos: String = "Packets.Contact.withContact",
+    block: (Contact) -> String
+): String =
+    when (type) {
+        1 -> withFriend(
+            bot,
+            "找不到对应好友，位置${errPos}，id:${id}"
+        ) { block(it) }
+
+        2 -> withGroup(
+            bot,
+            "找不到对应群组，位置${errPos}，id:${id}"
+        ) { block(it) }
+
+        3 -> withMember(
+            bot,
+            "找不到对应群组，位置${errPos}，id:${id}",
+            "找不到对应群成员，位置${errPos}，id:${id}, gid:${groupId}"
+        ) { _, member ->
+            block(member)
+        }
+
+        else -> {
+            PublicSharedData.logger.error("类型出错, 位置:${errPos}, contact:${this}")
+            "EA"
+        }
+    }
+
 fun Packets.Contact.withMiraiMember(block: (Bot, Group, NormalMember) -> String): String = withBot { bot ->
     return withMember(bot) { g, m -> block(bot, g, m) }
 }

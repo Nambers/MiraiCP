@@ -232,7 +232,7 @@ namespace MiraiCP {
         /// - std::string / const char* 相当于传入PlainText(str)
         /// - SingleMessage的各种派生类
         /// - MessageChain
-        /// @deprecated use Contact.quoteAndSend or `this->quoteAndSend1(s, groupid, env)`, since v2.8.1
+        /// @deprecated use Contact.quoteAndSend or `this->quoteAndSend1(s, groupId, env)`, since v2.8.1
         template<class T>
         ShouldNotUse("use Contact.quoteAndSend") MessageSource
                 quoteAndSendMessage(T s, QQID groupid = -1, void *env = nullptr) = delete;

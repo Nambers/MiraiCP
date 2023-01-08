@@ -47,7 +47,7 @@ namespace MiraiCP {
 
         /// 每个对象的必有信息
         struct info {
-            std::string nickornamecard;
+            std::string nickOrNameCard;
             std::string avatarUrl;
         };
 

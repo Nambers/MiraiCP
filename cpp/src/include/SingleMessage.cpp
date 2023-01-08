@@ -111,7 +111,7 @@ namespace MiraiCP {
         if (!this->md5.has_value()) this->refreshInfo();
         if (this->size == 0) throw IllegalArgumentException("size不能为0", MIRAICP_EXCEPTION_WHERE);
         nlohmann::json tmp = this->toJson();
-        tmp["botid"] = botid;
+        tmp["botId"] = botid;
         std::string re = KtOperation::ktOperation(KtOperation::ImageUploaded, std::move(tmp));
         return re == "true";
     }
@@ -280,7 +280,7 @@ namespace MiraiCP {
     Image Image::deserialize(const std::string &str) {
         json j = json::parse(str);
         return Image(
-                j["imageid"],
+                j["imageId"],
                 j["size"],
                 j["width"],
                 j["height"],
@@ -290,7 +290,7 @@ namespace MiraiCP {
     FlashImage FlashImage::deserialize(const std::string &str) {
         json j = json::parse(str);
         return FlashImage(
-                j["imageid"],
+                j["imageId"],
                 j["size"],
                 j["width"],
                 j["height"],

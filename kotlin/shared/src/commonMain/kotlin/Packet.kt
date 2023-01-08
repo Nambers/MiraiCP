@@ -28,8 +28,10 @@ import net.mamoe.mirai.contact.*
 import net.mamoe.mirai.data.RequestEventData.Factory.toRequestEventData
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.MessageSerializers
+import net.mamoe.mirai.message.data.ForwardMessage
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageSource
+import net.mamoe.mirai.message.data.RawForwardMessage
 import net.mamoe.mirai.message.data.toMessageChain
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 
@@ -156,6 +158,103 @@ object Packets {
             val ban: Boolean,
         )
 
+        @Serializable
+        data class SendForwarded(
+            val contact: Packets.Contact,
+            val nodes: List<Node>,
+            val display: ForwardedMessageDisplay,
+        ) {
+            class DisplayS(private val s: ForwardedMessageDisplay) : ForwardMessage.DisplayStrategy {
+                override fun generateBrief(forward: RawForwardMessage): String = s.brief
+                override fun generatePreview(forward: RawForwardMessage): List<String> = s.preview
+                override fun generateSource(forward: RawForwardMessage): String = s.source
+                override fun generateSummary(forward: RawForwardMessage): String = s.summary
+                override fun generateTitle(forward: RawForwardMessage): String = s.title
+            }
+
+            @Serializable
+            data class Node(
+                val senderId: Long,
+                val senderName: String,
+                val time: Int,
+                val messageChain: String,
+            )
+
+            @Serializable
+            data class ForwardedMessageDisplay(
+                val brief: String,
+                val preview: List<String>,
+                val source: String,
+                val summary: String,
+                val title: String,
+            )
+        }
+
+        @Serializable
+        data class RefreshInfo(
+            val contact: Packets.Contact,
+            val quit: Boolean,
+            val announcement: Boolean,
+        ) {
+            @Serializable
+            data class ContactInfo(
+                val nickOrNameCard: String,
+                val avatarUrl: String,
+                val setting: GroupSetting = GroupSetting("", false, false, false, false),
+            ) {
+                @Serializable
+                data class GroupSetting(
+                    val name: String,
+                    val isMuteAll: Boolean,
+                    val isAllowMemberInvite: Boolean,
+                    val isAutoApproveEnabled: Boolean,
+                    val isAnonymousChatEnabled: Boolean,
+                )
+            }
+        }
+
+        // Announcement params
+        @Serializable
+        data class AnnouncementParams(
+            val sendToNewMember: Boolean = false,
+            /** 置顶. 可以有多个置顶公告 */
+            val isPinned: Boolean = false,
+            /** 显示能够引导群成员修改昵称的窗口 */
+            val showEditCard: Boolean = false,
+            /** 使用弹窗 */
+            val showPopup: Boolean = false,
+            /** 需要群成员确认 */
+            val requireConfirmation: Boolean = false,
+        )
+
+        @Serializable
+        data class OnlineAnnouncement(
+            val content: String,
+            val fid: String,
+            val imageId: String,
+            val confirmationNum: Int,
+            val senderId: Long,
+            val groupId: Long,
+            val botId: Long,
+            val time: Long,
+            val params: AnnouncementParams,
+        )
+
+        @Serializable
+        data class AnnouncementOperation(
+            val botId: Long,
+            val groupId: Long,
+            val fid: String,
+            val type: Int,
+            val source: NewAnnouncement? = null,
+        ) {
+            @Serializable
+            data class NewAnnouncement(
+                val content: String,
+                val params: AnnouncementParams,
+            )
+        }
+
         enum class OperationCode {
             Recall,             // 0
             Send,               // 1
@@ -200,7 +299,7 @@ object Packets {
             OperationCode.QueryOwner to PublicShared::queryOwner,
             OperationCode.UploadVoice to PublicShared::uploadVoice,
             OperationCode.GroupSetting to PublicShared::groupSetting,
-            OperationCode.Buildforward to PublicShared::buildforward,
+            OperationCode.Buildforward to PublicShared::sendForwardMsg,
             OperationCode.Nfroperation to PublicShared::acceptFriendRequest,
             OperationCode.Gioperation to PublicShared::acceptGroupInvite,
             OperationCode.SendWithQuote to PublicShared::sendWithQuote,

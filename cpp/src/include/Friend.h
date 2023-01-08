@@ -34,7 +34,7 @@ namespace MiraiCP {
         Friend(QQID friendid, QQID botid);
 
         /// @brief 构建好友对象，一般为内部调用
-        /// @param in_json 内容至少如下：{"id":123, "botid":456}
+        /// @param in_json 内容至少如下：{"id":123, "botId":456}
         /// @throw IllegalArgumentException
         explicit Friend(nlohmann::json in_json);
 
