@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -82,7 +82,10 @@ namespace MiraiCP {
     }
 
     void Group::OnlineAnnouncement::deleteThis() {
-        json j{{"botId", botId}, {"groupId", groupId}, {"fid", fid}, {"type", 1}};
+        json j{{"botId",   botId},
+               {"groupId", groupId},
+               {"fid",     fid},
+               {"type",    KtOperation::AnnouncementOperationCode::Delete}};
         std::string re = KtOperation::ktOperation(KtOperation::Announcement, j);
         if (re == "E1")
             throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)", MIRAICP_EXCEPTION_WHERE);
@@ -100,8 +103,12 @@ namespace MiraiCP {
     }
 
     Group::OnlineAnnouncement Group::OfflineAnnouncement::publishTo(const Group &g) {
-        json s{{"content", content}, {"params", params.serializeToJson()}};
-        json j{{"botId", g.botid()}, {"groupId", g.id()}, {"type", 2}, {"source", s}};
+        json s{{"content", content},
+               {"params",  params.serializeToJson()}};
+        json j{{"botId",   g.botid()},
+               {"groupId", g.id()},
+               {"type",    KtOperation::AnnouncementOperationCode::Publish},
+               {"source",  s}};
         std::string re = KtOperation::ktOperation(KtOperation::Announcement, j);
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
     }
@@ -124,7 +131,8 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Group::getMemberList() {
-        nlohmann::json j{{"contact", toJson()}, {"type", 2}};
+        nlohmann::json j{{"contact", toJson()},
+                         {"type",    KtOperation::QueryBotListCode::MemberList}};
         std::string re = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         if (re == "E1") {
             throw GroupException(MIRAICP_EXCEPTION_WHERE);

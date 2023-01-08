@@ -54,22 +54,22 @@ namespace MiraiCP {
         )
 
         constexpr const char *miraiCodeNameInternal[] = {
-                "NoExists",
-                "NoExists",
-                "NoExists",
-                "NoExists",
-                "NoExists",
-                "NoExists",
-                "NoExists",
-                "at",
-                "atall",
-                "image",
-                "app",
-                "service",
-                "file",
-                "face",
-                "flash",
-                "musicshare"
+                "NoExists",      // 0
+                "NoExists",      // 1
+                "NoExists",      // 2
+                "NoExists",      // 3
+                "NoExists",      // 4
+                "NoExists",      // 5
+                "NoExists",      // 6
+                "at",            // 7
+                "atall",         // 8
+                "image",         // 9
+                "app",          // 10
+                "service",      // 11
+                "file",         // 12
+                "face",         // 13
+                "flash",        // 14
+                "musicshare"    // 15
         };
 
         constexpr const char *messageTypeInternal[] = {
@@ -346,8 +346,8 @@ namespace MiraiCP {
         }
 
         explicit FlashImage(const std::string &imageId, size_t size = 0, int width = 0, int height = 0,
-                            std::string type = "PNG") : Image(imageId, size, width, height, type) {
-            this->SingleMessage::internalType = 8;
+                            std::string type = "PNG") : Image(imageId, size, width, height, std::move(type)) {
+            this->SingleMessage::internalType = Types::FlashImage_t;
         }
 
         explicit FlashImage(const Image &img);

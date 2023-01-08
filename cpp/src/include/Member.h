@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -65,7 +65,7 @@ namespace MiraiCP {
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
         DECL_GETTER(anonymous)
         DECL_GETTER(permission)
-        INLINE_GETTER(groupid)
+        INLINE_GETTER(groupId)
 
     public:
         /// @brief 更改群成员权限

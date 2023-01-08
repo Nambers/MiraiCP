@@ -32,7 +32,6 @@ add_library(
         SHARED
         ${SRC_PATH}/../mockTest/mockTestEntrance.cpp
         ${SRC_PATH}/../mockTest/mockTests.cpp
-        ${SRC_PATH}/../mockTest/mockTests.h
         ${MIRAICP_CPP_PATH}
         ${MIRAICP_COMMON_PATH}
 )

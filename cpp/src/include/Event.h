@@ -121,10 +121,10 @@ namespace MiraiCP {
             StrangerMessageEvent,   // 3
         };
 
-        /// 获取当前聊天，可能是群，私聊，或群临时回话
+        /// 获取当前聊天，可能是群，私聊，或群临时会话
         virtual Contact *chat() = 0;
 
-        /// 获取当前聊天的发送人，可能是群成员，私聊的好友，或群临时回话对应的群成员
+        /// 获取当前聊天的发送人，可能是群成员，私聊的好友，或群临时会话对应的群成员
         virtual Contact *from() = 0;
 
         virtual MessageChain *getMessageChain() = 0;

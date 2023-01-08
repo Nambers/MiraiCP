@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -81,6 +81,20 @@ namespace MiraiCP::KtOperation {
         /// 改名称
         ChangeNameCard,
     };
+    enum QueryBotListCode {
+        /// 查询好友列表
+        FriendList = 0, // 0
+        /// 查询群列表
+        GroupList,      // 1
+        /// 查询群成员列表
+        MemberList,     // 2
+    };
+    enum AnnouncementOperationCode {
+        /// 发布公告
+        Delete = 1,      // 1
+        /// 删除公告
+        Publish,         // 2
+    };
 
     /**
      * @brief 调用mirai操作
@@ -90,7 +104,7 @@ namespace MiraiCP::KtOperation {
      */
     std::string ktOperation(
             operation_set type,
-            const nlohmann::json& data,
+            const nlohmann::json &data,
             bool catchErr = true,
             const std::string &errorInfo = "");
 } // namespace MiraiCP::KtOperation
