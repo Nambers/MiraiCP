@@ -100,26 +100,25 @@ namespace MiraiCP {
     }
 
     Image Contact::uploadImg(const std::string &path) const {
-        std::string re = LowLevelAPI::uploadImg0(path, toString());
+        std::string re = LowLevelAPI::uploadImg0(path, toJson());
         if (re == "E2")
             throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
         return Image::deserialize(re);
     }
 
     FlashImage Contact::uploadFlashImg(const std::string &path) const {
-        std::string re = LowLevelAPI::uploadImg0(path, toString());
+        std::string re = LowLevelAPI::uploadImg0(path, toJson());
         if (re == "E2")
             throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
         return FlashImage::deserialize(re);
     }
 
-    MessageSource Contact::sendMsgImpl(std::string msg, int retryTime, bool miraicode) const {
+    MessageSource Contact::sendMsgImpl(std::string msg) const {
         if (msg.empty()) {
             throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
         }
-        std::string re = LowLevelAPI::send0(std::move(msg), InternalData->toJson(), retryTime, miraicode,
-                                            "reach a error area, Contact::SendMiraiCode");
-        MIRAICP_ERROR_HANDLE(re, "");
+        nlohmann::json j{{"message", std::move(msg)}, {"contact", toJson()}};
+        auto re = KtOperation::ktOperation(KtOperation::Send, j, true, "reach a error area, Contact::sendMsgImpl");
         return MessageSource::deserializeFromString(re);
     }
 } // namespace MiraiCP

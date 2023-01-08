@@ -28,13 +28,6 @@ namespace LibLoader::LoaderApi {
 namespace MiraiCP {
     using json = nlohmann::json;
 
-    std::string LowLevelAPI::send0(std::string content, json c, int retryTime, bool miraicode,
-                                   const std::string &errorInfo) {
-        nlohmann::json tmp{{"content", std::move(content)}, {"contact", std::move(c)}};
-        nlohmann::json j{{"source", tmp.dump()}, {"miraiCode", miraicode}, {"retryTime", retryTime}};
-        return KtOperation::ktOperation(KtOperation::Send, std::move(j), true, errorInfo);
-    }
-
     LowLevelAPI::info LowLevelAPI::info0(const std::string &source) {
         MIRAICP_ERROR_HANDLE(source, "");
         auto j = nlohmann::json::parse(source);
@@ -47,9 +40,9 @@ namespace MiraiCP {
         return KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }
 
-    std::string LowLevelAPI::uploadImg0(std::string path, std::string c) {
-        nlohmann::json j{{"fileName", std::move(path)}, {"source", std::move(c)}};
-        return KtOperation::ktOperation(KtOperation::UploadImg, std::move(j));
+    std::string LowLevelAPI::uploadImg0(std::string path, nlohmann::json c) {
+        nlohmann::json j{{"fileName", std::move(path)}, {"contact", c}};
+        return KtOperation::ktOperation(KtOperation::UploadImg, j);
     }
 
     bool checkSafeCall() {

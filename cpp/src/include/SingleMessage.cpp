@@ -200,27 +200,29 @@ namespace MiraiCP {
             throw e;
         }
         try {
-            auto re = RemoteFile(j["id"], j["internalid"], j["name"], j["finfo"]["size"]);
-            if (j.contains("dinfo")) {
+            auto re = RemoteFile(j["id"], j["internalId"], j["name"], j["detailInfo"]["size"]);
+            if (j.contains("downloadInfo")) {
+                auto tmp = Tools::json_jsonmover(j, "downloadInfo");
                 struct Dinfo d {
-                    j["dinfo"]["url"],
-                            j["dinfo"]["md5"],
-                            j["dinfo"]["sha1"]
+                    Tools::json_jsonmover(tmp, "url"),
+                    Tools::json_jsonmover(tmp, "md5"),
+                        Tools::json_jsonmover(tmp, "sha1")
                 };
                 re.dinfo = d;
             }
-            if (j["finfo"].contains("uploaderid")) {
+            if (j["detailInfo"].contains("uploaderId")) {
+                auto tmp = Tools::json_jsonmover(j, "detailInfo");
                 struct Finfo f {
-                    j["finfo"]["size"],
-                            j["finfo"]["uploaderid"],
-                            j["finfo"]["expirytime"],
-                            j["finfo"]["uploadtime"],
-                            j["finfo"]["lastmodifytime"]
+                        Tools::json_jsonmover(tmp, "size"),
+                        Tools::json_jsonmover(tmp, "uploaderId"),
+                        Tools::json_jsonmover(tmp, "expiryTime"),
+                        Tools::json_jsonmover(tmp, "uploadTime"),
+                        Tools::json_jsonmover(tmp, "lastModifyTime")
                 };
                 re.finfo = f;
             }
             if (j.contains("path"))
-                re.path = j["path"];
+                re.path = Tools::json_jsonmover(j, "path");
             return re;
         } catch (json::type_error &e) {
             Logger::logger.error("json格式化失败，位置:RemoteFile");

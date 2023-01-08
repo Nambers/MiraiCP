@@ -223,19 +223,18 @@ namespace MiraiCP {
          *  - 各种SingleMessage的派生类
          *  - MessageChain
          *  @param msg Message
-         *  @param retryTime 重试次数
          *  @return MessageSource
          */
         template<typename T>
-        MessageSource sendMessage(T &&msg, int retryTime = 3) {
-            return this->unpackMsg(std::forward<T>(msg), retryTime);
+        MessageSource sendMessage(T &&msg) {
+            return this->unpackMsg(std::forward<T>(msg));
         }
 
     private: // private methods
         MessageSource quoteAndSend0(std::string msg, const MessageSource &ms);
 
         MessageSource quoteAndSend1(const SingleMessage &s, const MessageSource &ms) {
-            return this->quoteAndSend0(s.toMiraiCode(), ms);
+            return this->quoteAndSend0(MessageChain(s).toJson(), ms);
         }
 
         MessageSource quoteAndSend1(const std::string &s, const MessageSource &ms) {
@@ -243,7 +242,7 @@ namespace MiraiCP {
         }
 
         MessageSource quoteAndSend1(const MessageChain &mc, const MessageSource &ms) {
-            return this->quoteAndSend0(mc.toMiraiCode(), ms);
+            return this->quoteAndSend0(mc.toJson(), ms);
         }
 
     public: // serialization
@@ -290,18 +289,22 @@ namespace MiraiCP {
 
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsgImpl(std::string msg, int retryTime, bool miraicode = false) const;
+        MessageSource sendMsgImpl(std::string msg) const;
 
-        MessageSource unpackMsg(const MiraiCodeable &msg, int retryTime) const {
-            return sendMsgImpl(msg.toMiraiCode(), retryTime, true);
+        MessageSource unpackMsg(const MessageChain &msg) const {
+            return sendMsgImpl(msg.toJson());
         }
-
-        MessageSource unpackMsg(std::string msg, int retryTime) const {
-            return sendMsgImpl(std::move(msg), retryTime, false);
+        MessageSource unpackMsg(const MiraiCodeable &msg) const {
+            return sendMsgImpl(MessageChain::deserializationFromMiraiCode(msg.toMiraiCode()).toJson());
         }
-
-        MessageSource unpackMsg(const char *msg, int retryTime) const {
-            return sendMsgImpl(std::string(msg), retryTime, false);
+        MessageSource unpackMsg(const SingleMessage &msg) const {
+            return sendMsgImpl(MessageChain(msg).toJson());
+        }
+        MessageSource unpackMsg(std::string msg) const {
+            return sendMsgImpl(MessageChain(PlainText(std::move(msg))).toJson());
+        }
+        MessageSource unpackMsg(const char *msg) const {
+            return sendMsgImpl(MessageChain(PlainText(msg)).toJson());
         }
     };
 
