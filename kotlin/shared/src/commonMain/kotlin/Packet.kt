@@ -255,6 +255,42 @@ object Packets {
             )
         }
 
+        @Serializable
+        data class GetFile(
+            val path: String,
+            val id: String,
+            val contact: Packets.Contact,
+        )
+
+        @Serializable
+        data class SendFile(
+            val path: String,
+            val contact: Packets.Contact,
+            val filePath: String,
+        )
+
+        @Serializable
+        data class GroupSetting(
+            val name: String,
+            val isMuteAll: Boolean,
+            val isAllowMemberInvite: Boolean,
+            val isAutoApproveEnabled: Boolean,
+            val isAnonymousChatEnabled: Boolean,
+            val contact: Packets.Contact,
+        )
+
+        @Serializable
+        data class SendMessage(
+            val message: String,
+            val contact: Packets.Contact,
+        )
+
+        @Serializable
+        data class UploadImage(
+            val contact: Contact,
+            val filePath: String,
+        )
+
         enum class OperationCode {
             Recall,             // 0
             Send,               // 1
@@ -296,7 +332,7 @@ object Packets {
             OperationCode.MuteM to PublicShared::muteM,
             OperationCode.QueryM to PublicShared::queryM,
             OperationCode.KickM to PublicShared::kickM,
-            OperationCode.QueryOwner to PublicShared::queryOwner,
+            OperationCode.QueryOwner to PublicShared::getOwner,
             OperationCode.UploadVoice to PublicShared::uploadVoice,
             OperationCode.GroupSetting to PublicShared::groupSetting,
             OperationCode.Buildforward to PublicShared::sendForwardMsg,
@@ -319,6 +355,44 @@ object Packets {
         data class NextMsg(
             val message: String,
             val messageSource: String,
+        )
+
+        @Serializable
+        data class FileInfo(
+            val id: String,
+            val internalId: Int = 0,
+            val name: String = "",
+            val path: String = "/",
+            val downloadInfo: DownloadInfo,
+            val detailInfo: DetailInfo,
+        ) {
+            @Serializable
+            data class DownloadInfo(
+                val url: String,
+                val md5: String,
+                val sha1: String,
+            )
+
+            @Serializable
+            data class DetailInfo(
+                val size: Long,
+                val uploaderId: Long,
+                val expiryTime: Long,
+                val uploadTime: Long,
+                val lastModifyTime: Long,
+            )
+        }
+
+        @Serializable
+        data class ImgInfo(
+            val size: Long,
+            val width: Int? = null,
+            val height: Int? = null,
+            val md5: String? = null,
+            val url: String? = null,
+            val imageId: String? = null,
+            val isEmoji: Boolean? = null,
+            val imageType: String? = null,
         )
 
         // -- Event --

@@ -38,7 +38,6 @@ import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.MessageSerializers
-import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.isUploaded
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
@@ -160,7 +159,7 @@ object PublicShared {
 
     //发送消息部分实现 MiraiCode
 
-    private suspend fun send0(message: Message, c: Config.Contact): String = withBot(c.botid) { AIbot ->
+    private suspend fun send0(message: Message, c: Packets.Contact): String = c.withBot { AIbot ->
         return when (c.type) {
             1 -> {
                 logger.info("Send message for(${c.id}) is $message")
@@ -181,8 +180,8 @@ object PublicShared {
                 logger.info("Send message for a member(${c.id}) is $message")
                 c.withMember(
                     AIbot,
-                    "发送消息找不到群聊，位置K-Send()，id:${c.groupid}",
-                    "发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupid}"
+                    "发送消息找不到群聊，位置K-Send()，id:${c.groupId}",
+                    "发送消息找不到群成员，位置K-Send()，id:${c.id}，gid:${c.groupId}"
                 ) { _, m ->
                     sendWithCatch { m.sendMessage(message).source }
                 }
@@ -192,10 +191,9 @@ object PublicShared {
         }
     }
 
-    suspend fun sendMsg(message: String, c: Config.Contact): String = send0(message.toPlainText().toMessageChain(), c)
-
-    suspend fun sendMiraiCode(message: String, c: Config.Contact): String =
-        send0(MiraiCode.deserializeMiraiCode(message), c)
+    suspend fun sendMsg(source: String): String = withData(source, Packets.Incoming.SendMessage.serializer()) { data ->
+        send0(MessageChain.deserializeFromJsonString(data.message), data.contact)
+    }
 
     private fun OnlineAnnouncement.toOnlineA(): Packets.Incoming.OnlineAnnouncement {
         return Packets.Incoming.OnlineAnnouncement(
@@ -298,7 +296,7 @@ object PublicShared {
             val img = f.uploadAsImage(temp)
             f.close()
             json.encodeToString(
-                Config.ImgInfo(
+                Packets.Outgoing.ImgInfo(
                     size = img.size,
                     width = img.width,
                     height = img.height,
@@ -317,27 +315,36 @@ object PublicShared {
             err2
         }
 
-    suspend fun uploadImg(file: String, c: Config.Contact): String = c.withBot { bot ->
-        when (c.type) {
-            1 -> c.withFriend(bot, "发送图片找不到对应好友,位置:K-uploadImgFriend(),id:${c.id}") { temp ->
-                uploadImgAndId(file, temp)
-            }
+    suspend fun uploadImg(source: String): String =
+        withData(source, Packets.Incoming.UploadImage.serializer()) { data ->
+            data.contact.withBot { bot ->
+                when (data.contact.type) {
+                    1 -> data.contact.withFriend(
+                        bot,
+                        "发送图片找不到对应好友,位置:K-uploadImgFriend(),id:${data.contact.id}"
+                    ) { temp ->
+                        uploadImgAndId(data.filePath, temp)
+                    }
 
-            2 -> c.withGroup(bot, "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.id}") { temp ->
-                uploadImgAndId(file, temp)
-            }
+                    2 -> data.contact.withGroup(
+                        bot,
+                        "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${data.contact.id}"
+                    ) { temp ->
+                        uploadImgAndId(data.filePath, temp)
+                    }
 
-            3 -> c.withMember(
-                bot,
-                "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${c.groupid}",
-                "发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:${c.id},群聊id:${c.groupid}"
-            ) { _, temp1 ->
-                uploadImgAndId(file, temp1, "E3", "E4")
-            }
+                    3 -> data.contact.withMember(
+                        bot,
+                        "发送图片找不到对应群组,位置:K-uploadImgGroup(),id:${data.contact.groupId}",
+                        "发送图片找不到目标成员,位置:K-uploadImgMember(),成员id:${data.contact.id},群聊id:${data.contact.groupId}"
+                    ) { _, temp1 ->
+                        uploadImgAndId(data.filePath, temp1, "E3", "E4")
+                    }
 
-            else -> {
-                "EA"
-            }
+                    else -> {
+                        "EA"
+                    }
+                }
         }
     }
 
@@ -440,42 +447,48 @@ object PublicShared {
 
     private suspend fun fileInfo0(temp: AbsoluteFile): String {
         return json.encodeToString(
-            Config.FileInfoOut(
+            Packets.Outgoing.FileInfo(
                 id = temp.id,
                 name = temp.name,
                 path = temp.absolutePath,
-                dinfo = Config.DInfo(temp.getUrl() ?: "null", temp.md5.toString(), temp.sha1.toString()),
-                finfo = Config.FInfo(
+                downloadInfo = Packets.Outgoing.FileInfo.DownloadInfo(
+                    temp.getUrl() ?: "null",
+                    temp.md5.toString(),
+                    temp.sha1.toString()
+                ),
+                detailInfo = Packets.Outgoing.FileInfo.DetailInfo(
                     temp.size, temp.uploaderId, temp.expiryTime, temp.uploadTime, temp.lastModifiedTime
                 )
             )
         )
     }
 
-    suspend fun sendFile(path: String, file: String, c: Config.Contact): String = c.withBot { bot ->
-        c.withGroup(bot, "找不到对应群组，位置K-uploadfile()，gid:${c.id}") { group ->
-            val f = MiraiCPFiles.create(file)
-            if (!f.exists() || !f.isFile) {
-                return "E2"
-            }
-            val tmp = try {
-                f.toExternalResource().use {
-                    group.files.root.uploadNewFile(path, it)
+    suspend fun sendFile(source: String): String = withData(source, Packets.Incoming.SendFile.serializer()) { data ->
+        data.contact.withBot { bot ->
+            data.contact.withGroup(bot, "找不到对应群组，位置K-uploadfile()，gid:${data.contact.id}") { group ->
+                val f = MiraiCPFiles.create(data.filePath)
+                if (!f.exists() || !f.isFile) {
+                    return "E2"
                 }
-            } catch (e: PermissionDeniedException) {
-                return "EP"
-            } catch (e: IllegalStateException) {
-                return "E3"
-            } catch (e: Exception) {
-                logger.error(e.message)
-                e.printStackTrace()
-                return "E3"
+                val tmp = try {
+                    f.toExternalResource().use {
+                        group.files.root.uploadNewFile(data.path, it)
+                    }
+                } catch (e: PermissionDeniedException) {
+                    return "EP"
+                } catch (e: IllegalStateException) {
+                    return "E3"
+                } catch (e: Exception) {
+                    logger.error(e.message)
+                    e.printStackTrace()
+                    return "E3"
+                }
+                return fileInfo0(tmp)
             }
-            return fileInfo0(tmp)
         }
     }
 
-    private suspend fun remoteFileList(path: String, c: Config.Contact): String = c.withBot { bot ->
+    private suspend fun remoteFileList(path: String, c: Packets.Contact): String = c.withBot { bot ->
         c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
             var tmp = "["
             group.files.root.resolveFiles(path).toList().forEach {
@@ -487,7 +500,7 @@ object PublicShared {
         }
     }
 
-    private suspend fun remoteFileInfo0(path: String, c: Config.Contact): String = c.withBot { bot ->
+    private suspend fun remoteFileInfo0(path: String, c: Packets.Contact): String = c.withBot { bot ->
         c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}") { group ->
             val tmp = try {
                 group.files.root.resolveFiles(path).first()
@@ -503,21 +516,25 @@ object PublicShared {
         }
     }
 
-    suspend fun remoteFileInfo(path: String, id: String, c: Config.Contact): String = c.withBot { bot ->
-        if (id == "") return remoteFileInfo0(path, c)
-        if (id == "-1") return remoteFileList(path, c)
-        c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
-            group.files.root.resolveFolder(path).let {
-                if (it == null) remoteFileInfo0(path, c)
-                else fileInfo0(it.resolveFileById(id) ?: let {
-                    logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id, path:$path")
-                    return "E2"
-                })
+    suspend fun remoteFileInfo(source: String): String =
+        withData(source, Packets.Incoming.GetFile.serializer()) { data ->
+            data.contact.withBot { bot ->
+                if (data.id == "") return remoteFileInfo0(data.path, data.contact)
+                if (data.id == "-1") return remoteFileList(data.path, data.contact)
+                if (data.path == "-1") return remoteFileInfo(data.id, data.contact)
+                data.contact.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${data.id}") { group ->
+                    group.files.root.resolveFolder(data.path).let {
+                        if (it == null) remoteFileInfo0(data.path, data.contact)
+                        else fileInfo0(it.resolveFileById(data.id) ?: let {
+                            logger.error("cannot find the file,位置:K-remoteFileinfo, id:${data.id}, path:${data.path}")
+                            return "E2"
+                        })
+                    }
+                }
             }
         }
-    }
 
-    suspend fun remoteFileInfo(id: String, c: Config.Contact): String = c.withBot { bot ->
+    suspend fun remoteFileInfo(id: String, c: Packets.Contact): String = c.withBot { bot ->
         c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
             val tmp = group.files.root.resolveFileById(id) ?: let {
                 logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id")
@@ -554,9 +571,11 @@ object PublicShared {
     }
 
     //取群主
-    fun getowner(c: Config.Contact): String = c.withBot {
-        c.withGroup(it, "找不到群,位置:K-getowner,gid:${c.id}") { g ->
-            return g.owner.id.toString()
+    fun getOwner(source: String): String = withData(source, Packets.Contact.serializer()) { c ->
+        c.withBot {
+            c.withGroup(it, "找不到群,位置:K-getowner,gid:${c.id}") { g ->
+                return g.owner.id.toString()
+            }
         }
     }
 
@@ -638,19 +657,20 @@ object PublicShared {
             data.contact.withContact(bot) {
                 block(it)
             }
-    }
+        }
 
-    fun groupSetting(c: Config.Contact, source: String): String = c.withBot {
-        c.withGroup(it) { group ->
-            val root = json.decodeFromString<Config.GroupSetting>(source)
-            try {
-                group.name = root.name
-                group.settings.isMuteAll = root.isMuteAll
-                group.settings.isAllowMemberInvite = root.isAllowMemberInvite
-            } catch (e: PermissionDeniedException) {
-                return "EP"
+    fun groupSetting(source: String): String = withData(source, Packets.Incoming.GroupSetting.serializer()) { data ->
+        data.contact.withBot {
+            data.contact.withGroup(it) { group ->
+                try {
+                    group.name = data.name
+                    group.settings.isMuteAll = data.isMuteAll
+                    group.settings.isAllowMemberInvite = data.isAllowMemberInvite
+                } catch (e: PermissionDeniedException) {
+                    return "EP"
+                }
+                return "Y"
             }
-            return "Y"
         }
     }
 
