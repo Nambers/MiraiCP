@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -104,21 +104,131 @@ object Packets {
 
     object Incoming {
         @Serializable
-        data class Request(
-            val text: String,
-            val accept: Boolean,
-            val botid: Long,
-            val ban: Boolean? = null,
+        data class OperationPacket(
+            val type: Int,
+            val data: String,
+        )
+
+        @Serializable
+        data class GetList(
+            /*
+            0 -> FriendList
+            1 -> GroupList
+            2 -> MemberList
+             */
+            val type: Int,
+            val contact: Packets.Contact,
+        )
+
+        @Serializable
+        data class QuoteReply(
+            val messageSource: String,
+            val message: String,
+            val contact: Packets.Contact,
+        )
+
+        @Serializable
+        data class SendVoice(
+            val path: String,
+            val contact: Packets.Contact,
+        )
+
+        @Serializable
+        data class NextMsg(
+            val contact: Packets.Contact,
+            val time: Long,
+            val halt: Boolean,
+        )
+
+        @Serializable
+        data class InviteOrRequestOperation(
+            val source: String,
+            val botId: Long,
+            val sign: Boolean,
+            val msg: String,
+        )
+
+        @Serializable
+        data class FriendOperation(
+            val source: String,
+            val botId: Long,
+            val sign: Boolean,
+            val ban: Boolean,
+        )
+
+        enum class OperationCode {
+            Recall,             // 0
+            Send,               // 1
+            RefreshInfo,        // 2
+            UploadImg,          // 3
+            QueryBotList,       // 4
+            SendFile,           // 5
+            RemoteFileInfo,     // 6
+            QueryImgInfo,       // 7
+            MuteM,              // 8
+            QueryM,             // 9
+            KickM,              // 10
+            QueryOwner,         // 11
+            UploadVoice,        // 12
+            GroupSetting,       // 14
+            Buildforward,       // 15
+            Nfroperation,       // 16
+            Gioperation,        // 17
+            SendWithQuote,      // 18
+            Announcement,       // 19
+            Nudge,              // 20
+            NextMsg,            // 21
+            ModifyAdmin,        // 22
+            MemberJoinRequest,  // 23
+            ImageUploaded,      // 24
+            CommandReg,         // 25
+            ChangeNameCard,     // 26
+        }
+
+        val operations = hashMapOf<OperationCode, suspend (String) -> String>(
+            OperationCode.Recall to PublicShared::recallMsg,
+            OperationCode.Send to PublicShared::sendMsg,
+            OperationCode.RefreshInfo to PublicShared::refreshInfo,
+            OperationCode.UploadImg to PublicShared::uploadImg,
+            OperationCode.QueryBotList to PublicShared::queryBotList,
+            OperationCode.SendFile to PublicShared::sendFile,
+            OperationCode.RemoteFileInfo to PublicShared::remoteFileInfo,
+            OperationCode.QueryImgInfo to PublicShared::queryImgInfo,
+            OperationCode.MuteM to PublicShared::muteM,
+            OperationCode.QueryM to PublicShared::queryM,
+            OperationCode.KickM to PublicShared::kickM,
+            OperationCode.QueryOwner to PublicShared::queryOwner,
+            OperationCode.UploadVoice to PublicShared::uploadVoice,
+            OperationCode.GroupSetting to PublicShared::groupSetting,
+            OperationCode.Buildforward to PublicShared::buildforward,
+            OperationCode.Nfroperation to PublicShared::acceptFriendRequest,
+            OperationCode.Gioperation to PublicShared::acceptGroupInvite,
+            OperationCode.SendWithQuote to PublicShared::sendWithQuote,
+            OperationCode.Announcement to PublicShared::announcement,
+            OperationCode.Nudge to PublicShared::nudge,
+            OperationCode.NextMsg to PublicShared::nextMsg,
+            OperationCode.ModifyAdmin to PublicShared::modifyAdmin,
+            OperationCode.MemberJoinRequest to PublicShared::memberJoinRequest,
+            OperationCode.ImageUploaded to PublicShared::imageUploaded,
+            OperationCode.CommandReg to PublicShared::commandReg,
+            OperationCode.ChangeNameCard to PublicShared::changeNameCard,
         )
     }
 
     object Outgoing {
+        @Serializable
+        data class NextMsg(
+            val message: String,
+            val messageSource: String,
+        )
+
+        // -- Event --
         interface EventPacket {
             val eventId: Int
         }
 
         @Serializable
-        data class EventData<T: EventPacket>(
+        data class EventData<T : EventPacket>(
             val eventData: T,
             val eventId: Int = -1,
             var subject: Contact? = Contact(),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,6 +20,7 @@ package tech.eritquearcus.miraicp.shared
 
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.serializer
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.*
@@ -43,7 +44,7 @@ expect object UlitsMultiPlatform {
     fun getLibLoader(pathsInput: List<String>): String
 }
 
-fun Contact.toContact(): Config.Contact? = when (this) {
+fun Contact.toContact(): Packets.Contact? = when (this) {
     is Group -> this.toContact()
     is Friend -> this.toContact()
     is Member -> this.toContact()
@@ -54,7 +55,7 @@ fun Contact.toContact(): Config.Contact? = when (this) {
 }
 
 // convert mirai Contact type to MiraiCP contact
-fun ContactOrBot.toContact(): Config.Contact? = when (this) {
+fun ContactOrBot.toContact(): Packets.Contact? = when (this) {
     is Contact -> this.toContact()
     is Bot -> this.asFriend.toContact()
     else -> {
@@ -63,13 +64,14 @@ fun ContactOrBot.toContact(): Config.Contact? = when (this) {
     }
 }
 
-fun Group.toContact(): Config.Contact = Config.Contact(2, this.id, 0, this.name, this.bot.id)
+fun Group.toContact(): Packets.Contact = Packets.Contact(2, this.id, this.bot.id)
 
-fun Member.toContact(): Config.Contact = Config.Contact(3, this.id, this.group.id, this.nameCardOrNick, this.bot.id)
+fun Member.toContact(): Packets.Contact = Packets.Contact(3, this.id, this.bot.id, this.group.id)
 
-fun Friend.toContact(): Config.Contact = Config.Contact(1, this.id, 0, this.nameCardOrNick, this.bot.id)
+fun Friend.toContact(): Packets.Contact = Packets.Contact(1, this.id, this.bot.id)
 
-internal fun emptyContact(botid: Long): Config.Contact = Config.Contact(0, 0, 0, "", botid)
+internal inline fun <T> withData(source: String, strategy: DeserializationStrategy<T>, block: (T) -> String): String =
+    block(json.decodeFromString(strategy, source))
 
 internal inline fun withBot(botid: Long, Err: String = "", block: (Bot) -> String): String {
     val bot = Bot.getInstanceOrNull(botid)
@@ -80,10 +82,10 @@ internal inline fun withBot(botid: Long, Err: String = "", block: (Bot) -> Strin
     return block(bot)
 }
 
-internal inline fun Config.Contact.withBot(Err: String = "", block: (Bot) -> String): String {
-    val bot = Bot.getInstanceOrNull(botid)
+internal inline fun Packets.Contact.withBot(err: String = "", block: (Bot) -> String): String {
+    val bot = Bot.getInstanceOrNull(this.botId)
     if (bot == null) {
-        if (Err != "") PublicSharedData.logger.error(Err)
+        if (err != "") PublicSharedData.logger.error(err)
         return "EB"
     }
     return block(bot)
@@ -98,8 +100,8 @@ internal inline fun withFriend(bot: Bot, friendid: Long, Err: String = "", block
     return block(f)
 }
 
-internal inline fun Config.Contact.withFriend(bot: Bot, Err: String = "", block: (Friend) -> String): String {
-    require(this.id != null) { "id required to construct a friend, please contact MiraiCP" }
+internal inline fun Packets.Contact.withFriend(bot: Bot, Err: String = "", block: (Friend) -> String): String {
+    require(this.id != 0L) { "id required to construct a friend, please contact MiraiCP" }
     val f = bot.getFriend(this.id)
     if (f == null) {
         if (Err != "") PublicSharedData.logger.error(Err)
@@ -117,10 +119,10 @@ internal inline fun withGroup(bot: Bot, groupid: Long, Err: String = "", block: 
     return block(g)
 }
 
-internal inline fun Config.Contact.withGroup(bot: Bot, Err: String = "", block: (Group) -> String): String {
-    require(this.id != null) { "id is required to construct a group, please contact MiraiCP" }
-    require(this.groupid != null) { "groupid id is required to construct a group, please contact MiraiCP" }
-    val g = if (this.type == 2) bot.getGroup(this.id) else bot.getGroup(this.groupid)
+internal inline fun Packets.Contact.withGroup(bot: Bot, Err: String = "", block: (Group) -> String): String {
+    require(this.id != 0L) { "id is required to construct a group, please contact MiraiCP" }
+    require(this.groupId != 0L) { "groupId id is required to construct a group, please contact MiraiCP" }
+    val g = if (this.type == 2) bot.getGroup(this.id) else bot.getGroup(this.groupId)
     if (g == null) {
         if (Err != "") PublicSharedData.logger.error(Err)
         return "EG"
@@ -144,18 +146,18 @@ internal inline fun withMember(
     return block(group, m)
 }
 
-internal inline fun Config.Contact.withMember(
+internal inline fun Packets.Contact.withMember(
     bot: Bot, Err1: String = "", Err2: String = "", block: (Group, NormalMember) -> String
 ): String {
-    require(this.groupid != null) { "groupid is required to construct member, plz contact MiraiCP" }
-    require(this.id != null) { "id is required to construct a member, plz contact MiraiCP" }
-    val group = bot.getGroup(this.groupid)
+    require(this.groupId != 0L) { "groupid is required to construct member, plz contact MiraiCP" }
+    require(this.id != 0L) { "id is required to construct a member, plz contact MiraiCP" }
+    val group = bot.getGroup(this.groupId)
     if (group == null) {
         if (Err1 != "") PublicSharedData.logger.error(Err1)
         return "EM"
     }
     for (a in PublicShared.friend_cache) {
-        if (a.id == this.id && a.group.id == this.groupid) {
+        if (a.id == this.id && a.group.id == this.groupId) {
             return block(group, a)
         }
     }
@@ -167,7 +169,7 @@ internal inline fun Config.Contact.withMember(
     return block(group, m)
 }
 
-fun Config.Contact.withMiraiMember(block: (Bot, Group, NormalMember) -> String): String = withBot { bot ->
+fun Packets.Contact.withMiraiMember(block: (Bot, Group, NormalMember) -> String): String = withBot { bot ->
     return withMember(bot) { g, m -> block(bot, g, m) }
 }
 

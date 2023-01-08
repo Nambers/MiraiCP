@@ -49,7 +49,7 @@ namespace MiraiCP {
         /// id
         QQID _id{};
         /// 所属的 bot 的 id
-        QQID _botid{};
+        QQID _botId{};
         /// Contact 类型
         ContactType _type = MIRAI_CONTACT;
 
@@ -66,24 +66,16 @@ namespace MiraiCP {
          * @see nlohmann::update
          */
         void updateJson(nlohmann::json &jsonToUpdate) const;
-
-        /**
-         * 获取 QuoteSign
-         * @see Contact::quoteAndSend0
-         */
-        virtual nlohmann::json getQuoteSign() const;
     };
 
     struct GroupRelatedData : public IContactData {
         typedef IContactData Super;
         /// group id
-        QQID _groupid;
+        QQID _groupId;
 
         nlohmann::json internalToJson() const override;
 
-        explicit GroupRelatedData(QQID in_groupid) : _groupid(in_groupid) {}
-
-        nlohmann::json getQuoteSign() const override;
+        explicit GroupRelatedData(QQID in_groupid) : _groupId(in_groupid) {}
     };
 
     /*!
@@ -176,7 +168,7 @@ namespace MiraiCP {
          * 所属bot
          * @note dev: 不会修改，不需要锁
          */
-        QQID botid() const { return InternalData->_botid; };
+        QQID botid() const { return InternalData->_botId; };
 
         /**
          * @brief 回复并发送

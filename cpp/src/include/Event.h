@@ -115,10 +115,10 @@ namespace MiraiCP {
     class IMessageEvent {
     public:
         enum MessageEventType {
-            PrivateMessageEvent,
-            GroupMessageEvent,
-            GroupTempMessageEvent,
-            StrangerMessageEvent,
+            PrivateMessageEvent,    // 0
+            GroupMessageEvent,      // 1
+            GroupTempMessageEvent,  // 2
+            StrangerMessageEvent,   // 3
         };
 
         /// 获取当前聊天，可能是群，私聊，或群临时回话

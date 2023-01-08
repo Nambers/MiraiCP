@@ -98,8 +98,7 @@ namespace MiraiCP {
                 else
                     throw IllegalArgumentException("找不到合适的bindId", MIRAICP_EXCEPTION_WHERE);
             }
-            nlohmann::json rej{{"command", j.dump()}};
-            std::string re = KtOperation::ktOperation(KtOperation::CommandReg, std::move(rej));
+            std::string re = KtOperation::ktOperation(KtOperation::CommandReg, j);
             return re == "true";
         }
         static CommandManager commandManager;

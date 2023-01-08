@@ -28,26 +28,26 @@
 namespace MiraiCP {
 
 
-    struct InternalBot : public IMiraiData {
-        std::string _avatarUrl;
-        std::string _nickOrNameCard;
-        QQID _id;
-        explicit InternalBot(QQID in_botid) : _id(in_botid) {}
-        ~InternalBot() override = default;
-
-        void deserialize(nlohmann::json in_json) override {} // should never be called
-
-        nlohmann::json internalToJson() const override {
-            return {{"botid", _id}, {"type", MIRAI_OTHERTYPE}};
-        }
-
-        void refreshInfo() override {
-            nlohmann::json j{{"source", internalToString()}};
-            LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j)));
-            _avatarUrl = std::move(tmp.avatarUrl);
-            _nickOrNameCard = std::move(tmp.nickornamecard);
-        }
-    };
+//    struct InternalBot : public IMiraiData {
+//        std::string _avatarUrl;
+//        std::string _nickOrNameCard;
+//        QQID _id;
+//        explicit InternalBot(QQID in_botid) : _id(in_botid) {}
+//        ~InternalBot() override = default;
+//
+//        void deserialize(nlohmann::json in_json) override {} // should never be called
+//
+//        nlohmann::json internalToJson() const override {
+//            return {{"botId", _id}, {"id", _id}, {"type", MIRAI_BOT}};
+//        }
+//
+//        void refreshInfo() override {
+//            nlohmann::json j{{"source", internalToString()}};
+//            LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j)));
+//            _avatarUrl = std::move(tmp.avatarUrl);
+//            _nickOrNameCard = std::move(tmp.nickornamecard);
+//        }
+//    };
 
     inline std::shared_ptr<IContactData> get_bot(QQID id) {
         static std::unordered_map<QQID, std::shared_ptr<IContactData>> BotPool;
@@ -58,7 +58,7 @@ namespace MiraiCP {
             Ptr = std::make_shared<IContactData>();
             Ptr->_id = id;
             Ptr->_type = MIRAI_BOT;
-            Ptr->_botid = id;
+            Ptr->_botId = id;
             Ptr->forceRefreshNextTime();
         }
         return Ptr;
@@ -73,8 +73,8 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Bot::getFriendList() const {
-        nlohmann::json j{{"botid", InternalData->_id}};
-        std::string temp = KtOperation::ktOperation(KtOperation::QueryBFL, std::move(j));
+        nlohmann::json j{{"contact", this->toJson()}, {"type", 0}};
+        std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
     }
 
@@ -83,8 +83,8 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Bot::getGroupList() const {
-        nlohmann::json j{{"botid", InternalData->_id}};
-        std::string temp = KtOperation::ktOperation(KtOperation::QueryBGL, std::move(j));
+        nlohmann::json j{{"contact", this->toJson()}, {"type", 1}};
+        std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
     }
 

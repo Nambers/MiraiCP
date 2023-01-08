@@ -29,7 +29,7 @@ namespace MiraiCP {
         if (!val) {
             val = std::make_shared<Friend::DataType>();
             val->_id = id;
-            val->_botid = botid;
+            val->_botId = botid;
             val->_type = MIRAI_FRIEND;
         }
         return val;

@@ -34,10 +34,8 @@ namespace MiraiCP::KtOperation {
         RefreshInfo,
         /// 上传图片
         UploadImg,
-        /// 取好友列表
-        QueryBFL,
-        /// 取群组列表
-        QueryBGL,
+        /// 取bot相关列表
+        QueryBotList,
         /// 上传文件
         SendFile,
         /// 查询文件信息
@@ -54,8 +52,6 @@ namespace MiraiCP::KtOperation {
         QueryOwner,
         /// 语音
         Voice,
-        /// 查询群成员列表
-        QueryML,
         /// 群设置
         GroupSetting,
         /// 构建转发信息
@@ -94,7 +90,7 @@ namespace MiraiCP::KtOperation {
      */
     std::string ktOperation(
             operation_set type,
-            nlohmann::json data,
+            const nlohmann::json& data,
             bool catchErr = true,
             const std::string &errorInfo = "");
 } // namespace MiraiCP::KtOperation

@@ -36,26 +36,27 @@ namespace MiraiCP {
     }
 
     MessageChain GroupMessageEvent::nextMessage(long time, bool halt) const {
-        json j{{"contactSource", this->group.toString()},
-               {"time",          time},
-               {"halt",          halt}};
-        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, std::move(j));
+        json j{{"contact", this->group.toJson()},
+               {"time",    time},
+               {"halt",    halt}};
+        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, j);
         if (r == "E1")
             throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
-        return MessageChain::deserializationFromMessageSourceJson(json::parse(re["messageSource"].get<std::string>())).plus(MessageSource::deserializeFromString(re["messageSource"]));
+        return MessageChain::deserializationFromMessageJson(re["message"]).plus(
+                MessageSource::deserializeFromString(re["messageSource"]));
     }
 
     MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt) const {
-        json j{{"contactSource", this->sender.toString()},
-               {"time",          time},
-               {"halt",          halt}};
-        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, std::move(j));
+        json j{{"contact", this->sender.toString()},
+               {"time",    time},
+               {"halt",    halt}};
+        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, j);
         if (r == "E1")
             throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
-        return MessageChain::deserializationFromMessageSourceJson(
-                json::parse(re["messageSource"].get<std::string>())).plus(
+        return MessageChain::deserializationFromMessageJson(
+                json::parse(re["message"].get<std::string>())).plus(
                 MessageSource::deserializeFromString(re["messageSource"]));
     }
 
@@ -68,14 +69,15 @@ namespace MiraiCP {
     }
 
     MessageChain PrivateMessageEvent::nextMessage(long time, bool halt) const {
-        json j{{"contactSource", this->sender.toString()},
-               {"time",          time},
-               {"halt",          halt}};
-        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, std::move(j));
+        json j{{"contact", this->sender.toJson()},
+               {"time",    time},
+               {"halt",    halt}};
+        std::string r = KtOperation::ktOperation(KtOperation::NextMsg, j);
         if (r == "E1")
             throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
-        return MessageChain::deserializationFromMessageSourceJson(json::parse(re["messageSource"].get<std::string>())).plus(MessageSource::deserializeFromString(re["messageSource"]));
+        return MessageChain::deserializationFromMessageJson(json::parse(re["message"].get<std::string>()))
+                .plus(MessageSource::deserializeFromString(re["messageSource"]));
     }
 
     GroupInviteEvent::GroupInviteEvent(BaseEventData j) : BotEvent(j.botId),
@@ -89,8 +91,10 @@ namespace MiraiCP {
     }
 
     void GroupInviteEvent::operation0(const std::string &source, QQID botid, bool accept) {
-        nlohmann::json j{{"text", source}, {"accept", accept}, {"botid", botid}};
-        std::string re = KtOperation::ktOperation(KtOperation::Gioperation, std::move(j));
+        nlohmann::json j{{"source", source},
+                         {"sign",   accept},
+                         {"botId",  botid}};
+        std::string re = KtOperation::ktOperation(KtOperation::Gioperation, j);
         if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
     }
 
@@ -104,8 +108,11 @@ namespace MiraiCP {
     }
 
     void NewFriendRequestEvent::operation0(const std::string &source, QQID botid, bool accept, bool ban) {
-        nlohmann::json j{{"text", source}, {"accept", accept}, {"botid", botid}, {"ban", ban}};
-        std::string re = KtOperation::ktOperation(KtOperation::Nfroperation, std::move(j));
+        nlohmann::json j{{"source", source},
+                         {"sign",   accept},
+                         {"botId",  botid},
+                         {"ban",    ban}};
+        std::string re = KtOperation::ktOperation(KtOperation::Nfroperation, j);
         if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
     }
 
@@ -188,8 +195,11 @@ namespace MiraiCP {
     }
 
     void MemberJoinRequestEvent::operate(std::string_view s, QQID botid, bool sign, const std::string &msg) {
-        nlohmann::json j{{"source", s}, {"botid", botid}, {"sign", sign}, {"msg", msg}};
-        KtOperation::ktOperation(KtOperation::MemberJoinRequest, std::move(j));
+        nlohmann::json j{{"source", s},
+                         {"botId",  botid},
+                         {"sign",   sign},
+                         {"msg",    msg}};
+        KtOperation::ktOperation(KtOperation::MemberJoinRequest, j);
     }
 
     MessagePreSendEvent::MessagePreSendEvent(BaseEventData j) : BotEvent(j.botId),

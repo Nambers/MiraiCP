@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -93,26 +93,30 @@ object PublicShared {
         }
     }
 
-    fun nextMsg(c: Config.Contact, time: Long, halt: Boolean): String {
+    fun nextMsg(source: String): String = withData(source, Packets.Incoming.NextMsg.serializer()) { data ->
         return runBlocking {
             val e = try {
-                when (c.type) {
-                    1 -> nextMessage<FriendMessageEvent>(time, halt, EventPriority.HIGHEST) {
-                        it.sender.id == c.id && it.bot.id == c.botid
+                when (data.contact.type) {
+                    1 -> nextMessage<FriendMessageEvent>(data.time, data.halt, EventPriority.HIGHEST) {
+                        it.sender.id == data.contact.id && it.bot.id == data.contact.botId
                     }
-                    2 -> nextMessage<GroupMessageEvent>(time, halt, EventPriority.HIGHEST) {
-                        it.group.id == c.id && it.bot.id == c.botid
+
+                    2 -> nextMessage<GroupMessageEvent>(data.time, data.halt, EventPriority.HIGHEST) {
+                        it.group.id == data.contact.id && it.bot.id == data.contact.botId
                     }
-                    3 -> nextMessage<GroupMessageEvent>(time, halt, EventPriority.HIGHEST) {
-                        it.bot.id == c.botid && it.group.id == c.groupid && it.sender.id == c.id
+
+                    3 -> nextMessage<GroupMessageEvent>(data.time, data.halt, EventPriority.HIGHEST) {
+                        it.bot.id == data.contact.botId && it.group.id == data.contact.groupId && it.sender.id == data.contact.id
                     }
+
                     else -> throw Exception() //unreachable
                 }
             } catch (e: TimeoutCancellationException) {
                 return@runBlocking "E1"
             }
             json.encodeToString(
-                Config.Message(
+                Packets.Outgoing.NextMsg(
+                    e.serializeToJsonString(),
                     json.encodeToString(
                         MessageSerializers.serializersModule.serializer(), e[MessageSource]!!
                     )
@@ -223,6 +227,7 @@ object PublicShared {
                 }
                 json.encodeToString(Config.ContactInfo(f.nick, f.avatarUrl))
             }
+
             2 -> c.withGroup(bot, "取群名称找不到群,位置K-GetNickOrNameCard(), gid:${c.id}") { g ->
                 if (annoucment) return json.encodeToString(g.announcements.toList().map { it.toOnlineA() })
                 if (quit) {
@@ -241,6 +246,7 @@ object PublicShared {
                     )
                 )
             }
+
             3 -> friend_cache.firstOrNull { a ->
                 a.id == c.id && a.group.id == c.groupid
             }?.let {
@@ -260,22 +266,20 @@ object PublicShared {
         }
     }
 
-    //取群成员列表
-    fun queryML(c: Config.Contact): String = c.withBot { bot ->
-        c.withGroup(bot) { g ->
-            json.encodeToString(g.members.map { it.id })
+    fun queryBotList(source: String): String =
+        withData(source, Packets.Incoming.GetList.serializer()) { data ->
+            data.contact.withBot { bot ->
+                when (data.type) {
+                    0 -> json.encodeToString(bot.friends.map { it.id })
+                    1 -> json.encodeToString(bot.groups.map { it.id })
+                    2 -> data.contact.withGroup(bot) { g ->
+                        json.encodeToString(g.members.map { it.id })
+                    }
+
+                    else -> "EA"
+                }
+            }
         }
-    }
-
-    fun queryBFL(bid: Long): String = withBot(bid) { bot ->
-        json.encodeToString(bot.friends.map {
-            it.id
-        })
-    }
-
-    fun queryBGL(bid: Long): String = withBot(bid) { bot ->
-        json.encodeToString(bot.groups.map { it.id })
-    }
 
     //图片部分实现
     private suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String =
@@ -384,35 +388,40 @@ object PublicShared {
         }
     }
 
-    suspend fun uploadVoice(source: String, c: Config.Contact): String = c.withBot { bot ->
-        val file = MiraiCPFiles.create(json.decodeFromString<Config.VoiceInfoIn>(source).path)
-        if (!file.exists() || !file.isFile || !(file.extension == "amr" || file.extension == "silk")) {
-            logger.error("上传的语言文件需为.amr / .silk文件, 位置: KUploadVoice")
-            return "E1"
-        }
-        val cc = when (c.type) {
-            1 -> {
-                require(c.id != null) { "id is required to upload voice" }
-                bot.getFriend(c.id) ?: let { logger.error("上传语音找不到好友, id:${c.id}"); return "EF" }
-            }
+    suspend fun uploadVoice(source: String): String =
+        withData(source, Packets.Incoming.SendVoice.serializer()) { data ->
+            data.contact.withBot { bot ->
+                val file = MiraiCPFiles.create(json.decodeFromString<Config.VoiceInfoIn>(source).path)
+                if (!file.exists() || !file.isFile || !(file.extension == "amr" || file.extension == "silk")) {
+                    logger.error("上传的语言文件需为.amr / .silk文件, 位置: KUploadVoice")
+                    return "E1"
+                }
+                val cc = when (data.contact.type) {
+                    1 -> {
+                        require(data.contact.id != 0L) { "id is required to upload voice" }
+                        bot.getFriend(data.contact.id)
+                            ?: let { logger.error("上传语音找不到好友, id:${data.contact.id}"); return "EF" }
+                    }
 
-            2 -> {
-                require(c.id != null) { "id is required to upload voice for group" }
-                bot.getGroup(c.id) ?: let { logger.error("上传语音找不到群聊, gid:${c.id}"); return "EG" }
-            }
+                    2 -> {
+                        require(data.contact.id != 0L) { "id is required to upload voice for group" }
+                        bot.getGroup(data.contact.id)
+                            ?: let { logger.error("上传语音找不到群聊, gid:${data.contact.id}"); return "EG" }
+                    }
 
-            else -> return "EA"
-        }
-        return file.toExternalResource().use {
-            try {
-                json.encodeToString(
-                    MessageSerializers.serializersModule.serializer(),
-                    cc.uploadAudio(it).sendTo(cc).source
-                )
-            } catch (e: OverFileSizeMaxException) {
-                logger.error("上传语音失败, 文件应在大约1MB以内, 实际大小:${it.size}, 文件路径:${file.absolutePath}")
-                "E2"
-            }
+                    else -> return "EA"
+                }
+                return file.toExternalResource().use {
+                    try {
+                        json.encodeToString(
+                            MessageSerializers.serializersModule.serializer(),
+                            cc.uploadAudio(it).sendTo(cc).source
+                        )
+                    } catch (e: OverFileSizeMaxException) {
+                        logger.error("上传语音失败, 文件应在大约1MB以内, 实际大小:${it.size}, 文件路径:${file.absolutePath}")
+                        "E2"
+                    }
+                }
         }
     }
 
@@ -579,75 +588,75 @@ object PublicShared {
         }
     }
 
-    suspend fun accpetFriendRequest(info: String, botid: Long, accept: Boolean, ban: Boolean?): String =
-        withBot(botid) { bot ->
-            try {
-                json.decodeFromString<RequestEventData.NewFriendRequest>(info).apply {
-                    if (accept) accept(bot)
-                    else reject(bot, ban ?: false)
+    suspend fun acceptFriendRequest(source: String): String =
+        withData(source, Packets.Incoming.FriendOperation.serializer()) { data ->
+            withBot(data.botId) { bot ->
+                try {
+                    json.decodeFromString<RequestEventData.NewFriendRequest>(data.source).apply {
+                        if (data.sign) accept(bot)
+                        else reject(bot, data.ban)
+                    }
+                } catch (e: IllegalStateException) {
+                    return "E"
                 }
-            } catch (e: IllegalStateException) {
-                return "E"
+                return "Y"
             }
-            return "Y"
         }
 
-    suspend fun acceptGroupInvite(info: String, botid: Long, accept: Boolean): String = withBot(botid) { bot ->
-        try {
-            json.decodeFromString<RequestEventData.BotInvitedJoinGroupRequest>(info).apply {
-                if (accept) accept(bot)
-                else reject(bot)
-            }
-        } catch (e: IllegalStateException) {
-            return "E"
-        }
-        return "Y"
-    }
-
-    suspend fun sendWithQuote(messageSource: String, msg: String, sign: String): String {
-        val source =
-            json.decodeFromString(MessageSerializers.serializersModule.serializer<MessageSource>(), messageSource)
-        val obj = json.decodeFromString<Config.QuoteSign>(sign)
-        val message = if (obj.MiraiCode) {
-            MiraiCode.deserializeMiraiCode(msg)
-        } else {
-            PlainText(msg)
-        }
-        val bot = Bot.getInstanceOrNull(source.botId) ?: let {
-            return "EB"
-        }
-        val c = when (source.kind) {
-            MessageSourceKind.FRIEND -> {
-                bot.getFriend(source.fromId) ?: let {
-                    logger.error("找不到好友,位置:K-sendWithQuote,id:${source.fromId}")
-                    return "EF"
+    suspend fun acceptGroupInvite(source: String): String =
+        withData(source, Packets.Incoming.InviteOrRequestOperation.serializer()) { data ->
+            withBot(data.botId) { bot ->
+                try {
+                    json.decodeFromString<RequestEventData.BotInvitedJoinGroupRequest>(data.source).apply {
+                        if (data.sign) accept(bot)
+                        else reject(bot)
+                    }
+                } catch (e: IllegalStateException) {
+                    return "E"
                 }
-            }
-
-            MessageSourceKind.GROUP -> {
-                bot.getGroup(source.targetId) ?: let {
-                    logger.error("找不到群,位置:K-sendWithQuote,gid:${source.targetId}")
-                    return "EG"
-                }
-            }
-
-            MessageSourceKind.TEMP -> {
-                val tmp = bot.getGroup(obj.groupid) ?: let {
-                    logger.error("找不到群,位置:K-sendWithQuote,gid:${obj.groupid}")
-                    return "EM"
-                }
-                tmp[source.fromId] ?: let {
-                    logger.error("找不到群成员,位置:K-sendWithQuote,gid:${obj.groupid}, id:${source.fromId}")
-                    return "EMM"
-                }
-            }
-
-            else -> {
-                logger.error("类型出错, 位置:K-sendWithQuote, messageSource:${messageSource}")
-                return "EA"
+                return "Y"
             }
         }
-        return sendWithCatch { c.sendMessage(source.quote() + message).source }
+
+    suspend fun sendWithQuote(sourceStr: String): String =
+        withData(sourceStr, Packets.Incoming.QuoteReply.serializer()) { data ->
+            val source =
+                json.decodeFromString(
+                    MessageSerializers.serializersModule.serializer<MessageSource>(),
+                    data.messageSource
+                )
+            val message = MessageChain.deserializeFromJsonString(data.message)
+            val bot = Bot.getInstanceOrNull(data.contact.botId) ?: let {
+                return "EB"
+            }
+            val block: suspend (Contact) -> String = { c ->
+                sendWithCatch { c.sendMessage(source.quote() + message).source }
+            }
+
+            when (data.contact.type) {
+                1 -> data.contact.withFriend(
+                    bot,
+                    "找不到对应好友，位置K-sendWithQuote，id:${data.contact.id}"
+                ) { block(it) }
+
+                2 -> data.contact.withGroup(
+                    bot,
+                    "找不到对应群组，位置K-sendWithQuote，id:${data.contact.id}"
+                ) { block(it) }
+
+                3 -> data.contact.withMember(
+                    bot,
+                    "找不到对应群组，位置K-sendWithQuote，id:${data.contact.id}",
+                    "找不到对应群成员，位置K-sendWithQuote，id:${data.contact.id}, gid:${data.contact.groupid}"
+                ) { _, member ->
+                    block(member)
+                }
+
+                else -> {
+                    logger.error("类型出错, 位置:K-sendWithQuote, contact:${data.contact}")
+                    "EA"
+                }
+            }
     }
 
     fun groupSetting(c: Config.Contact, source: String): String = c.withBot {
@@ -738,12 +747,14 @@ object PublicShared {
         }
     }
 
-    suspend fun memberJoinRequest(source: String, b: Boolean, botid: Long, msg: String): String =
-        withBot(botid) { bot ->
-            return json.decodeFromString<RequestEventData.MemberJoinRequest>(source).let {
-                if (b) it.accept(bot)
-                else it.reject(bot, msg)
-                "Y"
+    suspend fun memberJoinRequest(source: String): String =
+        withData(source, Packets.Incoming.InviteOrRequestOperation.serializer()) { data ->
+            withBot(data.botId) { bot ->
+                return json.decodeFromString<RequestEventData.MemberJoinRequest>(data.source).let {
+                    if (data.sign) it.accept(bot)
+                    else it.reject(bot, data.msg)
+                    "Y"
+                }
             }
         }
 
@@ -760,7 +771,17 @@ object PublicShared {
         "s"
     }
 
+    fun commandReg(source: String): String {
+        PublicSharedData.commandReg.register(
+            json.decodeFromString(
+                source
+            )
+        )
+        return "true"
+    }
+
     fun onDisable() = PublicSharedMultiplatform.onDisable()
+
     @MiraiExperimentalApi
     fun onEnable(eventChannel: EventChannel<Event>) {
         eventChannel.subscribeAlways<FriendMessageEvent> {
