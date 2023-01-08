@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,7 +20,6 @@ package tech.eritquearcus.miraicp.shared
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 
 expect object CPPLibMultiplatform {
     fun init(
@@ -114,159 +113,12 @@ object CPPLib {
         PublicShared.queryImgInfo(it.imageId!!, it.size, it.width, it.height, it.imageType)
     }
 
-    enum class Operation_code {
-        Recall,
-        Send,
-        RefreshInfo,
-        UploadImg,
-        QueryBFL,
-        QueryBGL,
-        SendFile,
-        RemoteFileInfo,
-        QueryImgInfo,
-        MuteM,
-        QueryM,
-        KickM,
-        QueryOwner,
-        UploadVoice,
-        QueryML,
-        GroupSetting,
-        Buildforward,
-        Nfroperation,
-        Gioperation,
-        SendWithQuote,
-        Announcement,
-        Timer,
-        Nudge,
-        NextMsg,
-        ModifyAdmin,
-        MemberJoinRequest,
-        ImageUploaded,
-        CommandReg,
-        ChangeNameCard
-    }
 
     // 通用接口
     fun operation(content: String): String = runBlocking {
         try {
-            val j = json.decodeFromString<Config.Operation>(content)
-            val root = j.data
-            when (j.type) {
-                /// 撤回信息
-                Operation_code.Recall.ordinal -> PublicShared.recallMsg(root.source!!)
-                /// 发送信息
-                Operation_code.Send.ordinal -> KSend(
-                    root.source!!, root.miraiCode!!
-                )
-                /// 查询信息接口
-                Operation_code.RefreshInfo.ordinal -> PublicShared.refreshInfo(
-                    contact(root.source!!), root.quit != null, root.announcement != null
-                )
-                /// 上传图片
-                Operation_code.UploadImg.ordinal -> PublicShared.uploadImg(
-                    root.fileName!!, contact(root.source!!)
-                )
-                /// 取好友列表
-                Operation_code.QueryBFL.ordinal -> PublicShared.queryBFL(root.botid!!)
-                /// 取群组列表
-                Operation_code.QueryBGL.ordinal -> PublicShared.queryBGL(root.botid!!)
-                /// 上传文件
-                Operation_code.SendFile.ordinal -> KSendFile(
-                    root.source!!, root.contactSource!!
-                )
-                /// 查询文件信息
-                Operation_code.RemoteFileInfo.ordinal -> KRemoteFileInfo(
-                    root.source!!, root.contactSource!!
-                )
-                /// 查询图片下载地址
-                Operation_code.QueryImgInfo.ordinal -> kQueryImgInfo(json.encodeToString(root))
-                /// 禁言
-                Operation_code.MuteM.ordinal -> PublicShared.mute(
-                    root.time!!, contact(root.contactSource!!)
-                )
-                /// 查询权限
-                Operation_code.QueryM.ordinal -> PublicShared.kqueryM(
-                    contact(root.contactSource!!)
-                )
-                /// 踢出
-                Operation_code.KickM.ordinal -> PublicShared.kkick(
-                    root.message!!, contact(root.contactSource!!)
-                )
-                /// 取群主
-                Operation_code.QueryOwner.ordinal -> PublicShared.getowner(
-                    contact(root.contactSource!!)
-                )
-                /// 上传语音
-                Operation_code.UploadVoice.ordinal -> PublicShared.uploadVoice(
-                    root.source!!, contact(root.contactSource!!)
-                )
-                /// 查询群成员列表
-                Operation_code.QueryML.ordinal -> PublicShared.queryML(
-                    contact(root.contactSource!!)
-                )
-                /// 群设置
-                Operation_code.GroupSetting.ordinal -> PublicShared.groupSetting(
-                    contact(root.contactSource!!), root.source!!
-                )
-                /// 构建转发信息
-                Operation_code.Buildforward.ordinal -> PublicShared.sendForwardMsg(
-                    root.text!!, root.botid!!
-                )
-                /// 好友申请事件
-                Operation_code.Nfroperation.ordinal -> KNfroperation(
-                    json.encodeToString(root)
-                )
-                /// 群聊邀请事件
-                Operation_code.Gioperation.ordinal -> KGioperation(
-                    json.encodeToString(root)
-                )
-                /// 回复(引用并发送)
-                Operation_code.SendWithQuote.ordinal -> PublicShared.sendWithQuote(
-                    root.messageSource!!, root.msg!!, root.sign!!
-                )
-                /// 群公告操作
-                Operation_code.Announcement.ordinal -> KAnnouncement(
-                    root.identify!!, root.source
-                )
-                /// 发送戳一戳
-                Operation_code.Nudge.ordinal -> PublicShared.sendNudge(
-                    contact(root.contactSource!!)
-                )
-                /// 下一条信息
-                Operation_code.NextMsg.ordinal -> PublicShared.nextMsg(
-                    contact(root.contactSource!!), root.time!!, root.halt!!
-                )
-
-                Operation_code.ModifyAdmin.ordinal -> PublicShared.modifyAdmin(
-                    contact(root.contactSource!!), root.admin!!
-                )
-
-                Operation_code.MemberJoinRequest.ordinal -> PublicShared.memberJoinRequest(
-                    root.source!!, root.sign!! == "true" || root.sign == "True", root.botid!!, root.msg!!
-                )
-
-                Operation_code.ImageUploaded.ordinal -> PublicShared.isUploaded(
-                    json.decodeFromString(
-                        root.toString()
-                    ), root.botid!!
-                )
-
-                Operation_code.CommandReg.ordinal -> {
-                    PublicSharedData.commandReg.register(
-                        json.decodeFromString<Command>(
-                            root.command!!
-                        )
-                    )
-                }
-
-                Operation_code.ChangeNameCard.ordinal -> {
-                    PublicShared.changeNameCard(
-                        contact(root.contactSource!!), root.newName!!
-                    )
-                }
-
-                else -> "EA"
-            }
+            val j = json.decodeFromString<Packets.Incoming.OperationPacket>(content)
+            Packets.Incoming.operations[Packets.Incoming.OperationCode.values()[j.type]]!!(j.data)
         } catch (e: Exception) {
             println(e.message)
             println(content)

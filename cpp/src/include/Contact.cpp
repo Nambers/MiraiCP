@@ -50,10 +50,9 @@ namespace MiraiCP {
     }
 
     MessageSource Contact::sendVoiceImpl(std::string path) const {
-        json source{{"path", std::move(path)}};
-        json j{{"source", source.dump()},
-               {"contactSource", toString()}};
-        std::string re = KtOperation::ktOperation(KtOperation::Voice, std::move(j));
+        json j{{"path", std::move(path)},
+               {"contact", toJson()}};
+        std::string re = KtOperation::ktOperation(KtOperation::Voice, j);
         if (re == "E1") {
             throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在", MIRAICP_EXCEPTION_WHERE);
         } else if (re == "E2") {
@@ -80,11 +79,7 @@ namespace MiraiCP {
     }
 
     nlohmann::json IContactData::internalToJson() const {
-        return {{"nickornamecard", _nickOrNameCard}, {"id", _id}, {"botid", _botid}, {"type", _type}};
-    }
-
-    nlohmann::json IContactData::getQuoteSign() const {
-        return {{"MiraiCode", true}};
+        return {{"id", _id}, {"botId", _botId}, {"type", _type}};
     }
 
     void IContactData::updateJson(json &json_to_update) const {
@@ -93,22 +88,15 @@ namespace MiraiCP {
 
     nlohmann::json GroupRelatedData::internalToJson() const {
         auto result = IContactData::internalToJson();
-        result["groupid"] = _groupid;
+        result["groupId"] = _groupId;
         return result;
     }
 
-    nlohmann::json GroupRelatedData::getQuoteSign() const {
-        auto ans = Super::getQuoteSign();
-        ans["groupid"] = _groupid;
-        return ans;
-    }
-
     MessageSource Contact::quoteAndSend0(std::string msg, const MessageSource &ms) {
-        json sign = InternalData->getQuoteSign();
         json obj{{"messageSource", ms.serializeToString()},
                  {"msg",           std::move(msg)},
-                 {"sign",          sign.dump()}};
-        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, std::move(obj));
+                 {"contact",        toJson()}};
+        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
         MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
     }

@@ -26,15 +26,15 @@ namespace MiraiCP {
     using json = nlohmann::json;
 
 
-    auto GetMemberFromPool(QQID id, QQID groupid, QQID botid) noexcept {
+    auto GetMemberFromPool(QQID id, QQID groupId, QQID botid) noexcept {
         using Tools::idpair;
         static std::unordered_map<idpair, std::unordered_map<QQID, std::shared_ptr<Member::DataType>>> Pool;
-        idpair pr{botid, groupid};
+        idpair pr{botid, groupId};
         auto &Val = Pool[pr][id];
         if (!Val) {
-            Val = std::make_shared<Member::DataType>(groupid);
+            Val = std::make_shared<Member::DataType>(groupId);
             Val->_id = id;
-            Val->_botid = botid;
+            Val->_botId = botid;
             Val->_type = MIRAI_MEMBER;
         }
         return Val;
@@ -106,7 +106,7 @@ namespace MiraiCP {
     }
 
     void MemberData::deserialize(nlohmann::json in_json) {
-        _groupid = in_json["groupid"];
+        _groupId = in_json["groupid"];
         _anonymous = in_json["anonymous"].get<bool>();
         IContactData::deserialize(std::move(in_json));
     }

@@ -36,7 +36,7 @@ namespace MiraiCP {
         auto &Val = Pool[botid][groupid];
         if (!Val) {
             Val = std::make_shared<Group::DataType>(groupid);
-            Val->_botid = botid;
+            Val->_botId = botid;
             Val->_id = groupid;
             Val->_type = MIRAI_GROUP;
         }
@@ -126,8 +126,8 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Group::getMemberList() {
-        nlohmann::json j{{"contactSource", toString()}};
-        std::string re = KtOperation::ktOperation(KtOperation::QueryML, std::move(j));
+        nlohmann::json j{{"contact", toJson()}, {"type", 2}};
+        std::string re = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         if (re == "E1") {
             throw GroupException(MIRAICP_EXCEPTION_WHERE);
         }
@@ -229,7 +229,7 @@ namespace MiraiCP {
     }
 
     void GroupData::deserialize(nlohmann::json in_json) {
-        _groupid = in_json["groupid"];
+        _groupId = in_json["groupid"];
         IContactData::deserialize(std::move(in_json));
     }
 
