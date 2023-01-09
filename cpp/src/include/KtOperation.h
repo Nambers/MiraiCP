@@ -97,7 +97,7 @@ namespace MiraiCP::KtOperation {
     };
 
     /**
-     * @brief 调用mirai操作
+     * @brief 调用 Mirai 操作
      * @param type 操作id
      * @param data 传入数据
      * @return 返回数据
@@ -105,6 +105,18 @@ namespace MiraiCP::KtOperation {
     std::string ktOperation(
             operation_set type,
             const nlohmann::json &data,
+            bool catchErr = true,
+            const std::string &errorInfo = "");
+
+    /**
+     * @brief 调用 Mirai 操作
+     * @param type 操作id
+     * @param data 传入数据
+     * @return 返回数据
+     */
+    std::string ktOperationStr(
+            operation_set type,
+            const std::string &data,
             bool catchErr = true,
             const std::string &errorInfo = "");
 } // namespace MiraiCP::KtOperation

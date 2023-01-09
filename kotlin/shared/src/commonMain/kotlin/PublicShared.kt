@@ -92,7 +92,7 @@ object PublicShared {
         }
     }
 
-    fun nextMsg(source: String): String = withData(source, Packets.Incoming.NextMsg.serializer()) { data ->
+    suspend fun nextMsg(source: String): String = withData(source, Packets.Incoming.NextMsg.serializer()) { data ->
         return runBlocking {
             val e = try {
                 when (data.contact.type) {
@@ -257,7 +257,7 @@ object PublicShared {
                     3 -> friend_cache.firstOrNull { a ->
                         a.id == data.contact.id && a.group.id == data.contact.groupId
                     }?.let {
-                        json.encodeToString(Config.ContactInfo(it.nameCardOrNick, it.avatarUrl))
+                        json.encodeToString(Packets.Incoming.RefreshInfo.ContactInfo(it.nameCardOrNick, it.avatarUrl))
                     } ?: let {
                         data.contact.withMember(
                             bot,
@@ -274,7 +274,7 @@ object PublicShared {
         }
     }
 
-    fun queryBotList(source: String): String =
+    suspend fun queryBotList(source: String): String =
         withData(source, Packets.Incoming.GetList.serializer()) { data ->
             data.contact.withBot { bot ->
                 when (data.type) {
@@ -348,24 +348,20 @@ object PublicShared {
         }
     }
 
-    suspend fun queryImgInfo(id: String, size: Long?, width: Int?, height: Int?, imageType: String?): String {
-        return try {
-            val tmp = Image.newBuilder(id).apply {
-                this.size = size ?: 0L
-                this.width = width ?: 0
-                this.height = height ?: 0
-                this.type = ImageType.valueOf(imageType ?: "UNKNOWN")
-            }.build()
-            json.encodeToString(
-                Config.ImgInfo(
-                    md5 = json.encodeToString(tmp.md5),
-                    size = tmp.size,
-                    url = tmp.queryUrl(),
-                    width = tmp.width,
-                    height = tmp.height,
-                    imageType = tmp.imageType.name,
-                    isEmoji = tmp.isEmoji,
-                )
+    suspend fun queryImgInfo(source: String): String =
+        withData(source, Packets.Outgoing.ImgInfo.serializer()) { image ->
+            return try {
+                val tmp = image.toImage()
+                json.encodeToString(
+                    Packets.Outgoing.ImgInfo(
+                        md5 = json.encodeToString(tmp.md5),
+                        size = tmp.size,
+                        url = tmp.queryUrl(),
+                        width = tmp.width,
+                        height = tmp.height,
+                        imageType = tmp.imageType.name,
+                        isEmoji = tmp.isEmoji,
+                    )
             )
         } catch (e: IllegalArgumentException) {
             "E1"
@@ -373,10 +369,9 @@ object PublicShared {
     }
 
     //recall
-    suspend fun recallMsg(a: String): String {
-        val source = json.decodeFromString(MessageSerializers.serializersModule.serializer<MessageSource>(), a)
+    suspend fun recallMsg(source: String): String = withData(source, MessageSource.serializer()) { ms ->
         try {
-            source.recall()
+            ms.recall()
         } catch (e: PermissionDeniedException) {
             logger.error("机器人无权限撤回")
             return "EP"
@@ -388,30 +383,33 @@ object PublicShared {
     }
 
     //禁言
-    suspend fun mute(time: Long, c: Config.Contact): String = c.withBot { bot ->
-        c.withMember(
-            bot,
-            "禁言找不到对应群组，位置K-mute()，gid:${c.groupid}",
-            "禁言找不到对应群成员，位置K-mute()，id:${c.id}, gid:${c.id}"
-        ) { _, member ->
-            try {
-                if (time > 0) member.mute(time.toInt())
-                else member.unmute()
-            } catch (e: PermissionDeniedException) {
-                logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:${c.groupid}，目标成员id:${c.id}")
-                return "EP"
-            } catch (e: IllegalStateException) {
-                logger.error("执行禁言失败禁言时间超出0s~30d，位置:K-mute()，时间:$time")
-                return "E4"
+    suspend fun muteMember(source: String): String =
+        withData(source, Packets.Incoming.MuteMember.serializer()) { data ->
+            data.contact.withBot { bot ->
+                data.contact.withMember(
+                    bot,
+                    "禁言找不到对应群组，位置K-mute()，gid:${data.contact.groupId}",
+                    "禁言找不到对应群成员，位置K-mute()，id:${data.contact.id}, gid:${data.contact.id}"
+                ) { _, member ->
+                    try {
+                        if (data.time > 0) member.mute(data.time.toInt())
+                        else member.unmute()
+                    } catch (e: PermissionDeniedException) {
+                        logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:${data.contact.groupId}，目标成员id:${data.contact.id}")
+                        return "EP"
+                    } catch (e: IllegalStateException) {
+                        logger.error("执行禁言失败禁言时间超出0s~30d，位置:K-mute()，时间:$data.time")
+                        return "E4"
+                    }
+                    return "Y"
+                }
             }
-            return "Y"
         }
-    }
 
     suspend fun uploadVoice(source: String): String =
         withData(source, Packets.Incoming.SendVoice.serializer()) { data ->
             data.contact.withBot { bot ->
-                val file = MiraiCPFiles.create(json.decodeFromString<Config.VoiceInfoIn>(source).path)
+                val file = MiraiCPFiles.create(data.path)
                 if (!file.exists() || !file.isFile || !(file.extension == "amr" || file.extension == "silk")) {
                     logger.error("上传的语言文件需为.amr / .silk文件, 位置: KUploadVoice")
                     return "E1"
@@ -500,7 +498,7 @@ object PublicShared {
         }
     }
 
-    private suspend fun remoteFileInfo0(path: String, c: Packets.Contact): String = c.withBot { bot ->
+    private suspend fun remoteFileInfoPath(path: String, c: Packets.Contact): String = c.withBot { bot ->
         c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo0，gid:${c.id}") { group ->
             val tmp = try {
                 group.files.root.resolveFiles(path).first()
@@ -519,12 +517,12 @@ object PublicShared {
     suspend fun remoteFileInfo(source: String): String =
         withData(source, Packets.Incoming.GetFile.serializer()) { data ->
             data.contact.withBot { bot ->
-                if (data.id == "") return remoteFileInfo0(data.path, data.contact)
+                if (data.id == "") return remoteFileInfoPath(data.path, data.contact)
                 if (data.id == "-1") return remoteFileList(data.path, data.contact)
-                if (data.path == "-1") return remoteFileInfo(data.id, data.contact)
+                if (data.path == "-1") return remoteFileInfoId(data.id, data.contact)
                 data.contact.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${data.id}") { group ->
                     group.files.root.resolveFolder(data.path).let {
-                        if (it == null) remoteFileInfo0(data.path, data.contact)
+                        if (it == null) remoteFileInfoPath(data.path, data.contact)
                         else fileInfo0(it.resolveFileById(data.id) ?: let {
                             logger.error("cannot find the file,位置:K-remoteFileinfo, id:${data.id}, path:${data.path}")
                             return "E2"
@@ -534,7 +532,7 @@ object PublicShared {
             }
         }
 
-    suspend fun remoteFileInfo(id: String, c: Packets.Contact): String = c.withBot { bot ->
+    suspend fun remoteFileInfoId(id: String, c: Packets.Contact): String = c.withBot { bot ->
         c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
             val tmp = group.files.root.resolveFileById(id) ?: let {
                 logger.error("cannot find the file,位置:K-remoteFileinfo, id:$id")
@@ -545,33 +543,38 @@ object PublicShared {
     }
 
     //查询权限
-    fun kqueryM(c: Config.Contact): String = c.withBot { bot ->
-        c.withMember(
-            bot,
-            "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}",
-            "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.groupid}"
-        ) { _, member ->
-            return member.permission.level.toString()
+    suspend fun queryPermission(source: String): String = withData(source, Packets.Contact.serializer()) { c ->
+        c.withBot { bot ->
+            c.withMember(
+                bot,
+                "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupId}",
+                "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.groupId}"
+            ) { _, member ->
+                return member.permission.level.toString()
+            }
         }
     }
 
-    suspend fun kkick(message: String, c: Config.Contact): String = c.withBot { bot ->
-        c.withMember(
-            bot,
-            "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupid}",
-            "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.id}"
-        ) { _, member ->
-            try {
-                member.kick(message)
-            } catch (e: PermissionDeniedException) {
-                return "EP"
+    suspend fun kickMember(source: String): String =
+        withData(source, Packets.Incoming.KickMember.serializer()) { data ->
+            data.contact.withBot { bot ->
+                data.contact.withMember(
+                    bot,
+                    "查询权限找不到对应群组，位置K-queryM()，gid:${data.contact.groupId}",
+                    "查询权限找不到对应群成员，位置K-queryM()，id:${data.contact.id}, gid:${data.contact.id}"
+                ) { _, member ->
+                    try {
+                        member.kick(data.message)
+                    } catch (e: PermissionDeniedException) {
+                        return "EP"
+                    }
+                    return "Y"
+                }
             }
-            return "Y"
         }
-    }
 
     //取群主
-    fun getOwner(source: String): String = withData(source, Packets.Contact.serializer()) { c ->
+    suspend fun getOwner(source: String): String = withData(source, Packets.Contact.serializer()) { c ->
         c.withBot {
             c.withGroup(it, "找不到群,位置:K-getowner,gid:${c.id}") { g ->
                 return g.owner.id.toString()
@@ -659,17 +662,18 @@ object PublicShared {
             }
         }
 
-    fun groupSetting(source: String): String = withData(source, Packets.Incoming.GroupSetting.serializer()) { data ->
-        data.contact.withBot {
-            data.contact.withGroup(it) { group ->
-                try {
-                    group.name = data.name
-                    group.settings.isMuteAll = data.isMuteAll
-                    group.settings.isAllowMemberInvite = data.isAllowMemberInvite
-                } catch (e: PermissionDeniedException) {
-                    return "EP"
-                }
-                return "Y"
+    suspend fun groupSetting(source: String): String =
+        withData(source, Packets.Incoming.GroupSetting.serializer()) { data ->
+            data.contact.withBot {
+                data.contact.withGroup(it) { group ->
+                    try {
+                        group.name = data.name
+                        group.settings.isMuteAll = data.isMuteAll
+                        group.settings.isAllowMemberInvite = data.isAllowMemberInvite
+                    } catch (e: PermissionDeniedException) {
+                        return "EP"
+                    }
+                    return "Y"
             }
         }
     }
@@ -717,44 +721,51 @@ object PublicShared {
             }
         }
 
-    suspend fun sendNudge(c: Config.Contact): String = c.withBot { bot ->
-        return when (c.type) {
-            1 -> {
-                c.withFriend(bot) { f ->
-                    try {
-                        f.nudge().sendTo(f)
-                    } catch (e: UnsupportedOperationException) {
-                        logger.error("发送nudge必须使用ANDROID_PHONE/ipad协议，目前协议为:" + bot.configuration.protocol.name)
-                        return "E1"
+    suspend fun sendNudge(source: String): String = withData(source, Packets.Contact.serializer()) { c ->
+        c.withBot { bot ->
+            return when (c.type) {
+                1 -> {
+                    c.withFriend(bot) { f ->
+                        try {
+                            f.nudge().sendTo(f)
+                        } catch (e: UnsupportedOperationException) {
+                            logger.error("发送nudge必须使用ANDROID_PHONE/ipad协议，目前协议为:" + bot.configuration.protocol.name)
+                            return "E1"
+                        }
+                        "Y"
                     }
-                    "Y"
                 }
-            }
-            3 -> {
-                c.withMember(bot) { g, m ->
-                    try {
-                        m.nudge().sendTo(g)
-                    } catch (e: UnsupportedOperationException) {
-                        logger.error("发送nudge必须使用ANDROID_PHONE/ipad协议，目前协议为:" + bot.configuration.protocol.name)
-                        return "E1"
+
+                3 -> {
+                    c.withMember(bot) { g, m ->
+                        try {
+                            m.nudge().sendTo(g)
+                        } catch (e: UnsupportedOperationException) {
+                            logger.error("发送nudge必须使用ANDROID_PHONE/ipad协议，目前协议为:" + bot.configuration.protocol.name)
+                            return "E1"
+                        }
+                        "Y"
                     }
-                    "Y"
                 }
+
+                else -> "EA"
             }
-            else -> "EA"
         }
     }
 
-    suspend fun modifyAdmin(c: Config.Contact, b: Boolean): String = c.withBot { bot ->
-        c.withMember(bot) { _, member ->
-            try {
-                member.modifyAdmin(b)
-            } catch (e: PermissionDeniedException) {
-                return "EP"
+    suspend fun modifyAdmin(source: String): String =
+        withData(source, Packets.Incoming.ModifyAdmin.serializer()) { data ->
+            data.contact.withBot { bot ->
+                data.contact.withMember(bot) { _, member ->
+                    try {
+                        member.modifyAdmin(data.admin)
+                    } catch (e: PermissionDeniedException) {
+                        return "EP"
+                    }
+                    "Y"
+                }
             }
-            "Y"
         }
-    }
 
     suspend fun memberJoinRequest(source: String): String =
         withData(source, Packets.Incoming.InviteOrRequestOperation.serializer()) { data ->
@@ -767,20 +778,26 @@ object PublicShared {
             }
         }
 
-    suspend fun isUploaded(img: Config.ImgInfo, botid: Long): String = withBot(botid) { bot ->
-        img.toImage().isUploaded(bot).toString()
-    }
-
-    fun changeNameCard(c: Config.Contact, name: String): String = c.withMiraiMember { _, _, normalMember ->
-        try {
-            normalMember.nameCard = name
-        } catch (_: PermissionDeniedException) {
-            return@withMiraiMember "EP"
+    suspend fun isUploaded(source: String): String =
+        withData(source, Packets.Incoming.ImageInfoWithBot.serializer()) { data ->
+            withBot(data.botId) { bot ->
+                data.image.toImage().isUploaded(bot).toString()
+            }
         }
-        "s"
-    }
 
-    fun commandReg(source: String): String {
+    suspend fun changeNameCard(source: String): String =
+        withData(source, Packets.Incoming.ChangeNameCard.serializer()) { data ->
+            data.contact.withMiraiMember { _, _, normalMember ->
+                try {
+                    normalMember.nameCard = data.newName
+                } catch (_: PermissionDeniedException) {
+                    return@withMiraiMember "EP"
+                }
+                "s"
+            }
+        }
+
+    suspend fun commandReg(source: String): String {
         PublicSharedData.commandReg.register(
             json.decodeFromString(
                 source

@@ -300,22 +300,6 @@ namespace MiraiCP {
             insert(end(), mc.begin(), mc.end());
             constructMessages(std::forward<T>(args)...);
         }
-
-        MessageSource quoteAndSend0(std::string msg, QQID groupid = -1);
-
-        template<class T>
-        MessageSource quoteAndSend1(const T &s, QQID groupid = -1) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return this->quoteAndSend0(s.toMiraiCode(), groupid);
-        }
-
-        MessageSource quoteAndSend1(std::string s, QQID groupid) {
-            return this->quoteAndSend0(std::move(s), groupid);
-        }
-
-        MessageSource quoteAndSend1(const MessageChain &mc, QQID groupid) {
-            return this->quoteAndSend0(mc.toMiraiCode(), groupid);
-        }
     };
 } // namespace MiraiCP
 

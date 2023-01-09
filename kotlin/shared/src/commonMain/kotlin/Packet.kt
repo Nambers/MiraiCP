@@ -291,6 +291,36 @@ object Packets {
             val filePath: String,
         )
 
+        @Serializable
+        data class ChangeNameCard(
+            val contact: Contact,
+            val newName: String,
+        )
+
+        @Serializable
+        data class KickMember(
+            val contact: Contact,
+            val message: String,
+        )
+
+        @Serializable
+        data class ModifyAdmin(
+            val contact: Contact,
+            val admin: Boolean,
+        )
+
+        @Serializable
+        data class MuteMember(
+            val time: Long,
+            val contact: Contact,
+        )
+
+        @Serializable
+        data class ImageInfoWithBot(
+            val botId: Long,
+            val image: Outgoing.ImgInfo,
+        )
+
         enum class OperationCode {
             Recall,             // 0
             Send,               // 1
@@ -329,9 +359,9 @@ object Packets {
             OperationCode.SendFile to PublicShared::sendFile,
             OperationCode.RemoteFileInfo to PublicShared::remoteFileInfo,
             OperationCode.QueryImgInfo to PublicShared::queryImgInfo,
-            OperationCode.MuteM to PublicShared::muteM,
-            OperationCode.QueryM to PublicShared::queryM,
-            OperationCode.KickM to PublicShared::kickM,
+            OperationCode.MuteM to PublicShared::muteMember,
+            OperationCode.QueryM to PublicShared::queryPermission,
+            OperationCode.KickM to PublicShared::kickMember,
             OperationCode.QueryOwner to PublicShared::getOwner,
             OperationCode.UploadVoice to PublicShared::uploadVoice,
             OperationCode.GroupSetting to PublicShared::groupSetting,
@@ -339,12 +369,12 @@ object Packets {
             OperationCode.Nfroperation to PublicShared::acceptFriendRequest,
             OperationCode.Gioperation to PublicShared::acceptGroupInvite,
             OperationCode.SendWithQuote to PublicShared::sendWithQuote,
-            OperationCode.Announcement to PublicShared::announcement,
-            OperationCode.Nudge to PublicShared::nudge,
+            OperationCode.Announcement to PublicShared::announcementOperation,
+            OperationCode.Nudge to PublicShared::sendNudge,
             OperationCode.NextMsg to PublicShared::nextMsg,
             OperationCode.ModifyAdmin to PublicShared::modifyAdmin,
             OperationCode.MemberJoinRequest to PublicShared::memberJoinRequest,
-            OperationCode.ImageUploaded to PublicShared::imageUploaded,
+            OperationCode.ImageUploaded to PublicShared::isUploaded,
             OperationCode.CommandReg to PublicShared::commandReg,
             OperationCode.ChangeNameCard to PublicShared::changeNameCard,
         )
