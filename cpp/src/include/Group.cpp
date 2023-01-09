@@ -103,12 +103,11 @@ namespace MiraiCP {
     }
 
     Group::OnlineAnnouncement Group::OfflineAnnouncement::publishTo(const Group &g) {
-        json s{{"content", content},
-               {"params",  params.serializeToJson()}};
         json j{{"botId",   g.botid()},
                {"groupId", g.id()},
                {"type",    KtOperation::AnnouncementOperationCode::Publish},
-               {"source",  s}};
+               {"source",  {{"content", content},
+                       {"params",  params.serializeToJson()}}}};
         std::string re = KtOperation::ktOperation(KtOperation::Announcement, j);
         MIRAICP_ERROR_HANDLE(re, "");
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
@@ -140,7 +139,7 @@ namespace MiraiCP {
     }
 
     void Group::quit() {
-        nlohmann::json j{{"contact", toString()}, {"quit", true}};
+        nlohmann::json j{{"contact", toJson()}, {"quit", true}};
         MIRAICP_ERROR_HANDLE(KtOperation::ktOperation(KtOperation::RefreshInfo, j), "");
     }
 
@@ -156,7 +155,7 @@ namespace MiraiCP {
     }
 
     RemoteFile Group::sendFile(const std::string &path, const std::string &filepath) {
-        json j{{"path", path}, {"filePath", filepath}, {"contact", toString()}};
+        json j{{"path", path}, {"filePath", filepath}, {"contact", toJson()}};
         auto re = KtOperation::ktOperation(KtOperation::SendFile, j);
         if (re == "E2") throw UploadException("找不到" + filepath + "位置:C-uploadfile", MIRAICP_EXCEPTION_WHERE);
         if (re == "E3")

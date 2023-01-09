@@ -231,7 +231,7 @@ namespace MiraiCP {
         }
 
     private: // private methods
-        MessageSource quoteAndSend0(std::string msg, const MessageSource &ms);
+        MessageSource quoteAndSend0(std::string msg, const MessageSource &ms) const;
 
         MessageSource quoteAndSend1(const SingleMessage &s, const MessageSource &ms) {
             return this->quoteAndSend0(MessageChain(s).toJson(), ms);

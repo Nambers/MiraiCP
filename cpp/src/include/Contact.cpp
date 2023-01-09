@@ -90,7 +90,7 @@ namespace MiraiCP {
         return result;
     }
 
-    MessageSource Contact::quoteAndSend0(std::string msg, const MessageSource &ms) {
+    MessageSource Contact::quoteAndSend0(std::string msg, const MessageSource &ms) const {
         json obj{{"messageSource", ms.serializeToString()},
                  {"msg",           std::move(msg)},
                  {"contact",        toJson()}};

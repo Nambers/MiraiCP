@@ -48,7 +48,7 @@ namespace MiraiCP {
     }
 
     MessageChain GroupMessageEvent::senderNextMessage(long time, bool halt) const {
-        json j{{"contact", this->sender.toString()},
+        json j{{"contact", this->sender.toJson()},
                {"time",    time},
                {"halt",    halt}};
         std::string r = KtOperation::ktOperation(KtOperation::NextMsg, j);

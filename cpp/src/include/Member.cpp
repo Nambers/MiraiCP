@@ -71,28 +71,28 @@ namespace MiraiCP {
     }
 
     void Member::mute(long long sec) const {
-        json j{{"time", sec}, {"contact", toString()}};
+        json j{{"time", sec}, {"contact", toJson()}};
         std::string re = KtOperation::ktOperation(KtOperation::MuteM, j);
         if (re == "E4")
             throw MuteException(MIRAICP_EXCEPTION_WHERE);
     }
 
     void Member::kick(std::string reason) {
-        json j{{"message", std::move(reason)}, {"contact", toString()}};
+        json j{{"message", std::move(reason)}, {"contact", toJson()}};
         KtOperation::ktOperation(KtOperation::KickM, j);
         forceRefreshNextTime();
     }
 
     void Member::modifyAdmin(bool admin) {
         if (anonymous()) return;
-        json j{{"admin", admin}, {"contact", toString()}};
+        json j{{"admin", admin}, {"contact", toJson()}};
         KtOperation::ktOperation(KtOperation::ModifyAdmin, j);
         forceRefreshNextTime();
     }
 
     void Member::changeNameCard(std::string_view newName) {
         if (anonymous()) return;
-        json j{{"contact", toString()}, {"newName", newName}};
+        json j{{"contact", toJson()}, {"newName", newName}};
         KtOperation::ktOperation(KtOperation::ChangeNameCard, j);
         forceRefreshNextTime();
     }
@@ -127,7 +127,7 @@ namespace MiraiCP {
         }
 
         {
-            _permission = stoi(KtOperation::ktOperation(KtOperation::QueryM, toJson()));
+            _permission = stoi(KtOperation::ktOperation(KtOperation::QueryM, internalToJson()));
         }
     }
 

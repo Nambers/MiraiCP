@@ -64,8 +64,6 @@ namespace MiraiCP::KtOperation {
         SendWithQuote,
         /// 群公告操作
         Announcement,
-        /// 定时任务
-        TimeOut,
         /// 发送戳一戳
         SendNudge,
         /// 下一条信息
