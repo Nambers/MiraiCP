@@ -65,7 +65,7 @@ namespace MiraiCP {
     }
 
     void Friend::deleteFriend() {
-        json j{{"contact", toJson()}, {"quit", true}};
+        json j{{"contact", this->toJson()}, {"quit", true}};
         MIRAICP_ERROR_HANDLE(KtOperation::ktOperation(KtOperation::RefreshInfo, j), "");
     }
 
@@ -81,7 +81,7 @@ namespace MiraiCP {
     //    }
 
     void Friend::sendNudge() {
-        json j{{"contact", toString()}};
+        json j{{"contact", toJson()}};
         std::string re = KtOperation::ktOperation(KtOperation::SendNudge, j);
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone/ipad", MIRAICP_EXCEPTION_WHERE);

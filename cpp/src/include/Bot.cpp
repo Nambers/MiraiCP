@@ -73,7 +73,7 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Bot::getFriendList() const {
-        nlohmann::json j{{"contact", this->toJson()},
+        nlohmann::json j{{"contact", toJson()},
                          {"type",    KtOperation::QueryBotListCode::FriendList}};
         std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
@@ -84,7 +84,7 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Bot::getGroupList() const {
-        nlohmann::json j{{"contact", this->toJson()},
+        nlohmann::json j{{"contact", toJson()},
                          {"type",    KtOperation::QueryBotListCode::GroupList}};
         std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));

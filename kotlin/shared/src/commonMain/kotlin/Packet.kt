@@ -342,19 +342,19 @@ object Packets {
             KickM,              // 10
             QueryOwner,         // 11
             UploadVoice,        // 12
-            GroupSetting,       // 14
-            Buildforward,       // 15
-            Nfroperation,       // 16
-            Gioperation,        // 17
-            SendWithQuote,      // 18
-            Announcement,       // 19
-            Nudge,              // 20
-            NextMsg,            // 21
-            ModifyAdmin,        // 22
-            MemberJoinRequest,  // 23
-            ImageUploaded,      // 24
-            CommandReg,         // 25
-            ChangeNameCard,     // 26
+            GroupSetting,       // 13
+            Buildforward,       // 14
+            Nfroperation,       // 15
+            Gioperation,        // 16
+            SendWithQuote,      // 17
+            Announcement,       // 18
+            Nudge,              // 19
+            NextMsg,            // 20
+            ModifyAdmin,        // 21
+            MemberJoinRequest,  // 22
+            ImageUploaded,      // 23
+            CommandReg,         // 24
+            ChangeNameCard,     // 25
         }
 
         val operations = hashMapOf<OperationCode, suspend (String) -> String>(
