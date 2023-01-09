@@ -69,7 +69,7 @@ namespace MiraiCP {
 
     void IContactData::refreshInfo() {
         // default to Friend
-        std::string temp = LowLevelAPI::getInfoSource(internalToString());
+        std::string temp = LowLevelAPI::getInfoSource(internalToJson());
         MIRAICP_ERROR_HANDLE(temp, "");
         LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
         this->_nickOrNameCard = tmp.nickOrNameCard;

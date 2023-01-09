@@ -73,6 +73,7 @@ fun Friend.toContact(): Packets.Contact = Packets.Contact(1, this.id, this.bot.i
 internal inline fun <T> withData(source: String, strategy: DeserializationStrategy<T>, block: (T) -> String): String =
     block(json.decodeFromString(strategy, source))
 
+
 internal inline fun withBot(botid: Long, Err: String = "", block: (Bot) -> String): String {
     val bot = Bot.getInstanceOrNull(botid)
     if (bot == null) {

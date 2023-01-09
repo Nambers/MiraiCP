@@ -113,8 +113,7 @@ namespace MiraiCP {
     void MemberData::refreshInfo() {
         if (_anonymous) return;
 
-        auto tempserialize = internalToString();
-        std::string result = LowLevelAPI::getInfoSource(tempserialize);
+        std::string result = LowLevelAPI::getInfoSource(internalToJson());
 
         if (result == "E1")
             throw MemberException(1, MIRAICP_EXCEPTION_WHERE);

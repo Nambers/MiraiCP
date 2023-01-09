@@ -35,7 +35,7 @@ namespace MiraiCP {
         return re;
     }
 
-    std::string LowLevelAPI::getInfoSource(std::string c) {
+    std::string LowLevelAPI::getInfoSource(nlohmann::json c) {
         nlohmann::json j{{"contact", std::move(c)}};
         return KtOperation::ktOperation(KtOperation::RefreshInfo, j);
     }

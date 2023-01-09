@@ -221,7 +221,7 @@ namespace MiraiCP {
     IMPL_GETTER(setting)
 
     void GroupData::refreshInfo() {
-        std::string re = LowLevelAPI::getInfoSource(internalToString());
+        std::string re = LowLevelAPI::getInfoSource(internalToJson());
         LowLevelAPI::info tmp = LowLevelAPI::info0(re);
         this->_nickOrNameCard = std::move(tmp.nickOrNameCard);
         this->_avatarUrl = std::move(tmp.avatarUrl);

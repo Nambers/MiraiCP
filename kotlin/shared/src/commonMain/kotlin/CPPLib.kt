@@ -39,6 +39,21 @@ object CPPLib {
         callback: () -> Unit = {}
     ) = CPPLibMultiplatform.init(libPath, cfgPath, callback)
 
+    // 日志发送接口
+    fun sendLog(log: String, level: Int) {
+        val j = json.decodeFromString<Packets.Incoming.Log>(log)
+        if (j.id == -1L) when (level) {
+            0 -> PublicShared.basicSendLog(j.log, j.id, j.name!!)
+            1 -> PublicShared.sendWarning(j.log, j.id, j.name!!)
+            2 -> PublicShared.sendError(j.log, j.id, j.name!!)
+        }
+        else when (level) {
+            0 -> PublicShared.basicSendLog(j.log, j.id)
+            1 -> PublicShared.sendWarning(j.log, j.id)
+            2 -> PublicShared.sendError(j.log, j.id)
+        }
+    }
+
     // 通用接口
     fun operation(content: String): String = runBlocking {
         try {
