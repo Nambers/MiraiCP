@@ -37,16 +37,6 @@ namespace MiraiCP {
         return j;
     }
 
-    MessageSource MessageChain::quoteAndSend0(std::string msg, QQID groupid) {
-        json sign{{"MiraiCode", true},
-                  {"groupId", groupid}};
-        json obj{{"messageSource", source->serializeToString()},
-                 {"msg", std::move(msg)},
-                 {"sign", sign.dump()}};
-        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, std::move(obj));
-        return MessageSource::deserializeFromString(re);
-    }
-
     //message chain
     MessageChain MessageChain::deserializationFromMiraiCode(const std::string &m) {
         size_t pos = 0;

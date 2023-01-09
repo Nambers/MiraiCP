@@ -110,9 +110,7 @@ namespace MiraiCP {
     bool Image::isUploaded(QQID botid) {
         if (!this->md5.has_value()) this->refreshInfo();
         if (this->size == 0) throw IllegalArgumentException("size不能为0", MIRAICP_EXCEPTION_WHERE);
-        nlohmann::json tmp = this->toJson();
-        tmp["botId"] = botid;
-        std::string re = KtOperation::ktOperation(KtOperation::ImageUploaded, std::move(tmp));
+        std::string re = KtOperation::ktOperation(KtOperation::ImageUploaded, {{"botId", botid}, {"image", toJson()}});
         return re == "true";
     }
     nlohmann::json FlashImage::toJson() const {
@@ -264,9 +262,7 @@ namespace MiraiCP {
 
     /*图片类实现*/
     void Image::refreshInfo() {
-        auto tempJson = toJson();
-        tempJson.erase("type");
-        std::string re = KtOperation::ktOperation(KtOperation::QueryImgInfo, tempJson);
+        std::string re = KtOperation::ktOperation(KtOperation::QueryImgInfo, toJson());
         if (re == "E1")
             throw RemoteAssetException("图片id格式错误", MIRAICP_EXCEPTION_WHERE);
         json j = json::parse(re);

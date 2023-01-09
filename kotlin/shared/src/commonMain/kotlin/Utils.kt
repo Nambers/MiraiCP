@@ -204,7 +204,7 @@ fun Packets.Contact.withMiraiMember(block: (Bot, Group, NormalMember) -> String)
 }
 
 // MiraiCP image info to mirai image
-internal fun Config.ImgInfo.toImage(): Image = Image.newBuilder(this.imageId!!).apply {
+internal fun Packets.Outgoing.ImgInfo.toImage(): Image = Image.newBuilder(this.imageId!!).apply {
     this@apply.height = this@toImage.height ?: 0
     this@apply.width = this@toImage.width ?: 0
     this@apply.size = this@toImage.size

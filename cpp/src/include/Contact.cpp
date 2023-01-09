@@ -95,7 +95,6 @@ namespace MiraiCP {
                  {"msg",           std::move(msg)},
                  {"contact",        toJson()}};
         std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
-        MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);
     }
 

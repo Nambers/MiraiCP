@@ -71,36 +71,35 @@ namespace MiraiCP {
     }
 
     void Member::mute(long long sec) const {
-        json j{{"time", sec}, {"contactSource", toString()}};
-        std::string re = KtOperation::ktOperation(KtOperation::MuteM, std::move(j));
+        json j{{"time", sec}, {"contact", toString()}};
+        std::string re = KtOperation::ktOperation(KtOperation::MuteM, j);
         if (re == "E4")
             throw MuteException(MIRAICP_EXCEPTION_WHERE);
     }
 
     void Member::kick(std::string reason) {
-        json j{{"message", std::move(reason)}, {"contactSource", toString()}};
-        KtOperation::ktOperation(KtOperation::KickM, std::move(j));
+        json j{{"message", std::move(reason)}, {"contact", toString()}};
+        KtOperation::ktOperation(KtOperation::KickM, j);
         forceRefreshNextTime();
     }
 
     void Member::modifyAdmin(bool admin) {
         if (anonymous()) return;
-        json j{{"admin", admin}, {"contactSource", toString()}};
-        KtOperation::ktOperation(KtOperation::ModifyAdmin, std::move(j));
+        json j{{"admin", admin}, {"contact", toString()}};
+        KtOperation::ktOperation(KtOperation::ModifyAdmin, j);
         forceRefreshNextTime();
     }
 
     void Member::changeNameCard(std::string_view newName) {
         if (anonymous()) return;
-        json j{{"contactSource", toString()}, {"newName", newName}};
-        KtOperation::ktOperation(KtOperation::ChangeNameCard, std::move(j));
+        json j{{"contact", toString()}, {"newName", newName}};
+        KtOperation::ktOperation(KtOperation::ChangeNameCard, j);
         forceRefreshNextTime();
     }
 
     void Member::sendNudge() {
         if (anonymous()) return;
-        json j{{"contactSource", toString()}};
-        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, std::move(j));
+        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, toJson());
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone", MIRAICP_EXCEPTION_WHERE);
     }
@@ -129,8 +128,7 @@ namespace MiraiCP {
         }
 
         {
-            json j{{"contactSource", std::move(tempserialize)}};
-            _permission = stoi(KtOperation::ktOperation(KtOperation::QueryM, std::move(j)));
+            _permission = stoi(KtOperation::ktOperation(KtOperation::QueryM, toJson()));
         }
     }
 

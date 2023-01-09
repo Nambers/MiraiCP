@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -46,7 +46,7 @@ data class CommandWrap(
     val eventData: Command2C,
 ) {
     data class Command2C(
-        val contact: Config.Contact?,
+        val contact: Packets.Contact,
         val botid: Long,
         val message: String,
         val bindId: Int,
