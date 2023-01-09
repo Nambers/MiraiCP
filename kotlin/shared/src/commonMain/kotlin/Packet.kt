@@ -106,6 +106,13 @@ object Packets {
 
     object Incoming {
         @Serializable
+        data class Log(
+            val id: Long,
+            val log: String,
+            val name: String? = null,
+        )
+
+        @Serializable
         data class OperationPacket(
             val type: Int,
             val data: String,
@@ -193,8 +200,8 @@ object Packets {
         @Serializable
         data class RefreshInfo(
             val contact: Packets.Contact,
-            val quit: Boolean,
-            val announcement: Boolean,
+            val quit: Boolean = false,
+            val announcement: Boolean = false,
         ) {
             @Serializable
             data class ContactInfo(
