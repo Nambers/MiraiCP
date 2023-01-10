@@ -537,8 +537,7 @@ object Packets {
 
         @Serializable
         class MessageEventData : EventPacket {
-            override val eventId = 4
-            private val eventType: Int
+            override var eventId = 4
 
             /// serialization json string of MessageChain without source
             private val message: String
@@ -548,11 +547,11 @@ object Packets {
 
 
             constructor(event: MessageEvent) {
-                eventType = when (event) {
-                    is FriendMessageEvent -> 1
-                    is GroupMessageEvent -> 2
-                    is GroupTempMessageEvent -> 3
-                    is StrangerMessageEvent -> 4
+                eventId = 4 + when (event) {
+                    is FriendMessageEvent -> 0
+                    is GroupMessageEvent -> 1
+                    is GroupTempMessageEvent -> 2
+//                    is StrangerMessageEvent -> 4
                     else -> {
                         PublicSharedData.logger.error("MiraiCP遇到意料之中的问题, 请到github仓库发送issue和黏贴本信息以修复此问题, 位置:MessageEventData.constructor, info:${event}")
                         throw IllegalArgumentException("Unknown message event type")
@@ -572,7 +571,7 @@ object Packets {
 
         @Serializable
         class MessageRecall : EventPacket {
-            override val eventId = 5
+            override val eventId = 7
 
             /// unique id for each message
             private val messageIds: IntArray
@@ -609,7 +608,7 @@ object Packets {
 
         @Serializable
         class MessagePreSend : EventPacket {
-            override val eventId = 6
+            override val eventId = 8
             private val message: String
 
             constructor(event: MessagePreSendEvent) {
@@ -619,7 +618,7 @@ object Packets {
 
         @Serializable
         class Nudge : EventPacket {
-            override val eventId = 7
+            override val eventId = 9
 
             /// who receive the nudge
             val target: Contact
@@ -639,7 +638,7 @@ object Packets {
 
         @Serializable
         class NewFriendRequest : EventPacket {
-            override val eventId = 8
+            override val eventId = 10
 
             /// request serialization data, use to accept or reject
             private val request: String
@@ -660,7 +659,7 @@ object Packets {
 
         @Serializable
         class MemberLeave : EventPacket {
-            override val eventId = 9
+            override val eventId = 11
 
             /**
              * 1 - Kick
@@ -691,7 +690,7 @@ object Packets {
 
         @Serializable
         class MemberJoin : EventPacket {
-            override val eventId = 10
+            override val eventId = 12
 
             /**
             invite - 1
@@ -725,7 +724,7 @@ object Packets {
 
         @Serializable
         class MemberJoinRequest : EventPacket {
-            override val eventId = 11
+            override val eventId = 13
 
             /// request serialization data, use to accept or reject
             private val requestData: String

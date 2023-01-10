@@ -212,26 +212,21 @@ namespace MiraiCP {
 
     void Event::incomingEvent(BaseEventData j, int type) {
         switch (type) {
-            case eventTypes::MessageEvent: {
-                switch (j.eventData["eventType"].get<int>()) {
-                    case IMessageEvent::MessageEventType::GroupMessageEvent: {
-                        Event::broadcast(GroupMessageEvent(std::move(j)));
-                        break;
-                    }
-                    case IMessageEvent::MessageEventType::PrivateMessageEvent: {
-                        Event::broadcast(PrivateMessageEvent(std::move(j)));
-                        break;
-                    }
-                    case IMessageEvent::MessageEventType::GroupTempMessageEvent: {
-                        Event::broadcast(GroupTempMessageEvent(std::move(j)));
-                        break;
-                    }
-                    case IMessageEvent::MessageEventType::StrangerMessageEvent: {
-                        // todo Implement StrangerMessageEvent (ea)
-                    }
-                }
+            case eventTypes::GroupMessageEvent: {
+                Event::broadcast(GroupMessageEvent(std::move(j)));
                 break;
             }
+            case eventTypes::FriendMessageEvent: {
+                Event::broadcast(PrivateMessageEvent(std::move(j)));
+                break;
+            }
+            case eventTypes::GroupTempMessageEvent: {
+                Event::broadcast(GroupTempMessageEvent(std::move(j)));
+                break;
+            }
+//          case IMessageEvent::MessageEventType::StrangerMessageEvent: {
+//              // todo Implement StrangerMessageEvent (ea)
+//          }
             case eventTypes::GroupInviteEvent: {
                 //群聊邀请
                 Event::broadcast(GroupInviteEvent(std::move(j)));

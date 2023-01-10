@@ -17,8 +17,8 @@
 #include "mockTests.h"
 using namespace MiraiCP;
 namespace MockTests {
-    void testEnd(){
-        MiraiCP::Logger::logger.info("--test end--");
+    void testEnd(std::string str){
+        MiraiCP::Logger::logger.info("--test end--" + std::move(str));
     }
     namespace Message {
         void messageSerialization(const MessageChain& msg) {
