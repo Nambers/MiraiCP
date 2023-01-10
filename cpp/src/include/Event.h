@@ -34,15 +34,17 @@ namespace MiraiCP {
             BotJoinGroupEvent,              // 1
             GroupInviteEvent,               // 2
             BotLeaveEvent,                  // 3
-            MessageEvent,                   // 4
-            RecallEvent,                    // 5
-            MessagePreSendEvent,            // 6
-            NudgeEvent,                     // 7
-            NewFriendRequestEvent,          // 8
-            MemberLeaveEvent,               // 9
-            MemberJoinEvent,                // 10
-            MemberJoinRequestEvent,         // 11
-            TimeOutEvent,                   // 12
+            FriendMessageEvent,             // 4
+            GroupMessageEvent,              // 5
+            GroupTempMessageEvent,          // 6
+            RecallEvent,                    // 7
+            MessagePreSendEvent,            // 8
+            NudgeEvent,                     // 9
+            NewFriendRequestEvent,          // 10
+            MemberLeaveEvent,               // 11
+            MemberJoinEvent,                // 12
+            MemberJoinRequestEvent,         // 13
+            TimeOutEvent,                   // 14
             MiraiCPExceptionEvent = 16,     // 16 todo 暂时保持
             Command = 17,                   // 17
             count,                          // 事件在此位置前定义，此时count为事件种类数
@@ -114,13 +116,6 @@ namespace MiraiCP {
     /// MessageEvent类型的抽象接口，用于Message类型多态实现
     class IMessageEvent {
     public:
-        enum MessageEventType {
-            PrivateMessageEvent,    // 0
-            GroupMessageEvent,      // 1
-            GroupTempMessageEvent,  // 2
-            StrangerMessageEvent,   // 3
-        };
-
         /// 获取当前聊天，可能是群，私聊，或群临时会话
         virtual Contact *chat() = 0;
 
@@ -134,8 +129,6 @@ namespace MiraiCP {
         virtual const Contact *from() const = 0;
 
         virtual const MessageChain *getMessageChain() const = 0;
-
-        virtual MessageEventType getMessageEventType() const = 0;
     };
 
     /*!
@@ -145,7 +138,7 @@ namespace MiraiCP {
     class GroupMessageEvent : public BotEvent<GroupMessageEvent>, public IMessageEvent {
     public:
         static eventTypes::Types get_event_type() {
-            return eventTypes::Types::MessageEvent;
+            return eventTypes::Types::GroupMessageEvent;
         }
 
     public:
@@ -177,8 +170,6 @@ namespace MiraiCP {
          */
         MessageChain senderNextMessage(long time = -1, bool halt = true) const;
 
-        MessageEventType getMessageEventType() const override { return IMessageEvent::GroupMessageEvent; }
-
     public:
         Contact *chat() override {
             return &group;
@@ -209,7 +200,7 @@ namespace MiraiCP {
     class PrivateMessageEvent : public BotEvent<PrivateMessageEvent>, public IMessageEvent {
     public:
         static eventTypes::Types get_event_type() {
-            return eventTypes::Types::MessageEvent;
+            return eventTypes::Types::FriendMessageEvent;
         }
 
     public:
@@ -235,8 +226,6 @@ namespace MiraiCP {
          * @return 消息链
          */
         MessageChain nextMessage(long time = -1, bool halt = true) const;
-
-        MessageEventType getMessageEventType() const override { return IMessageEvent::PrivateMessageEvent; }
 
     public:
         Contact *chat() override {
@@ -459,7 +448,7 @@ namespace MiraiCP {
     class GroupTempMessageEvent : public BotEvent<GroupTempMessageEvent>, public IMessageEvent {
     public:
         static eventTypes::Types get_event_type() {
-            return eventTypes::Types::MessageEvent;
+            return eventTypes::Types::GroupTempMessageEvent;
         }
 
     public:
@@ -471,8 +460,6 @@ namespace MiraiCP {
         MessageChain message;
 
         explicit GroupTempMessageEvent(BaseEventData j);
-
-        MessageEventType getMessageEventType() const override { return IMessageEvent::GroupTempMessageEvent; }
 
     public:
         Contact *chat() override {

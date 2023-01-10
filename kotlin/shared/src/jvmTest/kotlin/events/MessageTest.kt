@@ -26,7 +26,6 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import org.junit.jupiter.api.Test
 import tech.eritquearcus.miraicp.shared.test.TestBase
 import tech.eritquearcus.miraicp.shared.test.TestUtils.checkMessageChainJsonResultFromLog
-import tech.eritquearcus.miraicp.shared.test.TestUtils.listener
 import tech.eritquearcus.miraicp.shared.test.TestUtils.noBroadcast
 import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
 
@@ -34,7 +33,6 @@ import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
 class MessageTest : TestBase() {
     @Test
     fun singleMessages() = runBlocking {
-        listener
         val msg = noBroadcast<GroupMessageEvent, MessageChain>(bot.eventChannel) {
             member.says("msg")
         }
@@ -62,7 +60,6 @@ class MessageTest : TestBase() {
 
     @Test
     fun forwardMessageOfSingleMessages() = runBlocking {
-        listener
         val mc = buildForwardMessage(group) {
             this.add(member, PlainText("IAmPlainText"))
             val builder = Image.Builder.newBuilder("{01E9451B-70ED-EAE3-B37C-101F1EEBF5B5}.jpg")
@@ -80,7 +77,6 @@ class MessageTest : TestBase() {
 
     @Test
     fun forwardMessageOfForwardMessages() = runBlocking {
-        listener
         val mc = buildForwardMessage(group) {
             this.add(member, PlainText("IAmPlainText"))
             val builder = Image.Builder.newBuilder("{01E9451B-70ED-EAE3-B37C-101F1EEBF5B5}.jpg")
@@ -108,7 +104,6 @@ class MessageTest : TestBase() {
 
     @Test
     fun voiceMessage() = runBlocking {
-        listener
         val au = this@MessageTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.toExternalResource().use {
             bot.uploadOnlineAudio(it)
         }
@@ -118,7 +113,6 @@ class MessageTest : TestBase() {
 
     @Test
     fun nudge() = runBlocking {
-        listener
         broadcastMockEvents {
             bot.nudgedBy(member)
         }

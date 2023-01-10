@@ -22,7 +22,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.createFileIfNotExists
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import tech.eritquearcus.miraicp.shared.CPPLib
 import tech.eritquearcus.miraicp.shared.PublicShared
 import java.io.File
@@ -50,37 +52,35 @@ open class TestBase {
 
         @JvmStatic
         @BeforeAll
-        fun loadCPPLib(): Unit {
-            if (!TestUtils.init) {
-                println("Currently working dir:" + TestUtils.workingDir)
-                require(TestUtils.workingDir.exists())
-                val cfgPath = TestUtils.workingDir.resolve("testFileFromKt4Mock/config.json")
-                cfgPath.createFileIfNotExists()
-                cfgPath.writeText(
-                    """
+        fun loadCPPLib() {
+            println("Currently working dir:" + TestUtils.workingDir)
+            require(TestUtils.workingDir.exists())
+            val cfgPath = TestUtils.workingDir.resolve("testFileFromKt4Mock/config.json")
+            cfgPath.createFileIfNotExists()
+            cfgPath.writeText(
+                """
 {
   "accounts": [],
   "cppPaths": [
     {
       "path": "${
-                        TestUtils.workingDir.resolve("libMiraiCP_mock_test.${TestUtils.libExtension}").absolutePath.replace(
-                            File.separator,
-                            "/"
-                        )
-                    }"
+                    TestUtils.workingDir.resolve("libMiraiCP_mock_test.${TestUtils.libExtension}").absolutePath.replace(
+                        File.separator,
+                        "/"
+                    )
+                }"
     }
   ]
 }
     """.trimIndent()
-                )
-                bot
-                CPPLib.init(
-                    listOf(TestUtils.workingDir.absolutePath.replace(File.separator, "/")),
-                    cfgPath.absolutePath
-                )
-                runBlocking {
-                    delay(1000)
-                }
+            )
+            bot
+            CPPLib.init(
+                listOf(TestUtils.workingDir.absolutePath.replace(File.separator, "/")),
+                cfgPath.absolutePath
+            )
+            runBlocking {
+                delay(1000)
             }
         }
 
@@ -90,13 +90,17 @@ open class TestBase {
             runBlocking {
                 delay(1000)
             }
+            TestUtils.logListener.cancel()
             PublicShared.onDisable()
             bot.close()
         }
+    }
 
-        @AfterEach
-        fun clearLog() {
-            TestUtils.logList.clear()
-        }
+    @BeforeEach
+    fun prepare() {
+        TestUtils.logListener
+        TestUtils.logList.clear()
+        TestUtils.end = false
+        println("test start")
     }
 }

@@ -39,14 +39,14 @@ public:
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
             Message::messageSerialization(a.message);
             refresh(a);
-            testEnd();
+            testEnd("groupMessageEvent");
         });
         Event::registerEvent<NudgeEvent>([](const NudgeEvent& a) {
             Logger::logger.info("nudge:" + std::to_string(a.target->id()));
-            testEnd();
+            testEnd("NudgeEvent");
         });
         Event::registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent a) {
-            testEnd();
+            testEnd("GroupTempEvent");
         });
     }
 

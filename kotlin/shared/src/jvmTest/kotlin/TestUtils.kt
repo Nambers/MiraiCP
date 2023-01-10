@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 
 object TestUtils {
-    var init = false
     val workingDir by lazy{
         File(System.getenv("libpath"))
     }
@@ -51,7 +50,7 @@ object TestUtils {
     var filter: (Event) -> Boolean = { true }
     val eventList = mutableListOf<Event>()
     val logList = mutableListOf<String>()
-    private var end = false
+    var end = false
     private fun collectLog(log: String) {
         println(log)
         logList.add(log)
@@ -61,7 +60,7 @@ object TestUtils {
     }
 
     @OptIn(MiraiInternalApi::class)
-    val listener by lazy {
+    val logListener by lazy {
         PublicSharedData._logger = PlatformLogger("TestLogger", output = { log ->
             collectLog(log)
         }, isColored = false)
@@ -81,15 +80,15 @@ object TestUtils {
         while (!end) {
             delay(1000)
         }
-        listener.cancel()
     }
 
     fun checkMessageChainJsonResultFromLog(mc: MessageChain) {
         val logs = logList.filter { it.contains("after_serialization:") }
         assertEquals(1, logs.size)
+        println("rerere:" + logs.first())
         assertEquals(
             mc.serializeToJsonString(),
-            MessageChain.deserializeFromJsonString(logs[0].substringAfter("after_serialization:"))
+            MessageChain.deserializeFromJsonString(logs.first().substringAfter("after_serialization:"))
                 .serializeToJsonString()
         )
     }
