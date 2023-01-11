@@ -21,8 +21,6 @@ import kotlinx.coroutines.delay
 import net.mamoe.mirai.event.*
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
-import net.mamoe.mirai.mock.MockBot
-import net.mamoe.mirai.mock.MockBotFactory
 import net.mamoe.mirai.utils.MiraiInternalApi
 import net.mamoe.mirai.utils.PlatformLogger
 import tech.eritquearcus.miraicp.shared.PublicShared
@@ -42,10 +40,6 @@ object TestUtils {
         } else {
             "so"
         }
-    }
-    private val botFactory by lazy {
-        MockBotFactory.initialize()
-        MockBotFactory.newMockBotBuilder()
     }
     var filter: (Event) -> Boolean = { true }
     val eventList = mutableListOf<Event>()
@@ -109,8 +103,6 @@ object TestUtils {
             null
         }
     }
-
-    fun newBot(): MockBot = botFactory.create()
 
     inline fun <reified T : Event, R> noBroadcast(chan: EventChannel<Event>, block: () -> R): R {
         val listener = chan.subscribe<T>(priority = EventPriority.HIGHEST) { event ->

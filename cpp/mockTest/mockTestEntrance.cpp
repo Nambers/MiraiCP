@@ -41,6 +41,31 @@ public:
                 testEnd("GroupMessageEventTest");
                 return;
             }
+            if(a.message[0]->content == "message"){
+                a.group.sendMessage(a.message);
+                testEnd("groupSendMessageTest");
+                return;
+            }
+            if(a.message[0]->content == "nudge"){
+                a.sender.sendNudge();
+                testEnd("memberNudgeTest");
+                return;
+            }
+            if(a.message[0]->content == "mute"){
+                a.sender.mute(999);
+                testEnd("memberMuteTest");
+                return;
+            }
+            if(a.message[0]->content == "upgrade"){
+                a.sender.modifyAdmin(true);
+                testEnd("memberUpgradeTest");
+                return;
+            }
+            if(a.message[0]->content == "kick"){
+                a.sender.kick("X");
+                testEnd("memberKickTest");
+                return;
+            }
             Message::messageSerialization(a.message);
             refresh(a);
             testEnd("groupMessageEventMessageTest");
@@ -53,6 +78,21 @@ public:
             testEnd("GroupMessageEventTest");
         });
         Event::registerEvent<PrivateMessageEvent>([](PrivateMessageEvent a) {
+            if(a.message[0]->content == "message"){
+                a.sender.sendMessage(a.message);
+                testEnd("privateSendMessageTest");
+                return;
+            }
+            if(a.message[0]->content == "nudge"){
+                a.sender.sendNudge();
+                testEnd("memberNudgeTest");
+                return;
+            }
+            if(a.message[0]->content == "delete"){
+                a.sender.deleteFriend();
+                testEnd("deleteFriendTest");
+                return;
+            }
             testEnd("GroupMessageEventTest");
         });
         Event::registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent a) {
@@ -65,6 +105,10 @@ public:
         Event::registerEvent<MemberJoinRequestEvent>([](MemberJoinRequestEvent a) {
             a.accept();
             testEnd("MemberJoinReqTest");
+        });
+        Event::registerEvent<MemberLeaveEvent>([](MemberLeaveEvent a) {
+            Logger::logger.info("type" + std::to_string(a.type));
+            testEnd("MemberLeaveEventKickTest");
         });
     }
 

@@ -392,8 +392,11 @@ object PublicShared {
                     "禁言找不到对应群成员，位置K-mute()，id:${data.contact.id}, gid:${data.contact.id}"
                 ) { _, member ->
                     try {
-                        if (data.time > 0) member.mute(data.time.toInt())
-                        else member.unmute()
+                        if (data.time > 0) {
+                            member.mute(data.time.toInt())
+                        } else {
+                            member.unmute()
+                        }
                     } catch (e: PermissionDeniedException) {
                         logger.error("执行禁言失败机器人无权限，位置:K-mute()，目标群id:${data.contact.groupId}，目标成员id:${data.contact.id}")
                         return "EP"

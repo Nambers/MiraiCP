@@ -84,4 +84,9 @@ class EventsTest : TestBase() {
         // for MemberJoinEvent
         waitUntilEnd()
     }
+
+//    @Test
+//    fun botJoinGroupEvent() = runBlocking {
+//        // todo
+//    }
 }

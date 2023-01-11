@@ -37,6 +37,10 @@ namespace MiraiCP {
         return j;
     }
 
+    std::string MessageChain::toString() const{
+        return toJson().dump();
+    }
+
     //message chain
     MessageChain MessageChain::deserializationFromMiraiCode(const std::string &m) {
         size_t pos = 0;
