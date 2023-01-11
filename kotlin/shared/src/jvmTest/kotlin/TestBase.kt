@@ -50,6 +50,10 @@ open class TestBase {
             group.addMember(222, "testMem1")
         }
 
+        val friend by lazy {
+            bot.addFriend(333, "testFriend1")
+        }
+
         @JvmStatic
         @BeforeAll
         fun loadCPPLib() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,14 +18,17 @@
 
 package tech.eritquearcus.miraicp.console
 
-import kotlinx.serialization.encodeToString
 import net.mamoe.mirai.console.command.CommandManager
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.RawCommand
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import tech.eritquearcus.miraicp.PluginMain
-import tech.eritquearcus.miraicp.shared.*
+import tech.eritquearcus.miraicp.shared.Command
+import tech.eritquearcus.miraicp.shared.CommandHandler
+import tech.eritquearcus.miraicp.shared.Packets.Utils.commandToEventData
+import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
+import tech.eritquearcus.miraicp.shared.toContact
 
 class CommandHandlerImpl : CommandHandler {
     override fun register(c: Command): String {
@@ -40,18 +43,14 @@ class CommandHandlerImpl : CommandHandler {
             var pluginId: Int = -1
             var bindId: Int = -1
             override suspend fun CommandSender.onCommand(args: MessageChain) {
-                val tmp = json.encodeToString(
-                    CommandWrap(
-                        this.bot?.id ?: 0,
-                        CommandWrap.Command2C(
-                            this.user?.toContact(),
-                            this.bot?.id ?: 0,
-                            args.serializeToJsonString(),
-                            bindId
-                        )
+                event(
+                    commandToEventData(
+                        bindId,
+                        this.user?.toContact(),
+                        args.serializeToJsonString(),
+                        this.bot?.id ?: 0
                     )
                 )
-                CPPLibMultiplatform.Event(tmp)
             }
         }
         a::preFixOption.set(c.preFixOption)

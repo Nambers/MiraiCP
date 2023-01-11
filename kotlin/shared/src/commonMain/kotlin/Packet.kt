@@ -649,11 +649,14 @@ object Packets {
             /// message from requester
             private val message: String
 
+            private val requesterNick: String
+
             constructor(event: NewFriendRequestEvent) {
                 val data = event.toRequestEventData()
                 request = json.encodeToString(data)
                 requestEventId = data.eventId
                 message = data.message
+                requesterNick = data.requesterNick
             }
         }
 
@@ -743,6 +746,20 @@ object Packets {
                 invitor = event.invitor?.toContact()
                 fromNick = event.fromNick
                 message = event.message
+            }
+        }
+
+        @Serializable
+        class Command : EventPacket {
+            override val eventId: Int = 17
+            private val bindId: Int
+            private val contact: Contact?
+            private val message: String?
+
+            constructor(bindId: Int, contact: Contact?, message: String?) {
+                this.bindId = bindId
+                this.contact = contact
+                this.message = message
             }
         }
 
@@ -858,6 +875,11 @@ object Packets {
         fun BotOnlineEvent.toEventData(): String = eventToJson(Outgoing.BotOnline()) {
 //            it.subject = this.bot.toContact()
 //            it.`object` = this.bot.toContact()
+        }
+
+        fun commandToEventData(bindId: Int, contact: Contact?, message: String?, botId: Long): String {
+            val event = Outgoing.Command(bindId, contact, message)
+            return Json.encodeToString(Outgoing.EventData(event, eventId = event.eventId, botId = botId))
         }
     }
 }

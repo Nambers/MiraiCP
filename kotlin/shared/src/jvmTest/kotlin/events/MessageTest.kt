@@ -21,7 +21,6 @@ package tech.eritquearcus.miraicp.shared.test.events
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
-import net.mamoe.mirai.mock.utils.broadcastMockEvents
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import org.junit.jupiter.api.Test
 import tech.eritquearcus.miraicp.shared.test.TestBase
@@ -30,6 +29,8 @@ import tech.eritquearcus.miraicp.shared.test.TestUtils.noBroadcast
 import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
 
 
+// all message tests under GroupMessageEvent
+// ref: https://github.com/mamoe/mirai/blob/dev/mirai-core-mock/test/mock/MessagingTest.kt
 class MessageTest : TestBase() {
     @Test
     fun singleMessages() = runBlocking {
@@ -110,12 +111,5 @@ class MessageTest : TestBase() {
         member.says(au)
         waitUntilEnd()
     }
-
-    @Test
-    fun nudge() = runBlocking {
-        broadcastMockEvents {
-            bot.nudgedBy(member)
-        }
-        waitUntilEnd()
-    }
+    // nudge is in Event test
 }

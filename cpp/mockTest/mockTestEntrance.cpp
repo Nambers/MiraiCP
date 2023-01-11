@@ -37,16 +37,34 @@ public:
 public:
     void onEnable() override {
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
+            if(a.message[0]->content == "event"){
+                testEnd("GroupMessageEventTest");
+                return;
+            }
             Message::messageSerialization(a.message);
             refresh(a);
-            testEnd("groupMessageEvent");
+            testEnd("groupMessageEventMessageTest");
         });
         Event::registerEvent<NudgeEvent>([](const NudgeEvent& a) {
             Logger::logger.info("nudge:" + std::to_string(a.target->id()));
-            testEnd("NudgeEvent");
+            testEnd("NudgeEventTest");
         });
         Event::registerEvent<GroupTempMessageEvent>([](GroupTempMessageEvent a) {
-            testEnd("GroupTempEvent");
+            testEnd("GroupMessageEventTest");
+        });
+        Event::registerEvent<PrivateMessageEvent>([](PrivateMessageEvent a) {
+            testEnd("GroupMessageEventTest");
+        });
+        Event::registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent a) {
+            a.accept();
+            testEnd("GroupMessageEventTest");
+        });
+        Event::registerEvent<MemberJoinEvent>([](MemberJoinEvent a) {
+            testEnd("MemberJoinEventTest");
+        });
+        Event::registerEvent<MemberJoinRequestEvent>([](MemberJoinRequestEvent a) {
+            a.accept();
+            testEnd("MemberJoinReqTest");
         });
     }
 

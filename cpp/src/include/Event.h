@@ -56,18 +56,18 @@ namespace MiraiCP {
     public:
         class BuiltInContact {
         public:
-            /**
-             * 1 - Friend
-             * 2 - Group
-             * 3 - Member
-             * 4 - Bot
-             * 5 - Stranger
-             * 6- Anonymous Member
-             */
-            int type{};
+            enum ContactType{
+                TypeFriend = 1, // 1
+                TypeGroup,      // 2
+                TypeMember,     // 3
+                TypeBot,        // 4
+                TypeStranger,   // 5
+                TypeAnonymousMember     // 6
+            };
             QQID id{};
             QQID botId{};
             QQID groupId{};
+            ContactType type{};
 
             explicit BuiltInContact(nlohmann::json in_json);
 
@@ -303,10 +303,12 @@ namespace MiraiCP {
         std::string nick;
         /// @brief 申请理由
         std::string message;
+        /// @brief 事件识别 id
+        unsigned long long int requestEventId;
 
         /// @brief 接受好友申请
         /// @param source 事件序列化信息
-        static void operation0(const std::string &source, QQID botid, bool accept, bool ban = false);
+        static void operation0(const std::string &source, QQID botId, bool accept, bool ban = false);
 
         /// @brief 拒绝好友申请
         /// @param ban - 是否加入黑名单
