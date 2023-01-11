@@ -40,16 +40,3 @@ data class Command(
     // 前缀`/`可选
     val preFixOption: Boolean
 )
-
-data class CommandWrap(
-    val botId: Long,
-    val eventData: Command2C,
-) {
-    data class Command2C(
-        val contact: Packets.Contact,
-        val botid: Long,
-        val message: String,
-        val bindId: Int,
-        val type: Int = 17,
-    )
-}

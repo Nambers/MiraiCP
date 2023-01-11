@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,6 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
-import kotlinx.serialization.encodeToString
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import net.mamoe.mirai.message.data.PlainText
@@ -27,6 +26,7 @@ import tech.eritquearcus.miraicp.loader.KotlinMainData
 import tech.eritquearcus.miraicp.loader.console.CommandMultiplatform.pureOrder
 import tech.eritquearcus.miraicp.loader.login
 import tech.eritquearcus.miraicp.shared.*
+import tech.eritquearcus.miraicp.shared.Packets.Utils.commandToEventData
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 
@@ -151,19 +151,7 @@ object Command {
         }?.let { it ->
             val mc = MessageChainBuilder()
             order.drop(1).forEach { mc.append(PlainText(it)) }
-            val tmp = json.encodeToString(
-                CommandWrap(
-                    0,
-                    CommandWrap.Command2C(
-                        null,
-                        0,
-                        mc.build().serializeToJsonString(),
-                        it.bid
-                    )
-                )
-            )
-            // 为什么之前直接Event了
-            event(tmp)
+            event(commandToEventData(it.bid, null, mc.build().serializeToJsonString(), 0))
             return true
         }
         return false

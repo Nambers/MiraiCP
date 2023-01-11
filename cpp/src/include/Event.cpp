@@ -102,15 +102,16 @@ namespace MiraiCP {
                                                                      source(Tools::json_stringmover(j.eventData, "request")),
                                                                      from(j.object->id, j.object->botId),
                                                                      fromGroup(j.subject == std::nullopt ? std::nullopt : std::optional(Group(j.subject->id, j.subject->botId))),
-                                                                     nick(Tools::json_stringmover(j.eventData["source"], "fromnick")),
-                                                                     message(Tools::json_stringmover(j.eventData["source"], "message")) {
+                                                                     nick(Tools::json_stringmover(j.eventData, "requesterNick")),
+                                                                     message(Tools::json_stringmover(j.eventData, "message")),
+                                                                     requestEventId(j.eventData["requestEventId"]) {
 
     }
 
-    void NewFriendRequestEvent::operation0(const std::string &source, QQID botid, bool accept, bool ban) {
+    void NewFriendRequestEvent::operation0(const std::string &source, QQID botId, bool accept, bool ban) {
         nlohmann::json j{{"source", source},
                          {"sign",   accept},
-                         {"botId",  botid},
+                         {"botId",  botId},
                          {"ban",    ban}};
         std::string re = KtOperation::ktOperation(KtOperation::Nfroperation, j);
         if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
@@ -284,13 +285,11 @@ namespace MiraiCP {
             }
             case eventTypes::Command: {
                 // command
-                // TODO TODO TODO TODO TODO 适配 command
                 CommandManager::commandManager[j.eventData["bindId"]]->onCommand(
                         j.eventData.contains("contact") ? Contact::deserializeToPointer(Tools::json_jsonmover(j.eventData, "contact")) : nullptr,
-                        Bot(j.eventData["botId"]),
-                        MessageChain::deserializationFromMessageSourceJson(
-                                j.eventData.contains("message") ? j.eventData["message"].get<std::string>() : "",
-                                false));
+                        Bot(j.botId),
+                        MessageChain::deserializationFromMessageJson(
+                                j.eventData.contains("message") ? Tools::json_jsonmover(j.eventData, "message") : ""));
                 break;
             }
             default: {
@@ -321,23 +320,23 @@ namespace MiraiCP {
         this->id = in_json["id"];
         if (in_json.contains("groupId"))
             this->groupId = in_json["groupId"];
-        this->type = in_json["type"];
+        this->type = ContactType(in_json["type"]);
     }
 
     std::shared_ptr<Contact> BaseEventData::BuiltInContact::toContactPointer() {
         switch (this->type) {
-            case 1:
+            case ContactType::TypeFriend:
                 return std::make_shared<Friend>(this->id, this->botId);
-            case 2:
+            case ContactType::TypeGroup:
                 return std::make_shared<Group>(this->id, this->botId);
-            case 3:
+            case ContactType::TypeMember:
                 return std::make_shared<Member>(this->id, this->groupId, this->botId);
-            case 4:
+            case ContactType::TypeBot:
                 // bot
                 return std::make_shared<Bot>(this->id);
-            case 5:
+            case ContactType::TypeStranger:
                 // todo Implement Stranger (ea)
-            case 6:
+            case ContactType::TypeAnonymousMember:
                 // todo anonymous member
             default:
                 throw APIException("Type of builtInContact doesn't match or implement", MIRAICP_EXCEPTION_WHERE);
