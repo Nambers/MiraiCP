@@ -130,7 +130,7 @@ namespace MiraiCP {
                                                            member(j.object->id, j.object->groupId, j.object->botId),
                                                            group(j.subject->id, j.subject->botId),
                                                            operater(!j.eventData.contains("operator") ? std::nullopt : std::optional(Member(j.eventData["operator"]["id"], j.eventData["operator"]["groupId"], j.eventData["operator"]["botId"]))),
-                                                           type(j.eventData["type"]){
+                                                           type(j.eventData["eventType"]){
     }
 
     RecallEvent::FriendRecallEvent::FriendRecallEvent(BaseEventData j) : BotEvent(j.botId),

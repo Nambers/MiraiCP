@@ -292,19 +292,19 @@ namespace MiraiCP {
         MessageSource sendMsgImpl(std::string msg) const;
 
         MessageSource unpackMsg(const MessageChain &msg) const {
-            return sendMsgImpl(msg.toJson());
+            return sendMsgImpl(msg.toString());
         }
         MessageSource unpackMsg(const MiraiCodeable &msg) const {
-            return sendMsgImpl(MessageChain::deserializationFromMiraiCode(msg.toMiraiCode()).toJson());
+            return sendMsgImpl(MessageChain::deserializationFromMiraiCode(msg.toMiraiCode()).toString());
         }
         MessageSource unpackMsg(const SingleMessage &msg) const {
-            return sendMsgImpl(MessageChain(msg).toJson());
+            return sendMsgImpl(MessageChain(msg).toString());
         }
         MessageSource unpackMsg(std::string msg) const {
-            return sendMsgImpl(MessageChain(PlainText(std::move(msg))).toJson());
+            return sendMsgImpl(MessageChain(PlainText(std::move(msg))).toString());
         }
         MessageSource unpackMsg(const char *msg) const {
-            return sendMsgImpl(MessageChain(PlainText(msg)).toJson());
+            return sendMsgImpl(MessageChain(PlainText(msg)).toString());
         }
     };
 

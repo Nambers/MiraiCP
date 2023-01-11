@@ -20,11 +20,16 @@ package tech.eritquearcus.miraicp.shared.test
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import net.mamoe.mirai.contact.MemberPermission
+import net.mamoe.mirai.mock.MockBot
+import net.mamoe.mirai.mock.MockBotFactory
+import net.mamoe.mirai.mock.contact.MockFriend
+import net.mamoe.mirai.mock.contact.MockGroup
+import net.mamoe.mirai.mock.contact.MockNormalMember
+import net.mamoe.mirai.mock.utils.mock
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.createFileIfNotExists
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.*
 import tech.eritquearcus.miraicp.shared.CPPLib
 import tech.eritquearcus.miraicp.shared.PublicShared
 import java.io.File
@@ -32,30 +37,8 @@ import java.util.*
 
 open class TestBase {
     companion object {
-        @OptIn(MiraiExperimentalApi::class)
-        val bot by lazy {
-            val bot = TestUtils.newBot()
-            runBlocking {
-                bot.login()
-            }
-            PublicShared.onEnable(bot.eventChannel)
-            bot
-        }
-
-        val group by lazy {
-            bot.addGroup(111, "testGr1")
-        }
-
-        val member by lazy {
-            group.addMember(222, "testMem1")
-        }
-
-        val friend by lazy {
-            bot.addFriend(333, "testFriend1")
-        }
-
-        @JvmStatic
         @BeforeAll
+        @JvmStatic
         fun loadCPPLib() {
             println("Currently working dir:" + TestUtils.workingDir)
             require(TestUtils.workingDir.exists())
@@ -78,7 +61,6 @@ open class TestBase {
 }
     """.trimIndent()
             )
-            bot
             CPPLib.init(
                 listOf(TestUtils.workingDir.absolutePath.replace(File.separator, "/")),
                 cfgPath.absolutePath
@@ -88,23 +70,49 @@ open class TestBase {
             }
         }
 
-        @JvmStatic
         @AfterAll
+        @JvmStatic
         fun endTest() {
             runBlocking {
                 delay(1000)
             }
             TestUtils.logListener.cancel()
             PublicShared.onDisable()
-            bot.close()
         }
     }
 
+    lateinit var bot: MockBot
+    val group: MockGroup
+        get() = bot.groups[111]!!.mock()
+
+    val member: MockNormalMember
+        get() = group[222L]!!.mock()
+
+    val friend: MockFriend
+        get() = bot.getFriend(333L)!!.mock()
+
+    @OptIn(MiraiExperimentalApi::class)
     @BeforeEach
     fun prepare() {
+        MockBotFactory.initialize()
+        bot = MockBotFactory.newMockBotBuilder().create()
+        runBlocking {
+            bot.login()
+        }
+        PublicShared.onEnable(bot.eventChannel)
+        bot.addGroup(111, "testGroup0")
+        group.botAsMember.mockApi.permission = MemberPermission.MEMBER
+        group.addMember(222, "testMember0")
+        member.mockApi.permission = MemberPermission.MEMBER
+        bot.addFriend(333, "testFriend0")
         TestUtils.logListener
         TestUtils.logList.clear()
         TestUtils.end = false
         println("test start")
+    }
+
+    @AfterEach
+    fun closeBot() {
+        bot.close()
     }
 }

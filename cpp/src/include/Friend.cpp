@@ -81,8 +81,7 @@ namespace MiraiCP {
     //    }
 
     void Friend::sendNudge() {
-        json j{{"contact", toJson()}};
-        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, j);
+        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, toJson());
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone/ipad", MIRAICP_EXCEPTION_WHERE);
     }

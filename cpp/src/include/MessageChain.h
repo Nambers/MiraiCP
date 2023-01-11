@@ -134,6 +134,11 @@ namespace MiraiCP {
         }
 
         nlohmann::json toJson() const;
+        /**
+         * @ensure toJson().dump()
+         * @return MessageChain serialize to String
+         */
+        std::string toString() const;
 
         /// @brief 添加元素
         /// @tparam T 任意的SingleMessage的子类
