@@ -260,7 +260,6 @@ namespace MiraiCP {
                 break;
             }
             case eventTypes::TimeOutEvent: {
-                // TODO TODO TODO TODO 适配 timeout
                 Event::broadcast(TimeOutEvent(Tools::json_stringmover(j.eventData, "msg")));
                 break;
             }
