@@ -37,14 +37,15 @@ namespace MiraiCP {
             FriendMessageEvent,             // 4
             GroupMessageEvent,              // 5
             GroupTempMessageEvent,          // 6
-            RecallEvent,                    // 7
-            MessagePreSendEvent,            // 8
-            NudgeEvent,                     // 9
-            NewFriendRequestEvent,          // 10
-            MemberLeaveEvent,               // 11
-            MemberJoinEvent,                // 12
-            MemberJoinRequestEvent,         // 13
-            TimeOutEvent,                   // 14
+            FriendRecallEvent,              // 7
+            MemberRecallEvent,              // 8
+            MessagePreSendEvent,            // 9
+            NudgeEvent,                     // 10
+            NewFriendRequestEvent,          // 11
+            MemberLeaveEvent,               // 12
+            MemberJoinEvent,                // 13
+            MemberJoinRequestEvent,         // 14
+            TimeOutEvent,                   // 15
             MiraiCPExceptionEvent = 16,     // 16 todo 暂时保持
             Command = 17,                   // 17
             count,                          // 事件在此位置前定义，此时count为事件种类数
@@ -391,41 +392,49 @@ namespace MiraiCP {
         explicit MemberLeaveEvent(BaseEventData j);
     };
 
+    class FriendRecallEvent: public BotEvent<FriendRecallEvent>{
+    public:
+        static eventTypes::Types get_event_type() {
+            return eventTypes::Types::FriendRecallEvent;
+        }
+    public:
+        /// 时间戳
+        int time = 0;
+        /// 信息发生着
+        Friend author;
+        /// 信息撤回者
+        Friend operater;
+        /// 信息id
+        std::string ids;
+        /// 信息内部ids
+        std::string internalIds;
+        explicit FriendRecallEvent(BaseEventData j);
+    };
+    class MemberRecallEvent: public BotEvent<MemberRecallEvent>{
+    public:
+        static eventTypes::Types get_event_type() {
+            return eventTypes::Types::MemberRecallEvent;
+        }
+    public:
+        /// 时间戳
+        int time = 0;
+        /// 信息发生着
+        Member author;
+        /// 信息撤回者
+        Member operater;
+        /// 信息id
+        std::string ids;
+        /// 信息内部ids
+        std::string internalIds;
+        explicit MemberRecallEvent(BaseEventData j);
+    };
     /// 撤回信息
     class RecallEvent : public BotEvent<RecallEvent> {
     public:
-        class FriendRecallEvent: public BotEvent<FriendRecallEvent>{
-        public:
-            static eventTypes::Types get_event_type() {
-                return eventTypes::Types::RecallEvent;
-            }
-        public:
-            /// 时间戳
-            int time = 0;
-            Friend author;
-            Friend operater;
-            /// 信息id
-            std::string ids;
-            //内部ids
-            std::string internalids;
-            explicit FriendRecallEvent(BaseEventData j);
-        };
-        class MemberRecallEvent: public BotEvent<MemberRecallEvent>{
-        public:
-            static eventTypes::Types get_event_type() {
-                return eventTypes::Types::RecallEvent;
-            }
-        public:
-            /// 时间戳
-            int time = 0;
-            Member author;
-            Member operater;
-            /// 信息id
-            std::string ids;
-            //内部ids
-            std::string internalids;
-            explicit MemberRecallEvent(BaseEventData j);
-        };
+        // depreciated
+        using FriendRecallEvent = FriendRecallEvent;
+        // depreciated
+        using MemberRecallEvent = MemberRecallEvent;
     };
 
     /// 机器人进入某群
