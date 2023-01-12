@@ -43,13 +43,15 @@ class OperationTest : TestBase() {
     @Test
     fun memberNudgeTest() = runBlocking {
         member.says("nudge")
-        waitUntilEnd()
+        // groupMessageEvent + nudgeEvent
+        waitUntilEnd(2)
     }
 
     @Test
     fun friendNudgeTest() = runBlocking {
         friend.says("nudge")
-        waitUntilEnd()
+        // groupMessageEvent + nudgeEvent
+        waitUntilEnd(2)
     }
 
     @Test
@@ -72,22 +74,22 @@ class OperationTest : TestBase() {
     fun memberKick() = runBlocking {
         group.botAsMember.mockApi.permission = MemberPermission.ADMINISTRATOR
         member.says("kick")
-        waitUntilEnd()
+        // groupMessageEvent + memberLeaveEvent
+        waitUntilEnd(2)
         assertFalse(group.members.any { it.id == member.id })
-        // for MemberLeaveEvent
-        waitUntilEnd()
-    }
 
-//    @Test
-//    fun botOffLineEvent() = runBlocking {
-//        bot.broadcastOfflineEvent()
-//        waitUntilEnd()
-//    }
+    }
 
     @Test
     fun friendDeleteTest(): Unit = runBlocking {
         friend.says("delete")
         waitUntilEnd()
         assertFalse(bot.friends.any { it.id == friend.id })
+    }
+
+    @Test
+    fun memberRefreshInfoTest() = runBlocking {
+        member.says("refresh")
+        waitUntilEnd()
     }
 }

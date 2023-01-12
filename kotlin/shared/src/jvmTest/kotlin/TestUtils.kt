@@ -44,13 +44,9 @@ object TestUtils {
     var filter: (Event) -> Boolean = { true }
     val eventList = mutableListOf<Event>()
     val logList = mutableListOf<String>()
-    var end = false
     private fun collectLog(log: String) {
         println(log)
         logList.add(log)
-        if (log.contains("--test end--")) {
-            end = true
-        }
     }
 
     @OptIn(MiraiInternalApi::class)
@@ -70,8 +66,8 @@ object TestUtils {
         }
     }
 
-    suspend fun waitUntilEnd() {
-        while (!end) {
+    suspend fun waitUntilEnd(count: Int = 1) {
+        while (logList.count { it.contains("--test end--") } != count) {
             delay(1000)
         }
     }

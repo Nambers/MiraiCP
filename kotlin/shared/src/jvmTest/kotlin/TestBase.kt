@@ -21,6 +21,7 @@ package tech.eritquearcus.miraicp.shared.test
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.MemberPermission
+import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.mock.MockBot
 import net.mamoe.mirai.mock.MockBotFactory
 import net.mamoe.mirai.mock.contact.MockFriend
@@ -31,7 +32,9 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.createFileIfNotExists
 import org.junit.jupiter.api.*
 import tech.eritquearcus.miraicp.shared.CPPLib
+import tech.eritquearcus.miraicp.shared.Packets.Utils.toEventData
 import tech.eritquearcus.miraicp.shared.PublicShared
+import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform
 import java.io.File
 import java.util.*
 
@@ -100,6 +103,9 @@ open class TestBase {
             bot.login()
         }
         PublicShared.onEnable(bot.eventChannel)
+        bot.eventChannel.subscribeAlways<BotOnlineEvent> {
+            UlitsMultiPlatform.event(toEventData())
+        }
         bot.addGroup(111, "testGroup0")
         group.botAsMember.mockApi.permission = MemberPermission.MEMBER
         group.addMember(222, "testMember0")
@@ -107,7 +113,6 @@ open class TestBase {
         bot.addFriend(333, "testFriend0")
         TestUtils.logListener
         TestUtils.logList.clear()
-        TestUtils.end = false
         println("test start")
     }
 

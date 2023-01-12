@@ -66,8 +66,17 @@ public:
                 testEnd("memberKickTest");
                 return;
             }
+            if(a.message[0]->content == "recall"){
+                a.message.source->recall();
+                testEnd("messageRecallTest");
+                return;
+            }
+            if(a.message[0]->content == "refresh"){
+                refresh(a);
+                testEnd("refreshInfoTest");
+                return;
+            }
             Message::messageSerialization(a.message);
-            refresh(a);
             testEnd("groupMessageEventMessageTest");
         });
         Event::registerEvent<NudgeEvent>([](const NudgeEvent& a) {
@@ -93,7 +102,7 @@ public:
                 testEnd("deleteFriendTest");
                 return;
             }
-            testEnd("GroupMessageEventTest");
+            testEnd("PrivateMessageEventTest");
         });
         Event::registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent a) {
             a.accept();
@@ -109,6 +118,15 @@ public:
         Event::registerEvent<MemberLeaveEvent>([](MemberLeaveEvent a) {
             Logger::logger.info("type" + std::to_string(a.type));
             testEnd("MemberLeaveEventKickTest");
+        });
+        Event::registerEvent<BotOnlineEvent>([](BotOnlineEvent a) {
+            testEnd("BotOnlineEventTest");
+        });
+        Event::registerEvent<RecallEvent::MemberRecallEvent>([](RecallEvent::MemberRecallEvent a) {
+            testEnd("MemberRecallEventTest");
+        });
+        Event::registerEvent<RecallEvent::FriendRecallEvent>([](RecallEvent::FriendRecallEvent a) {
+            testEnd("FriendRecallEventTest");
         });
     }
 

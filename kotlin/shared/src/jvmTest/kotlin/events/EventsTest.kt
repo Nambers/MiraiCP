@@ -19,7 +19,12 @@
 package tech.eritquearcus.miraicp.shared.test.events
 
 import kotlinx.coroutines.runBlocking
+import net.mamoe.mirai.contact.MemberPermission
+import net.mamoe.mirai.event.broadcast
+import net.mamoe.mirai.event.events.BotOnlineEvent
+import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.mock.utils.broadcastMockEvents
+import net.mamoe.mirai.utils.MiraiInternalApi
 import org.junit.jupiter.api.Test
 import tech.eritquearcus.miraicp.shared.test.TestBase
 import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
@@ -45,18 +50,11 @@ class EventsTest : TestBase() {
 //    }
 
     @Test
-    fun groupNudgeEvent() = runBlocking {
+    fun nudgeEvent() = runBlocking {
         broadcastMockEvents {
             bot.nudgedBy(member)
-            waitUntilEnd()
-        }
-    }
-
-    @Test
-    fun friendNudgeEvent() = runBlocking {
-        broadcastMockEvents {
             bot.nudgedBy(friend)
-            waitUntilEnd()
+            waitUntilEnd(2)
         }
     }
 
@@ -79,10 +77,32 @@ class EventsTest : TestBase() {
             requesterName = "Him188moe",
             message = "Hi!",
         )
-        waitUntilEnd()
+        // newMemberReq + MemberJoin
+        waitUntilEnd(2)
         assertTrue(group.members.any { it.id == 2333L })
-        // for MemberJoinEvent
+    }
+
+    @OptIn(MiraiInternalApi::class)
+    @Test
+    fun botOnlineEvent(): Unit = runBlocking {
+        BotOnlineEvent(bot).broadcast()
         waitUntilEnd()
+    }
+
+    @Test
+    fun memberRecallEvent() = runBlocking {
+        val mc = member.says("x")
+        group.botAsMember.mockApi.permission = MemberPermission.ADMINISTRATOR
+        mc.recall()
+        // GroupMessage + Recall
+        waitUntilEnd(2)
+    }
+
+    @Test
+    fun friendRecallEvent() = runBlocking {
+        friend.recallMessage(friend.says("x"))
+        // friendMessageEvent + friendRecallEvent
+        waitUntilEnd(2)
     }
 
 //    @Test

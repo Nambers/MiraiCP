@@ -571,7 +571,7 @@ object Packets {
 
         @Serializable
         class MessageRecall : EventPacket {
-            override val eventId = 7
+            override var eventId = 7
 
             /// unique id for each message
             private val messageIds: IntArray
@@ -585,9 +585,6 @@ object Packets {
             /// who send the message
             private val author: Contact
 
-            /// recall type
-            private val eventType: Int
-
             constructor(event: MessageRecallEvent) {
                 messageIds = event.messageIds
                 messageInternalIds = event.messageInternalIds
@@ -595,12 +592,11 @@ object Packets {
                 when (event) {
                     is MessageRecallEvent.GroupRecall -> {
                         author = event.author.toContact()
-                        eventType = 1
+                        eventId += 1
                     }
 
                     is MessageRecallEvent.FriendRecall -> {
                         author = event.author.toContact()
-                        eventType = 2
                     }
                 }
             }
@@ -608,7 +604,7 @@ object Packets {
 
         @Serializable
         class MessagePreSend : EventPacket {
-            override val eventId = 8
+            override val eventId = 9
             private val message: String
 
             constructor(event: MessagePreSendEvent) {
@@ -618,7 +614,7 @@ object Packets {
 
         @Serializable
         class Nudge : EventPacket {
-            override val eventId = 9
+            override val eventId = 10
 
             /// who receive the nudge
             val target: Contact
@@ -638,7 +634,7 @@ object Packets {
 
         @Serializable
         class NewFriendRequest : EventPacket {
-            override val eventId = 10
+            override val eventId = 11
 
             /// request serialization data, use to accept or reject
             private val request: String
@@ -662,7 +658,7 @@ object Packets {
 
         @Serializable
         class MemberLeave : EventPacket {
-            override val eventId = 11
+            override val eventId = 12
 
             /**
              * 1 - Kick
@@ -693,7 +689,7 @@ object Packets {
 
         @Serializable
         class MemberJoin : EventPacket {
-            override val eventId = 12
+            override val eventId = 13
 
             /**
             invite - 1
@@ -727,7 +723,7 @@ object Packets {
 
         @Serializable
         class MemberJoinRequest : EventPacket {
-            override val eventId = 13
+            override val eventId = 14
 
             /// request serialization data, use to accept or reject
             private val requestData: String

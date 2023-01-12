@@ -552,7 +552,7 @@ namespace MiraiCP {
         /*!
          * @brief 构造远程(群)文件
          * @param i ids
-         * @param ii internalids
+         * @param ii internalIds
          * @param n name
          * @param s size
          * @param p path
@@ -564,7 +564,7 @@ namespace MiraiCP {
         /*!
          * @brief 构造远程(群)文件
          * @param i ids
-         * @param ii internalids
+         * @param ii internalIds
          * @param n name
          * @param s size
          * @param p path

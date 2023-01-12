@@ -133,19 +133,19 @@ namespace MiraiCP {
                                                            type(j.eventData["eventType"]){
     }
 
-    RecallEvent::FriendRecallEvent::FriendRecallEvent(BaseEventData j) : BotEvent(j.botId),
-                                                 time(j.eventData["messageTime"]),
-                                                 author(j.eventData["author"]["id"], j.eventData["author"]["botId"]),
-                                                 operater(j.object->id, j.object->botId),
-                                                 ids(Tools::json_stringmover(j.eventData, "messageIds")),
-                                                 internalids(Tools::json_stringmover(j.eventData, "messageInternalIds")) {
+    FriendRecallEvent::FriendRecallEvent(BaseEventData j) : BotEvent(j.botId),
+                                                            time(j.eventData["messageTime"]),
+                                                            author(j.eventData["author"]["id"], j.eventData["author"]["botId"]),
+                                                            operater(j.object->id, j.object->botId),
+                                                            ids(j.eventData["messageIds"].dump()),
+                                                            internalIds(j.eventData["messageInternalIds"].dump()) {
     }
-    RecallEvent::MemberRecallEvent::MemberRecallEvent(BaseEventData j) : BotEvent(j.subject->botId),
-                                                time(j.eventData["messageTime"]),
-                                                author(j.eventData["author"]["id"], j.eventData["author"]["groupId"], j.eventData["author"]["botId"]),
-                                                operater(j.object->id, j.object->groupId, j.object->botId),
-                                                ids(Tools::json_stringmover(j.eventData, "messageIds")),
-                                                internalids(Tools::json_stringmover(j.eventData, "messageInternalIds")) {
+    MemberRecallEvent::MemberRecallEvent(BaseEventData j) : BotEvent(j.subject->botId),
+                                                            time(j.eventData["messageTime"]),
+                                                            author(j.eventData["author"]["id"], j.eventData["author"]["groupId"], j.eventData["author"]["botId"]),
+                                                            operater(j.object->id, j.object->groupId, j.object->botId),
+                                                            ids(j.eventData["messageIds"].dump()),
+                                                            internalIds(j.eventData["messageInternalIds"].dump()) {
     }
 
     BotJoinGroupEvent::BotJoinGroupEvent(BaseEventData j) : BotEvent(j.botId),
@@ -247,11 +247,12 @@ namespace MiraiCP {
                 Event::broadcast(MemberLeaveEvent(std::move(j)));
                 break;
             }
-            case eventTypes::RecallEvent: {
-                if(j.eventData["eventType"] == 1)
-                    Event::broadcast(RecallEvent::FriendRecallEvent(std::move(j)));
-                else
-                    Event::broadcast(RecallEvent::MemberRecallEvent(std::move(j)));
+            case eventTypes::FriendRecallEvent: {
+                Event::broadcast(RecallEvent::FriendRecallEvent(std::move(j)));
+                break;
+            }
+            case eventTypes::MemberRecallEvent: {
+                Event::broadcast(RecallEvent::MemberRecallEvent(std::move(j)));
                 break;
             }
             case eventTypes::BotJoinGroupEvent: {
