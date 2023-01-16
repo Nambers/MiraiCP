@@ -817,7 +817,6 @@ object PublicShared {
             event(toEventData())
         }
         eventChannel.subscribeAlways<GroupMessageEvent> {
-            logger.info(this.message.serializeToJsonString())
             event(toEventData())
         }
         eventChannel.subscribeAlways<GroupTempMessageEvent> {

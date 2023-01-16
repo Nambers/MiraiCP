@@ -32,7 +32,7 @@ import kotlin.test.assertEquals
 
 object TestUtils {
     val workingDir by lazy{
-        File(System.getenv("libpath"))
+        File(System.getenv("libpath") ?: "../../cpp/cmake-build-debug")
     }
     val libExtension by lazy{
         if (System.getProperty("os.name").lowercase().contains("win")) {

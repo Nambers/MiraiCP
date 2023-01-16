@@ -19,10 +19,10 @@
 package tech.eritquearcus.miraicp.shared.test.events
 
 import kotlinx.coroutines.runBlocking
-import net.mamoe.mirai.contact.MemberPermission
 import net.mamoe.mirai.event.broadcast
 import net.mamoe.mirai.event.events.BotOnlineEvent
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
+import net.mamoe.mirai.mock.MockActions
 import net.mamoe.mirai.mock.utils.broadcastMockEvents
 import net.mamoe.mirai.utils.MiraiInternalApi
 import org.junit.jupiter.api.Test
@@ -92,7 +92,6 @@ class EventsTest : TestBase() {
     @Test
     fun memberRecallEvent() = runBlocking {
         val mc = member.says("x")
-        group.botAsMember.mockApi.permission = MemberPermission.ADMINISTRATOR
         mc.recall()
         // GroupMessage + Recall
         waitUntilEnd(2)
@@ -100,9 +99,11 @@ class EventsTest : TestBase() {
 
     @Test
     fun friendRecallEvent() = runBlocking {
-        friend.recallMessage(friend.says("x"))
+        broadcastMockEvents {
+            MockActions.fireMessageRecalled(friend.says("x"))
+        }
         // friendMessageEvent + friendRecallEvent
-        waitUntilEnd(2)
+        waitUntilEnd()
     }
 
 //    @Test
