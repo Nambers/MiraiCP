@@ -19,6 +19,13 @@
 #include "MockTests.h"
 using namespace MiraiCP;
 using namespace MockTests;
+#define MESSAGE_EQ(msg) a.message[0]->content == #msg
+#define TEST(msg, endMsg, test) \
+    if (MESSAGE_EQ(msg)) {      \
+        test\
+        if(strcmp(#endMsg, "") != 0) testEnd(#endMsg);\
+        return; \
+    }
 
 const PluginConfig CPPPlugin::config{
         "idMockTest",          // 插件id
@@ -48,61 +55,45 @@ public:
 public:
     void onEnable() override {
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
-            if(a.message[0]->content == "event"){
-                testEnd("GroupMessageEventTest");
-                return;
-            }
-            if(a.message[0]->content == "message"){
+            TEST(event, GroupMessageEventTest,)
+            TEST(message, groupSendMessageTest, {
                 a.group.sendMessage(a.message);
-                testEnd("groupSendMessageTest");
-                return;
-            }
-            if(a.message[0]->content == "nudge"){
+            })
+            TEST(nudge, memberNudgeTest, {
                 a.sender.sendNudge();
-                testEnd("memberNudgeTest");
-                return;
-            }
-            if(a.message[0]->content == "mute"){
+            })
+            TEST(mute, memberMuteTest, {
                 a.sender.mute(999);
-                testEnd("memberMuteTest");
-                return;
-            }
-            if(a.message[0]->content == "upgrade"){
-                a.sender.modifyAdmin(true);
-                testEnd("memberUpgradeTest");
-                return;
-            }
-            if(a.message[0]->content == "kick"){
+            })
+            TEST(upgrade, memberUpgradeTest, {
+                    a.sender.modifyAdmin(true);
+            })
+            TEST(kick, memberKickTest, {
                 a.sender.kick("X");
-                testEnd("memberKickTest");
-                return;
-            }
-            if(a.message[0]->content == "recall"){
+            })
+            TEST(recall, messageRecallTest,{
                 a.message.source->recall();
-                testEnd("messageRecallTest");
-                return;
-            }
-            if(a.message[0]->content == "refresh"){
+            })
+            TEST(refresh, refreshInfoTest, {
                 refresh(a);
-                testEnd("refreshInfoTest");
-                return;
-            }
-            if(a.message[0]->content == "timer"){
+                a.group.getAnnouncementsList();
+            })
+            TEST(timer, , {
                 schedule(1, "This is a message");
-                return;
-            }
-            if(a.message[0]->content == "command"){
+            })
+            TEST(command, registerCommandTest, {
                 CommandManager::commandManager.registerCommand(CustomCommand());
-                testEnd("registerCommandTest");
-                return;
-            }
-            if(a.message[0]->content == "image"){
+            })
+            TEST(image, uploadImageTest, {
                 Logger::logger.info(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
                 auto img = a.group.uploadImg(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
                 a.group.sendMessage(img);
-                testEnd("uploadImageTest");
-                return;
-            }
+            })
+            TEST(botList, queryBotListTest, {
+                Logger::logger.info(a.bot.FriendListToString());
+                Logger::logger.info(a.bot.GroupListToString());
+                Logger::logger.info(a.group.MemberListToString());
+            })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
         });
@@ -114,21 +105,15 @@ public:
             testEnd("GroupMessageEventTest");
         });
         Event::registerEvent<PrivateMessageEvent>([](PrivateMessageEvent a) {
-            if(a.message[0]->content == "message"){
+            TEST(message, privateSendMessageTest, {
                 a.sender.sendMessage(a.message);
-                testEnd("privateSendMessageTest");
-                return;
-            }
-            if(a.message[0]->content == "nudge"){
+            })
+            TEST(nudge, memberNudgeTest, {
                 a.sender.sendNudge();
-                testEnd("memberNudgeTest");
-                return;
-            }
-            if(a.message[0]->content == "delete"){
+            })
+            TEST(delete, deleteFriendTest, {
                 a.sender.deleteFriend();
-                testEnd("deleteFriendTest");
-                return;
-            }
+            })
             testEnd("PrivateMessageEventTest");
         });
         Event::registerEvent<NewFriendRequestEvent>([](NewFriendRequestEvent a) {
@@ -167,9 +152,7 @@ public:
             testEnd("BotLeaveEvent");
         });
         Event::registerEvent<MessagePreSendEvent>([](MessagePreSendEvent a) {
-            if(a.message.first<PlainText>()->content == "MsgPreSend") {
-                testEnd("MessagePreSendEvent");
-            }
+            TEST(MsgPreSend, MessagePreSendEvent,)
         });
         Event::registerEvent<TimeOutEvent>([](TimeOutEvent a) {
             testEnd("TimeOutException");

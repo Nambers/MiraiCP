@@ -44,6 +44,12 @@ class OperationTest : TestBase() {
     }
 
     @Test
+    fun queryBotList() = runBlocking {
+        member.says("botList")
+        waitUntilEnd()
+    }
+
+    @Test
     fun sendMessageTestGroup() = runBlocking {
         member.says("message")
         waitUntilEnd()
