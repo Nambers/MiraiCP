@@ -84,12 +84,12 @@ namespace LibLoader {
         std::string str(cstr);
         std::vector<unsigned short> utf16line;
         utf8::utf8to16(str.begin(), str.end(), std::back_inserter(utf16line));
-        auto *c = new jchar[utf16line.size()];
-        MIRAICP_DEFER(delete[] c;);
-        for (size_t i = 0; i < utf16line.size(); i++) {
-            c[i] = utf16line[i];
+        std::basic_string<jchar> ans;
+        ans.reserve(utf16line.size());
+        for (auto c : utf16line) {
+            ans.push_back(c);
         }
-        return JNIEnvs::getEnv()->NewString((jchar *) c, (jsize) utf16line.size());
+        return JNIEnvs::getEnv()->NewString(ans.c_str(), (jsize) ans.size());
     }
 #endif
 } // namespace LibLoader
