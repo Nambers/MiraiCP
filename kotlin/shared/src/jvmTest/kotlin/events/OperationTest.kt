@@ -20,6 +20,7 @@ package tech.eritquearcus.miraicp.shared.test.events
 
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.MemberPermission
+import net.mamoe.mirai.message.data.ids
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import tech.eritquearcus.miraicp.shared.test.TestBase
@@ -28,6 +29,20 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class OperationTest : TestBase() {
+    @Test
+    fun recallTestGroup() = runBlocking {
+        val mc = member.says("recall")
+        // recallEvent + recallTest
+        waitUntilEnd(2)
+        assertEquals(null, bot.msgDatabase.queryMessageInfo(mc.ids[0].toLong()))
+    }
+
+    @Test
+    fun uploadImage() = runBlocking {
+        member.says("image")
+        waitUntilEnd()
+    }
+
     @Test
     fun sendMessageTestGroup() = runBlocking {
         member.says("message")

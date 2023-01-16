@@ -96,6 +96,13 @@ public:
                 testEnd("registerCommandTest");
                 return;
             }
+            if(a.message[0]->content == "image"){
+                Logger::logger.info(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
+                auto img = a.group.uploadImg(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
+                a.group.sendMessage(MessageChain(img));
+                testEnd("uploadImageTest");
+                return;
+            }
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
         });

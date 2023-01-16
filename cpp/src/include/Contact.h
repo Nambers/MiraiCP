@@ -294,11 +294,11 @@ namespace MiraiCP {
         MessageSource unpackMsg(const MessageChain &msg) const {
             return sendMsgImpl(msg.toString());
         }
-        MessageSource unpackMsg(const MiraiCodeable &msg) const {
-            return sendMsgImpl(MessageChain::deserializationFromMiraiCode(msg.toMiraiCode()).toString());
-        }
         MessageSource unpackMsg(const SingleMessage &msg) const {
             return sendMsgImpl(MessageChain(msg).toString());
+        }
+        MessageSource unpackMsg(const MiraiCodeable &msg) const {
+            return sendMsgImpl(MessageChain::deserializationFromMiraiCode(msg.toMiraiCode()).toString());
         }
         MessageSource unpackMsg(std::string msg) const {
             return sendMsgImpl(MessageChain(PlainText(std::move(msg))).toString());

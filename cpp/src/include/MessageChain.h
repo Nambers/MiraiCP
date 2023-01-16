@@ -77,6 +77,10 @@ namespace MiraiCP {
                 return (*this)->toMiraiCode();
             }
 
+            [[nodiscard]] std::string toJson() const {
+                return (*this)->toJson();
+            }
+
             bool operator==(const Message &m) const {
                 return (*this)->internalType == m->internalType && (*this)->toMiraiCode() == m->toMiraiCode();
             }
