@@ -38,12 +38,14 @@ import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform
 import java.io.File
 import java.util.*
 
+// each test timeOut in 6 sec
+@Timeout(6)
 open class TestBase {
     companion object {
         @BeforeAll
         @JvmStatic
         fun loadCPPLib() {
-            println("Currently working dir:" + TestUtils.workingDir)
+            println("Currently working dir:" + TestUtils.workingDir.absolutePath)
             require(TestUtils.workingDir.exists())
             val cfgPath = TestUtils.workingDir.resolve("testFileFromKt4Mock/config.json")
             cfgPath.createFileIfNotExists()
@@ -77,7 +79,7 @@ open class TestBase {
         @JvmStatic
         fun endTest() {
             runBlocking {
-                delay(1000)
+                delay(100)
             }
             TestUtils.logListener.cancel()
             PublicShared.onDisable()
@@ -107,7 +109,6 @@ open class TestBase {
             UlitsMultiPlatform.event(toEventData())
         }
         bot.addGroup(111, "testGroup0")
-        group.botAsMember.mockApi.permission = MemberPermission.MEMBER
         group.addMember(222, "testMember0")
         member.mockApi.permission = MemberPermission.MEMBER
         bot.addFriend(333, "testFriend0")

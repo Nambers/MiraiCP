@@ -56,7 +56,6 @@ class OperationTest : TestBase() {
 
     @Test
     fun memberMuteTest() = runBlocking {
-        group.botAsMember.mockApi.permission = MemberPermission.ADMINISTRATOR
         member.says("mute")
         waitUntilEnd()
         assertTrue(member.isMuted)
@@ -64,7 +63,6 @@ class OperationTest : TestBase() {
 
     @Test
     fun memberUpgrade() = runBlocking {
-        group.botAsMember.mockApi.permission = MemberPermission.OWNER
         member.says("upgrade")
         waitUntilEnd()
         assertEquals(MemberPermission.ADMINISTRATOR, member.permission)
@@ -72,7 +70,6 @@ class OperationTest : TestBase() {
 
     @Test
     fun memberKick() = runBlocking {
-        group.botAsMember.mockApi.permission = MemberPermission.ADMINISTRATOR
         member.says("kick")
         // groupMessageEvent + memberLeaveEvent
         waitUntilEnd(2)
