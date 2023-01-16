@@ -775,7 +775,7 @@ object PublicShared {
             withBot(data.botId) { bot ->
                 return json.decodeFromString<RequestEventData.MemberJoinRequest>(data.source).let {
                     if (data.sign) it.accept(bot)
-                    else it.reject(bot, data.msg)
+                    else it.reject(bot, data.msg!!)
                     "Y"
                 }
             }

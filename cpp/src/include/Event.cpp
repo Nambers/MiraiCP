@@ -83,7 +83,7 @@ namespace MiraiCP {
     GroupInviteEvent::GroupInviteEvent(BaseEventData j) : BotEvent(j.botId),
                                                           source(Tools::json_stringmover(j.eventData, "request")),
                                                           inviterNick(
-                                                                  Tools::json_stringmover(j.eventData, "inviterNick")),
+                                                                  Tools::json_stringmover(j.eventData, "invitorNick")),
                                                           groupName(Tools::json_stringmover(j.eventData, "groupName")),
                                                           group(j.subject->id, j.subject->botId),
                                                           inviter(j.object->id, j.object->botId),
@@ -208,7 +208,8 @@ namespace MiraiCP {
     MessagePreSendEvent::MessagePreSendEvent(BaseEventData j) : BotEvent(j.botId),
                                                                 target(j.subject->toContactPointer()),
                                                                 message(MessageChain::deserializationFromMessageJson(
-                                                                        j.eventData["message"].get<std::string>())) {
+                                                                        nlohmann::json::parse(
+                                                                                Tools::json_stringmover(j.eventData, "message")))) {
     }
 
     void Event::incomingEvent(BaseEventData j, int type) {

@@ -154,7 +154,7 @@ object Packets {
             val source: String,
             val botId: Long,
             val sign: Boolean,
-            val msg: String,
+            val msg: String? = "",
         )
 
         @Serializable

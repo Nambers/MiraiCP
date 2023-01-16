@@ -81,8 +81,8 @@ open class TestBase {
             runBlocking {
                 delay(100)
             }
-            TestUtils.logListener.cancel()
             PublicShared.onDisable()
+            TestUtils.logListener.complete()
         }
     }
 
