@@ -32,7 +32,7 @@ namespace MiraiCP {
     /*!
      * @brief 指令 Interface
      * @doxygenEg{1001, command.cpp, 新建自定义命令}
-     * @attention loader端的命令只支持从console传入, plugin端是对接mirai的RawCommand
+     * @attention loader端的命令只支持从console传入, plugin端是对接 mirai 的RawCommand
      */
     class IRawCommand {
         using string = std::string;

@@ -89,4 +89,10 @@ class OperationTest : TestBase() {
         member.says("refresh")
         waitUntilEnd()
     }
+
+    @Test
+    fun commandRegisterTest() = runBlocking {
+        member.says("Command")
+        waitUntilEnd()
+    }
 }

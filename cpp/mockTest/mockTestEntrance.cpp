@@ -29,6 +29,17 @@ const PluginConfig CPPPlugin::config{
         // 可选：日期
 };
 
+class CustomCommand: public IRawCommand {
+public:
+    Config config() override {
+        return {"commandPrefix", {"commandPrefix1"}};
+    }
+
+    void onCommand(std::shared_ptr<Contact> ptr, const Bot &bot, const MessageChain &chain) override {
+        testEnd("CustomCommand");
+    }
+};
+
 class Main : public CPPPlugin {
 public:
     Main() : CPPPlugin() {}
@@ -74,6 +85,15 @@ public:
             if(a.message[0]->content == "refresh"){
                 refresh(a);
                 testEnd("refreshInfoTest");
+                return;
+            }
+            if(a.message[0]->content == "timer"){
+                schedule(1, "This is a message");
+                return;
+            }
+            if(a.message[0]->content == "command"){
+                CommandManager::commandManager.registerCommand(CustomCommand());
+                testEnd("registerCommandTest");
                 return;
             }
             Message::messageSerialization(a.message);
@@ -127,6 +147,25 @@ public:
         });
         Event::registerEvent<RecallEvent::FriendRecallEvent>([](RecallEvent::FriendRecallEvent a) {
             testEnd("FriendRecallEventTest");
+        });
+        Event::registerEvent<BotJoinGroupEvent>([](BotJoinGroupEvent a) {
+            Logger::logger.info(a.type);
+            testEnd("BotJoinGroupEventTest");
+        });
+        Event::registerEvent<GroupInviteEvent>([](GroupInviteEvent a) {
+            a.accept();
+            testEnd("GroupInviteEvent");
+        });
+        Event::registerEvent<BotLeaveEvent>([](BotLeaveEvent a) {
+            testEnd("BotLeaveEvent");
+        });
+        Event::registerEvent<MessagePreSendEvent>([](MessagePreSendEvent a) {
+            if(a.message.first<PlainText>()->content == "MsgPreSend") {
+                testEnd("MessagePreSendEvent");
+            }
+        });
+        Event::registerEvent<TimeOutEvent>([](TimeOutEvent a) {
+            testEnd("TimeOutException");
         });
     }
 

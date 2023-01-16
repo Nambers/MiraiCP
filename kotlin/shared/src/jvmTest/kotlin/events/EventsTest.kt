@@ -20,10 +20,11 @@ package tech.eritquearcus.miraicp.shared.test.events
 
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.event.broadcast
-import net.mamoe.mirai.event.events.BotOnlineEvent
+import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.mock.MockActions
 import net.mamoe.mirai.mock.utils.broadcastMockEvents
+import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import org.junit.jupiter.api.Test
 import tech.eritquearcus.miraicp.shared.test.TestBase
@@ -71,6 +72,12 @@ class EventsTest : TestBase() {
     }
 
     @Test
+    fun memberLeaveEvent() = runBlocking {
+        member.kick("xx")
+        waitUntilEnd()
+    }
+
+    @Test
     fun newMemberRequestEvent() = runBlocking {
         group.broadcastNewMemberJoinRequestEvent(
             requester = 2333,
@@ -80,6 +87,45 @@ class EventsTest : TestBase() {
         // newMemberReq + MemberJoin
         waitUntilEnd(2)
         assertTrue(group.members.any { it.id == 2333L })
+    }
+
+    @OptIn(MiraiInternalApi::class)
+    @Test
+    fun memberJoinEvent() = runBlocking {
+        MemberJoinEvent.Active(member).broadcast()
+        waitUntilEnd()
+    }
+
+    @OptIn(MiraiInternalApi::class)
+    @Test
+    fun botInvitedJoinGroupRequestEvent() = runBlocking {
+        val g = bot.addGroup(112, "group2")
+        val inv = g.addMember(223, "invited")
+        BotInvitedJoinGroupRequestEvent(
+            bot = bot,
+            eventId = 2333,
+            invitorId = inv.id,
+            groupId = g.uin,
+            groupName = g.name,
+            invitorNick = inv.nick,
+        ).broadcast()
+        // botInvitedEvent + botJoinEvent
+        waitUntilEnd(2)
+        assertTrue(bot.groups.any { it.id == group.id })
+    }
+
+    @OptIn(MiraiInternalApi::class, MiraiExperimentalApi::class)
+    @Test
+    fun botLeaveEventTest() = runBlocking {
+        BotLeaveEvent.Active(group).broadcast()
+        waitUntilEnd()
+    }
+
+    @Test
+    fun messagePreSendEventTest() = runBlocking {
+        group.sendMessage("MsgPreSend")
+        // MessagePreSend
+        waitUntilEnd()
     }
 
     @OptIn(MiraiInternalApi::class)
@@ -106,8 +152,16 @@ class EventsTest : TestBase() {
         waitUntilEnd()
     }
 
-//    @Test
-//    fun botJoinGroupEvent() = runBlocking {
-//        // todo
-//    }
+    @OptIn(MiraiInternalApi::class, MiraiExperimentalApi::class)
+    @Test
+    fun botJoinGroupEvent(): Unit = runBlocking {
+        BotJoinGroupEvent.Active(group).broadcast()
+        waitUntilEnd()
+    }
+
+    @Test
+    fun timerTest() = runBlocking {
+        member.says("Timer")
+        waitUntilEnd()
+    }
 }

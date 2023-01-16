@@ -26,8 +26,6 @@ import net.mamoe.mirai.utils.PlatformLogger
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import java.io.File
-import java.io.IOException
-import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 
 object TestUtils {
@@ -81,23 +79,6 @@ object TestUtils {
             MessageChain.deserializeFromJsonString(logs.first().substringAfter("after_serialization:"))
                 .serializeToJsonString()
         )
-    }
-
-    fun String.runCommand(workingDir: File): String? {
-        return try {
-            val parts = this.split("\\s".toRegex())
-            val proc = ProcessBuilder(*parts.toTypedArray())
-                .directory(workingDir)
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .redirectError(ProcessBuilder.Redirect.PIPE)
-                .start()
-
-            proc.waitFor(60, TimeUnit.MINUTES)
-            proc.inputStream.bufferedReader().readText() + proc.errorStream.bufferedReader().readText()
-        } catch (e: IOException) {
-            e.printStackTrace()
-            null
-        }
     }
 
     inline fun <reified T : Event, R> noBroadcast(chan: EventChannel<Event>, block: () -> R): R {
