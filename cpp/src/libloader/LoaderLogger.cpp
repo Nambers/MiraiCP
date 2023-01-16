@@ -20,8 +20,8 @@
 #include "LoaderLogger.h"
 #include "commonTools.h"
 #include "loaderTools.h"
+#include "utf8.h"
 #include <json.hpp>
-
 
 #ifdef LOADER_NATIVE
 namespace LoaderAPIs {
@@ -52,10 +52,43 @@ namespace LibLoader {
         call_logger(msg, LoaderName, -1, 2);
     }
 
+    void LoaderLogger::info(const LoaderLogger::wstring &msg) const {
+        call_logger(msg, LoaderName, -1, 0);
+    }
+
+    void LoaderLogger::warning(const LoaderLogger::wstring &msg) const {
+        call_logger(msg, LoaderName, -1, 1);
+    }
+
+    void LoaderLogger::error(const LoaderLogger::wstring &msg) const {
+        call_logger(msg, LoaderName, -1, 2);
+    }
+
     void LoaderLogger::call_logger(const string &content, string name, long long id, int level) const {
         nlohmann::json j = {
                 {"id", id},
                 {"log", content}};
+        if (!name.empty()) j["name"] = std::move(name);
+#ifdef LOADER_NATIVE
+        LoaderAPIs::log(j.dump().c_str(), level);
+#else
+        auto env = JNIEnvs::getEnv();
+        env->CallStaticVoidMethod(JNIEnvs::Class_cpplib, logMethod, LibLoader::str2jstring(j.dump().c_str()), (jint) (level));
+#endif
+    }
+
+    void LoaderLogger::call_logger(const wstring &content, string name, long long id, int level) const {
+        std::string rcontent;
+
+#if WCHAR_MAX <= 0xFFFFu
+        utf8::utf16to8(content.begin(), content.end(), std::back_inserter(rcontent)); // Windows
+#else
+        utf8::utf32to8(content.begin(), content.end(), std::back_inserter(rcontent)); // Linux & others
+#endif
+
+        nlohmann::json j = {
+                {"id", id},
+                {"log", rcontent}};
         if (!name.empty()) j["name"] = std::move(name);
 #ifdef LOADER_NATIVE
         LoaderAPIs::log(j.dump().c_str(), level);

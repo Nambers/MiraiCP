@@ -25,7 +25,7 @@ struct _jmethodID;
 namespace LibLoader {
     class LoaderLogger {
         using string = std::string;
-
+        using wstring = std::wstring;
     public:
         _jmethodID *logMethod;
 
@@ -38,10 +38,15 @@ namespace LibLoader {
         void info(const string &) const;
         void warning(const string &) const;
         void error(const string &) const;
+        // wstring support
+        void info(const wstring &) const;
+        void warning(const wstring &) const;
+        void error(const wstring &) const;
 
     public:
         /// 实际暴露的接口
         void call_logger(const string &content, string name, long long id, int level) const;
+        void call_logger(const wstring &content, string name, long long id, int level) const;
     };
 
     extern LoaderLogger logger;
