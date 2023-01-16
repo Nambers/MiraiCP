@@ -287,7 +287,20 @@ namespace LibLoader {
 
     bool PluginListManager::pluginNameLookup(const std::string &_id) {
         std::shared_lock lk(pluginlist_mtx);
-        return id_plugin_list.find(_id) != id_plugin_list.end();
+        for (auto [k, v]: id_plugin_list) {
+            std::string testId;
+            if (_id.size() > k.size()) {
+                continue;
+            } else if (_id.size() < k.size()) {
+                testId = k.substr(0, _id.size());
+            } else {
+                testId = k;
+            }
+            if (testId == _id) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
