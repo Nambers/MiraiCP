@@ -78,7 +78,7 @@ inline void platform_set_thread_name(decltype(platform_thread_self()) id, const 
         std::string tNewName;
         tNewName.reserve(15);
         tNewName.append(std::string_view(name, 15));
-        pthread_setname_np(id, tNewName);
+        pthread_setname_np(id, tNewName.c_str());
     }
 }
 
