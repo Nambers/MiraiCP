@@ -104,6 +104,10 @@
 
 1. 从各自的模板项目中下载 `MiraiCP.hpp`, `MiraiCP.cpp`, 替换原本的文件
 
+# 调试
+
+请参考[调试文档仓库](https://github.com/0ph1uch1/MiraiCP-debug-docs)。
+
 # 交流方式
 
 论坛贴: [miraicp](https://mirai.mamoe.net/topic/532/miraicp-c-sdk)
