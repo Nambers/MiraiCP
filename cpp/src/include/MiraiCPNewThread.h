@@ -40,7 +40,14 @@ namespace MiraiCP {
                       [lambda_func = std::forward<Callable>(func)](auto &&...argss) {
                           try {
                               const char *thread_name = CPPPlugin::config.id;
-                              platform_set_thread_name(platform_thread_self(), thread_name);
+                              if (strlen(thread_name) <= 15) {
+                                  platform_set_thread_name(platform_thread_self(), thread_name);
+                              } else {
+                                  std::string tNewName;
+                                  tNewName.reserve(15);
+                                  tNewName.append(std::string_view(thread_name, 15));
+                                  platform_set_thread_name(platform_thread_self(), tNewName.c_str());
+                              }
                               lambda_func(std::forward<decltype(argss)>(argss)...);
                           } catch (MiraiCPExceptionBase &e) {
                               e.raise();
