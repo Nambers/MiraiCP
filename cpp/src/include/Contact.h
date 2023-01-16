@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -227,7 +227,7 @@ namespace MiraiCP {
          */
         template<typename T>
         MessageSource sendMessage(T &&msg) {
-            return this->unpackMsg(std::forward<T>(msg));
+            return this->unpackMsg(MessageChain(std::forward<T>(msg)));
         }
 
     private: // private methods
@@ -293,9 +293,6 @@ namespace MiraiCP {
 
         MessageSource unpackMsg(const MessageChain &msg) const {
             return sendMsgImpl(msg.toString());
-        }
-        MessageSource unpackMsg(const SingleMessage &msg) const {
-            return sendMsgImpl(MessageChain(msg).toString());
         }
         MessageSource unpackMsg(const MiraiCodeable &msg) const {
             return sendMsgImpl(MessageChain::deserializationFromMiraiCode(msg.toMiraiCode()).toString());
