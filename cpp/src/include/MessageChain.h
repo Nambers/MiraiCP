@@ -103,7 +103,11 @@ namespace MiraiCP {
     public:
         MessageChain(const MessageChain &_o) = default;
         MessageChain(MessageChain &&_o) = default;
+
+        MessageChain() = default;
+
         ~MessageChain() override = default;
+
         /*!
          * @brief 从多个参数构建MessageChain
          * @tparam T 多个传入参数的类型
@@ -112,7 +116,7 @@ namespace MiraiCP {
          * - SingleMessage的派生类
          * @param args 参数本身
          */
-        template<class... T>
+        template<typename... T, typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>..., MessageChain>>>
         explicit MessageChain(T &&...args) {
             constructMessages(std::forward<T>(args)...);
         };

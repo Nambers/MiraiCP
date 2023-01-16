@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Eritque arcus and contributors.
+// Copyright (c) 2022 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -99,7 +99,7 @@ public:
             if(a.message[0]->content == "image"){
                 Logger::logger.info(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
                 auto img = a.group.uploadImg(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
-                a.group.sendMessage(MessageChain(img));
+                a.group.sendMessage(img);
                 testEnd("uploadImageTest");
                 return;
             }
