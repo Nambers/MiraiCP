@@ -33,7 +33,7 @@
 #include <windows.h>
 // https://stackoverflow.com/questions/1387064/how-to-get-the-error-message-from-the-error-code-returned-by-getlasterror
 //Returns the last Win32 error, in string format. Returns an empty string if there is no error.
-std::string GetLastErrorAsString() {
+std::wstring GetLastErrorAsString() {
     //Get the error message ID, if any.
     DWORD errorMessageID = ::GetLastError();
     if (errorMessageID == 0) {
@@ -54,10 +54,10 @@ std::string GetLastErrorAsString() {
     LocalFree(messageBuffer);
 
     // Translate to utf8 encoded std::string
-    std::string ans;
-    utf8::utf16to8(message.begin(), message.end(), std::back_inserter(ans));
+    // std::string ans;
+    // utf8::utf16to8(message.begin(), message.end(), std::back_inserter(ans));
 
-    return ans;
+    return message;
 }
 #endif
 
