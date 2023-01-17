@@ -43,7 +43,7 @@ namespace MiraiCP {
         if (r == "E1")
             throw TimeOutException("取下一条信息超时", MIRAICP_EXCEPTION_WHERE);
         json re = json::parse(r);
-        return MessageChain::deserializationFromMessageJson(re["message"]).plus(
+        return MessageChain::deserializationFromMessageJson(nlohmann::json::parse(Tools::json_stringmover(re, "message"))).plus(
                 MessageSource::deserializeFromString(re["messageSource"]));
     }
 

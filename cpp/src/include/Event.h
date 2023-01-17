@@ -270,7 +270,7 @@ namespace MiraiCP {
         /// 邀请的好友, 如果在邀请后删除好友则为空
         Friend inviter;
         /// 本次申请 id
-        long requestEventId = 0;
+        size_t requestEventId = 0;
 
 
         static void operation0(const std::string &source, QQID botid, bool accept);
@@ -305,7 +305,7 @@ namespace MiraiCP {
         /// @brief 申请理由
         std::string message;
         /// @brief 事件识别 id
-        unsigned long long int requestEventId;
+        size_t requestEventId;
 
         /// @brief 接受好友申请
         /// @param source 事件序列化信息

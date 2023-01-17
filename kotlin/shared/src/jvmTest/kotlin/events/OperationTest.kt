@@ -18,10 +18,12 @@
 
 package tech.eritquearcus.miraicp.shared.test.events
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.MemberPermission
 import net.mamoe.mirai.contact.announcement.Announcement.Companion.publishAnnouncement
+import net.mamoe.mirai.message.data.buildMessageChain
 import net.mamoe.mirai.message.data.ids
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.md5
@@ -191,6 +193,41 @@ class OperationTest : TestBase() {
         val pinnedAnnouncements = group.announcements.toList().filter { it.parameters.isPinned }
         assertEquals(1, pinnedAnnouncements.size)
         assertEquals("test", pinnedAnnouncements[0].content)
+    }
+
+    @Test
+    fun nextMsg() = runBlocking {
+        member.says("nextMsg")
+        delay(100)
+        member.says("nextMsg1")
+        waitUntilEnd()
+    }
+
+    @Test
+    fun imgUploaded() = runBlocking {
+        this@OperationTest.javaClass.getResourceAsStream("/img.png")!!.toExternalResource().use {
+            val img = group.uploadImage(it)
+            member.says(buildMessageChain {
+                add("imgUploaded")
+                add(img)
+            })
+        }
+        waitUntilEnd()
+    }
+
+    @Test
+    fun changeNameCard() = runBlocking {
+        member.says("changeNameCard")
+        waitUntilEnd()
+        assertEquals("test", member.nameCard)
+    }
+
+    @Test
+    fun a(): Unit = runBlocking {
+        this@OperationTest.javaClass.classLoader!!.getResourceAsStream("mic.amr")!!.toExternalResource().use {
+            bot.uploadOnlineAudio(it)
+            println("x ")
+        }
     }
 
     @Test

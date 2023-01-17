@@ -141,6 +141,20 @@ public:
                 announcement.params.pinned = true;
                 announcement.publishTo(a.group);
             })
+            TEST(nextMsg,, {
+                auto msg = a.nextMessage();
+                if(msg[0]->content == "nextMsg1" && msg.size() == 1){
+                    testEnd("nextMsgTest");
+                }
+            })
+            TEST(imgUploaded,, {
+                if(a.message[1].getVal<Image>().isUploaded(a.bot.id())){
+                    testEnd("imgUploadedTest");
+                }
+            })
+            TEST(changeNameCard, changeNameCardTest, {
+                a.sender.changeNameCard("test");
+            })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
         });
