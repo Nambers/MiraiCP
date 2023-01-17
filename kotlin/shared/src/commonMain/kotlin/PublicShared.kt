@@ -44,7 +44,6 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
-import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
@@ -433,7 +432,7 @@ object PublicShared {
 
                     else -> return "EA"
                 }
-                return file.readByteArray().toExternalResource().use {
+                return file.toExternalResource().use {
                     try {
                         json.encodeToString(
                             MessageSerializers.serializersModule.serializer(),

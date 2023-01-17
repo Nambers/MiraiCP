@@ -29,6 +29,7 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.md5
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Timeout
 import tech.eritquearcus.miraicp.shared.test.TestBase
 import tech.eritquearcus.miraicp.shared.test.TestUtils
 import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
@@ -57,6 +58,7 @@ class OperationTest : TestBase() {
     }
 
     @Test
+    @Timeout(10000)
     fun sendFileTest() = runBlocking {
         member.says("sendFile")
         waitUntilEnd()
@@ -70,12 +72,14 @@ class OperationTest : TestBase() {
 
     @Test
     fun remoteFileInfo() = runBlocking {
-        val f = this@OperationTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.toExternalResource()
-        val file = group.files.root.uploadNewFile(
-            "/mic.amr",
-            f
-        )
-        f.close()
+        val file = this@OperationTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.use { res ->
+            res.toExternalResource().use {
+                group.files.root.uploadNewFile(
+                    "/mic.amr",
+                    it
+                )
+            }
+        }
         member.says("remoteFileInfo" + file.id)
         // remoteFileInfo
         waitUntilEnd()
@@ -205,12 +209,14 @@ class OperationTest : TestBase() {
 
     @Test
     fun imgUploaded() = runBlocking {
-        this@OperationTest.javaClass.getResourceAsStream("/img.png")!!.toExternalResource().use {
-            val img = group.uploadImage(it)
-            member.says(buildMessageChain {
-                add("imgUploaded")
-                add(img)
-            })
+        this@OperationTest.javaClass.getResourceAsStream("/img.png")!!.use { res ->
+            res.toExternalResource().use {
+                val img = bot.uploadMockImage(it)
+                member.says(buildMessageChain {
+                    add("imgUploaded")
+                    add(img)
+                })
+            }
         }
         waitUntilEnd()
     }
