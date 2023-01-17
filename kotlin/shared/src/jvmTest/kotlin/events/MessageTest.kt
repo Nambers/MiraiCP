@@ -105,8 +105,10 @@ class MessageTest : TestBase() {
 
     @Test
     fun voiceMessage() = runBlocking {
-        val au = this@MessageTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.toExternalResource().use {
-            bot.uploadOnlineAudio(it)
+        val au = this@MessageTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.use { res ->
+            res.toExternalResource().use {
+                bot.uploadOnlineAudio(it)
+            }
         }
         member.says(au)
         waitUntilEnd()
