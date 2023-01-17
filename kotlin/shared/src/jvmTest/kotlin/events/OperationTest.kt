@@ -18,12 +18,17 @@
 
 package tech.eritquearcus.miraicp.shared.test.events
 
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.MemberPermission
+import net.mamoe.mirai.contact.announcement.Announcement.Companion.publishAnnouncement
 import net.mamoe.mirai.message.data.ids
+import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
+import net.mamoe.mirai.utils.md5
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import tech.eritquearcus.miraicp.shared.test.TestBase
+import tech.eritquearcus.miraicp.shared.test.TestUtils
 import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -47,6 +52,39 @@ class OperationTest : TestBase() {
     fun queryBotList() = runBlocking {
         member.says("botList")
         waitUntilEnd()
+    }
+
+    @Test
+    fun sendFileTest() = runBlocking {
+        member.says("sendFile")
+        waitUntilEnd()
+        val files = group.files.root.resolveFiles("/img/img.png").toList()
+        assertEquals(1, files.size)
+        assertEquals(
+            this@OperationTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.md5(),
+            files[0].md5
+        )
+    }
+
+    @Test
+    fun remoteFileInfo() = runBlocking {
+        val f = this@OperationTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.toExternalResource()
+        val file = group.files.root.uploadNewFile(
+            "/mic.amr",
+            f
+        )
+        f.close()
+        member.says("remoteFileInfo" + file.id)
+        // remoteFileInfo
+        waitUntilEnd()
+        val logs = TestUtils.logList.filter {
+            it.contains("reId")
+        }.map {
+            it.substringAfter("reId")
+        }
+        assertEquals(2, logs.size)
+        assertEquals(file.id, logs[0])
+        assertEquals(file.id, logs[1])
     }
 
     @Test
@@ -90,12 +128,69 @@ class OperationTest : TestBase() {
     }
 
     @Test
+    fun getOwner() = runBlocking {
+        member.says("getOwner")
+        waitUntilEnd()
+        val logs = TestUtils.logList.filter {
+            it.contains("reId")
+        }.map {
+            it.substringAfter("reId")
+        }
+        assertEquals(1, logs.size)
+        assertEquals(group.owner.id.toString(), logs[0])
+    }
+
+    @Test
+    fun uploadVoice() = runBlocking {
+        member.says("voice")
+        waitUntilEnd()
+    }
+
+
+    @Test
     fun memberKick() = runBlocking {
         member.says("kick")
         // groupMessageEvent + memberLeaveEvent
         waitUntilEnd(2)
         assertFalse(group.members.any { it.id == member.id })
 
+    }
+
+    @Test
+    fun groupSetting() = runBlocking {
+        group.settings.isMuteAll = false
+        group.settings.isAllowMemberInvite = false
+        member.says("groupSetting")
+        waitUntilEnd()
+        assertEquals("test", group.name)
+        assertEquals(true, group.settings.isMuteAll)
+        assertEquals(true, group.settings.isAllowMemberInvite)
+    }
+
+    @Test
+    fun buildForward() = runBlocking {
+        member.says("buildForward")
+        waitUntilEnd()
+    }
+
+    @Test
+    fun sendWithQuote() = runBlocking {
+        member.says("sendWithQuote")
+        waitUntilEnd()
+    }
+
+    @Test
+    fun announcement() = runBlocking {
+        val announcement = group.publishAnnouncement("test1")
+        member.says("announcement")
+        waitUntilEnd()
+        assertFalse(group.announcements.toList().any {
+            it.fid == announcement.fid
+        })
+        assertEquals(1, group.announcements.toList().size)
+        val pinnedAnnouncements = group.announcements.toList().filter { it.parameters.isPinned }
+        assertEquals(1, pinnedAnnouncements.size)
+        assertEquals("test", pinnedAnnouncements[0].content)
     }
 
     @Test

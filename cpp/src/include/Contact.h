@@ -234,7 +234,7 @@ namespace MiraiCP {
         MessageSource quoteAndSend0(std::string msg, const MessageSource &ms) const;
 
         MessageSource quoteAndSend1(const SingleMessage &s, const MessageSource &ms) {
-            return this->quoteAndSend0(MessageChain(s).toJson(), ms);
+            return this->quoteAndSend0(MessageChain(s).toString(), ms);
         }
 
         MessageSource quoteAndSend1(const std::string &s, const MessageSource &ms) {
@@ -242,7 +242,7 @@ namespace MiraiCP {
         }
 
         MessageSource quoteAndSend1(const MessageChain &mc, const MessageSource &ms) {
-            return this->quoteAndSend0(mc.toJson(), ms);
+            return this->quoteAndSend0(mc.toString(), ms);
         }
 
     public: // serialization

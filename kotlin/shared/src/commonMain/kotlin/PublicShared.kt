@@ -44,6 +44,7 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
+import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiLogger
@@ -432,11 +433,11 @@ object PublicShared {
 
                     else -> return "EA"
                 }
-                return file.toExternalResource().use {
+                return file.readByteArray().toExternalResource().use {
                     try {
                         json.encodeToString(
                             MessageSerializers.serializersModule.serializer(),
-                            cc.uploadAudio(it).sendTo(cc).source
+                            cc.uploadAudio(it).sendTo(cc).source as MessageSource
                         )
                     } catch (e: OverFileSizeMaxException) {
                         logger.error("上传语音失败, 文件应在大约1MB以内, 实际大小:${it.size}, 文件路径:${file.absolutePath}")
@@ -585,26 +586,11 @@ object PublicShared {
         }
     }
 
-    private fun buildForwardMsg(
-        nodes: List<Packets.Incoming.SendForwarded.Node>,
-        display: Packets.Incoming.SendForwarded.ForwardedMessageDisplay
-    ): ForwardMessage {
-        val a = mutableListOf<ForwardMessage.Node>()
-        nodes.forEach {
-            a.add(
-                ForwardMessage.Node(
-                    it.senderId, it.time, it.senderName, MessageChain.deserializeFromJsonString(it.messageChain)
-                )
-            )
-        }
-        return RawForwardMessage(a).render(Packets.Incoming.SendForwarded.DisplayS(display))
-    }
-
     //构建聊天记录
     suspend fun sendForwardMsg(source: String): String =
         withData(source, Packets.Incoming.SendForwarded.serializer()) { data ->
             withBot(data.contact.botId) { bot ->
-                val tmp = buildForwardMsg(data.nodes, data.display)
+                val tmp = MessageChain.deserializeFromJsonString(data.msg)
                 val block: suspend (Contact) -> String = { c ->
                     sendWithCatch {
                         tmp.sendTo(c).source
@@ -653,7 +639,7 @@ object PublicShared {
                     MessageSerializers.serializersModule.serializer<MessageSource>(),
                     data.messageSource
                 )
-            val message = MessageChain.deserializeFromJsonString(data.message)
+            val message = MessageChain.deserializeFromJsonString(data.msg)
             val bot = Bot.getInstanceOrNull(data.contact.botId) ?: let {
                 return "EB"
             }
@@ -688,7 +674,7 @@ object PublicShared {
                     when (data.type) {
                         1 -> {
                             try {
-                                group.announcements.delete(data.fid).let {
+                                group.announcements.delete(data.fid!!).let {
                                     if (!it) return "E1"
                                 }
                             } catch (e: PermissionDeniedException) {

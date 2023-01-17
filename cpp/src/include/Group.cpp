@@ -186,7 +186,7 @@ namespace MiraiCP {
     Member Group::getOwner() {
         std::string re = KtOperation::ktOperation(KtOperation::QueryOwner, toJson());
         MIRAICP_ERROR_HANDLE(re, "");
-        return Member(stoi(re), this->id(), this->botid());
+        return Member(std::stoll(re), this->id(), this->botid());
     }
 
     std::string Group::getFileListString(const std::string &path) {
