@@ -426,14 +426,14 @@ namespace MiraiCP {
         std::string ids;
         /// 信息内部ids
         std::string internalIds;
+
         explicit MemberRecallEvent(BaseEventData j);
     };
     /// 撤回信息
-    class RecallEvent : public BotEvent<RecallEvent> {
-    public:
-        // depreciated
+    namespace RecallEvent {
+        // deprecated
         using FriendRecallEvent = FriendRecallEvent;
-        // depreciated
+        // deprecated
         using MemberRecallEvent = MemberRecallEvent;
     };
 
