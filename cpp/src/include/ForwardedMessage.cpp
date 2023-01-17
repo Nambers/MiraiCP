@@ -53,9 +53,10 @@ namespace MiraiCP {
 
     //发送这个聊天记录
     MessageSource ForwardedMessage::sendTo(Contact *c) const{
+        auto msg = toJson();
+        msg.update(display.toJson());
         json req{{"contact", c->toJson()},
-                 {"display", display.toJson()},
-                 {"nodes", nodesToJson()}};
+                 {"msg", json::array({msg}).dump()}};
         std::string re = KtOperation::ktOperation(KtOperation::Buildforward, req);
         MIRAICP_ERROR_HANDLE(re, "");
         return MessageSource::deserializeFromString(re);

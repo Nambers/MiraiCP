@@ -132,7 +132,7 @@ object Packets {
         @Serializable
         data class QuoteReply(
             val messageSource: String,
-            val message: String,
+            val msg: String,
             val contact: Packets.Contact,
         )
 
@@ -168,8 +168,7 @@ object Packets {
         @Serializable
         data class SendForwarded(
             val contact: Packets.Contact,
-            val nodes: List<Node>,
-            val display: ForwardedMessageDisplay,
+            val msg: String,
         ) {
             class DisplayS(private val s: ForwardedMessageDisplay) : ForwardMessage.DisplayStrategy {
                 override fun generateBrief(forward: RawForwardMessage): String = s.brief
@@ -178,15 +177,6 @@ object Packets {
                 override fun generateSummary(forward: RawForwardMessage): String = s.summary
                 override fun generateTitle(forward: RawForwardMessage): String = s.title
             }
-
-            @Serializable
-            data class Node(
-                val senderId: Long,
-                val senderName: String,
-                val time: Int,
-                val messageChain: String,
-            )
-
             @Serializable
             data class ForwardedMessageDisplay(
                 val brief: String,
@@ -251,7 +241,7 @@ object Packets {
         data class AnnouncementOperation(
             val botId: Long,
             val groupId: Long,
-            val fid: String,
+            val fid: String? = null,
             val type: Int,
             val source: NewAnnouncement? = null,
         ) {

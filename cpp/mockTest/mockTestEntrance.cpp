@@ -26,6 +26,12 @@ using namespace MockTests;
         if(strcmp(#endMsg, "") != 0) testEnd(#endMsg);\
         return; \
     }
+#define TEST_STARTWITH(msg, endMsg, test) \
+    if (Tools::starts_with(a.message[0]->content, #msg)) {      \
+        test\
+        if(strcmp(#endMsg, "") != 0) testEnd(#endMsg);\
+        return; \
+    }
 
 const PluginConfig CPPPlugin::config{
         "idMockTest",          // 插件id
@@ -93,6 +99,47 @@ public:
                 Logger::logger.info(a.bot.FriendListToString());
                 Logger::logger.info(a.bot.GroupListToString());
                 Logger::logger.info(a.group.MemberListToString());
+            })
+            TEST(sendFile, sendFileTest, {
+                a.group.sendFile("/img/img.png", absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
+            })
+            TEST_STARTWITH(remoteFileInfo, remoteFileInfoTest, {
+                Logger::logger.info("reId" + a.group.getFile("/mic.amr").id);
+                Logger::logger.info("reId" + a.group.getFileById(a.message[0]->content.substr(14)).id);
+            })
+            TEST(getOwner, getOwnerTest, {
+                Logger::logger.info("reId" + std::to_string(a.group.getOwner().id()));
+            })
+            TEST(voice, uploadVoiceTest, {
+                a.group.sendVoice(absolute(std::filesystem::path("./src/jvmTest/resources/mic.amr")).string());
+            })
+            TEST(groupSetting, getGroupSettingTest, {
+                auto settings = a.group.setting();
+                settings.isAllowMemberInvite = true;
+                settings.isMuteAll = true;
+                settings.name = "test";
+                a.group.updateSetting(settings);
+            })
+            TEST(buildForward, buildForwardMessageTest, {
+                auto style1 = ForwardedMessageDisplayStrategy();
+                style1.summary = "Summary";
+                style1.preview.emplace_back("preview1");
+                style1.source = "SourceA";
+                style1.brief = "BriefA";
+                ForwardedMessage(
+                {ForwardedNode(12, "a", MessageChain(PlainText("test")), 1),
+                            ForwardedNode(12, "b", ForwardedMessage({ForwardedNode(12, "a", MessageChain(PlainText("test")), 1)}), 1)},
+                ForwardedMessageDisplayStrategy::defaultStrategy()).sendTo(&a.group);
+            })
+            TEST(sendWithQuote, sendWithQuoteTest, {
+                a.group.quoteAndSendMessage(a.message, a.message.source.value());
+            })
+            TEST(announcement, announcementTest, {
+                a.group.getAnnouncementsList()[0].deleteThis();
+                auto announcement = Group::OfflineAnnouncement();
+                announcement.content = "test";
+                announcement.params.pinned = true;
+                announcement.publishTo(a.group);
             })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
