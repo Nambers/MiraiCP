@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_MOCKTESTS_H
 #include "MiraiCP.hpp"
 namespace MockTests{
-    void testEnd(std::string);
+    void testEnd(const std::string&);
     namespace Message{
         void messageSerialization(const MiraiCP::MessageChain&);
     }
