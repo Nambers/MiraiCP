@@ -223,14 +223,6 @@ class OperationTest : TestBase() {
     }
 
     @Test
-    fun a(): Unit = runBlocking {
-        this@OperationTest.javaClass.classLoader!!.getResourceAsStream("mic.amr")!!.toExternalResource().use {
-            bot.uploadOnlineAudio(it)
-            println("x ")
-        }
-    }
-
-    @Test
     fun friendDeleteTest(): Unit = runBlocking {
         friend.says("delete")
         waitUntilEnd()
