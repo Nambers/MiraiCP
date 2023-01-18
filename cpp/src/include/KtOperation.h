@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,10 +34,8 @@ namespace MiraiCP::KtOperation {
         RefreshInfo,
         /// 上传图片
         UploadImg,
-        /// 取好友列表
-        QueryBFL,
-        /// 取群组列表
-        QueryBGL,
+        /// 取bot相关列表
+        QueryBotList,
         /// 上传文件
         SendFile,
         /// 查询文件信息
@@ -54,8 +52,6 @@ namespace MiraiCP::KtOperation {
         QueryOwner,
         /// 语音
         Voice,
-        /// 查询群成员列表
-        QueryML,
         /// 群设置
         GroupSetting,
         /// 构建转发信息
@@ -68,8 +64,6 @@ namespace MiraiCP::KtOperation {
         SendWithQuote,
         /// 群公告操作
         Announcement,
-        /// 定时任务
-        TimeOut,
         /// 发送戳一戳
         SendNudge,
         /// 下一条信息
@@ -85,16 +79,42 @@ namespace MiraiCP::KtOperation {
         /// 改名称
         ChangeNameCard,
     };
+    enum QueryBotListCode {
+        /// 查询好友列表
+        FriendList = 0, // 0
+        /// 查询群列表
+        GroupList,      // 1
+        /// 查询群成员列表
+        MemberList,     // 2
+    };
+    enum AnnouncementOperationCode {
+        /// 发布公告
+        Delete = 1,      // 1
+        /// 删除公告
+        Publish,         // 2
+    };
 
     /**
-     * @brief 调用mirai操作
+     * @brief 调用 Mirai 操作
      * @param type 操作id
      * @param data 传入数据
      * @return 返回数据
      */
     std::string ktOperation(
             operation_set type,
-            nlohmann::json data,
+            const nlohmann::json &data,
+            bool catchErr = true,
+            const std::string &errorInfo = "");
+
+    /**
+     * @brief 调用 Mirai 操作
+     * @param type 操作id
+     * @param data 传入数据
+     * @return 返回数据
+     */
+    std::string ktOperationStr(
+            operation_set type,
+            const std::string &data,
             bool catchErr = true,
             const std::string &errorInfo = "");
 } // namespace MiraiCP::KtOperation

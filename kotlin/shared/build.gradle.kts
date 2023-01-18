@@ -34,6 +34,9 @@ kotlin {
         withJava()
         testRuns["test"].executionTask.configure {
             useJUnitPlatform()
+            testLogging{
+                this.showStandardStreams = true
+            }
         }
     }
     val hostOs = System.getProperty("os.name")

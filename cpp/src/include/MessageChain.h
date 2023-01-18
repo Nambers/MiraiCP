@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -77,6 +77,10 @@ namespace MiraiCP {
                 return (*this)->toMiraiCode();
             }
 
+            [[nodiscard]] std::string toJson() const {
+                return (*this)->toJson();
+            }
+
             bool operator==(const Message &m) const {
                 return (*this)->internalType == m->internalType && (*this)->toMiraiCode() == m->toMiraiCode();
             }
@@ -99,7 +103,11 @@ namespace MiraiCP {
     public:
         MessageChain(const MessageChain &_o) = default;
         MessageChain(MessageChain &&_o) = default;
+
+        MessageChain() = default;
+
         ~MessageChain() override = default;
+
         /*!
          * @brief 从多个参数构建MessageChain
          * @tparam T 多个传入参数的类型
@@ -108,7 +116,7 @@ namespace MiraiCP {
          * - SingleMessage的派生类
          * @param args 参数本身
          */
-        template<class... T>
+        template<typename... T, typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>..., MessageChain>>>
         explicit MessageChain(T &&...args) {
             constructMessages(std::forward<T>(args)...);
         };
@@ -132,6 +140,13 @@ namespace MiraiCP {
                 tmp.emplace_back(a->toMiraiCode());
             return tmp;
         }
+
+        nlohmann::json toJson() const;
+        /**
+         * @ensure toJson().dump()
+         * @return MessageChain serialize to String
+         */
+        std::string toString() const;
 
         /// @brief 添加元素
         /// @tparam T 任意的SingleMessage的子类
@@ -230,7 +245,7 @@ namespace MiraiCP {
         /// - std::string / const char* 相当于传入PlainText(str)
         /// - SingleMessage的各种派生类
         /// - MessageChain
-        /// @deprecated use Contact.quoteAndSend or `this->quoteAndSend1(s, groupid, env)`, since v2.8.1
+        /// @deprecated use Contact.quoteAndSend or `this->quoteAndSend1(s, groupId, env)`, since v2.8.1
         template<class T>
         ShouldNotUse("use Contact.quoteAndSend") MessageSource
                 quoteAndSendMessage(T s, QQID groupid = -1, void *env = nullptr) = delete;
@@ -266,12 +281,17 @@ namespace MiraiCP {
         /// @attention 本方法并不会自动附加MessageSource到MessageChain, 需要用.plus方法自行附加
         static MessageChain deserializationFromMessageSourceJson(nlohmann::json j, bool origin = true);
 
+        /// 从 Message json中构建MessageChain, 常用于Incoming message
+        /// @attention 本方法并不会自动附加MessageSource到MessageChain, 需要用.plus方法自行附加
+        static MessageChain deserializationFromMessageJson(const nlohmann::json &j);
+
     private: // private methods
         void constructMessages() {}
 
         template<class T1, class... T2>
         void constructMessages(T1 &&h, T2 &&...args) {
-            static_assert(std::is_base_of_v<SingleMessage, typename std::remove_reference_t<T1>>, "只支持SingleMessage子类");
+            static_assert(std::is_base_of_v<SingleMessage, typename std::decay_t<T1>>,
+                          "只支持SingleMessage子类");
             emplace_back(std::forward<T1>(h));
             constructMessages(std::forward<T2>(args)...);
         }
@@ -292,22 +312,6 @@ namespace MiraiCP {
         void constructMessages(const MessageChain &mc, T &&...args) {
             insert(end(), mc.begin(), mc.end());
             constructMessages(std::forward<T>(args)...);
-        }
-
-        MessageSource quoteAndSend0(std::string msg, QQID groupid = -1);
-
-        template<class T>
-        MessageSource quoteAndSend1(const T &s, QQID groupid = -1) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-            return this->quoteAndSend0(s.toMiraiCode(), groupid);
-        }
-
-        MessageSource quoteAndSend1(std::string s, QQID groupid) {
-            return this->quoteAndSend0(std::move(s), groupid);
-        }
-
-        MessageSource quoteAndSend1(const MessageChain &mc, QQID groupid) {
-            return this->quoteAndSend0(mc.toMiraiCode(), groupid);
         }
     };
 } // namespace MiraiCP

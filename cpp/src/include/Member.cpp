@@ -26,15 +26,15 @@ namespace MiraiCP {
     using json = nlohmann::json;
 
 
-    auto GetMemberFromPool(QQID id, QQID groupid, QQID botid) noexcept {
+    auto GetMemberFromPool(QQID id, QQID groupId, QQID botid) noexcept {
         using Tools::idpair;
         static std::unordered_map<idpair, std::unordered_map<QQID, std::shared_ptr<Member::DataType>>> Pool;
-        idpair pr{botid, groupid};
+        idpair pr{botid, groupId};
         auto &Val = Pool[pr][id];
         if (!Val) {
-            Val = std::make_shared<Member::DataType>(groupid);
+            Val = std::make_shared<Member::DataType>(groupId);
             Val->_id = id;
-            Val->_botid = botid;
+            Val->_botId = botid;
             Val->_type = MIRAI_MEMBER;
         }
         return Val;
@@ -42,7 +42,7 @@ namespace MiraiCP {
 
     auto GetMemberFromPool(const json &in_json) {
         try {
-            return GetMemberFromPool(in_json["id"], in_json["groupid"], in_json["botid"]);
+            return GetMemberFromPool(in_json["id"], in_json["groupId"], in_json["botId"]);
         } catch (const nlohmann::detail::exception &) {
             throw IllegalArgumentException("构造Member时传入的json异常", MIRAICP_EXCEPTION_WHERE);
         }
@@ -57,7 +57,7 @@ namespace MiraiCP {
         auto ActualDataPtr = GetDataInternal();
         assert(ActualDataPtr != nullptr);
         bool needrefresh = false;
-        if (in_json.contains("nickornamecard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+        if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickOrNameCard");
         else
             needrefresh = true;
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
@@ -71,42 +71,41 @@ namespace MiraiCP {
     }
 
     void Member::mute(long long sec) const {
-        json j{{"time", sec}, {"contactSource", toString()}};
-        std::string re = KtOperation::ktOperation(KtOperation::MuteM, std::move(j));
+        json j{{"time", sec}, {"contact", toJson()}};
+        std::string re = KtOperation::ktOperation(KtOperation::MuteM, j);
         if (re == "E4")
             throw MuteException(MIRAICP_EXCEPTION_WHERE);
     }
 
     void Member::kick(std::string reason) {
-        json j{{"message", std::move(reason)}, {"contactSource", toString()}};
-        KtOperation::ktOperation(KtOperation::KickM, std::move(j));
+        json j{{"message", std::move(reason)}, {"contact", toJson()}};
+        KtOperation::ktOperation(KtOperation::KickM, j);
         forceRefreshNextTime();
     }
 
     void Member::modifyAdmin(bool admin) {
         if (anonymous()) return;
-        json j{{"admin", admin}, {"contactSource", toString()}};
-        KtOperation::ktOperation(KtOperation::ModifyAdmin, std::move(j));
+        json j{{"admin", admin}, {"contact", toJson()}};
+        KtOperation::ktOperation(KtOperation::ModifyAdmin, j);
         forceRefreshNextTime();
     }
 
     void Member::changeNameCard(std::string_view newName) {
         if (anonymous()) return;
-        json j{{"contactSource", toString()}, {"newName", newName}};
-        KtOperation::ktOperation(KtOperation::ChangeNameCard, std::move(j));
+        json j{{"contact", toJson()}, {"newName", newName}};
+        KtOperation::ktOperation(KtOperation::ChangeNameCard, j);
         forceRefreshNextTime();
     }
 
     void Member::sendNudge() {
         if (anonymous()) return;
-        json j{{"contactSource", toString()}};
-        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, std::move(j));
+        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, toJson());
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone", MIRAICP_EXCEPTION_WHERE);
     }
 
     void MemberData::deserialize(nlohmann::json in_json) {
-        _groupid = in_json["groupid"];
+        _groupId = in_json["groupId"];
         _anonymous = in_json["anonymous"].get<bool>();
         IContactData::deserialize(std::move(in_json));
     }
@@ -114,8 +113,7 @@ namespace MiraiCP {
     void MemberData::refreshInfo() {
         if (_anonymous) return;
 
-        auto tempserialize = internalToString();
-        std::string result = LowLevelAPI::getInfoSource(tempserialize);
+        std::string result = LowLevelAPI::getInfoSource(internalToJson());
 
         if (result == "E1")
             throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
@@ -124,13 +122,12 @@ namespace MiraiCP {
 
         {
             LowLevelAPI::info tmp = LowLevelAPI::info0(result);
-            this->_nickOrNameCard = tmp.nickornamecard;
+            this->_nickOrNameCard = tmp.nickOrNameCard;
             this->_avatarUrl = tmp.avatarUrl;
         }
 
         {
-            json j{{"contactSource", std::move(tempserialize)}};
-            _permission = stoi(KtOperation::ktOperation(KtOperation::QueryM, std::move(j)));
+            _permission = stoi(KtOperation::ktOperation(KtOperation::QueryM, internalToJson()));
         }
     }
 

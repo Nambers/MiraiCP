@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,12 +39,4 @@ data class Command(
     val override: Boolean,
     // 前缀`/`可选
     val preFixOption: Boolean
-)
-
-data class Command2C(
-    val contact: Config.Contact?,
-    val botid: Long,
-    val message: String,
-    val bindId: Int,
-    val type: Int = 17,
 )

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -36,7 +36,8 @@ namespace MiraiCP {
         /// 群成员
         MIRAI_MEMBER = 3,
         /// bot
-        MIRAI_OTHERTYPE = 4,
+        MIRAI_BOT = 4,
+        MIRAI_OTHERTYPE = 5,
     };
 
     /// Contact 内部储存数据抽象类
@@ -48,7 +49,7 @@ namespace MiraiCP {
         /// id
         QQID _id{};
         /// 所属的 bot 的 id
-        QQID _botid{};
+        QQID _botId{};
         /// Contact 类型
         ContactType _type = MIRAI_CONTACT;
 
@@ -65,24 +66,16 @@ namespace MiraiCP {
          * @see nlohmann::update
          */
         void updateJson(nlohmann::json &jsonToUpdate) const;
-
-        /**
-         * 获取 QuoteSign
-         * @see Contact::quoteAndSend0
-         */
-        virtual nlohmann::json getQuoteSign() const;
     };
 
     struct GroupRelatedData : public IContactData {
         typedef IContactData Super;
         /// group id
-        QQID _groupid;
+        QQID _groupId;
 
         nlohmann::json internalToJson() const override;
 
-        explicit GroupRelatedData(QQID in_groupid) : _groupid(in_groupid) {}
-
-        nlohmann::json getQuoteSign() const override;
+        explicit GroupRelatedData(QQID in_groupid) : _groupId(in_groupid) {}
     };
 
     /*!
@@ -175,7 +168,7 @@ namespace MiraiCP {
          * 所属bot
          * @note dev: 不会修改，不需要锁
          */
-        QQID botid() const { return InternalData->_botid; };
+        QQID botid() const { return InternalData->_botId; };
 
         /**
          * @brief 回复并发送
@@ -230,19 +223,18 @@ namespace MiraiCP {
          *  - 各种SingleMessage的派生类
          *  - MessageChain
          *  @param msg Message
-         *  @param retryTime 重试次数
          *  @return MessageSource
          */
         template<typename T>
-        MessageSource sendMessage(T &&msg, int retryTime = 3) {
-            return this->unpackMsg(std::forward<T>(msg), retryTime);
+        MessageSource sendMessage(T &&msg) {
+            return this->unpackMsg(MessageChain(std::forward<T>(msg)));
         }
 
     private: // private methods
-        MessageSource quoteAndSend0(std::string msg, const MessageSource &ms);
+        MessageSource quoteAndSend0(std::string msg, const MessageSource &ms) const;
 
         MessageSource quoteAndSend1(const SingleMessage &s, const MessageSource &ms) {
-            return this->quoteAndSend0(s.toMiraiCode(), ms);
+            return this->quoteAndSend0(MessageChain(s).toString(), ms);
         }
 
         MessageSource quoteAndSend1(const std::string &s, const MessageSource &ms) {
@@ -250,7 +242,7 @@ namespace MiraiCP {
         }
 
         MessageSource quoteAndSend1(const MessageChain &mc, const MessageSource &ms) {
-            return this->quoteAndSend0(mc.toMiraiCode(), ms);
+            return this->quoteAndSend0(mc.toString(), ms);
         }
 
     public: // serialization
@@ -297,18 +289,19 @@ namespace MiraiCP {
 
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsgImpl(std::string msg, int retryTime, bool miraicode = false) const;
+        MessageSource sendMsgImpl(std::string msg) const;
 
-        MessageSource unpackMsg(const MiraiCodeable &msg, int retryTime) const {
-            return sendMsgImpl(msg.toMiraiCode(), retryTime, true);
+        MessageSource unpackMsg(const MessageChain &msg) const {
+            return sendMsgImpl(msg.toString());
         }
-
-        MessageSource unpackMsg(std::string msg, int retryTime) const {
-            return sendMsgImpl(std::move(msg), retryTime, false);
+        MessageSource unpackMsg(const MiraiCodeable &msg) const {
+            return sendMsgImpl(MessageChain::deserializationFromMiraiCode(msg.toMiraiCode()).toString());
         }
-
-        MessageSource unpackMsg(const char *msg, int retryTime) const {
-            return sendMsgImpl(std::string(msg), retryTime, false);
+        MessageSource unpackMsg(std::string msg) const {
+            return sendMsgImpl(MessageChain(PlainText(std::move(msg))).toString());
+        }
+        MessageSource unpackMsg(const char *msg) const {
+            return sendMsgImpl(MessageChain(PlainText(msg)).toString());
         }
     };
 

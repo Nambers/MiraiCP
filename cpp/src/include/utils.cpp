@@ -125,11 +125,11 @@ MIRAICP_EXPORT int FUNC_EVENT(const MiraiCP::MiraiCPString &c) {
     int type;
 
     try {
-        if (!j.is_object() || !j.contains("type") || !j["type"].is_number()) {
-            MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("Json格式错误：没有type这一field或这一field不是数字类型");)
+        if (!j.is_object() || !j.contains("eventId") || !j["eventId"].is_number()) {
+            MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("Json格式错误：没有eventId这一field或这一field不是数字类型");)
             return PLUGIN_NORMAL;
         }
-        type = j["type"].get<int>();
+        type = j["eventId"].get<int>();
         if (type != eventTypes::Command && Event::noRegistered(type)) return PLUGIN_NORMAL;
     } catch (...) {
         MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("Json格式错误：解析json时遇到无法预料的异常");)
@@ -138,7 +138,7 @@ MIRAICP_EXPORT int FUNC_EVENT(const MiraiCP::MiraiCPString &c) {
 
     try {
         // core logic
-        Event::incomingEvent(std::move(j), type);
+        Event::incomingEvent(BaseEventData(std::move(j)), type);
     } catch (json::type_error &e) {
         MIRAICP_CRITICAL_NOEXCEPT_BLOCK(Logger::logger.error("json格式化异常,位置：FUNC_EVENT");
                                         Logger::logger.error(e.what());

@@ -19,7 +19,6 @@
 package tech.eritquearcus.miraicp.loader
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.EventPriority
@@ -31,9 +30,8 @@ import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.LoginSolver
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.shared.CPPConfig
-import tech.eritquearcus.miraicp.shared.CPPEvent
+import tech.eritquearcus.miraicp.shared.Packets.Utils.toEventData
 import tech.eritquearcus.miraicp.shared.PublicShared
-import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 
@@ -89,9 +87,7 @@ fun CPPConfig.LoaderConfig.Account.login(selfLoginSolver: LoginSolver? = LoginSo
         }
     }
     b.eventChannel.subscribeAlways<BotOnlineEvent> {
-        event(
-            json.encodeToString(CPPEvent.BotOnline(this.bot.id))
-        )
+        event(toEventData())
     }
     runBlocking {
         b.login()

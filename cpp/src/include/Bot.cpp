@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -28,33 +28,39 @@
 namespace MiraiCP {
 
 
-    struct InternalBot : public IMiraiData {
-        std::string _avatarUrl;
-        std::string _nickOrNameCard;
-        QQID _id;
-        explicit InternalBot(QQID in_botid) : _id(in_botid) {}
-        ~InternalBot() override = default;
+//    struct InternalBot : public IMiraiData {
+//        std::string _avatarUrl;
+//        std::string _nickOrNameCard;
+//        QQID _id;
+//        explicit InternalBot(QQID in_botid) : _id(in_botid) {}
+//        ~InternalBot() override = default;
+//
+//        void deserialize(nlohmann::json in_json) override {} // should never be called
+//
+//        nlohmann::json internalToJson() const override {
+//            return {{"botId", _id}, {"id", _id}, {"type", MIRAI_BOT}};
+//        }
+//
+//        void refreshInfo() override {
+//            nlohmann::json j{{"source", internalToString()}};
+//            LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j)));
+//            _avatarUrl = std::move(tmp.avatarUrl);
+//            _nickOrNameCard = std::move(tmp.nickOrNameCard);
+//        }
+//    };
 
-        void deserialize(nlohmann::json in_json) override {} // should never be called
-
-        nlohmann::json internalToJson() const override {
-            return {{"botid", _id}, {"type", MIRAI_OTHERTYPE}};
-        }
-
-        void refreshInfo() override {
-            nlohmann::json j{{"source", internalToString()}};
-            LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j)));
-            _avatarUrl = std::move(tmp.avatarUrl);
-            _nickOrNameCard = std::move(tmp.nickornamecard);
-        }
-    };
-
-    inline std::shared_ptr<InternalBot> get_bot(QQID id) {
-        static std::unordered_map<QQID, std::shared_ptr<InternalBot>> BotPool;
+    inline std::shared_ptr<IContactData> get_bot(QQID id) {
+        static std::unordered_map<QQID, std::shared_ptr<IContactData>> BotPool;
         static std::mutex mtx;
         std::lock_guard<std::mutex> lck(mtx);
         auto &Ptr = BotPool.try_emplace(id).first->second;
-        if (!Ptr) Ptr = std::make_shared<InternalBot>(id);
+        if (!Ptr){
+            Ptr = std::make_shared<IContactData>();
+            Ptr->_id = id;
+            Ptr->_type = MIRAI_BOT;
+            Ptr->_botId = id;
+            Ptr->forceRefreshNextTime();
+        }
         return Ptr;
     }
 
@@ -67,8 +73,9 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Bot::getFriendList() const {
-        nlohmann::json j{{"botid", InternalData->_id}};
-        std::string temp = KtOperation::ktOperation(KtOperation::QueryBFL, std::move(j));
+        nlohmann::json j{{"contact", toJson()},
+                         {"type",    KtOperation::QueryBotListCode::FriendList}};
+        std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
     }
 
@@ -77,8 +84,9 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Bot::getGroupList() const {
-        nlohmann::json j{{"botid", InternalData->_id}};
-        std::string temp = KtOperation::ktOperation(KtOperation::QueryBGL, std::move(j));
+        nlohmann::json j{{"contact", toJson()},
+                         {"type",    KtOperation::QueryBotListCode::GroupList}};
+        std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
     }
 
@@ -86,12 +94,7 @@ namespace MiraiCP {
         return Tools::VectorToString(getGroupList());
     }
 
-    void Bot::refreshInfo() {
-        InternalData->requestRefresh();
-    }
-
-    Bot::Bot(QQID in_id) : InternalData(get_bot(in_id)) {
-        InternalData->forceRefreshNextTime();
+    Bot::Bot(QQID in_id): Contact(get_bot(in_id)) {
     }
 
     std::string Bot::nick() {
@@ -104,9 +107,5 @@ namespace MiraiCP {
         refreshInfo();
         std::shared_lock<std::shared_mutex> _lck(InternalData->getMutex());
         return InternalData->_avatarUrl;
-    }
-
-    QQID Bot::id() const {
-        return InternalData->_id;
     }
 } // namespace MiraiCP

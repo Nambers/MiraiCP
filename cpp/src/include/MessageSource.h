@@ -66,7 +66,7 @@ namespace MiraiCP {
          * @brief 从json字符串反序列化到MessageSource对象
          * @note json应该为以下格式
          * @code
-         * {"ids":"", "internalids":""}
+         * {"ids":"", "internalIds":""}
          * @endcode
          */
         static MessageSource deserializeFromString(const std::string &source);

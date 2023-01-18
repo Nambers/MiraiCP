@@ -300,7 +300,7 @@ namespace MiraiCP {
         std::string getThreadIdStr() const { return getThreadIdStr(threadId); }
 
     public:
-        MIRAICP_EXPORT static string exceptionType() { return "MiraiCPThreadException"; }
+        static string exceptionType() { return "MiraiCPThreadException"; }
 
     private:
         MIRAICP_EXPORT static std::string getThreadIdStr(const std::thread::id &id);

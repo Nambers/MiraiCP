@@ -19,13 +19,14 @@ package tech.eritquearcus.miraicp.loader
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import tech.eritquearcus.miraicp.shared.CPPConfig
 
 object KotlinMainData {
     val job = Job()
     val coroutineScope = CoroutineScope(job)
     lateinit var loginAccount: List<CPPConfig.LoaderConfig.Account>
-    var alive = true
+    val aliveChan: Channel<Unit> = Channel(0)
 }
 
 

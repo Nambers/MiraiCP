@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,7 @@
 #ifndef MIRAICP_PRO_SINGLEMESSAGE_H
 #define MIRAICP_PRO_SINGLEMESSAGE_H
 
-
+#include "MiraiCPMacros.h"
 #include "MessageSource.h"
 #include "MiraiCode.h"
 #include <array>
@@ -32,8 +32,10 @@ namespace MiraiCP {
     // todo(Antares): delete these after the whole refactor is finished
 #define SINGLEMESSAGE_REFACTOR_ASSERTION(x, y) static_assert((x) == (y), "static assertion failed when refactoring code")
     namespace SingleMessageType {
+        // id 小于 0 的是不能直接发送的消息(仅在接收的 MessageChain 里出现)
         MIRAICP_ITERABLE_ENUM(            // NOLINT(cert-dcl21-cpp)
-                -5,                       // begin at
+                -6,                       // begin at
+                MessageSource_t,          // -6
                 MarketFace_t,             // -5
                 OnlineForwardedMessage_t, // -4
                 OnlineAudio_t,            // -3
@@ -51,20 +53,40 @@ namespace MiraiCP {
                 MusicShare_t              // 9, End = 10
         )
 
+        constexpr const char *miraiCodeNameInternal[] = {
+                "NoExists",      // 0
+                "NoExists",      // 1
+                "NoExists",      // 2
+                "NoExists",      // 3
+                "NoExists",      // 4
+                "NoExists",      // 5
+                "NoExists",      // 6
+                "at",            // 7
+                "atall",         // 8
+                "image",         // 9
+                "app",          // 10
+                "service",      // 11
+                "file",         // 12
+                "face",         // 13
+                "flash",        // 14
+                "musicshare"    // 15
+        };
+
         constexpr const char *messageTypeInternal[] = {
+                "MessageSource",        // -6
                 "MarketFace",             // -5
-                "OnlineForwardedMessage", // -4
+                "ForwardMessage", // -4
                 "OnlineAudio",            // -3
                 "QuoteReply",             // -2
-                "unSupportMessage",       // -1
-                "plainText",              // 0      <-- messageType is here
-                "at",                     // 1
-                "atAll",                  // 2
-                "image",                  // 3
-                "app",                    // 4
-                "service",                // 5
-                "file",                   // 6
-                "face",                   // 7
+                "UnsupportedMessage",       // -1
+                "PlainText",              // 0      <-- messageType is here
+                "At",                     // 1
+                "AtAll",                  // 2
+                "Image",                  // 3
+                "LightApp",               // 4
+                "SimpleServiceMessage",   // 5
+                "FileMessage",            // 6
+                "Face",                   // 7
                 "FlashImage",             // 8
                 "MusicShare",             // 9
         };
@@ -105,6 +127,7 @@ namespace MiraiCP {
 
     public:
         static const char *const *const messageType;
+        static const char *const *const miraiCodeName;
 
         static std::string getTypeString(int type) {
             return messageType[type];
@@ -127,6 +150,13 @@ namespace MiraiCP {
         /// @param value 类型名
         /// @return 如果没找到返回-1
         static int getKey(const std::string &value);
+
+        /**
+         * 寻找对应的 MiraiCode 名称
+         * @param value 名称
+         * @return 如果没找到返回-1
+         */
+        static int getMiraiCodeKey(const std::string &value);
 
     public:
         [[nodiscard]] virtual nlohmann::json toJson() const;
@@ -179,17 +209,20 @@ namespace MiraiCP {
     //  例如 At(const SingleMessage &) 这样的构造函数不应该出现
 
     /// @
-    class At : public SingleMessage {
+    class MIRAICP_EXPORT At : public SingleMessage {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(1, Types::At_t);
             return Types::At_t;
         }
+
         QQID target;
+
         [[nodiscard]] nlohmann::json toJson() const override;
+
         explicit At(const SingleMessage &sg);
 
-        explicit At(QQID a) : SingleMessage(At::type(), std::to_string(a)), target(a){};
+        explicit At(QQID a) : SingleMessage(At::type(), std::to_string(a)), target(a) {};
 
         [[nodiscard]] std::string toMiraiCode() const override {
             return "[mirai:at:" + std::to_string(this->target) + "] "; // 后面有个空格
@@ -201,15 +234,17 @@ namespace MiraiCP {
     };
 
     /// @brief \@全体
-    class AtAll : public SingleMessage {
+    class MIRAICP_EXPORT AtAll : public SingleMessage {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(2, Types::AtAll_t);
             return Types::AtAll_t;
         }
+
         [[nodiscard]] std::string toMiraiCode() const override {
             return "[mirai:atall] ";
         }
+
         [[nodiscard]] nlohmann::json toJson() const override;
 
         AtAll() : SingleMessage(AtAll::type(), "", "") {}
@@ -222,29 +257,32 @@ namespace MiraiCP {
             SINGLEMESSAGE_REFACTOR_ASSERTION(3, Types::Image_t);
             return Types::Image_t;
         }
+
         //图片id，样式:` {xxx}.xx `
         std::string id;
-        /// 可为空, 用`refreshInfo`获取
-        std::optional<std::string> md5;
-        /// 可为0, 来源:用`refreshInfo`可能可以获取或者自己填充, 是isUploaded的必须条件, 默认0
-        size_t size;
-        /// 可为空, 用`refreshInfo`获取
-        std::optional<std::string> url;
-        /// 宽度, 默认0, 单位px
-        int width;
-        /// 长度, 默认0, 单位px
-        int height;
         /*!
          * @brief 图片类型
-         *  - 0 png
-         *  - 1 bmp
-         *  - 2 jpg
-         *  - 3 gif
-         *  - 4 apng
-         *  - 5 unknown
-         *  默认 5
+         *  - png
+         *  - bmp
+         *  - jpg
+         *  - gif
+         *  - apng
+         *  - unknown
+         *  默认 png
          */
-        int imageType;
+        std::string imageType;
+        /// 可为空, 用`refreshInfo`获取
+        std::optional<std::string> md5;
+        /// 可为空, 用`refreshInfo`获取
+        std::optional<std::string> url;
+        /// 可为0, 来源:用`refreshInfo`可能可以获取或者自己填充, 是isUploaded的必须条件, 默认0
+        size_t size{};
+        /// 宽度, 默认0, 单位px
+        int width{};
+        /// 长度, 默认0, 单位px
+        int height{};
+        /// 是否为 emoji
+        bool isEmoji{};
 
         /*!
          * @brief 图片是否已经上传(如果已经上传即表明可以直接用ImageId发送, 如果没有需要手动上传)
@@ -271,13 +309,12 @@ namespace MiraiCP {
         * @detail 图片miraiCode格式例子, `[mirai:image:{图片id}.jpg]`
         * 可以用这个正则表达式找出id `\\[mirai:image:(.*?)\\]`
         */
-        explicit Image(std::string imageId, size_t size = 0, int width = 0, int height = 0, int type = 5)
-            : SingleMessage(Image::type(), std::move(imageId)) {
-            this->id = content; // todo(Antares): 实际上重复的属性
-            this->size = size;
-            this->width = width;
-            this->height = height;
-            this->imageType = type;
+        explicit Image(const std::string &imageId, size_t size = 0, int width = 0, int height = 0,
+                       std::string type = "PNG",
+                       bool isEmoji = false)
+                : SingleMessage(Image::type(), imageId), id(imageId), imageType(std::move(type)), size(size),
+                  width(width), height(height), isEmoji(isEmoji) {
+            // todo(Antares): 实际上重复的属性 id 和 content
         }
 
         /// 刷新信息(获取图片下载Url,md5, size)
@@ -297,7 +334,7 @@ namespace MiraiCP {
     };
 
     /// 闪照, 和Image属性类似
-    class FlashImage : public Image {
+    class MIRAICP_EXPORT FlashImage : public Image {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(8, Types::FlashImage_t);
@@ -308,8 +345,9 @@ namespace MiraiCP {
             return "[mirai:flash:" + this->id + "]";
         }
 
-        explicit FlashImage(const std::string &imageId, size_t size = 0, int width = 0, int height = 0, int type = 0) : Image(imageId, size, width, height, type) {
-            this->SingleMessage::internalType = 8;
+        explicit FlashImage(const std::string &imageId, size_t size = 0, int width = 0, int height = 0,
+                            std::string type = "PNG") : Image(imageId, size, width, height, std::move(type)) {
+            this->SingleMessage::internalType = Types::FlashImage_t;
         }
 
         explicit FlashImage(const Image &img);
@@ -353,14 +391,17 @@ namespace MiraiCP {
 
     /// xml格式的超文本信息
     /// @attention 自带的模板不稳定，可能发出现没有效果
-    class ServiceMessage : public SingleMessage {
+    class MIRAICP_EXPORT ServiceMessage : public SingleMessage {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(5, Types::ServiceMessage_t);
             return Types::ServiceMessage_t;
         }
+
         [[nodiscard]] nlohmann::json toJson() const override;
+
         [[nodiscard]] std::string toMiraiCode() const override;
+
         int id;
 
         /// @brief ServiceMessage
@@ -388,7 +429,7 @@ namespace MiraiCP {
     };
 
     /// 引用信息
-    class QuoteReply : public SingleMessage {
+    class MIRAICP_EXPORT QuoteReply : public SingleMessage {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(-2, Types::QuoteReply_t);
@@ -398,6 +439,7 @@ namespace MiraiCP {
         ShouldNotUse("don't have MiraiCode, use MessageChain.quote instead") std::string toMiraiCode() const override {
             return "";
         }
+
         /// 引用信息的MessageSource
         MessageSource source;
 
@@ -408,15 +450,18 @@ namespace MiraiCP {
         bool operator==(const QuoteReply &qr) const {
             return this->source == qr.source;
         }
+
+        nlohmann::json toJson() const override;
     };
 
     /// 接收到的音频文件, 发送用`Contact.sendAudio`
-    class OnlineAudio : public SingleMessage {
+    class MIRAICP_EXPORT OnlineAudio : public SingleMessage {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(-3, Types::OnlineAudio_t);
             return Types::OnlineAudio_t;
         }
+
         /// 文件名
         std::string filename;
         /// 下载地址
@@ -446,12 +491,13 @@ namespace MiraiCP {
     };
 
     /// @brief 远程(群)文件类型
-    class RemoteFile : public SingleMessage {
+    class MIRAICP_EXPORT RemoteFile : public SingleMessage {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(6, Types::RemoteFile_t);
             return Types::RemoteFile_t;
         }
+
         /// @brief 下载信息
         /// @see RemoteFile
         struct Dinfo {
@@ -506,7 +552,7 @@ namespace MiraiCP {
         /*!
          * @brief 构造远程(群)文件
          * @param i ids
-         * @param ii internalids
+         * @param ii internalIds
          * @param n name
          * @param s size
          * @param p path
@@ -518,7 +564,7 @@ namespace MiraiCP {
         /*!
          * @brief 构造远程(群)文件
          * @param i ids
-         * @param ii internalids
+         * @param ii internalIds
          * @param n name
          * @param s size
          * @param p path
@@ -539,15 +585,20 @@ namespace MiraiCP {
 
     /// 自带表情
     /// @attention 有些表情会变成PlainText类型和\\xxx 的格式
-    class Face : public SingleMessage {
+    class MIRAICP_EXPORT Face : public SingleMessage {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(7, Types::Face_t);
             return Types::Face_t;
         }
+
+        /**
+         * @brief 表情 id
+         */
         int id;
 
         [[nodiscard]] nlohmann::json toJson() const override;
+
         [[nodiscard]] std::string toMiraiCode() const override {
             return "[mirai:face:" + std::to_string(id) + "]";
         }
@@ -560,12 +611,13 @@ namespace MiraiCP {
     };
 
     /// 一些可以被mirai识别的音乐卡片, 如果不能被mirai识别, 那应该被表现成lightApp类型(可能收费/vip歌曲用lightApp, 免费用MusicShare)
-    class MusicShare : public SingleMessage {
+    class MIRAICP_EXPORT MusicShare : public SingleMessage {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(9, Types::MusicShare_t);
             return Types::MusicShare_t;
         }
+
         /// 应用名称, 如NeteaseCloudMusic
         std::string appName;
         /// 歌名
@@ -600,7 +652,7 @@ namespace MiraiCP {
               brief(std::move(brief)) {}
     };
 
-    class MarketFace : public SingleMessage {
+    class MIRAICP_EXPORT MarketFace : public SingleMessage {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(-5, Types::MarketFace_t);
@@ -610,6 +662,7 @@ namespace MiraiCP {
         ShouldNotUse("暂不支持直接发送") std::string toMiraiCode() const override {
             return "";
         }
+
         std::array<uint8_t, 16> faceId;
 
         explicit MarketFace(std::array<uint8_t, 16> id) : SingleMessage(MarketFace::type(), ""), faceId(id) {}
@@ -620,12 +673,13 @@ namespace MiraiCP {
     };
 
     /// @brief 目前不支持的消息类型, 不支持发送
-    class UnSupportMessage : public SingleMessage {
+    class MIRAICP_EXPORT UnSupportMessage : public SingleMessage {
     public:
         static int type() {
             SINGLEMESSAGE_REFACTOR_ASSERTION(-1, Types::UnsupportedMessage_t);
             return Types::UnsupportedMessage_t;
         }
+
         [[nodiscard]] nlohmann::json toJson() const override;
         /// 不支持发送
         ShouldNotUse("不支持直接发送UnSupportMessage") std::string toMiraiCode() const override {

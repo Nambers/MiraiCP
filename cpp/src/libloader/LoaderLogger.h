@@ -17,13 +17,13 @@
 #ifndef MIRAICP_PRO_LOADERLOGGER_H
 #define MIRAICP_PRO_LOADERLOGGER_H
 
-
+#include "MiraiCPMacros.h"
 #include <string>
 #include <vector>
 
 struct _jmethodID;
 namespace LibLoader {
-    class LoaderLogger {
+    class MIRAICP_EXPORT LoaderLogger {
         using string = std::string;
         using wstring = std::wstring;
     public:
@@ -36,7 +36,9 @@ namespace LibLoader {
         /// 实际暴露的接口只有call_logger一个，
         /// MiraiCP插件通过call_logger具体实现多种不同的logger
         void info(const string &) const;
+
         void warning(const string &) const;
+
         void error(const string &) const;
         // wstring support
         void info(const wstring &) const;
@@ -49,7 +51,7 @@ namespace LibLoader {
         void call_logger(const wstring &content, string name, long long id, int level) const;
     };
 
-    extern LoaderLogger logger;
+    MIRAICP_EXPORT extern LoaderLogger logger;
 } // namespace LibLoader
 
 

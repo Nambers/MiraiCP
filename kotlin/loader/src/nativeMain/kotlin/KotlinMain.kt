@@ -21,6 +21,7 @@
 package tech.eritquearcus.miraicp.loader
 
 import MiraiCPLoginSolver
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import net.mamoe.mirai.internal.initMirai
 import net.mamoe.mirai.utils.MiraiExperimentalApi
@@ -28,7 +29,6 @@ import tech.eritquearcus.miraicp.loader.console.Console
 import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
 import tech.eritquearcus.miraicp.loader.console.registerFactory
 import tech.eritquearcus.miraicp.shared.*
-import tech.eritquearcus.miraicp.shared.PublicShared.json
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 import kotlin.system.exitProcess
@@ -37,7 +37,9 @@ actual object KotlinMain {
     actual var exit: () -> Unit = {
         PublicShared.exit()
         KotlinMainData.job.cancel()
-        KotlinMainData.alive = false
+        runBlocking {
+            KotlinMainData.aliveChan.send(Unit)
+        }
         exitProcess(0)
     }
 
@@ -82,7 +84,8 @@ actual object KotlinMain {
         logger.info("⭐已成功加载MiraiCP⭐")
         Console.listen()
         // keep alive
-        while (KotlinMainData.alive) {
+        runBlocking {
+            KotlinMainData.aliveChan.receive()
         }
     }
 }
