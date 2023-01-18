@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Timeout
 import tech.eritquearcus.miraicp.shared.test.TestBase
 import tech.eritquearcus.miraicp.shared.test.TestUtils
 import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -64,8 +65,8 @@ class OperationTest : TestBase() {
         waitUntilEnd()
         val files = group.files.root.resolveFiles("/img/img.png").toList()
         assertEquals(1, files.size)
-        assertEquals(
-            this@OperationTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.md5(),
+        assertContentEquals(
+            this@OperationTest.javaClass.classLoader.getResourceAsStream("img.png")!!.use { it.md5() },
             files[0].md5
         )
     }

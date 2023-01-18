@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,12 +32,6 @@ kotlin {
             kotlinOptions.jvmTarget = "1.8"
         }
         withJava()
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-            testLogging{
-                this.showStandardStreams = true
-            }
-        }
     }
     val hostOs = System.getProperty("os.name")
     when {
@@ -73,5 +67,18 @@ kotlin {
             }
         }
         val nativeMain by getting
+    }
+}
+
+tasks.named<Test>("jvmTest") {
+    useJUnitPlatform()
+    testLogging {
+        showExceptions = true
+        showStandardStreams = true
+        events = setOf(
+            org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
+        )
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
 }
