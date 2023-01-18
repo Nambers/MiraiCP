@@ -15,34 +15,35 @@
 //
 
 // MiraiCP依赖文件(只需要引入这一个)
+
 #include "MiraiCP.hpp"
-#include "MockTests.h"
-using namespace MiraiCP;
-using namespace MockTests;
+#include "mockTests.h"
+
 #define MESSAGE_EQ(msg) a.message[0]->content == #msg
-#define TEST(msg, endMsg, test) \
-    if (MESSAGE_EQ(msg)) {      \
-        test\
-        if(strcmp(#endMsg, "") != 0) testEnd(#endMsg);\
-        return; \
+#define TEST(msg, endMsg, test)                              \
+    if (MESSAGE_EQ(msg)) {                                   \
+        test if (strcmp(#endMsg, "") != 0) testEnd(#endMsg); \
+        return;                                              \
     }
-#define TEST_STARTWITH(msg, endMsg, test) \
-    if (Tools::starts_with(a.message[0]->content, #msg)) {      \
-        test\
-        if(strcmp(#endMsg, "") != 0) testEnd(#endMsg);\
-        return; \
+#define TEST_STARTWITH(msg, endMsg, test)                    \
+    if (Tools::starts_with(a.message[0]->content, #msg)) {   \
+        test if (strcmp(#endMsg, "") != 0) testEnd(#endMsg); \
+        return;                                              \
     }
 
+using namespace MiraiCP;
+using namespace MockTests;
+
 const PluginConfig CPPPlugin::config{
-        "idMockTest",          // 插件id
+        "idMockTest",   // 插件id
         "test",         // 插件名称
         "v1.0",         // 插件版本
         "a",            // 插件作者
         "测试中文描述", // 可选：插件描述
-        // 可选：日期
+                        // 可选：日期
 };
 
-class CustomCommand: public IRawCommand {
+class CustomCommand : public IRawCommand {
 public:
     Config config() override {
         return {"commandPrefix", {"commandPrefix1"}};
@@ -61,7 +62,7 @@ public:
 public:
     void onEnable() override {
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
-            TEST(event, GroupMessageEventTest,)
+            TEST(event, GroupMessageEventTest, )
             TEST(message, groupSendMessageTest, {
                 a.group.sendMessage(a.message);
             })
@@ -72,12 +73,12 @@ public:
                 a.sender.mute(999);
             })
             TEST(upgrade, memberUpgradeTest, {
-                    a.sender.modifyAdmin(true);
+                a.sender.modifyAdmin(true);
             })
             TEST(kick, memberKickTest, {
                 a.sender.kick("X");
             })
-            TEST(recall, messageRecallTest,{
+            TEST(recall, messageRecallTest, {
                 a.message.source->recall();
             })
             TEST(refresh, refreshInfoTest, {
@@ -127,9 +128,10 @@ public:
                 style1.source = "SourceA";
                 style1.brief = "BriefA";
                 ForwardedMessage(
-                {ForwardedNode(12, "a", MessageChain(PlainText("test")), 1),
-                            ForwardedNode(12, "b", ForwardedMessage({ForwardedNode(12, "a", MessageChain(PlainText("test")), 1)}), 1)},
-                ForwardedMessageDisplayStrategy::defaultStrategy()).sendTo(&a.group);
+                        {ForwardedNode(12, "a", MessageChain(PlainText("test")), 1),
+                         ForwardedNode(12, "b", ForwardedMessage({ForwardedNode(12, "a", MessageChain(PlainText("test")), 1)}), 1)},
+                        ForwardedMessageDisplayStrategy::defaultStrategy())
+                        .sendTo(&a.group);
             })
             TEST(sendWithQuote, sendWithQuoteTest, {
                 a.group.quoteAndSendMessage(a.message, a.message.source.value());
@@ -141,14 +143,14 @@ public:
                 announcement.params.pinned = true;
                 announcement.publishTo(a.group);
             })
-            TEST(nextMsg,, {
+            TEST(nextMsg, , {
                 auto msg = a.nextMessage();
-                if(msg[0]->content == "nextMsg1" && msg.size() == 1){
+                if (msg[0]->content == "nextMsg1" && msg.size() == 1) {
                     testEnd("nextMsgTest");
                 }
             })
-            TEST(imgUploaded,, {
-                if(a.message[1].getVal<Image>().isUploaded(a.bot.id())){
+            TEST(imgUploaded, , {
+                if (a.message[1].getVal<Image>().isUploaded(a.bot.id())) {
                     testEnd("imgUploadedTest");
                 }
             })
@@ -158,7 +160,7 @@ public:
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
         });
-        Event::registerEvent<NudgeEvent>([](const NudgeEvent& a) {
+        Event::registerEvent<NudgeEvent>([](const NudgeEvent &a) {
             Logger::logger.info("nudge:" + std::to_string(a.target->id()));
             testEnd("NudgeEventTest");
         });
@@ -213,7 +215,7 @@ public:
             testEnd("BotLeaveEvent");
         });
         Event::registerEvent<MessagePreSendEvent>([](MessagePreSendEvent a) {
-            TEST(MsgPreSend, MessagePreSendEvent,)
+            TEST(MsgPreSend, MessagePreSendEvent, )
         });
         Event::registerEvent<TimeOutEvent>([](TimeOutEvent a) {
             testEnd("TimeOutException");
