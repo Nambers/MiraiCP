@@ -29,7 +29,7 @@ namespace MiraiCP {
         if (!val) {
             val = std::make_shared<Friend::DataType>();
             val->_id = id;
-            val->_botid = botid;
+            val->_botId = botid;
             val->_type = MIRAI_FRIEND;
         }
         return val;
@@ -37,7 +37,7 @@ namespace MiraiCP {
 
     auto GetFriendPool(const json &in_json) {
         try {
-            return GetFriendPool(in_json["id"], in_json["botid"]);
+            return GetFriendPool(in_json["id"], in_json["id2"]);
         } catch (const nlohmann::detail::exception &) {
             throw IllegalArgumentException("构造Friend时传入的json异常", MIRAICP_EXCEPTION_WHERE);
         }
@@ -54,7 +54,7 @@ namespace MiraiCP {
 
         bool needRefresh = false;
 
-        if (in_json.contains("avatarUrl")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickornamecard");
+        if (in_json.contains("avatarUrl")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickOrNameCard");
         else
             needRefresh = true;
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
@@ -65,8 +65,8 @@ namespace MiraiCP {
     }
 
     void Friend::deleteFriend() {
-        json j{{"source", toString()}, {"quit", true}};
-        KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j));
+        json j{{"contact", this->toJson()}, {"quit", true}};
+        MIRAICP_ERROR_HANDLE(KtOperation::ktOperation(KtOperation::RefreshInfo, j), "");
     }
 
     //    void Friend::refreshInfo() {
@@ -76,13 +76,12 @@ namespace MiraiCP {
     //        //            throw FriendException(MIRAICP_EXCEPTION_WHERE);
     //        //        }
     //        //        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
-    //        //        this->_nickOrNameCard = tmp.nickornamecard;
+    //        //        this->_nickOrNameCard = tmp.nickOrNameCard;
     //        //        this->_avatarUrl = tmp.avatarUrl;
     //    }
 
     void Friend::sendNudge() {
-        json j{{"contactSource", toString()}};
-        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, std::move(j));
+        std::string re = KtOperation::ktOperation(KtOperation::SendNudge, toJson());
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone/ipad", MIRAICP_EXCEPTION_WHERE);
     }

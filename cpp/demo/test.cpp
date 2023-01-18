@@ -29,7 +29,9 @@ const PluginConfig CPPPlugin::config{
 };
 
 // 测试全局变量构造
-Member mem(nlohmann::json{{"id", 1234567}, {"botid", 1245634}, {"groupid", 123456}});
+Member mem(nlohmann::json{{"id",      1234567},
+                          {"botId",   1245634},
+                          {"groupId", 123456}});
 Member mem2(123, 456, 789);
 
 // test

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,37 +29,70 @@ namespace MiraiCP {
     /// Event 工厂
     namespace eventTypes {
         enum Types {
-            BaseEvent [[maybe_unused]], // 0
-            GroupMessageEvent,          // 1
-            PrivateMessageEvent,        // 2
-            GroupInviteEvent,           // 3
-            NewFriendRequestEvent,      // 4
-            MemberJoinEvent,            // 5
-            MemberLeaveEvent,           // 6
-            RecallEvent,                // 7
-            BotJoinGroupEvent,          // 8
-            GroupTempMessageEvent,      // 9
-            TimeOutEvent,               // 10
-            BotOnlineEvent,             // 11
-            NudgeEvent,                 // 12
-            BotLeaveEvent,              // 13
-            MemberJoinRequestEvent,     // 14
-            MessagePreSendEvent,        // 15
-            MiraiCPExceptionEvent,      // 16
-            Command,                    // 17
-            count,                      // 事件在此位置前定义，此时count为事件种类数
-            error                       // 出现问题时使用此enum
+            BaseEvent [[maybe_unused]] = -1,
+            BotOnlineEvent,                 // 0
+            BotJoinGroupEvent,              // 1
+            GroupInviteEvent,               // 2
+            BotLeaveEvent,                  // 3
+            FriendMessageEvent,             // 4
+            GroupMessageEvent,              // 5
+            GroupTempMessageEvent,          // 6
+            FriendRecallEvent,              // 7
+            MemberRecallEvent,              // 8
+            MessagePreSendEvent,            // 9
+            NudgeEvent,                     // 10
+            NewFriendRequestEvent,          // 11
+            MemberLeaveEvent,               // 12
+            MemberJoinEvent,                // 13
+            MemberJoinRequestEvent,         // 14
+            TimeOutEvent,                   // 15
+            MiraiCPExceptionEvent = 16,     // 16 todo 暂时保持
+            Command = 17,                   // 17
+            count,                          // 事件在此位置前定义，此时count为事件种类数
+            error                           // 出现问题时使用此enum
         };
     }
+
+    class BaseEventData {
+    public:
+        class BuiltInContact {
+        public:
+            enum ContactType{
+                TypeFriend = 1, // 1
+                TypeGroup,      // 2
+                TypeMember,     // 3
+                TypeBot,        // 4
+                TypeStranger,   // 5
+                TypeAnonymousMember     // 6
+            };
+            QQID id{};
+            QQID botId{};
+            QQID groupId{};
+            ContactType type{};
+
+            explicit BuiltInContact(nlohmann::json in_json);
+
+            std::shared_ptr<Contact> toContactPointer();
+        };
+
+        std::optional<BuiltInContact> subject = std::nullopt;
+        std::optional<BuiltInContact> object = std::nullopt;
+        QQID botId;
+        nlohmann::json eventData;
+
+        explicit BaseEventData(nlohmann::json j);
+    };
 
     /// Event抽象父类
     class MiraiCPEvent {
     public:
         MiraiCPEvent() = default;
+
         virtual ~MiraiCPEvent() = default;
 
     public:
         static eventTypes::Types get_event_type() { return eventTypes::Types::error; }
+
         virtual eventTypes::Types getEventType() const = 0;
     };
 
@@ -84,13 +117,18 @@ namespace MiraiCP {
     /// MessageEvent类型的抽象接口，用于Message类型多态实现
     class IMessageEvent {
     public:
-        /// 获取当前聊天，可能是群，私聊，或群临时回话
+        /// 获取当前聊天，可能是群，私聊，或群临时会话
         virtual Contact *chat() = 0;
-        /// 获取当前聊天，可能是群，私聊，或群临时回话
+
+        /// 获取当前聊天的发送人，可能是群成员，私聊的好友，或群临时会话对应的群成员
         virtual Contact *from() = 0;
+
         virtual MessageChain *getMessageChain() = 0;
+
         virtual const Contact *chat() const = 0;
+
         virtual const Contact *from() const = 0;
+
         virtual const MessageChain *getMessageChain() const = 0;
     };
 
@@ -112,11 +150,11 @@ namespace MiraiCP {
         /// 信息
         MessageChain message;
 
-        //        GroupMessageEvent(QQID botid, Group group, Member sender,
-        //                          MessageChain mc) : BotEvent(botid), group(std::move(group)),
+        //        GroupMessageEvent(QQID botId, Group group, Member sender,
+        //                          MessageChain mc) : BotEvent(botId), group(std::move(group)),
         //                                             sender(std::move(sender)), message(std::move(mc)){};
 
-        explicit GroupMessageEvent(nlohmann::json j);
+        explicit GroupMessageEvent(BaseEventData j);
         /*!
          * @brief 取群聊下一个消息(群聊与本事件一样)
          * @param time 超时时间限制, 单位为ms, 超时后抛出TimeOutException
@@ -137,9 +175,11 @@ namespace MiraiCP {
         Contact *chat() override {
             return &group;
         }
+
         const Contact *chat() const override {
             return &group;
         }
+
         Contact *from() override {
             return &sender;
         }
@@ -161,7 +201,7 @@ namespace MiraiCP {
     class PrivateMessageEvent : public BotEvent<PrivateMessageEvent>, public IMessageEvent {
     public:
         static eventTypes::Types get_event_type() {
-            return eventTypes::Types::PrivateMessageEvent;
+            return eventTypes::Types::FriendMessageEvent;
         }
 
     public:
@@ -177,7 +217,7 @@ namespace MiraiCP {
          * @param message 消息
          * @param messageSource 消息源
          */
-        explicit PrivateMessageEvent(nlohmann::json j);
+        explicit PrivateMessageEvent(BaseEventData j);
 
         /*!
          * @brief 取下一个消息(发送人和接收人和本事件一样)
@@ -192,9 +232,11 @@ namespace MiraiCP {
         Contact *chat() override {
             return &sender;
         }
+
         const Contact *chat() const override {
             return &sender;
         }
+
         Contact *from() override {
             return &sender;
         }
@@ -224,9 +266,11 @@ namespace MiraiCP {
         /// 被邀请进的组
         std::string groupName;
         /// 群号
-        QQID groupid = 0;
-        /// 发起人id
-        QQID inviterid = 0;
+        Group group;
+        /// 邀请的好友, 如果在邀请后删除好友则为空
+        Friend inviter;
+        /// 本次申请 id
+        size_t requestEventId = 0;
 
 
         static void operation0(const std::string &source, QQID botid, bool accept);
@@ -239,21 +283,7 @@ namespace MiraiCP {
             GroupInviteEvent::operation0(this->source, this->bot.id(), true);
         }
 
-        /*!
-         * @brief 群邀请事件
-         * @param botid 当前botid
-         * @param source 序列化后字符串
-         * @param inviterNick 邀请人昵称
-         * @param inviterid 邀请人id
-         * @param groupName 群聊名称
-         * @param groupid 群号
-         */
-        //        GroupInviteEvent(QQID botid, std::string source, std::string inviterNick,
-        //                         QQID inviterid, std::string groupName, QQID groupid)
-        //            : BotEvent(botid), source(std::move(source)), inviterNick(std::move(inviterNick)), groupName(std::move(groupName)),
-        //              groupid(groupid), inviterid(inviterid) {}
-
-        explicit GroupInviteEvent(nlohmann::json j);
+        explicit GroupInviteEvent(BaseEventData j);
     };
 
     /// 好友申请事件声明
@@ -267,16 +297,19 @@ namespace MiraiCP {
         /// @brief 序列化的事件信息
         std::string source;
         /// @brief 对方id
-        QQID fromid;
-        QQID fromgroupid;
+        Friend from;
+        /// 如果是从群聊申请的则为来源群, 否则为空
+        std::optional<Group> fromGroup;
         /// @brief 对方昵称
         std::string nick;
         /// @brief 申请理由
         std::string message;
+        /// @brief 事件识别 id
+        size_t requestEventId;
 
         /// @brief 接受好友申请
         /// @param source 事件序列化信息
-        static void operation0(const std::string &source, QQID botid, bool accept, bool ban = false);
+        static void operation0(const std::string &source, QQID botId, bool accept, bool ban = false);
 
         /// @brief 拒绝好友申请
         /// @param ban - 是否加入黑名单
@@ -289,28 +322,7 @@ namespace MiraiCP {
             NewFriendRequestEvent::operation0(this->source, this->bot.id(), true);
         }
 
-        /*!
-         * @brief 好友申请事件
-         * @param botid 对应botid
-         * @param source 序列化后信息
-         * @param fromid 对方id
-         * @param fromgroupid 从哪个群申请的，否则为0
-         * @param nick 对方昵称
-         * @param message 申请理由
-         */
-        //        NewFriendRequestEvent(QQID botid,
-        //                              std::string source,
-        //                              QQID fromid,
-        //                              QQID fromgroupid,
-        //                              std::string nick,
-        //                              std::string message)
-        //            : BotEvent(botid),
-        //              source(std::move(source)),
-        //              fromid(fromid),
-        //              fromgroupid(fromgroupid),
-        //              nick(std::move(nick)),
-        //              message(std::move(message)) {}
-        explicit NewFriendRequestEvent(nlohmann::json j);
+        explicit NewFriendRequestEvent(BaseEventData j);
     };
 
     /// 新群成员加入
@@ -340,21 +352,21 @@ namespace MiraiCP {
         ///目标群
         Group group;
         ///邀请人, 当type = 1时存在，否则则和member变量相同
-        QQID inviterid;
+        std::optional<Member> inviter;
 
         /*!
          * @brief 新群成员入群事件
-         * @param botid botid
+         * @param botid botId
          * @param type 类别 @see MemberJoinEvent::type
          * @param member 入群群成员
          * @param group 群组
          * @param inviterid 邀请群成员id，如果不存在和member id参数一致
          */
-        //        MemberJoinEvent(QQID botid, int type, const Member &member, const Group &group,
-        //                        QQID inviterid) : BotEvent(botid), type(joinType(type)), member(member),
+        //        MemberJoinEvent(QQID botId, int type, const Member &member, const Group &group,
+        //                        QQID inviterid) : BotEvent(botId), type(joinType(type)), member(member),
         //                                          group(group),
         //                                          inviterid(inviterid) {}
-        explicit MemberJoinEvent(nlohmann::json j);
+        explicit MemberJoinEvent(BaseEventData j);
     };
 
     /// 群成员离开
@@ -366,74 +378,63 @@ namespace MiraiCP {
 
     public:
         /// 退出的成员q号
-        QQID memberid;
+        Member member;
         /// 目标群
         Group group;
         /// 操作人, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
-        QQID operaterid;
+        std::optional<Member> operater;
         /*!
         * @brief 事件类型
         *           1 - 被踢出
         *           2 - 主动退出
         */
         int type = 0;
-        /*!
-         * @brief 群成员离开
-         * @param botid
-         * @param type
-         * @param memberid 退出的群成员
-         * @param group 群
-         * @param operaterid 操作人id, 主动退出时与member相同，该成员可能是当前bot，名称为operater以与系统operator区分
-         */
-        //        MemberLeaveEvent(QQID botid, QQID memberid,
-        //                         Group group,
-        //                         QQID operaterid, int type) : BotEvent(botid), memberid(memberid),
-        //                                                      group(std::move(group)),
-        //                                                      operaterid(operaterid), type(type) {}
-        explicit MemberLeaveEvent(nlohmann::json j);
+        explicit MemberLeaveEvent(BaseEventData j);
     };
 
-    /// 撤回信息
-    class RecallEvent : public BotEvent<RecallEvent> {
+    class FriendRecallEvent: public BotEvent<FriendRecallEvent>{
     public:
         static eventTypes::Types get_event_type() {
-            return eventTypes::Types::RecallEvent;
+            return eventTypes::Types::FriendRecallEvent;
         }
-
     public:
-        /// 为1时是好友私聊中撤回，为2时为群聊内撤回
-        int type = 0;
         /// 时间戳
         int time = 0;
-        /// 原发送者
-        QQID authorid = 0;
-        /// 撤回者
-        QQID operatorid = 0;
+        /// 信息发生着
+        Friend author;
+        /// 信息撤回者
+        Friend operater;
         /// 信息id
         std::string ids;
-        //内部ids
-        std::string internalids;
-        //当type是2的时候存在，否则为0
-        QQID groupid = 0;
+        /// 信息内部ids
+        std::string internalIds;
+        explicit FriendRecallEvent(BaseEventData j);
+    };
+    class MemberRecallEvent: public BotEvent<MemberRecallEvent>{
+    public:
+        static eventTypes::Types get_event_type() {
+            return eventTypes::Types::MemberRecallEvent;
+        }
+    public:
+        /// 时间戳
+        int time = 0;
+        /// 信息发生着
+        Member author;
+        /// 信息撤回者
+        Member operater;
+        /// 信息id
+        std::string ids;
+        /// 信息内部ids
+        std::string internalIds;
 
-        /*!
-         * @brief 撤回事件
-         * @param botid 对应bot
-         * @param type 类型
-         * @param time 时间
-         * @param authorid 发送者id
-         * @param operatorid 撤回者id
-         * @param ids 消息源ids
-         * @param internalids 消息源internalids
-         * @param groupid
-         */
-        //        RecallEvent(QQID botid, int type, int time, QQID authorid,
-        //                    QQID operatorid, std::string ids, std::string internalids,
-        //                    QQID groupid) : BotEvent(botid), type(type), time(time), authorid(authorid),
-        //                                    operatorid(operatorid), ids(std::move(ids)),
-        //                                    internalids(std::move(internalids)),
-        //                                    groupid(groupid) {}
-        explicit RecallEvent(nlohmann::json j);
+        explicit MemberRecallEvent(BaseEventData j);
+    };
+    /// 撤回信息
+    namespace RecallEvent {
+        // deprecated
+        using FriendRecallEvent = FriendRecallEvent;
+        // deprecated
+        using MemberRecallEvent = MemberRecallEvent;
     };
 
     /// 机器人进入某群
@@ -447,26 +448,11 @@ namespace MiraiCP {
         /// 进入的群
         Group group;
         /// 当type=2时存在，为邀请人，否则为空，调用可能会报错
-        QQID inviterid;
+        std::optional<Member> inviter;
         /// 1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
         int type;
 
-        /*!
-         * @brief bot加入群
-         * @param botid 对应bot
-         * @param type 类别
-         * @param group 加入的群
-         * @param inviter 邀请人
-         */
-        //        BotJoinGroupEvent(QQID botid,
-        //                          Group group,
-        //                          QQID inviter,
-        //                          int type)
-        //            : BotEvent(botid),
-        //              group(std::move(group)),
-        //              inviterid(inviter),
-        //              type(type) {}
-        explicit BotJoinGroupEvent(nlohmann::json j);
+        explicit BotJoinGroupEvent(BaseEventData j);
     };
 
     /// 群临时会话
@@ -484,28 +470,17 @@ namespace MiraiCP {
         /// 信息
         MessageChain message;
 
-        /*!
-         * @brief 群临时会话消息事件
-         * @param botid 对应bot
-         * @param group 发起的群
-         * @param sender 发送消息对象
-         * @param message 消息
-         * @param messageSource 消息源
-         */
-        //        GroupTempMessageEvent(QQID botid, Group group, Member sender,
-        //                              MessageChain message) : BotEvent(botid),
-        //                                                      group(std::move(group)),
-        //                                                      sender(std::move(sender)),
-        //                                                      message(std::move(message)) {}
-        explicit GroupTempMessageEvent(nlohmann::json j);
+        explicit GroupTempMessageEvent(BaseEventData j);
 
     public:
         Contact *chat() override {
             return &sender;
         }
+
         const Contact *chat() const override {
             return &sender;
         }
+
         Contact *from() override {
             return &sender;
         }
@@ -566,12 +541,7 @@ namespace MiraiCP {
         /// 发送的环境, 可能为Group / Friend
         std::shared_ptr<Contact> subject;
 
-        //        NudgeEvent(std::shared_ptr<Contact> c, std::shared_ptr<Contact> target, std::shared_ptr<Contact> subject, QQID botid)
-        //            : BotEvent(botid),
-        //              from(std::move(c)),
-        //              target(std::move(target)),
-        //              subject(std::move(subject)) {}
-        explicit NudgeEvent(nlohmann::json j);
+        explicit NudgeEvent(BaseEventData j);
     };
 
     /// 机器人退群事件
@@ -596,19 +566,19 @@ namespace MiraiCP {
     public:
         /// 退出的群
         /// @attension 收到这个事件时已经退出该群, 可能取不到相关信息
-        QQID groupid;
+        Group group;
         EventType type;
-        std::optional<QQID> operatorId = std::nullopt;
+        Member operater;
 
-        //        BotLeaveEvent(QQID ingroupid, QQID botid, int type, QQID operatorId)
-        //            : BotEvent(botid),
-        //              groupid(ingroupid), type(static_cast<EventType>(type)) {
+        //        BotLeaveEvent(QQID ingroupid, QQID botId, int type, QQID operatorId)
+        //            : BotEvent(botId),
+        //              groupId(ingroupid), type(static_cast<EventType>(type)) {
         //            if (operatorId != -1) {
         //                this->operatorId = operatorId;
         //            }
         //        }
 
-        explicit BotLeaveEvent(nlohmann::json j);
+        explicit BotLeaveEvent(BaseEventData j);
     };
 
     /// 申请加群事件, bot需为管理员或者群主
@@ -636,15 +606,16 @@ namespace MiraiCP {
         Group group;
         /// 邀请人, 如果不存在表明这个邀请人退出了群或没有邀请人为主动进群
         std::optional<Member> inviter;
-        /// 申请人id
-        QQID requesterId;
+        /// 申请人
+        Member from;
+        /// 申请人昵称
+        std::string fromNick;
+        /// 申请信息
+        std::string message;
 
     public:
-        //        MemberJoinRequestEvent(std::optional<Group> g, std::optional<Member> i, QQID botid, QQID requesterId,
-        //                               std::string source)
-        //            : BotEvent(botid), source(std::move(source)), group(std::move(g)), inviter(std::move(i)),
-        //              requesterId(requesterId){};
-        explicit MemberJoinRequestEvent(nlohmann::json j);
+        explicit MemberJoinRequestEvent(BaseEventData j);
+
         /// 通过
         void accept() {
             operate(this->source, this->bot.id(), true);
@@ -672,8 +643,8 @@ namespace MiraiCP {
         /// 消息
         MessageChain message;
 
-        //MessagePreSendEvent(std::shared_ptr<Contact> c, MessageChain mc, QQID botid) : BotEvent(botid), target(std::move(c)), message(std::move(mc)) {}
-        explicit MessagePreSendEvent(nlohmann::json j);
+        //MessagePreSendEvent(std::shared_ptr<Contact> c, MessageChain mc, QQID botId) : BotEvent(botId), target(std::move(c)), message(std::move(mc)) {}
+        explicit MessagePreSendEvent(BaseEventData j);
     };
 
     class MiraiCPExceptionBase; // forward declaration
@@ -771,7 +742,7 @@ namespace MiraiCP {
             for (auto &a: processor._all_events_) a.clear();
         }
 
-        static void incomingEvent(nlohmann::json j, int type);
+        static void incomingEvent(BaseEventData j, int type);
         /// 广播一个事件, 必须为MiraiCPEvent的派生类
         template<typename EventClass>
         static void broadcast(EventClass &&val) {
@@ -817,7 +788,7 @@ namespace MiraiCP {
         static std::shared_ptr<NodeHandle> registerBlockingEvent(std::function<bool(EventClass)> callback, priority_level level = 100) {
             static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
-                return callback(*dynamic_cast<EventClass *>(p));
+                return callback(*static_cast<EventClass *>(p));
             };
             auto t = eventNode(tmp);
             auto ans = t.getHandle();

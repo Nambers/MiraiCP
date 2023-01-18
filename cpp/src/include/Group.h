@@ -89,17 +89,17 @@ namespace MiraiCP {
             /// 内容
             std::string content;
             /// 所属bot
-            QQID botid;
+            QQID botId;
             /// 所在群id
-            QQID groupid;
+            QQID groupId;
             /// 发送者id
-            QQID senderid;
+            QQID senderId;
             /// 发送时间戳
             long long publicationTime;
             /// 唯一识别属性
             std::string fid;
             /// 图片id, 如果不存在即为空
-            std::string imageid;
+            std::string imageId;
             /// 如果需要确认，即为确认的人数
             int confirmNum;
             /// 公告属性
@@ -112,12 +112,12 @@ namespace MiraiCP {
             static OnlineAnnouncement deserializeFromJson(const nlohmann::json &);
 
             //            OnlineAnnouncement(std::string content, AnnouncementParams params,
-            //                               QQID groupid, QQID senderid, QQID botid,
+            //                               QQID groupId, QQID senderId, QQID botId,
             //                               long long int publicationTime, std::string fid, int confirmNum,
-            //                               std::string imageid) : content(std::move(content)), botid(botid), params(std::move(params)),
-            //                                                             groupid(groupid), senderid(senderid),
+            //                               std::string imageId) : content(std::move(content)), botId(botId), params(std::move(params)),
+            //                                                             groupId(groupId), senderId(senderId),
             //                                                             publicationTime(publicationTime),
-            //                                                             fid(std::move(fid)), confirmNum(confirmNum), imageid(std::move(imageid)) {}
+            //                                                             fid(std::move(fid)), confirmNum(confirmNum), imageId(std::move(imageId)) {}
         };
 
         /// 本地(未发送)群公告
@@ -146,13 +146,13 @@ namespace MiraiCP {
 
     public: // constructors
         ///  @brief 构建以群号构建群对象
-        /// @param groupid 群号
-        /// @param botid 机器人id
+        /// @param groupId 群号
+        /// @param botId 机器人id
         /// @doxygenEg{1007, group.cpp, 从群号构建群对象}
-        Group(QQID groupid, QQID botid);
+        Group(QQID groupId, QQID botId);
 
         /// @brief 构建群对象，一般为内部调用
-        /// @param in_json 内容至少如下：{"id":123, "botid":456}
+        /// @param in_json 内容至少如下：{"id":123, "botId":456}
         /// @throw IllegalArgumentException
         explicit Group(nlohmann::json in_json);
 
@@ -160,9 +160,9 @@ namespace MiraiCP {
         Group(bool) = delete;
 
     public: // methods
-        /// @brief 获取groupid
+        /// @brief 获取groupId
         /// @note 同 id()
-        INLINE_GETTER(groupid)
+        INLINE_GETTER(groupId)
 
         /**
          * @brief 更新群设置, 即覆盖服务器上的群设置

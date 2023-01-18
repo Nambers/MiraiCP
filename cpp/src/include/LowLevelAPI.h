@@ -24,18 +24,10 @@ namespace MiraiCP {
     /// 较底层api
     class LowLevelAPI {
     public:
-        /// @brief 抽象封装底层发送信息接口
-        /// @param content 信息字符串
-        /// @param c 目标Contact->serialization()
-        /// @param miraicode 是否为miraicode格式
-        /// @return
-        static std::string send0(std::string content, nlohmann::json c, int retryTime, bool miraicode,
-                                 const std::string &errorInfo = "");
-
         /// @brief 取该联系人的一些信息
         /// @param c 该联系人Contact->serializationToString()
         /// @return json格式字符串，待解析
-        static std::string getInfoSource( std::string );
+        static std::string getInfoSource(nlohmann::json c);
 
         /*!
          * @brief 上传图片
@@ -43,11 +35,11 @@ namespace MiraiCP {
          * @param c 上传的对象, Contact->serializationToString()
          * @return string 待解析json
          */
-        static std::string uploadImg0( std::string ,  std::string );
+        static std::string uploadImg0(std::string, nlohmann::json);
 
         /// 每个对象的必有信息
         struct info {
-            std::string nickornamecard;
+            std::string nickOrNameCard;
             std::string avatarUrl;
         };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,6 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
-import kotlinx.serialization.encodeToString
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import net.mamoe.mirai.message.data.PlainText
@@ -26,10 +25,8 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.loader.KotlinMainData
 import tech.eritquearcus.miraicp.loader.console.CommandMultiplatform.pureOrder
 import tech.eritquearcus.miraicp.loader.login
-import tech.eritquearcus.miraicp.shared.CPPEvent
-import tech.eritquearcus.miraicp.shared.Command2C
-import tech.eritquearcus.miraicp.shared.PublicShared.json
-import tech.eritquearcus.miraicp.shared.PublicSharedData
+import tech.eritquearcus.miraicp.shared.*
+import tech.eritquearcus.miraicp.shared.Packets.Utils.commandToEventData
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 import tech.eritquearcus.miraicp.uilts.MiraiCPFiles
 
@@ -123,25 +120,25 @@ object Command {
                     }
 
                     else -> {
-                        event(CPPEvent.LibLoaderEvent("LoadPlugin", f.absolutePath))
+                        event(Packets.Outgoing.LibLoaderEvent("LoadPlugin", f.absolutePath))
                     }
                 }
             }
 
             "disablePlugin", "disable" -> {
-                event(CPPEvent.LibLoaderEvent("DisablePlugin", order[1]))
+                event(Packets.Outgoing.LibLoaderEvent("DisablePlugin", order[1]))
             }
 
             "enablePlugin", "enable" -> {
-                event(CPPEvent.LibLoaderEvent("EnablePlugin", order[1]))
+                event(Packets.Outgoing.LibLoaderEvent("EnablePlugin", order[1]))
             }
 
             "unloadPlugin", "unload" -> {
-                event(CPPEvent.LibLoaderEvent("UnloadPlugin", order[1]))
+                event(Packets.Outgoing.LibLoaderEvent("UnloadPlugin", order[1]))
             }
 
             "reloadPlugin", "reload" -> {
-                event(CPPEvent.LibLoaderEvent("ReloadPlugin", order[1]))
+                event(Packets.Outgoing.LibLoaderEvent("ReloadPlugin", order[1]))
             }
 
             else -> lastOneOrMoreParamOrder(re)
@@ -154,16 +151,7 @@ object Command {
         }?.let { it ->
             val mc = MessageChainBuilder()
             order.drop(1).forEach { mc.append(PlainText(it)) }
-            val tmp = json.encodeToString(
-                Command2C(
-                    null,
-                    0,
-                    mc.build().serializeToJsonString(),
-                    it.bid
-                )
-            )
-            // 为什么之前直接Event了
-            event(tmp)
+            event(commandToEventData(it.bid, null, mc.build().serializeToJsonString(), 0))
             return true
         }
         return false

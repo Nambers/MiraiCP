@@ -32,7 +32,7 @@ namespace MiraiCP {
     /*!
      * @brief 指令 Interface
      * @doxygenEg{1001, command.cpp, 新建自定义命令}
-     * @attention loader端的命令只支持从console传入, plugin端是对接mirai的RawCommand
+     * @attention loader端的命令只支持从console传入, plugin端是对接 mirai 的RawCommand
      */
     class IRawCommand {
         using string = std::string;
@@ -98,8 +98,7 @@ namespace MiraiCP {
                 else
                     throw IllegalArgumentException("找不到合适的bindId", MIRAICP_EXCEPTION_WHERE);
             }
-            nlohmann::json rej{{"command", j.dump()}};
-            std::string re = KtOperation::ktOperation(KtOperation::CommandReg, std::move(rej));
+            std::string re = KtOperation::ktOperation(KtOperation::CommandReg, j);
             return re == "true";
         }
         static CommandManager commandManager;

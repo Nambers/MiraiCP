@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -49,7 +49,7 @@ namespace MiraiCP {
 
     public:
         /// @brief 构建群成员对象，一般为内部调用
-        /// @param in_json 内容至少如下：{"id":123, "groupid":456, "botid":789}
+        /// @param in_json 内容至少如下：{"id":123, "groupId":456, "botId":789}
         /// @throw IllegalArgumentException
         explicit Member(nlohmann::json in_json);
 
@@ -65,7 +65,7 @@ namespace MiraiCP {
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
         DECL_GETTER(anonymous)
         DECL_GETTER(permission)
-        INLINE_GETTER(groupid)
+        INLINE_GETTER(groupId)
 
     public:
         /// @brief 更改群成员权限

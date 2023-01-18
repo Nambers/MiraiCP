@@ -50,10 +50,9 @@ namespace MiraiCP {
     }
 
     MessageSource Contact::sendVoiceImpl(std::string path) const {
-        json source{{"path", std::move(path)}};
-        json j{{"source", source.dump()},
-               {"contactSource", toString()}};
-        std::string re = KtOperation::ktOperation(KtOperation::Voice, std::move(j));
+        json j{{"path", std::move(path)},
+               {"contact", toJson()}};
+        std::string re = KtOperation::ktOperation(KtOperation::Voice, j);
         if (re == "E1") {
             throw UploadException("上传语音文件格式不对(必须为.amr/.silk)或文件不存在", MIRAICP_EXCEPTION_WHERE);
         } else if (re == "E2") {
@@ -64,27 +63,21 @@ namespace MiraiCP {
 
     void IContactData::deserialize(nlohmann::json in_json) {
         using Tools::json_stringmover;
-        _nickOrNameCard = json_stringmover(in_json, "nickornamecard");
+        _nickOrNameCard = json_stringmover(in_json, "nickOrNameCard");
         _avatarUrl = json_stringmover(in_json, "avatarUrl");
     }
 
     void IContactData::refreshInfo() {
         // default to Friend
-        std::string temp = LowLevelAPI::getInfoSource(internalToString());
-        if (temp == "E1") {
-            throw FriendException(MIRAICP_EXCEPTION_WHERE);
-        }
+        std::string temp = LowLevelAPI::getInfoSource(internalToJson());
+        MIRAICP_ERROR_HANDLE(temp, "");
         LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
-        this->_nickOrNameCard = tmp.nickornamecard;
+        this->_nickOrNameCard = tmp.nickOrNameCard;
         this->_avatarUrl = tmp.avatarUrl;
     }
 
     nlohmann::json IContactData::internalToJson() const {
-        return {{"nickornamecard", _nickOrNameCard}, {"id", _id}, {"botid", _botid}, {"type", _type}};
-    }
-
-    nlohmann::json IContactData::getQuoteSign() const {
-        return {{"MiraiCode", true}};
+        return {{"id", _id}, {"botId", _botId}, {"type", _type}};
     }
 
     void IContactData::updateJson(json &json_to_update) const {
@@ -93,47 +86,38 @@ namespace MiraiCP {
 
     nlohmann::json GroupRelatedData::internalToJson() const {
         auto result = IContactData::internalToJson();
-        result["groupid"] = _groupid;
+        result["groupId"] = _groupId;
         return result;
     }
 
-    nlohmann::json GroupRelatedData::getQuoteSign() const {
-        auto ans = Super::getQuoteSign();
-        ans["groupid"] = _groupid;
-        return ans;
-    }
-
-    MessageSource Contact::quoteAndSend0(std::string msg, const MessageSource &ms) {
-        json sign = InternalData->getQuoteSign();
+    MessageSource Contact::quoteAndSend0(std::string msg, const MessageSource &ms) const {
         json obj{{"messageSource", ms.serializeToString()},
                  {"msg",           std::move(msg)},
-                 {"sign",          sign.dump()}};
-        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, std::move(obj));
-        MIRAICP_ERROR_HANDLE(re, "");
+                 {"contact",        toJson()}};
+        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
         return MessageSource::deserializeFromString(re);
     }
 
     Image Contact::uploadImg(const std::string &path) const {
-        std::string re = LowLevelAPI::uploadImg0(path, toString());
+        std::string re = LowLevelAPI::uploadImg0(path, toJson());
         if (re == "E2")
             throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
         return Image::deserialize(re);
     }
 
     FlashImage Contact::uploadFlashImg(const std::string &path) const {
-        std::string re = LowLevelAPI::uploadImg0(path, toString());
+        std::string re = LowLevelAPI::uploadImg0(path, toJson());
         if (re == "E2")
             throw UploadException("上传图片大小超过30MB,路径:" + path, MIRAICP_EXCEPTION_WHERE);
         return FlashImage::deserialize(re);
     }
 
-    MessageSource Contact::sendMsgImpl(std::string msg, int retryTime, bool miraicode) const {
+    MessageSource Contact::sendMsgImpl(std::string msg) const {
         if (msg.empty()) {
             throw IllegalArgumentException("不能发送空信息, 位置: Contact::SendMsg", MIRAICP_EXCEPTION_WHERE);
         }
-        std::string re = LowLevelAPI::send0(std::move(msg), InternalData->toJson(), retryTime, miraicode,
-                                            "reach a error area, Contact::SendMiraiCode");
-        MIRAICP_ERROR_HANDLE(re, "");
+        nlohmann::json j{{"message", std::move(msg)}, {"contact", toJson()}};
+        auto re = KtOperation::ktOperation(KtOperation::Send, j, true, "reach a error area, Contact::sendMsgImpl");
         return MessageSource::deserializeFromString(re);
     }
 } // namespace MiraiCP

@@ -20,6 +20,7 @@
 #include "KtOperation.h"
 #include "Logger.h"
 #include "Tools.h"
+#include "MessageChain.h"
 
 
 namespace MiraiCP {
@@ -29,14 +30,15 @@ namespace MiraiCP {
         return Tools::VectorToString(toMiraiCodeVector(), "");
     }
 
-    MessageSource MessageChain::quoteAndSend0(std::string msg, QQID groupid) {
-        json sign{{"MiraiCode", true},
-                  {"groupid", groupid}};
-        json obj{{"messageSource", source->serializeToString()},
-                 {"msg", std::move(msg)},
-                 {"sign", sign.dump()}};
-        std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, std::move(obj));
-        return MessageSource::deserializeFromString(re);
+    nlohmann::json MessageChain::toJson() const {
+        nlohmann::json j = nlohmann::json::array();
+        for (auto &&a: *this)
+            j.emplace_back(a->toJson());
+        return j;
+    }
+
+    std::string MessageChain::toString() const{
+        return toJson().dump();
     }
 
     //message chain
@@ -56,31 +58,31 @@ namespace MiraiCP {
                 std::string tmp = m.substr(pos, back - pos);
                 tmp = Tools::replace(std::move(tmp), "[mirai:", "");
                 size_t i = tmp.find(':'); // first :
-                int t = SingleMessage::getKey(tmp.substr(0, i));
+                int t = SingleMessage::getMiraiCodeKey(tmp.substr(0, i));
                 switch (t) {
-                    case 0:
+                    case SingleMessageType::PlainText_t:
                         // no miraiCode key is PlainText
                         Logger::logger.error("无法预料的错误, 信息: " + m);
                         break;
-                    case 1:
+                    case SingleMessageType::At_t:
                         mc.add(At(std::stoll(tmp.substr(i + 1, tmp.length() - i - 1))));
                         break;
-                    case 2:
+                    case SingleMessageType::AtAll_t:
                         mc.add(AtAll());
                         break;
-                    case 3:
+                    case SingleMessageType::Image_t:
                         mc.add(Image(tmp.substr(i + 1, tmp.length() - i - 1)));
                         break;
-                    case 4:
+                    case SingleMessageType::LightApp_t:
                         mc.add(LightApp(tmp.substr(i + 1, tmp.length() - i - 1)));
                         break;
-                    case 5: {
+                    case SingleMessageType::ServiceMessage_t: {
                         size_t comma = tmp.find(',');
                         mc.add(ServiceMessage(std::stoi(tmp.substr(i + 1, comma - i - 1)),
                                               tmp.substr(comma + 1, tmp.length() - comma - 1)));
                         break;
                     }
-                    case 6: {
+                    case SingleMessageType::RemoteFile_t: {
                         //[mirai:file:/b53231e8-46dd-11ec-8ba5-5452007bd6c0,102,run.bat,55]
                         size_t comma1 = tmp.find(',');
                         size_t comma2 = tmp.find(',', comma1 + 1);
@@ -91,13 +93,13 @@ namespace MiraiCP {
                                           std::stoll(tmp.substr(comma3 + 1, tmp.length() - comma3 - 1))));
                         break;
                     }
-                    case 7:
+                    case SingleMessageType::Face_t:
                         mc.add(Face(std::stoi(tmp.substr(i + 1, tmp.length() - i - 1))));
                         break;
-                    case 8:
+                    case SingleMessageType::FlashImage_t:
                         mc.add(FlashImage(tmp.substr(i + 1, tmp.length() - i - 1)));
                         break;
-                    case 9: {
+                    case SingleMessageType::MusicShare_t: {
                         //[mirai:musicshare:name,title,summary,jUrl,pUrl,mUrl,brief]
                         auto temp = Tools::split(tmp.substr(i + 1, tmp.length() - i - 1), ",");
                         mc.add(MusicShare(temp[0], temp[1], temp[2], temp[3], temp[4], temp[5], temp[6]));
@@ -138,7 +140,8 @@ namespace MiraiCP {
                                   jArray[1]["musicUrl"], jArray[1]["brief"]));
                 return mc;
             }
-            mc.add(OnlineForwardedMessage::deserializationFromMessageSourceJson(jArray));
+            // todo del MessageSource deserialization methods
+//            mc.add(ForwardedMessage::deserializationFromMessageSourceJson(jArray));
             return mc;
         }
 
@@ -187,6 +190,77 @@ namespace MiraiCP {
                     break;
                 case 8:
                     mc.add(FlashImage(node["imageId"]));
+                    break;
+                default:
+                    Logger::logger.warning(
+                            "MiraiCP碰到了意料之中的错误(原因:接受到的SimpleMessage在MessageSource解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: node:" +
+                            node.dump());
+                    mc.add(UnSupportMessage(node.dump()));
+            }
+        }
+        return mc;
+    }
+
+    MessageChain MessageChain::deserializationFromMessageJson(const json &j) {
+        MessageChain mc;
+        if (j.empty()) return mc;
+        if (!j.is_array())
+            throw IllegalArgumentException(std::string(__func__) + "输入的json应当是数组类型", MIRAICP_EXCEPTION_WHERE);
+        for (auto &node: j.get<json::array_t>()) {
+            switch (SingleMessage::getKey(node["type"])) {
+                case SingleMessageType::MusicShare_t:
+                    mc.add(MusicShare(node["kind"], node["title"], node["summary"], node["jumpUrl"], node["pictureUrl"],
+                                      node["musicUrl"], node["brief"]));
+                    break;
+                case SingleMessageType::ServiceMessage_t:
+                    mc.add(ServiceMessage(node["serviceId"], node["content"]));
+                    break;
+                case SingleMessageType::LightApp_t:
+                    mc.add(LightApp(node["content"]));
+                    break;
+                case SingleMessageType::OnlineAudio_t:
+                    mc.add(OnlineAudio(node["filename"], node["fileMd5"], node["fileSize"], node["codec"],
+                                       node["length"],
+                                       node["urlForDownload"]));
+                    break;
+                case SingleMessageType::MarketFace_t:
+                    mc.add(MarketFace(node["delegate"]["faceId"]));
+                    break;
+                case SingleMessageType::RemoteFile_t:
+                    // note: RemoteFile::deserializeFromString() uses j["finfo"]["size"], which is different from here.
+                    mc.add(RemoteFile(node["id"], node["internalId"], node["name"], node["size"]));
+                    break;
+                case SingleMessageType::MessageSource_t:
+//                    mc.add(MessageSource::deserializeFromString(node.dump()));
+                    break;
+                case SingleMessageType::QuoteReply_t:
+                    mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
+                    break;
+                case SingleMessageType::UnsupportedMessage_t:
+                    mc.add(UnSupportMessage(node["struct"].dump()));
+                    break;
+                case SingleMessageType::PlainText_t:
+                    mc.add(PlainText(node["content"].get<std::string>()));
+                    break;
+                case SingleMessageType::At_t:
+                    mc.add(At(node["target"]));
+                    break;
+                case SingleMessageType::AtAll_t:
+                    mc.add(AtAll());
+                    break;
+                case SingleMessageType::Image_t:
+                    mc.add(Image(node["imageId"], node["size"].get<size_t>(), node["width"].get<int>(),
+                                 node["height"].get<int>(), node["imageType"],
+                                 node["isEmoji"].get<bool>()));
+                    break;
+                case SingleMessageType::Face_t:
+                    mc.add(Face(node["id"]));
+                    break;
+                case SingleMessageType::FlashImage_t:
+                    mc.add(FlashImage(node["imageId"]));
+                    break;
+                case SingleMessageType::OnlineForwardedMessage_t:
+                    mc.add(ForwardedMessage::deserializationFromMessageJson(node));
                     break;
                 default:
                     Logger::logger.warning(

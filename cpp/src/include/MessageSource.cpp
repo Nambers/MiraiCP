@@ -24,8 +24,7 @@
 namespace MiraiCP {
     using json = nlohmann::json;
     void MessageSource::recall() const {
-        json j{{"source", serializeToString()}};
-        std::string re = KtOperation::ktOperation(KtOperation::Recall, std::move(j));
+        std::string re = KtOperation::ktOperationStr(KtOperation::Recall, serializeToString());
         if (re == "E2") throw RecallException(MIRAICP_EXCEPTION_WHERE);
     }
 
