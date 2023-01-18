@@ -10,7 +10,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 enable_testing()
 include(GoogleTest)
-add_subdirectory(plugin/multi)
+add_subdirectory(plugin)
 add_subdirectory(libLoader)
 # -- end test --
 

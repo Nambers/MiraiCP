@@ -38,14 +38,14 @@ ss = """// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
 #define MIRAICP_HPP_H\n\n
 """
 
-fnames = os.listdir('include')
+fnames = os.listdir('include/sdk')
 fnames.sort()
 
 for filename in fnames:
     if filename.endswith('.h'):
         ss += "#include \"{}\"\n".format(filename)
 
-fnames = os.listdir('common')
+fnames = os.listdir('include/common')
 fnames.sort()
 
 for filename in fnames:
@@ -54,7 +54,7 @@ for filename in fnames:
 
 ss += "\n#endif //MIRAICP_HPP_H"
 
-with open('include/MiraiCP.hpp', 'w', encoding='utf-8') as f:
+with open('include/sdk/MiraiCP.hpp', 'w', encoding='utf-8') as f:
     f.write(ss)
 
 print("header file generated successfully")

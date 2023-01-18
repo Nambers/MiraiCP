@@ -1,6 +1,6 @@
 .idea/
 build/
-src/single_include/MiraiCP/**
+single_include/**
 .vs
 x64
 cache
