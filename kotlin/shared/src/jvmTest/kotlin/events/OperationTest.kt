@@ -29,7 +29,6 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.md5
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Timeout
 import tech.eritquearcus.miraicp.shared.test.TestBase
 import tech.eritquearcus.miraicp.shared.test.TestUtils
 import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
@@ -59,7 +58,6 @@ class OperationTest : TestBase() {
     }
 
     @Test
-    @Timeout(10000)
     fun sendFileTest() = runBlocking {
         member.says("sendFile")
         waitUntilEnd()
