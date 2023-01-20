@@ -105,6 +105,12 @@ class OperationTest : TestBase() {
     }
 
     @Test
+    fun sendMessageTestTemp() = runBlocking {
+        member.says("sendTemp")
+        waitUntilEnd()
+    }
+
+    @Test
     fun memberNudgeTest() = runBlocking {
         member.says("nudge")
         // groupMessageEvent + nudgeEvent
