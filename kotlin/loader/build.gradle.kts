@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -100,6 +100,15 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
         attributes["Implementation-Version"] = miraiCP
         attributes["Created-By"] = "Gradle " + gradle.gradleVersion
         attributes["Build-Kotlin"] = Version.kotlin
+    }
+}
+
+afterEvaluate {
+    tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile>("compileKotlinNative").apply {
+        this.configure {
+            this.kotlinOptions.freeCompilerArgs = listOf("-Xllvm-variant=D:\\msys64\\mingw64")
+            // this.kotlinOptions.freeCompilerArgs = listOf("-Xllvm-variant=F:\\Downloads\\llvm-mingw-20220906-ucrt-x86_64")
+        }
     }
 }
 
