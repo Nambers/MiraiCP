@@ -157,6 +157,9 @@ public:
             TEST(changeNameCard, changeNameCardTest, {
                 a.sender.changeNameCard("test");
             })
+            TEST(sendTemp, sendTempTest, {
+                a.sender.sendMessage("x");
+            })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
         });
