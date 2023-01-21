@@ -71,14 +71,12 @@ namespace MiraiCP {
          */
         static MessageSource deserializeFromString(const std::string &source);
 
-        std::string serializeToString() const;
+        [[nodiscard]] std::string serializeToString() const;
 
         /// @brief 撤回该信息
         void recall() const;
 
-        bool operator==(const MessageSource &ms) const {
-            return this->ids == ms.ids && this->internalids == ms.internalids;
-        }
+        bool operator==(const MessageSource &ms) const;
     };
 } // namespace MiraiCP
 

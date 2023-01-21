@@ -32,4 +32,23 @@ namespace MiraiCP {
         handler_trigger(content, level);
         LibLoader::LoaderApi::loggerInterface(content, "", static_cast<long long>(id), level);
     }
+
+    IdLogger::IdLogger(QQID inId, Logger *l) : id(inId) {
+        this->loggerhandler = l->loggerhandler;
+    }
+
+    void Logger_interface::handler_trigger(Logger_interface::string log, int level) {
+        if (!loggerhandler) create_loggerhandler();
+        if (loggerhandler->enable && loggerhandler->action) loggerhandler->action(std::move(log), level);
+    }
+
+    void Logger_interface::registerHandle(Logger_interface::Action action) {
+        if (!this->loggerhandler) create_loggerhandler();
+        this->loggerhandler->action = std::move(action);
+    }
+
+    void Logger_interface::setHandleState(bool state) {
+        if (!this->loggerhandler) create_loggerhandler();
+        this->loggerhandler->enable = state;
+    }
 } // namespace MiraiCP

@@ -74,14 +74,6 @@ namespace MiraiCP {
 
             /// 序列化到文本
             nlohmann::json serializeToJson();
-
-            //            explicit AnnouncementParams(bool send2New = false, bool requireConfirm = false, bool pinned = false,
-            //                                        bool showEditCard = false, bool showPopup = false) : send2new(send2New),
-            //                                                                                             requireConfirm(
-            //                                                                                                     requireConfirm),
-            //                                                                                             pinned(pinned),
-            //                                                                                             showEditCard(showEditCard),
-            //                                                                                             showPopup(showPopup) {}
         };
 
         /// 在线群公告
@@ -110,14 +102,6 @@ namespace MiraiCP {
 
             /// 反序列化
             static OnlineAnnouncement deserializeFromJson(const nlohmann::json &);
-
-            //            OnlineAnnouncement(std::string content, AnnouncementParams params,
-            //                               QQID groupId, QQID senderId, QQID botId,
-            //                               long long int publicationTime, std::string fid, int confirmNum,
-            //                               std::string imageId) : content(std::move(content)), botId(botId), params(std::move(params)),
-            //                                                             groupId(groupId), senderId(senderId),
-            //                                                             publicationTime(publicationTime),
-            //                                                             fid(std::move(fid)), confirmNum(confirmNum), imageId(std::move(imageId)) {}
         };
 
         /// 本地(未发送)群公告
@@ -129,9 +113,6 @@ namespace MiraiCP {
 
             /// 发布群公告
             Group::OnlineAnnouncement publishTo(const Group &);
-
-            //            OfflineAnnouncement(const std::string &content, AnnouncementParams params) : content(content),
-            //                                                                                         params(params) {}
         };
 
         DECL_GETTER(setting)
@@ -158,6 +139,7 @@ namespace MiraiCP {
 
         /// @note dev: avoid unintentional implicit conversion to nlohmann::json
         Group(bool) = delete;
+        ~Group() override = default;
 
     public: // methods
         /// @brief 获取groupId
@@ -194,9 +176,7 @@ namespace MiraiCP {
         /// 取群公告列表
         std::vector<OnlineAnnouncement> getAnnouncementsList();
 
-        /// 刷新群聊信息
-        //void refreshInfo();
-
+        /// 退群
         void quit();
 
         /*!
@@ -209,7 +189,7 @@ namespace MiraiCP {
         RemoteFile sendFile(const std::string &path, const std::string &filepath);
 
         /// 发送语音
-        MessageSource sendVoice( std::string path) {
+        MessageSource sendVoice(std::string path) {
             return sendVoiceImpl(std::move(path));
         }
 
@@ -221,7 +201,7 @@ namespace MiraiCP {
         @see RemoteFile
         @doxygenEg{1009, group.cpp, 获取群文件}
         */
-        RemoteFile getFile(const std::string &path, const std::string &id = "");
+        RemoteFile getFile(const std::string &path, const std::string &id = std::string());
 
         /*!
          * @brief 取文件信息(根据id)

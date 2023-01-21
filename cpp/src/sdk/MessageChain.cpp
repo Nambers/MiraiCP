@@ -14,13 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "MessageChain.h"
 #include "Exception.h"
 #include "ForwardedMessage.h"
 #include "Group.h"
 #include "KtOperation.h"
 #include "Logger.h"
 #include "Tools.h"
-#include "MessageChain.h"
 
 
 namespace MiraiCP {
@@ -37,7 +37,7 @@ namespace MiraiCP {
         return j;
     }
 
-    std::string MessageChain::toString() const{
+    std::string MessageChain::toString() const {
         return toJson().dump();
     }
 
@@ -141,7 +141,7 @@ namespace MiraiCP {
                 return mc;
             }
             // todo del MessageSource deserialization methods
-//            mc.add(ForwardedMessage::deserializationFromMessageSourceJson(jArray));
+            //            mc.add(ForwardedMessage::deserializationFromMessageSourceJson(jArray));
             return mc;
         }
 
@@ -231,7 +231,7 @@ namespace MiraiCP {
                     mc.add(RemoteFile(node["id"], node["internalId"], node["name"], node["size"]));
                     break;
                 case SingleMessageType::MessageSource_t:
-//                    mc.add(MessageSource::deserializeFromString(node.dump()));
+                    //                    mc.add(MessageSource::deserializeFromString(node.dump()));
                     break;
                 case SingleMessageType::QuoteReply_t:
                     mc.add(QuoteReply(MessageSource::deserializeFromString(node["source"].dump())));
@@ -271,4 +271,78 @@ namespace MiraiCP {
         }
         return mc;
     }
+
+    std::vector<std::string> MessageChain::toMiraiCodeVector() const {
+        std::vector<std::string> tmp;
+        for (auto &&a: *this)
+            tmp.emplace_back(a->toMiraiCode());
+        return tmp;
+    }
+
+    MessageChain MessageChain::plus(const MessageChain &mc) const {
+        MessageChain tmp(*this);
+        tmp.insert(tmp.end(), mc.begin(), mc.end());
+        return tmp;
+    }
+
+    MessageChain MessageChain::plus(const MessageSource &ms) const {
+        MessageChain tmp(*this);
+        tmp.source = ms;
+        return tmp;
+    }
+
+    bool MessageChain::operator==(const MessageChain &mc) const {
+        if (size() != mc.size())
+            return false;
+        for (size_t i = 0; i < size(); i++) {
+            if ((*this)[i] != mc[i])
+                return false;
+        }
+        return true;
+    }
+
+    bool MessageChain::operator!=(const MessageChain &mc) const {
+        return !(*this == mc);
+    }
+
+    bool MessageChain::empty() const {
+        return std::vector<Message>::empty() || toMiraiCode().empty();
+    }
+
+    size_t MessageChain::findEnd(const std::string &s, size_t start) {
+        size_t pos = start;
+        while (pos < s.length()) {
+            switch (s[pos]) {
+                case '\\':
+                    pos += 2;
+                    continue;
+                case ']':
+                    return pos;
+            }
+            pos++;
+        }
+        return -1;
+    }
+
+    internal::Message::Message(internal::Message::Super msgptr) noexcept : Super(std::move(msgptr)) {}
+
+    int internal::Message::getType() const {
+        return (*this)->internalType;
+    }
+
+    std::string internal::Message::toMiraiCode() const {
+        return (*this)->toMiraiCode();
+    }
+
+    std::string internal::Message::toJson() const {
+        return (*this)->toJson();
+    }
+
+    bool internal::Message::operator==(const internal::Message &m) const {
+        return (*this)->internalType == m->internalType && (*this)->toMiraiCode() == m->toMiraiCode();
+    }
+
+    bool internal::Message::operator!=(const internal::Message &m) const {
+        return (*this)->internalType != m->internalType || (*this)->toMiraiCode() != m->toMiraiCode();
+    };
 } // namespace MiraiCP

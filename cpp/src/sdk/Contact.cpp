@@ -92,8 +92,8 @@ namespace MiraiCP {
 
     MessageSource Contact::quoteAndSend0(std::string msg, const MessageSource &ms) const {
         json obj{{"messageSource", ms.serializeToString()},
-                 {"msg",           std::move(msg)},
-                 {"contact",        toJson()}};
+                 {"msg", std::move(msg)},
+                 {"contact", toJson()}};
         std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
         return MessageSource::deserializeFromString(re);
     }
@@ -120,4 +120,22 @@ namespace MiraiCP {
         auto re = KtOperation::ktOperation(KtOperation::Send, j, true, "reach a error area, Contact::sendMsgImpl");
         return MessageSource::deserializeFromString(re);
     }
+
+    void Contact::SetInternalData(std::shared_ptr<IContactData> Data) { InternalData = std::move(Data); }
+
+    Contact::Contact(std::shared_ptr<IContactData> Data) {
+        SetInternalData(std::move(Data));
+    }
+
+    ContactType Contact::type() const { return InternalData->_type; }
+
+    QQID Contact::id() const { return InternalData->_id; }
+
+    QQID Contact::botid() const  { return InternalData->_botId; }
+
+    nlohmann::json Contact::toJson() const { return InternalData->toJson(); }
+
+    void Contact::updateJson(json &j) const { InternalData->updateJson(j); }
+
+    std::string Contact::toString() const {return toJson().dump();}
 } // namespace MiraiCP

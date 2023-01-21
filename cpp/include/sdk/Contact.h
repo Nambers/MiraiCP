@@ -98,23 +98,21 @@ namespace MiraiCP {
         Contact() = delete;
 
     protected:
-        explicit Contact(std::shared_ptr<IContactData> Data) {
-            SetInternalData(std::move(Data));
-        }
+        explicit Contact(std::shared_ptr<IContactData> Data);
 
     public:
         /// 虚类 destructor
         virtual ~Contact() = default;
 
         bool operator==(const Contact &c) const {
-            return this->id() == c.id();
+            return id() == c.id();
         }
 
         /**
          * @brief 设置内部数据指针
          * @note dev: 避免直接使用 InternalData, 请使用该接口操作 InternalData 指针
          */
-        void SetInternalData(std::shared_ptr<IContactData> Data) { InternalData = std::move(Data); }
+        void SetInternalData(std::shared_ptr<IContactData> Data);
 
         /**
          * @brief 尝试一次数据刷新
@@ -152,7 +150,7 @@ namespace MiraiCP {
          *     - ContactType::MIRAI_GROUP 群聊
          *     - ContactType::MIRAI_MEMBER 群成员
          */
-        ContactType type() const { return InternalData->_type; }
+        [[nodiscard]] ContactType type() const;
 
         /**
          * @brief id 在全部情况存在
@@ -162,13 +160,13 @@ namespace MiraiCP {
          *      - 当前type为Member时，为群成员id
          * @see MIRAI_CONTACT
          */
-        QQID id() const { return InternalData->_id; }
+        QQID id() const;
 
         /**
          * 所属bot
          * @note dev: 不会修改，不需要锁
          */
-        QQID botid() const { return InternalData->_botId; };
+        QQID botid() const;
 
         /**
          * @brief 回复并发送
@@ -182,7 +180,7 @@ namespace MiraiCP {
          */
         template<typename T>
         MessageSource quoteAndSendMessage(const T &s, MessageSource ms) {
-            return this->quoteAndSend1(s, ms);
+            return quoteAndSend1(s, ms);
         }
 
         /**
@@ -247,18 +245,16 @@ namespace MiraiCP {
 
     public: // serialization
         /// 序列化到json对象
-        nlohmann::json toJson() const { return InternalData->toJson(); }
+        [[nodiscard]] nlohmann::json toJson() const;
 
         /// 将数据序列化进已有的json对象, 覆盖原有数据
-        void updateJson(nlohmann::json &j) const { InternalData->updateJson(j); }
+        void updateJson(nlohmann::json &j) const;
 
         /**
          * 序列化成文本, 可以通过deserializationFromString反序列化, 利于保存
          * @see Contact::fromString()
          */
-        std::string toString() const {
-            return toJson().dump();
-        }
+        std::string toString() const;
 
         /// 反序列化成Contact智能指针
         /// @param source 序列化后的文本
@@ -346,6 +342,7 @@ namespace MiraiCP {
 
     class INudgeSupport {
     public:
+        virtual ~INudgeSupport() = default;
         /*!
          * @brief 发送戳一戳
          * @warning 仅限Friend, Member类调用

@@ -43,15 +43,13 @@ namespace MiraiCP {
                 reset(new T(std::move(msg)));
             }
 
-            explicit Message(Super msgptr) noexcept : Super(std::move(msgptr)) {}
+            explicit Message(Super msgptr) noexcept;
 
             // dev: DON'T write copy and move constructors here, otherwise add operator= overloads. See MessageChain
         public:
             /// 代表的子类
             /// @see MessageChain::messageType
-            [[nodiscard]] int getType() const {
-                return (*this)->internalType;
-            };
+            [[nodiscard]] int getType() const;
 
             /// 取指定类型
             /// @throw IllegalArgumentException
@@ -73,21 +71,12 @@ namespace MiraiCP {
                 return *re;
             }
 
-            [[nodiscard]] std::string toMiraiCode() const {
-                return (*this)->toMiraiCode();
-            }
+            [[nodiscard]] std::string toMiraiCode() const;
 
-            [[nodiscard]] std::string toJson() const {
-                return (*this)->toJson();
-            }
+            [[nodiscard]] std::string toJson() const;
 
-            bool operator==(const Message &m) const {
-                return (*this)->internalType == m->internalType && (*this)->toMiraiCode() == m->toMiraiCode();
-            }
-
-            bool operator!=(const Message &m) const {
-                return (*this)->internalType != m->internalType || (*this)->toMiraiCode() != m->toMiraiCode();
-            }
+            bool operator==(const Message &m) const;
+            bool operator!=(const Message &m) const;
         };
     } // namespace internal
 
@@ -132,21 +121,16 @@ namespace MiraiCP {
             return static_cast<const std::vector<Message> &>(*this);
         }
 
-        std::string toMiraiCode() const override;
+        [[nodiscard]] std::string toMiraiCode() const override;
 
-        std::vector<std::string> toMiraiCodeVector() const {
-            std::vector<std::string> tmp;
-            for (auto &&a: *this)
-                tmp.emplace_back(a->toMiraiCode());
-            return tmp;
-        }
+        [[nodiscard]] std::vector<std::string> toMiraiCodeVector() const;
 
-        nlohmann::json toJson() const;
+        [[nodiscard]] nlohmann::json toJson() const;
         /**
          * @ensure toJson().dump()
          * @return MessageChain serialize to String
          */
-        std::string toString() const;
+        [[nodiscard]] std::string toString() const;
 
         /// @brief 添加元素
         /// @tparam T 任意的SingleMessage的子类
@@ -202,40 +186,20 @@ namespace MiraiCP {
             return tmp;
         }
 
-        [[nodiscard]] MessageChain plus(const MessageChain &mc) const {
-            MessageChain tmp(*this);
-            tmp.insert(tmp.end(), mc.begin(), mc.end());
-            return tmp;
-        }
+        [[nodiscard]] MessageChain plus(const MessageChain &mc) const;
 
-        [[nodiscard]] MessageChain plus(const MessageSource &ms) const {
-            MessageChain tmp(*this);
-            tmp.source = ms;
-            return tmp;
-        }
+        [[nodiscard]] MessageChain plus(const MessageSource &ms) const;
 
         template<class T>
         MessageChain operator+(const T &msg) const {
             return this->plus(msg);
         }
 
-        bool operator==(const MessageChain &mc) const {
-            if (size() != mc.size())
-                return false;
-            for (size_t i = 0; i < size(); i++) {
-                if ((*this)[i] != mc[i])
-                    return false;
-            }
-            return true;
-        }
+        bool operator==(const MessageChain &mc) const;
 
-        bool operator!=(const MessageChain &mc) const {
-            return !(*this == mc);
-        }
+        bool operator!=(const MessageChain &mc) const;
 
-        bool empty() const {
-            return std::vector<Message>::empty() || toMiraiCode().empty();
-        }
+        [[nodiscard]] bool empty() const;
 
         /// @brief 回复并发送
         /// @param s 内容
@@ -255,20 +219,7 @@ namespace MiraiCP {
         /// @param s 文本
         /// @param start 开始位置
         /// @return 如果不存在返回-1, 存在则返回index
-        static size_t findEnd(const std::string &s, size_t start) {
-            size_t pos = start;
-            while (pos < s.length()) {
-                switch (s[pos]) {
-                    case '\\':
-                        pos += 2;
-                        continue;
-                    case ']':
-                        return pos;
-                }
-                pos++;
-            }
-            return -1;
-        }
+        static size_t findEnd(const std::string &s, size_t start);
 
         /// 从miraicode string构建MessageChain
         static MessageChain deserializationFromMiraiCode(const std::string &m);
