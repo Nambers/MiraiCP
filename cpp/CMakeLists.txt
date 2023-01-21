@@ -18,13 +18,11 @@ if (MSVC)
     # Disable RTTI.
     # string(REGEX REPLACE "/GR" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GR-")
-    message("modified cmake cxx flags: ${CMAKE_CXX_FLAGS}")
 else ()
     # 禁止无返回值的函数；禁止unknown-pragmas warning
     add_compile_options(-Wall -Werror=return-type -Wno-unknown-pragmas)
     # Disable RTTI.
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
-    message("modified cmake cxx flags: ${CMAKE_CXX_FLAGS}")
     # hide symbol
     add_link_options(-fvisibility=hidden)
 endif ()
@@ -41,8 +39,11 @@ endif (CMAKE_BUILD_TYPE MATCHES ".*Rel.*")
 
 #
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
-file(GLOB MIRAICP_CPP_PATH ${SRC_PATH}/include/*.cpp)
+set(INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(DEMO_PATH ${CMAKE_CURRENT_SOURCE_DIR}/demo)
+set(THIRD_PARTY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/3rd_include)
 file(GLOB MIRAICP_COMMON_PATH ${SRC_PATH}/common/*.cpp)
+
 option(GOOGLE_TEST "GOOGLE_TEST" ON)
 
 #
@@ -51,14 +52,14 @@ add_compile_definitions(JSON_HAS_CPP_17)
 # -- automatic add include --
 if (WIN32)
     execute_process(
-            COMMAND python ../buildScript/addinclude.py
-            WORKING_DIRECTORY ${SRC_PATH}
+            COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/buildScript/addinclude.py
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif (WIN32)
 if (UNIX)
     execute_process(
-            COMMAND python3 ../buildScript/addinclude.py
-            WORKING_DIRECTORY ${SRC_PATH}
+            COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/buildScript/addinclude.py
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif (UNIX)
 # -- end --
@@ -75,10 +76,10 @@ if (JNI_FOUND)
             ${JAVA_INCLUDE_PATH2}
             )
     set(3RD_PATH
-            ${SRC_PATH}/3rd_include/json
-            ${SRC_PATH}/3rd_include/json/nlohmann
-            ${SRC_PATH}/3rd_include/utf8
-            ${SRC_PATH}/3rd_include/utf8/utf8
+            ${THIRD_PARTY_PATH}/json
+            ${THIRD_PARTY_PATH}/json/nlohmann
+            ${THIRD_PARTY_PATH}/utf8
+            ${THIRD_PARTY_PATH}/utf8/utf8
             )
 else ()
     message(STATUS "Cannot find JNI")
@@ -90,17 +91,17 @@ if (WIN32)
     # must use `\\`
     add_custom_target(
             deleteSingleHeaders
-            COMMAND del single_include\\MiraiCP\\MiraiCP.cpp
-            COMMAND del single_include\\MiraiCP\\MiraiCP.hpp
-            WORKING_DIRECTORY ${SRC_PATH}
+            COMMAND del single_include\\MiraiCP.cpp
+            COMMAND del single_include\\MiraiCP.hpp
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif (WIN32)
 if (UNIX)
     add_custom_target(
             deleteSingleHeaders
-            COMMAND rm single_include/MiraiCP/MiraiCP.cpp
-            COMMAND rm single_include/MiraiCP/MiraiCP.hpp
-            WORKING_DIRECTORY ${SRC_PATH}
+            COMMAND rm single_include/MiraiCP.cpp
+            COMMAND rm single_include/MiraiCP.hpp
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif (UNIX)
 # -- end --
@@ -109,28 +110,28 @@ endif (UNIX)
 if (WIN32)
     add_custom_target(
             generateSingleHeaders
-            COMMAND python ../buildScript/addinclude.py
-            COMMAND python ../buildScript/third-party/config.py
-            COMMAND python ../buildScript/third-party/amalgamate.py -c ../buildScript/third-party/config.json -p ../buildScript/third-party/prologue -s . --verbose=yes
-            COMMAND python ../buildScript/combineSource.py
-            WORKING_DIRECTORY ${SRC_PATH}
+            COMMAND python buildScript/addinclude.py
+            COMMAND python buildScript/third-party/config.py
+            COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
+            COMMAND python buildScript/combineSource.py
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif (WIN32)
 if (UNIX)
     add_custom_target(
             generateSingleHeaders
-            COMMAND python3 ../buildScript/addinclude.py
-            COMMAND python3 ../buildScript/third-party/config.py
-            COMMAND python3 ../buildScript/third-party/amalgamate.py -c ../buildScript/third-party/config.json -p ../buildScript/third-party/prologue -s . --verbose=yes
-            COMMAND python3 ../buildScript/combineSource.py
-            WORKING_DIRECTORY ${SRC_PATH}
+            COMMAND python3 buildScript/addinclude.py
+            COMMAND python3 buildScript/third-party/config.py
+            COMMAND python3 buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
+            COMMAND python3 buildScript/combineSource.py
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif (UNIX)
 # -- end --
 
-add_subdirectory(src/include)
+add_subdirectory(src/sdk)
 add_subdirectory(src/libloader)
 if (GOOGLE_TEST)
     message(STATUS "loading test")
-    add_subdirectory(src/tests)
+    add_subdirectory(tests)
 endif ()

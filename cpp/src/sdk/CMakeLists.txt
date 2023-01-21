@@ -1,8 +1,10 @@
 # -- miraicp multi --
+file(GLOB MIRAICP_CPP_PATH ${SRC_PATH}/sdk/*.cpp)
+
 add_library(
         MiraiCP_multi
         SHARED
-        ${SRC_PATH}/../demo/test.cpp
+        ${DEMO_PATH}/test.cpp
         ${MIRAICP_CPP_PATH}
         ${MIRAICP_COMMON_PATH}
 )
@@ -15,8 +17,8 @@ set_target_properties(
 )
 
 set(SDK_INCLUDES_INTERNAL
-        ${SRC_PATH}/include
-        ${SRC_PATH}/common
+        ${INCLUDE_PATH}/sdk
+        ${INCLUDE_PATH}/common
         ${3RD_PATH})
 set(SDK_INCLUDES_ALL ${SDK_INCLUDES_INTERNAL} PARENT_SCOPE)
 
@@ -27,11 +29,12 @@ target_compile_definitions(MiraiCP_multi PUBLIC MIRAICP_LIB_SDK JSON_MultipleHea
 # -- end --
 
 # -- MiraiCP mock --
+set(MOCK_PATH ${CMAKE_SOURCE_DIR}/mockTest)
 add_library(
         MiraiCP_mock_test
         SHARED
-        ${SRC_PATH}/../mockTest/mockTestEntrance.cpp
-        ${SRC_PATH}/../mockTest/mockTests.cpp
+        ${MOCK_PATH}/mockTestEntrance.cpp
+        ${MOCK_PATH}/mockTests.cpp
         ${MIRAICP_CPP_PATH}
         ${MIRAICP_COMMON_PATH}
 )
@@ -50,21 +53,22 @@ target_compile_definitions(MiraiCP_mock_test PUBLIC MIRAICP_LIB_SDK JSON_Multipl
 # -- end --
 
 # -- MiraiCP single --
-if (NOT EXISTS "${SRC_PATH}/single_include/MiraiCP/MiraiCP.hpp" OR NOT EXISTS "${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp")
-    FILE(WRITE "${SRC_PATH}/single_include/MiraiCP/MiraiCP.hpp" "")
-    FILE(WRITE "${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp" "")
+set(SINGLE_HEADER_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/single_include)
+if (NOT EXISTS "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.hpp" OR NOT EXISTS "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.cpp")
+    FILE(WRITE "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.hpp" "")
+    FILE(WRITE "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.cpp" "")
 endif ()
 
 
 add_library(
         MiraiCP_single
         SHARED
-        ${SRC_PATH}/../demo/test.cpp
-        ${SRC_PATH}/single_include/MiraiCP/MiraiCP.cpp
+        ${DEMO_PATH}/test.cpp
+        ${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.cpp
 )
 target_include_directories(
         MiraiCP_single PUBLIC
-        ${SRC_PATH}/single_include/MiraiCP
+        ${SINGLE_HEADER_OUTPUT_PATH}
         ${3RD_PATH}
 )
 set_target_properties(
@@ -76,7 +80,7 @@ set_target_properties(
 )
 
 add_dependencies(MiraiCP_single generateSingleHeaders)
-target_compile_options(MiraiCP_single PUBLIC -w)
+target_compile_options(MiraiCP_single PUBLIC -w) # disable all warnings!
 target_compile_definitions(MiraiCP_single PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
 # -- end --
 

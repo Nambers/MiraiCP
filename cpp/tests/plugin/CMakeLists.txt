@@ -1,4 +1,4 @@
-file(GLOB Multi_Tests ${SRC_PATH}/tests/plugin/multi/*.cpp)
+file(GLOB Multi_Tests ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_executable(AllTestForPlugin_Multi ${Multi_Tests})
 
 set_target_properties(

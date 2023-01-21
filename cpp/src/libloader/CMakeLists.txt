@@ -1,4 +1,4 @@
-file(GLOB LOADER_PATH ${SRC_PATH}/libloader/*.cpp)
+file(GLOB LOADER_PATH ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 # -- MiraiCP libLoader --
 add_library(Loader
@@ -10,8 +10,8 @@ add_library(Loader
 target_include_directories(Loader PUBLIC
         ${JNI_PATH}
         ${3RD_PATH}
-        ${SRC_PATH}/libloader
-        ${SRC_PATH}/common
+        ${INCLUDE_PATH}/libloader
+        ${INCLUDE_PATH}/common
         )
 
 set_target_properties(Loader PROPERTIES
@@ -48,8 +48,8 @@ add_library(LoaderNative
 target_include_directories(LoaderNative PUBLIC
         ${JNI_PATH}
         ${3RD_PATH}
-        ${SRC_PATH}/libloader
-        ${SRC_PATH}/common
+        ${INCLUDE_PATH}/libloader
+        ${INCLUDE_PATH}/common
         )
 
 set_target_properties(LoaderNative PROPERTIES
