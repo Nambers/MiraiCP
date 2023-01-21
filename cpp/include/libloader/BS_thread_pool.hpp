@@ -620,7 +620,7 @@ namespace BS {
          * @brief A worker function to be assigned to each thread in the pool. Waits until it is notified by push_task() that a task is available, and then retrieves the task from the queue and executes it. Once the task finishes, the worker notifies wait_for_tasks() in case it is waiting.
          */
         void worker() {
-            platform_set_thread_name(platform_thread_self(), "LoaderWorker");
+            platform_set_thread_name("LoaderWorker");
             setThreadIndex();
             while (running) {
                 std::function<void()> task;

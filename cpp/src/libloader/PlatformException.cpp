@@ -24,7 +24,7 @@
 
 #if MIRAICP_WINDOWS
 #include "LoaderLogger.h"
-#include <windows.h>
+#include "WindowsMin.h"
 
 thread_local bool alreadyInHandler;
 
@@ -40,7 +40,7 @@ public:
         if (pluginName.empty()) {
             // test the thread is from jvm
             char threadName[80];
-            platform_get_thread_name(platform_thread_self(), threadName, 80);
+            platform_get_thread_name(threadName, 80);
             if (strcmp(threadName, "libLoader") == 0) {
                 LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
                 exit(1);

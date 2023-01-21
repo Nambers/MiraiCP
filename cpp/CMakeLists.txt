@@ -6,10 +6,10 @@ set(CMAKE_CXX_STANDARD 17) # not working on MSVC
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (WIN32)
-    # See Warning C4668
-    add_compile_definitions(WIN32_LEAN_AND_MEAN)
-endif (WIN32)
+#if (WIN32)
+#    # See Warning C4668
+#    add_compile_definitions(WIN32_LEAN_AND_MEAN)
+#endif (WIN32)
 
 if (MSVC)
     message("MSVC detected")

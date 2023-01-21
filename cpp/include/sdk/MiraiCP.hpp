@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 #ifndef MIRAICP_HPP_H
 #define MIRAICP_HPP_H
 
@@ -45,6 +46,7 @@
 #include "MiraiCPStringInternal.h"
 #include "PlatformThreading.h"
 #include "PluginConfig.h"
+#include "WindowsMin.h"
 #include "commonTools.h"
 #include "commonTypes.h"
 #include "loaderApiInternal.h"
