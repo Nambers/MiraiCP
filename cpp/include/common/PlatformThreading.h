@@ -17,75 +17,10 @@
 #ifndef MIRAICP_PRO_PLATFORMTHREADING_H
 #define MIRAICP_PRO_PLATFORMTHREADING_H
 
-#include "MiraiCPMacros.h"
-// -----------------------
+bool checkPthreadLen(const char *ptr);
 
+void platform_set_thread_name(const char *name) ;
 
-#if MIRAICP_MSVC
-#include <Windows.h>
-#include <processthreadsapi.h>
-#include <string>
-
-inline bool checkPthreadLen(const char *ptr) {
-    size_t count = 0;
-    while ((*ptr) && count <= 80) {
-        ptr++;
-        ++count;
-    }
-    return count <= 80;
-}
-
-inline void *platform_thread_self() {
-    return GetCurrentThread();
-}
-
-inline void platform_set_thread_name(void *platform_thread_self, const char *name) {
-    size_t len = strlen(name);
-    std::wstring wst(len + 1, '#');
-    size_t num_convert;
-    mbstowcs_s(&num_convert, &wst[0], len + 1, name, len + 1);
-    SetThreadDescription(platform_thread_self, &wst[0]);
-}
-
-inline void platform_get_thread_name(void *platform_thread_self, char *buf, size_t bufsize) {
-    wchar_t *wbuf;
-    GetThreadDescription(platform_thread_self, &wbuf);
-    size_t num_convert;
-    wcstombs_s(&num_convert, buf, bufsize, wbuf, bufsize);
-    LocalFree(wbuf);
-}
-#else
-#include <string>
-#include <thread>
-
-inline auto platform_thread_self() {
-    return pthread_self();
-}
-
-inline bool checkPthreadLen(const char *ptr) {
-    size_t count = 0;
-    while ((*ptr) && count <= 15) {
-        ptr++;
-        ++count;
-    }
-    return count <= 15;
-}
-
-inline void platform_set_thread_name(decltype(platform_thread_self()) id, const char *name) {
-    if (checkPthreadLen(name)) {
-        pthread_setname_np(id, name);
-    } else {
-        std::string tNewName;
-        tNewName.reserve(15);
-        tNewName.append(std::string_view(name, 15));
-        pthread_setname_np(id, tNewName.c_str());
-    }
-}
-
-inline void platform_get_thread_name(decltype(platform_thread_self()) id, char *buf, size_t bufsize) {
-    pthread_getname_np(id, buf, bufsize);
-}
-#endif
-
+void platform_get_thread_name(char *buf, size_t bufsize);
 
 #endif //MIRAICP_PRO_PLATFORMTHREADING_H
