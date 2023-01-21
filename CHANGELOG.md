@@ -7,12 +7,17 @@
 + 可能包含少许 API 不兼容, 比如属性改名
 + 不同版本的 libLoader 加载不同版本的插件可能导致加载问题, [PR#154])(https://github.com/Nambers/MiraiCP/issues/154) 引入
 + 完善一些事件信息
++ 性能优化
++ libLoader 引入线程池, 可以使用 pushtask 方法调用
++ **在 Thread local 语境中(包括但不仅限于事件监听 lambda)存的静态数据不可靠**
 + Mirai 版本到 2.14.0-RC
 
 Internal:
 + 优化内部实现
 + 内部重构
 + 增加使用 MockTest 的单元测试
++ TimeOut schedule 变成非阻塞
++ 插件与线程无绑定关系
 
 + 由于 kotlin/native LLVM 后端 GCC 版本不兼容, Native Loader 暂时还无法使用
 
