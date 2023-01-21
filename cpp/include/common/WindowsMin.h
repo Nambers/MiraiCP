@@ -5,6 +5,9 @@
 #ifndef MIRAICP_PRO_WINDOWSMIN_H
 #define MIRAICP_PRO_WINDOWSMIN_H
 
+#include "MiraiCPMacros.h"
+#if MIRAICP_WINDOWS
+
 // 定义下面这些宏以去掉Windows中那些没用的组件
 
 #ifndef FULL_WINTARD
@@ -48,5 +51,6 @@
 
 #include <Windows.h>
 
+#endif //MIRAICP_WINDOWS
 
 #endif //MIRAICP_PRO_WINDOWSMIN_H
