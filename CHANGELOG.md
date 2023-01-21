@@ -1,5 +1,21 @@
 # Change Log
 
+## v2.13.1
++ 修复已知问题:
+	+ 消息解析
+	+ 修复一些事件解析
++ 可能包含少许 API 不兼容, 比如属性改名
++ 可能与之前版本不兼容, [PR#154])(https://github.com/Nambers/MiraiCP/issues/154) 引入
++ 完善一些事件信息
++ Mirai 版本到 2.14.0-RC
+
+Internal:
++ 优化内部实现
++ 内部重构
++ 增加使用 MockTest 的单元测试
+
++ 由于 kotlin/native LLVM 后端 GCC 版本不兼容, Native Loader 暂时还无法使用
+
 ## v2.13.0-alpha-3
 
 * 修复上一个版本已知问题：
