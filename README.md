@@ -140,10 +140,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
 
 # 依赖
-| Dependence name                            | Url                                 | Author             | License                              |
-|--------------------------------------------|-------------------------------------|--------------------|--------------------------------------|
-| JSON for modern C++                        | <https://github.com/nlohmann/json>  | Niels Lohmann      | MIT                                  |
-| UTF8-CPP: UTF-8 with C++ in a Portable Way | <https://github.com/nemtrif/utfcpp> | Nemanja Trifunovic | BSL-1.0                              |
-| JNI Headers                                | Null                                | Java               | GNU General Public License version 2 |
+| Dependence name                                                                 | Url                                        | Author             | License                              |
+|---------------------------------------------------------------------------------|--------------------------------------------|--------------------|--------------------------------------|
+| JSON for modern C++                                                             | <https://github.com/nlohmann/json>         | Niels Lohmann      | MIT                                  |
+| UTF8-CPP: UTF-8 with C++ in a Portable Way                                      | <https://github.com/nemtrif/utfcpp>        | Nemanja Trifunovic | BSL-1.0                              |
+| JNI Headers                                                                     | Null                                       | Java               | GNU General Public License version 2 |
+| BS::thread_pool: a fast, lightweight, and easy-to-use C++17 thread pool library | <https://github.com/bshoshany/thread-pool> | Barak Shoshany     | MIT                                  |
 # Stargazers
 [![Stargazers repo roster for @Nambers/MiraiCP](https://reporoster.com/stars/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/stargazers)
