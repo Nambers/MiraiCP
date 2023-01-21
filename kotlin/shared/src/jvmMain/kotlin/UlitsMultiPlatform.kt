@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,6 @@ import java.io.File
 actual object UlitsMultiPlatform {
 
     actual inline fun <reified T> event(value: T) {
-        println("event:" + if (value is String) value else json.encodeToString(value))
         CPPLibMultiplatform.Event(if (value is String) value else json.encodeToString(value))
     }
 

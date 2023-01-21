@@ -20,6 +20,7 @@ package tech.eritquearcus.miraicp.shared
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
+import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 
 expect object CPPLibMultiplatform {
     fun init(
@@ -60,8 +61,8 @@ object CPPLib {
             val j = json.decodeFromString<Packets.Incoming.OperationPacket>(content)
             Packets.Incoming.operations[Packets.Incoming.OperationCode.values()[j.type]]!!(j.data)
         } catch (e: Exception) {
-            println(e.message)
-            println(content)
+            logger.error(e.message)
+            logger.error(content)
             e.printStackTrace()
             "EA"
         }
