@@ -5,7 +5,7 @@
 	+ 消息解析
 	+ 修复一些事件解析
 + 可能包含少许 API 不兼容, 比如属性改名
-+ 可能与之前版本不兼容, [PR#154])(https://github.com/Nambers/MiraiCP/issues/154) 引入
++ 不同版本的 libLoader 加载不同版本的插件可能导致加载问题, [PR#154])(https://github.com/Nambers/MiraiCP/issues/154) 引入
 + 完善一些事件信息
 + Mirai 版本到 2.14.0-RC
 
