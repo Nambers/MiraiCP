@@ -11,7 +11,7 @@ import os
 
 d = dict()
 d['project'] = "Mirai C++ SDK"
-d['target'] = "single_include/MiraiCP/MiraiCP.hpp"
+d['target'] = "single_include/MiraiCP.hpp"
 
 includePath = list()
 namelist = list()
@@ -32,8 +32,8 @@ def add_directory(dname: str) -> None:
     includePath.append(dname)
 
 
-add_directory("common")
-add_directory("include")
+add_directory("include/common")
+add_directory("include/sdk")
 
 d['sources'] = namelist
 d['include_paths'] = includePath

@@ -1,4 +1,4 @@
-file(GLOB libLoader_Tests ${SRC_PATH}/tests/libLoader/*.cpp)
+file(GLOB libLoader_Tests ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_executable(AllTestForLibLoader ${libLoader_Tests})
 
 set_target_properties(
