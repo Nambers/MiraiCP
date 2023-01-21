@@ -26,29 +26,6 @@
 
 
 namespace MiraiCP {
-
-
-//    struct InternalBot : public IMiraiData {
-//        std::string _avatarUrl;
-//        std::string _nickOrNameCard;
-//        QQID _id;
-//        explicit InternalBot(QQID in_botid) : _id(in_botid) {}
-//        ~InternalBot() override = default;
-//
-//        void deserialize(nlohmann::json in_json) override {} // should never be called
-//
-//        nlohmann::json internalToJson() const override {
-//            return {{"botId", _id}, {"id", _id}, {"type", MIRAI_BOT}};
-//        }
-//
-//        void refreshInfo() override {
-//            nlohmann::json j{{"source", internalToString()}};
-//            LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j)));
-//            _avatarUrl = std::move(tmp.avatarUrl);
-//            _nickOrNameCard = std::move(tmp.nickOrNameCard);
-//        }
-//    };
-
     inline std::shared_ptr<IContactData> get_bot(QQID id) {
         static std::unordered_map<QQID, std::shared_ptr<IContactData>> BotPool;
         static std::mutex mtx;
@@ -99,13 +76,13 @@ namespace MiraiCP {
 
     std::string Bot::nick() {
         refreshInfo();
-        std::shared_lock<std::shared_mutex> _lck(InternalData->getMutex());
+        MIRAICP_DATALOCK;
         return InternalData->_nickOrNameCard;
     }
 
     std::string Bot::avatarUrl() {
         refreshInfo();
-        std::shared_lock<std::shared_mutex> _lck(InternalData->getMutex());
+        MIRAICP_DATALOCK;
         return InternalData->_avatarUrl;
     }
 } // namespace MiraiCP

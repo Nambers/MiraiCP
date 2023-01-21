@@ -50,4 +50,8 @@ namespace MiraiCP {
             throw IllegalArgumentException(std::string("消息源序列化出错，格式不符合(MessageSource::deserializeFromString), ") + e.what(), MIRAICP_EXCEPTION_WHERE);
         }
     }
+
+    bool MessageSource::operator==(const MessageSource &ms) const {
+        return this->ids == ms.ids && this->internalids == ms.internalids;
+    }
 } // namespace MiraiCP

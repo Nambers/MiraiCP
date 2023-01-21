@@ -73,7 +73,7 @@ namespace MiraiCP {
          * @param command 指令
          * @return 是否注册成功
          */
-        template<class T>
+        template<typename T>
         bool registerCommand(T command) {
             static_assert(std::is_base_of_v<IRawCommand, T>, "只支持IRawCommand的派生类");
             nlohmann::json j;
@@ -85,8 +85,8 @@ namespace MiraiCP {
             j["override"] = command.config().overrideOrigin;
             j["preFixOption"] = command.config().preFixOption;
             size_t before = commandList.size();
-            std::shared_ptr<IRawCommand> c;
-            c.reset(new T(command));
+            std::shared_ptr<IRawCommand> c = std::make_shared<T>(command);
+            // c.reset(new T(command));
             commandList.push_back(c);
             size_t now = commandList.size();
             if (now - before == 1)

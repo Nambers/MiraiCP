@@ -36,7 +36,7 @@ namespace MiraiCP {
         string source = "聊天记录";
         string summary = "查看1条转发信息";
         std::vector<string> preview{"Name: message"};
-        bool operator==(const ForwardedMessageDisplayStrategy& other) const;
+        bool operator==(const ForwardedMessageDisplayStrategy &other) const;
 
     public:
         static ForwardedMessageDisplayStrategy defaultStrategy() { return {}; }
@@ -44,21 +44,12 @@ namespace MiraiCP {
     public:
         ForwardedMessageDisplayStrategy() = default;
 
-        ForwardedMessageDisplayStrategy(std::string title, std::string brief, std::string source, std::string summary, std::vector<std::string> preview) : title(std::move(title)), brief(std::move(brief)), source(std::move(source)), summary(std::move(summary)), preview(std::move(preview)) {}
+        ForwardedMessageDisplayStrategy(std::string title, std::string brief, std::string source, std::string summary, std::vector<std::string> preview);
 
     public:
-        nlohmann::json toJson() const{
-            nlohmann::json j;
-            j["title"] = title;
-            j["brief"] = brief;
-            j["source"] = source;
-            j["summary"] = summary;
-            j["preview"] = preview;
-            return j;
-        }
-        static ForwardedMessageDisplayStrategy fromJson(const nlohmann::json& j){
-            return {j["title"], j["brief"], j["source"], j["summary"], j["preview"].get<std::vector<std::string>>()};
-        }
+        [[nodiscard]] nlohmann::json toJson() const;
+
+        static ForwardedMessageDisplayStrategy fromJson(const nlohmann::json &j);
     };
 
     ///聊天记录里每个消息
@@ -83,9 +74,7 @@ namespace MiraiCP {
         /// @param name - 发送者昵称
         /// @param message - 发送的信息
         /// @param time - 发送时间，以时间戳记
-        ForwardedNode(QQID id, std::string name, MessageChain message,
-                      int time)
-            : id(id), name(std::move(name)), message(std::move(message)), time(time), isForwardedMessage(false) {}
+        ForwardedNode(QQID id, std::string name, MessageChain message, int time);
 
         /// @brief 构造聊天记录里每条信息
         /// @param c - 发送者的contact指针
@@ -94,14 +83,14 @@ namespace MiraiCP {
         ForwardedNode(QQID id, std::string name, ForwardedMessage message, int t);
 
     public:
-        bool isForwarded() const { return isForwardedMessage; }
+        [[nodiscard]] bool isForwarded() const { return isForwardedMessage; }
     };
 
     /*!转发消息, 由ForwardNode组成
      * @see class ForwardedNode
      * @doxygenEg{1005, forwardMessage.cpp, 构建聊天记录}
      */
-    class ForwardedMessage: public SingleMessage {
+    class ForwardedMessage : public SingleMessage {
     private:
         /// 每条信息
         std::vector<ForwardedNode> nodes;
@@ -109,26 +98,17 @@ namespace MiraiCP {
         ForwardedMessageDisplayStrategy display;
 
     public:
-        ForwardedNode &operator[](int i) {
+        ForwardedNode &operator[](size_t i) {
             return nodes[i];
         }
 
-        const ForwardedNode &operator[](int i) const {
+        const ForwardedNode &operator[](size_t i) const {
             return nodes[i];
         }
 
-        void add(ForwardedNode &&a) { this->nodes.emplace_back(std::move(a)); }
-        void add(const ForwardedNode &a) { this->nodes.push_back(a); }
+        void add(ForwardedNode a);
 
-        auto &operator+=(const ForwardedNode &a) {
-            this->add(a);
-            return *this;
-        }
-
-        auto &operator+=(ForwardedNode &&a) {
-            this->add(std::move(a));
-            return *this;
-        }
+        auto &operator+=(ForwardedNode a);
 
         bool operator==(const ForwardedMessage &m) const;
 
@@ -137,22 +117,19 @@ namespace MiraiCP {
         *@brief 构建一条聊天记录
         *@details 第一个参数是聊天记录发生的地方, 然后是每条信息
         */
-        ForwardedMessage(std::initializer_list<ForwardedNode> nodes, ForwardedMessageDisplayStrategy display = ForwardedMessageDisplayStrategy::defaultStrategy())
-            : nodes(std::vector(nodes)), display(std::move(display)) {}
+        ForwardedMessage(std::initializer_list<ForwardedNode> nodes, ForwardedMessageDisplayStrategy display = ForwardedMessageDisplayStrategy::defaultStrategy());
 
-        explicit ForwardedMessage(std::vector<ForwardedNode> inNodes, ForwardedMessageDisplayStrategy display = ForwardedMessageDisplayStrategy::defaultStrategy())
-            : nodes(std::move(inNodes)), display(std::move(display)) {}
+        explicit ForwardedMessage(std::vector<ForwardedNode> inNodes, ForwardedMessageDisplayStrategy display = ForwardedMessageDisplayStrategy::defaultStrategy());
 
         ForwardedMessage(const ForwardedMessage &) = default;
         ForwardedMessage(ForwardedMessage &&) = default;
-        nlohmann::json toJson() const override;
+        [[nodiscard]] nlohmann::json toJson() const override;
 
     public:
         /// 发送给群或好友或群成员
         MessageSource sendTo(Contact *c) const;
 
-        nlohmann::json nodesToJson() const;
-
+        [[nodiscard]] nlohmann::json nodesToJson() const;
 
     public:
         static ForwardedMessage deserializationFromMessageJson(const nlohmann::json &j);

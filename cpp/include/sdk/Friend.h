@@ -22,7 +22,7 @@
 
 namespace MiraiCP {
     /// 好友类声明
-    class Friend : public Contact, public INudgeSupport , public ContactDataHelper<Friend, IContactData>{
+    class Friend : public Contact, public INudgeSupport, public ContactDataHelper<Friend, IContactData> {
         friend class Contact;
 
     public:
@@ -40,6 +40,8 @@ namespace MiraiCP {
 
         /// @note dev: avoid unintentional implicit conversion to nlohmann::json
         Friend(bool) = delete;
+
+        ~Friend() override = default;
 
     public:
         /// @brief 删除好友

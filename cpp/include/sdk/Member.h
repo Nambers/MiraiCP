@@ -62,6 +62,7 @@ namespace MiraiCP {
         /// @note dev: avoid unintentional implicit conversion to nlohmann::json
         Member(bool) = delete;
 
+        ~Member() override = default;
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
         DECL_GETTER(anonymous)
         DECL_GETTER(permission)
