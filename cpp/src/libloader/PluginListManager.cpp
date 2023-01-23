@@ -94,21 +94,22 @@ namespace LibLoader {
     /// 如果插件id重复则应该取消加载
     bool PluginListManager::addNewPlugin(const std::shared_ptr<Plugin> &pluginPtr) {
         std::unique_lock lk(pluginlist_mtx);
+        Plugin &pluginObject = *pluginPtr;
 
-        if (!pluginPtr->isLoaded()) {
-            throw PluginNotLoadedException(pluginPtr->path, MIRAICP_EXCEPTION_WHERE);
+        if (!pluginObject.isLoaded()) {
+            throw PluginNotLoadedException(pluginObject.path, MIRAICP_EXCEPTION_WHERE);
         }
 
         // 该函数语境下，插件不会被其他线程访问到，因为获得的Plugin智能指针刚刚被创建，无需考虑锁的问题
 
-        auto id = pluginPtr->getIdSafe();
+        auto id = pluginObject.getIdSafe();
 
         auto pr = id_plugin_list.insert(std::make_pair(id, pluginPtr));
 
         if (!pr.second) {
             logger.error("Plugin with id: " + id + " Already exists");
-            pluginPtr->unloadPlugin();
-            throw PluginIdDuplicateException(id, pr.first->first, pluginPtr->path, MIRAICP_EXCEPTION_WHERE);
+            pluginObject.unloadPlugin();
+            throw PluginIdDuplicateException(id, pr.first->first, pluginObject.path, MIRAICP_EXCEPTION_WHERE);
         }
 
         return true;
@@ -182,9 +183,10 @@ namespace LibLoader {
         cfg.unloadPlugin();
         cfg.loadPlugin(true);
 
-        if (cfg.getIdSafe() != it->first) {
-            logger.warning("插件id: " + it->first + " 被修改为: " + cfg.getIdSafe());
-            changeKeyInternal(it->first, cfg.getIdSafe());
+        auto safeId = cfg.getIdSafe();
+        if (safeId != it->first) {
+            logger.warning("插件id: " + it->first + " 被修改为: " + safeId);
+            changeKeyInternal(it->first, safeId);
         }
     }
 

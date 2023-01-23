@@ -263,12 +263,13 @@ namespace LibLoader {
         });
     }
 
-    std::shared_ptr<std::future<void>> Plugin::disableInternal() {
+    std::shared_ptr<std::future<void>> Plugin::disableInternal(bool lockedAndWait) {
         if (exit == nullptr) return nullptr;
         _disable();
 
-        return std::make_shared<std::future<void>>(BS::pool->submit([this] {
-            std::shared_lock lk(_mtx);
+        return std::make_shared<std::future<void>>(BS::pool->submit([this, lockedAndWait] {
+            std::shared_lock lk(_mtx, std::defer_lock);
+            if (!lockedAndWait) lk.lock();
             if (!checkValid() || exit == nullptr) {
                 // 任务分派过慢
                 return;
@@ -299,7 +300,7 @@ namespace LibLoader {
 
         // first disable it
         if (enabled) {
-            auto fu = disableInternal();
+            auto fu = disableInternal(true);
             if (fu) {
                 fu->wait();
             }

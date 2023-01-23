@@ -20,14 +20,15 @@ on:
 
 jobs:
   build-libLoader-msvc-4-windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
     - name: checkout  
       uses: actions/checkout@v2
     - name: Set up MSVC
-      uses: ilammy/msvc-dev-cmd@v1
+      uses: ilammy/msvc-dev-cmd@v1.12.0
       with:
-        vsversion: 2017
+        arch: amd64
+        vsversion: 2019
     - name: configure
       run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with msvc
