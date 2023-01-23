@@ -288,25 +288,19 @@ namespace MiraiCP {
     private: // private methods
         void constructMessages() {}
 
-        template<typename T1, typename ... T2, typename = std::enable_if_t<std::is_base_of_v<SingleMessage, typename std::decay_t<T1>>>>
+        template<typename T1, typename ... T2, typename = std::enable_if_t<std::is_base_of_v<SingleMessage, std::decay_t<T1>>>>
         void constructMessages(T1 &&h, T2 &&...args) {
             emplace_back(std::forward<T1>(h));
             constructMessages(std::forward<T2>(args)...);
         }
 
-        template<class... T2>
+        template<typename... T2>
         void constructMessages(const std::string &h, T2 &&...args) {
             emplace_back(PlainText(h));
             constructMessages(std::forward<T2>(args)...);
         }
 
-        template<class... T2>
-        void constructMessages(const char *h, T2 &&...args) {
-            emplace_back(PlainText(h));
-            constructMessages(std::forward<T2>(args)...);
-        }
-
-        template<class... T>
+        template<typename... T>
         void constructMessages(const MessageChain &mc, T &&...args) {
             insert(end(), mc.begin(), mc.end());
             constructMessages(std::forward<T>(args)...);

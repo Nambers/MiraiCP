@@ -58,7 +58,8 @@ public:
         Logger::logger.info("loading test plugin!");
         // 监听
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent a) {
-            a.group.sendMessage(std::string("a") + "a");
+            a.group.sendMessage("a");
+            a.group.sendMessage(std::string("b") + "b");
             Logger::logger.info(a.group.avatarUrl());
             auto r = a.group.getFileById("/e3080b6d-aea9-4d66-9f07-7289cf097cdc");
             Logger::logger.info("file size: ", r.size);
