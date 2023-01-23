@@ -65,7 +65,7 @@ void EventImpl(JSTRING content) {
     std::string str = J_TO_STD_STRING(content);
     auto stringPtr = MiraiCP::MiraiCPString(str);
 
-    if (str.find(R"("type":1000)") != std::string::npos) {
+    if (str.find(R"("eventId":1000)") != std::string::npos) {
         LibLoader::builtInCommand(str);
         return;
     }

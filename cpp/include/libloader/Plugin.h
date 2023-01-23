@@ -47,7 +47,7 @@ namespace LibLoader {
     private: // internal, no lock; literally
         void enableInternal();
 
-        std::shared_ptr<std::future<void>> disableInternal();
+        std::shared_ptr<std::future<void>> disableInternal(bool lockedAndWait = false);
 
         void loadInternal(bool alsoEnablePlugin);
 
