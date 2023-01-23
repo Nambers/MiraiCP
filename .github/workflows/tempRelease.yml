@@ -20,19 +20,12 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
-    # - uses: ilammy/msvc-dev-cmd@v1.12.0
-    #   with:
-    #     vsversion: "2019"
-    - name: Set up GCC
-      uses: egor-tensin/setup-gcc@v1
+    - name: Set up MSVC
+      uses: ilammy/msvc-dev-cmd@v1
       with:
-        version: 9
-        platform: x64
+        vsversion: 2017
     - name: configure
-      env:
-        cc: gcc
-        cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DGOOGLE_TEST=OFF ..
+      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with gcc
       run: cd ./cpp && cmake --build build --config Release --target Loader
     - name: upload
@@ -46,6 +39,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
+    - name: Set up GCC
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: 9
+        platform: x64
     - name: configure
       env:
         cc: gcc
