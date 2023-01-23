@@ -19,7 +19,9 @@
 
 
 #include "commonTypes.h"
+#include <functional>
 #include <shared_mutex>
+#include <unordered_map>
 
 
 namespace LibLoader {
