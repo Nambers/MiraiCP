@@ -23,7 +23,7 @@ jobs:
     - name: Set up MSVC
       uses: ilammy/msvc-dev-cmd@v1
       with:
-        vsversion: 2017
+        vsversion: "2017"
     - name: configure
       run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with gcc
@@ -118,7 +118,7 @@ jobs:
     - name: build with gcc
       run: cd ./main/cpp/build && make generateSingleHeaders
     - name: moveCPP
-      run: rm -rf ./tr/${{ github.event.inputs.v }} && mkdir ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/src/single_include/MiraiCP/MiraiCP.hpp" ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/src/single_include/MiraiCP/MiraiCP.cpp" ./tr/${{ github.event.inputs.v }}
+      run: rm -rf ./tr/${{ github.event.inputs.v }} && mkdir ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/single_include/MiraiCP.hpp" ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/single_include/MiraiCP.cpp" ./tr/${{ github.event.inputs.v }}
     - name: moveKt
       run: ls -1 ./main/kotlin/loader/build/libs/MiraiCP-loader-*.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} && ls -1 ./main/kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai2.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} && ls -1 ./main/kotlin/core/build/libs/MiraiCP-core-*.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }}
     #name: print
