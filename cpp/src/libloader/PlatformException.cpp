@@ -158,7 +158,14 @@ private:
         // 插件导致的崩溃，卸载该插件
         alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
-        LibLoader::logger.error("插件" + pluginName + "遇到致命错误! 插件运行终止，信号： SIG" + sigabbrev_np(si->si_signo));
+        LibLoader::logger.error(
+                "插件" + pluginName + "遇到致命错误! 插件运行终止，信号： SIG" +
+#if __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 32
+                sigabbrev_np(si->si_signo)
+#else
+                "NAL" + std::to_string(si->si_signo)
+#endif
+        );
         LibLoader::logger.error("请检查您的插件代码，崩溃发生后的任何行为均未定义，MiraiCP将尽可能尝试继续运行");
         LibLoader::sendPluginException(std::move(pluginName));
 
