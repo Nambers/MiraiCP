@@ -21,13 +21,13 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - windows-latest
+          - windows-2019
           - ubuntu-latest
         include:
-          - os: windows-latest
-            targetName: mingwX64
+          - os: windows-2019
+            targetName: MSVCX64
           - os: ubuntu-latest
-            targetName: linuxX64
+            targetName: LinuxX64
     env:
       isWindows: ${{ startsWith(matrix.os, 'windows') }}
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
@@ -35,30 +35,35 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: configure
-        env:
-          cc: gcc
-          cxx: g++
         run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
 
       - if: ${{ env.isUbuntu == 'true' }}
         name: build with gcc ubuntu
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: 9
+          platform: x64
+        env:
+          cc: gcc
+          cxx: g++
         run: cd cpp/build && make generateSingleHeaders && make MiraiCP_single
       
       - if: ${{ env.isWindows == 'true' }}
-        name: build with gcc win
+        name: build with MSVC
+        uses: ilammy/msvc-dev-cmd@v1.12.0
+        with:
+          arch: amd64
+          vsversion: 2019
         run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single --config Release
 
   windows-mingw-single:
     runs-on: windows-latest
     steps:
-      - name: checkout  
+      - name: checkout
         uses: actions/checkout@v2
       - name: configure
-        env:
-          cc: gcc
-          cxx: g++
         run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
-      - name: build with gcc
+      - name: build with MinGW
         run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single
 
   libLoader:
@@ -68,11 +73,11 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - windows-latest
+          - windows-2019
           - ubuntu-latest
         include:
-          - os: windows-latest
-            targetName: mingwX64
+          - os: windows-2019
+            targetName: MSVCX64
           - os: ubuntu-latest
             targetName: linuxX64
     env:
@@ -82,17 +87,26 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: configure
-        env:
-          cc: gcc
-          cxx: g++
+        
         run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
 
       - if: ${{ env.isUbuntu == 'true' }}
         name: build with gcc ubuntu
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: 9
+          platform: x64
+        env:
+          cc: gcc
+          cxx: g++
         run: cd cpp/build && make Loader
       
       - if: ${{ env.isWindows == 'true' }}
-        name: build with gcc win
+        name: build with MSVC
+        uses: ilammy/msvc-dev-cmd@v1.12.0
+        with:
+          arch: amd64
+          vsversion: 2019
         run: cd ./cpp && cmake --build build --config Release --target Loader
 
   libLoader-native:
@@ -116,15 +130,19 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: configure
-        env:
-          cc: gcc
-          cxx: g++
-        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
+        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
 
       - if: ${{ env.isUbuntu == 'true' }}
         name: build with gcc ubuntu
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: 9
+          platform: x64
+        env:
+          cc: gcc
+          cxx: g++
         run: cd cpp/build && make LoaderNative
       
       - if: ${{ env.isWindows == 'true' }}
-        name: build with gcc win
-        run: cd cpp && cmake --build build --config Release --target LoaderNative
+        name: build with MinGW win
+        run: cd cpp && cmake --build build --target LoaderNative
