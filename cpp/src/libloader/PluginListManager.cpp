@@ -183,9 +183,10 @@ namespace LibLoader {
         cfg.unloadPlugin();
         cfg.loadPlugin(true);
 
-        if (cfg.getIdSafe() != it->first) {
-            logger.warning("插件id: " + it->first + " 被修改为: " + cfg.getIdSafe());
-            changeKeyInternal(it->first, cfg.getIdSafe());
+        auto safeId = cfg.getIdSafe();
+        if (safeId != it->first) {
+            logger.warning("插件id: " + it->first + " 被修改为: " + safeId);
+            changeKeyInternal(it->first, safeId);
         }
     }
 
