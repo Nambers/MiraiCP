@@ -91,9 +91,8 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: configure
-        
         run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
-
+      # Linux
       - name: setup gcc
         if: ${{ env.isUbuntu == 'true' }}
         uses: egor-tensin/setup-gcc@v1
@@ -106,7 +105,7 @@ jobs:
           cc: gcc
           cxx: g++
         run: cd cpp/build && make Loader
-      
+      # Windows
       - name: setup MSVC
         if: ${{ env.isWindows == 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.12.0
@@ -137,9 +136,10 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: configure
-        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
-
+      # Linux
+      - name: configure Linux
+        if: ${{ env.isUbuntu == 'true' }}
+        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
       - name: setup gcc
         if: ${{ env.isUbuntu == 'true' }}
         uses: egor-tensin/setup-gcc@v1
@@ -152,7 +152,10 @@ jobs:
           cc: gcc
           cxx: g++
         run: cd cpp/build && make LoaderNative
-      
-      - if: ${{ env.isWindows == 'true' }}
-        name: build with MinGW win
+      # Windows
+      - name: configure Windows
+        if: ${{ env.isWindows == 'true' }}
+        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
+      - name: build with MinGW win
+        if: ${{ env.isWindows == 'true' }}
         run: cd cpp && cmake --build build --target LoaderNative
