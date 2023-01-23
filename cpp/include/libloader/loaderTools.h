@@ -23,6 +23,7 @@
 #include "PluginData.h"
 #include "commonTools.h"
 #include <fstream>
+#include <json.hpp>
 #include <string>
 #include <thread>
 
