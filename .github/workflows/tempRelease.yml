@@ -23,7 +23,9 @@ jobs:
     - name: Set up MSVC
       uses: ilammy/msvc-dev-cmd@v1.12.0
       with:
-        vsversion: 2017
+        arch: amd64
+        sdk: 10.0.15063.468 # version 1703
+        toolset: 14.11 # VS2017
     - name: configure
       run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with gcc
