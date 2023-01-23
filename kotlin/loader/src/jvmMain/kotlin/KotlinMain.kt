@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,7 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import tech.eritquearcus.miraicp.loader.KotlinMainData.job
 import tech.eritquearcus.miraicp.loader.KotlinMainData.loginAccount
 import tech.eritquearcus.miraicp.loader.console.Console
+import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
 import tech.eritquearcus.miraicp.shared.*
 import tech.eritquearcus.miraicp.shared.PublicShared.now_tag
 import java.io.File
@@ -51,6 +52,7 @@ actual object KotlinMain {
         PublicSharedData.logger.info("⭐MiraiCP启动中⭐")
         PublicSharedData.logger.info("⭐github存储库:https://github.com/Nambers/MiraiCP")
         PublicSharedData.logger.info("⭐MiraiCP-plugin 版本: $now_tag, 构建时间: ${BuiltInConstants.date}, mirai版本: ${BuiltInConstants.miraiVersion}")
+        PublicSharedData.commandReg = LoaderCommandHandlerImpl()
         val tmp = if (c.advanceConfig?.libLoaderPath != null) {
             val tmp2 = File(c.advanceConfig?.libLoaderPath!!)
             if (tmp2.exists() && tmp2.name.startsWith("libLoader") && tmp2.isFile)

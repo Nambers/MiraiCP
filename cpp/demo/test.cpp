@@ -20,17 +20,17 @@
 using namespace MiraiCP;
 
 const PluginConfig CPPPlugin::config{
-        "id1",          // 插件id
-        "test",         // 插件名称
-        "v1.0",         // 插件版本
-        "a",            // 插件作者
+        "测试id",       // 插件id
+        "测试名称",     // 插件名称
+        "v0.0.1",       // 插件版本
+        "大聪明",       // 插件作者
         "测试中文描述", // 可选：插件描述
                         // 可选：日期
 };
 
 // 测试全局变量构造
-Member mem(nlohmann::json{{"id",      1234567},
-                          {"botId",   1245634},
+Member mem(nlohmann::json{{"id", 1234567},
+                          {"botId", 1245634},
                           {"groupId", 123456}});
 Member mem2(123, 456, 789);
 

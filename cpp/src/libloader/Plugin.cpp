@@ -1,4 +1,4 @@
-// Copyright (c) 2022 - 2022. Antares, Eritque arcus and contributors.
+// Copyright (c) 2022 - 2023. Antares, Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-/// 本文件的目的是分离出PluginListManager交互的部分函数实现，方便代码的阅读和维护
+// 本文件的目的是分离出PluginListManager交互的部分函数实现，方便代码的阅读和维护
 #include "MiraiCPMacros.h"
 // -----------------------
 #include "BS_thread_pool.hpp"

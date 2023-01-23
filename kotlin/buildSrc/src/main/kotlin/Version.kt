@@ -24,7 +24,7 @@ object Version {
     const val `kotlinx-coroutines-core` = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     const val `kotlin-test` = "org.jetbrains.kotlin:kotlin-test:$kotlin"
 
-    const val mirai = "2.13.3"
+    const val mirai = "2.14.0-RC"
     const val `mirai-core-api` = "net.mamoe:mirai-core-api:$mirai"
     const val `mirai-core-utils` = "net.mamoe:mirai-core-utils:$mirai"
     const val `mirai-console` = "net.mamoe:mirai-console:$mirai"
