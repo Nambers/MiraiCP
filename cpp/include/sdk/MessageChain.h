@@ -288,10 +288,8 @@ namespace MiraiCP {
     private: // private methods
         void constructMessages() {}
 
-        template<class T1, class... T2>
+        template<typename T1, typename ... T2, typename = std::enable_if_t<std::is_base_of_v<SingleMessage, typename std::decay_t<T1>>>>
         void constructMessages(T1 &&h, T2 &&...args) {
-            static_assert(std::is_base_of_v<SingleMessage, typename std::decay_t<T1>>,
-                          "只支持SingleMessage子类");
             emplace_back(std::forward<T1>(h));
             constructMessages(std::forward<T2>(args)...);
         }
