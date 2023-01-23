@@ -18,6 +18,7 @@
 #include "Exception.h"
 #include "KtOperation.h"
 #include "Tools.h"
+#include "JsonTools.h"
 #include <utility>
 
 
@@ -31,7 +32,7 @@ namespace MiraiCP {
     LowLevelAPI::info LowLevelAPI::info0(const std::string &source) {
         MIRAICP_ERROR_HANDLE(source, "");
         auto j = nlohmann::json::parse(source);
-        info re{Tools::json_stringmover(j, "nickOrNameCard"), Tools::json_stringmover(j, "avatarUrl")};
+        info re{json_stringmover(j, "nickOrNameCard"), json_stringmover(j, "avatarUrl")};
         return re;
     }
 

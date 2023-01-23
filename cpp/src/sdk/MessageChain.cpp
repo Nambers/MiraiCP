@@ -21,6 +21,7 @@
 #include "KtOperation.h"
 #include "Logger.h"
 #include "Tools.h"
+#include <json.hpp>
 
 
 namespace MiraiCP {
@@ -322,6 +323,10 @@ namespace MiraiCP {
             pos++;
         }
         return -1;
+    }
+
+    MessageChain MessageChain::deserializationFromMessageSourceJson(const std::string &msg, bool origin) {
+        return deserializationFromMessageSourceJson(nlohmann::json::parse(msg), origin);
     }
 
     internal::Message::Message(internal::Message::Super msgptr) noexcept : Super(std::move(msgptr)) {}

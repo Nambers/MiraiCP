@@ -16,6 +16,7 @@
 
 #include "Member.h"
 #include "Exception.h"
+#include "JsonTools.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
 #include "Tools.h"
@@ -57,10 +58,10 @@ namespace MiraiCP {
         auto ActualDataPtr = GetDataInternal();
         assert(ActualDataPtr != nullptr);
         bool needrefresh = false;
-        if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickOrNameCard");
+        if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = json_stringmover(in_json, "nickOrNameCard");
         else
             needrefresh = true;
-        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
+        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = json_stringmover(in_json, "avatarUrl");
         else
             needrefresh = true;
         if (in_json.contains("anonymous")) ActualDataPtr->_anonymous = in_json["anonymous"].get<bool>();

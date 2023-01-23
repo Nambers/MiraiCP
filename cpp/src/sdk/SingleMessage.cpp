@@ -16,11 +16,11 @@
 
 #include "SingleMessage.h"
 #include "Exception.h"
+#include "JsonTools.h"
 #include "KtOperation.h"
 #include "Logger.h"
 #include "Tools.h"
 #include "commonTools.h"
-#include <json.hpp>
 
 
 namespace MiraiCP {
@@ -48,7 +48,7 @@ namespace MiraiCP {
     }
 
     nlohmann::json PlainText::toJson() const {
-        return {{"type",    SingleMessage::messageType[this->internalType]},
+        return {{"type", SingleMessage::messageType[this->internalType]},
                 {"content", content}};
     }
 
@@ -85,7 +85,7 @@ namespace MiraiCP {
         this->content = sg.content;
     }
     nlohmann::json At::toJson() const {
-        return {{"type",   SingleMessage::messageType[this->internalType]},
+        return {{"type", SingleMessage::messageType[this->internalType]},
                 {"target", target}};
     }
     At::At(const SingleMessage &sg) : SingleMessage(sg) {
@@ -98,13 +98,13 @@ namespace MiraiCP {
         return {{"type", SingleMessage::messageType[this->internalType]}};
     }
     nlohmann::json Image::toJson() const {
-        return {{"type",      SingleMessage::messageType[this->internalType]},
-                {"imageId",   id},
-                {"size",      size},
-                {"width",     width},
-                {"height",    height},
+        return {{"type", SingleMessage::messageType[this->internalType]},
+                {"imageId", id},
+                {"size", size},
+                {"width", width},
+                {"height", height},
                 {"imageType", imageType},
-                {"isEmoji",   isEmoji}};
+                {"isEmoji", isEmoji}};
     }
 
     bool Image::isUploaded(QQID botid) {
@@ -114,15 +114,15 @@ namespace MiraiCP {
         return re == "true";
     }
     nlohmann::json FlashImage::toJson() const {
-        return {{"type",      SingleMessage::messageType[this->internalType]},
-                {"imageId",   id},
-                {"size",      size},
-                {"width",     width},
-                {"height",    height},
+        return {{"type", SingleMessage::messageType[this->internalType]},
+                {"imageId", id},
+                {"size", size},
+                {"width", width},
+                {"height", height},
                 {"imageType", imageType}};
     }
     nlohmann::json LightApp::toJson() const {
-        return {{"type",    SingleMessage::messageType[this->internalType]},
+        return {{"type", SingleMessage::messageType[this->internalType]},
                 {"content", content}};
     }
     LightApp::LightApp(const SingleMessage &sg) : SingleMessage(sg) {
@@ -135,9 +135,9 @@ namespace MiraiCP {
         return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
     }
     nlohmann::json ServiceMessage::toJson() const {
-        return {{"type",    SingleMessage::messageType[this->internalType]},
+        return {{"type", SingleMessage::messageType[this->internalType]},
                 {"content", content},
-                {"id",      id}};
+                {"id", id}};
     }
     std::string ServiceMessage::toMiraiCode() const {
         return "[mirai:service" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
@@ -149,10 +149,10 @@ namespace MiraiCP {
     }
     nlohmann::json Face::toJson() const {
         return {{"type", SingleMessage::messageType[this->internalType]},
-                {"id",   id}};
+                {"id", id}};
     }
     nlohmann::json UnSupportMessage::toJson() const {
-        return {{"type",    SingleMessage::messageType[this->internalType]},
+        return {{"type", SingleMessage::messageType[this->internalType]},
                 {"struct", content}};
     }
 
@@ -200,27 +200,27 @@ namespace MiraiCP {
         try {
             auto re = RemoteFile(j["id"], j["internalId"], j["name"], j["detailInfo"]["size"]);
             if (j.contains("downloadInfo")) {
-                auto tmp = Tools::json_jsonmover(j, "downloadInfo");
+                auto tmp = json_jsonmover(j, "downloadInfo");
                 struct Dinfo d {
-                    Tools::json_jsonmover(tmp, "url"),
-                    Tools::json_jsonmover(tmp, "md5"),
-                        Tools::json_jsonmover(tmp, "sha1")
+                    json_jsonmover(tmp, "url"),
+                            json_jsonmover(tmp, "md5"),
+                            json_jsonmover(tmp, "sha1")
                 };
                 re.dinfo = d;
             }
             if (j["detailInfo"].contains("uploaderId")) {
-                auto tmp = Tools::json_jsonmover(j, "detailInfo");
+                auto tmp = json_jsonmover(j, "detailInfo");
                 struct Finfo f {
-                        Tools::json_jsonmover(tmp, "size"),
-                        Tools::json_jsonmover(tmp, "uploaderId"),
-                        Tools::json_jsonmover(tmp, "expiryTime"),
-                        Tools::json_jsonmover(tmp, "uploadTime"),
-                        Tools::json_jsonmover(tmp, "lastModifyTime")
+                    json_jsonmover(tmp, "size"),
+                            json_jsonmover(tmp, "uploaderId"),
+                            json_jsonmover(tmp, "expiryTime"),
+                            json_jsonmover(tmp, "uploadTime"),
+                            json_jsonmover(tmp, "lastModifyTime")
                 };
                 re.finfo = f;
             }
             if (j.contains("path"))
-                re.path = Tools::json_jsonmover(j, "path");
+                re.path = json_jsonmover(j, "path");
             return re;
         } catch (json::type_error &e) {
             Logger::logger.error("json格式化失败，位置:RemoteFile");
@@ -266,8 +266,8 @@ namespace MiraiCP {
         if (re == "E1")
             throw RemoteAssetException("图片id格式错误", MIRAICP_EXCEPTION_WHERE);
         json j = json::parse(re);
-        this->url = Tools::json_stringmover(j, "url");
-        this->md5 = Tools::json_stringmover(j, "md5");
+        this->url = json_stringmover(j, "url");
+        this->md5 = json_stringmover(j, "md5");
         this->size = j["size"];
         this->width = j["width"];
         this->height = j["height"];

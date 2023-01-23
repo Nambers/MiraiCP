@@ -16,6 +16,7 @@
 
 #include "Group.h"
 #include "Exception.h"
+#include "JsonTools.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
 #include "Member.h"
@@ -61,10 +62,10 @@ namespace MiraiCP {
 
         bool needRefresh = false;
 
-        if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickOrNameCard");
+        if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = json_stringmover(in_json, "nickOrNameCard");
         else
             needRefresh = true;
-        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
+        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = json_stringmover(in_json, "avatarUrl");
         else
             needRefresh = true;
 
@@ -82,10 +83,10 @@ namespace MiraiCP {
     }
 
     void Group::OnlineAnnouncement::deleteThis() {
-        json j{{"botId",   botId},
+        json j{{"botId", botId},
                {"groupId", groupId},
-               {"fid",     fid},
-               {"type",    KtOperation::AnnouncementOperationCode::Delete}};
+               {"fid", fid},
+               {"type", KtOperation::AnnouncementOperationCode::Delete}};
         std::string re = KtOperation::ktOperation(KtOperation::Announcement, j);
         if (re == "E1")
             throw IllegalArgumentException("无法根据fid找到群公告(群公告不存在)", MIRAICP_EXCEPTION_WHERE);
@@ -103,11 +104,10 @@ namespace MiraiCP {
     }
 
     Group::OnlineAnnouncement Group::OfflineAnnouncement::publishTo(const Group &g) {
-        json j{{"botId",   g.botid()},
+        json j{{"botId", g.botid()},
                {"groupId", g.id()},
-               {"type",    KtOperation::AnnouncementOperationCode::Publish},
-               {"source",  {{"content", content},
-                       {"params",  params.serializeToJson()}}}};
+               {"type", KtOperation::AnnouncementOperationCode::Publish},
+               {"source", {{"content", content}, {"params", params.serializeToJson()}}}};
         std::string re = KtOperation::ktOperation(KtOperation::Announcement, j);
         MIRAICP_ERROR_HANDLE(re, "");
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
@@ -132,7 +132,7 @@ namespace MiraiCP {
 
     std::vector<QQID> Group::getMemberList() {
         nlohmann::json j{{"contact", toJson()},
-                         {"type",    KtOperation::QueryBotListCode::MemberList}};
+                         {"type", KtOperation::QueryBotListCode::MemberList}};
         std::string re = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         MIRAICP_ERROR_HANDLE(re, "");
         return Tools::StringToVector(std::move(re));
@@ -145,11 +145,11 @@ namespace MiraiCP {
 
     void Group::updateSetting(GroupData::GroupSetting newSetting) {
         json j{{"name", std::move(newSetting.name)},
-                 {"isMuteAll", newSetting.isMuteAll},
-                 {"isAllowMemberInvite", newSetting.isAllowMemberInvite},
-                 {"isAutoApproveEnabled", newSetting.isAutoApproveEnabled},
-                 {"isAnonymousChatEnabled", newSetting.isAnonymousChatEnabled},
-                 {"contact", toJson()}};
+               {"isMuteAll", newSetting.isMuteAll},
+               {"isAllowMemberInvite", newSetting.isAllowMemberInvite},
+               {"isAutoApproveEnabled", newSetting.isAutoApproveEnabled},
+               {"isAnonymousChatEnabled", newSetting.isAnonymousChatEnabled},
+               {"contact", toJson()}};
         MIRAICP_ERROR_HANDLE(KtOperation::ktOperation(KtOperation::GroupSetting, j), "");
         InternalData->forceRefreshNextTime();
     }
@@ -225,7 +225,7 @@ namespace MiraiCP {
         this->_nickOrNameCard = std::move(tmp.nickOrNameCard);
         this->_avatarUrl = std::move(tmp.avatarUrl);
         nlohmann::json j = nlohmann::json::parse(re)["setting"];
-        this->_setting.name = Tools::json_stringmover(j, "name");
+        this->_setting.name = json_stringmover(j, "name");
         this->_setting.isMuteAll = j["isMuteAll"];
         this->_setting.isAllowMemberInvite = j["isAllowMemberInvite"];
         this->_setting.isAutoApproveEnabled = j["isAutoApproveEnabled"];
