@@ -89,7 +89,7 @@ jobs:
      - name: mv
        run: mv ./template/.git ./.git
      - name: Push
-       uses: s0/git-publish-subdir-action@develop 
+       uses: s0/git-publish-subdir-action@develop
        env:
          REPO: git@github.com:Nambers/MiraiCP-template.git
          BRANCH: main # The branch name where you want to push the assets
