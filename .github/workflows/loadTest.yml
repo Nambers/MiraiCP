@@ -21,11 +21,12 @@ jobs:
         cache-read-only: ${{ github.ref != 'refs/heads/main' }}
     - name: chmod -R 777 *
       run: chmod -R 777 *
-    - name: configure
+    - name: setup MSVC
       uses: ilammy/msvc-dev-cmd@v1.12.0
       with:
         arch: amd64
         vsversion: 2019
+    - name: configure
       run: mkdir "cpp/cmake-build-debug" && cd "cpp/cmake-build-debug" && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: complie cpp
       run: cd ./cpp && cmake --build "cmake-build-debug" --config Release --target Loader && cmake --build "cmake-build-debug" --config Release --target MiraiCP_multi
@@ -50,11 +51,12 @@ jobs:
         cache-read-only: ${{ github.ref != 'refs/heads/main' }}
     - name: chmod -R 777 *
       run: chmod -R 777 *
-    - name: configure
+    - name: setup gcc
       uses: egor-tensin/setup-gcc@v1
       with:
         version: 9
         platform: x64
+    - name: configure
       env:
         cc: gcc
         cxx: g++
