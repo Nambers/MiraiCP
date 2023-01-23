@@ -79,6 +79,7 @@ jobs:
         MESSAGE: "clean all" # The commit message
       
   tempRelease:
+    needs: [build-libLoader-msvc-4-windows, build-libLoader-gcc-4-linux]
     if: ${{ github.event.inputs.clean == 'false' }}
     runs-on: ubuntu-latest
     steps:
