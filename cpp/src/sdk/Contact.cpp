@@ -19,6 +19,7 @@
 #include "Friend.h"
 #include "Group.h"
 #include "IMiraiData.h"
+#include "JsonTools.h"
 #include "KtOperation.h"
 #include "Logger.h"
 #include "LowLevelAPI.h"
@@ -62,7 +63,6 @@ namespace MiraiCP {
     }
 
     void IContactData::deserialize(nlohmann::json in_json) {
-        using Tools::json_stringmover;
         _nickOrNameCard = json_stringmover(in_json, "nickOrNameCard");
         _avatarUrl = json_stringmover(in_json, "avatarUrl");
     }
@@ -131,11 +131,11 @@ namespace MiraiCP {
 
     QQID Contact::id() const { return InternalData->_id; }
 
-    QQID Contact::botid() const  { return InternalData->_botId; }
+    QQID Contact::botid() const { return InternalData->_botId; }
 
     nlohmann::json Contact::toJson() const { return InternalData->toJson(); }
 
     void Contact::updateJson(json &j) const { InternalData->updateJson(j); }
 
-    std::string Contact::toString() const {return toJson().dump();}
+    std::string Contact::toString() const { return toJson().dump(); }
 } // namespace MiraiCP

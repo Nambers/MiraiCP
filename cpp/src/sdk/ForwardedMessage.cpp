@@ -17,6 +17,7 @@
 #include "ForwardedMessage.h"
 #include "Contact.h"
 #include "KtOperation.h"
+#include <json.hpp>
 
 
 namespace MiraiCP {

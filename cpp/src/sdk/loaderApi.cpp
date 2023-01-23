@@ -18,6 +18,7 @@
 #include "Exception.h"
 #include "commonTools.h"
 #include "loaderApiInternal.h"
+#include <json.hpp>
 #include <string>
 #include <vector>
 

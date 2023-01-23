@@ -19,6 +19,7 @@
 #include "KtOperation.h"
 #include "Logger.h"
 #include "commonTools.h"
+#include <json.hpp>
 
 
 namespace MiraiCP {

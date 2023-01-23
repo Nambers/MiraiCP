@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_PLUGINCONFIG_H
 
 
-#include "MiraiCPStringInternal.h"
+#include <string>
 
 
 namespace MiraiCP {

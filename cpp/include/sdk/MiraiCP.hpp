@@ -42,6 +42,7 @@
 #include "Tools.h"
 #include "loaderApi.h"
 #include "utils.h"
+#include "JsonTools.h"
 #include "MiraiCPMacros.h"
 #include "MiraiCPStringInternal.h"
 #include "PlatformThreading.h"

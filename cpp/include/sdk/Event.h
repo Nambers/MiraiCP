@@ -17,11 +17,13 @@
 #ifndef MIRAICP_PRO_EVENT_H
 #define MIRAICP_PRO_EVENT_H
 
+
 #include "Bot.h"
 #include "Friend.h"
 #include "Group.h"
 #include "Logger.h"
 #include "Member.h"
+#include <json.hpp>
 #include <utility>
 
 
@@ -30,26 +32,26 @@ namespace MiraiCP {
     namespace eventTypes {
         enum Types {
             BaseEvent [[maybe_unused]] = -1,
-            BotOnlineEvent,                 // 0
-            BotJoinGroupEvent,              // 1
-            GroupInviteEvent,               // 2
-            BotLeaveEvent,                  // 3
-            FriendMessageEvent,             // 4
-            GroupMessageEvent,              // 5
-            GroupTempMessageEvent,          // 6
-            FriendRecallEvent,              // 7
-            MemberRecallEvent,              // 8
-            MessagePreSendEvent,            // 9
-            NudgeEvent,                     // 10
-            NewFriendRequestEvent,          // 11
-            MemberLeaveEvent,               // 12
-            MemberJoinEvent,                // 13
-            MemberJoinRequestEvent,         // 14
-            TimeOutEvent,                   // 15
-            MiraiCPExceptionEvent = 16,     // 16 todo 暂时保持
-            Command = 17,                   // 17
-            count,                          // 事件在此位置前定义，此时count为事件种类数
-            error                           // 出现问题时使用此enum
+            BotOnlineEvent,             // 0
+            BotJoinGroupEvent,          // 1
+            GroupInviteEvent,           // 2
+            BotLeaveEvent,              // 3
+            FriendMessageEvent,         // 4
+            GroupMessageEvent,          // 5
+            GroupTempMessageEvent,      // 6
+            FriendRecallEvent,          // 7
+            MemberRecallEvent,          // 8
+            MessagePreSendEvent,        // 9
+            NudgeEvent,                 // 10
+            NewFriendRequestEvent,      // 11
+            MemberLeaveEvent,           // 12
+            MemberJoinEvent,            // 13
+            MemberJoinRequestEvent,     // 14
+            TimeOutEvent,               // 15
+            MiraiCPExceptionEvent = 16, // 16 todo 暂时保持
+            Command = 17,               // 17
+            count,                      // 事件在此位置前定义，此时count为事件种类数
+            error                       // 出现问题时使用此enum
         };
     }
 
@@ -57,13 +59,13 @@ namespace MiraiCP {
     public:
         class BuiltInContact {
         public:
-            enum ContactType{
-                TypeFriend = 1, // 1
-                TypeGroup,      // 2
-                TypeMember,     // 3
-                TypeBot,        // 4
-                TypeStranger,   // 5
-                TypeAnonymousMember     // 6
+            enum ContactType {
+                TypeFriend = 1,     // 1
+                TypeGroup,          // 2
+                TypeMember,         // 3
+                TypeBot,            // 4
+                TypeStranger,       // 5
+                TypeAnonymousMember // 6
             };
             QQID id{};
             QQID botId{};
@@ -392,11 +394,12 @@ namespace MiraiCP {
         explicit MemberLeaveEvent(BaseEventData j);
     };
 
-    class FriendRecallEvent: public BotEvent<FriendRecallEvent>{
+    class FriendRecallEvent : public BotEvent<FriendRecallEvent> {
     public:
         static eventTypes::Types get_event_type() {
             return eventTypes::Types::FriendRecallEvent;
         }
+
     public:
         /// 时间戳
         int time = 0;
@@ -410,11 +413,12 @@ namespace MiraiCP {
         std::string internalIds;
         explicit FriendRecallEvent(BaseEventData j);
     };
-    class MemberRecallEvent: public BotEvent<MemberRecallEvent>{
+    class MemberRecallEvent : public BotEvent<MemberRecallEvent> {
     public:
         static eventTypes::Types get_event_type() {
             return eventTypes::Types::MemberRecallEvent;
         }
+
     public:
         /// 时间戳
         int time = 0;
@@ -435,7 +439,7 @@ namespace MiraiCP {
         using FriendRecallEvent = FriendRecallEvent;
         // deprecated
         using MemberRecallEvent = MemberRecallEvent;
-    };
+    }; // namespace RecallEvent
 
     /// 机器人进入某群
     class BotJoinGroupEvent : public BotEvent<BotJoinGroupEvent> {

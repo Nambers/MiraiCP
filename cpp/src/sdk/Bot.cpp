@@ -21,6 +21,7 @@
 #include "LowLevelAPI.h"
 #include "Tools.h"
 #include <atomic>
+#include <json.hpp>
 #include <memory>
 #include <mutex>
 
@@ -31,7 +32,7 @@ namespace MiraiCP {
         static std::mutex mtx;
         std::lock_guard<std::mutex> lck(mtx);
         auto &Ptr = BotPool.try_emplace(id).first->second;
-        if (!Ptr){
+        if (!Ptr) {
             Ptr = std::make_shared<IContactData>();
             Ptr->_id = id;
             Ptr->_type = MIRAI_BOT;
@@ -51,7 +52,7 @@ namespace MiraiCP {
 
     std::vector<QQID> Bot::getFriendList() const {
         nlohmann::json j{{"contact", toJson()},
-                         {"type",    KtOperation::QueryBotListCode::FriendList}};
+                         {"type", KtOperation::QueryBotListCode::FriendList}};
         std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
     }
@@ -62,7 +63,7 @@ namespace MiraiCP {
 
     std::vector<QQID> Bot::getGroupList() const {
         nlohmann::json j{{"contact", toJson()},
-                         {"type",    KtOperation::QueryBotListCode::GroupList}};
+                         {"type", KtOperation::QueryBotListCode::GroupList}};
         std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
     }
@@ -71,7 +72,7 @@ namespace MiraiCP {
         return Tools::VectorToString(getGroupList());
     }
 
-    Bot::Bot(QQID in_id): Contact(get_bot(in_id)) {
+    Bot::Bot(QQID in_id) : Contact(get_bot(in_id)) {
     }
 
     std::string Bot::nick() {

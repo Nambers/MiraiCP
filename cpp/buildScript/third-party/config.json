@@ -2,6 +2,7 @@
     "project": "Mirai C++ SDK",
     "target": "single_include/MiraiCP.hpp",
     "sources": [
+        "include/common/JsonTools.h",
         "include/common/MiraiCPMacros.h",
         "include/common/MiraiCPStringInternal.h",
         "include/common/PlatformThreading.h",
