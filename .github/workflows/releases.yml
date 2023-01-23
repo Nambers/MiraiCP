@@ -24,12 +24,13 @@ jobs:
     steps:
     - name: checkout  
       uses: actions/checkout@v2
+    - name: Set up MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        vsversion: 2017
     - name: configure
-      env:
-        cc: gcc
-        cxx: g++
       run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
-    - name: build with gcc
+    - name: build with msvc
       run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --config Release --target Loader
     - name: upload
       uses: actions/upload-artifact@v3
@@ -41,6 +42,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
+    - name: Set up GCC
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: 9
+        platform: x64
     - name: configure
       env:
         cc: gcc
@@ -72,18 +78,18 @@ jobs:
         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
         fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
      - name: generate single headers
-       env: 
+       env:
          cc: gcc
          cxx: g++
        run: cd main && mkdir cpp/build && cd cpp/build && cmake -DGOOGLE_TEST=OFF .. && make generateSingleHeaders
      - name: replace single header(1/2)
-       run: cat main/cpp/src/single_include/MiraiCP/MiraiCP.hpp > template/single_include/MiraiCP/MiraiCP.hpp
+       run: cat main/cpp/single_include/MiraiCP.hpp > template/single_include/MiraiCP/MiraiCP.hpp
      - name: replace single header(2/2)
-       run: cat main/cpp/src/single_include/MiraiCP/MiraiCP.cpp > template/single_include/MiraiCP/MiraiCP.cpp
+       run: cat main/cpp/single_include/MiraiCP.cpp > template/single_include/MiraiCP/MiraiCP.cpp
      - name: mv
        run: mv ./template/.git ./.git
      - name: Push
-       uses: s0/git-publish-subdir-action@develop 
+       uses: s0/git-publish-subdir-action@develop
        env:
          REPO: git@github.com:Nambers/MiraiCP-template.git
          BRANCH: main # The branch name where you want to push the assets

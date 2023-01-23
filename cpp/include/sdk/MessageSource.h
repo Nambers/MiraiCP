@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -28,16 +28,16 @@ namespace MiraiCP {
     /*! 消息源声明
      * @doxygenEg{1014, message.cpp, 回复信息}
     */
-    class MessageSource {
-    public:
-        /// 消息的ids
-        std::string ids;
-        /// 消息的internalids
-        std::string internalids;
-        /// 消息源序列化
-        std::string source;
+     class MIRAICP_EXPORT MessageSource {
+     public:
+         /// 消息的ids
+         std::string ids;
+         /// 消息的internalids
+         std::string internalids;
+         /// 消息源序列化
+         std::string source;
 
-        MessageSource() = default;
+         MessageSource() = default;
 
         /// @deprecated 用Contact.quoteAndSendMessage, since v2.8.1
         ShouldNotUse("Use Contact.quoteAndSendMessage") MessageSource

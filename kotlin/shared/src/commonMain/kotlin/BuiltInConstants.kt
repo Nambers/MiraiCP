@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@
 package tech.eritquearcus.miraicp.shared
 
 object BuiltInConstants {
-    const val date = "Thu Nov 10 10:46:28 EST 2022"
-    const val version = "2.13.0-alpha"
-    const val miraiVersion = "2.13.0-RC2"
+    const val date = "Sat Jan 21 13:42:53 EST 2023"
+    const val version = "2.13.1"
+    const val miraiVersion = "2.14.0-RC"
 }
