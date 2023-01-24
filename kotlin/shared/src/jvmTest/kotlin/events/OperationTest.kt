@@ -29,9 +29,9 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.md5
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
-import tech.eritquearcus.miraicp.shared.test.TestBase
-import tech.eritquearcus.miraicp.shared.test.TestUtils
-import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
+import tech.eritquearcus.miraicp.testUtils.TestBase
+import tech.eritquearcus.miraicp.testUtils.TestUtils
+import tech.eritquearcus.miraicp.testUtils.TestUtils.waitUntilEnd
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
