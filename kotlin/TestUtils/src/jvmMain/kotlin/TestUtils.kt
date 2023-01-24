@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package tech.eritquearcus.miraicp.shared.test
+package tech.eritquearcus.miraicp.testUtils
 
 import kotlinx.coroutines.delay
 import net.mamoe.mirai.event.*
