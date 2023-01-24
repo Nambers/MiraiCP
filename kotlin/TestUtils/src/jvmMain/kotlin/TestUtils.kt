@@ -73,7 +73,6 @@ object TestUtils {
     fun checkMessageChainJsonResultFromLog(mc: MessageChain) {
         val logs = logList.filter { it.contains("after_serialization:") }
         assertEquals(1, logs.size)
-        println("rerere:" + logs.first())
         assertEquals(
             mc.serializeToJsonString(),
             MessageChain.deserializeFromJsonString(logs.first().substringAfter("after_serialization:"))

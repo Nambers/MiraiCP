@@ -38,7 +38,7 @@ actual object KotlinMain {
         runBlocking {
             KotlinMainData.aliveChan.send(Unit)
         }
-        exitProcess(0)
+//        exitProcess(0)
     }
 
     @OptIn(MiraiExperimentalApi::class)

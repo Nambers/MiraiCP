@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,11 +18,13 @@
 
 package tech.eritquearcus.miraicp.loader.console
 
+import kotlinx.serialization.Serializable
 import tech.eritquearcus.miraicp.shared.CommandHandler
 
+@Serializable
 data class CommandBrief(
     val name: String,
-    val pid: Int,
+    val pid: String,
     val bid: Int,
     val sName: List<String>
 )

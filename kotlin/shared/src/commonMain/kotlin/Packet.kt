@@ -740,9 +740,9 @@ object Packets {
             override val eventId: Int = 17
             private val bindId: Int
             private val contact: Contact?
-            private val message: String?
+            private val message: String
 
-            constructor(bindId: Int, contact: Contact?, message: String?) {
+            constructor(bindId: Int, contact: Contact?, message: String) {
                 this.bindId = bindId
                 this.contact = contact
                 this.message = message
@@ -863,9 +863,9 @@ object Packets {
 //            it.`object` = this.bot.toContact()
         }
 
-        fun commandToEventData(bindId: Int, contact: Contact?, message: String?, botId: Long): String {
+        fun commandToEventData(bindId: Int, contact: Contact?, message: String, botId: Long): String {
             val event = Outgoing.Command(bindId, contact, message)
-            return Json.encodeToString(Outgoing.EventData(event, eventId = event.eventId, botId = botId))
+            return json.encodeToString(Outgoing.EventData(event, eventId = event.eventId, botId = botId))
         }
     }
 }
