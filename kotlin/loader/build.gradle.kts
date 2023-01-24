@@ -78,7 +78,8 @@ kotlin {
         }
         val jvmTest by getting {
             dependencies {
-                implementation(kotlin("test"))
+                dependsOn(jvmMain)
+                implementation(project(":TestUtils"))
             }
         }
         val nativeMain by getting {

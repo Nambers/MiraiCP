@@ -50,6 +50,7 @@ public:
     }
 
     void onCommand(std::shared_ptr<Contact> ptr, const Bot &bot, const MessageChain &chain) override {
+        Message::messageSerialization(chain);
         testEnd("CustomCommand");
     }
 };
