@@ -78,6 +78,8 @@ namespace MiraiCP::KtOperation {
         CommandReg,
         /// 改名称
         ChangeNameCard,
+        /// 改群头衔
+        ChangeSpecialTitle,
     };
     enum QueryBotListCode {
         /// 查询好友列表

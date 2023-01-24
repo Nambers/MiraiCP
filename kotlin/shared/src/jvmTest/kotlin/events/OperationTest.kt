@@ -242,7 +242,16 @@ class OperationTest : TestBase() {
 
     @Test
     fun memberRefreshInfoTest() = runBlocking {
+        member.mockApi.specialTitle = "IAmSpecialTitle群头衔"
         member.says("refresh")
         waitUntilEnd()
+    }
+
+    @Test
+    fun memberChangeSpecialTitleTest() = runBlocking {
+        member.mockApi.specialTitle = "IAmSpecialTitle群头衔"
+        member.says("specialTitle")
+        waitUntilEnd()
+        assertEquals("test", member.specialTitle)
     }
 }
