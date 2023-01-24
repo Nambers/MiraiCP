@@ -161,6 +161,9 @@ public:
             TEST(sendTemp, sendTempTest, {
                 a.sender.sendMessage("x");
             })
+            TEST(specialTitle, changeSpecialTitleTest, {
+                a.sender.changeSpecialTitle("test");
+            })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
         });
