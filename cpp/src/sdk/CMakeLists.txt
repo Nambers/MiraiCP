@@ -26,6 +26,7 @@ target_include_directories(MiraiCP_multi PUBLIC ${SDK_INCLUDES_INTERNAL})
 
 # target_compile_options(MiraiCP_multi PUBLIC -Wall)
 target_compile_definitions(MiraiCP_multi PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
+target_link_libraries(MiraiCP_multi PRIVATE commonBuild)
 # -- end --
 
 # -- MiraiCP mock --
@@ -50,6 +51,7 @@ target_include_directories(MiraiCP_mock_test PUBLIC ${SDK_INCLUDES_INTERNAL})
 
 # target_compile_options(MiraiCP_multi PUBLIC -Wall)
 target_compile_definitions(MiraiCP_mock_test PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
+target_link_libraries(MiraiCP_mock_test PRIVATE commonBuild)
 # -- end --
 
 # -- MiraiCP single --
@@ -82,6 +84,7 @@ set_target_properties(
 add_dependencies(MiraiCP_single generateSingleHeaders)
 target_compile_options(MiraiCP_single PUBLIC -w) # disable all warnings!
 target_compile_definitions(MiraiCP_single PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
+target_link_libraries(MiraiCP_single PRIVATE commonBuild)
 # -- end --
 
 # 移植性
