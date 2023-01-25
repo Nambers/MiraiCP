@@ -153,7 +153,7 @@ int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *g
 // register
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnv *env = nullptr;
-    if (vm->GetEnv((void **) &env, JNI_VERSION_1_8) != JNI_OK) {
+    if (vm->GetEnv(MIRAICP_JNIPPTR &env, MIRAICP_JVER) != JNI_OK) {
         return JNI_ERR;
     }
     assert(env != nullptr);

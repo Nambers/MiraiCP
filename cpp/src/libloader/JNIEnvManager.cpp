@@ -16,7 +16,7 @@
 
 #ifndef LOADER_NATIVE
 
-#include "MiraiCPMacros.h"
+#include "LoaderMacro.h"
 // -----------------------
 #include "JNIEnvManager.h"
 
@@ -50,17 +50,10 @@ thread_local JNIEnvManager::ThreadInfo thread_info;
 /// @brief 为当前线程创建一个env.
 inline JNIEnv *newEnv() {
     JNIEnv *env = nullptr;
-#if MIRAICP_TERMUX || MIRAICP_ANDROID
-    JavaVMAttachArgs args{0x00010008,
+    JavaVMAttachArgs args{static_cast<int>(MIRAICP_JVER),
                           nullptr,
                           nullptr};
-    JNIEnvManager::getGvm()->AttachCurrentThread(&env, &args);
-#else
-    JavaVMAttachArgs args{static_cast<int>(JNI_VERSION_1_8),
-                          nullptr,
-                          nullptr};
-    JNIEnvManager::getGvm()->AttachCurrentThread((void **) &env, &args);
-#endif
+    JNIEnvManager::getGvm()->AttachCurrentThread(MIRAICP_JNIPPTR &env, &args);
     return env;
 }
 
