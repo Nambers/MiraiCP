@@ -34,10 +34,10 @@ if (WIN32)
         target_link_libraries(Loader PUBLIC -static)
     endif (MSVC)
 endif (WIN32)
-if (UNIX)
+if (UNIX AND NOT (CMAKE_SYSTEM_NAME STREQUAL Android))
     target_link_libraries(Loader PRIVATE -static-libstdc++ -static-libgcc)
     # target_compile_options(Loader PUBLIC -rdynamic)
-endif (UNIX)
+endif ()
 # -- end --
 
 # -- MiraiCP libLoader native --
@@ -74,6 +74,8 @@ if (WIN32)
 endif (WIN32)
 if (UNIX AND NOT (CMAKE_SYSTEM_NAME STREQUAL Android))
     target_link_libraries(LoaderNative PRIVATE -static-libstdc++ -static-libgcc)
+endif ()
+if (UNIX)
     add_link_options(-fvisibility=hidden)
 endif ()
 # -- end --
