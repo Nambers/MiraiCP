@@ -135,6 +135,7 @@ endif (UNIX)
 
 if (CMAKE_SYSTEM_NAME STREQUAL Android)
     message("Android build detected, testing API level")
+    include(CheckCXXSourceCompiles)
     check_cxx_source_compiles("
 #include <android/api-level.h>
 #include<cstdio>
