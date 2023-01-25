@@ -18,8 +18,8 @@
 // -----------------------
 #include "BS_thread_pool.hpp"
 #include "LoaderTaskQueue.h"
-#include "PlatformThreading.h"
 #include "PluginListManager.h"
+#include "ThreadIdentify.h"
 #include "commonTools.h"
 
 #if MIRAICP_WINDOWS

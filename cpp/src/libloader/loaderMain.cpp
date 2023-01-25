@@ -19,10 +19,10 @@
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
-#include "PlatformThreading.h"
 #include "Plugin.h"
 #include "PluginListManager.h"
 #include "Scheduler.h"
+#include "ThreadIdentify.h"
 #include "redirectCout.h"
 
 

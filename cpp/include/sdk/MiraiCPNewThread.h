@@ -23,7 +23,7 @@
 #include "Event.h"
 #include "Exception.h"
 #include "Logger.h"
-#include "PlatformThreading.h"
+#include "ThreadIdentify.h"
 #include <ostream>
 #include <thread>
 
