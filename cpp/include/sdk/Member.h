@@ -26,12 +26,8 @@ namespace MiraiCP {
      */
     struct MemberData : public GroupRelatedData {
         typedef IContactData Super;
-
-        /// @brief 权限等级
-        ///     - OWNER群主 为 2
-        ///     - ADMINISTRATOR管理员 为 1
-        ///     - MEMBER群成员 为 0
         unsigned int _permission = 0;
+        std::string _specialTitle;
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
         bool _anonymous = false;
 
@@ -65,7 +61,13 @@ namespace MiraiCP {
         ~Member() override = default;
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
         DECL_GETTER(anonymous)
+        /// @brief 权限等级
+        ///     - OWNER群主 为 2
+        ///     - ADMINISTRATOR管理员 为 1
+        ///     - MEMBER群成员 为 0
         DECL_GETTER(permission)
+        /// 群头衔
+        DECL_GETTER(specialTitle)
         INLINE_GETTER(groupId)
 
     public:
@@ -73,6 +75,10 @@ namespace MiraiCP {
         /// @param admin 如果为true为更改到管理员
         /// @param env
         void modifyAdmin(bool admin);
+
+        /// @brief 更改群成员群头衔
+        /// @throws BotException 如果没权限时
+        void changeSpecialTitle(std::string_view);
 
         /// 发送语音
         MessageSource sendVoice(std::string path) {

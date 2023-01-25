@@ -318,6 +318,12 @@ object Packets {
             val image: Outgoing.ImgInfo,
         )
 
+        @Serializable
+        data class ChangeSpecialTitle(
+            val contact: Contact,
+            val title: String,
+        )
+
         enum class OperationCode {
             Recall,             // 0
             Send,               // 1
@@ -345,6 +351,7 @@ object Packets {
             ImageUploaded,      // 23
             CommandReg,         // 24
             ChangeNameCard,     // 25
+            ChangSpeicalTitle,  // 26
         }
 
         val operations = hashMapOf<OperationCode, suspend (String) -> String>(
@@ -374,6 +381,7 @@ object Packets {
             OperationCode.ImageUploaded to PublicShared::isUploaded,
             OperationCode.CommandReg to PublicShared::commandReg,
             OperationCode.ChangeNameCard to PublicShared::changeNameCard,
+            OperationCode.ChangSpeicalTitle to PublicShared::changeSpecialTitle,
         )
     }
 
@@ -420,6 +428,12 @@ object Packets {
             val imageId: String? = null,
             val isEmoji: Boolean? = null,
             val imageType: String? = null,
+        )
+
+        @Serializable
+        data class MemberExtraInfo(
+            val permission: Int,
+            val specialTitle: String,
         )
 
         // -- Event --
@@ -740,9 +754,9 @@ object Packets {
             override val eventId: Int = 17
             private val bindId: Int
             private val contact: Contact?
-            private val message: String?
+            private val message: String
 
-            constructor(bindId: Int, contact: Contact?, message: String?) {
+            constructor(bindId: Int, contact: Contact?, message: String) {
                 this.bindId = bindId
                 this.contact = contact
                 this.message = message
@@ -863,9 +877,9 @@ object Packets {
 //            it.`object` = this.bot.toContact()
         }
 
-        fun commandToEventData(bindId: Int, contact: Contact?, message: String?, botId: Long): String {
+        fun commandToEventData(bindId: Int, contact: Contact?, message: String, botId: Long): String {
             val event = Outgoing.Command(bindId, contact, message)
-            return Json.encodeToString(Outgoing.EventData(event, eventId = event.eventId, botId = botId))
+            return json.encodeToString(Outgoing.EventData(event, eventId = event.eventId, botId = botId))
         }
     }
 }

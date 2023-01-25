@@ -28,6 +28,7 @@ namespace MockTests {
     }
     void refresh(GroupMessageEvent event){
         Logger::logger.info("refresh:");
+        Logger::logger.info(event.sender.specialTitle());
        Logger::logger.info(event.sender.avatarUrl());
        Logger::logger.info(event.group.avatarUrl());
        Logger::logger.info(event.bot.avatarUrl());

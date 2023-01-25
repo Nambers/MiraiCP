@@ -29,9 +29,9 @@ import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.md5
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
-import tech.eritquearcus.miraicp.shared.test.TestBase
-import tech.eritquearcus.miraicp.shared.test.TestUtils
-import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
+import tech.eritquearcus.miraicp.testUtils.TestBase
+import tech.eritquearcus.miraicp.testUtils.TestUtils
+import tech.eritquearcus.miraicp.testUtils.TestUtils.waitUntilEnd
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -242,13 +242,16 @@ class OperationTest : TestBase() {
 
     @Test
     fun memberRefreshInfoTest() = runBlocking {
+        member.mockApi.specialTitle = "IAmSpecialTitle群头衔"
         member.says("refresh")
         waitUntilEnd()
     }
 
     @Test
-    fun commandRegisterTest() = runBlocking {
-        member.says("Command")
+    fun memberChangeSpecialTitleTest() = runBlocking {
+        member.mockApi.specialTitle = "IAmSpecialTitle群头衔"
+        member.says("specialTitle")
         waitUntilEnd()
+        assertEquals("test", member.specialTitle)
     }
 }

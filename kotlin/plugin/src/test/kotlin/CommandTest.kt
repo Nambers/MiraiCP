@@ -16,29 +16,34 @@
  *
  */
 
-package tech.eritquearcus.miraicp.loader
+package tech.eritquearcus.miraicp.plugin
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import net.mamoe.mirai.console.command.CommandManager
+import net.mamoe.mirai.console.command.ConsoleCommandSender
+import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
+import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.buildMessageChain
 import org.junit.jupiter.api.Test
-import tech.eritquearcus.miraicp.loader.console.Command
-import tech.eritquearcus.miraicp.loader.console.LoaderCommandHandlerImpl
+import tech.eritquearcus.miraicp.console.CommandHandlerImpl
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import tech.eritquearcus.miraicp.testUtils.TestBase
-import tech.eritquearcus.miraicp.testUtils.TestUtils
+import tech.eritquearcus.miraicp.testUtils.TestUtils.checkMessageChainJsonResultFromLog
 import tech.eritquearcus.miraicp.testUtils.TestUtils.waitUntilEnd
 
 class CommandTest : TestBase() {
+    @OptIn(ExperimentalCommandDescriptors::class, ConsoleExperimentalApi::class)
     @Test
     fun customCommandTest() = runBlocking {
-        PublicSharedData.commandReg = LoaderCommandHandlerImpl()
+        // todo commandTest don't work
+        PublicSharedData.commandReg = CommandHandlerImpl()
         member.says("command")
         delay(100)
-        Command.parse("commandPrefix a b c")
+        CommandManager.executeCommand(ConsoleCommandSender, buildMessageChain { add(PlainText("commandPrefix a b c")) })
         waitUntilEnd(2)
-        TestUtils.checkMessageChainJsonResultFromLog(buildMessageChain {
+        checkMessageChainJsonResultFromLog(buildMessageChain {
             add(PlainText("a"))
             add(PlainText("b"))
             add(PlainText("c"))

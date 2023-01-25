@@ -78,7 +78,8 @@ kotlin {
         }
         val jvmTest by getting {
             dependencies {
-                implementation(kotlin("test"))
+                dependsOn(jvmMain)
+                implementation(project(":TestUtils"))
             }
         }
         val nativeMain by getting {
@@ -107,7 +108,6 @@ afterEvaluate {
     tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile>("compileKotlinNative").apply {
         this.configure {
             this.kotlinOptions.freeCompilerArgs = listOf("-Xllvm-variant=D:\\msys64\\mingw64")
-            // this.kotlinOptions.freeCompilerArgs = listOf("-Xllvm-variant=F:\\Downloads\\llvm-mingw-20220906-ucrt-x86_64")
         }
     }
 }

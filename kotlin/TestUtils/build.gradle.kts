@@ -16,21 +16,34 @@
  *
  */
 
-enableFeaturePreview("VERSION_CATALOGS")
-rootProject.name = "MiraiCP"
-include("shared")
-include("plugin")
-include("loader")
-include("utils")
-include("TestUtils")
-project(":plugin").name = "MiraiCP-plugin"
-project(":loader").name = "MiraiCP-loader"
+import Version.`junit-jupiter`
+import Version.`kotlin-test`
+import Version.`mirai-core-mock`
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        // mirai snapshot
-        maven("https://repo.mirai.mamoe.net/snapshots")
+plugins {
+    kotlin("multiplatform")
+}
+group = "tech.eritquearcus"
+version = Version.miraiCP
+
+kotlin {
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+        withJava()
+    }
+    sourceSets {
+        val commonMain by getting
+
+        val jvmMain by getting {
+            dependencies {
+                // pass junit and other dependencies
+                api(`junit-jupiter`)
+                api(`kotlin-test`)
+                api(`mirai-core-mock`)
+                implementation(project(":shared"))
+            }
+        }
     }
 }
