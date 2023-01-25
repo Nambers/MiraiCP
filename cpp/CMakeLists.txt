@@ -71,10 +71,14 @@ set(JAVA_AWT_INCLUDE_PATH NotNeeded)
 find_package(JNI REQUIRED)
 if (JNI_FOUND)
     message(STATUS "FOUND JNI IN ${JAVA_INCLUDE_PATH}")
-    set(JNI_PATH
-            ${JAVA_INCLUDE_PATH}
-            ${JAVA_INCLUDE_PATH2}
-            )
+    if (CMAKE_SYSTEM_NAME STREQUAL Android)
+        set(JNI_PATH ${JAVA_INCLUDE_PATH})
+    else ()
+        set(JNI_PATH
+                ${JAVA_INCLUDE_PATH}
+                ${JAVA_INCLUDE_PATH2}
+                )
+    endif ()
     set(3RD_PATH
             ${THIRD_PARTY_PATH}/json
             ${THIRD_PARTY_PATH}/json/nlohmann
@@ -128,6 +132,22 @@ if (UNIX)
     )
 endif (UNIX)
 # -- end --
+
+if (CMAKE_SYSTEM_NAME STREQUAL Android)
+    message("Android build detected, testing API level")
+    check_cxx_source_compiles("
+#include <android/api-level.h>
+#include<cstdio>
+int main(){
+    std::printf(\"%d\", android_get_device_api_level());
+    return 0;
+}
+" ANDROID_API_LEVEL)
+    if (${ANDROID_API_LEVEL} GREATER_EQUAL 26)
+        add_compile_definitions(TERMUX_THREAD_SUPPORTED)
+    endif ()
+    message("API level is: ${ANDROID_API_LEVEL}")
+endif ()
 
 add_subdirectory(src/sdk)
 add_subdirectory(src/libloader)

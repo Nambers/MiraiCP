@@ -19,7 +19,7 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
-
+// TODO(Antares): 删掉这些实现。改成不依赖pthread或msvc的的线程识别方案
 
 #if MIRAICP_MSVC
 #include <Windows.h>
@@ -55,8 +55,28 @@ inline void platform_get_thread_name(void *platform_thread_self, char *buf, size
     LocalFree(wbuf);
 }
 #else
+
+
+#if MIRAICP_TERMUX && !defined(TERMUX_THREAD_SUPPORTED)
+
+inline int pthread_self();
+inline void platform_set_thread_name(int id, const char *name) {}
+inline void platform_get_thread_name(int id, char *buf, size_t bufsize) {
+    buf[0] = 0;
+}
+
+#else
+
+#include "pthread.h"
 #include <string>
-#include <thread>
+
+#if MIRAICP_TERMUX && defined(TERMUX_THREAD_SUPPORTED)
+
+pthread_t pthread_self(void) attribute_const;
+int pthread_setname_np(pthread_t pthread, const char *__name);
+int pthread_getname_np(pthread_t pthread, char *buf, size_t n);
+
+#endif
 
 inline auto platform_thread_self() {
     return pthread_self();
@@ -85,6 +105,7 @@ inline void platform_set_thread_name(decltype(platform_thread_self()) id, const 
 inline void platform_get_thread_name(decltype(platform_thread_self()) id, char *buf, size_t bufsize) {
     pthread_getname_np(id, buf, bufsize);
 }
+#endif
 #endif
 
 
