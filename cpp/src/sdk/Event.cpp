@@ -181,7 +181,7 @@ namespace MiraiCP {
 
     MemberJoinRequestEvent::MemberJoinRequestEvent(BaseEventData j) : BotEvent(j.botId),
                                                                       source(json_jsonmover(j.eventData,
-                                                                                                   "requestData")),
+                                                                                            "requestData")),
                                                                       group(j.subject->id, j.subject->botId),
                                                                       inviter(j.eventData.contains("inviter")
                                                                                       ? std::optional(
@@ -191,9 +191,9 @@ namespace MiraiCP {
                                                                       from(j.object->id, j.object->groupId,
                                                                            j.object->botId),
                                                                       fromNick(json_jsonmover(j.eventData,
-                                                                                                     "fromNick")),
+                                                                                              "fromNick")),
                                                                       message(json_jsonmover(j.eventData,
-                                                                                                    "message")) {
+                                                                                             "message")) {
     }
 
     void MemberJoinRequestEvent::operate(std::string_view s, QQID botid, bool sign, const std::string &msg) {
@@ -288,8 +288,7 @@ namespace MiraiCP {
                 CommandManager::commandManager[j.eventData["bindId"]]->onCommand(
                         j.eventData.contains("contact") ? Contact::deserializeToPointer(json_jsonmover(j.eventData, "contact")) : nullptr,
                         Bot(j.botId),
-                        MessageChain::deserializationFromMessageJson(
-                                json::parse(Tools::json_stringmover(j.eventData, "message"))));
+                        MessageChain::deserializationFromMessageJson(json::parse(json_stringmover(j.eventData, "message"))));
                 break;
             }
             default: {
