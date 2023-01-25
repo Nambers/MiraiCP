@@ -139,7 +139,7 @@ namespace MiraiCP {
             MIRAICP_ERROR_HANDLE(result, "");
             auto tmp = nlohmann::json::parse(result);
             _permission = tmp["permission"];
-            _specialTitle = Tools::json_stringmover(tmp, "specialTitle");
+            _specialTitle = json_stringmover(tmp, "specialTitle");
         }
     }
 
