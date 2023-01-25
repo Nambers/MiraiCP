@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -82,4 +82,5 @@ dependencies {
     compileOnly(`mirai-core-api`)
     implementation(`kotlinx-coroutines-core`)
     implementation(project(":shared"))
+    testImplementation(project(":TestUtils"))
 }

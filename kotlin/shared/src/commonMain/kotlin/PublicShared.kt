@@ -222,7 +222,7 @@ object PublicShared {
                 when (data.contact.type) {
                     1 -> data.contact.withFriend(
                         bot,
-                        "找不到对应好友，位置:K-GetNickOrNameCard()，id:${data.contact.id}"
+                        "找不到对应好友，位置:K-refreshInfo()1，id:${data.contact.id}"
                     ) { f ->
                         if (data.quit) {
                             f.delete()
@@ -233,7 +233,7 @@ object PublicShared {
 
                     2 -> data.contact.withGroup(
                         bot,
-                        "取群名称找不到群,位置K-GetNickOrNameCard(), gid:${data.contact.id}"
+                        "找不到群,位置K-refreshInfo()2, gid:${data.contact.id}"
                     ) { g ->
                         if (data.announcement) return json.encodeToString(
                             g.announcements.toList().map { it.toOnlineA() })
@@ -261,9 +261,10 @@ object PublicShared {
                     } ?: let {
                         data.contact.withMember(
                             bot,
-                            "取群名片找不到对应群组，位置K-GetNickOrNameCard()，gid:${data.contact.groupId}",
-                            "取群名片找不到对应群成员，位置K-GetNickOrNameCard()，id:${data.contact.id}, gid:${data.contact.groupId}"
+                            "找不到对应群组，位置K-refreshInfo()3，gid:${data.contact.groupId}",
+                            "找不到对应群成员，位置K-refreshInfo()3，id:${data.contact.id}, gid:${data.contact.groupId}"
                         ) { _, m ->
+                            m
                             json.encodeToString(Packets.Incoming.RefreshInfo.ContactInfo(m.nameCardOrNick, m.avatarUrl))
                         }
                     }
@@ -553,7 +554,12 @@ object PublicShared {
                 "查询权限找不到对应群组，位置K-queryM()，gid:${c.groupId}",
                 "查询权限找不到对应群成员，位置K-queryM()，id:${c.id}, gid:${c.groupId}"
             ) { _, member ->
-                return member.permission.level.toString()
+                return json.encodeToString(
+                    Packets.Outgoing.MemberExtraInfo(
+                        member.permission.level,
+                        member.specialTitle
+                    )
+                )
             }
         }
     }
@@ -793,6 +799,18 @@ object PublicShared {
         )
         return "true"
     }
+
+    suspend fun changeSpecialTitle(source: String): String =
+        withData(source, Packets.Incoming.ChangeSpecialTitle.serializer()) { data ->
+            data.contact.withMiraiMember { _, _, member ->
+                try {
+                    member.specialTitle = data.title
+                } catch (_: PermissionDeniedException) {
+                    return@withMiraiMember "EP"
+                }
+                ""
+            }
+        }
 
     fun onDisable() = PublicSharedMultiplatform.onDisable()
 

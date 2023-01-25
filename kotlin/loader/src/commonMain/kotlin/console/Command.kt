@@ -146,15 +146,14 @@ object Command {
     }
 
     private fun List<CommandBrief>.matchCommand(order: List<String>): Boolean {
-        this.firstOrNull { pair ->
+        return this.firstOrNull { pair ->
             pair.name == order[0] || pair.sName.contains(order[0])
         }?.let { it ->
             val mc = MessageChainBuilder()
             order.drop(1).forEach { mc.append(PlainText(it)) }
             event(commandToEventData(it.bid, null, mc.build().serializeToJsonString(), 0))
-            return true
-        }
-        return false
+            true
+        } ?: false
     }
 
     private fun preOneOrMoreParamOrder(order: List<String>): Boolean {

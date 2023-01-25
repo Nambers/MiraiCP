@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package tech.eritquearcus.miraicp.shared.test
+package tech.eritquearcus.miraicp.testUtils
 
 import kotlinx.coroutines.delay
 import net.mamoe.mirai.event.*
@@ -73,7 +73,6 @@ object TestUtils {
     fun checkMessageChainJsonResultFromLog(mc: MessageChain) {
         val logs = logList.filter { it.contains("after_serialization:") }
         assertEquals(1, logs.size)
-        println("rerere:" + logs.first())
         assertEquals(
             mc.serializeToJsonString(),
             MessageChain.deserializeFromJsonString(logs.first().substringAfter("after_serialization:"))

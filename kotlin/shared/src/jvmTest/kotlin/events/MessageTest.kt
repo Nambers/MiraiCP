@@ -23,10 +23,10 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import org.junit.jupiter.api.Test
-import tech.eritquearcus.miraicp.shared.test.TestBase
-import tech.eritquearcus.miraicp.shared.test.TestUtils.checkMessageChainJsonResultFromLog
-import tech.eritquearcus.miraicp.shared.test.TestUtils.noBroadcast
-import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
+import tech.eritquearcus.miraicp.testUtils.TestBase
+import tech.eritquearcus.miraicp.testUtils.TestUtils.checkMessageChainJsonResultFromLog
+import tech.eritquearcus.miraicp.testUtils.TestUtils.noBroadcast
+import tech.eritquearcus.miraicp.testUtils.TestUtils.waitUntilEnd
 
 
 // all message tests under GroupMessageEvent

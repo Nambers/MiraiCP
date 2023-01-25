@@ -27,8 +27,8 @@ import net.mamoe.mirai.mock.utils.broadcastMockEvents
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import org.junit.jupiter.api.Test
-import tech.eritquearcus.miraicp.shared.test.TestBase
-import tech.eritquearcus.miraicp.shared.test.TestUtils.waitUntilEnd
+import tech.eritquearcus.miraicp.testUtils.TestBase
+import tech.eritquearcus.miraicp.testUtils.TestUtils.waitUntilEnd
 import kotlin.test.assertTrue
 
 // ref: https://github.com/mamoe/mirai/blob/dev/mirai-core-mock/test/DslTest.kt

@@ -289,7 +289,7 @@ namespace MiraiCP {
                         j.eventData.contains("contact") ? Contact::deserializeToPointer(json_jsonmover(j.eventData, "contact")) : nullptr,
                         Bot(j.botId),
                         MessageChain::deserializationFromMessageJson(
-                                j.eventData.contains("message") ? json_jsonmover(j.eventData, "message") : ""));
+                                json::parse(Tools::json_stringmover(j.eventData, "message"))));
                 break;
             }
             default: {

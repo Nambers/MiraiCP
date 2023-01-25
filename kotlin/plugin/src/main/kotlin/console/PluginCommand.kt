@@ -40,7 +40,7 @@ class CommandHandlerImpl : CommandHandler {
             var preFixOption = false
             override val prefixOptional: Boolean
                 get() = preFixOption
-            var pluginId: Int = -1
+            var pluginId: String = ""
             var bindId: Int = -1
             override suspend fun CommandSender.onCommand(args: MessageChain) {
                 event(

@@ -16,7 +16,7 @@
  *
  */
 
-package tech.eritquearcus.miraicp.shared.test
+package tech.eritquearcus.miraicp.testUtils
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -29,7 +29,6 @@ import net.mamoe.mirai.mock.contact.MockGroup
 import net.mamoe.mirai.mock.contact.MockNormalMember
 import net.mamoe.mirai.mock.utils.mock
 import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.createFileIfNotExists
 import org.junit.jupiter.api.*
 import tech.eritquearcus.miraicp.shared.CPPLib
 import tech.eritquearcus.miraicp.shared.Packets.Utils.toEventData
@@ -48,7 +47,6 @@ open class TestBase {
             println("Currently working dir:" + TestUtils.workingDir.absolutePath)
             require(TestUtils.workingDir.exists())
             val cfgPath = TestUtils.workingDir.resolve("testFileFromKt4Mock/config.json")
-            cfgPath.createFileIfNotExists()
             cfgPath.writeText(
                 """
 {

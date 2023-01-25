@@ -18,10 +18,13 @@
 
 package tech.eritquearcus.miraicp.shared
 
+import kotlinx.serialization.Serializable
+
 interface CommandHandler {
-    fun register(c:Command): String
+    fun register(c: Command): String
 }
 
+@Serializable
 data class Command(
     // 主要指令名
     val primaryName: String,
@@ -34,7 +37,7 @@ data class Command(
     // cpp端对应的监听id
     val bindId: Int,
     // kt端插件编号
-    val pluginId: Int,
+    val pluginId: String,
     // 覆盖已有指令
     val override: Boolean,
     // 前缀`/`可选

@@ -91,6 +91,13 @@ namespace MiraiCP {
         forceRefreshNextTime();
     }
 
+    void Member::changeSpecialTitle(std::string_view title) {
+        if (anonymous()) return;
+        json j{{"title", title}, {"contact", toJson()}};
+        KtOperation::ktOperation(KtOperation::ChangeSpecialTitle, j);
+        forceRefreshNextTime();
+    }
+
     void Member::changeNameCard(std::string_view newName) {
         if (anonymous()) return;
         json j{{"contact", toJson()}, {"newName", newName}};
@@ -128,12 +135,17 @@ namespace MiraiCP {
         }
 
         {
-            _permission = stoi(KtOperation::ktOperation(KtOperation::QueryM, internalToJson()));
+            result = KtOperation::ktOperation(KtOperation::QueryM, internalToJson());
+            MIRAICP_ERROR_HANDLE(result, "");
+            auto tmp = nlohmann::json::parse(result);
+            _permission = tmp["permission"];
+            _specialTitle = Tools::json_stringmover(tmp, "specialTitle");
         }
     }
 
     IMPL_GETTER(anonymous)
     IMPL_GETTER(permission)
+    IMPL_GETTER(specialTitle)
 
 #undef LOC_CLASS_NAMESPACE
 } // namespace MiraiCP

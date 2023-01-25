@@ -50,6 +50,7 @@ public:
     }
 
     void onCommand(std::shared_ptr<Contact> ptr, const Bot &bot, const MessageChain &chain) override {
+        Message::messageSerialization(chain);
         testEnd("CustomCommand");
     }
 };
@@ -159,6 +160,9 @@ public:
             })
             TEST(sendTemp, sendTempTest, {
                 a.sender.sendMessage("x");
+            })
+            TEST(specialTitle, changeSpecialTitleTest, {
+                a.sender.changeSpecialTitle("test");
             })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
