@@ -4,8 +4,8 @@
     "sources": [
         "include/common/MiraiCPMacros.h",
         "include/common/MiraiCPStringInternal.h",
-        "include/common/PlatformThreading.h",
         "include/common/PluginConfig.h",
+        "include/common/ThreadIdentify.h",
         "include/common/commonTools.h",
         "include/common/commonTypes.h",
         "include/common/loaderApiInternal.h",

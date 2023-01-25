@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MIRAICP_PRO_PLATFORMTHREADING_H
-#define MIRAICP_PRO_PLATFORMTHREADING_H
+#ifndef MIRAICP_PRO_THREADIDENTIFY_H
+#define MIRAICP_PRO_THREADIDENTIFY_H
 
 #include "MiraiCPMacros.h"
 // -----------------------
@@ -107,4 +107,4 @@ inline void platform_get_thread_name(decltype(platform_thread_self()) id, char *
 #endif
 
 
-#endif //MIRAICP_PRO_PLATFORMTHREADING_H
+#endif //MIRAICP_PRO_THREADIDENTIFY_H
