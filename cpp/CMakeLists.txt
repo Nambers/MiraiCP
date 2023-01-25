@@ -133,21 +133,9 @@ if (UNIX)
 endif (UNIX)
 # -- end --
 
+# checks
 if (CMAKE_SYSTEM_NAME STREQUAL Android)
-    message("Android build detected, testing API level")
-    include(CheckCXXSourceCompiles)
-    check_cxx_source_compiles("
-#include <android/api-level.h>
-#include<cstdio>
-int main(){
-    std::printf(\"%d\", android_get_device_api_level());
-    return 0;
-}
-" ANDROID_API_LEVEL)
-    if (${ANDROID_API_LEVEL} GREATER_EQUAL 26)
-        add_compile_definitions(TERMUX_THREAD_SUPPORTED)
-    endif ()
-    message("API level is: ${ANDROID_API_LEVEL}")
+    include(cmake/termux)
 endif ()
 
 add_subdirectory(src/sdk)
