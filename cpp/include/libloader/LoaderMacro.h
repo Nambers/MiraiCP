@@ -33,7 +33,7 @@
 #endif
 
 #if MIRAICP_TERMUX || MIRAICP_ANDROID
-#define JNIPPTR
+#define MIRAICP_JNIPPTR
 #define MIRAICP_JVER 0x00010008
 #else
 #define MIRAICP_JNIPPTR (void **)

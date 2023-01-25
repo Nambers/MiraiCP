@@ -163,6 +163,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLibMultiplatform", method_table, 3)) {
         return JNI_ERR;
     }
-    return JNI_VERSION_1_8;
+    return MIRAICP_JVER;
 }
 #endif
