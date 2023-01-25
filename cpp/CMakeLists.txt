@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 17) # not working on MSVC
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_library(commonBuild INTERFACE)
+
 if (WIN32)
     # See Warning C4668
     add_compile_definitions(WIN32_LEAN_AND_MEAN)
@@ -134,6 +136,7 @@ endif (UNIX)
 # -- end --
 
 # checks
+add_subdirectory(cmake/pthread)
 if (CMAKE_SYSTEM_NAME STREQUAL Android)
     add_subdirectory(cmake/termux)
 endif ()

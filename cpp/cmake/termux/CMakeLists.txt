@@ -9,7 +9,7 @@ try_run(test_run_result # exit code
 if (test_compile_result AND ("${test_run_result}" EQUAL 0))
     message("API level is: ${ANDROID_API_LEVEL}")
     if (${ANDROID_API_LEVEL} GREATER_EQUAL 26)
-        add_compile_definitions(TERMUX_THREAD_SUPPORTED)
+        target_compile_definitions(commonBuild INTERFACE TERMUX_THREAD_SUPPORTED)
         message("pthread utilities supported")
     else ()
         message("pthread utilities not supported")

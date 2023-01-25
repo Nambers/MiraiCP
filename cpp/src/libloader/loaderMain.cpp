@@ -37,7 +37,7 @@ namespace LibLoader {
     /// LoaderMain实现开始
 
     void LoaderMain::loaderMain() {
-        platform_set_thread_name(platform_thread_self(), "libLoader");
+        ThreadIdentify::IAmLoaderThread();
         logger.info("libLoader thread start");
 
         BS::pool = std::make_unique<BS::thread_pool>();
