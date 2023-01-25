@@ -138,7 +138,7 @@ endif (UNIX)
 # checks
 add_subdirectory(cmake/pthread)
 if (CMAKE_SYSTEM_NAME STREQUAL Android)
-    add_subdirectory(cmake/termux)
+    message("Android build detected") # TODO(Antares)
 endif ()
 
 add_subdirectory(src/sdk)
