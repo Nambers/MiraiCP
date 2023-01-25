@@ -17,11 +17,12 @@
 #ifndef MIRAICP_PRO_CONTACT_H
 #define MIRAICP_PRO_CONTACT_H
 
+
 #include "IMiraiData.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
 #include "MessageChain.h"
-#include <json_fwd.hpp>
+#include <json.hpp>
 #include <string>
 
 
@@ -261,7 +262,7 @@ namespace MiraiCP {
         static std::shared_ptr<Contact> deserializeToPointer(nlohmann::json source);
 
         // for derived class
-        template<class T>
+        template<typename T>
         static T deserialize(nlohmann::json source) {
             static_assert(std::is_base_of_v<Contact, T>, "Cannot deserialize class that isn't base on Contact");
             return T(std::move(source));

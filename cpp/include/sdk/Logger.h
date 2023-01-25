@@ -17,9 +17,11 @@
 #ifndef MIRAICP_PRO_LOGGER_H
 #define MIRAICP_PRO_LOGGER_H
 
+
 #include "MiraiCode.h"
 #include "commonTypes.h"
 #include <functional>
+#include <memory>
 #include <sstream>
 
 
