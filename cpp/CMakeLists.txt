@@ -8,11 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(commonBuild INTERFACE)
 
-if (WIN32)
-    # See Warning C4668
-    add_compile_definitions(WIN32_LEAN_AND_MEAN)
-endif (WIN32)
-
 if (MSVC)
     message("MSVC detected")
     # 以utf8编译, for msvc; EHa参数启用标准 C++ stack unwinding; 启用多线程编译；禁止无返回值的函数；禁止unknown-pragmas warning；禁用两个与dll export相关的warning

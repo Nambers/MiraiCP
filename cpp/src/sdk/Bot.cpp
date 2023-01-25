@@ -21,7 +21,6 @@
 #include "LowLevelAPI.h"
 #include "Tools.h"
 #include <atomic>
-#include <json.hpp>
 #include <memory>
 #include <mutex>
 

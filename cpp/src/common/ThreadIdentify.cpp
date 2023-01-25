@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #if MIRAICP_MSVC /// Windows case
-#include <Windows.h>
+#include "WindowsMin.h"
 #include <processthreadsapi.h>
 #include <string>
 #define SET_THREADNAME(name)                                   \
