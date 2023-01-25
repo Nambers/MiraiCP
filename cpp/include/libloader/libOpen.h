@@ -24,9 +24,10 @@ namespace LibLoader::LoaderApi {
     // dlopen or sth like dlopen on Windows
     plugin_handle libOpen(const std::string &path);
 
-
     plugin_func_ptr libSymbolLookup(void *handle, const char *symbol);
 
     int libClose(void *handle);
+
+    std::string libError();
 } // namespace LibLoader::LoaderApi
 #endif //MIRAICP_PRO_LIBOPEN_H
