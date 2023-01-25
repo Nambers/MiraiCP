@@ -135,7 +135,7 @@ endif (UNIX)
 
 # checks
 if (CMAKE_SYSTEM_NAME STREQUAL Android)
-    include(cmake/termux)
+    add_subdirectory(cmake/termux)
 endif ()
 
 add_subdirectory(src/sdk)
