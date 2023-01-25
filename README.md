@@ -67,6 +67,7 @@
 - 使用cmake
 - 使用jni与kt交互
 - c++ utf8编码
+- 支持termux
 - 与mirai-core同步发布(无需mah)
 - 支持3种使用方法(mcl, MiraiCP-loader 以及 MiraiCP-core)
 - [从2.7.0开始]代码集中到一个hpp文件和其他固定依赖文件，每次更新只需要更新那个文件
