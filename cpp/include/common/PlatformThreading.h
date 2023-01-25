@@ -57,11 +57,10 @@ inline void platform_get_thread_name(void *platform_thread_self, char *buf, size
 #else
 
 
-#if MIRAICP_TERMUX && !defined(TERMUX_THREAD_SUPPORTED)
+#if (MIRAICP_ANDROID || MIRAICP_TERMUX) && !defined(TERMUX_THREAD_SUPPORTED)
 
-inline int pthread_self();
-inline void platform_set_thread_name(int id, const char *name) {}
-inline void platform_get_thread_name(int id, char *buf, size_t bufsize) {
+inline void platform_set_thread_name(decltype(pthread_self()) id, const char *name) {}
+inline void platform_get_thread_name(decltype(pthread_self()) id, char *buf, size_t bufsize) {
     buf[0] = 0;
 }
 
@@ -70,9 +69,8 @@ inline void platform_get_thread_name(int id, char *buf, size_t bufsize) {
 #include "pthread.h"
 #include <string>
 
-#if MIRAICP_TERMUX && defined(TERMUX_THREAD_SUPPORTED)
+#if (MIRAICP_ANDROID || MIRAICP_TERMUX) && defined(TERMUX_THREAD_SUPPORTED)
 
-pthread_t pthread_self(void) attribute_const;
 int pthread_setname_np(pthread_t pthread, const char *__name);
 int pthread_getname_np(pthread_t pthread, char *buf, size_t n);
 
