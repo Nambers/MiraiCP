@@ -148,17 +148,18 @@ namespace MiraiCP {
          */
         std::string toString() const;
 
-        /// @brief 添加元素
-        /// @tparam T 任意的SingleMessage的子类
+        /// @brief 使用emplace_back构造Message添加元素
+        /// @tparam T 任意的SingleMessage的子类对象，但不允许传入SingleMessage本身
         /// @param a 添加的值
-        template<class T>
-        void add(const T &a) {
-            static_assert(std::is_base_of_v<SingleMessage, T>, "只接受SingleMessage的子类");
-            emplace_back(a);
+        /// @note 如果你已经有一个Message对象，请直接调用emplace_back。
+        ///  若你尝试传入一个基类SingleMessage对象，说明你的程序出现了一些问题
+        template<typename T, typename = std::enable_if_t<std::is_base_of_v<SingleMessage, std::decay_t<T>> && !std::is_same_v<SingleMessage, std::decay_t<T>>>>
+        void add(T &&a) {
+            emplace_back(std::forward<T>(a));
         }
 
-        void add(const MessageSource &val) {
-            source = val;
+        void add(MessageSource val) {
+            source = std::move(val);
         }
 
         /// 筛选出某种类型的消息
@@ -288,7 +289,7 @@ namespace MiraiCP {
     private: // private methods
         void constructMessages() {}
 
-        template<typename T1, typename ... T2, typename = std::enable_if_t<std::is_base_of_v<SingleMessage, std::decay_t<T1>>>>
+        template<typename T1, typename... T2, typename = std::enable_if_t<std::is_base_of_v<SingleMessage, std::decay_t<T1>>>>
         void constructMessages(T1 &&h, T2 &&...args) {
             emplace_back(std::forward<T1>(h));
             constructMessages(std::forward<T2>(args)...);
