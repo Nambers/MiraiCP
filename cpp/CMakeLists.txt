@@ -6,10 +6,12 @@ set(CMAKE_CXX_STANDARD 17) # not working on MSVC
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#if (WIN32)
-#    # See Warning C4668
-#    add_compile_definitions(WIN32_LEAN_AND_MEAN)
-#endif (WIN32)
+add_library(commonBuild INTERFACE)
+
+if (WIN32)
+    # See Warning C4668
+    add_compile_definitions(WIN32_LEAN_AND_MEAN)
+endif (WIN32)
 
 if (MSVC)
     message("MSVC detected")
@@ -71,10 +73,14 @@ set(JAVA_AWT_INCLUDE_PATH NotNeeded)
 find_package(JNI REQUIRED)
 if (JNI_FOUND)
     message(STATUS "FOUND JNI IN ${JAVA_INCLUDE_PATH}")
-    set(JNI_PATH
-            ${JAVA_INCLUDE_PATH}
-            ${JAVA_INCLUDE_PATH2}
-            )
+    if (CMAKE_SYSTEM_NAME STREQUAL Android)
+        set(JNI_PATH ${JAVA_INCLUDE_PATH})
+    else ()
+        set(JNI_PATH
+                ${JAVA_INCLUDE_PATH}
+                ${JAVA_INCLUDE_PATH2}
+                )
+    endif ()
     set(3RD_PATH
             ${THIRD_PARTY_PATH}/json
             ${THIRD_PARTY_PATH}/json/nlohmann
@@ -128,6 +134,12 @@ if (UNIX)
     )
 endif (UNIX)
 # -- end --
+
+# checks
+add_subdirectory(cmake/pthread)
+if (CMAKE_SYSTEM_NAME STREQUAL Android)
+    message("Android build detected") # TODO(Antares)
+endif ()
 
 add_subdirectory(src/sdk)
 add_subdirectory(src/libloader)

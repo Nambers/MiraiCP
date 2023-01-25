@@ -18,8 +18,8 @@
 // -----------------------
 #include "BS_thread_pool.hpp"
 #include "LoaderTaskQueue.h"
-#include "PlatformThreading.h"
 #include "PluginListManager.h"
+#include "ThreadIdentify.h"
 #include "commonTools.h"
 
 #if MIRAICP_WINDOWS
@@ -39,18 +39,16 @@ public:
 
         if (pluginName.empty()) {
             // test the thread is from jvm
-            char threadName[80];
-            platform_get_thread_name(threadName, 80);
-            if (strcmp(threadName, "libLoader") == 0) {
+            if (ThreadIdentify::isMeLoaderThread()) {
                 LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
                 exit(1);
-            } else if (strcmp(threadName, "LoaderWorker") == 0) {
+            } else if (ThreadIdentify::isMePoolThread()) {
                 // 非插件导致的工作线程致命错误
                 LibLoader::logger.error("libLoader工作线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
                 exit(1);
             }
 
-            std::string maybeId = threadName;
+            std::string maybeId = ThreadIdentify::identifyMe();
             // 插件列表中查询是否有这个线程名的插件，如果没有则放弃处理，有则卸载
             if (LibLoader::PluginListManager::pluginNameLookup(maybeId)) {
                 pluginName = std::move(maybeId);
@@ -135,18 +133,16 @@ private:
         auto pluginName = LibLoader::PluginListManager::getThreadRunningPluginId();
         if (pluginName.empty()) {
             // test the thread is from jvm
-            char threadName[80];
-            platform_get_thread_name(threadName, 80);
-            if (strcmp(threadName, "libLoader") == 0) {
+            if (ThreadIdentify::isMeLoaderThread()) {
                 LibLoader::logger.error("libLoader线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
                 exit(1);
-            } else if (strcmp(threadName, "LoaderWorker") == 0) {
+            } else if (ThreadIdentify::isMePoolThread()) {
                 // 非插件导致的工作线程致命错误
                 LibLoader::logger.error("libLoader工作线程遇到致命错误，请向MiraiCP仓库提交您的报错信息以及堆栈信息");
                 exit(1);
             }
 
-            std::string maybeId = threadName;
+            std::string maybeId = ThreadIdentify::identifyMe();
             // 插件列表中查询是否有这个线程名的插件，如果没有则放弃处理，有则卸载
             if (LibLoader::PluginListManager::pluginNameLookup(maybeId)) {
                 pluginName = std::move(maybeId);
@@ -174,8 +170,9 @@ private:
             // 是线程池线程
             LibLoader::sendThreadReset(threadIndex);
         }
-
+#ifdef PTHREAD_CANCEL_SUPPORTED
         pthread_cancel(pthread_self());
+#endif
     }
 
 private:

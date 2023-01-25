@@ -153,7 +153,7 @@ int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *g
 // register
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnv *env = nullptr;
-    if (vm->GetEnv((void **) &env, JNI_VERSION_1_8) != JNI_OK) {
+    if (vm->GetEnv((void**) &env, MIRAICP_JVER) != JNI_OK) {
         return JNI_ERR;
     }
     assert(env != nullptr);
@@ -163,6 +163,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     if (!registerMethods(env, "tech/eritquearcus/miraicp/shared/CPPLibMultiplatform", method_table, 3)) {
         return JNI_ERR;
     }
-    return JNI_VERSION_1_8;
+    return MIRAICP_JVER;
 }
 #endif
