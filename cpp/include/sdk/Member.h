@@ -76,6 +76,7 @@ namespace MiraiCP {
         void modifyAdmin(bool admin);
 
         /// @brief 更改群成员群头衔
+        /// @throws BotException 如果没权限时
         void changeSpecialTitle(std::string_view);
 
         /// 发送语音
