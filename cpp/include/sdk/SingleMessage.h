@@ -17,7 +17,9 @@
 #ifndef MIRAICP_PRO_SINGLEMESSAGE_H
 #define MIRAICP_PRO_SINGLEMESSAGE_H
 
+
 #include "MiraiCPMacros.h"
+// -----------------------
 #include "MessageSource.h"
 #include "MiraiCode.h"
 #include <array>
@@ -54,41 +56,41 @@ namespace MiraiCP {
         )
 
         constexpr const char *miraiCodeNameInternal[] = {
-                "NoExists",      // 0
-                "NoExists",      // 1
-                "NoExists",      // 2
-                "NoExists",      // 3
-                "NoExists",      // 4
-                "NoExists",      // 5
-                "NoExists",      // 6
-                "at",            // 7
-                "atall",         // 8
-                "image",         // 9
-                "app",          // 10
-                "service",      // 11
-                "file",         // 12
-                "face",         // 13
-                "flash",        // 14
-                "musicshare"    // 15
+                "NoExists",  // 0
+                "NoExists",  // 1
+                "NoExists",  // 2
+                "NoExists",  // 3
+                "NoExists",  // 4
+                "NoExists",  // 5
+                "NoExists",  // 6
+                "at",        // 7
+                "atall",     // 8
+                "image",     // 9
+                "app",       // 10
+                "service",   // 11
+                "file",      // 12
+                "face",      // 13
+                "flash",     // 14
+                "musicshare" // 15
         };
 
         constexpr const char *messageTypeInternal[] = {
                 "MessageSource",        // -6
-                "MarketFace",             // -5
-                "ForwardMessage", // -4
-                "OnlineAudio",            // -3
-                "QuoteReply",             // -2
-                "UnsupportedMessage",       // -1
-                "PlainText",              // 0      <-- messageType is here
-                "At",                     // 1
-                "AtAll",                  // 2
-                "Image",                  // 3
-                "LightApp",               // 4
-                "SimpleServiceMessage",   // 5
-                "FileMessage",            // 6
-                "Face",                   // 7
-                "FlashImage",             // 8
-                "MusicShare",             // 9
+                "MarketFace",           // -5
+                "ForwardMessage",       // -4
+                "OnlineAudio",          // -3
+                "QuoteReply",           // -2
+                "UnsupportedMessage",   // -1
+                "PlainText",            // 0      <-- messageType is here
+                "At",                   // 1
+                "AtAll",                // 2
+                "Image",                // 3
+                "LightApp",             // 4
+                "SimpleServiceMessage", // 5
+                "FileMessage",          // 6
+                "Face",                 // 7
+                "FlashImage",           // 8
+                "MusicShare",           // 9
         };
 
         static_assert(sizeof(messageTypeInternal) / sizeof(*messageTypeInternal) == SingleMessageType::End - SingleMessageType::Begin);
@@ -222,7 +224,7 @@ namespace MiraiCP {
 
         explicit At(const SingleMessage &sg);
 
-        explicit At(QQID a) : SingleMessage(At::type(), std::to_string(a)), target(a) {};
+        explicit At(QQID a) : SingleMessage(At::type(), std::to_string(a)), target(a){};
 
         [[nodiscard]] std::string toMiraiCode() const override {
             return "[mirai:at:" + std::to_string(this->target) + "] "; // 后面有个空格
@@ -312,8 +314,8 @@ namespace MiraiCP {
         explicit Image(const std::string &imageId, size_t size = 0, int width = 0, int height = 0,
                        std::string type = "PNG",
                        bool isEmoji = false)
-                : SingleMessage(Image::type(), imageId), id(imageId), imageType(std::move(type)), size(size),
-                  width(width), height(height), isEmoji(isEmoji) {
+            : SingleMessage(Image::type(), imageId), id(imageId), imageType(std::move(type)), size(size),
+              width(width), height(height), isEmoji(isEmoji) {
             // todo(Antares): 实际上重复的属性 id 和 content
         }
 
