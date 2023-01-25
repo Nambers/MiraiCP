@@ -23,7 +23,7 @@
 #include "Event.h"
 #include "Exception.h"
 #include "Logger.h"
-#include "PlatformThreading.h"
+#include "ThreadIdentify.h"
 #include <ostream>
 #include <thread>
 
@@ -40,10 +40,10 @@ namespace MiraiCP {
                       [lambda_func = std::forward<Callable>(func)](auto &&...argss) {
                           try {
                               const char *thread_name = CPPPlugin::config.id;
-                              if (!checkPthreadLen(thread_name)) {
-                                  Logger::logger.warning("新线程创建中：插件id过长（Linux内核上限制为15个字节），当遇到致命问题时，MiraiCP可能无法正确排查");
-                              }
-                              platform_set_thread_name(thread_name);
+//                              if (!checkPthreadLen(thread_name)) {
+//                                  Logger::logger.warning("新线程创建中：插件id过长（Linux内核上限制为15个字节），当遇到致命问题时，MiraiCP可能无法正确排查");
+//                              }
+//                              platform_set_thread_name(platform_thread_self(), thread_name);
                               lambda_func(std::forward<decltype(argss)>(argss)...);
                           } catch (MiraiCPExceptionBase &e) {
                               e.raise();

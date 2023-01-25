@@ -22,6 +22,8 @@ set_target_properties(Loader PROPERTIES
 
 target_compile_definitions(Loader PUBLIC MIRAICP_LIB_LOADER JSON_MultipleHeaders=ON)
 
+target_link_libraries(Loader PRIVATE commonBuild)
+
 # 移植性
 set_target_properties(Loader PROPERTIES LINK_SEARCH_START_STATIC 1)
 set_target_properties(Loader PROPERTIES LINK_SEARCH_END_STATIC 1)
@@ -32,10 +34,10 @@ if (WIN32)
         target_link_libraries(Loader PUBLIC -static)
     endif (MSVC)
 endif (WIN32)
-if (UNIX)
-    target_link_libraries(Loader -static-libstdc++ -static-libgcc)
+if (UNIX AND NOT (CMAKE_SYSTEM_NAME STREQUAL Android))
+    target_link_libraries(Loader PRIVATE -static-libstdc++ -static-libgcc)
     # target_compile_options(Loader PUBLIC -rdynamic)
-endif (UNIX)
+endif ()
 # -- end --
 
 # -- MiraiCP libLoader native --
@@ -58,6 +60,7 @@ set_target_properties(LoaderNative PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 target_compile_definitions(LoaderNative PUBLIC MIRAICP_LIB_LOADER LOADER_NATIVE JSON_MultipleHeaders=ON)
+target_link_libraries(LoaderNative PRIVATE commonBuild)
 
 # 移植性
 set_target_properties(LoaderNative PROPERTIES LINK_SEARCH_START_STATIC 1)
@@ -69,8 +72,10 @@ if (WIN32)
         target_link_libraries(LoaderNative PUBLIC -static)
     endif (MSVC)
 endif (WIN32)
+if (UNIX AND NOT (CMAKE_SYSTEM_NAME STREQUAL Android))
+    target_link_libraries(LoaderNative PRIVATE -static-libstdc++ -static-libgcc)
+endif ()
 if (UNIX)
-    target_link_libraries(LoaderNative -static-libstdc++ -static-libgcc)
     add_link_options(-fvisibility=hidden)
-endif (UNIX)
+endif ()
 # -- end --

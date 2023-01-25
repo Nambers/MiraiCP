@@ -1,4 +1,4 @@
-// Copyright (c) 2022 - 2022. Antares, Eritque arcus and contributors.
+// Copyright (c) 2022. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,20 +14,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MIRAICP_PRO_LIBOPEN_H
-#define MIRAICP_PRO_LIBOPEN_H
+#ifndef MIRAICP_PRO_THREADIDENTIFY_H
+#define MIRAICP_PRO_THREADIDENTIFY_H
 
+#include <string>
 
-#include "commonTypes.h"
+namespace ThreadIdentify {
+    void IAmPoolThread();
 
-namespace LibLoader::LoaderApi {
-    // dlopen or sth like dlopen on Windows
-    plugin_handle libOpen(const std::string &path);
+    bool isMePoolThread();
 
-    plugin_func_ptr libSymbolLookup(void *handle, const char *symbol);
+    void IAmLoaderThread();
 
-    int libClose(void *handle);
+    bool isMeLoaderThread();
 
-    std::string libError();
-} // namespace LibLoader::LoaderApi
-#endif //MIRAICP_PRO_LIBOPEN_H
+    void setMyThreadName(const std::string &name);
+
+    std::string identifyMe();
+} // namespace ThreadIdentify
+#endif //MIRAICP_PRO_THREADIDENTIFY_H

@@ -2,12 +2,10 @@
     "project": "Mirai C++ SDK",
     "target": "single_include/MiraiCP.hpp",
     "sources": [
-        "include/common/JsonTools.h",
         "include/common/MiraiCPMacros.h",
         "include/common/MiraiCPStringInternal.h",
-        "include/common/PlatformThreading.h",
         "include/common/PluginConfig.h",
-        "include/common/WindowsMin.h",
+        "include/common/ThreadIdentify.h",
         "include/common/commonTools.h",
         "include/common/commonTypes.h",
         "include/common/loaderApiInternal.h",

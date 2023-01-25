@@ -19,10 +19,10 @@
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
-#include "PlatformThreading.h"
 #include "Plugin.h"
 #include "PluginListManager.h"
 #include "Scheduler.h"
+#include "ThreadIdentify.h"
 #include "redirectCout.h"
 
 
@@ -37,7 +37,7 @@ namespace LibLoader {
     /// LoaderMain实现开始
 
     void LoaderMain::loaderMain() {
-        platform_set_thread_name("libLoader");
+        ThreadIdentify::IAmLoaderThread();
         logger.info("libLoader thread start");
 
         BS::pool = std::make_unique<BS::thread_pool>();

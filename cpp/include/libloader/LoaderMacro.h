@@ -32,4 +32,12 @@
 #define J_ARGS_AND_STRING JNIEnv *, jobject, JSTRING
 #endif
 
+#if MIRAICP_TERMUX || MIRAICP_ANDROID
+#define MIRAICP_JNIPPTR
+#define MIRAICP_JVER 0x00010008
+#else
+#define MIRAICP_JNIPPTR (void **)
+#define MIRAICP_JVER JNI_VERSION_1_8
+#endif
+
 #endif //MIRAICP_PRO_LOADERMACRO_H
