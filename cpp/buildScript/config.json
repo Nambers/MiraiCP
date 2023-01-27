@@ -1,0 +1,34 @@
+{
+    "baseDirectory": "./",
+    "sources": [
+        "src/sdk",
+        "src/common"
+    ],
+    "headers": [
+        "include/common",
+        "include/sdk"
+    ],
+    "sourceDest": "single_include/MiraiCP.cpp",
+    "headerDest": "single_include/MiraiCP.hpp",
+    "prologue": "buildScript/prologue",
+    "includeDirectory": [
+        "include",
+        "include/common",
+        "include/sdk"
+    ],
+    "removeTwoSlashComments": true,
+    "extension": {
+        "source": [
+            ".c",
+            ".cpp",
+            ".cxx",
+            ".cc"
+        ],
+        "header": [
+            ".h",
+            ".hpp",
+            ".hxx",
+            ".inl"
+        ]
+    }
+}
