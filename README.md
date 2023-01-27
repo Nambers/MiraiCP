@@ -141,11 +141,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
 
 # 依赖
+<details> 
+<summary>C++ dependencies</summary>
+
 | Dependence name                                                                 | Url                                        | Author             | License                              |
 |---------------------------------------------------------------------------------|--------------------------------------------|--------------------|--------------------------------------|
 | JSON for modern C++                                                             | <https://github.com/nlohmann/json>         | Niels Lohmann      | MIT                                  |
 | UTF8-CPP: UTF-8 with C++ in a Portable Way                                      | <https://github.com/nemtrif/utfcpp>        | Nemanja Trifunovic | BSL-1.0                              |
 | JNI Headers                                                                     | Null                                       | Java               | GNU General Public License version 2 |
 | BS::thread_pool: a fast, lightweight, and easy-to-use C++17 thread pool library | <https://github.com/bshoshany/thread-pool> | Barak Shoshany     | MIT                                  |
+| Amalgamate: C++ source file amalgamation                                        | <https://github.com/0ph1uch1/amalgamate>   | Antares0982        | AGPL-3.0                             |
+
+</details>
+<details> 
+<summary>Kotlin dependencies</summary>
+
+| Dependence name                                         | Url                                    | Author          | License                        |
+|---------------------------------------------------------|----------------------------------------|-----------------|--------------------------------|
+| Jline 3                                                 | <https://github.com/jline/jline3>      | Jline team      | BSD-3                          |
+| Mirai                                                   | <https://github.com/mamoe/mirai>       | Mamoe team      | AGPL-3.0                       |
+| Jansi                                                   | <https://github.com/fusesource/jansi>  | FuseSource team | Apache License 2.0             |
+| Mordant: Colorful styling for command-line applications | <https://github.com/ajalt/mordant>     | AJ Alt          | Apache License 2.0             |
+| Junit 5                                                 | <https://github.com/junit-team/junit5> | Junit team      | Eclipse Public License - v 2.0 |
+
+</details>
+
 # Stargazers
 [![Stargazers repo roster for @Nambers/MiraiCP](https://reporoster.com/stars/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/stargazers)
