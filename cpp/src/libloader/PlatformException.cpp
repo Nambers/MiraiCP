@@ -97,6 +97,7 @@ private:
 
 #include "LoaderLogger.h"
 #include <csignal>
+#include <cstring>
 #include <thread>
 
 
