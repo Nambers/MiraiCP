@@ -523,18 +523,18 @@ object Packets {
             override val eventId = 3
 
             /**
-             * 1 - Active
-             * 2 - Kick
-             * 3 - Disband
+             * 0 - Active
+             * 1 - Kick
+             * 2 - Disband
              */
             val eventType: Int
 
             @OptIn(MiraiExperimentalApi::class)
             constructor(event: BotLeaveEvent) {
                 eventType = when (event) {
-                    is BotLeaveEvent.Active -> 1
-                    is BotLeaveEvent.Kick -> 2
-                    is BotLeaveEvent.Disband -> 3
+                    is BotLeaveEvent.Active -> 0
+                    is BotLeaveEvent.Kick -> 1
+                    is BotLeaveEvent.Disband -> 2
                 }
             }
         }
