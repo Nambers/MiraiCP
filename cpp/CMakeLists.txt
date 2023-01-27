@@ -109,25 +109,15 @@ endif (UNIX)
 
 # -- gengerate single headers --
 if (WIN32)
-    add_custom_target(
-            generateSingleHeaders
-            COMMAND python buildScript/addinclude.py
-            COMMAND python buildScript/third-party/config.py
-            COMMAND python buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
-            COMMAND python buildScript/combineSource.py
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-endif (WIN32)
-if (UNIX)
-    add_custom_target(
-            generateSingleHeaders
-            COMMAND python3 buildScript/addinclude.py
-            COMMAND python3 buildScript/third-party/config.py
-            COMMAND python3 buildScript/third-party/amalgamate.py -c buildScript/third-party/config.json -p buildScript/third-party/prologue -s . --verbose=yes
-            COMMAND python3 buildScript/combineSource.py
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-endif (UNIX)
+    set(PYTHON_NAME python)
+else ()
+    set(PYTHON_NAME python3)
+endif ()
+add_custom_target(
+        generateSingleHeaders
+        COMMAND ${PYTHON_NAME} buildScript/generate.py buildScript/config.json
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
 # -- end --
 
 # checks
