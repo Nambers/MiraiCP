@@ -1,6 +1,6 @@
 set(SDK_INCLUDES_INTERNAL
         ${INCLUDE_PATH}/sdk
-        ${INCLUDE_PATH}/common
+        ${SRC_PATH}/sdk
         ${3RD_PATH})
 set(SDK_INCLUDES_ALL ${SDK_INCLUDES_INTERNAL} PARENT_SCOPE)
 
@@ -56,10 +56,6 @@ target_link_libraries(MiraiCP_mock_test PRIVATE commonBuild sdkCommonMulti)
 
 # -- MiraiCP single --
 set(SINGLE_HEADER_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/single_include)
-#if (NOT EXISTS "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.hpp" OR NOT EXISTS "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.cpp")
-#    FILE(WRITE "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.hpp" "")
-#    FILE(WRITE "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.cpp" "")
-#endif ()
 
 add_library(
         MiraiCP_single
