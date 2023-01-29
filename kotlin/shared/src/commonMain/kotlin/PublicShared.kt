@@ -38,6 +38,7 @@ import net.mamoe.mirai.event.EventChannel
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.MessageSerializers
+import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.isUploaded
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
@@ -811,6 +812,9 @@ object PublicShared {
                 ""
             }
         }
+
+    suspend fun deserializeMiraiCode(source: String): String =
+        MiraiCode.deserializeMiraiCode(source).serializeToJsonString()
 
     fun onDisable() = PublicSharedMultiplatform.onDisable()
 
