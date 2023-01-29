@@ -352,6 +352,7 @@ object Packets {
             CommandReg,         // 24
             ChangeNameCard,     // 25
             ChangSpeicalTitle,  // 26
+            DeserializeMiraiCode, // 27
         }
 
         val operations = hashMapOf<OperationCode, suspend (String) -> String>(
@@ -382,6 +383,7 @@ object Packets {
             OperationCode.CommandReg to PublicShared::commandReg,
             OperationCode.ChangeNameCard to PublicShared::changeNameCard,
             OperationCode.ChangSpeicalTitle to PublicShared::changeSpecialTitle,
+            OperationCode.DeserializeMiraiCode to PublicShared::deserializeMiraiCode,
         )
     }
 
@@ -523,18 +525,18 @@ object Packets {
             override val eventId = 3
 
             /**
-             * 1 - Active
-             * 2 - Kick
-             * 3 - Disband
+             * 0 - Active
+             * 1 - Kick
+             * 2 - Disband
              */
             val eventType: Int
 
             @OptIn(MiraiExperimentalApi::class)
             constructor(event: BotLeaveEvent) {
                 eventType = when (event) {
-                    is BotLeaveEvent.Active -> 1
-                    is BotLeaveEvent.Kick -> 2
-                    is BotLeaveEvent.Disband -> 3
+                    is BotLeaveEvent.Active -> 0
+                    is BotLeaveEvent.Kick -> 1
+                    is BotLeaveEvent.Disband -> 2
                 }
             }
         }

@@ -80,6 +80,8 @@ namespace MiraiCP::KtOperation {
         ChangeNameCard,
         /// 改群头衔
         ChangeSpecialTitle,
+        /// 反序列化 MiraiCode
+        DeserializeMiraiCode,
     };
     enum QueryBotListCode {
         /// 查询好友列表

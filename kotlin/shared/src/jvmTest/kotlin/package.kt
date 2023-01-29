@@ -15,11 +15,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-package tech.eritquearcus.miraicp.shared
-
-object BuiltInConstants {
-    const val date = "Thu Jan 26 15:21:49 EST 2023"
-    const val version = "2.13.2"
-    const val miraiVersion = "2.14.0-RC"
-}
+package tech.eritquearcus.miraicp.shared.test

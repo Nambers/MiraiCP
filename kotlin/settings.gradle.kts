@@ -16,7 +16,6 @@
  *
  */
 
-enableFeaturePreview("VERSION_CATALOGS")
 rootProject.name = "MiraiCP"
 include("shared")
 include("plugin")

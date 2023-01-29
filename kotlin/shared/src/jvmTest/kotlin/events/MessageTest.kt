@@ -113,5 +113,14 @@ class MessageTest : TestBase() {
         member.says(au)
         waitUntilEnd()
     }
+
+    @Test
+    fun miraiCodeDeserialize() = runBlocking {
+        member.says("deserializeMiraiCode")
+        waitUntilEnd()
+        checkMessageChainJsonResultFromLog(buildMessageChain {
+            add(At(111))
+        })
+    }
     // nudge is in Event test
 }
