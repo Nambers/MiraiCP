@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_BOT_H
 
 #include "Contact.h"
-#include "commonTypes.h"
+#include "SdkType.h"
 #include <string>
 #include <vector>
 

@@ -17,7 +17,7 @@
 #ifndef MIRAICP_PRO_KTOPERATION_H
 #define MIRAICP_PRO_KTOPERATION_H
 
-#include <json_fwd.hpp>
+#include "nlohmann/json_fwd.hpp"
 
 
 /// @brief 配置类声明,  MiraiCP内部使用, 不需要更改或其他操作

@@ -19,7 +19,6 @@
 
 #include "CPPPlugin.h"
 #include "Exception.h"
-#include "KtOperation.h"
 #include "Logger.h"
 #include "commonTools.h"
 #include <json.hpp>
@@ -40,7 +39,6 @@ namespace MiraiCP {
 
     public:
         struct Config {
-        public:
             /// 指令名不能为空
             string primaryName;
             /// 可以为空
@@ -65,6 +63,8 @@ namespace MiraiCP {
     private:
         CommandManager() = default;
         std::vector<std::shared_ptr<IRawCommand>> commandList;
+
+        static std::string internalRegister(const nlohmann::json &j);
 
     public:
         std::shared_ptr<IRawCommand> &operator[](const int &index) { return commandList[index]; }
@@ -99,7 +99,7 @@ namespace MiraiCP {
                 else
                     throw IllegalArgumentException("找不到合适的bindId", MIRAICP_EXCEPTION_WHERE);
             }
-            std::string re = KtOperation::ktOperation(KtOperation::CommandReg, j);
+            std::string re = internalRegister(j);
             return re == "true";
         }
         static CommandManager commandManager;
