@@ -15,8 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// MiraiCP依赖文件(只需要引入这一个)
-#include <MiraiCP.hpp>
+#include "CPPPlugin.h"
+#include "Event.h"
+#include "Member.h"
+#include "Schedule.h"
+#include "ThreadTask.h"
+#include "utils.h"
+
 using namespace MiraiCP;
 
 const PluginConfig CPPPlugin::config{

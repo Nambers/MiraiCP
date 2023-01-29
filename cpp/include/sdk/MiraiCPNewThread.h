@@ -23,7 +23,6 @@
 #include "Event.h"
 #include "Exception.h"
 #include "Logger.h"
-#include "ThreadIdentify.h"
 #include <ostream>
 #include <thread>
 
