@@ -18,8 +18,10 @@
 #define MIRAICP_PRO_LOGGER_H
 
 
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "MiraiCode.h"
-#include "commonTypes.h"
+#include "SdkType.h"
 #include <functional>
 #include <memory>
 #include <sstream>

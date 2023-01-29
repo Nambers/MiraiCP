@@ -15,8 +15,11 @@
 //
 
 #include "Command.h"
-
+#include "KtOperation.h"
 
 namespace MiraiCP {
     CommandManager CommandManager::commandManager = CommandManager();
-}
+    std::string CommandManager::internalRegister(const nlohmann::json &j) {
+        return KtOperation::ktOperation(KtOperation::CommandReg, j);
+    }
+} // namespace MiraiCP

@@ -21,6 +21,7 @@
 #include "KtOperation.h"
 #include "Logger.h"
 #include "commonTools.h"
+#include "commonTypes.h"
 #include "loaderApiInternal.h"
 #include "utils.h"
 #include <iostream>

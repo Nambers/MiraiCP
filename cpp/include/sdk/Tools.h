@@ -19,7 +19,7 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
-#include "commonTypes.h"
+#include "SdkType.h"
 #include <json_fwd.hpp>
 #include <sstream>
 #include <string>

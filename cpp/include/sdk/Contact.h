@@ -19,8 +19,6 @@
 
 
 #include "IMiraiData.h"
-#include "KtOperation.h"
-#include "LowLevelAPI.h"
 #include "MessageChain.h"
 #include <json.hpp>
 #include <string>
