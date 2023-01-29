@@ -22,8 +22,8 @@
 #include "LoaderMacro.h"
 #include "PluginData.h"
 #include "commonTools.h"
+#include "nlohmann/json.hpp"
 #include <fstream>
-#include <json.hpp>
 #include <string>
 #include <thread>
 

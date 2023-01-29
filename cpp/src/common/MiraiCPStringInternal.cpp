@@ -17,9 +17,6 @@
 #include "MiraiCPMacros.h"
 // -----------------------
 #include "MiraiCPStringInternal.h"
-#ifdef MIRAICP_LIB_LOADER
-#include "LoaderLogger.h"
-#endif
 #include <cstring>
 
 
@@ -28,9 +25,6 @@ namespace MiraiCP {
     void MiraiCPString::construction() {
         str = (char *) ::std::malloc(sizeof(char) * (_size + 1));
         if (str == nullptr) {
-#ifdef MIRAICP_LIB_LOADER
-            LibLoader::logger.error("MiraiCPString::construction: malloc failed when trying to malloc size " + std::to_string(_size + 1));
-#endif
             throw std::bad_alloc();
         }
     }
