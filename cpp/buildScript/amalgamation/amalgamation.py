@@ -129,7 +129,7 @@ class Amalgamation(object):
             with open(os.path.join(FileProcessor.baseDir, self.prologue), 'r', encoding='utf-8') as f:
                 prologue = f.read()
         sourcePrologue = prologue + \
-            f"\n#include \"{os.path.basename(self.headerDest)}\"\n"
+                         f"\n#include \"{os.path.basename(self.headerDest)}\"\n"
         self._process(self.headers, self.headerDest, prologue)
         print(f"Header file is generated to {self.headerDest}")
         self._process(self.sources, self.sourceDest, sourcePrologue)
@@ -153,6 +153,19 @@ class Amalgamation(object):
         d = os.path.dirname(writeto)
         if not os.path.exists(d):
             os.mkdir(d)
+
+        def isSameFile(file: str, content: str) -> bool:
+            try:
+                with open(file, 'r', encoding='utf-8') as f:
+                    oldContent = f.read()
+            except Exception:
+                return False
+            return oldContent == content
+
+        bIsSameFile = isSameFile(writeto, result)
+        if bIsSameFile:
+            print(f"File {writeto} is not changed")
+            return
 
         with open(writeto, 'w', encoding='utf-8') as f:
             f.write(result)
