@@ -164,6 +164,10 @@ public:
             TEST(specialTitle, changeSpecialTitleTest, {
                 a.sender.changeSpecialTitle("test");
             })
+            TEST(deserializeMiraiCode, deserializeMiraiCodeTest, {
+                auto msg = MessageChain::deserializationFromMiraiCode("[mirai:at:111]");
+                Message::messageSerialization(msg);
+            })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
         });

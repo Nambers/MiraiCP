@@ -1,4 +1,16 @@
 # Change Log
+## v2.13.2
++ 解决了reload等指令的问题
++ 修改了线程识别方案
++ 增加了 Termux 支持
++ 增加群头衔支持
+
+Internal:
++ 修复命令的一些小问题
++ Kotlin -> v1.8.0
++ Gradle -> v7.6
++ mordant -> v2.0.0-beta11
+> libLoaderNative 改为动态链接库, MiraiCP-native 能跑了但是还有些小问题 (画饼.jpg
 
 ## v2.13.1
 + 修复已知问题:

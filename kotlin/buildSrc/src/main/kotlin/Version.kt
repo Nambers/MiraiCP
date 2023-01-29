@@ -17,9 +17,9 @@
  */
 
 object Version {
-    const val miraiCP = "2.13.1"
+    const val miraiCP = "2.13.2"
     // plugins
-    const val kotlin = "1.7.21"
+    const val kotlin = "1.8.0"
     const val shadowJar = "7.1.2"
     const val `kotlinx-coroutines-core` = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     const val `kotlin-test` = "org.jetbrains.kotlin:kotlin-test:$kotlin"
@@ -35,7 +35,7 @@ object Version {
     const val mavenCenterPublish = "1.0.0"
     const val jline = "org.jline:jline:3.21.0"
     const val jansi = "org.fusesource.jansi:jansi:2.4.0"
-    const val mordant = "com.github.ajalt.mordant:mordant:2.0.0-beta7"
+    const val mordant = "com.github.ajalt.mordant:mordant:2.0.0-beta10"
 
     const val `junit-jupiter` = "org.junit.jupiter:junit-jupiter:5.8.1"
 }

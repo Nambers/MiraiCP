@@ -26,7 +26,7 @@ target_link_libraries(Loader PRIVATE commonBuild loaderCommon)
 # -- MiraiCP libLoader native --
 add_library(
         LoaderNative
-        STATIC
+        SHARED
         ${LOADER_PATH}
         ${MIRAICP_COMMON_PATH}
 )
@@ -35,8 +35,8 @@ set_target_properties(
         LoaderNative PROPERTIES
         PREFIX lib
         OUTPUT_NAME LoaderNative
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-)
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 target_compile_definitions(LoaderNative PRIVATE LOADER_NATIVE)
 target_link_libraries(LoaderNative PRIVATE commonBuild loaderCommon)
