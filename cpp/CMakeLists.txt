@@ -49,6 +49,7 @@ target_compile_definitions(commonBuild INTERFACE JSON_HAS_CPP_17)
 # checks
 add_subdirectory(cmake/jni)
 add_subdirectory(cmake/pthread)
+add_subdirectory(cmake/static)
 if (CMAKE_SYSTEM_NAME STREQUAL Android)
     message("Android build detected") # TODO(Antares)
 endif ()
@@ -80,8 +81,7 @@ add_custom_target(
 # -- end --
 
 # add targets
-add_subdirectory(src/sdk)
-add_subdirectory(src/libloader)
+add_subdirectory(src)
 
 # tests
 if (GOOGLE_TEST)
