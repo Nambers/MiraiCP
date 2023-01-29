@@ -56,6 +56,11 @@ target_link_libraries(MiraiCP_mock_test PRIVATE commonBuild sdkCommonMulti)
 
 # -- MiraiCP single --
 set(SINGLE_HEADER_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/single_include)
+# To ensure the source files exist when running cmake. Useful in CI.
+if (NOT EXISTS "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.hpp" OR NOT EXISTS "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.cpp")
+    FILE(WRITE "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.hpp" "")
+    FILE(WRITE "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.cpp" "")
+endif ()
 
 add_library(
         MiraiCP_single
