@@ -352,6 +352,7 @@ object Packets {
             CommandReg,         // 24
             ChangeNameCard,     // 25
             ChangSpeicalTitle,  // 26
+            DeserializeMiraiCode, // 27
         }
 
         val operations = hashMapOf<OperationCode, suspend (String) -> String>(
@@ -382,6 +383,7 @@ object Packets {
             OperationCode.CommandReg to PublicShared::commandReg,
             OperationCode.ChangeNameCard to PublicShared::changeNameCard,
             OperationCode.ChangSpeicalTitle to PublicShared::changeSpecialTitle,
+            OperationCode.DeserializeMiraiCode to PublicShared::deserializeMiraiCode,
         )
     }
 
