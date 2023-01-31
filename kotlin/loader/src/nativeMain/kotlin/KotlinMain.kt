@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -51,9 +51,9 @@ actual object KotlinMain {
 //        setSystemProp("mirai.network.packet.logger", "true")
 //        setSystemProp("mirai.network.show.packet.details", "true")
 //        setSystemProp("mirai.jce.deserializer.debug", "true")
+        KotlinMainData.job.start()
         registerFactory()
         initMirai()
-        KotlinMainData.job.start()
         val c = json.decodeFromString<CPPConfig.LoaderConfig>(j)
         KotlinMainData.loginAccount = c.accounts ?: emptyList()
         if (PublicSharedData.cachePath.exists()) PublicSharedData.cachePath.deleteRecursively()
