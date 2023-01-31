@@ -105,7 +105,7 @@ namespace MiraiCP {
          * - SingleMessage的派生类
          * @param args 参数本身
          */
-        template<typename... T, typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>..., MessageChain>>>
+        template<typename... T, typename = typename std::enable_if_t<(true && ... && !std::is_same_v<std::decay_t<T>, MessageChain>)>>
         explicit MessageChain(T &&...args) {
             constructMessages(std::forward<T>(args)...);
         };
