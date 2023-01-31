@@ -306,6 +306,13 @@ namespace MiraiCP {
             insert(end(), mc.begin(), mc.end());
             constructMessages(std::forward<T>(args)...);
         }
+
+        template<typename... T>
+        void constructMessages(const MiraiCode &m, T &&...args) {
+            auto mc = MessageChain::deserializationFromMiraiCode(m.toMiraiCode());
+            insert(end(), mc.begin(), mc.end());
+            constructMessages(std::forward<T>(args)...);
+        }
     };
 } // namespace MiraiCP
 
