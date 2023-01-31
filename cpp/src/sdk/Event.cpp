@@ -16,7 +16,8 @@
 
 #include "Event.h"
 #include "Command.h"
-#include "Exception.h"
+#include "Exceptions/API.h"
+#include "Exceptions/TimeOut.h"
 #include "JsonTools.h"
 #include "KtOperation.h"
 #include "Tools.h"

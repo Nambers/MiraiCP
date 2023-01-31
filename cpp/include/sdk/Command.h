@@ -17,10 +17,6 @@
 #ifndef MIRAICP_PRO_COMMAND_H
 #define MIRAICP_PRO_COMMAND_H
 
-#include "CPPPlugin.h"
-#include "Exception.h"
-#include "Logger.h"
-#include "commonTools.h"
 #include <json.hpp>
 #include <optional>
 
@@ -29,16 +25,17 @@ namespace MiraiCP {
     class MessageChain;
     class Bot;
     class Contact;
+
     /*!
      * @brief 指令 Interface
      * @doxygenEg{1001, command.cpp, 新建自定义命令}
      * @attention loader端的命令只支持从console传入, plugin端是对接 mirai 的RawCommand
+     * @note 析构函数必须重写基类，否则会造成内存泄漏
      */
     class IRawCommand {
-        using string = std::string;
-
     public:
         struct Config {
+            using string = std::string;
             /// 指令名不能为空
             string primaryName;
             /// 可以为空
@@ -53,55 +50,37 @@ namespace MiraiCP {
             bool preFixOption = false;
         };
 
+    public:
         virtual IRawCommand::Config config() = 0;
         virtual void onCommand(std::shared_ptr<Contact>, const Bot &, const MessageChain &) = 0;
-        IRawCommand() = default;
-        virtual ~IRawCommand() = default;
+        /// 析构函数必须override该函数
+        virtual ~IRawCommand() = 0;
     };
 
     class CommandManager {
+        std::vector<IRawCommand *> commandList;
+
     private:
         CommandManager() = default;
-        std::vector<std::shared_ptr<IRawCommand>> commandList;
+        ~CommandManager();
 
-        static std::string internalRegister(const nlohmann::json &j);
+        bool internalRegister(IRawCommand *inPtr);
 
     public:
-        std::shared_ptr<IRawCommand> &operator[](const int &index) { return commandList[index]; }
+        IRawCommand *&operator[](const int &index) { return commandList[index]; }
 
         /*!
          * @brief 注册一条指令
-         * @param command 指令
+         * @tparam T 指令的类，必须继承 IRawCommand 且默认构造函数可访问
          * @return 是否注册成功
+         * @note 默认构造函数构造出的对象的config()函数内容会被注册
          */
         template<typename T>
-        bool registerCommand(T command) {
+        bool registerCommand() {
             static_assert(std::is_base_of_v<IRawCommand, T>, "只支持IRawCommand的派生类");
-            nlohmann::json j;
-            j["pluginId"] = CPPPlugin::config.id;
-            j["usage"] = command.config().usage;
-            j["primaryName"] = command.config().primaryName;
-            j["secondName"] = command.config().secondNames;
-            j["description"] = command.config().description;
-            j["override"] = command.config().overrideOrigin;
-            j["preFixOption"] = command.config().preFixOption;
-            size_t before = commandList.size();
-            std::shared_ptr<IRawCommand> c = std::make_shared<T>(command);
-            // c.reset(new T(command));
-            commandList.push_back(c);
-            size_t now = commandList.size();
-            if (now - before == 1)
-                j["bindId"] = now - 1;
-            else {
-                auto i = std::find(commandList.begin(), commandList.end(), c);
-                if (i != commandList.end())
-                    j["bindId"] = i - commandList.begin();
-                else
-                    throw IllegalArgumentException("找不到合适的bindId", MIRAICP_EXCEPTION_WHERE);
-            }
-            std::string re = internalRegister(j);
-            return re == "true";
+            return internalRegister(new T);
         }
+
         static CommandManager commandManager;
     };
 } // namespace MiraiCP

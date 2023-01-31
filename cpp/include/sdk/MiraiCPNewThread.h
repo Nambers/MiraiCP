@@ -20,14 +20,13 @@
 #include "MiraiCPMacros.h"
 // -----------------------
 #include "CPPPlugin.h"
-#include "Event.h"
 #include "Exception.h"
-#include "Logger.h"
-#include <ostream>
 #include <thread>
 
 
 namespace MiraiCP {
+
+
     /// MiraiCP 对 std::thread 的封装
     class MiraiCPNewThread : public std::thread {
     public:
@@ -38,23 +37,16 @@ namespace MiraiCP {
             : std::thread(
                       [lambda_func = std::forward<Callable>(func)](auto &&...argss) {
                           try {
-//                              const char *thread_name = CPPPlugin::config.id;
-//                              if (!checkPthreadLen(thread_name)) {
-//                                  Logger::logger.warning("新线程创建中：插件id过长（Linux内核上限制为15个字节），当遇到致命问题时，MiraiCP可能无法正确排查");
-//                              }
-//                              platform_set_thread_name(platform_thread_self(), thread_name);
+                              // TODO(Antares): use identify
+                              //                              const char *thread_name = CPPPlugin::config.id;
+                              //                              platform_set_thread_name(platform_thread_self(), thread_name);
                               lambda_func(std::forward<decltype(argss)>(argss)...);
                           } catch (MiraiCPExceptionBase &e) {
-                              e.raise();
-                              Event::broadcast(MiraiCPExceptionEvent(&e));
+                              threadExceptionBroadcast(e);
                           } catch (const std::exception &e) {
-                              MiraiCPThreadException exNew(std::string(e.what()), std::this_thread::get_id(), MIRAICP_EXCEPTION_WHERE);
-                              exNew.raise();
-                              Event::broadcast(MiraiCPExceptionEvent(&exNew));
+                              threadThrows(e.what());
                           } catch (...) {
-                              MiraiCPThreadException exNew("unknown exception type", std::this_thread::get_id(), MIRAICP_EXCEPTION_WHERE);
-                              exNew.raise();
-                              Event::broadcast(MiraiCPExceptionEvent(&exNew));
+                              threadThrows("unknown exception type");
                           }
                       },
                       std::forward<Args>(args)...) {}
@@ -71,6 +63,11 @@ namespace MiraiCP {
             static_cast<std::thread &>(*this) = std::move(static_cast<std::thread &>(other));
             return *this;
         }
+
+    private:
+        static void threadThrows(const std::string &content);
+
+        static void threadExceptionBroadcast(MiraiCPExceptionBase &e);
     };
 } // namespace MiraiCP
 

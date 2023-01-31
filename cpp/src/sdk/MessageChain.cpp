@@ -16,6 +16,7 @@
 
 #include "MessageChain.h"
 #include "Exception.h"
+#include "Exceptions/IllegalArgument.h"
 #include "ForwardedMessage.h"
 #include "Group.h"
 #include "KtOperation.h"
@@ -44,85 +45,6 @@ namespace MiraiCP {
 
     //message chain
     MessageChain MessageChain::deserializationFromMiraiCode(const std::string &m) {
-//        size_t pos = 0;
-//        size_t lastPos = -1;
-//        MessageChain mc;
-//        if (m.length() <= 7) {
-//            return MessageChain(PlainText(m));
-//        }
-//        do {
-//            if (m.length() - 7 - pos > 0 && m.substr(pos, 7) == "[mirai:") {
-//                if (pos - lastPos > 1)
-//                    mc.add(PlainText(m.substr(lastPos + 1, pos - lastPos - 1))); // plain text
-//                size_t back = MessageChain::findEnd(m, pos);
-//                if (back == (size_t) -1) throw IllegalStateException("", MIRAICP_EXCEPTION_WHERE);
-//                std::string tmp = m.substr(pos, back - pos);
-//                tmp = Tools::replace(std::move(tmp), "[mirai:", "");
-//                size_t i = tmp.find(':'); // first :
-//                int t = SingleMessage::getMiraiCodeKey(tmp.substr(0, i));
-//                switch (t) {
-//                    case SingleMessageType::PlainText_t:
-//                        // no miraiCode key is PlainText
-//                        Logger::logger.error("无法预料的错误, 信息: " + m);
-//                        break;
-//                    case SingleMessageType::At_t:
-//                        mc.add(At(std::stoll(tmp.substr(i + 1, tmp.length() - i - 1))));
-//                        break;
-//                    case SingleMessageType::AtAll_t:
-//                        mc.add(AtAll());
-//                        break;
-//                    case SingleMessageType::Image_t:
-//                        mc.add(Image(tmp.substr(i + 1, tmp.length() - i - 1)));
-//                        break;
-//                    case SingleMessageType::LightApp_t:
-//                        mc.add(LightApp(tmp.substr(i + 1, tmp.length() - i - 1)));
-//                        break;
-//                    case SingleMessageType::ServiceMessage_t: {
-//                        size_t comma = tmp.find(',');
-//                        mc.add(ServiceMessage(std::stoi(tmp.substr(i + 1, comma - i - 1)),
-//                                              tmp.substr(comma + 1, tmp.length() - comma - 1)));
-//                        break;
-//                    }
-//                    case SingleMessageType::RemoteFile_t: {
-//                        //[mirai:file:/b53231e8-46dd-11ec-8ba5-5452007bd6c0,102,run.bat,55]
-//                        size_t comma1 = tmp.find(',');
-//                        size_t comma2 = tmp.find(',', comma1 + 1);
-//                        size_t comma3 = tmp.find(',', comma2 + 1);
-//                        mc.add(RemoteFile(tmp.substr(i + 1, comma1 - i - 1),
-//                                          std::stoi(tmp.substr(comma1 + 1, comma2 - comma1 - 1)),
-//                                          tmp.substr(comma2 + 1, comma3 - comma2 - 1),
-//                                          std::stoll(tmp.substr(comma3 + 1, tmp.length() - comma3 - 1))));
-//                        break;
-//                    }
-//                    case SingleMessageType::Face_t:
-//                        mc.add(Face(std::stoi(tmp.substr(i + 1, tmp.length() - i - 1))));
-//                        break;
-//                    case SingleMessageType::FlashImage_t:
-//                        mc.add(FlashImage(tmp.substr(i + 1, tmp.length() - i - 1)));
-//                        break;
-//                    case SingleMessageType::MusicShare_t: {
-//                        //[mirai:musicshare:name,title,summary,jUrl,pUrl,mUrl,brief]
-//                        auto temp = Tools::split(tmp.substr(i + 1, tmp.length() - i - 1), ",");
-//                        mc.add(MusicShare(temp[0], temp[1], temp[2], temp[3], temp[4], temp[5], temp[6]));
-//                        break;
-//                    }
-//                    default:
-//                        Logger::logger.error(
-//                                "MiraiCP碰到了意料之中的错误(原因:部分SimpleMessage在MiraiCode解析支持之外)\n请到MiraiCP(github.com/Nambers/MiraiCP)发送issue并复制本段信息使MiraiCP可以支持这种消息: MiraiCode:" +
-//                                m);
-//                        mc.add(UnSupportMessage("[mirai:" + tmp));
-//                        break;
-//                }
-//                pos = back;
-//                lastPos = pos;
-//                if (t == 1)
-//                    lastPos++;
-//            }
-//            pos++;
-//        } while (pos < m.length());
-//        if (lastPos + 1 < m.length())
-//            mc.add(PlainText(m.substr(lastPos + 1, m.length() - lastPos - 1))); // plain text
-//        return mc;
         std::string re = KtOperation::ktOperationStr(KtOperation::DeserializeMiraiCode, m);
         return MessageChain::deserializationFromMessageJson(json::parse(re));
     }
@@ -351,5 +273,9 @@ namespace MiraiCP {
 
     bool internal::Message::operator!=(const internal::Message &m) const {
         return (*this)->internalType != m->internalType || (*this)->toMiraiCode() != m->toMiraiCode();
+    }
+
+    void internal::Message::messageThrow(const std::string& from, const std::string& to, const char* file, int line) {
+        throw IllegalArgumentException("cannot convert from " + from + " to " + to, std::string(file), line);
     };
 } // namespace MiraiCP

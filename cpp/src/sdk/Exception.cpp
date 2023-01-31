@@ -14,7 +14,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "Exception.h"
+#include "Exceptions/API.h"
+#include "Exceptions/Bot.h"
+#include "Exceptions/BotIsBeingMuted.h"
+#include "Exceptions/EventCancelled.h"
+#include "Exceptions/Friend.h"
+#include "Exceptions/Group.h"
+#include "Exceptions/Member.h"
+#include "Exceptions/TimeOut.h"
+#include "Logger.h"
 
 
 namespace MiraiCP {
@@ -27,14 +35,6 @@ namespace MiraiCP {
         if (!filename.empty() && lineNum != 0) {
             Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
         }
-    }
-
-    std::string MiraiCPThreadException::getThreadIdStr(const std::thread::id &id) {
-        static std::stringstream ss;
-        ss << id;
-        auto result = ss.str();
-        ss.str("");
-        return result;
     }
 
     void ErrorHandle0(const std::string &name, int line, const std::string &re, const std::string &ErrorMsg) {

@@ -40,6 +40,13 @@ namespace LibLoader::LoaderApi {
     MIRAICP_EXPORT void reset_loader_apis() noexcept;
 } // namespace LibLoader::LoaderApi
 
+/// 安全检查
+extern "C" {
+MIRAICP_EXPORT void _unused_MiraiCP_internal_safety_check() {
+    MiraiCP::enrollPlugin();
+}
+}
+
 extern "C" {
 /// 插件开启入口
 MIRAICP_EXPORT int FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
@@ -164,12 +171,9 @@ MIRAICP_EXPORT int FUNC_EVENT(const MiraiCP::MiraiCPString &c) {
 
 /// 获取 Plugin Info
 /// 如果未正确定义，插件无法正确加载
-/// 该函数不可调用loader api；因为会在入口函数调用前先调用，loader api未初始化
+/// dev: 该函数不可调用loader api；因为会在入口函数调用前先调用，loader api未初始化
 MIRAICP_EXPORT const MiraiCP::PluginConfig *PLUGIN_INFO() {
     static_assert(std::is_same_v<decltype(&PLUGIN_INFO), LibLoader::plugin_info_func_ptr>);
-
-    //    if (MiraiCP::CPPPlugin::config.getIdSafe().empty())
-    //        throw std::exception();
 
     return &MiraiCP::CPPPlugin::config; // never nullptr
 }

@@ -1,13 +1,26 @@
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
-// Created by antares on 11/8/22.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or any later version(in your opinion).
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef MIRAICP_PRO_THREADTASK_H
 #define MIRAICP_PRO_THREADTASK_H
 
-#include "Logger.h"
-#include "loaderApiInternal.h"
+#include <functional>
 #include <future>
+#include <memory>
+#include <string>
 
 
 namespace MiraiCP::ThreadTask {
@@ -19,6 +32,10 @@ namespace MiraiCP::ThreadTask {
         void remove_task(size_t id);
 
         void push_task(size_t id, std::shared_ptr<std::function<void()>> func);
+
+        void raw_push_task(void (*)());
+
+        void logerror(const std::string &content);
     } // namespace internal
 
     /// @brief 提交一个任务到线程池，参数与构造 std::thread 以及 MiraiCPNewThread 用的参数相同。
@@ -43,7 +60,7 @@ namespace MiraiCP::ThreadTask {
                     } catch (...) {
                         try {
                             promise->set_exception(std::current_exception());
-                            Logger::logger.error("Failed to run task: " + std::to_string(function_id));
+                            internal::logerror("Failed to run task: " + std::to_string(function_id));
                         } catch (...) {
                         }
                     }
@@ -62,7 +79,7 @@ namespace MiraiCP::ThreadTask {
     template<typename F, typename... Args, typename R = std::invoke_result_t<std::decay_t<F>, std::decay_t<Args>...>>
     void addTask(F &&func, Args &&...args) {
         if constexpr (std::is_same_v<std::decay_t<F>, void (*)()>) {
-            LibLoader::LoaderApi::pushTask(func);
+            internal::raw_push_task(func);
         } else {
             auto function_id = internal::get_auto_incr_id();
             std::function<void()> taskfunction = std::bind(std::forward<F>(func), std::forward<Args>(args)...);
@@ -72,7 +89,7 @@ namespace MiraiCP::ThreadTask {
                             std::invoke(taskfunction);
                         } catch (...) {
                             try {
-                                Logger::logger.error("Failed to run task: " + std::to_string(function_id));
+                                internal::logerror("Failed to run task: " + std::to_string(function_id));
                             } catch (...) {
                             }
                         }

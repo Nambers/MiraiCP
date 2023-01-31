@@ -15,7 +15,8 @@
 //
 
 #include "MessageSource.h"
-#include "Exception.h"
+#include "Exceptions/IllegalArgument.h"
+#include "Exceptions/Recall.h"
 #include "KtOperation.h"
 #include "Logger.h"
 #include "commonTools.h"

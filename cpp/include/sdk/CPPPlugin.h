@@ -17,8 +17,10 @@
 #ifndef MIRAICP_PRO_CPPPLUGIN_H
 #define MIRAICP_PRO_CPPPLUGIN_H
 
-#include "Logger.h"
+#include "MiraiCPMacros.h"
+// -----------------------
 #include "PluginConfig.h"
+#include <memory>
 #include <utility>
 
 
@@ -36,11 +38,8 @@ namespace MiraiCP {
     public:
         /// @brief 插件信息，一个插件中该内容不应变化
         MIRAICP_EXPORT const static PluginConfig config;
-        /// @brief 插件级logger
-        /// @deprecated use Logger::logger instead
-        [[deprecated("Use Logger::logger instead")]] static Logger *pluginLogger;
 
-        static std::unique_ptr<CPPPlugin> plugin;
+        inline static std::unique_ptr<CPPPlugin> plugin = nullptr;
 
     public:
         /// 插件启用时调用一次

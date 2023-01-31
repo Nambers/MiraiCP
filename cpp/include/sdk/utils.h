@@ -38,12 +38,4 @@ namespace MiraiCP {
     }
 } // namespace MiraiCP
 
-//
-//extern "C" {
-//MIRAICP_EXPORT int FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &);
-//MIRAICP_EXPORT int FUNC_EVENT(const MiraiCP::MiraiCPString &ccontent);
-//MIRAICP_EXPORT int FUNC_EXIT();
-//MIRAICP_EXPORT const MiraiCP::PluginConfig *PLUGIN_INFO();
-//}
-
 #endif //MIRAICP_PRO_UTILS_H
