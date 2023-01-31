@@ -15,13 +15,13 @@
 //
 
 #include "Contact.h"
-#include "Exception.h"
+#include "ExceptionHandle.h"
+#include "Exceptions/IllegalArgument.h"
+#include "Exceptions/Upload.h"
 #include "Friend.h"
 #include "Group.h"
-#include "IMiraiData.h"
 #include "JsonTools.h"
 #include "KtOperation.h"
-#include "Logger.h"
 #include "LowLevelAPI.h"
 #include "Member.h"
 #include "Tools.h"

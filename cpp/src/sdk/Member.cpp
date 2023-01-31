@@ -15,7 +15,11 @@
 //
 
 #include "Member.h"
-#include "Exception.h"
+#include "ExceptionHandle.h"
+#include "Exceptions/IllegalArgument.h"
+#include "Exceptions/IllegalState.h"
+#include "Exceptions/Member.h"
+#include "Exceptions/Mute.h"
 #include "JsonTools.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
