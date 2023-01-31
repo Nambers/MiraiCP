@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,13 +18,20 @@
 package tech.eritquearcus.miraicp.loader
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.newSingleThreadContext
 import tech.eritquearcus.miraicp.shared.CPPConfig
 
 object KotlinMainData {
     val job = Job()
-    val coroutineScope = CoroutineScope(job)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val threadPool = newSingleThreadContext("console")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val coroutineScope = CoroutineScope(threadPool + job)
     lateinit var loginAccount: List<CPPConfig.LoaderConfig.Account>
     val aliveChan: Channel<Unit> = Channel(0)
 }

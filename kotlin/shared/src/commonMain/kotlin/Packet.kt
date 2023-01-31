@@ -564,10 +564,7 @@ object Packets {
                     }
                 }
 
-                message = json.encodeToString(event.message.let {
-                    if (it.contains(MessageSource)) it.drop(1)
-                    else it
-                })
+                message = event.message.serializeToJsonString()
                 source = json.encodeToString(
                     MessageSerializers.serializersModule.serializer(),
                     event.message[MessageSource]!!
