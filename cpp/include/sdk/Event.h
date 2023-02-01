@@ -17,7 +17,6 @@
 #ifndef MIRAICP_PRO_EVENT_H
 #define MIRAICP_PRO_EVENT_H
 
-
 #include "Bot.h"
 #include "Friend.h"
 #include "Group.h"
@@ -152,10 +151,6 @@ namespace MiraiCP {
         /// 信息
         MessageChain message;
 
-        //        GroupMessageEvent(QQID botId, Group group, Member sender,
-        //                          MessageChain mc) : BotEvent(botId), group(std::move(group)),
-        //                                             sender(std::move(sender)), message(std::move(mc)){};
-
         explicit GroupMessageEvent(BaseEventData j);
         /*!
          * @brief 取群聊下一个消息(群聊与本事件一样)
@@ -274,16 +269,9 @@ namespace MiraiCP {
         /// 本次申请 id
         size_t requestEventId = 0;
 
+        void reject();
 
-        static void operation0(const std::string &source, QQID botid, bool accept);
-
-        void reject() {
-            GroupInviteEvent::operation0(this->source, this->bot.id(), false);
-        }
-
-        void accept() {
-            GroupInviteEvent::operation0(this->source, this->bot.id(), true);
-        }
+        void accept();
 
         explicit GroupInviteEvent(BaseEventData j);
     };
@@ -309,20 +297,12 @@ namespace MiraiCP {
         /// @brief 事件识别 id
         size_t requestEventId;
 
-        /// @brief 接受好友申请
-        /// @param source 事件序列化信息
-        static void operation0(const std::string &source, QQID botId, bool accept, bool ban = false);
-
         /// @brief 拒绝好友申请
         /// @param ban - 是否加入黑名单
-        void reject(bool ban = false) {
-            NewFriendRequestEvent::operation0(this->source, this->bot.id(), false, ban);
-        }
+        void reject(bool ban = false);
 
-        /// @brief 接受申请
-        void accept() {
-            NewFriendRequestEvent::operation0(this->source, this->bot.id(), true);
-        }
+        /// @brief 接受好友申请
+        void accept();
 
         explicit NewFriendRequestEvent(BaseEventData j);
     };
@@ -356,18 +336,6 @@ namespace MiraiCP {
         ///邀请人, 当type = 1时存在，否则则和member变量相同
         std::optional<Member> inviter;
 
-        /*!
-         * @brief 新群成员入群事件
-         * @param botid botId
-         * @param type 类别 @see MemberJoinEvent::type
-         * @param member 入群群成员
-         * @param group 群组
-         * @param inviterid 邀请群成员id，如果不存在和member id参数一致
-         */
-        //        MemberJoinEvent(QQID botId, int type, const Member &member, const Group &group,
-        //                        QQID inviterid) : BotEvent(botId), type(joinType(type)), member(member),
-        //                                          group(group),
-        //                                          inviterid(inviterid) {}
         explicit MemberJoinEvent(BaseEventData j);
     };
 
@@ -391,6 +359,8 @@ namespace MiraiCP {
         *           2 - 主动退出
         */
         int type = 0;
+
+    public:
         explicit MemberLeaveEvent(BaseEventData j);
     };
 
@@ -411,8 +381,11 @@ namespace MiraiCP {
         std::string ids;
         /// 信息内部ids
         std::string internalIds;
+
+    public:
         explicit FriendRecallEvent(BaseEventData j);
     };
+
     class MemberRecallEvent : public BotEvent<MemberRecallEvent> {
     public:
         static eventTypes::Types get_event_type() {
@@ -431,8 +404,10 @@ namespace MiraiCP {
         /// 信息内部ids
         std::string internalIds;
 
+    public:
         explicit MemberRecallEvent(BaseEventData j);
     };
+
     /// 撤回信息
     namespace RecallEvent {
         // deprecated
@@ -456,6 +431,7 @@ namespace MiraiCP {
         /// 1-主动加入,2-被邀请加入,3-提供恢复群主身份加入
         int type;
 
+    public:
         explicit BotJoinGroupEvent(BaseEventData j);
     };
 
@@ -474,17 +450,16 @@ namespace MiraiCP {
         /// 信息
         MessageChain message;
 
+    public:
         explicit GroupTempMessageEvent(BaseEventData j);
 
     public:
         Contact *chat() override {
             return &sender;
         }
-
         const Contact *chat() const override {
             return &sender;
         }
-
         Contact *from() override {
             return &sender;
         }
@@ -513,7 +488,7 @@ namespace MiraiCP {
             return eventTypes::Types::TimeOutEvent;
         }
 
-        eventTypes::Types getEventType() const override { return this->get_event_type(); }
+        eventTypes::Types getEventType() const override { return get_event_type(); }
     };
 
 
@@ -545,6 +520,7 @@ namespace MiraiCP {
         /// 发送的环境, 可能为Group / Friend
         std::shared_ptr<Contact> subject;
 
+    public:
         explicit NudgeEvent(BaseEventData j);
     };
 
@@ -574,14 +550,7 @@ namespace MiraiCP {
         EventType type;
         Member operater;
 
-        //        BotLeaveEvent(QQID ingroupid, QQID botId, int type, QQID operatorId)
-        //            : BotEvent(botId),
-        //              groupId(ingroupid), type(static_cast<EventType>(type)) {
-        //            if (operatorId != -1) {
-        //                this->operatorId = operatorId;
-        //            }
-        //        }
-
+    public:
         explicit BotLeaveEvent(BaseEventData j);
     };
 
@@ -589,16 +558,6 @@ namespace MiraiCP {
     class MemberJoinRequestEvent : public BotEvent<MemberJoinRequestEvent> {
     private:
         std::string source;
-
-    public:
-        /**
-         * @brief 底层通过MemberJoinRequest
-         * @param s 序列化后的文本
-         */
-        static void operate(std::string_view s,
-                            QQID botid,
-                            bool sign,
-                            const std::string &msg = "");
 
     public:
         static eventTypes::Types get_event_type() {
@@ -621,14 +580,10 @@ namespace MiraiCP {
         explicit MemberJoinRequestEvent(BaseEventData j);
 
         /// 通过
-        void accept() {
-            operate(this->source, this->bot.id(), true);
-        }
+        void accept();
 
         /// 拒绝
-        void reject(const std::string &msg) {
-            operate(this->source, this->bot.id(), false, msg);
-        }
+        void reject(std::string msg);
     };
 
     /*! 每条消息发送前的事件, 总是在消息实际上被发送和广播MessagePostSendEvent前广播
@@ -647,7 +602,6 @@ namespace MiraiCP {
         /// 消息
         MessageChain message;
 
-        //MessagePreSendEvent(std::shared_ptr<Contact> c, MessageChain mc, QQID botId) : BotEvent(botId), target(std::move(c)), message(std::move(mc)) {}
         explicit MessagePreSendEvent(BaseEventData j);
     };
 
@@ -668,7 +622,7 @@ namespace MiraiCP {
             return eventTypes::Types::MiraiCPExceptionEvent;
         }
 
-        eventTypes::Types getEventType() const override { return this->get_event_type(); }
+        eventTypes::Types getEventType() const override { return get_event_type(); }
 
         const MiraiCPExceptionBase *getException() const {
             return exceptionPtr;
@@ -677,51 +631,54 @@ namespace MiraiCP {
 
     /// 事件监听操控, 可用于stop停止监听和resume继续监听
     class NodeHandle {
+        struct NodeHandleInternal;
+
     private:
-        bool _enable;
+        NodeHandleInternal *handle;
 
     public:
-        explicit NodeHandle(bool a) : _enable(a) {}
-        bool isEnable() const { return _enable; }
-        void stop() { _enable = false; }
-        void resume() { _enable = true; }
+        explicit NodeHandle(bool a);
+        NodeHandle(NodeHandle &&) = delete;
+        NodeHandle(const NodeHandle &) = delete;
+        ~NodeHandle();
+        [[nodiscard]] bool isEnable() const;
+        void stop();
+        void resume();
     };
 
     class MIRAICP_EXPORT Event {
     private: // typedefs
         class eventNode {
-        private:
-            /// 回调的handle，用于管理
-            std::shared_ptr<NodeHandle> _handle;
-
         public:
             std::function<bool(MiraiCPEvent *)> func;
 
+        private:
+            /// 回调的handle，用于管理
+            NodeHandle _handle;
+
         public:
-            eventNode() : _handle(), func(nullptr) {}
+            eventNode() : func(nullptr), _handle(true) {}
 
-            explicit eventNode(std::function<bool(MiraiCPEvent *)> f) : _handle(new NodeHandle(true)), func(std::move(f)) {}
-
-            eventNode(const eventNode &_o) = default; // for MSVC compatible, or you will get an error
-            eventNode(eventNode &&_o) noexcept : _handle(std::move(_o._handle)), func(std::move(_o.func)) {}
+            explicit eventNode(std::function<bool(MiraiCPEvent *)> f) : func(std::move(f)), _handle(true) {}
 
         public:
             /// 返回true代表block之后的回调
             bool run(MiraiCPEvent *a) const {
-                return _handle->isEnable() && func(a);
+                return _handle.isEnable() && func(a);
             }
 
-            std::shared_ptr<NodeHandle> getHandle() {
-                return _handle;
+            NodeHandle *getHandle() {
+                return &_handle;
             }
         };
 
         using priority_level = unsigned char;
-        using event_vector = std::vector<eventNode>;
+        using event_vector = std::vector<std::unique_ptr<eventNode>>;
         using eventNodeTable = std::vector<std::map<priority_level, event_vector>>;
 
     private: // member
         eventNodeTable _all_events_;
+        std::mutex eventsMtx;
 
     private:
         Event() : _all_events_(int(eventTypes::Types::count)){};
@@ -754,7 +711,7 @@ namespace MiraiCP {
             MiraiCPEvent *p = &val;
             for (auto &&[k, v]: processor._all_events_[id<EventClass>()]) {
                 for (auto &&a: v) {
-                    if (a.run(p)) return;
+                    if (a->run(p)) return;
                 }
             }
         }
@@ -767,17 +724,16 @@ namespace MiraiCP {
          * @doxygenEg{1018, callbackHandle.cpp, NodeHandle使用}
          */
         template<typename EventClass>
-        static std::shared_ptr<NodeHandle> registerEvent(std::function<void(EventClass)> callback, priority_level level = 100) {
+        static NodeHandle *registerEvent(std::function<void(EventClass)> callback, priority_level level = 100) {
             static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
                 callback(*static_cast<EventClass *>(p));
                 return false;
             };
-            auto t = eventNode(tmp);
-            auto ans = t.getHandle();
-            // 先获得shared_ptr才可以emplace_back
-            processor._all_events_[id<EventClass>()][level].emplace_back(std::move(t));
-            return ans;
+            std::lock_guard lk(processor.eventsMtx);
+            auto &row = processor._all_events_[id<EventClass>()][level];
+            row.emplace_back(std::make_unique<eventNode>(tmp));
+            return row[row.size() - 1]->getHandle();
         }
 
         /**
@@ -789,16 +745,15 @@ namespace MiraiCP {
          * @doxygenEg{1019, callbackHandle.cpp, NodeHandle使用}
          */
         template<typename EventClass>
-        static std::shared_ptr<NodeHandle> registerBlockingEvent(std::function<bool(EventClass)> callback, priority_level level = 100) {
+        static NodeHandle *registerBlockingEvent(std::function<bool(EventClass)> callback, priority_level level = 100) {
             static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
                 return callback(*static_cast<EventClass *>(p));
             };
-            auto t = eventNode(tmp);
-            auto ans = t.getHandle();
-            // 先获得shared_ptr才可以emplace_back
-            processor._all_events_[id<EventClass>()][level].emplace_back(std::move(t));
-            return ans;
+            std::lock_guard lk(processor.eventsMtx);
+            auto &row = processor._all_events_[id<EventClass>()][level];
+            row.emplace_back(std::make_unique<eventNode>(tmp));
+            return row[row.size() - 1]->getHandle();
         }
     };
 } // namespace MiraiCP

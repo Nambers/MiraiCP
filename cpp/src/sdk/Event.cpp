@@ -92,12 +92,20 @@ namespace MiraiCP {
                                                           requestEventId(j.eventData["requestEventId"]) {
     }
 
-    void GroupInviteEvent::operation0(const std::string &source, QQID botid, bool accept) {
+    void groupInviteInternal(const std::string &source, QQID botid, bool accept) {
         nlohmann::json j{{"source", source},
                          {"sign", accept},
                          {"botId", botid}};
         std::string re = KtOperation::ktOperation(KtOperation::Gioperation, j);
         if (re == "E") Logger::logger.error("群聊邀请事件同意失败(可能因为重复处理),id:" + source);
+    }
+
+    void GroupInviteEvent::reject() {
+        groupInviteInternal(source, bot.id(), false);
+    }
+
+    void GroupInviteEvent::accept() {
+        groupInviteInternal(source, bot.id(), true);
     }
 
     NewFriendRequestEvent::NewFriendRequestEvent(BaseEventData j) : BotEvent(j.botId),
@@ -109,13 +117,21 @@ namespace MiraiCP {
                                                                     requestEventId(j.eventData["requestEventId"]) {
     }
 
-    void NewFriendRequestEvent::operation0(const std::string &source, QQID botId, bool accept, bool ban) {
+    void newFriendRequestInternal(const std::string &source, QQID botId, bool accept, bool ban = false) {
         nlohmann::json j{{"source", source},
                          {"sign", accept},
                          {"botId", botId},
                          {"ban", ban}};
         std::string re = KtOperation::ktOperation(KtOperation::Nfroperation, j);
         if (re == "E") Logger::logger.error("好友申请事件同意失败(可能因为重复处理),id:" + source);
+    }
+
+    void NewFriendRequestEvent::reject(bool ban) {
+        newFriendRequestInternal(source, bot.id(), false, ban);
+    }
+
+    void NewFriendRequestEvent::accept() {
+        newFriendRequestInternal(source, bot.id(), true);
     }
 
     MemberJoinEvent::MemberJoinEvent(BaseEventData j) : BotEvent(j.botId),
@@ -197,12 +213,24 @@ namespace MiraiCP {
                                                                                              "message")) {
     }
 
-    void MemberJoinRequestEvent::operate(std::string_view s, QQID botid, bool sign, const std::string &msg) {
+    /**
+     * @brief 底层通过MemberJoinRequest
+     * @param s 序列化后的文本
+     */
+    void memberJoinRequestInternal(std::string_view s, QQID botid, bool sign, std::string msg = "") {
         nlohmann::json j{{"source", s},
                          {"botId", botid},
                          {"sign", sign},
-                         {"msg", msg}};
+                         {"msg", std::move(msg)}};
         KtOperation::ktOperation(KtOperation::MemberJoinRequest, j);
+    }
+
+    void MemberJoinRequestEvent::accept() {
+        memberJoinRequestInternal(source, bot.id(), true);
+    }
+
+    void MemberJoinRequestEvent::reject(std::string msg) {
+        memberJoinRequestInternal(source, bot.id(), false, std::move(msg));
     }
 
     MessagePreSendEvent::MessagePreSendEvent(BaseEventData j) : BotEvent(j.botId),
@@ -340,5 +368,23 @@ namespace MiraiCP {
             default:
                 throw APIException("Type of builtInContact doesn't match or implement", MIRAICP_EXCEPTION_WHERE);
         }
+    }
+    struct NodeHandle::NodeHandleInternal {
+        std::atomic<bool> flag;
+    };
+
+    NodeHandle::NodeHandle(bool a) : handle(new NodeHandleInternal{a}) {
+    }
+    bool NodeHandle::isEnable() const {
+        return handle->flag.load();
+    }
+    void NodeHandle::stop() {
+        handle->flag.store(false);
+    }
+    void NodeHandle::resume() {
+        handle->flag.store(true);
+    }
+    NodeHandle::~NodeHandle() {
+        delete handle;
     }
 } // namespace MiraiCP
