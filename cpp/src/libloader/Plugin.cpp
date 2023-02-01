@@ -90,12 +90,20 @@ namespace LibLoader {
 
     constexpr static LoaderApi::interface_funcs normalInterfaces = LoaderApi::collect_interface_functions(false);
 
-    int Plugin::callEntranceFuncAdmin() {
+    int Plugin::callEntranceFuncAdmin() const {
         return entrance(adminInterfaces);
     }
 
-    int Plugin::callEntranceFuncNormal() {
+    int Plugin::callEntranceFuncNormal() const {
         return entrance(normalInterfaces);
+    }
+
+    int Plugin::callEntranceByAuthority() const {
+        if (authority == PluginAuthority::PLUGIN_AUTHORITY_ADMIN) {
+            return callEntranceFuncAdmin();
+        } else {
+            return callEntranceFuncNormal();
+        }
     }
 
     inline bool checkPluginInfoValid(plugin_info_func_ptr info_ptr) {
@@ -199,8 +207,6 @@ namespace LibLoader {
             throw PluginAlreadyEnabledException(_getId(), MIRAICP_EXCEPTION_WHERE);
         }
 
-        // auto func = (plugin_entrance_func_ptr) LoaderApi::libSymbolLookup(handle, STRINGIFY(FUNC_ENTRANCE));
-
         if (infoFunc()->getMVersion() != MiraiCP::MiraiCPVersion) {
             LibLoader::logger.warning("MiraiCP依赖库版本(" + infoFunc()->getMVersion() + ")和libLoader版本(" + MiraiCP::MiraiCPVersion + ")不一致, 建议更新到最新");
         }
@@ -208,6 +214,8 @@ namespace LibLoader {
         _enable();
 
         BS::pool->push_task([this] {
+            updateTimeStamp();
+
             std::shared_lock lk(_mtx);
             if (nullptr == entrance) {
                 // 并发过快，插件在启用前被卸载了。直接return
@@ -217,13 +225,11 @@ namespace LibLoader {
             int ret = -1;
 
             {
-                PluginListManager::setThreadRunningPluginId(_getId());
-                MIRAICP_DEFER(PluginListManager::unsetThreadRunningPluginId(););
+                ThreadIdentify::setThreadWorkingName(_getId());
+                // PluginListManager::setThreadRunningPluginId(_getId());
+                MIRAICP_DEFER(ThreadIdentify::unsetThreadWorkingName(););
                 try {
-                    if (authority == PLUGIN_AUTHORITY_ADMIN)
-                        ret = callEntranceFuncAdmin();
-                    else
-                        ret = callEntranceFuncNormal();
+                    ret = callEntranceByAuthority();
                 } catch (...) {
                 }
             }
@@ -249,8 +255,9 @@ namespace LibLoader {
             int ret = -1;
 
             {
-                PluginListManager::setThreadRunningPluginId(_getId());
-                MIRAICP_DEFER(PluginListManager::unsetThreadRunningPluginId(););
+                ThreadIdentify::setThreadWorkingName(_getId());
+                // PluginListManager::setThreadRunningPluginId(_getId());
+                MIRAICP_DEFER(ThreadIdentify::unsetThreadWorkingName(););
                 try {
                     ret = exit();
                 } catch (...) {}
@@ -328,8 +335,8 @@ namespace LibLoader {
         int ret = -1;
 
         {
-            PluginListManager::setThreadRunningPluginId(_getId());
-            MIRAICP_DEFER(PluginListManager::unsetThreadRunningPluginId(););
+            ThreadIdentify::setThreadWorkingName(_getId());
+            MIRAICP_DEFER(ThreadIdentify::unsetThreadWorkingName(););
             try {
                 ret = eventFunc(event);
             } catch (...) {
@@ -441,6 +448,10 @@ namespace LibLoader {
         try {
             exit();
         } catch (...) {} // do not leak any exception
+    }
+
+    void Plugin::updateTimeStamp() {
+        timestamp = std::chrono::system_clock::now();
     }
 
     void registerAllPlugin(const std::string &cfgPath) noexcept {

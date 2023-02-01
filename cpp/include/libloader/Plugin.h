@@ -28,8 +28,10 @@
 
 namespace LibLoader {
     class Plugin : public PluginData {
+        using timepoint = std::chrono::time_point<std::chrono::system_clock>;
         std::atomic<int> _runCounter = {0};
         mutable std::shared_mutex _mtx;
+        timepoint timestamp;
 
     public:
         explicit Plugin(std::string inPath) : PluginData(std::move(inPath)) {}
@@ -40,11 +42,15 @@ namespace LibLoader {
         static void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept;
 
     private:
-        int callEntranceFuncAdmin();
+        int callEntranceFuncAdmin() const;
 
-        int callEntranceFuncNormal();
+        int callEntranceFuncNormal() const;
+
+        int callEntranceByAuthority() const;
 
     private: // internal, no lock; literally
+        void updateTimeStamp();
+
         void enableInternal();
 
         std::shared_ptr<std::future<void>> disableInternal(bool lockedAndWait = false);

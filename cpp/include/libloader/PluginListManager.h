@@ -89,12 +89,6 @@ namespace LibLoader {
             return threadRunningPluginId();
         }
 
-        static void setThreadRunningPluginId(std::string inId) {
-            threadRunningPluginId() = std::move(inId);
-        }
-
-        static void unsetThreadRunningPluginId() { setThreadRunningPluginId(""); }
-
     public:
         static void broadcastToAllEnabledPlugins(const MiraiCP::MiraiCPString &strPtr);
 
