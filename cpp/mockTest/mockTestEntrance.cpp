@@ -14,10 +14,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// MiraiCP依赖文件(只需要引入这一个)
-
-#include "MiraiCP.hpp"
+#include "CPPPlugin.h"
+#include "Command.h"
+#include "ForwardedMessage.h"
+#include "Schedule.h"
+#include "Tools.h"
 #include "mockTests.h"
+#include "utils.h"
+
 
 #define MESSAGE_EQ(msg) a.message[0]->content == #msg
 #define TEST(msg, endMsg, test)                              \
@@ -90,7 +94,7 @@ public:
                 schedule(1, "This is a message");
             })
             TEST(command, registerCommandTest, {
-                CommandManager::commandManager.registerCommand(CustomCommand());
+                CommandManager::commandManager.registerCommand<CustomCommand>();
             })
             TEST(image, uploadImageTest, {
                 Logger::logger.info(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
