@@ -29,6 +29,11 @@
 namespace LibLoader {
     volatile bool LoaderMain::loader_exit = false;
 
+    std::mutex &loaderCVLock() {
+        static std::mutex m;
+        return m;
+    }
+
     std::condition_variable &loaderWakeCV() {
         static std::condition_variable cv;
         return cv;
@@ -98,14 +103,18 @@ namespace LibLoader {
         Scheduler::popSchedule();
     }
 
-    bool shouldTick() noexcept { return !Scheduler::empty(); }
+    bool shouldTick() noexcept { return Scheduler::timeup(); }
 
     void LoaderMain::mainloop() noexcept {
-        static std::mutex fakeLock;
-        std::unique_lock fakeUniqueLock(fakeLock);
-        loaderWakeCV().wait(fakeUniqueLock, []() { return is_loader_exited() || shouldTick() || !loader_thread_task_queue.empty(); });
+        std::unique_lock cvuniquelock(loaderCVLock());
+        loaderWakeCV().wait_for(
+                cvuniquelock,
+                std::chrono::milliseconds(100),
+                []() { return is_loader_exited() || shouldTick() || !loader_thread_task_queue.empty(); });
+        cvuniquelock.unlock();
 
         tick();
+
         if (!loader_thread_task_queue.empty()) {
             loadertask task;
             {

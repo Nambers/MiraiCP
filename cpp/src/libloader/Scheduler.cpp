@@ -14,11 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//
-// Created by antares on 11/11/22.
-//
-
 #include "Scheduler.h"
+#include "LoaderExceptions.h"
 #include "PluginListManager.h"
 #include "json.hpp"
 #include <chrono>
@@ -30,6 +27,7 @@
 using timepoint = decltype(std::chrono::system_clock::now());
 
 struct scheduleTask {
+    timepoint createTime;
     timepoint tp;
     std::string pluginId;
     std::string content;
@@ -44,36 +42,53 @@ struct std::greater<scheduleTask> {
 
 namespace LibLoader {
     std::condition_variable &loaderWakeCV();
-}
+    std::mutex &loaderCVLock();
+} // namespace LibLoader
 
 namespace LibLoader::Scheduler {
     static std::priority_queue<scheduleTask, std::vector<scheduleTask>, std::greater<scheduleTask>> timerQueue; // NOLINT(modernize-use-transparent-functors)
     static std::mutex mtx;
 
     void timer(std::string pluginId, std::string content, size_t timeInSecond) {
-        auto scheduleTime = std::chrono::system_clock::now() + std::chrono::seconds(timeInSecond);
-        scheduleTask a{scheduleTime, std::move(pluginId), std::move(content)};
-        std::lock_guard lk(mtx);
-        timerQueue.push(std::move(a));
-        loaderWakeCV().notify_one();
+        auto timenow = std::chrono::system_clock::now();
+        auto scheduleTime = timenow + std::chrono::seconds(timeInSecond);
+        scheduleTask a{timenow, scheduleTime, std::move(pluginId), std::move(content)};
+        {
+            std::lock_guard lk(mtx);
+            timerQueue.push(std::move(a));
+        }
+        {
+            loaderWakeCV().notify_one();
+        }
     }
 
     inline void sendTimeoutEvent(const std::string &pluginId, const std::string &content) noexcept {
-        nlohmann::json j{{"eventId",   15},
+        nlohmann::json j{{"eventId", 15},
                          {"eventData", nlohmann::json{{"msg", content}}}};
         PluginListManager::broadcastToOnePlugin(pluginId, j.dump());
     }
 
+    bool checkValidTimeStamp(const scheduleTask &task) {
+        return task.createTime > PluginListManager::getPluginTimeStamp(task.pluginId);
+    }
+
     void popSchedule() noexcept {
         std::lock_guard lk(mtx);
-        while (!timerQueue.empty() && timerQueue.top().tp < std::chrono::system_clock::now()) {
-            auto task = timerQueue.top();
+        while (timeup()) {
+            auto &task = timerQueue.top();
+            try {
+                if (checkValidTimeStamp(task)) {
+                    sendTimeoutEvent(task.pluginId, task.content);
+                }
+            } catch (const PluginNotLoadedException &e) {
+                logger.error("未加载的插件传入了定时任务，任务失效");
+                e.raise();
+            }
             timerQueue.pop();
-            sendTimeoutEvent(task.pluginId, task.content);
         }
     }
 
-    bool empty() noexcept {
-        return timerQueue.empty();
+    bool timeup() noexcept {
+        return !timerQueue.empty() && timerQueue.top().tp < std::chrono::system_clock::now();
     }
 } // namespace LibLoader::Scheduler

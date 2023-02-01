@@ -1,5 +1,9 @@
 # Change Log
+* Command注册函数`registerCommand`现在不接受参数，只接受一个模板参数，会调用默认构造函数构造子类对象；command类必须重写基类析构函数
+* schedule不会从重载前的插件传递timeout event给重载后的插件
+
 ## v2.13.2
+
 + 解决了reload等指令的问题
 + 修改了线程识别方案
 + 增加了 Termux 支持

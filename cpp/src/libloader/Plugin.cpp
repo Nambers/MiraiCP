@@ -212,11 +212,11 @@ namespace LibLoader {
         }
 
         _enable();
+        updateTimeStamp();
 
         BS::pool->push_task([this] {
-            updateTimeStamp();
-
             std::shared_lock lk(_mtx);
+
             if (nullptr == entrance) {
                 // 并发过快，插件在启用前被卸载了。直接return
                 return;
@@ -226,7 +226,6 @@ namespace LibLoader {
 
             {
                 ThreadIdentify::setThreadWorkingName(_getId());
-                // PluginListManager::setThreadRunningPluginId(_getId());
                 MIRAICP_DEFER(ThreadIdentify::unsetThreadWorkingName(););
                 try {
                     ret = callEntranceByAuthority();
@@ -243,9 +242,11 @@ namespace LibLoader {
     std::shared_ptr<std::future<void>> Plugin::disableInternal(bool lockedAndWait) {
         if (exit == nullptr) return nullptr;
         _disable();
+        updateTimeStamp();
 
         return std::make_shared<std::future<void>>(BS::pool->submit([this, lockedAndWait] {
             std::shared_lock lk(_mtx, std::defer_lock);
+
             if (!lockedAndWait) lk.lock();
             if (!checkValid() || exit == nullptr) {
                 // 任务分派过慢
@@ -256,7 +257,6 @@ namespace LibLoader {
 
             {
                 ThreadIdentify::setThreadWorkingName(_getId());
-                // PluginListManager::setThreadRunningPluginId(_getId());
                 MIRAICP_DEFER(ThreadIdentify::unsetThreadWorkingName(););
                 try {
                     ret = exit();
@@ -452,6 +452,11 @@ namespace LibLoader {
 
     void Plugin::updateTimeStamp() {
         timestamp = std::chrono::system_clock::now();
+    }
+
+    Plugin::timepoint Plugin::getTimeStamp() const {
+        std::shared_lock lk(_mtx);
+        return timestamp;
     }
 
     void registerAllPlugin(const std::string &cfgPath) noexcept {

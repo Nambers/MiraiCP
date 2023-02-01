@@ -89,6 +89,8 @@ namespace LibLoader {
 
         void forceCallExit();
 
+        timepoint getTimeStamp() const;
+
     public:
         static PluginFuncAddrData testSymbolExistance(plugin_handle handle, const std::string &path);
 
