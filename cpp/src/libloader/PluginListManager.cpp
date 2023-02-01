@@ -21,6 +21,7 @@
 #include "Plugin.h"
 #include "PluginConfig.h"
 #include "commonTools.h"
+#include <iomanip>
 #include <sstream>
 #include <string>
 #include <utility>
