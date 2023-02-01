@@ -7,6 +7,7 @@
 #include <thread>
 #include <unordered_map>
 
+
 #if MIRAICP_MSVC /// Windows case
 #include <Windows.h>
 #include <processthreadsapi.h>
@@ -24,7 +25,7 @@
     wcstombs_s(&num_convert, buf, bufsize, wbuf, bufsize); \
     LocalFree(wbuf);
 
-#elif defined(_POSIX_THREADS) /// pthread case
+#else /// pthread case
 
 #ifdef PTHREAD_SET_SUPPORTED
 #define SET_THREADNAME(name) pthread_setname_np(pthread_self(), name)
@@ -37,11 +38,6 @@
 #else
 #define GET_THREADNAME(buffer, buffersize) buffer[0] = 0
 #endif
-
-#else /// others
-
-#define SET_THREADNAME(name)
-#define GET_THREADNAME(buffer, buffersize) buffer[0] = 0
 
 #endif
 
