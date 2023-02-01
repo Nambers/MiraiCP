@@ -16,7 +16,7 @@ import sys
 codepage = 'utf-8' if sys.platform != 'win32' else 'cp936'
 currentFilePath = os.path.dirname(os.path.abspath(__file__))
 logfile = "mock_errlog.txt"
-
+prefix = "bash " if sys.platform != 'win32' else ""
 
 def writelog(e: subprocess.CalledProcessError):
     ot: str = e.stdout.decode(codepage, errors='ignore')
@@ -29,7 +29,7 @@ def runmock(name: str, kwargs: dict) -> bool:
     global kotlinPath, env
     try:
         subprocess.check_output(
-            f"gradlew :shared:cleanJvmTest :shared:jvmTest --tests \"tech.eritquearcus.miraicp.shared.test.events.{name}\"",
+            f"{prefix}gradlew :shared:cleanJvmTest :shared:jvmTest --tests \"tech.eritquearcus.miraicp.shared.test.events.{name}\"",
             shell=True,
             stderr=subprocess.PIPE,
             **kwargs
