@@ -35,7 +35,7 @@ public:
         if (alreadyInHandler) {
             return EXCEPTION_CONTINUE_EXECUTION;
         }
-        auto pluginName = LibLoader::PluginListManager::getThreadRunningPluginId();
+        auto pluginName = ThreadIdentify::getThreadWorkingName();
 
         if (pluginName.empty()) {
             // test the thread is from jvm
@@ -131,7 +131,7 @@ private:
         if (alreadyInHandler) {
             return;
         }
-        auto pluginName = LibLoader::PluginListManager::getThreadRunningPluginId();
+        auto pluginName = ThreadIdentify::getThreadWorkingName();
         if (pluginName.empty()) {
             // test the thread is from jvm
             if (ThreadIdentify::isMeLoaderThread()) {

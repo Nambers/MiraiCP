@@ -38,6 +38,7 @@
 
 namespace LibLoader {
     void registerAllPlugin(const std::string &) noexcept;
+    std::mutex &loaderCVLock();
     std::condition_variable &loaderWakeCV();
     std::thread loaderThread;
 } // namespace LibLoader
@@ -75,7 +76,9 @@ void EventImpl(JSTRING content) {
 
 void PluginDisableImpl() {
     LibLoader::LoaderMain::loaderExit();
-    LibLoader::loaderWakeCV().notify_one();
+    {
+        LibLoader::loaderWakeCV().notify_one();
+    }
     LibLoader::loaderThread.join();
 }
 

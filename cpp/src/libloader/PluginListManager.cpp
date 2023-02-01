@@ -21,8 +21,6 @@
 #include "Plugin.h"
 #include "PluginConfig.h"
 #include "commonTools.h"
-#include "libOpen.h"
-#include "loaderTools.h"
 #include <sstream>
 #include <string>
 #include <utility>
@@ -289,21 +287,21 @@ namespace LibLoader {
 
     bool PluginListManager::pluginNameLookup(const std::string &_id) {
         std::shared_lock lk(pluginlist_mtx);
-        for (auto [k, v]: id_plugin_list) {
-            std::string testId;
-            if (_id.size() > k.size()) {
-                continue;
-            } else if (_id.size() < k.size()) {
-                testId = k.substr(0, _id.size());
-            } else {
-                testId = k;
-            }
-            if (testId == _id) {
-                return true;
-            }
-        }
-        return false;
+        return std::any_of(id_plugin_list.begin(), id_plugin_list.end(), [&_id](const auto &pr) {
+            return pr.first == _id;
+        });
     }
 
-
+    std::chrono::time_point<std::chrono::system_clock> PluginListManager::getPluginTimeStamp(const std::string &_id) {
+        iterator it;
+        {
+            std::shared_lock lk(pluginlist_mtx);
+            it = id_plugin_list.find(_id);
+            if (it == id_plugin_list.end()) {
+                // 没有找到这个id，说明出现了严重的错误
+                throw PluginNotLoadedException("插件：" + _id + "传入的定时任务已经失效", MIRAICP_EXCEPTION_WHERE);
+            }
+        }
+        return it->second->getTimeStamp();
+    }
 } // namespace LibLoader

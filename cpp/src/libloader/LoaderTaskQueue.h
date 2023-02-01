@@ -24,6 +24,7 @@
 
 
 namespace LibLoader {
+    std::mutex &loaderCVLock();
     std::condition_variable &loaderWakeCV();
 
     enum struct LOADER_TASKS {
@@ -46,15 +47,23 @@ namespace LibLoader {
     extern std::recursive_mutex task_mtx;
 
     inline void sendPluginException(std::string plugin_id) {
-        std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.emplace(LOADER_TASKS::EXCEPTION_PLUGINEND, std::move(plugin_id));
-        loaderWakeCV().notify_one();
+        {
+            std::lock_guard lk(task_mtx);
+            loader_thread_task_queue.emplace(LOADER_TASKS::EXCEPTION_PLUGINEND, std::move(plugin_id));
+        }
+        {
+            loaderWakeCV().notify_one();
+        }
     }
 
     inline void sendThreadReset(size_t index) {
-        std::lock_guard lk(task_mtx);
-        loader_thread_task_queue.emplace(LOADER_TASKS::RESET_THREAD, std::to_string(index));
-        loaderWakeCV().notify_one();
+        {
+            std::lock_guard lk(task_mtx);
+            loader_thread_task_queue.emplace(LOADER_TASKS::RESET_THREAD, std::to_string(index));
+        }
+        {
+            loaderWakeCV().notify_one();
+        }
     }
 } // namespace LibLoader
 
