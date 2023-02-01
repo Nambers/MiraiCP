@@ -1,6 +1,7 @@
 # Change Log
 * Command注册函数`registerCommand`现在不接受参数，只接受一个模板参数，会调用默认构造函数构造子类对象；command类必须重写基类析构函数
 * schedule不会从重载前的插件传递timeout event给重载后的插件
+* 采用CRTP定义的Exception具体类型将不会出现在头文件中，因为这造成了大量的编译时间开销（基类仍然在头文件中）。如果需要某种具体的MiraiCP内部异常类型，可以从源文件中找到并复制到你的代码引用位置的前方
 
 ## v2.13.2
 
