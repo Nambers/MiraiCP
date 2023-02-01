@@ -19,7 +19,6 @@
 #include "Exceptions/IllegalArgument.h"
 #include "Exceptions/IllegalState.h"
 #include "Exceptions/Member.h"
-#include "Exceptions/Mute.h"
 #include "JsonTools.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
@@ -28,8 +27,20 @@
 
 namespace MiraiCP {
 #define LOC_CLASS_NAMESPACE Member
+
     using json = nlohmann::json;
 
+    /// 禁言异常
+    /// @see MiraiCPExceptionBase
+    class MIRAICP_EXPORT MuteException : public MiraiCPExceptionCRTP<MuteException> {
+    public:
+        /*
+        *	 禁言时间超出0s~30d
+        */
+        MuteException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("禁言时长不在0s~30d中间", std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "MuteException"; }
+    };
 
     auto GetMemberFromPool(QQID id, QQID groupId, QQID botid) noexcept {
         using Tools::idpair;
