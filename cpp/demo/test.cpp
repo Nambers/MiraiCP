@@ -67,6 +67,7 @@ public:
         Event::registerEvent<TimeOutEvent>([](TimeOutEvent a) {
             Logger::logger.info("timeout");
             Logger::logger.info(a.msg);
+            schedule(1, "This is a message");
         });
         schedule(1, "This is a message");
         auto fu = ThreadTask::promiseTask(test_task, std::chrono::seconds(2));
