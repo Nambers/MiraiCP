@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -18,21 +18,23 @@
 #define MIRAICP_PRO_MIRAICODE_H
 
 #include <string>
+#include "MiraiCPMacros.h"
 
 
 namespace MiraiCP {
     /// MiraiCode父类, 指可以被转换成miraicode的类型
-    class MiraiCodeable {
+    class MIRAICP_EXPORT MiraiCodeable {
     public:
         /// 返回MiraiCode
         virtual std::string toMiraiCode() const = 0;
+
         virtual ~MiraiCodeable() = default;
     };
 
     /// @brief miraicode字符串
     /// @attention MiraiCode会把非miraicode组成部分(非[mirai:])转码, 输出转码前的文本用toString, 参考: https://github.com/mamoe/mirai/blob/dev/docs/Messages.md#%E8%BD%AC%E4%B9%89%E8%A7%84%E5%88%99
     /// @detail 为了便捷使用，构造函数不以explicit注释
-    class MiraiCode : public MiraiCodeable {
+    class MIRAICP_EXPORT MiraiCode : public MiraiCodeable {
     private:
         std::string content;
 

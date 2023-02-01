@@ -7,6 +7,7 @@
 #include <thread>
 #include <unordered_map>
 
+
 #if MIRAICP_MSVC /// Windows case
 #include "WindowsMin.h"
 #include <processthreadsapi.h>
@@ -24,7 +25,7 @@
     wcstombs_s(&num_convert, buf, bufsize, wbuf, bufsize); \
     LocalFree(wbuf);
 
-#elif defined(_POSIX_THREADS) /// pthread case
+#else /// pthread case
 
 #ifdef PTHREAD_SET_SUPPORTED
 #define SET_THREADNAME(name) pthread_setname_np(pthread_self(), name)
@@ -37,11 +38,6 @@
 #else
 #define GET_THREADNAME(buffer, buffersize) buffer[0] = 0
 #endif
-
-#else /// others
-
-#define SET_THREADNAME(name)
-#define GET_THREADNAME(buffer, buffersize) buffer[0] = 0
 
 #endif
 
@@ -72,13 +68,16 @@ namespace ThreadIdentify {
     std::shared_mutex mtx;
 
     void setMyThreadName(const std::string &name) {
-        std::unique_lock _lk(mtx);
-        auto success = Identify.insert({std::this_thread::get_id(), name}).second;
+        bool success;
+        {
+            std::unique_lock _lk(mtx);
+            success = Identify.insert({std::this_thread::get_id(), name}).second;
+        }
         if (!success) {
             // todo
         }
         std::string t;
-#if defined(_POSIX_THREADS) && defined(PTHREAD_SET_SUPPORTED)
+#ifdef PTHREAD_SET_SUPPORTED
         // 受限于Linux内核，只取前15个char，否则会失败
         if (name.size() > 15) {
             t.append(std::string_view(name), 15);
@@ -95,5 +94,32 @@ namespace ThreadIdentify {
     std::string identifyMe() {
         std::shared_lock _lk(mtx);
         return Identify[std::this_thread::get_id()];
+    }
+
+    std::unordered_map<id, std::string> Working;
+    std::shared_mutex wk_mtx;
+
+    void internalSetThreadWorkingName(std::string name) {
+        {
+            std::unique_lock _lk(wk_mtx);
+            Working[std::this_thread::get_id()] = std::move(name);
+        }
+    }
+
+    void setThreadWorkingName(std::string name) {
+        internalSetThreadWorkingName(std::move(name));
+    }
+
+    void unsetThreadWorkingName() {
+        internalSetThreadWorkingName("");
+    }
+
+    std::string getThreadWorkingName() {
+        std::string name;
+        {
+            std::unique_lock _lk(wk_mtx);
+            name = Working[std::this_thread::get_id()];
+        }
+        return name;
     }
 } // namespace ThreadIdentify

@@ -28,8 +28,11 @@
 namespace LibLoader {
     class Plugin;
 
+    /// Plugin 对象的管理接口，全静态
+    /// 不应提供接口可以使外部获取 Plugin 对象，所有功能应委托 PluginListManager 完成
     class PluginListManager {
         typedef std::unordered_map<std::string, std::shared_ptr<Plugin>> PluginList;
+        typedef PluginList::iterator iterator;
 
     private:
         static PluginList id_plugin_list;
@@ -48,13 +51,11 @@ namespace LibLoader {
         ~PluginListManager() = delete;
 
     public:
-        /// 为保证一些外部操作是原子操作，允许在外部获取锁对象的引用
-        static auto &getLock() { return pluginlist_mtx; }
-
-    public:
         static std::vector<std::string> getAllPluginId();
-        // filter == true
+
+        /// 将所有插件信息格式化为一个string
         static std::string pluginListInfo(const std::function<bool(const Plugin &)> &);
+
         static std::vector<std::string> getAllPluginPath();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
@@ -92,12 +93,6 @@ namespace LibLoader {
             return threadRunningPluginId();
         }
 
-        static void setThreadRunningPluginId(std::string inId) {
-            threadRunningPluginId() = std::move(inId);
-        }
-
-        static void unsetThreadRunningPluginId() { setThreadRunningPluginId(""); }
-
     public:
         static void broadcastToAllEnabledPlugins(const MiraiCP::MiraiCPString &strPtr);
 
@@ -106,6 +101,8 @@ namespace LibLoader {
         static void loadNewPluginByPath(const std::string &_path, bool activateNow);
 
         static bool pluginNameLookup(const std::string &_id);
+
+        static std::chrono::time_point<std::chrono::system_clock> getPluginTimeStamp(const std::string &_id);
     };
 } // namespace LibLoader
 

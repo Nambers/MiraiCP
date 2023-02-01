@@ -31,5 +31,11 @@ namespace ThreadIdentify {
     void setMyThreadName(const std::string &name);
 
     std::string identifyMe();
+
+    void setThreadWorkingName(std::string name);
+
+    void unsetThreadWorkingName();
+
+    std::string getThreadWorkingName();
 } // namespace ThreadIdentify
 #endif //MIRAICP_PRO_THREADIDENTIFY_H

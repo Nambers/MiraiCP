@@ -17,7 +17,7 @@ namespace LibLoader::Scheduler {
     void timer(std::string id, std::string content, size_t timeInSec);
 
     /// @brief 获取schduler是否空
-    bool empty() noexcept;
+    bool timeup() noexcept;
 } // namespace LibLoader::Scheduler
 
 
