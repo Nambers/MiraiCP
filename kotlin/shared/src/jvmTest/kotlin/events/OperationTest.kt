@@ -55,6 +55,12 @@ class OperationTest : TestBase() {
     fun queryBotList() = runBlocking {
         member.says("botList")
         waitUntilEnd()
+        val logs = TestUtils.logList.filter { it.contains("botList:") }.map { it.substringAfter("botList:") }
+        assertEquals(4, logs.size)
+        assertEquals(friend.id, logs[0].toLong())
+        assertEquals(group.id, logs[1].toLong())
+        assertEquals(member.id, logs[2].toLong())
+        assertEquals(bot.id, logs[3].toLong())
     }
 
     @Test

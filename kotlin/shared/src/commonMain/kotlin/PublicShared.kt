@@ -286,6 +286,8 @@ object PublicShared {
                         json.encodeToString(g.members.map { it.id })
                     }
 
+                    3 -> json.encodeToString(Bot.instances.filter { it.isOnline }.map { it.id })
+
                     else -> "EA"
                 }
             }

@@ -61,14 +61,20 @@ namespace MiraiCP {
         /// @brief 取好友列表
         [[nodiscard]] std::vector<QQID> getFriendList() const;
 
-        /// @brief 好友列表string形式返回，利于保存
+        /// @brief 好友列表string形式返回, 利于保存
         [[nodiscard]] std::string FriendListToString() const;
 
         /// @brief 取群列表
         [[nodiscard]] std::vector<QQID> getGroupList() const;
 
-        /// @brief 群列表string形式返回，利于保存
+        /// @brief 群列表string形式返回, 利于保存
         [[nodiscard]] std::string GroupListToString() const;
+
+        /// @brief 取在线 Bot 列表
+        [[nodiscard]] std::vector<QQID> getOnlineBotsList() const;
+
+        /// @brief 在线 Bot 列表string形式返回, 利于保存
+        [[nodiscard]] std::string OnlineBotsListToString() const;
 
         bool operator==(const Bot &b) const {
             return id() == b.id();
