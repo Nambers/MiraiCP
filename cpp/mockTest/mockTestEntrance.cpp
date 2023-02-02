@@ -98,9 +98,10 @@ public:
                 a.group.sendMessage(img);
             })
             TEST(botList, queryBotListTest, {
-                Logger::logger.info(a.bot.FriendListToString());
-                Logger::logger.info(a.bot.GroupListToString());
-                Logger::logger.info(a.group.MemberListToString());
+                Logger::logger.info("botList:", a.bot.FriendListToString());
+                Logger::logger.info("botList:",a.bot.GroupListToString());
+                Logger::logger.info("botList:",a.group.MemberListToString());
+                Logger::logger.info("botList:",a.bot.OnlineBotsListToString());
             })
             TEST(sendFile, sendFileTest, {
                 a.group.sendFile("/img/img.png", absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
