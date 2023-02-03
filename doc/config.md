@@ -27,12 +27,7 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
   {
 	"id": 222,
 	"passwords": ""
-  }],
-  "cppPaths":[
-	{
-	  "path":"\\cmake-build-debug\\MiraiCP.dll"
-	}
-  ]
+  }]
 }
 ```
 而每个账号应包含以下配置
@@ -55,6 +50,7 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 除了基本的 `id` 和 `passwords` 之外，`autoLogin` 配置项也需特别注意
 如果 `autoLogin` 为 true, loader 端就会在加载时自动登录, 否则需要手动在loader端控制台输入 `login <qqid>` 来登录, 然后全部 `login` 登录的账号都需要实现在配置文件里写明
 如:
+
 ```json
 {
 	"id":,
@@ -64,6 +60,7 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 ```
 模板代码见[config.kt#L151](https://github.com/Nambers/MiraiCP/blob/master/kotlin/shared/src/main/kotlin/Config.kt#L151)
 就会自动在loader端启动的时候登录
+
 ##### 进阶账号配置
 所有的可选账号配置:
 - `heatBeat` 账号心跳策略, 可选: STAT_HB/REGISTER/NONE (默认为state_hb), 详细查看[mirai文档](https://github.com/mamoe/mirai/blob/dev/docs/Bots.md#%E5%88%87%E6%8D%A2%E5%BF%83%E8%B7%B3%E7%AD%96%E7%95%A5)
@@ -74,10 +71,6 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 
 ```json
 {
-  "accounts": [{
-	"id": ,
-	"passwords": ""
-  }],
   "cppPaths":[
 	{
 	  "path":"<dll1 路径>",
@@ -98,7 +91,7 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 ```
 模板代码见[Config.kt#L132](https://github.com/Nambers/MiraiCP/blob/master/kotlin/shared/src/main/kotlin/Config.kt#L132)
 ### 1.3 进阶配置
-配置文件中还可以加入 `config` 配置进阶配置:
+配置文件中还可以加入 `config` 配置进阶配置：
 ```json
 {
   "config":{
@@ -116,7 +109,7 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 }
 ```
 可配置项:
-- `threadNum` 配置bot用线程池, 默认为5, 作用代码于[Ulits.kt#L28](https://github.com/Nambers/MiraiCP/blob/master/kotlin/shared/src/main/kotlin/Ulits.kt#L28)
+- `threadNum` 配置kt端bot用线程池，默认为5。作用代码于[Ulits.kt#L28](https://github.com/Nambers/MiraiCP/blob/master/kotlin/shared/src/main/kotlin/Ulits.kt#L28)
 模板代码见[Config.kt#L137](https://github.com/Nambers/MiraiCP/blob/master/kotlin/shared/src/main/kotlin/Config.kt#L137)
 ## 2. plugin 端
 `plugin` 端配置文件位于 `/data/miraiCP/config.json` 应遵守json格式并至少拥有以下元素
@@ -129,23 +122,15 @@ loader 的配置文件位于`miraicp-loader-version.jar`同目录或传入的参
 ```
 模板代码见[Config#L141](https://github.com/Nambers/MiraiCP/blob/master/kotlin/shared/src/main/kotlin/Config.kt#L141)
 ### pluginConfig
-该元素类型为列表, 包含要加载的全部dll的路径, 与loader端的配置文件相同, 也可以加载多个dll文件和加载依赖的dll, 如
+该元素类型为列表, 包含要加载的全部dll的路径，与loader端的配置文件相同，如
 ```json
 {
   "pluginConfig": [
     {
-      "path": "<dll路径1>",
-      "dependencies": [
-        "<依赖的dll1>",
-        "<依赖的dll2>"
-      ]
+      "path": "<dll路径1>"
     },
     {
-      "path": "<dll路径2>",
-      "dependencies": [
-        "<依赖的dll1>",
-        "<依赖的dll2>"
-      ]
+      "path": "<dll路径2>"
     }
   ]
 }
