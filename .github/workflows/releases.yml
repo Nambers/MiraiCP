@@ -39,7 +39,7 @@ jobs:
         name: libLoaderdll
         path: ./cpp/build/Release/libLoader.dll
   build-libLoader-gcc-4-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: checkout
       uses: actions/checkout@v2
@@ -61,7 +61,7 @@ jobs:
         name: libLoaderso
         path: ./cpp/build/libLoader.so
   push-single-include-2-template:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
      - name: checkout
        uses: actions/checkout@v2
@@ -100,7 +100,7 @@ jobs:
     
   publish-release:
     needs: [build-libLoader-msvc-4-windows, build-libLoader-gcc-4-linux]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: loadTest
       if: ${{ !github.event.inputs.skipTest }}

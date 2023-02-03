@@ -36,7 +36,7 @@ jobs:
       run: cd ./kotlin/ && ./gradlew :MiraiCP-loader:test --tests "tech.eritquearcus.miraicp.loader.LoaderCITest.test" --warning-mode all --info --stacktrace
 
   ubuntu-load-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: checkout
       uses: actions/checkout@v2
