@@ -775,7 +775,7 @@ object Packets {
             event: T,
             builder: (Outgoing.EventData<T>) -> Unit
         ) =
-            Json.encodeToString(
+            json.encodeToString(
                 Outgoing.EventData(event, eventId = event.eventId).also { builder(it) })
 
         fun MessageEvent.toEventData(): String = eventToJson(Outgoing.MessageEventData(this)) {
