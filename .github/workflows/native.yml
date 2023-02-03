@@ -22,7 +22,7 @@ on:
 jobs:
   no-job:
     if: "!contains(github.event.commits[0].message, 'native')"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: nope
         run: echo "hi"
@@ -36,11 +36,11 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - ubuntu-latest
+          - ubuntu-20.04
         include:
           - os: windows-latest
             targetName: mingwX64
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             targetName: linuxX64
     env:
       isWindows: ${{ startsWith(matrix.os, 'windows') }}
@@ -90,11 +90,11 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - ubuntu-latest
+          - ubuntu-20.04
         include:
           - os: windows-latest
             targetName: mingwX64
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             targetName: linuxX64
     env:
       isWindows: ${{ startsWith(matrix.os, 'windows') }}

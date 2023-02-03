@@ -22,11 +22,11 @@ jobs:
       matrix:
         os:
           - windows-2019
-          - ubuntu-latest
+          - ubuntu-20.04
         include:
           - os: windows-2019
             targetName: MSVCX64
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             targetName: LinuxX64
     env:
       isWindows: ${{ startsWith(matrix.os, 'windows') }}
@@ -78,11 +78,11 @@ jobs:
       matrix:
         os:
           - windows-2019
-          - ubuntu-latest
+          - ubuntu-20.04
         include:
           - os: windows-2019
             targetName: MSVCX64
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             targetName: linuxX64
     env:
       isWindows: ${{ startsWith(matrix.os, 'windows') }}
@@ -124,11 +124,11 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - ubuntu-latest
+          - ubuntu-20.04
         include:
           - os: windows-latest
             targetName: mingwX64
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             targetName: linuxX64
     env:
       isWindows: ${{ startsWith(matrix.os, 'windows') }}
