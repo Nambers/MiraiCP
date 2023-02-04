@@ -32,6 +32,7 @@ import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
 import net.mamoe.mirai.contact.announcement.bot
 import net.mamoe.mirai.contact.announcement.buildAnnouncementParameters
 import net.mamoe.mirai.contact.file.AbsoluteFile
+import net.mamoe.mirai.data.GroupHonorType
 import net.mamoe.mirai.data.RequestEventData
 import net.mamoe.mirai.event.Event
 import net.mamoe.mirai.event.EventChannel
@@ -784,11 +785,11 @@ object PublicShared {
 
     suspend fun changeNameCard(source: String): String =
         withData(source, Packets.Incoming.ChangeNameCard.serializer()) { data ->
-            data.contact.withMiraiMember { _, _, normalMember ->
+            data.contact.withMember { _, _, normalMember ->
                 try {
                     normalMember.nameCard = data.newName
                 } catch (_: PermissionDeniedException) {
-                    return@withMiraiMember "EP"
+                    return@withMember "EP"
                 }
                 "s"
             }
@@ -805,11 +806,11 @@ object PublicShared {
 
     suspend fun changeSpecialTitle(source: String): String =
         withData(source, Packets.Incoming.ChangeSpecialTitle.serializer()) { data ->
-            data.contact.withMiraiMember { _, _, member ->
+            data.contact.withMember { _, _, member ->
                 try {
                     member.specialTitle = data.title
                 } catch (_: PermissionDeniedException) {
-                    return@withMiraiMember "EP"
+                    return@withMember "EP"
                 }
                 ""
             }
@@ -817,6 +818,16 @@ object PublicShared {
 
     suspend fun deserializeMiraiCode(source: String): String =
         MiraiCode.deserializeMiraiCode(source).serializeToJsonString()
+
+    suspend fun queryHonorMember(source: String): String =
+        withData(source, Packets.Incoming.HonorMember.serializer()) { data ->
+            data.contact.withGroup { b, g ->
+                val current = g.active.queryHonorHistory(GroupHonorType(data.honorType)).current ?: return@withData "E1"
+                json.encodeToString(
+                    Packets.Contact(3, current.memberId, b.id, g.id),
+                )
+            }
+        }
 
     fun onDisable() = PublicSharedMultiplatform.onDisable()
 

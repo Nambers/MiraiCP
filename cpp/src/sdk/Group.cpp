@@ -61,7 +61,8 @@ namespace MiraiCP {
 
         bool needRefresh = false;
 
-        if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickOrNameCard");
+        if (in_json.contains("nickOrNameCard"))
+            ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickOrNameCard");
         else
             needRefresh = true;
         if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
@@ -72,7 +73,8 @@ namespace MiraiCP {
     }
 
     std::vector<Group::OnlineAnnouncement> Group::getAnnouncementsList() {
-        json j{{"contact", toJson()}, {"announcement", true}};
+        json j{{"contact",      toJson()},
+               {"announcement", true}};
         std::string re = KtOperation::ktOperation(KtOperation::RefreshInfo, j);
         std::vector<OnlineAnnouncement> oa;
         for (const json &e: json::parse(re)) {
@@ -95,10 +97,10 @@ namespace MiraiCP {
 
     json Group::AnnouncementParams::serializeToJson() {
         return {
-                {"sendToNewMember", send2new},
-                {"isPinned", pinned},
-                {"showEditCard", showEditCard},
-                {"showPopup", showPopup},
+                {"sendToNewMember",     send2new},
+                {"isPinned",            pinned},
+                {"showEditCard",        showEditCard},
+                {"showPopup",           showPopup},
                 {"requireConfirmation", requireConfirm}};
     }
 
@@ -107,7 +109,7 @@ namespace MiraiCP {
                {"groupId", g.id()},
                {"type",    KtOperation::AnnouncementOperationCode::Publish},
                {"source",  {{"content", content},
-                       {"params",  params.serializeToJson()}}}};
+                                   {"params", params.serializeToJson()}}}};
         std::string re = KtOperation::ktOperation(KtOperation::Announcement, j);
         MIRAICP_ERROR_HANDLE(re, "");
         return Group::OnlineAnnouncement::deserializeFromJson(json::parse(re));
@@ -139,27 +141,32 @@ namespace MiraiCP {
     }
 
     void Group::quit() {
-        nlohmann::json j{{"contact", toJson()}, {"quit", true}};
+        nlohmann::json j{{"contact", toJson()},
+                         {"quit",    true}};
         MIRAICP_ERROR_HANDLE(KtOperation::ktOperation(KtOperation::RefreshInfo, j), "");
     }
 
     void Group::updateSetting(GroupData::GroupSetting newSetting) {
-        json j{{"name", std::move(newSetting.name)},
-                 {"isMuteAll", newSetting.isMuteAll},
-                 {"isAllowMemberInvite", newSetting.isAllowMemberInvite},
-                 {"isAutoApproveEnabled", newSetting.isAutoApproveEnabled},
-                 {"isAnonymousChatEnabled", newSetting.isAnonymousChatEnabled},
-                 {"contact", toJson()}};
+        json j{{"name",                   std::move(newSetting.name)},
+               {"isMuteAll",              newSetting.isMuteAll},
+               {"isAllowMemberInvite",    newSetting.isAllowMemberInvite},
+               {"isAutoApproveEnabled",   newSetting.isAutoApproveEnabled},
+               {"isAnonymousChatEnabled", newSetting.isAnonymousChatEnabled},
+               {"contact",                toJson()}};
         MIRAICP_ERROR_HANDLE(KtOperation::ktOperation(KtOperation::GroupSetting, j), "");
         InternalData->forceRefreshNextTime();
     }
 
     RemoteFile Group::sendFile(const std::string &path, const std::string &filepath) {
-        json j{{"path", path}, {"filePath", filepath}, {"contact", toJson()}};
+        json j{{"path",     path},
+               {"filePath", filepath},
+               {"contact",  toJson()}};
         auto re = KtOperation::ktOperation(KtOperation::SendFile, j);
         if (re == "E2") throw UploadException("找不到" + filepath + "位置:C-uploadfile", MIRAICP_EXCEPTION_WHERE);
         if (re == "E3")
-            throw UploadException("Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path, MIRAICP_EXCEPTION_WHERE);
+            throw UploadException(
+                    "Upload error:路径格式异常，应为'/xxx.xxx'或'/xx/xxx.xxx'目前只支持群文件和单层路径, path:" + path,
+                    MIRAICP_EXCEPTION_WHERE);
         MIRAICP_ERROR_HANDLE(re, "");
         return RemoteFile::deserializeFromString(re);
     }
@@ -168,15 +175,21 @@ namespace MiraiCP {
         // source 参数
         if (path.empty() || path == "/")
             return this->getFileById(id);
-        json j{{"id", id}, {"path", path}, {"contact", toJson()}};
+        json j{{"id",      id},
+               {"path",    path},
+               {"contact", toJson()}};
         std::string re = KtOperation::ktOperation(KtOperation::RemoteFileInfo, j);
-        if (re == "E2") throw RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id, MIRAICP_EXCEPTION_WHERE);
+        if (re == "E2")
+            throw RemoteAssetException("Get error: 文件路径不存在, path:" + path + ",id:" + id,
+                                       MIRAICP_EXCEPTION_WHERE);
         MIRAICP_ERROR_HANDLE(re, "");
         return RemoteFile::deserializeFromString(re);
     }
 
     RemoteFile Group::getFileById(const std::string &id) {
-        json j{{"id", id}, {"path", "-1"}, {"contact", toJson()}};
+        json j{{"id",      id},
+               {"path",    "-1"},
+               {"contact", toJson()}};
         std::string re = KtOperation::ktOperation(KtOperation::RemoteFileInfo, j);
         if (re == "E1") throw RemoteAssetException("Get error: 文件路径不存在, id:" + id, MIRAICP_EXCEPTION_WHERE);
         MIRAICP_ERROR_HANDLE(re, "");
@@ -190,7 +203,9 @@ namespace MiraiCP {
     }
 
     std::string Group::getFileListString(const std::string &path) {
-        json j{{"id", "-1"}, {"path", path}, {"contact", toJson()}};
+        json j{{"id",      "-1"},
+               {"path",    path},
+               {"contact", toJson()}};
         auto re = KtOperation::ktOperation(KtOperation::RemoteFileInfo, j);
         MIRAICP_ERROR_HANDLE(re, "");
         return re;
@@ -235,6 +250,16 @@ namespace MiraiCP {
     void GroupData::deserialize(nlohmann::json in_json) {
         _groupId = in_json["groupId"];
         IContactData::deserialize(std::move(in_json));
+    }
+
+    std::optional<Member> Group::queryCurrentHonorMember(HonorMemberType type) {
+        auto re = KtOperation::ktOperation(KtOperation::queryHonorMember,
+                                           json{{"honorType", static_cast<int>(type)},
+                                                {"contact",   toJson()}});
+        if (re == "E1") {
+            return std::nullopt;
+        }
+        return Member(json::parse(re));
     }
 
 #undef LOC_CLASS_NAMESPACE

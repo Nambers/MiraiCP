@@ -144,6 +144,13 @@ namespace MiraiCP {
             std::string id;
         };
 
+        /// 群荣耀类型
+        /// @note 与这里的值对应: <https://github.com/mamoe/mirai/blob/v2.13.4/mirai-core-api/src/commonMain/kotlin/data/GroupHonorType.kt#L52>
+        enum HonorMemberType{
+            /// 龙王
+            TALKATIVE = 1,
+        };
+
     public: // constructors
         ///  @brief 构建以群号构建群对象
         /// @param groupId 群号
@@ -246,6 +253,9 @@ namespace MiraiCP {
         /// 取文件列表以字符串形式返回
         /// @param path 文件夹路径
         std::string getFileListString(const std::string &path);
+
+        /// 查询目前拥有对应群荣耀的成员
+        std::optional<Member> queryCurrentHonorMember(HonorMemberType);
     };
 } // namespace MiraiCP
 
