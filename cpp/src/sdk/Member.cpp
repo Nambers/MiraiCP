@@ -71,8 +71,7 @@ namespace MiraiCP {
     }
 
     void Member::mute(long long sec) const {
-        json j{{"time", sec}, {"contact", toJson()}};
-        std::string re = KtOperation::ktOperation(KtOperation::MuteM, j);
+        std::string re = KtOperation::ktOperation(KtOperation::MuteM, json{{"time", sec}, {"contact", toJson()}});
         if (re == "E4")
             throw MuteException(MIRAICP_EXCEPTION_WHERE);
     }

@@ -324,6 +324,12 @@ object Packets {
             val title: String,
         )
 
+        @Serializable
+        data class HonorMember(
+            val contact: Contact,
+            val honorType: Int,
+        )
+
         enum class OperationCode {
             Recall,             // 0
             Send,               // 1
@@ -353,6 +359,7 @@ object Packets {
             ChangeNameCard,     // 25
             ChangSpeicalTitle,  // 26
             DeserializeMiraiCode, // 27
+            HonorMember,          // 28
         }
 
         val operations = hashMapOf<OperationCode, suspend (String) -> String>(
@@ -384,6 +391,7 @@ object Packets {
             OperationCode.ChangeNameCard to PublicShared::changeNameCard,
             OperationCode.ChangSpeicalTitle to PublicShared::changeSpecialTitle,
             OperationCode.DeserializeMiraiCode to PublicShared::deserializeMiraiCode,
+            OperationCode.HonorMember to PublicShared::queryHonorMember,
         )
     }
 

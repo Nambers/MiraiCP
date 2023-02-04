@@ -169,6 +169,10 @@ public:
                 auto msg = MessageChain::deserializationFromMiraiCode("[mirai:at:111]");
                 Message::messageSerialization(msg);
             })
+            TEST(honorMember, honorMemberTest, {
+                auto m = a.group.queryCurrentHonorMember(MiraiCP::Group::TALKATIVE);
+                Logger::logger.info("honorMember:", m.has_value()? m.value().id() : 0);
+            })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
         });
