@@ -18,8 +18,9 @@
 #define MIRAICP_PRO_COMMAND_H
 
 #include <json.hpp>
+#include <memory>
 #include <optional>
-
+#include <vector>
 
 namespace MiraiCP {
     class MessageChain;
@@ -54,7 +55,7 @@ namespace MiraiCP {
         virtual IRawCommand::Config config() = 0;
         virtual void onCommand(std::shared_ptr<Contact>, const Bot &, const MessageChain &) = 0;
         /// 析构函数必须override该函数
-        virtual ~IRawCommand() = 0;
+        virtual ~IRawCommand() = default;
     };
 
     class CommandManager {

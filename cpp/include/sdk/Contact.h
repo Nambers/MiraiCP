@@ -323,7 +323,7 @@ namespace MiraiCP {
 
     public:
         /// 群名称，群成员群名片，或好友昵称
-        std::string nickOrNameCard() const {
+        [[nodiscard]] std::string nickOrNameCard() const {
             auto dataPtr = GetDataInternal();
             dataPtr->requestRefresh();
             std::shared_lock<std::shared_mutex> local_lck(dataPtr->getMutex());
@@ -331,7 +331,7 @@ namespace MiraiCP {
         };
 
         /// 头像url地址
-        std::string avatarUrl() const {
+        [[nodiscard]] std::string avatarUrl() const {
             auto dataPtr = GetDataInternal();
             dataPtr->requestRefresh();
             std::shared_lock<std::shared_mutex> local_lck(dataPtr->getMutex());
