@@ -85,4 +85,8 @@ namespace MiraiCP {
         MIRAICP_DATALOCK;
         return InternalData->_avatarUrl;
     }
+
+    bool Bot::operator==(const Bot &b) const {
+        return id() == b.id();
+    }
 } // namespace MiraiCP
