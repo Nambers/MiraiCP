@@ -102,9 +102,10 @@ public:
                 a.group.sendMessage(img);
             })
             TEST(botList, queryBotListTest, {
-                Logger::logger.info(a.bot.FriendListToString());
-                Logger::logger.info(a.bot.GroupListToString());
-                Logger::logger.info(a.group.MemberListToString());
+                Logger::logger.info("botList:", a.bot.FriendListToString());
+                Logger::logger.info("botList:",a.bot.GroupListToString());
+                Logger::logger.info("botList:",a.group.MemberListToString());
+                Logger::logger.info("botList:",a.bot.OnlineBotsListToString());
             })
             TEST(sendFile, sendFileTest, {
                 a.group.sendFile("/img/img.png", absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
@@ -171,6 +172,10 @@ public:
             TEST(deserializeMiraiCode, deserializeMiraiCodeTest, {
                 auto msg = MessageChain::deserializationFromMiraiCode("[mirai:at:111]");
                 Message::messageSerialization(msg);
+            })
+            TEST(honorMember, honorMemberTest, {
+                auto m = a.group.queryCurrentHonorMember(MiraiCP::Group::TALKATIVE);
+                Logger::logger.info("honorMember:", m.has_value()? m.value().id() : 0);
             })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");

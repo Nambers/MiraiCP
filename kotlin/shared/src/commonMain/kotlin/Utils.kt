@@ -200,8 +200,12 @@ internal inline fun Packets.Contact.withContact(
         }
     }
 
-fun Packets.Contact.withMiraiMember(block: (Bot, Group, NormalMember) -> String): String = withBot { bot ->
-    return withMember(bot) { g, m -> block(bot, g, m) }
+internal inline fun Packets.Contact.withMember(block: (Bot, Group, NormalMember) -> String): String = withBot { bot ->
+    withMember(bot) { g, m -> block(bot, g, m) }
+}
+
+internal inline fun Packets.Contact.withGroup(block: (Bot, Group) -> String): String = withBot { bot ->
+    withGroup(bot) { g -> block(bot, g) }
 }
 
 // MiraiCP image info to mirai image

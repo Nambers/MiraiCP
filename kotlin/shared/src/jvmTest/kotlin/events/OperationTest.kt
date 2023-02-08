@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.contact.MemberPermission
 import net.mamoe.mirai.contact.announcement.Announcement.Companion.publishAnnouncement
+import net.mamoe.mirai.data.GroupHonorType
 import net.mamoe.mirai.message.data.buildMessageChain
 import net.mamoe.mirai.message.data.ids
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
@@ -37,6 +38,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class OperationTest : TestBase() {
+    @Test
+    fun queryHonorMember() = runBlocking {
+        group.honorMembers[GroupHonorType.TALKATIVE] = member
+        member.says("honorMember")
+        waitUntilEnd()
+        val logs = TestUtils.logList.filter { it.contains("honorMember:") }.map { it.substringAfter("honorMember:") }
+        assertEquals(1, logs.size)
+        assertEquals(member.id.toString(), logs[0])
+    }
+
     @Test
     fun recallTestGroup() = runBlocking {
         val mc = member.says("recall")
@@ -55,6 +66,12 @@ class OperationTest : TestBase() {
     fun queryBotList() = runBlocking {
         member.says("botList")
         waitUntilEnd()
+        val logs = TestUtils.logList.filter { it.contains("botList:") }.map { it.substringAfter("botList:") }
+        assertEquals(4, logs.size)
+        assertEquals(friend.id, logs[0].toLong())
+        assertEquals(group.id, logs[1].toLong())
+        assertEquals(member.id, logs[2].toLong())
+        assertEquals(bot.id, logs[3].toLong())
     }
 
     @Test
