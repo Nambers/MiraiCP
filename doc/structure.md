@@ -10,6 +10,7 @@ class Main:public CPPPlugin {
 public:
     // 配置插件信息
     Main(): CPPPlugin(PluginConfig("name", "1.0", "Eritque arcus", "hello world", "2021")){}
+    ~Main() override = default;
     void onEnable() override {
     // 监听
     }
@@ -21,11 +22,9 @@ public:
 
 // 绑定当前插件实例
 void MiraiCP::enrollPlugin(){
-    MiraiCP::enrollPlugin0(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }
 ```
-`demo.cpp`中除了这些内容都可以删除
-
 # 注意事项
-- 插件以`name`属性来区分，所以尽量给插件配置一个独特的名字
-- enrollPlugin只会在开始的时候调用一次
+- 插件以`id`属性来区分，所以尽量给插件配置一个独特的名字
+- enrollPlugin只会在启动的时候调用

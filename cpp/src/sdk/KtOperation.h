@@ -82,6 +82,8 @@ namespace MiraiCP::KtOperation {
         ChangeSpecialTitle,
         /// 反序列化 MiraiCode
         DeserializeMiraiCode,
+        /// 群荣耀
+        queryHonorMember,
     };
     enum QueryBotListCode {
         /// 查询好友列表
@@ -90,6 +92,8 @@ namespace MiraiCP::KtOperation {
         GroupList,      // 1
         /// 查询群成员列表
         MemberList,     // 2
+        /// 查询在线的 Bot 列表
+        OnlineBotsList, // 3
     };
     enum AnnouncementOperationCode {
         /// 发布公告

@@ -49,11 +49,15 @@ namespace MiraiCP {
         return {i, InternalData->_id};
     }
 
-    std::vector<QQID> Bot::getFriendList() const {
-        nlohmann::json j{{"contact", toJson()},
-                         {"type", KtOperation::QueryBotListCode::FriendList}};
+    std::vector<QQID> queryList(nlohmann::json bot, KtOperation::QueryBotListCode type) {
+        nlohmann::json j{{"contact", std::move(bot)},
+                         {"type",    type}};
         std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
+    }
+
+    std::vector<QQID> Bot::getFriendList() const {
+        return queryList(toJson(), KtOperation::QueryBotListCode::FriendList);
     }
 
     std::string Bot::FriendListToString() const {
@@ -61,17 +65,22 @@ namespace MiraiCP {
     }
 
     std::vector<QQID> Bot::getGroupList() const {
-        nlohmann::json j{{"contact", toJson()},
-                         {"type", KtOperation::QueryBotListCode::GroupList}};
-        std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
-        return Tools::StringToVector(std::move(temp));
+        return queryList(toJson(), KtOperation::QueryBotListCode::GroupList);
     }
 
     std::string Bot::GroupListToString() const {
         return Tools::VectorToString(getGroupList());
     }
 
-    Bot::Bot(QQID in_id) : Contact(get_bot(in_id)) {
+    std::vector<QQID> Bot::getOnlineBotsList() const {
+        return queryList(toJson(), KtOperation::QueryBotListCode::OnlineBotsList);
+    }
+
+    std::string Bot::OnlineBotsListToString() const {
+        return Tools::VectorToString(getOnlineBotsList());
+    }
+
+    Bot::Bot(QQID in_id): Contact(get_bot(in_id)) {
     }
 
     std::string Bot::nick() {
