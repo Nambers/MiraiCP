@@ -23,18 +23,19 @@
 #include <vector>
 
 namespace MiraiCP {
-    class MessageChain;
-    class Bot;
-    class Contact;
+    class MessageChain; /// forward declaration
+    class Bot;          /// forward declaration
+    class Contact;      /// forward declaration
 
     /*!
      * @brief 指令 Interface
-     * @doxygenEg{1001, command.cpp, 新建自定义命令}
+     * @doxygenEg{1001, command.h, 新建自定义命令}
      * @attention loader端的命令只支持从console传入, plugin端是对接 mirai 的RawCommand
      * @note 析构函数必须重写基类，否则会造成内存泄漏
      */
     class IRawCommand {
     public:
+        /// @brief Command 类的配置信息
         struct Config {
             using string = std::string;
             /// 指令名不能为空
@@ -52,24 +53,25 @@ namespace MiraiCP {
         };
 
     public:
+        /// @brief 子类需要实现的函数
+        /// @return 返回一个 IRawCommand::Config 对象
         virtual IRawCommand::Config config() = 0;
-        virtual void onCommand(std::shared_ptr<Contact>, const Bot &, const MessageChain &) = 0;
+
+        /// @brief 子类需要实现的函数
+        /// @return 在command被触发时的回调
+        /// @param contact command被触发的聊天环境
+        /// @param msg command被触发的 message chain
+        virtual void onCommand(std::shared_ptr<Contact> contact, const Bot &bot, const MessageChain &msg) = 0;
+
         /// 析构函数必须override该函数
         virtual ~IRawCommand() = default;
     };
 
-    class CommandManager {
-        std::vector<IRawCommand *> commandList;
+    namespace internal {
+        bool commandRegister(std::unique_ptr<IRawCommand> inPtr);
+    }
 
-    private:
-        CommandManager() = default;
-        ~CommandManager();
-
-        bool internalRegister(IRawCommand *inPtr);
-
-    public:
-        IRawCommand *&operator[](const int &index) { return commandList[index]; }
-
+    namespace CommandManager {
         /*!
          * @brief 注册一条指令
          * @tparam T 指令的类，必须继承 IRawCommand 且默认构造函数可访问
@@ -79,10 +81,8 @@ namespace MiraiCP {
         template<typename T>
         bool registerCommand() {
             static_assert(std::is_base_of_v<IRawCommand, T>, "只支持IRawCommand的派生类");
-            return internalRegister(new T);
+            return internal::commandRegister(std::make_unique<T>());
         }
-
-        static CommandManager commandManager;
-    };
+    } // namespace CommandManager
 } // namespace MiraiCP
 #endif //MIRAICP_PRO_COMMAND_H
