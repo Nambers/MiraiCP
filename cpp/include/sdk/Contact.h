@@ -50,7 +50,7 @@ namespace MiraiCP {
     * @brief group, friend, member的父类
     * @doxygenEg{1002, message.cpp, 发送以及回复群消息}
     */
-    class Contact {
+    class MIRAICP_EXPORT Contact {
         template<typename ClassType, typename InternalDataType>
         friend struct ContactDataHelper;
         // attrs
@@ -72,9 +72,7 @@ namespace MiraiCP {
         /// 虚类 destructor
         virtual ~Contact() = default;
 
-        bool operator==(const Contact &c) const {
-            return id() == c.id();
-        }
+        bool operator==(const Contact &c) const;
 
         /**
          * @brief 设置内部数据指针
@@ -141,13 +139,12 @@ namespace MiraiCP {
          */
         template<typename T>
         MessageSource quoteAndSendMessage(const T &s, MessageSource ms) {
-            return quoteAndSend1(s, ms);
+            return unpackQuote(s, ms);
         }
 
         /**
          * @brief 回复并发送
-         * @param s 内容
-         * @param groupid 如果是来源于TempGroupMessage就要提供(因为要找到那个Member)
+         * @param val 内容
          * @note 可以改MessageSource里的内容, 客户端在发送的时候并不会校验MessageSource的内容正确性(比如改originalMessage来改引用的文本的内容, 或者改id来定位到其他信息)
          * @detail 支持以下类型传入
          * - std::string / const char* 相当于传入PlainText(str)
@@ -156,7 +153,7 @@ namespace MiraiCP {
          */
         template<typename... T>
         MessageSource quoteAndSendMessage(const MessageSource &ms, T &&...val) {
-            return quoteAndSend1(MessageChain(std::forward<T>(val)...), ms);
+            return unpackQuote(MessageChain(std::forward<T>(val)...), ms);
         }
 
         /**
@@ -171,7 +168,7 @@ namespace MiraiCP {
          */
         template<typename... T>
         MessageSource sendMessage(T &&...msg) {
-            return sendMessage(MessageChain(std::forward<T>(msg)...));
+            return unpackMsg(MessageChain(std::forward<T>(msg)...));
         }
 
         /**
@@ -190,19 +187,11 @@ namespace MiraiCP {
         }
 
     private: // private methods
-        MessageSource quoteAndSend0(std::string msg, const MessageSource &ms) const;
+        MessageSource quoteAndSendInternal(std::string msg, const MessageSource &ms) const;
 
-        MessageSource quoteAndSend1(const SingleMessage &s, const MessageSource &ms) {
-            return quoteAndSend0(MessageChain(s).toString(), ms);
-        }
-
-        MessageSource quoteAndSend1(const std::string &s, const MessageSource &ms) {
-            return quoteAndSend0(s, ms);
-        }
-
-        MessageSource quoteAndSend1(const MessageChain &mc, const MessageSource &ms) {
-            return quoteAndSend0(mc.toString(), ms);
-        }
+        MessageSource unpackQuote(const SingleMessage &s, const MessageSource &ms);
+        MessageSource unpackQuote(const std::string &s, const MessageSource &ms);
+        MessageSource unpackQuote(const MessageChain &mc, const MessageSource &ms);
 
     public: // serialization
         /// 序列化到json对象
@@ -222,11 +211,11 @@ namespace MiraiCP {
         static std::shared_ptr<Contact> deserializeToPointer(nlohmann::json source);
 
         // for derived class
-        template<typename T>
-        static T deserialize(nlohmann::json source) {
-            static_assert(std::is_base_of_v<Contact, T>, "Cannot deserialize class that isn't base on Contact");
-            return T(std::move(source));
-        }
+        //        template<typename T>
+        //        static T deserialize(nlohmann::json source) {
+        //            static_assert(std::is_base_of_v<Contact, T>, "Cannot deserialize class that isn't base on Contact");
+        //            return T(std::move(source));
+        //        }
 
         /**
         * @brief 上传本地图片，务必要用绝对路径
@@ -248,18 +237,9 @@ namespace MiraiCP {
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
         MessageSource sendMsgImpl(std::string msg) const;
 
-        MessageSource unpackMsg(const MessageChain &msg) const {
-            return sendMsgImpl(msg.toString());
-        }
-        MessageSource unpackMsg(const MiraiCodeable &msg) const {
-            return sendMsgImpl(MessageChain::deserializationFromMiraiCode(msg.toMiraiCode()).toString());
-        }
-        MessageSource unpackMsg(std::string msg) const {
-            return sendMsgImpl(MessageChain(PlainText(std::move(msg))).toString());
-        }
-        MessageSource unpackMsg(const char *msg) const {
-            return sendMsgImpl(MessageChain(PlainText(msg)).toString());
-        }
+        MessageSource unpackMsg(const MessageChain &msg) const;
+        MessageSource unpackMsg(const MiraiCodeable &msg) const;
+        MessageSource unpackMsg(std::string msg) const;
     };
 
     /// @brief Contact类型的数据接口模板类

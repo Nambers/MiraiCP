@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "IMiraiData.h"
+#include "ContactDataType/IMiraiData.h"
 #include "LowLevelAPI.h"
 #include "json.hpp"
 #include <mutex>
