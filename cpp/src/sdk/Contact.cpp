@@ -25,7 +25,6 @@
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
 #include "Member.h"
-#include "Tools.h"
 
 
 namespace MiraiCP {
@@ -92,7 +91,7 @@ namespace MiraiCP {
         return result;
     }
 
-    MessageSource Contact::quoteAndSend0(std::string msg, const MessageSource &ms) const {
+    MessageSource Contact::quoteAndSendInternal(std::string msg, const MessageSource &ms) const {
         json obj{{"messageSource", ms.serializeToString()},
                  {"msg", std::move(msg)},
                  {"contact", toJson()}};
@@ -152,6 +151,34 @@ namespace MiraiCP {
     void Contact::forceRefreshNow() {
         forceRefreshNextTime();
         refreshInfo();
+    }
+
+    bool Contact::operator==(const Contact &c) const {
+        return id() == c.id() && InternalData->_type == c.InternalData->_type;
+    }
+
+    MessageSource Contact::unpackMsg(const MessageChain &msg) const {
+        return sendMsgImpl(msg.toString());
+    }
+
+    MessageSource Contact::unpackMsg(const MiraiCodeable &msg) const {
+        return sendMsgImpl(MessageChain::deserializationFromMiraiCode(msg.toMiraiCode()).toString());
+    }
+
+    MessageSource Contact::unpackMsg(std::string msg) const {
+        return sendMsgImpl(MessageChain(PlainText(std::move(msg))).toString());
+    }
+
+    MessageSource Contact::unpackQuote(const SingleMessage &s, const MessageSource &ms) {
+        return quoteAndSendInternal(MessageChain(s).toString(), ms);
+    }
+
+    MessageSource Contact::unpackQuote(const std::string &s, const MessageSource &ms) {
+        return quoteAndSendInternal(s, ms);
+    }
+
+    MessageSource Contact::unpackQuote(const MessageChain &mc, const MessageSource &ms) {
+        return quoteAndSendInternal(mc.toString(), ms);
     }
 
     std::string internal::getNickFromIContactPtr(IContactData *p) {
