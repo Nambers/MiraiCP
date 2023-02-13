@@ -188,11 +188,15 @@ static_assert(false, "Unsupported platform");
 
 // getter
 // need to define macro LOC_CLASS_NAMESPACE to the class first!
-#define DECL_GETTER(attr) decltype(DataType::_##attr) attr();
+#define DECL_GETTER(type, attr) type attr();
 #define IMPL_GETTER(attr)                                                          \
     decltype(LOC_CLASS_NAMESPACE::DataType::_##attr) LOC_CLASS_NAMESPACE::attr() { \
         InternalData->requestRefresh();                                            \
         MIRAICP_DATALOCK;                                                          \
+        return GetDataInternal()->_##attr;                                         \
+    }
+#define NOLOCK_IMPL_GETTER(attr)                                                   \
+    decltype(LOC_CLASS_NAMESPACE::DataType::_##attr) LOC_CLASS_NAMESPACE::attr() { \
         return GetDataInternal()->_##attr;                                         \
     }
 #define INLINE_GETTER(attr) \

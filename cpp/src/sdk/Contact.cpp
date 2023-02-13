@@ -15,6 +15,7 @@
 //
 
 #include "Contact.h"
+#include "ContactDataType/GroupRelatedData.h"
 #include "ExceptionHandle.h"
 #include "Exceptions/IllegalArgument.h"
 #include "Exceptions/Upload.h"
@@ -28,6 +29,7 @@
 
 
 namespace MiraiCP {
+
     using json = nlohmann::json;
 
     std::shared_ptr<Contact> Contact::deserializeToPointer(nlohmann::json j) {
@@ -138,4 +140,29 @@ namespace MiraiCP {
     void Contact::updateJson(json &j) const { InternalData->updateJson(j); }
 
     std::string Contact::toString() const { return toJson().dump(); }
+
+    void Contact::refreshInfo() {
+        InternalData->requestRefresh();
+    }
+
+    void Contact::forceRefreshNextTime() {
+        InternalData->forceRefreshNextTime();
+    }
+
+    void Contact::forceRefreshNow() {
+        forceRefreshNextTime();
+        refreshInfo();
+    }
+
+    std::string internal::getNickFromIContactPtr(IContactData *p) {
+        p->requestRefresh();
+        std::shared_lock<std::shared_mutex> local_lck(p->getMutex());
+        return p->_nickOrNameCard;
+    }
+
+    std::string internal::getAvatarUrlFromIContactPtr(IContactData *p) {
+        p->requestRefresh();
+        std::shared_lock<std::shared_mutex> local_lck(p->getMutex());
+        return p->_avatarUrl;
+    }
 } // namespace MiraiCP

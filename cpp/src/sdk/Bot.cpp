@@ -15,6 +15,7 @@
 //
 
 #include "Bot.h"
+#include "ContactDataType/IContactData.h"
 #include "Friend.h"
 #include "Group.h"
 #include "KtOperation.h"
@@ -51,7 +52,7 @@ namespace MiraiCP {
 
     std::vector<QQID> queryList(nlohmann::json bot, KtOperation::QueryBotListCode type) {
         nlohmann::json j{{"contact", std::move(bot)},
-                         {"type",    type}};
+                         {"type", type}};
         std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
     }
@@ -80,7 +81,7 @@ namespace MiraiCP {
         return Tools::VectorToString(getOnlineBotsList());
     }
 
-    Bot::Bot(QQID in_id): Contact(get_bot(in_id)) {
+    Bot::Bot(QQID in_id) : Contact(get_bot(in_id)) {
     }
 
     std::string Bot::nick() {

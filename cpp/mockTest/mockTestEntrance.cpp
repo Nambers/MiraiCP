@@ -94,7 +94,7 @@ public:
                 schedule(1, "This is a message");
             })
             TEST(command, registerCommandTest, {
-                CommandManager::commandManager.registerCommand<CustomCommand>();
+                CommandManager::registerCommand<CustomCommand>();
             })
             TEST(image, uploadImageTest, {
                 Logger::logger.info(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());

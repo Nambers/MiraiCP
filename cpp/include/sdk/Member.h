@@ -24,18 +24,7 @@ namespace MiraiCP {
     /*!
      * @brief Member数据声明
      */
-    struct MemberData : public GroupRelatedData {
-        typedef IContactData Super;
-        unsigned int _permission = 0;
-        std::string _specialTitle;
-        /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
-        bool _anonymous = false;
-
-        explicit MemberData(QQID in_groupid) : GroupRelatedData(in_groupid) {}
-
-        void deserialize(nlohmann::json in_json) override;
-        void refreshInfo() override;
-    };
+    struct MemberData;
     /*!
      * @brief 群成员类声明
      * @doxygenEg{1013, member.cpp, 群成员操作}
@@ -60,15 +49,15 @@ namespace MiraiCP {
 
         ~Member() override = default;
         /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
-        DECL_GETTER(anonymous)
+        DECL_GETTER(bool, anonymous)
         /// @brief 权限等级
         ///     - OWNER群主 为 2
         ///     - ADMINISTRATOR管理员 为 1
         ///     - MEMBER群成员 为 0
-        DECL_GETTER(permission)
+        DECL_GETTER(unsigned int, permission)
         /// 群头衔
-        DECL_GETTER(specialTitle)
-        INLINE_GETTER(groupId)
+        DECL_GETTER(std::string, specialTitle)
+        DECL_GETTER(QQID, groupId)
 
     public:
         /// @brief 更改群成员权限
