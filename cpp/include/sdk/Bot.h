@@ -24,8 +24,8 @@
 
 
 namespace MiraiCP {
-    class Friend;       // forward declaration
-    class Group;        // forward declaration
+    class Friend;       /// forward declaration
+    class Group;        /// forward declaration
 
     /// 当前bot账号信息
     class Bot: public Contact {

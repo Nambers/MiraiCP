@@ -22,9 +22,11 @@
 
 
 namespace MiraiCP {
-    CommandManager CommandManager::commandManager = CommandManager();
+    namespace CommandManager {
+        std::vector<std::unique_ptr<IRawCommand>> commandList;
+    };
 
-    bool CommandManager::internalRegister(IRawCommand *inPtr) {
+    bool internal::commandRegister(std::unique_ptr<IRawCommand> inPtr) {
         static std::mutex mtx;
 
         auto cfg = inPtr->config();
@@ -39,21 +41,16 @@ namespace MiraiCP {
         j["preFixOption"] = cfg.preFixOption;
         //
         std::lock_guard lk(mtx);
-        j["bindId"] = commandList.size();
+        j["bindId"] = CommandManager::commandList.size();
 
         std::string re = KtOperation::ktOperation(KtOperation::CommandReg, j);
         if (re != "true") {
             Logger::logger.error("指令注册失败，返回值：" + re);
             return false;
         }
-        commandList.emplace_back(inPtr);
+        CommandManager::commandList.emplace_back(std::move(inPtr));
         return true;
     }
 
-    CommandManager::~CommandManager() {
-        std::vector<IRawCommand *> arr = std::move(commandList);
-        for (auto ptr: arr) {
-            delete ptr;
-        }
-    }
+    // IRawCommand *CommandManager::operator[](size_t index) const { return commandList[index].get(); }
 } // namespace MiraiCP

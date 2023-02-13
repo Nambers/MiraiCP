@@ -24,6 +24,10 @@
 
 
 namespace MiraiCP {
+    namespace CommandManager {
+        extern std::vector<std::unique_ptr<IRawCommand>> commandList;
+    };
+
     using json = nlohmann::json;
 
     Event Event::processor;
@@ -314,7 +318,7 @@ namespace MiraiCP {
             }
             case eventTypes::Command: {
                 // command
-                CommandManager::commandManager[j.eventData["bindId"]]->onCommand(
+                CommandManager::commandList[j.eventData["bindId"]]->onCommand(
                         j.eventData.contains("contact") ? Contact::deserializeToPointer(json_jsonmover(j.eventData, "contact")) : nullptr,
                         Bot(j.botId),
                         MessageChain::deserializationFromMessageJson(json::parse(json_stringmover(j.eventData, "message"))));
