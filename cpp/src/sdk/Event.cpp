@@ -21,6 +21,7 @@
 #include "JsonTools.h"
 #include "KtOperation.h"
 #include "Tools.h"
+#include <atomic>
 
 
 namespace MiraiCP {

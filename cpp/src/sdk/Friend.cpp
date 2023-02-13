@@ -15,6 +15,7 @@
 //
 
 #include "Friend.h"
+#include "ContactDataType/IContactData.h"
 #include "ExceptionHandle.h"
 #include "Exceptions/IllegalArgument.h"
 #include "Exceptions/IllegalState.h"

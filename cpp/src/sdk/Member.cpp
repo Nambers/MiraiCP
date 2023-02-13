@@ -15,6 +15,7 @@
 //
 
 #include "Member.h"
+#include "ContactDataType/GroupRelatedData.h"
 #include "ExceptionHandle.h"
 #include "Exceptions/IllegalArgument.h"
 #include "Exceptions/IllegalState.h"
@@ -27,6 +28,19 @@
 
 namespace MiraiCP {
 #define LOC_CLASS_NAMESPACE Member
+
+    struct MemberData : public GroupRelatedData {
+        typedef IContactData Super;
+        unsigned int _permission = 0;
+        std::string _specialTitle;
+        /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
+        bool _anonymous = false;
+
+        explicit MemberData(QQID in_groupid) : GroupRelatedData(in_groupid) {}
+
+        void deserialize(nlohmann::json in_json) override;
+        void refreshInfo() override;
+    };
 
     using json = nlohmann::json;
 
@@ -160,6 +174,6 @@ namespace MiraiCP {
     IMPL_GETTER(anonymous)
     IMPL_GETTER(permission)
     IMPL_GETTER(specialTitle)
-
+    NOLOCK_IMPL_GETTER(groupId)
 #undef LOC_CLASS_NAMESPACE
 } // namespace MiraiCP

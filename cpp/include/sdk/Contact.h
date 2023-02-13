@@ -18,7 +18,6 @@
 #define MIRAICP_PRO_CONTACT_H
 
 
-#include "IMiraiData.h"
 #include "MessageChain.h"
 #include <json.hpp>
 #include <string>
@@ -39,43 +38,13 @@ namespace MiraiCP {
         MIRAI_OTHERTYPE = 5,
     };
 
-    /// Contact 内部储存数据抽象类
-    struct IContactData : public IMiraiData {
-        /// 昵称或者群名片
-        std::string _nickOrNameCard;
-        /// 头像 url
-        std::string _avatarUrl;
-        /// id
-        QQID _id{};
-        /// 所属的 bot 的 id
-        QQID _botId{};
-        /// Contact 类型
-        ContactType _type = MIRAI_CONTACT;
+    struct IMiraiData;
+    struct IContactData;
 
-        void deserialize(nlohmann::json inJson) override;
-
-        nlohmann::json internalToJson() const override;
-
-        /// 刷新数据
-        void refreshInfo() override;
-
-        /**
-         * 更新传入 json 中的数据, 在调用后, 原 json 数据会被更新
-         * @param jsonToUpdate 需更新的 json 数据
-         * @see nlohmann::update
-         */
-        void updateJson(nlohmann::json &jsonToUpdate) const;
-    };
-
-    struct GroupRelatedData : public IContactData {
-        typedef IContactData Super;
-        /// group id
-        QQID _groupId;
-
-        nlohmann::json internalToJson() const override;
-
-        explicit GroupRelatedData(QQID in_groupid) : _groupId(in_groupid) {}
-    };
+    namespace internal {
+        std::string getNickFromIContactPtr(IContactData *);
+        std::string getAvatarUrlFromIContactPtr(IContactData *);
+    } // namespace internal
 
     /*!
     * @brief group, friend, member的父类
@@ -118,28 +87,21 @@ namespace MiraiCP {
          * @note 不保证进行刷新, 一般为内部调用. 强制刷新请使用 forceRefreshInfo()
          * @see forceRefreshInfo
          */
-        void refreshInfo() {
-            InternalData->requestRefresh();
-        }
+        void refreshInfo();
 
         /**
          * @brief 强制下次 refreshInfo() 调用时刷新数据
          * @note 尽可能调用该函数, 避免不必要的刷新
          * @see refreshInfo
          */
-        void forceRefreshNextTime() {
-            InternalData->forceRefreshNextTime();
-        }
+        void forceRefreshNextTime();
 
         /**
          * @brief 强制数据刷新
          * @note 频繁刷新可能会有性能损耗
          * @see refreshInfo, forceRefreshNextTime
          */
-        void forceRefreshNow() {
-            forceRefreshNextTime();
-            refreshInfo();
-        }
+        void forceRefreshNow();
 
         /**
          * @brief 当前对象类型
@@ -159,13 +121,13 @@ namespace MiraiCP {
          *      - 当前type为Member时，为群成员id
          * @see MIRAI_CONTACT
          */
-        QQID id() const;
+        [[nodiscard]] QQID id() const;
 
         /**
          * 所属bot
          * @note dev: 不会修改，不需要锁
          */
-        QQID botid() const;
+        [[nodiscard]] QQID botid() const;
 
         /**
          * @brief 回复并发送
@@ -194,7 +156,7 @@ namespace MiraiCP {
          */
         template<typename... T>
         MessageSource quoteAndSendMessage(const MessageSource &ms, T &&...val) {
-            return this->quoteAndSend1(MessageChain(std::forward<T>(val)...), ms);
+            return quoteAndSend1(MessageChain(std::forward<T>(val)...), ms);
         }
 
         /**
@@ -209,7 +171,7 @@ namespace MiraiCP {
          */
         template<typename... T>
         MessageSource sendMessage(T &&...msg) {
-            return this->sendMessage(MessageChain(std::forward<T>(msg)...));
+            return sendMessage(MessageChain(std::forward<T>(msg)...));
         }
 
         /**
@@ -224,22 +186,22 @@ namespace MiraiCP {
          */
         template<typename T>
         MessageSource sendMessage(T &&msg) {
-            return this->unpackMsg(MessageChain(std::forward<T>(msg)));
+            return unpackMsg(MessageChain(std::forward<T>(msg)));
         }
 
     private: // private methods
         MessageSource quoteAndSend0(std::string msg, const MessageSource &ms) const;
 
         MessageSource quoteAndSend1(const SingleMessage &s, const MessageSource &ms) {
-            return this->quoteAndSend0(MessageChain(s).toString(), ms);
+            return quoteAndSend0(MessageChain(s).toString(), ms);
         }
 
         MessageSource quoteAndSend1(const std::string &s, const MessageSource &ms) {
-            return this->quoteAndSend0(s, ms);
+            return quoteAndSend0(s, ms);
         }
 
         MessageSource quoteAndSend1(const MessageChain &mc, const MessageSource &ms) {
-            return this->quoteAndSend0(mc.toString(), ms);
+            return quoteAndSend0(mc.toString(), ms);
         }
 
     public: // serialization
@@ -253,7 +215,7 @@ namespace MiraiCP {
          * 序列化成文本, 可以通过deserializationFromString反序列化, 利于保存
          * @see Contact::fromString()
          */
-        std::string toString() const;
+        [[nodiscard]] std::string toString() const;
 
         /// 反序列化成Contact智能指针
         /// @param source 序列化后的文本
@@ -324,18 +286,14 @@ namespace MiraiCP {
     public:
         /// 群名称，群成员群名片，或好友昵称
         [[nodiscard]] std::string nickOrNameCard() const {
-            auto dataPtr = GetDataInternal();
-            dataPtr->requestRefresh();
-            std::shared_lock<std::shared_mutex> local_lck(dataPtr->getMutex());
-            return dataPtr->_nickOrNameCard;
+            auto clz_ptr = static_cast<const ClassType *>(this);
+            return internal::getNickFromIContactPtr(clz_ptr->InternalData.get());
         };
 
         /// 头像url地址
         [[nodiscard]] std::string avatarUrl() const {
-            auto dataPtr = GetDataInternal();
-            dataPtr->requestRefresh();
-            std::shared_lock<std::shared_mutex> local_lck(dataPtr->getMutex());
-            return dataPtr->_avatarUrl;
+            auto clz_ptr = static_cast<const ClassType *>(this);
+            return internal::getNickFromIContactPtr(clz_ptr->InternalData.get());
         };
     };
 
