@@ -138,7 +138,7 @@ namespace MiraiCP {
          * @note 可以改MessageSource里的内容, 客户端在发送的时候并不会校验MessageSource的内容正确性(比如改originalMessage来改引用的文本的内容, 或者改id来定位到其他信息)
          */
         template<typename T>
-        MessageSource quoteAndSendMessage(const T &s, MessageSource ms) {
+        MessageSource quoteAndSendMessage(const T &s, MessageSource ms) const {
             return unpackQuote(s, ms);
         }
 
@@ -152,7 +152,7 @@ namespace MiraiCP {
          * - MessageChain
          */
         template<typename... T>
-        MessageSource quoteAndSendMessage(const MessageSource &ms, T &&...val) {
+        MessageSource quoteAndSendMessage(const MessageSource &ms, T &&...val) const {
             return unpackQuote(MessageChain(std::forward<T>(val)...), ms);
         }
 
@@ -167,7 +167,7 @@ namespace MiraiCP {
          * @return MessageSource
          */
         template<typename... T>
-        MessageSource sendMessage(T &&...msg) {
+        MessageSource sendMessage(T &&...msg) const {
             return unpackMsg(MessageChain(std::forward<T>(msg)...));
         }
 
@@ -182,16 +182,9 @@ namespace MiraiCP {
          *  @return MessageSource
          */
         template<typename T>
-        MessageSource sendMessage(T &&msg) {
+        MessageSource sendMessage(T &&msg) const {
             return unpackMsg(MessageChain(std::forward<T>(msg)));
         }
-
-    private: // private methods
-        MessageSource quoteAndSendInternal(std::string msg, const MessageSource &ms) const;
-
-        MessageSource unpackQuote(const SingleMessage &s, const MessageSource &ms);
-        MessageSource unpackQuote(const std::string &s, const MessageSource &ms);
-        MessageSource unpackQuote(const MessageChain &mc, const MessageSource &ms);
 
     public: // serialization
         /// 序列化到json对象
@@ -225,21 +218,27 @@ namespace MiraiCP {
         * -可能抛出UploadException异常代表路径无效或大小大于30MB
         * -可能抛出MemberException找不到群或群成员
         */
-        Image uploadImg(const std::string &path) const;
+        [[nodiscard]] Image uploadImg(const std::string &path) const;
 
-        FlashImage uploadFlashImg(const std::string &path) const;
+        [[nodiscard]] FlashImage uploadFlashImg(const std::string &path) const;
 
     protected:
+        [[nodiscard]] MessageSource quoteAndSendImpl(std::string msg, const MessageSource &ms) const;
+
+        [[nodiscard]] MessageSource unpackQuote(const SingleMessage &s, const MessageSource &ms) const;
+        [[nodiscard]] MessageSource unpackQuote(const std::string &s, const MessageSource &ms) const;
+        [[nodiscard]] MessageSource unpackQuote(const MessageChain &mc, const MessageSource &ms) const;
+
         /// 发送语音
-        MessageSource sendVoiceImpl(std::string path) const;
+        [[nodiscard]] MessageSource sendVoiceImpl(std::string path) const;
 
         /// 发送纯文本信息
         /// @throw IllegalArgumentException, TimeOutException, BotIsBeingMutedException
-        MessageSource sendMsgImpl(std::string msg) const;
+        [[nodiscard]] MessageSource sendMsgImpl(std::string msg) const;
 
-        MessageSource unpackMsg(const MessageChain &msg) const;
-        MessageSource unpackMsg(const MiraiCodeable &msg) const;
-        MessageSource unpackMsg(std::string msg) const;
+        [[nodiscard]] MessageSource unpackMsg(const MessageChain &msg) const;
+        [[nodiscard]] MessageSource unpackMsg(const MiraiCodeable &msg) const;
+        [[nodiscard]] MessageSource unpackMsg(std::string msg) const;
     };
 
     /// @brief Contact类型的数据接口模板类

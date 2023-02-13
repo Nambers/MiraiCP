@@ -91,7 +91,7 @@ namespace MiraiCP {
         return result;
     }
 
-    MessageSource Contact::quoteAndSendInternal(std::string msg, const MessageSource &ms) const {
+    MessageSource Contact::quoteAndSendImpl(std::string msg, const MessageSource &ms) const {
         json obj{{"messageSource", ms.serializeToString()},
                  {"msg", std::move(msg)},
                  {"contact", toJson()}};
@@ -169,16 +169,16 @@ namespace MiraiCP {
         return sendMsgImpl(MessageChain(PlainText(std::move(msg))).toString());
     }
 
-    MessageSource Contact::unpackQuote(const SingleMessage &s, const MessageSource &ms) {
-        return quoteAndSendInternal(MessageChain(s).toString(), ms);
+    MessageSource Contact::unpackQuote(const SingleMessage &s, const MessageSource &ms) const {
+        return quoteAndSendImpl(MessageChain(s).toString(), ms);
     }
 
-    MessageSource Contact::unpackQuote(const std::string &s, const MessageSource &ms) {
-        return quoteAndSendInternal(s, ms);
+    MessageSource Contact::unpackQuote(const std::string &s, const MessageSource &ms) const {
+        return quoteAndSendImpl(s, ms);
     }
 
-    MessageSource Contact::unpackQuote(const MessageChain &mc, const MessageSource &ms) {
-        return quoteAndSendInternal(mc.toString(), ms);
+    MessageSource Contact::unpackQuote(const MessageChain &mc, const MessageSource &ms) const {
+        return quoteAndSendImpl(mc.toString(), ms);
     }
 
     std::string internal::getNickFromIContactPtr(IContactData *p) {
