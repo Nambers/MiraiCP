@@ -14,7 +14,8 @@
     "includeDirectory": [
         "include",
         "include/common",
-        "include/sdk"
+        "include/sdk",
+        "src/common"
     ],
     "removeTwoSlashComments": true,
     "extension": {
