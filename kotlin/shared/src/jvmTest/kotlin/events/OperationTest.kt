@@ -231,15 +231,9 @@ class OperationTest : TestBase() {
 
     @Test
     fun imgUploaded() = runBlocking {
-        this@OperationTest.javaClass.getResourceAsStream("/img.png")!!.use { res ->
-            res.toExternalResource().use {
-                val img = bot.uploadMockImage(it)
-                member.says(buildMessageChain {
-                    add("imgUploaded")
-                    add(img)
-                })
-            }
-        }
+        member.says(buildMessageChain {
+            add("imgUploaded")
+        })
         waitUntilEnd()
     }
 

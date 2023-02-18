@@ -15,6 +15,7 @@
 //
 
 #include "mockTests.h"
+
 using namespace MiraiCP;
 namespace MockTests {
     void testEnd(const std::string& str){

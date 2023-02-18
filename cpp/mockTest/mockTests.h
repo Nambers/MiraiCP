@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_MOCKTESTS_H
 #include "Event.h"
 #include "MessageChain.h"
+#include "Events/GroupMessageEvent.h"
 #include <string>
 namespace MockTests{
     void testEnd(const std::string&);
