@@ -91,7 +91,9 @@ object Console {
     fun registerShutDownHook() {
         val shutdownListener: Thread = object : Thread() {
             override fun run() {
-                KotlinMain.exit()
+                if (KotlinMainData.job.isActive) {
+                    KotlinMain.exit()
+                }
             }
         }
         Runtime.getRuntime().addShutdownHook(shutdownListener)
