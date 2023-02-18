@@ -18,15 +18,14 @@
 #define MIRAICP_PRO_BOT_H
 
 #include "Contact.h"
-#include "commonTypes.h"
+#include "SdkType.h"
 #include <string>
 #include <vector>
 
 
 namespace MiraiCP {
-    class Friend;       // forward declaration
-    class Group;        // forward declaration
-    struct InternalBot; // forward declaration
+    class Friend;       /// forward declaration
+    class Group;        /// forward declaration
 
     /// 当前bot账号信息
     class Bot: public Contact {
@@ -76,9 +75,7 @@ namespace MiraiCP {
         /// @brief 在线 Bot 列表string形式返回, 利于保存
         [[nodiscard]] std::string OnlineBotsListToString() const;
 
-        bool operator==(const Bot &b) const {
-            return id() == b.id();
-        }
+        bool operator==(const Bot &b) const;
     };
 } // namespace MiraiCP
 

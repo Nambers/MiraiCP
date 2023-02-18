@@ -24,7 +24,7 @@
 
 #if MIRAICP_WINDOWS
 #include "LoaderLogger.h"
-#include <windows.h>
+#include "WindowsMin.h"
 
 thread_local bool alreadyInHandler;
 
@@ -97,6 +97,7 @@ private:
 
 #include "LoaderLogger.h"
 #include <csignal>
+#include <cstring>
 #include <thread>
 
 

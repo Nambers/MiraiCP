@@ -1,10 +1,23 @@
+set(SDK_INCLUDES_INTERNAL
+        ${INCLUDE_PATH}/sdk
+        ${SRC_PATH}/sdk
+        ${3RD_PATH})
+set(SDK_INCLUDES_ALL ${SDK_INCLUDES_INTERNAL} PARENT_SCOPE)
+
+# common build options for sdk
+add_library(sdkCommon INTERFACE)
+target_compile_definitions(sdkCommon INTERFACE MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
+add_library(sdkCommonMulti INTERFACE)
+target_link_libraries(sdkCommonMulti INTERFACE sdkCommon)
+target_include_directories(sdkCommonMulti INTERFACE ${SDK_INCLUDES_INTERNAL})
+
 # -- miraicp multi --
 file(GLOB MIRAICP_CPP_PATH ${SRC_PATH}/sdk/*.cpp)
 
 add_library(
         MiraiCP_multi
         SHARED
-        ${DEMO_PATH}/test.cpp
+        ${DEMO_PATH}/test_multi.cpp
         ${MIRAICP_CPP_PATH}
         ${MIRAICP_COMMON_PATH}
 )
@@ -16,17 +29,8 @@ set_target_properties(
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-set(SDK_INCLUDES_INTERNAL
-        ${INCLUDE_PATH}/sdk
-        ${INCLUDE_PATH}/common
-        ${3RD_PATH})
-set(SDK_INCLUDES_ALL ${SDK_INCLUDES_INTERNAL} PARENT_SCOPE)
-
-target_include_directories(MiraiCP_multi PUBLIC ${SDK_INCLUDES_INTERNAL})
-
 # target_compile_options(MiraiCP_multi PUBLIC -Wall)
-target_compile_definitions(MiraiCP_multi PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
-target_link_libraries(MiraiCP_multi PRIVATE commonBuild)
+target_link_libraries(MiraiCP_multi PRIVATE commonBuild sdkCommonMulti)
 # -- end --
 
 # -- MiraiCP mock --
@@ -47,31 +51,22 @@ set_target_properties(
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-target_include_directories(MiraiCP_mock_test PUBLIC ${SDK_INCLUDES_INTERNAL})
-
-# target_compile_options(MiraiCP_multi PUBLIC -Wall)
-target_compile_definitions(MiraiCP_mock_test PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
-target_link_libraries(MiraiCP_mock_test PRIVATE commonBuild)
+target_link_libraries(MiraiCP_mock_test PRIVATE commonBuild sdkCommonMulti)
 # -- end --
 
 # -- MiraiCP single --
 set(SINGLE_HEADER_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/single_include)
+# To ensure the source files exist when running cmake. Useful in CI.
 if (NOT EXISTS "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.hpp" OR NOT EXISTS "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.cpp")
     FILE(WRITE "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.hpp" "")
     FILE(WRITE "${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.cpp" "")
 endif ()
 
-
 add_library(
         MiraiCP_single
         SHARED
-        ${DEMO_PATH}/test.cpp
+        ${DEMO_PATH}/test_single.cpp
         ${SINGLE_HEADER_OUTPUT_PATH}/MiraiCP.cpp
-)
-target_include_directories(
-        MiraiCP_single PUBLIC
-        ${SINGLE_HEADER_OUTPUT_PATH}
-        ${3RD_PATH}
 )
 set_target_properties(
         MiraiCP_single PROPERTIES
@@ -80,29 +75,8 @@ set_target_properties(
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
-
+target_include_directories(MiraiCP_single PRIVATE ${SINGLE_HEADER_OUTPUT_PATH})
 add_dependencies(MiraiCP_single generateSingleHeaders)
 target_compile_options(MiraiCP_single PUBLIC -w) # disable all warnings!
-target_compile_definitions(MiraiCP_single PUBLIC MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
-target_link_libraries(MiraiCP_single PRIVATE commonBuild)
+target_link_libraries(MiraiCP_single PRIVATE commonBuild sdkCommon)
 # -- end --
-
-# 移植性
-set_target_properties(MiraiCP_multi PROPERTIES LINK_SEARCH_START_STATIC 1)
-set_target_properties(MiraiCP_multi PROPERTIES LINK_SEARCH_END_STATIC 1)
-set_target_properties(MiraiCP_single PROPERTIES LINK_SEARCH_START_STATIC 1)
-set_target_properties(MiraiCP_single PROPERTIES LINK_SEARCH_END_STATIC 1)
-if (WIN32)
-    if (MSVC)
-        target_compile_options(MiraiCP_multi PUBLIC /MT)
-        target_compile_options(MiraiCP_single PUBLIC /MT)
-    else ()
-        target_link_libraries(MiraiCP_multi PUBLIC -static)
-        target_link_libraries(MiraiCP_single PUBLIC -static)
-    endif (MSVC)
-endif (WIN32)
-if (UNIX AND NOT (CMAKE_SYSTEM_NAME STREQUAL Android))
-    target_link_libraries(MiraiCP_multi PRIVATE -static-libstdc++ -static-libgcc)
-    target_link_libraries(MiraiCP_single PRIVATE -static-libstdc++ -static-libgcc)
-    add_link_options(-fvisibility=hidden)
-endif ()

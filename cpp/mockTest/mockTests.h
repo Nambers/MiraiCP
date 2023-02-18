@@ -16,7 +16,9 @@
 
 #ifndef MIRAICP_PRO_MOCKTESTS_H
 #define MIRAICP_PRO_MOCKTESTS_H
-#include "MiraiCP.hpp"
+#include "Event.h"
+#include "MessageChain.h"
+#include <string>
 namespace MockTests{
     void testEnd(const std::string&);
     namespace Message{

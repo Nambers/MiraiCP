@@ -30,7 +30,7 @@
 #if MIRAICP_WINDOWS
 #include "utf8.h"
 #include <filesystem>
-#include <windows.h>
+#include "WindowsMin.h"
 #endif
 
 namespace LibLoader {

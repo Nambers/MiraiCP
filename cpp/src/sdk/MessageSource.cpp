@@ -15,14 +15,25 @@
 //
 
 #include "MessageSource.h"
-#include "Exception.h"
+#include "Exceptions/IllegalArgument.h"
 #include "KtOperation.h"
 #include "Logger.h"
 #include "commonTools.h"
+#include <json.hpp>
 
 
 namespace MiraiCP {
     using json = nlohmann::json;
+
+    /// 撤回异常
+    /// @see MiraiCPExceptionBase
+    class MIRAICP_EXPORT RecallException : public MiraiCPExceptionCRTP<RecallException> {
+    public:
+        RecallException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("该消息已经被撤回", std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "RecallException"; }
+    };
+
     void MessageSource::recall() const {
         std::string re = KtOperation::ktOperationStr(KtOperation::Recall, serializeToString());
         if (re == "E2") throw RecallException(MIRAICP_EXCEPTION_WHERE);
@@ -49,5 +60,9 @@ namespace MiraiCP {
             Logger::logger.error(e.what());
             throw IllegalArgumentException(std::string("消息源序列化出错，格式不符合(MessageSource::deserializeFromString), ") + e.what(), MIRAICP_EXCEPTION_WHERE);
         }
+    }
+
+    bool MessageSource::operator==(const MessageSource &ms) const {
+        return this->ids == ms.ids && this->internalids == ms.internalids;
     }
 } // namespace MiraiCP

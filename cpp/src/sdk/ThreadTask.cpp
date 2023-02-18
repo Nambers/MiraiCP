@@ -6,7 +6,6 @@
 #include "Logger.h"
 #include "loaderApiInternal.h"
 #include <atomic>
-#include <deque>
 #include <shared_mutex>
 
 
@@ -75,5 +74,13 @@ namespace MiraiCP::ThreadTask::internal {
         }
         // running task!
         (*fPtr)();
+    }
+
+    void raw_push_task(void (*func)()) {
+        LibLoader::LoaderApi::pushTask(func);
+    }
+
+    void logerror(const std::string &content) {
+        Logger::logger.error(content);
     }
 } // namespace MiraiCP::ThreadTask::internal
