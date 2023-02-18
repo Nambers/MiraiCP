@@ -21,6 +21,22 @@
 #include "Tools.h"
 #include "mockTests.h"
 #include "utils.h"
+#include "Events/GroupMessageEvent.h"
+#include "Events/NudgeEvent.h"
+#include "Events/GroupTempMessageEvent.h"
+#include "Events/PrivateMessageEvent.h"
+#include "Events/NewFriendRequestEvent.h"
+#include "Events/MemberJoinEvent.h"
+#include "Events/MemberJoinRequestEvent.h"
+#include "Events/MemberLeaveEvent.h"
+#include "Events/BotOnlineEvent.h"
+#include "Events/MemberRecallEvent.h"
+#include "Events/FriendRecallEvent.h"
+#include "Events/BotJoinGroupEvent.h"
+#include "Events/GroupInviteEvent.h"
+#include "Events/BotLeaveEvent.h"
+#include "Events/MessagePreSendEvent.h"
+#include "Events/TimeOutEvent.h"
 
 
 #define MESSAGE_EQ(msg) a.message[0]->content == #msg
@@ -100,6 +116,7 @@ public:
                 Logger::logger.info(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
                 auto img = a.group.uploadImg(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
                 a.group.sendMessage(img);
+                assert(img.size != 0);
             })
             TEST(botList, queryBotListTest, {
                 Logger::logger.info("botList:", a.bot.FriendListToString());
@@ -156,7 +173,9 @@ public:
                 }
             })
             TEST(imgUploaded, , {
-                if (a.message[1].getVal<Image>().isUploaded(a.bot.id())) {
+                auto img = a.group.uploadImg(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
+                Logger::logger.info(img.toJson().dump());
+                if (img.isUploaded(a.bot.id())) {
                     testEnd("imgUploadedTest");
                 }
             })
