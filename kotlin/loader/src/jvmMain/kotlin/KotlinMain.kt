@@ -73,6 +73,7 @@ actual object KotlinMain {
             it.login()
         }
         PublicSharedData.logger.info("⭐已成功加载MiraiCP⭐")
+        Console.registerShutDownHook()
         Console.listen()
         // keep alive
         runBlocking {

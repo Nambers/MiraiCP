@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,7 +22,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import net.mamoe.mirai.Bot
 import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
 import org.jline.reader.UserInterruptException
@@ -30,8 +29,8 @@ import org.jline.reader.impl.completer.NullCompleter
 import org.jline.terminal.Terminal
 import org.jline.terminal.TerminalBuilder
 import org.jline.terminal.impl.AbstractWindowsTerminal
+import tech.eritquearcus.miraicp.loader.KotlinMain
 import tech.eritquearcus.miraicp.loader.KotlinMainData
-import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.PublicSharedData
 import java.time.LocalDateTime
 import kotlin.system.exitProcess
@@ -80,17 +79,21 @@ object Console {
                     PublicSharedData.logger.error(e)
                     return@launch
                 } catch (e: UserInterruptException) {
-                    PublicSharedData.logger.info("Closing MiraiCP...")
-                    Bot.instances.forEach {
-                        it.closeAndJoin()
-                        PublicSharedData.logger.info("Bot ${it.id} closed")
-                    }
-                    PublicShared.onDisable()
+                    KotlinMain.exit()
                     exitProcess(0)
                 }
                 if (re.isEmpty() || re.isBlank()) continue
                 Command.parse(re)
             }
         }
+    }
+
+    fun registerShutDownHook() {
+        val shutdownListener: Thread = object : Thread() {
+            override fun run() {
+                KotlinMain.exit()
+            }
+        }
+        Runtime.getRuntime().addShutdownHook(shutdownListener)
     }
 }
