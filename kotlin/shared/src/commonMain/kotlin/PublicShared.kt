@@ -297,9 +297,9 @@ object PublicShared {
     //图片部分实现
     private suspend fun uploadImgAndId(file: String, temp: Contact, err1: String = "E2", err2: String = "E3"): String =
         try {
-            val f = MiraiCPFiles.create(file).toExternalResource()
-            val img = f.uploadAsImage(temp)
-            f.close()
+            val img = MiraiCPFiles.create(file).toExternalResource().use {
+                it.uploadAsImage(temp)
+            }
             json.encodeToString(
                 Packets.Outgoing.ImgInfo(
                     size = img.size,
