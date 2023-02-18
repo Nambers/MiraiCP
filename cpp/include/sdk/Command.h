@@ -17,10 +17,12 @@
 #ifndef MIRAICP_PRO_COMMAND_H
 #define MIRAICP_PRO_COMMAND_H
 
-#include <json.hpp>
+
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
+
 
 namespace MiraiCP {
     class MessageChain; /// forward declaration

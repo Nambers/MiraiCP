@@ -77,12 +77,12 @@ namespace MiraiCP {
             return sstream.str() + constructString(std::forward<T1>(val1)...);
         }
 
-        template<class... T>
+        template<typename... T>
         static std::string constructString(const std::string &a, T &&...val1) {
             return a + constructString(std::forward<T>(val1)...);
         }
 
-        template<class... T>
+        template<typename... T>
         static std::string constructString(const MiraiCodeable &val, T &&...val1) {
             return val.toMiraiCode() + constructString(std::forward<T>(val1)...);
         }

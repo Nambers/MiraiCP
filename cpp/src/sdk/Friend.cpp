@@ -21,12 +21,11 @@
 #include "Exceptions/IllegalState.h"
 #include "JsonTools.h"
 #include "KtOperation.h"
-#include "LowLevelAPI.h"
-#include "Tools.h"
 
 
 namespace MiraiCP {
     using json = nlohmann::json;
+
     auto GetFriendPool(QQID id, QQID botid) noexcept {
         static std::unordered_map<QQID, std::unordered_map<QQID, std::shared_ptr<Friend::DataType>>> Pool;
         auto &val = Pool[botid][id];
@@ -72,17 +71,6 @@ namespace MiraiCP {
         json j{{"contact", this->toJson()}, {"quit", true}};
         MIRAICP_ERROR_HANDLE(KtOperation::ktOperation(KtOperation::RefreshInfo, j), "");
     }
-
-    //    void Friend::refreshInfo() {
-    //        InternalData->requestRefresh();
-    //        //        std::string temp = LowLevelAPI::getInfoSource(this->toString());
-    //        //        if (temp == "E1") {
-    //        //            throw FriendException(MIRAICP_EXCEPTION_WHERE);
-    //        //        }
-    //        //        LowLevelAPI::info tmp = LowLevelAPI::info0(temp);
-    //        //        this->_nickOrNameCard = tmp.nickOrNameCard;
-    //        //        this->_avatarUrl = tmp.avatarUrl;
-    //    }
 
     void Friend::sendNudge() {
         std::string re = KtOperation::ktOperation(KtOperation::SendNudge, toJson());
