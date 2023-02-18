@@ -44,6 +44,7 @@ open class TestBase {
         @BeforeAll
         @JvmStatic
         fun loadCPPLib() {
+            MockBotFactory.initialize()
             println("Currently working dir:" + TestUtils.workingDir.absolutePath)
             require(TestUtils.workingDir.exists())
             val cfgPath = TestUtils.workingDir.resolve("testFileFromKt4Mock/config.json")
@@ -81,6 +82,10 @@ open class TestBase {
             }
             PublicShared.onDisable()
             TestUtils.logListener.complete()
+            println("unload finished")
+            runBlocking {
+                delay(100)
+            }
         }
     }
 
@@ -97,7 +102,6 @@ open class TestBase {
     @OptIn(MiraiExperimentalApi::class)
     @BeforeEach
     fun prepare() {
-        MockBotFactory.initialize()
         bot = MockBotFactory.newMockBotBuilder().create()
         runBlocking {
             bot.login()
