@@ -18,8 +18,10 @@
 #define MIRAICP_PRO_FORWARDEDMESSAGE_H
 
 #include "MessageChain.h"
+#include <string>
 #include <utility>
 #include <variant>
+#include <vector>
 
 
 namespace MiraiCP {

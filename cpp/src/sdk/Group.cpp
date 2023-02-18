@@ -280,5 +280,8 @@ namespace MiraiCP {
         return GetDataInternal()->_groupId;
     }
 
+    MessageSource Group::sendVoice(std::string path) {
+        return sendVoiceImpl(std::move(path));
+    }
 #undef LOC_CLASS_NAMESPACE
 } // namespace MiraiCP

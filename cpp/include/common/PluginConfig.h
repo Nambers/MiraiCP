@@ -40,28 +40,27 @@ namespace MiraiCP {
         const char *time = __DATE__;
         const char *mversion = m_MiraiCPVersion;
 
-        std::string getId() const {
+        [[nodiscard]] std::string getId() const {
             return {id};
         }
-        std::string getName() const {
+        [[nodiscard]] std::string getName() const {
             return {name};
         }
-        std::string getVersion() const {
+        [[nodiscard]] std::string getVersion() const {
             return {version};
         }
-        std::string getAuthor() const {
+        [[nodiscard]] std::string getAuthor() const {
             return {author};
         }
-        std::string getDescription() const {
+        [[nodiscard]] std::string getDescription() const {
             return {description};
         }
-        std::string getTime() const {
+        [[nodiscard]] std::string getTime() const {
             return {time};
         }
-        std::string getMVersion() const {
+        [[nodiscard]] std::string getMVersion() const {
             return {mversion};
         }
-
         [[nodiscard]] bool isValid() const {
             return id && name && version && author;
         }

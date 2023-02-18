@@ -26,31 +26,21 @@
 
 namespace MiraiCP {
     using json = nlohmann::json;
-    nlohmann::json SingleMessage::toJson() const {
-        nlohmann::json re;
-        re["type"] = "miraicode";
-        re["content"] = this->toMiraiCode();
-        return re;
-    }
 
     // 静态成员
     const char *const *const SingleMessage::messageType = SingleMessageType::messageTypeInternal + 6;
     const char *const *const SingleMessage::miraiCodeName = SingleMessageType::miraiCodeNameInternal + 6;
 
-    QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
-        if (m.internalType != type()) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.internalType) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
-        source = MessageSource::deserializeFromString(m.content);
-    }
-    nlohmann::json QuoteReply::toJson() const {
-        nlohmann::json re;
-        re["type"] = "QuoteReply";
-        re["source"] = nlohmann::json::parse(source.source);
-        return re;
-    }
+    SingleMessage::SingleMessage(int inType, std::string content, std::string prefix) noexcept
+        : content(std::move(content)),
+          prefix(std::move(prefix)),
+          internalType(inType) {}
 
-    nlohmann::json PlainText::toJson() const {
-        return {{"type", SingleMessage::messageType[this->internalType]},
-                {"content", content}};
+    nlohmann::json SingleMessage::toJson() const {
+        nlohmann::json re;
+        re["type"] = "miraicode";
+        re["content"] = this->toMiraiCode();
+        return re;
     }
 
     int SingleMessage::getKey(const std::string &value) {
@@ -79,25 +69,100 @@ namespace MiraiCP {
             return content;
     }
 
+    bool SingleMessage::operator==(const SingleMessage &m) const {
+        return this->internalType == m.internalType && this->toMiraiCode() == m.toMiraiCode();
+    }
+
+    PlainText::PlainText(std::string inStr) noexcept : SingleMessage(PlainText::type(), std::move(inStr)) {}
+
     PlainText::PlainText(const SingleMessage &sg) : SingleMessage(sg) {
         if (sg.internalType != type())
             throw IllegalArgumentException(
                     "Cannot convert(" + getTypeString(sg.internalType) + ") to PlainText", MIRAICP_EXCEPTION_WHERE);
         this->content = sg.content;
     }
+
+    nlohmann::json PlainText::toJson() const {
+        return {{"type", SingleMessage::messageType[this->internalType]},
+                {"content", content}};
+    }
+
+    bool PlainText::operator==(const PlainText &p) const {
+        return this->content == p.content;
+    }
+
     nlohmann::json At::toJson() const {
         return {{"type", SingleMessage::messageType[this->internalType]},
                 {"target", target}};
     }
+
+    At::At(QQID a) : SingleMessage(At::type(), std::to_string(a)), target(a) {}
+
     At::At(const SingleMessage &sg) : SingleMessage(sg) {
         if (sg.internalType != type())
             throw IllegalArgumentException(
                     "Cannot convert(" + getTypeString(sg.internalType) + ") to At", MIRAICP_EXCEPTION_WHERE);
         this->target = std::stol(sg.content);
     }
+
+    std::string At::toMiraiCode() const {
+        return "[mirai:at:" + std::to_string(this->target) + "] "; // 后面有个空格
+    }
+
+    bool At::operator==(const At &a) const {
+        return this->target == a.target;
+    }
+
+    AtAll::AtAll() : SingleMessage(AtAll::type(), "", "") {}
+
     nlohmann::json AtAll::toJson() const {
         return {{"type", SingleMessage::messageType[this->internalType]}};
     }
+
+    std::string AtAll::toMiraiCode() const {
+        return "[mirai:atall] ";
+    }
+
+    /*图片类实现*/
+    void Image::refreshInfo() {
+        std::string re = KtOperation::ktOperation(KtOperation::QueryImgInfo, toJson());
+        if (re == "E1")
+            throw RemoteAssetException("图片id格式错误", MIRAICP_EXCEPTION_WHERE);
+        json j = json::parse(re);
+        this->url = json_stringmover(j, "url");
+        this->md5 = json_stringmover(j, "md5");
+        this->size = j["size"];
+        this->width = j["width"];
+        this->height = j["height"];
+        this->imageType = j["imageType"];
+        this->isEmoji = j["isEmoji"];
+    }
+
+    Image Image::deserialize(const std::string &str) {
+        json j = json::parse(str);
+        return Image(
+                j["imageId"],
+                j["size"],
+                j["width"],
+                j["height"],
+                j["imageType"],
+                j["isEmoji"]);
+    }
+
+    Image::Image(const std::string &imageId, size_t size, int width, int height, std::string type, bool isEmoji)
+        : SingleMessage(Image::type(), imageId), id(imageId), imageType(std::move(type)), size(size),
+          width(width), height(height), isEmoji(isEmoji) {
+        // todo(Antares): 实际上重复的属性 id 和 content
+    }
+
+    std::string Image::toMiraiCode() const {
+        return "[mirai:image:" + this->id + "]";
+    }
+
+    bool Image::operator==(const Image &i) const {
+        return this->id == i.id;
+    }
+
     nlohmann::json Image::toJson() const {
         return {{"type", SingleMessage::messageType[this->internalType]},
                 {"imageId", id},
@@ -114,6 +179,38 @@ namespace MiraiCP {
         std::string re = KtOperation::ktOperation(KtOperation::ImageUploaded, {{"botId", botid}, {"image", toJson()}});
         return re == "true";
     }
+
+    FlashImage FlashImage::deserialize(const std::string &str) {
+        json j = json::parse(str);
+        return FlashImage(
+                j["imageId"],
+                j["size"],
+                j["width"],
+                j["height"],
+                j["imageType"]);
+    }
+
+    FlashImage::FlashImage(const Image &img) {
+        if (img.internalType == FlashImage::type()) {
+            *this = static_cast<const FlashImage &>(img); // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        } else if (img.internalType == Image::type()) {
+            static_cast<Image &>(*this) = img;
+        } else {
+            MIRAICP_THROW(IllegalArgumentException, "拷贝构造FlashImage时传入参数无法正确转换");
+        }
+    }
+
+    FlashImage::FlashImage(const std::string &imageId, size_t size, int width, int height, std::string type)
+        : Image(imageId, size, width, height, std::move(type)) {
+        this->SingleMessage::internalType = Types::FlashImage_t;
+    }
+
+    bool FlashImage::operator==(const FlashImage &i) const {
+        return this->id == i.id;
+    }
+
+    Image FlashImage::toImage() { return Image(*this); }
+
     nlohmann::json FlashImage::toJson() const {
         return {{"type", SingleMessage::messageType[this->internalType]},
                 {"imageId", id},
@@ -122,39 +219,92 @@ namespace MiraiCP {
                 {"height", height},
                 {"imageType", imageType}};
     }
+
+    LightApp::LightApp(std::string content) : SingleMessage(LightApp::type(), std::move(content)) {}
+
     nlohmann::json LightApp::toJson() const {
         return {{"type", SingleMessage::messageType[this->internalType]},
                 {"content", content}};
     }
+
     LightApp::LightApp(const SingleMessage &sg) : SingleMessage(sg) {
         // todo(Antares): this was originally 3; why?
         if (sg.internalType != type())
             throw IllegalArgumentException(
                     "Cannot convert(" + getTypeString(sg.internalType) + ") to LighApp", MIRAICP_EXCEPTION_WHERE);
     }
+
     std::string LightApp::toMiraiCode() const {
         return "[mirai:app:" + Tools::escapeToMiraiCode(content) + "]";
     }
+
+    bool LightApp::operator==(const LightApp &other) const {
+        return this->content == other.content;
+    }
+
+    ServiceMessage::ServiceMessage(int id, std::string a)
+        : SingleMessage(ServiceMessage::type(), std::move(a),
+                        ":" + std::to_string(id) + ','),
+          id(id) {}
+
     nlohmann::json ServiceMessage::toJson() const {
         return {{"type", SingleMessage::messageType[this->internalType]},
                 {"content", content},
                 {"id", id}};
     }
+
     std::string ServiceMessage::toMiraiCode() const {
         return "[mirai:service" + this->prefix + Tools::escapeToMiraiCode(content) + "]";
     }
+
     ServiceMessage::ServiceMessage(const SingleMessage &sg) : SingleMessage(sg) {
         if (sg.internalType != type())
             throw IllegalArgumentException(
                     "Cannot convert(" + getTypeString(sg.internalType) + ") to ServiceMessage", MIRAICP_EXCEPTION_WHERE);
+        id = static_cast<const ServiceMessage &>(sg).id; // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
     }
-    nlohmann::json Face::toJson() const {
-        return {{"type", SingleMessage::messageType[this->internalType]},
-                {"id", id}};
+
+    ServiceMessage::ServiceMessage(const URLSharer &a)
+        : SingleMessage(5,
+                        R"(<?xml version="1.0" encoding="utf-8"?><msg templateID="12345" action="web" brief=")" +
+                                a.brief + R"(" serviceID="1" url=")" + a.url +
+                                R"("><item layout="2"><picture cover=")" +
+                                a.cover + "\"/><title>" + a.title +
+                                "</title><summary>" + a.summary +
+                                "</summary></item><source/></msg>",
+                        ":1,"),
+          id(1) {}
+
+    bool ServiceMessage::operator==(const ServiceMessage &s) const {
+        return this->content == s.content;
     }
-    nlohmann::json UnSupportMessage::toJson() const {
-        return {{"type", SingleMessage::messageType[this->internalType]},
-                {"struct", content}};
+
+    QuoteReply::QuoteReply(MessageSource source)
+        : SingleMessage(QuoteReply::type(), source.serializeToString()), source(std::move(source)) {}
+
+    QuoteReply::QuoteReply(const SingleMessage &m) : SingleMessage(m) {
+        if (m.internalType != type()) throw IllegalArgumentException("cannot convert type(" + std::to_string(m.internalType) + "to QuoteReply", MIRAICP_EXCEPTION_WHERE);
+        source = MessageSource::deserializeFromString(m.content);
+    }
+
+    nlohmann::json QuoteReply::toJson() const {
+        nlohmann::json re;
+        re["type"] = "QuoteReply";
+        re["source"] = nlohmann::json::parse(source.source);
+        return re;
+    }
+
+    bool QuoteReply::operator==(const QuoteReply &qr) const {
+        return this->source == qr.source;
+    }
+
+    OnlineAudio::OnlineAudio(std::string f, std::array<uint8_t, 16> md5, int size, int codec, int length, std::string url)
+        : SingleMessage(OnlineAudio::type(), ""),
+          filename(std::move(f)), url(std::move(url)), size(size), codec(codec),
+          length(length), md5(md5) {}
+
+    bool OnlineAudio::operator==(const OnlineAudio &oa) const {
+        return this->md5 == oa.md5;
     }
 
     //远程文件(群文件)
@@ -176,6 +326,7 @@ namespace MiraiCP {
           path(std::move(p)),
           dinfo(std::move(d)),
           finfo(f) {}
+
     RemoteFile::RemoteFile(
             const std::string &i,
             unsigned int ii,
@@ -188,6 +339,7 @@ namespace MiraiCP {
           internalid(ii),
           name(std::move(n)),
           size(s) {}
+
     RemoteFile RemoteFile::deserializeFromString(const std::string &source) {
         json j;
         try {
@@ -230,6 +382,7 @@ namespace MiraiCP {
             throw e;
         }
     }
+
     RemoteFile RemoteFile::plus(unsigned int ii) {
         RemoteFile tmp(*this);
         tmp.internalid = ii;
@@ -261,48 +414,51 @@ namespace MiraiCP {
         return j.dump();
     }
 
-    /*图片类实现*/
-    void Image::refreshInfo() {
-        std::string re = KtOperation::ktOperation(KtOperation::QueryImgInfo, toJson());
-        if (re == "E1")
-            throw RemoteAssetException("图片id格式错误", MIRAICP_EXCEPTION_WHERE);
-        json j = json::parse(re);
-        this->url = json_stringmover(j, "url");
-        this->md5 = json_stringmover(j, "md5");
-        this->size = j["size"];
-        this->width = j["width"];
-        this->height = j["height"];
-        this->imageType = j["imageType"];
-        this->isEmoji = j["isEmoji"];
+    bool RemoteFile::operator==(const RemoteFile &rf) const {
+        return this->id == rf.id;
     }
 
-    Image Image::deserialize(const std::string &str) {
-        json j = json::parse(str);
-        return Image(
-                j["imageId"],
-                j["size"],
-                j["width"],
-                j["height"],
-                j["imageType"],
-                j["isEmoji"]);
-    }
-    FlashImage FlashImage::deserialize(const std::string &str) {
-        json j = json::parse(str);
-        return FlashImage(
-                j["imageId"],
-                j["size"],
-                j["width"],
-                j["height"],
-                j["imageType"]);
+    nlohmann::json Face::toJson() const {
+        return {{"type", SingleMessage::messageType[this->internalType]},
+                {"id", id}};
     }
 
-    FlashImage::FlashImage(const Image &img) {
-        if (img.internalType == FlashImage::type()) {
-            *this = static_cast<const FlashImage &>(img); // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        } else if (img.internalType == Image::type()) {
-            static_cast<Image &>(*this) = img;
-        } else {
-            MIRAICP_THROW(IllegalArgumentException, "拷贝构造FlashImage时传入参数无法正确转换");
-        }
+    std::string Face::toMiraiCode() const {
+        return "[mirai:face:" + std::to_string(id) + "]";
+    }
+
+    bool Face::operator==(const Face &f) const {
+        return this->id == f.id;
+    }
+
+    MusicShare::MusicShare(std::string appName, std::string title, std::string summary, std::string jumpUrl, std::string picUrl, std::string musicUrl, std::string brief)
+        : SingleMessage(MusicShare::type(), ""),
+          appName(std::move(appName)),
+          title(std::move(title)),
+          summary(std::move(summary)),
+          jumpUrl(std::move(jumpUrl)),
+          picUrl(std::move(picUrl)),
+          musicUrl(std::move(musicUrl)),
+          brief(std::move(brief)) {}
+
+    std::string MusicShare::toMiraiCode() const {
+        return "[mirai:musicshare:" + appName + "," + title + "," + summary + "," + jumpUrl + "," + picUrl + "," + musicUrl + "," + brief + "]";
+    }
+
+    MarketFace::MarketFace(std::array<uint8_t, 16> id) : SingleMessage(MarketFace::type(), ""), faceId(id) {}
+
+    bool MarketFace::operator==(const MarketFace &mf) const {
+        return this->faceId == mf.faceId;
+    }
+
+    UnSupportMessage::UnSupportMessage(const SingleMessage &s) : SingleMessage(s) {}
+
+    nlohmann::json UnSupportMessage::toJson() const {
+        return {{"type", SingleMessage::messageType[this->internalType]},
+                {"struct", content}};
+    }
+
+    bool UnSupportMessage::operator==(const UnSupportMessage &m) const {
+        return this->content == m.content;
     }
 } // namespace MiraiCP

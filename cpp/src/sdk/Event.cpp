@@ -16,6 +16,22 @@
 
 #include "Event.h"
 #include "Command.h"
+#include "Events/BotJoinGroupEvent.h"
+#include "Events/BotLeaveEvent.h"
+#include "Events/BotOnlineEvent.h"
+#include "Events/FriendRecallEvent.h"
+#include "Events/GroupInviteEvent.h"
+#include "Events/GroupMessageEvent.h"
+#include "Events/GroupTempMessageEvent.h"
+#include "Events/MemberJoinEvent.h"
+#include "Events/MemberJoinRequestEvent.h"
+#include "Events/MemberLeaveEvent.h"
+#include "Events/MemberRecallEvent.h"
+#include "Events/MessagePreSendEvent.h"
+#include "Events/NewFriendRequestEvent.h"
+#include "Events/NudgeEvent.h"
+#include "Events/PrivateMessageEvent.h"
+#include "Events/TimeOutEvent.h"
 #include "Exceptions/API.h"
 #include "Exceptions/TimeOut.h"
 #include "JsonTools.h"
@@ -411,7 +427,7 @@ namespace MiraiCP {
         return _handle.isEnable() && func(a);
     }
 
-    Event::eventNode::eventNode()  : func(nullptr), _handle(true) {}
+    Event::eventNode::eventNode() : func(nullptr), _handle(true) {}
 
-    Event::eventNode::eventNode(std::function<bool(MiraiCPEvent *)> f)  : func(std::move(f)), _handle(true) {}
+    Event::eventNode::eventNode(std::function<bool(MiraiCPEvent *)> f) : func(std::move(f)), _handle(true) {}
 } // namespace MiraiCP

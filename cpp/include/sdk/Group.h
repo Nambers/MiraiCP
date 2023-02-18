@@ -111,9 +111,9 @@ namespace MiraiCP {
 
         /// 群文件的简短描述
         struct file_short_info {
-            // 路径带文件名
+            /// 路径带文件名
             std::string path;
-            // 唯一id
+            /// 唯一id
             std::string id;
         };
 
@@ -188,9 +188,7 @@ namespace MiraiCP {
         RemoteFile sendFile(const std::string &path, const std::string &filepath);
 
         /// 发送语音
-        MessageSource sendVoice(std::string path) {
-            return sendVoiceImpl(std::move(path));
-        }
+        MessageSource sendVoice(std::string path);
 
         /*!
         取群文件信息,会自动搜索子目录
