@@ -4,6 +4,7 @@
 * 采用CRTP定义的Exception具体类型将不会出现在头文件中，因为这造成了大量的编译时间开销（基类仍然在头文件中）。如果需要某种具体的MiraiCP内部异常类型，可以从源文件中找到并复制到你的代码引用位置的前方
 * 隐藏`GroupInviteEvent`，`NewFriendRequestEvent`，`MemberJoinRequestEvent`内部接口
 * Event回调的handle使用裸指针而非更慢的shared_ptr
+* SingleMessage删除了使用指针的`==`重载
 
 ## v2.13.2
 
