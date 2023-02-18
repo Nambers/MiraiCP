@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,24 +14,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef MIRAICP_PRO_EXCEPTIONHANDLE_H
+#define MIRAICP_PRO_EXCEPTIONHANDLE_H
 
-#include "PluginConfig.h"
+#include "MiraiCPMacros.h"
+// -----------------------
+#include <string>
 
 
 namespace MiraiCP {
-    using json = nlohmann::json;
-    json PluginConfig::serialize() {
-        json j;
-        j["name"] = name;
-        j["version"] = version;
-        j["author"] = author;
-        j["description"] = description;
-        j["time"] = time;
-        j["id"] = id;
-        return j;
-    }
+    void ErrorHandle0(const std::string &name, int line, const std::string &re, const std::string &ErrorMsg = "");
+}
 
-    std::string PluginConfig::serialize2string() {
-        return serialize().dump();
-    }
-} // namespace MiraiCP
+#endif //MIRAICP_PRO_EXCEPTIONHANDLE_H

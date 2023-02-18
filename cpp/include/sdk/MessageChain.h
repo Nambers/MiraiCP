@@ -19,9 +19,8 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
-#include "Exception.h"
 #include "SingleMessage.h"
-#include "commonTools.h"
+#include <functional>
 
 
 namespace MiraiCP {
@@ -30,12 +29,12 @@ namespace MiraiCP {
     namespace internal {
         /// @brief 为 std::shared_ptr<SingleMessage> 增加功能的封装类
         /// @note dev: 不可加入其他成员变量
-        class Message : public std::shared_ptr<SingleMessage> {
+        class MIRAICP_EXPORT Message : public std::shared_ptr<SingleMessage> {
             typedef std::shared_ptr<SingleMessage> Super;
 
         public:
 #if MIRAICP_MSVC
-            Message() {} // for MSVC compatible, Message should be default constructable. See MessageChain
+            Message() {} /// for MSVC compatible, Message should be default constructable. See MessageChain
 #endif
 
             template<typename T, typename = std::enable_if<std::is_base_of_v<SingleMessage, T>>>
@@ -43,51 +42,43 @@ namespace MiraiCP {
                 reset(new T(std::move(msg)));
             }
 
-            explicit Message(Super msgptr) noexcept : Super(std::move(msgptr)) {}
+            explicit Message(Super msgptr) noexcept;
 
             // dev: DON'T write copy and move constructors here, otherwise add operator= overloads. See MessageChain
         public:
             /// 代表的子类
             /// @see MessageChain::messageType
-            [[nodiscard]] int getType() const {
-                return (*this)->internalType;
-            };
+            [[nodiscard]] int getType() const;
 
             /// 取指定类型
             /// @throw IllegalArgumentException
-            template<class T>
+            /// @note 将复制一次对象
+            template<typename T>
             T getVal() const {
-                // for dev: 不用 get 为了不和shared_ptr重叠
+                return getRef<T>();
+            }
+
+            /// 取指定类型的const引用
+            /// @throw IllegalArgumentException
+            template<typename T>
+            const T &getRef() const {
+                assert(get());
                 static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的派生类");
-                if (T::type() != getType())
-                    throw IllegalArgumentException(
-                            "cannot convert from " + SingleMessage::getTypeString(getType()) + " to " +
-                                    SingleMessage::getTypeString(T::type()),
-                            MIRAICP_EXCEPTION_WHERE);
-                T *re = static_cast<T *>(std::shared_ptr<SingleMessage>::get());
-                if (re == nullptr)
-                    throw IllegalArgumentException(
-                            "cannot convert from " + SingleMessage::getTypeString(getType()) + " to " +
-                                    SingleMessage::getTypeString(T::type()),
-                            MIRAICP_EXCEPTION_WHERE);
-                return *re;
+                if (T::type() != getType()) {
+                    messageThrow(SingleMessage::getTypeString(getType()), SingleMessage::getTypeString(T::type()), MIRAICP_EXCEPTION_WHERE);
+                }
+                return *static_cast<T *>(Super::get()); // safe cast!
             }
 
-            [[nodiscard]] std::string toMiraiCode() const {
-                return (*this)->toMiraiCode();
-            }
+            [[nodiscard]] std::string toMiraiCode() const;
 
-            [[nodiscard]] std::string toJson() const {
-                return (*this)->toJson();
-            }
+            [[nodiscard]] std::string toJson() const;
 
-            bool operator==(const Message &m) const {
-                return (*this)->internalType == m->internalType && (*this)->toMiraiCode() == m->toMiraiCode();
-            }
+            bool operator==(const Message &m) const;
+            bool operator!=(const Message &m) const;
 
-            bool operator!=(const Message &m) const {
-                return (*this)->internalType != m->internalType || (*this)->toMiraiCode() != m->toMiraiCode();
-            }
+        private:
+            static void messageThrow(const std::string &from, const std::string &to, const char *file, int line);
         };
     } // namespace internal
 
@@ -128,25 +119,17 @@ namespace MiraiCP {
         };
 
     public:
-        [[deprecated("MessageChain继承自std::vector<Message>，无需获取内部vector")]] const std::vector<Message> &vector() const {
-            return static_cast<const std::vector<Message> &>(*this);
-        }
+        [[nodiscard]] std::string toMiraiCode() const override;
 
-        std::string toMiraiCode() const override;
+        [[nodiscard]] std::vector<std::string> toMiraiCodeVector() const;
 
-        std::vector<std::string> toMiraiCodeVector() const {
-            std::vector<std::string> tmp;
-            for (auto &&a: *this)
-                tmp.emplace_back(a->toMiraiCode());
-            return tmp;
-        }
+        [[nodiscard]] nlohmann::json toJson() const;
 
-        nlohmann::json toJson() const;
         /**
          * @ensure toJson().dump()
          * @return MessageChain serialize to String
          */
-        std::string toString() const;
+        [[nodiscard]] std::string toString() const;
 
         /// @brief 使用emplace_back构造Message添加元素
         /// @tparam T 任意的SingleMessage的子类对象，但不允许传入SingleMessage本身
@@ -163,7 +146,8 @@ namespace MiraiCP {
         }
 
         /// 筛选出某种类型的消息
-        template<class T>
+        /// @note 最多可能将整个vector复制一次
+        template<typename T>
         std::vector<T> filter() {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
@@ -175,7 +159,8 @@ namespace MiraiCP {
         }
 
         /// 自定义筛选器
-        template<class T>
+        /// @note 最多可能将整个vector复制一次
+        template<typename T>
         std::vector<T> filter(const std::function<bool(const Message &)> &func) {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
@@ -187,7 +172,7 @@ namespace MiraiCP {
         }
 
         /// 找出第一个指定的type的消息，消息可能不存在
-        template<class T>
+        template<typename T>
         std::optional<T> first() {
             for (auto &&a: *this)
                 if (a.getType() == T::type())
@@ -195,7 +180,7 @@ namespace MiraiCP {
             return std::nullopt;
         }
 
-        template<class T>
+        template<typename T>
         [[nodiscard]] MessageChain plus(const T &a) const {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             MessageChain tmp(*this);
@@ -203,80 +188,32 @@ namespace MiraiCP {
             return tmp;
         }
 
-        [[nodiscard]] MessageChain plus(const MessageChain &mc) const {
-            MessageChain tmp(*this);
-            tmp.insert(tmp.end(), mc.begin(), mc.end());
-            return tmp;
-        }
+        [[nodiscard]] MessageChain plus(const MessageChain &mc) const;
 
-        [[nodiscard]] MessageChain plus(const MessageSource &ms) const {
-            MessageChain tmp(*this);
-            tmp.source = ms;
-            return tmp;
-        }
+        [[nodiscard]] MessageChain plus(const MessageSource &ms) const;
 
         template<class T>
         MessageChain operator+(const T &msg) const {
             return this->plus(msg);
         }
 
-        bool operator==(const MessageChain &mc) const {
-            if (size() != mc.size())
-                return false;
-            for (size_t i = 0; i < size(); i++) {
-                if ((*this)[i] != mc[i])
-                    return false;
-            }
-            return true;
-        }
+        bool operator==(const MessageChain &mc) const;
 
-        bool operator!=(const MessageChain &mc) const {
-            return !(*this == mc);
-        }
+        bool operator!=(const MessageChain &mc) const;
 
-        bool empty() const {
-            return std::vector<Message>::empty() || toMiraiCode().empty();
-        }
-
-        /// @brief 回复并发送
-        /// @param s 内容
-        /// @param groupid 如果是来源于TempGroupMessage就要提供(因为要找到那个Member)
-        /// @note 可以改MessageSource里的内容, 客户端在发送的时候并不会校验MessageSource的内容正确性(比如改originalMessage来改引用的文本的内容, 或者改id来定位到其他信息)
-        /// @detail 支持以下类型传入
-        /// - std::string / const char* 相当于传入PlainText(str)
-        /// - SingleMessage的各种派生类
-        /// - MessageChain
-        /// @deprecated use Contact.quoteAndSend or `this->quoteAndSend1(s, groupId, env)`, since v2.8.1
-        template<class T>
-        ShouldNotUse("use Contact.quoteAndSend") MessageSource
-                quoteAndSendMessage(T s, QQID groupid = -1, void *env = nullptr) = delete;
+        [[nodiscard]] bool empty() const;
 
     public: // static functions
         /// @brief 找到miraiCode结尾的`]`
         /// @param s 文本
         /// @param start 开始位置
         /// @return 如果不存在返回-1, 存在则返回index
-        static size_t findEnd(const std::string &s, size_t start) {
-            size_t pos = start;
-            while (pos < s.length()) {
-                switch (s[pos]) {
-                    case '\\':
-                        pos += 2;
-                        continue;
-                    case ']':
-                        return pos;
-                }
-                pos++;
-            }
-            return -1;
-        }
+        static size_t findEnd(const std::string &s, size_t start);
 
         /// 从miraicode string构建MessageChain
         static MessageChain deserializationFromMiraiCode(const std::string &m);
 
-        static MessageChain deserializationFromMessageSourceJson(const std::string &msg, bool origin = true) {
-            return deserializationFromMessageSourceJson(nlohmann::json::parse(msg), origin);
-        }
+        static MessageChain deserializationFromMessageSourceJson(const std::string &msg, bool origin = true);
 
         /// 从MessageSource json中构建MessageChain, 常用于Incoming message
         /// @attention 本方法并不会自动附加MessageSource到MessageChain, 需要用.plus方法自行附加
@@ -296,8 +233,8 @@ namespace MiraiCP {
         }
 
         template<typename... T2>
-        void constructMessages(const std::string &h, T2 &&...args) {
-            emplace_back(PlainText(h));
+        void constructMessages(std::string h, T2 &&...args) {
+            emplace_back(PlainText(std::move(h)));
             constructMessages(std::forward<T2>(args)...);
         }
 

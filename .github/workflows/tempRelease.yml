@@ -36,7 +36,7 @@ jobs:
         path: ./cpp/build/Release/libLoader.dll
   build-libLoader-gcc-4-linux:
     if: ${{ github.event.inputs.clean == 'false' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: checkout
       uses: actions/checkout@v2
@@ -45,6 +45,8 @@ jobs:
       with:
         version: 9
         platform: x64
+    - name: print glibc version
+      run: ldd --version
     - name: configure
       env:
         cc: gcc
@@ -59,7 +61,7 @@ jobs:
         path: ./cpp/build/libLoader.so
   clean:
     if: ${{ github.event.inputs.clean == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: checkout
       uses: actions/checkout@v2
@@ -81,7 +83,7 @@ jobs:
   tempRelease:
     needs: [build-libLoader-msvc-4-windows, build-libLoader-gcc-4-linux]
     if: ${{ github.event.inputs.clean == 'false' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: checkout
       uses: actions/checkout@v2

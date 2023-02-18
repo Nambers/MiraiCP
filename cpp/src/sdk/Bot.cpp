@@ -15,6 +15,7 @@
 //
 
 #include "Bot.h"
+#include "ContactDataType/IContactData.h"
 #include "Friend.h"
 #include "Group.h"
 #include "KtOperation.h"
@@ -26,35 +27,12 @@
 
 
 namespace MiraiCP {
-
-
-//    struct InternalBot : public IMiraiData {
-//        std::string _avatarUrl;
-//        std::string _nickOrNameCard;
-//        QQID _id;
-//        explicit InternalBot(QQID in_botid) : _id(in_botid) {}
-//        ~InternalBot() override = default;
-//
-//        void deserialize(nlohmann::json in_json) override {} // should never be called
-//
-//        nlohmann::json internalToJson() const override {
-//            return {{"botId", _id}, {"id", _id}, {"type", MIRAI_BOT}};
-//        }
-//
-//        void refreshInfo() override {
-//            nlohmann::json j{{"source", internalToString()}};
-//            LowLevelAPI::info tmp = LowLevelAPI::info0(KtOperation::ktOperation(KtOperation::RefreshInfo, std::move(j)));
-//            _avatarUrl = std::move(tmp.avatarUrl);
-//            _nickOrNameCard = std::move(tmp.nickOrNameCard);
-//        }
-//    };
-
     inline std::shared_ptr<IContactData> get_bot(QQID id) {
         static std::unordered_map<QQID, std::shared_ptr<IContactData>> BotPool;
         static std::mutex mtx;
         std::lock_guard<std::mutex> lck(mtx);
         auto &Ptr = BotPool.try_emplace(id).first->second;
-        if (!Ptr){
+        if (!Ptr) {
             Ptr = std::make_shared<IContactData>();
             Ptr->_id = id;
             Ptr->_type = MIRAI_BOT;
@@ -74,7 +52,7 @@ namespace MiraiCP {
 
     std::vector<QQID> queryList(nlohmann::json bot, KtOperation::QueryBotListCode type) {
         nlohmann::json j{{"contact", std::move(bot)},
-                         {"type",    type}};
+                         {"type", type}};
         std::string temp = KtOperation::ktOperation(KtOperation::QueryBotList, j);
         return Tools::StringToVector(std::move(temp));
     }
@@ -103,18 +81,22 @@ namespace MiraiCP {
         return Tools::VectorToString(getOnlineBotsList());
     }
 
-    Bot::Bot(QQID in_id): Contact(get_bot(in_id)) {
+    Bot::Bot(QQID in_id) : Contact(get_bot(in_id)) {
     }
 
     std::string Bot::nick() {
         refreshInfo();
-        std::shared_lock<std::shared_mutex> _lck(InternalData->getMutex());
+        MIRAICP_DATALOCK;
         return InternalData->_nickOrNameCard;
     }
 
     std::string Bot::avatarUrl() {
         refreshInfo();
-        std::shared_lock<std::shared_mutex> _lck(InternalData->getMutex());
+        MIRAICP_DATALOCK;
         return InternalData->_avatarUrl;
+    }
+
+    bool Bot::operator==(const Bot &b) const {
+        return id() == b.id();
     }
 } // namespace MiraiCP

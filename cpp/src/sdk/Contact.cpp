@@ -15,18 +15,20 @@
 //
 
 #include "Contact.h"
-#include "Exception.h"
+#include "ContactDataType/GroupRelatedData.h"
+#include "ExceptionHandle.h"
+#include "Exceptions/IllegalArgument.h"
+#include "Exceptions/Upload.h"
 #include "Friend.h"
 #include "Group.h"
-#include "IMiraiData.h"
+#include "JsonTools.h"
 #include "KtOperation.h"
-#include "Logger.h"
 #include "LowLevelAPI.h"
 #include "Member.h"
-#include "Tools.h"
 
 
 namespace MiraiCP {
+
     using json = nlohmann::json;
 
     std::shared_ptr<Contact> Contact::deserializeToPointer(nlohmann::json j) {
@@ -62,7 +64,6 @@ namespace MiraiCP {
     }
 
     void IContactData::deserialize(nlohmann::json in_json) {
-        using Tools::json_stringmover;
         _nickOrNameCard = json_stringmover(in_json, "nickOrNameCard");
         _avatarUrl = json_stringmover(in_json, "avatarUrl");
     }
@@ -90,10 +91,10 @@ namespace MiraiCP {
         return result;
     }
 
-    MessageSource Contact::quoteAndSend0(std::string msg, const MessageSource &ms) const {
+    MessageSource Contact::quoteAndSendImpl(std::string msg, const MessageSource &ms) const {
         json obj{{"messageSource", ms.serializeToString()},
-                 {"msg",           std::move(msg)},
-                 {"contact",        toJson()}};
+                 {"msg", std::move(msg)},
+                 {"contact", toJson()}};
         std::string re = KtOperation::ktOperation(KtOperation::SendWithQuote, obj);
         return MessageSource::deserializeFromString(re);
     }
@@ -119,5 +120,76 @@ namespace MiraiCP {
         nlohmann::json j{{"message", std::move(msg)}, {"contact", toJson()}};
         auto re = KtOperation::ktOperation(KtOperation::Send, j, true, "reach a error area, Contact::sendMsgImpl");
         return MessageSource::deserializeFromString(re);
+    }
+
+    void Contact::SetInternalData(std::shared_ptr<IContactData> Data) { InternalData = std::move(Data); }
+
+    Contact::Contact(std::shared_ptr<IContactData> Data) {
+        SetInternalData(std::move(Data));
+    }
+
+    ContactType Contact::type() const { return InternalData->_type; }
+
+    QQID Contact::id() const { return InternalData->_id; }
+
+    QQID Contact::botid() const { return InternalData->_botId; }
+
+    nlohmann::json Contact::toJson() const { return InternalData->toJson(); }
+
+    void Contact::updateJson(json &j) const { InternalData->updateJson(j); }
+
+    std::string Contact::toString() const { return toJson().dump(); }
+
+    void Contact::refreshInfo() {
+        InternalData->requestRefresh();
+    }
+
+    void Contact::forceRefreshNextTime() {
+        InternalData->forceRefreshNextTime();
+    }
+
+    void Contact::forceRefreshNow() {
+        forceRefreshNextTime();
+        refreshInfo();
+    }
+
+    bool Contact::operator==(const Contact &c) const {
+        return id() == c.id() && InternalData->_type == c.InternalData->_type;
+    }
+
+    MessageSource Contact::unpackMsg(const MessageChain &msg) const {
+        return sendMsgImpl(msg.toString());
+    }
+
+    MessageSource Contact::unpackMsg(const MiraiCodeable &msg) const {
+        return sendMsgImpl(MessageChain::deserializationFromMiraiCode(msg.toMiraiCode()).toString());
+    }
+
+    MessageSource Contact::unpackMsg(std::string msg) const {
+        return sendMsgImpl(MessageChain(PlainText(std::move(msg))).toString());
+    }
+
+    MessageSource Contact::unpackQuote(const SingleMessage &s, const MessageSource &ms) const {
+        return quoteAndSendImpl(MessageChain(s).toString(), ms);
+    }
+
+    MessageSource Contact::unpackQuote(const std::string &s, const MessageSource &ms) const {
+        return quoteAndSendImpl(s, ms);
+    }
+
+    MessageSource Contact::unpackQuote(const MessageChain &mc, const MessageSource &ms) const {
+        return quoteAndSendImpl(mc.toString(), ms);
+    }
+
+    std::string internal::getNickFromIContactPtr(IContactData *p) {
+        p->requestRefresh();
+        std::shared_lock<std::shared_mutex> local_lck(p->getMutex());
+        return p->_nickOrNameCard;
+    }
+
+    std::string internal::getAvatarUrlFromIContactPtr(IContactData *p) {
+        p->requestRefresh();
+        std::shared_lock<std::shared_mutex> local_lck(p->getMutex());
+        return p->_avatarUrl;
     }
 } // namespace MiraiCP

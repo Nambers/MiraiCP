@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,14 +14,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "CPPPlugin.h"
+#ifndef MIRAICP_PRO_EXCEPTION_ILLEGALSTATE_H
+#define MIRAICP_PRO_EXCEPTION_ILLEGALSTATE_H
+
+#include "Exception.h"
 
 
 namespace MiraiCP {
-    // 静态区代码一般不会使用logger，虽是ub，但应该不会造成影响；
-    // 静态区强行调用的话，因为loggerInterface尚未传入，若logger尚未初始化，访问Logger::logger将是ub
-    // 可以考虑把logger做成纯静态实现？以及最好做成 Logger * const
-    Logger *CPPPlugin::pluginLogger = &Logger::logger;
+    /// 通常为Mirai返回
+    /// @see MiraiCPExceptionBase
+    class MIRAICP_EXPORT IllegalStateException : public MiraiCPExceptionCRTP<IllegalStateException> {
+    public:
+        explicit IllegalStateException(const std::string &text, string _filename, int _lineNum) : MiraiCPExceptionCRTP("状态异常:" + text, std::move(_filename), _lineNum) {}
 
-    std::unique_ptr<CPPPlugin> CPPPlugin::plugin = nullptr;
+        static std::string exceptionType() { return "IllegalStateException"; }
+    };
 } // namespace MiraiCP
+
+#endif //MIRAICP_PRO_EXCEPTION_ILLEGALSTATE_H

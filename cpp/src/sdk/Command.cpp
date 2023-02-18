@@ -15,8 +15,42 @@
 //
 
 #include "Command.h"
+#include "CPPPlugin.h"
+#include "KtOperation.h"
+#include "Logger.h"
+#include <mutex>
 
 
 namespace MiraiCP {
-    CommandManager CommandManager::commandManager = CommandManager();
-}
+    namespace CommandManager {
+        std::vector<std::unique_ptr<IRawCommand>> commandList;
+    };
+
+    bool internal::commandRegister(std::unique_ptr<IRawCommand> inPtr) {
+        static std::mutex mtx;
+
+        auto cfg = inPtr->config();
+
+        nlohmann::json j;
+        j["pluginId"] = CPPPlugin::config.id;
+        j["usage"] = cfg.usage;
+        j["primaryName"] = cfg.primaryName;
+        j["secondName"] = cfg.secondNames;
+        j["description"] = cfg.description;
+        j["override"] = cfg.overrideOrigin;
+        j["preFixOption"] = cfg.preFixOption;
+        //
+        std::lock_guard lk(mtx);
+        j["bindId"] = CommandManager::commandList.size();
+
+        std::string re = KtOperation::ktOperation(KtOperation::CommandReg, j);
+        if (re != "true") {
+            Logger::logger.error("指令注册失败，返回值：" + re);
+            return false;
+        }
+        CommandManager::commandList.emplace_back(std::move(inPtr));
+        return true;
+    }
+
+    // IRawCommand *CommandManager::operator[](size_t index) const { return commandList[index].get(); }
+} // namespace MiraiCP

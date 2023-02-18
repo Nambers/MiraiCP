@@ -38,9 +38,6 @@ namespace LibLoader {
 } // namespace LibLoader
 
 
-namespace MiraiCP {
-    using QQID = unsigned long long;
-} // namespace MiraiCP
 
 
 #endif //MIRAICP_PRO_COMMONTYPES_H

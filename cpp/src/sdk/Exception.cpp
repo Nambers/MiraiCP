@@ -14,10 +14,68 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "Exception.h"
+#include "Exceptions/API.h"
+#include "Exceptions/Member.h"
+#include "Exceptions/TimeOut.h"
+#include "Logger.h"
 
 
 namespace MiraiCP {
+    /// 机器人操作异常
+    /// @see MiraiCPExceptionBase
+    class MIRAICP_EXPORT BotException : public MiraiCPExceptionCRTP<BotException> {
+    public:
+        explicit BotException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("没有权限执行该操作", std::move(_filename), _lineNum) {}
+
+        explicit BotException(const string &d, string _filename, int _lineNum) : MiraiCPExceptionCRTP(d, std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "BotException"; }
+    };
+
+    /// 被禁言异常, 通常发生于发送信息
+    class MIRAICP_EXPORT BotIsBeingMutedException : public MiraiCPExceptionCRTP<BotIsBeingMutedException> {
+    public:
+        /// 剩余禁言时间, 单位秒
+        int timeRemain;
+
+    public:
+        explicit BotIsBeingMutedException(int t, string _filename, int _lineNum) : MiraiCPExceptionCRTP(
+                                                                                           "发送信息失败, bot已被禁言, 剩余时间" + std::to_string(t), std::move(_filename), _lineNum),
+                                                                                   timeRemain(t) {}
+
+        static string exceptionType() { return "BotIsBeingMutedException"; }
+    };
+
+    /// 事件被取消, 一般出现在发送消息时在preSendMessageEvent取消的时候抛出
+    /// @see MiraiCPExceptionBase
+    class MIRAICP_EXPORT EventCancelledException : public MiraiCPExceptionCRTP<EventCancelledException> {
+    public:
+        explicit EventCancelledException(const string &msg, string _filename, int _lineNum) : MiraiCPExceptionCRTP(msg, std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "EventCancelledException"; }
+    };
+
+    /// 获取群成员错误
+    /// @see MiraiCPExceptionBase
+    class MIRAICP_EXPORT FriendException : public MiraiCPExceptionCRTP<FriendException> {
+    public:
+        /*
+        *   找不到好友
+        */
+        FriendException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("找不到好友", std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "FriendException"; }
+    };
+
+    /// 获取群错误
+    /// @see MiraiCPExceptionBase
+    class MIRAICP_EXPORT GroupException : public MiraiCPExceptionCRTP<GroupException> {
+    public:
+        GroupException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("找不到群", std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "GroupException"; }
+    };
+
     void MiraiCPExceptionBase::basicRaise() const {
         Logger::logger.error(this->what());
     }
@@ -27,14 +85,6 @@ namespace MiraiCP {
         if (!filename.empty() && lineNum != 0) {
             Logger::logger.error("文件名:" + filename + "\n行号:" + std::to_string(lineNum));
         }
-    }
-
-    std::string MiraiCPThreadException::getThreadIdStr(const std::thread::id &id) {
-        static std::stringstream ss;
-        ss << id;
-        auto result = ss.str();
-        ss.str("");
-        return result;
     }
 
     void ErrorHandle0(const std::string &name, int line, const std::string &re, const std::string &ErrorMsg) {

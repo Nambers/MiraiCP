@@ -21,12 +21,23 @@
 #include <json_fwd.hpp>
 #include <utility>
 
-
 namespace MiraiCP {
-    class Member; // forward declaration
+    class Member;     /// forward declaration
+    struct GroupData; /// forward declaration
 
 
-    struct GroupData : public GroupRelatedData {
+    /*!
+     * @brief 群聊类
+     */
+    class Group : public Contact, public ContactDataHelper<Group, GroupData> {
+    private:
+        friend class Contact;
+
+        /**
+         * @brief 群设置
+         * @details 使用 Group::updateSetting 上传设置，后面两项由于 https://github.com/mamoe/mirai/issues/1307 还不能改
+         */
+    public: // nested classes and structs
         struct GroupSetting {
             /// 群名称
             std::string name;
@@ -39,26 +50,7 @@ namespace MiraiCP {
             /// 允许匿名聊天
             bool isAnonymousChatEnabled{};
         };
-        /**
-         * @brief 群设置
-         * @details 使用 Group::updateSetting 上传设置，后面两项由于 https://github.com/mamoe/mirai/issues/1307 还不能改
-         */
-        GroupSetting _setting;
 
-        explicit GroupData(QQID in_groupid) : GroupRelatedData(in_groupid) {}
-
-        void deserialize(nlohmann::json in_json) override;
-        void refreshInfo() override;
-    };
-
-    /*!
-     * @brief 群聊类
-     */
-    class Group : public Contact, public ContactDataHelper<Group, GroupData> {
-    private:
-        friend class Contact;
-
-    public: // nested classes and structs
         /// 群公告参数
         struct AnnouncementParams {
             /// 发送给新成员
@@ -74,14 +66,6 @@ namespace MiraiCP {
 
             /// 序列化到文本
             nlohmann::json serializeToJson();
-
-            //            explicit AnnouncementParams(bool send2New = false, bool requireConfirm = false, bool pinned = false,
-            //                                        bool showEditCard = false, bool showPopup = false) : send2new(send2New),
-            //                                                                                             requireConfirm(
-            //                                                                                                     requireConfirm),
-            //                                                                                             pinned(pinned),
-            //                                                                                             showEditCard(showEditCard),
-            //                                                                                             showPopup(showPopup) {}
         };
 
         /// 在线群公告
@@ -110,14 +94,6 @@ namespace MiraiCP {
 
             /// 反序列化
             static OnlineAnnouncement deserializeFromJson(const nlohmann::json &);
-
-            //            OnlineAnnouncement(std::string content, AnnouncementParams params,
-            //                               QQID groupId, QQID senderId, QQID botId,
-            //                               long long int publicationTime, std::string fid, int confirmNum,
-            //                               std::string imageId) : content(std::move(content)), botId(botId), params(std::move(params)),
-            //                                                             groupId(groupId), senderId(senderId),
-            //                                                             publicationTime(publicationTime),
-            //                                                             fid(std::move(fid)), confirmNum(confirmNum), imageId(std::move(imageId)) {}
         };
 
         /// 本地(未发送)群公告
@@ -129,12 +105,9 @@ namespace MiraiCP {
 
             /// 发布群公告
             Group::OnlineAnnouncement publishTo(const Group &);
-
-            //            OfflineAnnouncement(const std::string &content, AnnouncementParams params) : content(content),
-            //                                                                                         params(params) {}
         };
 
-        DECL_GETTER(setting)
+        DECL_GETTER(GroupSetting, setting)
 
         /// 群文件的简短描述
         struct file_short_info {
@@ -146,7 +119,7 @@ namespace MiraiCP {
 
         /// 群荣耀类型
         /// @note 与这里的值对应: <https://github.com/mamoe/mirai/blob/v2.13.4/mirai-core-api/src/commonMain/kotlin/data/GroupHonorType.kt#L52>
-        enum HonorMemberType{
+        enum HonorMemberType {
             /// 龙王
             TALKATIVE = 1,
         };
@@ -165,11 +138,12 @@ namespace MiraiCP {
 
         /// @note dev: avoid unintentional implicit conversion to nlohmann::json
         Group(bool) = delete;
+        ~Group() override = default;
 
     public: // methods
         /// @brief 获取groupId
         /// @note 同 id()
-        INLINE_GETTER(groupId)
+        QQID groupId();
 
         /**
          * @brief 更新群设置, 即覆盖服务器上的群设置
@@ -177,7 +151,7 @@ namespace MiraiCP {
          * @param newSetting 新的设置
          * @see Group::refreshInfo()
          */
-        void updateSetting(GroupData::GroupSetting newSetting);
+        void updateSetting(GroupSetting newSetting);
 
         /// 取群成员列表
         /// @return vector<long>
@@ -201,9 +175,7 @@ namespace MiraiCP {
         /// 取群公告列表
         std::vector<OnlineAnnouncement> getAnnouncementsList();
 
-        /// 刷新群聊信息
-        //void refreshInfo();
-
+        /// 退群
         void quit();
 
         /*!
@@ -216,7 +188,7 @@ namespace MiraiCP {
         RemoteFile sendFile(const std::string &path, const std::string &filepath);
 
         /// 发送语音
-        MessageSource sendVoice( std::string path) {
+        MessageSource sendVoice(std::string path) {
             return sendVoiceImpl(std::move(path));
         }
 
@@ -228,7 +200,7 @@ namespace MiraiCP {
         @see RemoteFile
         @doxygenEg{1009, group.cpp, 获取群文件}
         */
-        RemoteFile getFile(const std::string &path, const std::string &id = "");
+        RemoteFile getFile(const std::string &path, const std::string &id = std::string());
 
         /*!
          * @brief 取文件信息(根据id)

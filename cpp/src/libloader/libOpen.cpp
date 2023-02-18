@@ -20,7 +20,7 @@
 #if MIRAICP_WINDOWS
 #include "utf8.h"
 #include <cstdio>
-#include <windows.h>
+#include "WindowsMin.h"
 #define OPEN_LIBRARY(path) LoadLibrary(TEXT(path.c_str()))
 #define CLOSE_LIBRARY(handle) FreeLibrary((HMODULE) handle)
 #define GET_SYMBOL(handle, symbol) GetProcAddress((HINSTANCE) handle, symbol)

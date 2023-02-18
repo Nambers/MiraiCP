@@ -15,7 +15,12 @@
 //
 
 #include "Member.h"
-#include "Exception.h"
+#include "ContactDataType/GroupRelatedData.h"
+#include "ExceptionHandle.h"
+#include "Exceptions/IllegalArgument.h"
+#include "Exceptions/IllegalState.h"
+#include "Exceptions/Member.h"
+#include "JsonTools.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
 #include "Tools.h"
@@ -23,8 +28,33 @@
 
 namespace MiraiCP {
 #define LOC_CLASS_NAMESPACE Member
+
+    struct MemberData : public GroupRelatedData {
+        typedef IContactData Super;
+        unsigned int _permission = 0;
+        std::string _specialTitle;
+        /// 是否是匿名群成员, 如果是匿名群成员一些功能会受限
+        bool _anonymous = false;
+
+        explicit MemberData(QQID in_groupid) : GroupRelatedData(in_groupid) {}
+
+        void deserialize(nlohmann::json in_json) override;
+        void refreshInfo() override;
+    };
+
     using json = nlohmann::json;
 
+    /// 禁言异常
+    /// @see MiraiCPExceptionBase
+    class MIRAICP_EXPORT MuteException : public MiraiCPExceptionCRTP<MuteException> {
+    public:
+        /*
+        *	 禁言时间超出0s~30d
+        */
+        MuteException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("禁言时长不在0s~30d中间", std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "MuteException"; }
+    };
 
     auto GetMemberFromPool(QQID id, QQID groupId, QQID botid) noexcept {
         using Tools::idpair;
@@ -57,10 +87,10 @@ namespace MiraiCP {
         auto ActualDataPtr = GetDataInternal();
         assert(ActualDataPtr != nullptr);
         bool needrefresh = false;
-        if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = Tools::json_stringmover(in_json, "nickOrNameCard");
+        if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = json_stringmover(in_json, "nickOrNameCard");
         else
             needrefresh = true;
-        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = Tools::json_stringmover(in_json, "avatarUrl");
+        if (in_json.contains("avatarUrl")) ActualDataPtr->_avatarUrl = json_stringmover(in_json, "avatarUrl");
         else
             needrefresh = true;
         if (in_json.contains("anonymous")) ActualDataPtr->_anonymous = in_json["anonymous"].get<bool>();
@@ -137,13 +167,13 @@ namespace MiraiCP {
             MIRAICP_ERROR_HANDLE(result, "");
             auto tmp = nlohmann::json::parse(result);
             _permission = tmp["permission"];
-            _specialTitle = Tools::json_stringmover(tmp, "specialTitle");
+            _specialTitle = json_stringmover(tmp, "specialTitle");
         }
     }
 
     IMPL_GETTER(anonymous)
     IMPL_GETTER(permission)
     IMPL_GETTER(specialTitle)
-
+    NOLOCK_IMPL_GETTER(groupId)
 #undef LOC_CLASS_NAMESPACE
 } // namespace MiraiCP

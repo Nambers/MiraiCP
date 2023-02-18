@@ -18,8 +18,7 @@
 #define MIRAICP_PRO_PLUGINCONFIG_H
 
 
-#include "MiraiCPStringInternal.h"
-#include <json.hpp>
+#include <string>
 
 
 namespace MiraiCP {
@@ -66,10 +65,6 @@ namespace MiraiCP {
         [[nodiscard]] bool isValid() const {
             return id && name && version && author;
         }
-
-        nlohmann::json serialize();
-
-        std::string serialize2string();
     };
 } // namespace MiraiCP
 
