@@ -1,4 +1,4 @@
-// Copyright (C) 2020-2023 Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -12,15 +12,26 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
-/// dev: add includes here before including test.h, to share code with target "multi"
+#ifndef MIRAICP_PRO_BOTONLINEEVENT_H
+#define MIRAICP_PRO_BOTONLINEEVENT_H
 
-#include "CPPPlugin.h"
-#include "Event.h"
-#include "Events/GroupMessageEvent.h"
-#include "Member.h"
-#include "Schedule.h"
-#include "ThreadTask.h"
-#include "utils.h"
-// --------------------
-#include "test.h"
+
+#include "BotEvent.h"
+
+
+namespace MiraiCP {
+    /// 机器人上线事件
+    class BotOnlineEvent : public BotEvent<BotOnlineEvent> {
+    public:
+        static eventTypes::Types get_event_type() {
+            return eventTypes::Types::BotOnlineEvent;
+        }
+
+    public:
+        explicit BotOnlineEvent(QQID botid) : BotEvent(botid) {}
+    };
+} // namespace MiraiCP
+
+#endif //MIRAICP_PRO_BOTONLINEEVENT_H

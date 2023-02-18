@@ -17,6 +17,7 @@
 #include "MiraiCPMacros.h"
 // -----------------------
 #include "Event.h"
+#include "Events/MiraiCPExceptionEvent.h"
 #include "Exception.h"
 #include "KtOperation.h"
 #include "Logger.h"

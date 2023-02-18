@@ -16,6 +16,22 @@
 
 #include "Event.h"
 #include "Command.h"
+#include "Events/BotJoinGroupEvent.h"
+#include "Events/BotLeaveEvent.h"
+#include "Events/BotOnlineEvent.h"
+#include "Events/FriendRecallEvent.h"
+#include "Events/GroupInviteEvent.h"
+#include "Events/GroupMessageEvent.h"
+#include "Events/GroupTempMessageEvent.h"
+#include "Events/MemberJoinEvent.h"
+#include "Events/MemberJoinRequestEvent.h"
+#include "Events/MemberLeaveEvent.h"
+#include "Events/MemberRecallEvent.h"
+#include "Events/MessagePreSendEvent.h"
+#include "Events/NewFriendRequestEvent.h"
+#include "Events/NudgeEvent.h"
+#include "Events/PrivateMessageEvent.h"
+#include "Events/TimeOutEvent.h"
 #include "Exceptions/API.h"
 #include "Exceptions/TimeOut.h"
 #include "JsonTools.h"
@@ -331,6 +347,16 @@ namespace MiraiCP {
         }
     }
 
+    Event::Event() : _all_events_(int(eventTypes::Types::count)) {}
+
+    bool Event::noRegistered(int index) {
+        return processor._all_events_[index].empty();
+    }
+
+    void Event::clear() noexcept {
+        for (auto &a: processor._all_events_) a.clear();
+    }
+
     BaseEventData::BaseEventData(nlohmann::json j) {
         this->botId = 0;
         if (j.contains("subject")) {
@@ -380,16 +406,28 @@ namespace MiraiCP {
 
     NodeHandle::NodeHandle(bool a) : handle(new NodeHandleInternal{a}) {
     }
+
     bool NodeHandle::isEnable() const {
         return handle->flag.load();
     }
+
     void NodeHandle::stop() {
         handle->flag.store(false);
     }
+
     void NodeHandle::resume() {
         handle->flag.store(true);
     }
+
     NodeHandle::~NodeHandle() {
         delete handle;
     }
+
+    bool Event::eventNode::run(MiraiCPEvent *a) const {
+        return _handle.isEnable() && func(a);
+    }
+
+    Event::eventNode::eventNode() : func(nullptr), _handle(true) {}
+
+    Event::eventNode::eventNode(std::function<bool(MiraiCPEvent *)> f) : func(std::move(f)), _handle(true) {}
 } // namespace MiraiCP

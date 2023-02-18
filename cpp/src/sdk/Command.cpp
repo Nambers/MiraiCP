@@ -18,13 +18,14 @@
 #include "CPPPlugin.h"
 #include "KtOperation.h"
 #include "Logger.h"
+#include <json.hpp>
 #include <mutex>
 
 
 namespace MiraiCP {
     namespace CommandManager {
         std::vector<std::unique_ptr<IRawCommand>> commandList;
-    };
+    }
 
     bool internal::commandRegister(std::unique_ptr<IRawCommand> inPtr) {
         static std::mutex mtx;
@@ -51,6 +52,4 @@ namespace MiraiCP {
         CommandManager::commandList.emplace_back(std::move(inPtr));
         return true;
     }
-
-    // IRawCommand *CommandManager::operator[](size_t index) const { return commandList[index].get(); }
 } // namespace MiraiCP
