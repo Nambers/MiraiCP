@@ -31,11 +31,44 @@ import net.mamoe.mirai.mock.utils.mock
 import net.mamoe.mirai.utils.MiraiExperimentalApi
 import org.junit.jupiter.api.*
 import tech.eritquearcus.miraicp.shared.CPPLib
+import tech.eritquearcus.miraicp.shared.Packets
 import tech.eritquearcus.miraicp.shared.Packets.Utils.toEventData
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform
 import java.io.File
 import java.util.*
+
+val onCloseLock: Unit by lazy {
+    println("load libLoader")
+    MockBotFactory.initialize()
+    println("Currently working dir:" + TestUtils.workingDir.absolutePath)
+    require(TestUtils.workingDir.exists())
+    val cfgPath = TestUtils.workingDir.resolve("testFileFromKt4Mock/config.json")
+    cfgPath.writeText(
+        """
+{
+  "accounts": [],
+  "cppPaths": [
+    {
+      "path": "${
+            TestUtils.workingDir.resolve("libMiraiCP_mock_test.${TestUtils.libExtension}").absolutePath.replace(
+                File.separator,
+                "/"
+            )
+        }"
+    }
+  ]
+}
+    """.trimIndent()
+    )
+    CPPLib.init(
+        listOf(TestUtils.workingDir.absolutePath.replace(File.separator, "/")),
+        cfgPath.absolutePath
+    )
+    runBlocking {
+        delay(1000)
+    }
+}
 
 // each test timeOut in 6 sec
 @Timeout(6)
@@ -43,46 +76,23 @@ open class TestBase {
     companion object {
         @BeforeAll
         @JvmStatic
+        @Timeout(10)
         fun loadCPPLib() {
-            MockBotFactory.initialize()
-            println("Currently working dir:" + TestUtils.workingDir.absolutePath)
-            require(TestUtils.workingDir.exists())
-            val cfgPath = TestUtils.workingDir.resolve("testFileFromKt4Mock/config.json")
-            cfgPath.writeText(
-                """
-{
-  "accounts": [],
-  "cppPaths": [
-    {
-      "path": "${
-                    TestUtils.workingDir.resolve("libMiraiCP_mock_test.${TestUtils.libExtension}").absolutePath.replace(
-                        File.separator,
-                        "/"
-                    )
-                }"
-    }
-  ]
-}
-    """.trimIndent()
-            )
-            CPPLib.init(
-                listOf(TestUtils.workingDir.absolutePath.replace(File.separator, "/")),
-                cfgPath.absolutePath
-            )
-            runBlocking {
-                delay(1000)
-            }
+            onCloseLock
+            println("enable All plugins")
+            UlitsMultiPlatform.event(Packets.Outgoing.LibLoaderEvent("EnableAllPlugins"))
         }
 
         @AfterAll
         @JvmStatic
+        @Timeout(10)
         fun endTest() {
             runBlocking {
                 delay(100)
             }
-            PublicShared.onDisable()
             TestUtils.logListener.complete()
-            println("unload finished")
+            println("disable All plugins")
+            UlitsMultiPlatform.event(Packets.Outgoing.LibLoaderEvent("DisableAllPlugins"));
             runBlocking {
                 delay(100)
             }

@@ -36,27 +36,34 @@ namespace LibLoader {
             {"EnablePlugin", [](const std::string &name) {
                  LoaderApi::enablePluginById(name);
              }},
-            {"DisablePlugin", [](const std::string &name) {
+            {"DisablePlugin",     [](const std::string &name) {
                  LoaderApi::disablePluginById(name);
              }},
             {"DisablePluginList", [](const std::string &) {
                  LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::Plugin &c) { return !c.isEnabled(); }));
              }},
-            {"EnablePluginList", [](const std::string &) {
+            {"EnablePluginList",  [](const std::string &) {
                  LibLoader::logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::Plugin &c) { return c.isEnabled(); }));
              }},
-            {"ReloadPlugin", [](const std::string &id) {
+            {"ReloadPlugin",      [](const std::string &id) {
                  LoaderApi::reloadPluginById(id);
-             }},
-            {"LoadPlugin", [](const std::string &name) {
-                 LoaderApi::loadNewPlugin(name, true);
-             }},
-            {"UnloadPlugin", [](const std::string &id) {
-                 LoaderApi::unloadPluginById(id);
-             }},
-            {"PluginList", [](const std::string &) {
-                 logger.info(LibLoader::PluginListManager::pluginListInfo([](const LibLoader::PluginData &) { return true; }));
-             }},
+            }},
+            {"LoadPlugin",        [](const std::string &name) {
+                LoaderApi::loadNewPlugin(name, true);
+            }},
+            {"UnloadPlugin",      [](const std::string &id) {
+                LoaderApi::unloadPluginById(id);
+            }},
+            {"PluginList",        [](const std::string &) {
+                logger.info(LibLoader::PluginListManager::pluginListInfo(
+                        [](const LibLoader::PluginData &) { return true; }));
+            }},
+            {"DisableAllPlugins", [](const std::string &) {
+                LoaderApi::disableAllPlugins();
+            }},
+            {"EnableAllPlugins",  [](const std::string &) {
+                LoaderApi::enableAllPlugins();
+            }},
     };
 
     void builtInCommand(const std::string &cmd) {
