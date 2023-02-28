@@ -17,7 +17,7 @@
  */
 
 object Version {
-    const val miraiCP = "2.13.2"
+    const val miraiCP = "2.14.0"
     // plugins
     const val kotlin = "1.8.0"
     const val shadowJar = "7.1.2"

@@ -1,10 +1,16 @@
 # Change Log
+
+## v2.14.0
 * Command注册函数`registerCommand`现在不接受参数，只接受一个模板参数，会调用默认构造函数构造子类对象；command类必须重写基类析构函数
 * schedule不会从重载前的插件传递timeout event给重载后的插件
 * 采用CRTP定义的Exception具体类型将不会出现在头文件中，因为这造成了大量的编译时间开销（基类仍然在头文件中）。如果需要某种具体的MiraiCP内部异常类型，可以从源文件中找到并复制到你的代码引用位置的前方
 * 隐藏`GroupInviteEvent`，`NewFriendRequestEvent`，`MemberJoinRequestEvent`内部接口
 * Event回调的handle使用裸指针而非更慢的shared_ptr
 * SingleMessage删除了使用指针的`==`重载
+* 修复 MemberLeaveEvent 构造问题
+* 增加获取全部在线 bot 接口
+* 增加获取群荣耀成员接口 (龙王之类的)
+> MiraiCP-native 还有问题, 目前还跑不了(悲)
 
 ## v2.13.2
 
