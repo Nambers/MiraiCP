@@ -106,9 +106,9 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
 
 afterEvaluate {
     tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile>("compileKotlinNative").apply {
-        this.configure {
-            this.kotlinOptions.freeCompilerArgs = listOf("-Xllvm-variant=D:\\msys64\\mingw64")
-        }
+//        this.configure {
+//            this.kotlinOptions.freeCompilerArgs = listOf("-Xllvm-variant=D:\\msys64\\mingw64")
+//        }
     }
 }
 
