@@ -10,6 +10,11 @@
 * 修复 MemberLeaveEvent 构造问题
 * 增加获取全部在线 bot 接口
 * 增加获取群荣耀成员接口 (龙王之类的)
+* 修复解析 MiraiCode
+
+Internal:
+* 修复 Console 没有自己的线程处理输入
+* 修复 test 重复加载/cancel 的问题
 > MiraiCP-native 还有问题, 目前还跑不了(悲)
 
 ## v2.13.2
