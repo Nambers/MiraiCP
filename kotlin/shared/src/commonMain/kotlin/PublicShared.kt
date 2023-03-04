@@ -496,13 +496,12 @@ object PublicShared {
 
     private suspend fun remoteFileList(path: String, c: Packets.Contact): String = c.withBot { bot ->
         c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
-            var tmp = "["
-            group.files.root.resolveFiles(path).toList().forEach {
-                tmp += "[\"${it.absolutePath}\", \"${it.id}\"],"
-            }
-            tmp = tmp.substring(0, tmp.length - 1)
-            tmp += "]"
-            return tmp
+            return "[" +
+                    (if (path == "/") group.files.root.files() else group.files.root.resolveFiles(path))
+                        .toList().joinToString(",") {
+                            "[\"${it.absolutePath}\", \"${it.id}\"]"
+                        } +
+                    "]"
         }
     }
 

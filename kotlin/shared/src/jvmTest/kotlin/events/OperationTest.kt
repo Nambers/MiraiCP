@@ -44,8 +44,7 @@ class OperationTest : TestBase() {
         member.says("honorMember")
         waitUntilEnd()
         val logs = TestUtils.logList.filter { it.contains("honorMember:") }.map { it.substringAfter("honorMember:") }
-        assertEquals(1, logs.size)
-        assertEquals(member.id.toString(), logs[0])
+        assertContentEquals(listOf(member.id.toString()), logs)
     }
 
     @Test
@@ -67,11 +66,7 @@ class OperationTest : TestBase() {
         member.says("botList")
         waitUntilEnd()
         val logs = TestUtils.logList.filter { it.contains("botList:") }.map { it.substringAfter("botList:") }
-        assertEquals(4, logs.size)
-        assertEquals(friend.id, logs[0].toLong())
-        assertEquals(group.id, logs[1].toLong())
-        assertEquals(member.id, logs[2].toLong())
-        assertEquals(bot.id, logs[3].toLong())
+        assertContentEquals(listOf(friend.id, group.id, member.id, bot.id), logs.map { it.toLong() })
     }
 
     @Test
@@ -104,9 +99,7 @@ class OperationTest : TestBase() {
         }.map {
             it.substringAfter("reId")
         }
-        assertEquals(2, logs.size)
-        assertEquals(file.id, logs[0])
-        assertEquals(file.id, logs[1])
+        assertContentEquals(listOf(file.id, file.id), logs)
     }
 
     @Test
@@ -164,8 +157,7 @@ class OperationTest : TestBase() {
         }.map {
             it.substringAfter("reId")
         }
-        assertEquals(1, logs.size)
-        assertEquals(group.owner.id.toString(), logs[0])
+        assertContentEquals(listOf(group.owner.id.toString()), logs)
     }
 
     @Test
@@ -264,5 +256,66 @@ class OperationTest : TestBase() {
         member.says("specialTitle")
         waitUntilEnd()
         assertEquals("test", member.specialTitle)
+    }
+
+    @Test
+    fun groupFileListRootEmpty() = runBlocking {
+        member.says("groupFileListRoot")
+        waitUntilEnd()
+        val logs = TestUtils.logList.filter {
+            it.contains("fileList:")
+        }.map {
+            it.substringAfter("fileList:")
+        }
+        assertContentEquals(listOf("[]"), logs)
+    }
+
+    @Test
+    fun groupFileListRoot() = runBlocking {
+        val file = this@OperationTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.use { res ->
+            res.toExternalResource().use {
+                group.files.root.uploadNewFile(
+                    "/mic.amr",
+                    it
+                )
+            }
+        }
+        member.says("groupFileListRoot")
+        waitUntilEnd()
+        val logs = TestUtils.logList.filter {
+            it.contains("fileList:")
+        }.map {
+            it.substringAfter("fileList:")
+        }
+        assertContentEquals(listOf("[[\"/mic.amr\", \"${file.id}\"]]"), logs)
+    }
+
+    @Test
+    fun groupFileListFolder() = runBlocking {
+        val file = this@OperationTest.javaClass.classLoader.getResourceAsStream("mic.amr")!!.use { res ->
+            res.toExternalResource().use {
+                listOf(
+                    group.files.root.uploadNewFile(
+                        "/a/mic.amr",
+                        it
+                    ),
+                    group.files.root.uploadNewFile(
+                        "/a/micb.amr",
+                        it
+                    )
+                )
+            }
+        }
+        member.says("groupFileListFolder")
+        waitUntilEnd()
+        val logs = TestUtils.logList.filter {
+            it.contains("fileList:")
+        }.map {
+            it.substringAfter("fileList:")
+        }
+        assertContentEquals(
+            listOf("[[\"/a/mic.amr\", \"${file[0].id}\"], [\"/a/micb.amr\", \"${file[1].id}\"]]"),
+            logs
+        )
     }
 }
