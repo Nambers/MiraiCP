@@ -127,6 +127,12 @@ public:
             TEST(sendFile, sendFileTest, {
                 a.group.sendFile("/img/img.png", absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
             })
+            TEST(groupFileListRoot, groupFileListRootTest, {
+                Logger::logger.info("fileList:", a.group.getFileListString("/"));
+            })
+            TEST(groupFileListFolder, groupFileListFolderTest, {
+                Logger::logger.info("fileList:", a.group.getFileListString("/a/"));
+            })
             TEST_STARTWITH(remoteFileInfo, remoteFileInfoTest, {
                 Logger::logger.info("reId" + a.group.getFile("/mic.amr").id);
                 Logger::logger.info("reId" + a.group.getFileById(a.message[0]->content.substr(14)).id);
