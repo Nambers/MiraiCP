@@ -131,7 +131,7 @@ public:
                 Logger::logger.info("fileList:", a.group.getFileListString("/"));
             })
             TEST(groupFileListFolder, groupFileListFolderTest, {
-                Logger::logger.info("fileList:", a.group.getFileListString("/a/"));
+                Logger::logger.info("fileList:", a.group.getFileListString("/a"));
             })
             TEST_STARTWITH(remoteFileInfo, remoteFileInfoTest, {
                 Logger::logger.info("reId" + a.group.getFile("/mic.amr").id);
@@ -141,7 +141,8 @@ public:
                 Logger::logger.info("reId" + std::to_string(a.group.getOwner().id()));
             })
             TEST(voice, uploadVoiceTest, {
-                a.group.sendVoice(absolute(std::filesystem::path("./src/jvmTest/resources/mic.amr")).string());
+//                a.group.sendVoice(absolute(std::filesystem::path("./src/jvmTest/resources/mic.amr")).string());
+                a.group.sendVoice("F:\\Git\\mirai\\MiraiCP\\kotlin\\shared\\src\\jvmTest\\resources\\mic.amr");
             })
             TEST(groupSetting, getGroupSettingTest, {
                 auto settings = a.group.setting();

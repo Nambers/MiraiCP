@@ -314,7 +314,7 @@ class OperationTest : TestBase() {
             it.substringAfter("fileList:")
         }
         assertContentEquals(
-            listOf("[[\"/a/mic.amr\", \"${file[0].id}\"], [\"/a/micb.amr\", \"${file[1].id}\"]]"),
+            listOf("[[\"/a/micb.amr\", \"${file[1].id}\"],[\"/a/mic.amr\", \"${file[0].id}\"]]"),
             logs
         )
     }

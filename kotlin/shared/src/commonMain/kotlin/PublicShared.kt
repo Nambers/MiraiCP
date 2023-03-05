@@ -19,6 +19,7 @@
 package tech.eritquearcus.miraicp.shared
 
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
@@ -46,11 +47,8 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain.Companion.serializeToJsonString
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
+import net.mamoe.mirai.utils.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
-import net.mamoe.mirai.utils.MiraiExperimentalApi
-import net.mamoe.mirai.utils.MiraiLogger
-import net.mamoe.mirai.utils.OverFileSizeMaxException
-import net.mamoe.mirai.utils.use
 import tech.eritquearcus.miraicp.shared.Packets.Utils.toEventData
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
@@ -497,7 +495,8 @@ object PublicShared {
     private suspend fun remoteFileList(path: String, c: Packets.Contact): String = c.withBot { bot ->
         c.withGroup(bot, "找不到对应群组，位置K-remoteFileInfo，gid:${c.id}") { group ->
             return "[" +
-                    (if (path == "/") group.files.root.files() else group.files.root.resolveFiles(path))
+                    (if (path == "/") group.files.root.files()
+                    else group.files.root.resolveFolder(path)?.files() ?: emptyFlow())
                         .toList().joinToString(",") {
                             "[\"${it.absolutePath}\", \"${it.id}\"]"
                         } +
