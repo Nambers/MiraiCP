@@ -141,8 +141,7 @@ public:
                 Logger::logger.info("reId" + std::to_string(a.group.getOwner().id()));
             })
             TEST(voice, uploadVoiceTest, {
-//                a.group.sendVoice(absolute(std::filesystem::path("./src/jvmTest/resources/mic.amr")).string());
-                a.group.sendVoice("F:\\Git\\mirai\\MiraiCP\\kotlin\\shared\\src\\jvmTest\\resources\\mic.amr");
+                a.group.sendVoice(absolute(std::filesystem::path("./src/jvmTest/resources/mic.amr")).string());
             })
             TEST(groupSetting, getGroupSettingTest, {
                 auto settings = a.group.setting();
