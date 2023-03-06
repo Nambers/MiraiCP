@@ -1,3 +1,12 @@
 linkerOpts  = -L F:/Git/mirai/MiraiCP/cpp/cmake-build-debug/ \
                 -L GITHUB_WORKSPACE \
                 -l LoaderNative
+package =  tech.eritquearcus.MiraiCP
+---
+#ifndef MIRAICP_PRO_MIRAICP_H
+#define MIRAICP_PRO_MIRAICP_H
+
+void Event(const char*);
+void Verify(const char*, const char*, const char* (*)(const char*), void (*)(const char*, int));
+void PluginDisable();
+#endif //MIRAICP_PRO_MIRAICP_H
