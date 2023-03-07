@@ -21,14 +21,14 @@
 #include "LoaderMacro.h"
 
 
-// EXPORT functions
-LOADER_EXPORT JRETURNTYPE DECL_EXPORT_NAME(Verify)(J_ARGS_AND_STRING, JSTRING);
-
-LOADER_EXPORT JRETURNTYPE DECL_EXPORT_NAME(Event)(J_ARGS_AND_STRING);
-
-LOADER_EXPORT JRETURNTYPE DECL_EXPORT_NAME(PluginDisable)(J_ARGS);
-
 #ifndef LOADER_NATIVE
+// EXPORT functions
+JNIEXPORT jobject Verify(J_ARGS, JSTRING, JSTRING);
+
+JNIEXPORT jobject Event(J_ARGS, JSTRING);
+
+JNIEXPORT jobject PluginDisable(J_ARGS);
+
 int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *gMethods, int numMethods);
 
 const JNINativeMethod method_table[]{

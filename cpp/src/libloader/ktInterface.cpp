@@ -24,13 +24,12 @@
 #include "ktInterface.h"
 #include "loaderMain.h"
 #include "redirectCout.h"
-#include <thread>
 #include <condition_variable>
+#include <thread>
 
 #ifdef LOADER_NATIVE
 #include <cstdio>
 #else
-#include "BS_thread_pool.hpp"
 #include "JNIEnvs.h"
 #include "LoaderMacro.h"
 #include "loaderTools.h"
@@ -106,6 +105,10 @@ MIRAICP_EXPORT void Event(const char *a) {
 MIRAICP_EXPORT void PluginDisable() {
     PluginDisableImpl();
 }
+
+MIRAICP_EXPORT char *KtNewString(size_t inSize) {
+    return new char[inSize + 1];
+}
 }
 #else
 /// 实际初始化函数
@@ -156,7 +159,7 @@ int registerMethods(JNIEnv *env, const char *className, const JNINativeMethod *g
 // register
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnv *env = nullptr;
-    if (vm->GetEnv((void**) &env, MIRAICP_JVER) != JNI_OK) {
+    if (vm->GetEnv((void **) &env, MIRAICP_JVER) != JNI_OK) {
         return JNI_ERR;
     }
     assert(env != nullptr);
