@@ -37,7 +37,7 @@ namespace LibLoader {
 
 #ifdef LOADER_NATIVE
 namespace LoaderAPIs {
-    using OperFunc = const char *(*) (const char *);
+    using OperFunc = char **(*) (const char *);
     extern OperFunc oper;
 }; // namespace LoaderAPIs
 
@@ -53,7 +53,7 @@ namespace LibLoader::LoaderApi {
     MiraiCPString pluginOperation(const MiraiCPString &s) {
 #ifdef LOADER_NATIVE
         auto nCharPtr = s.c_str();
-        return {LoaderAPIs::oper(nCharPtr)};
+        return *retrieveString(LoaderAPIs::oper(nCharPtr));
 #else
         auto env = JNIEnvManager::getEnv();
         auto tmp = jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
