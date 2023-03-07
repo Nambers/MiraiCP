@@ -7,6 +7,7 @@ package =  tech.eritquearcus.MiraiCP
 #define MIRAICP_PRO_MIRAICP_H
 
 void Event(const char*);
-void Verify(const char*, const char*, const char* (*)(const char*), void (*)(const char*, int));
+void Verify(const char*, const char*, char** (*)(const char*), void (*)(const char*, int));
 void PluginDisable();
+char** NewString(unsigned long long);
 #endif //MIRAICP_PRO_MIRAICP_H

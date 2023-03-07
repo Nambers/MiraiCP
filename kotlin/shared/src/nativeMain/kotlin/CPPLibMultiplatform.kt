@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,10 @@
 
 package tech.eritquearcus.miraicp.shared
 import kotlinx.cinterop.*
+import net.mamoe.mirai.utils.cast
+import platform.posix.memcpy
 import tech.eritquearcus.MiraiCP.Event
+import tech.eritquearcus.MiraiCP.NewString
 import tech.eritquearcus.MiraiCP.Verify
 import tech.eritquearcus.miraicp.shared.CPPLib.operation
 import tech.eritquearcus.miraicp.shared.CPPLib.sendLog
@@ -29,16 +32,15 @@ actual object CPPLibMultiplatform {
         Event(str)
     }
 
-    private val koper = staticCFunction<CPointer<ByteVar>?, CPointer<ByteVar>?> { input ->
-        memScoped {
-            operation(input?.toKStringFromUtf8() ?: "").cstr.getPointer(this)
-        }
+    private val koper = staticCFunction<CPointer<ByteVar>?, CPointer<CPointerVar<ByteVar>>> { input ->
+        val str = operation(input?.toKStringFromUtf8() ?: "").cstr
+        val str2 = NewString(str.size.toULong())
+        memcpy(str2!!.pointed.value, str, str.size.toULong())
+        str2
     }
 
     private val log = staticCFunction<CPointer<ByteVar>?, Int, Unit> { input, level ->
-        memScoped {
-            sendLog(input?.toKStringFromUtf8() ?: "", level)
-        }
+        sendLog(input?.toKStringFromUtf8() ?: "", level)
     }
 
     actual fun init(
@@ -49,9 +51,7 @@ actual object CPPLibMultiplatform {
         if (libPath == null) {
             callback()
         } else {
-            memScoped{
-                Verify(BuiltInConstants.version, cfgPath!!, koper, log)
-            }
+            Verify(BuiltInConstants.version, cfgPath!!, koper.cast(), log)
         }
     }
 }

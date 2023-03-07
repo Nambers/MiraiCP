@@ -84,7 +84,7 @@ void PluginDisableImpl() {
 #ifdef LOADER_NATIVE
 namespace LoaderAPIs {
     using LogFunc = void (*)(const char *, int);
-    using OperFunc = const char *(*) (const char *);
+    using OperFunc = char **(*) (const char *);
     LogFunc log = nullptr;
     OperFunc oper = nullptr;
 } // namespace LoaderAPIs
@@ -106,7 +106,7 @@ MIRAICP_EXPORT void PluginDisable() {
     PluginDisableImpl();
 }
 
-MIRAICP_EXPORT char **KtNewString(size_t inSize) {
+MIRAICP_EXPORT char **NewString(size_t inSize) {
     auto str = new MiraiCP::MiraiCPString;
     str->reserve(inSize);
     return reinterpret_cast<char **>(str);
