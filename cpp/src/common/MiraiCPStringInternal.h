@@ -29,7 +29,7 @@ namespace MiraiCP {
     // note: DO NOT use this directly;
     // always convert to const char* or std::string before using.
     /// @brief MiraiCP内部传递string数据用
-    /// @note 请勿使用！
+    /// @note 用户请勿使用！
     class MIRAICP_EXPORT MiraiCPString final {
         using string = std::string;
 
@@ -43,17 +43,7 @@ namespace MiraiCP {
         decltype(&::std::free) free_this = std_free_ptr; // specify which free() to use; ensure deconstruction is paired to construction
 
     public:
-        [[nodiscard]] bool isEmpty() const {
-            return _size == 0;
-        }
-
         MiraiCPString() = default;
-
-        // call if _size is set to non-zero
-        // allocate memory for str
-        void construction();
-
-        ~MiraiCPString();
 
         MiraiCPString(const MiraiCPString &other);
 
@@ -62,6 +52,18 @@ namespace MiraiCP {
         MiraiCPString(const char *char_str); // NOLINT(google-explicit-constructor)
 
         MiraiCPString(const std::string &string_str); // NOLINT(google-explicit-constructor)
+
+        ~MiraiCPString();
+
+    private:
+        // call if _size is set to non-zero
+        // allocate memory for str
+        void construction();
+
+    public:
+        [[nodiscard]] bool isEmpty() const {
+            return _size == 0;
+        }
 
         [[nodiscard]] std::string toString() const {
             if (str == nullptr || _size == 0) return {};
@@ -76,6 +78,14 @@ namespace MiraiCP {
         // the return value of this method can always be deleted by delete[] and is never nullptr
         [[nodiscard]] const char *copyToCharPtr() const;
 
+        [[nodiscard]] const char *c_str() const { return str; }
+
+    public:
+        void reserve(size_t inSize);
+
+        [[nodiscard]] char *data() { return str; }
+
+    public:
         bool operator==(const MiraiCPString &another) const;
 
         MiraiCPString &operator=(const MiraiCPString &another);

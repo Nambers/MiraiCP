@@ -76,6 +76,22 @@ namespace MiraiCP {
         return t;
     }
 
+    void MiraiCPString::reserve(size_t inSize) {
+        if (inSize <= _size) return;
+        char *t = (char *) ::std::malloc(sizeof(char) * (inSize + 1));
+        if (t == nullptr) {
+            throw std::bad_alloc();
+        }
+        if (str != nullptr) {
+            memcpy(t, str, _size * sizeof(char));
+            free_this(str);
+        }
+        str = t;
+        _size = inSize;
+        str[_size] = 0;
+        free_this = ::std::free; // make sure to update the free_this to ::std::free, since the original free_this may not be paired with ::std::malloc
+    }
+
     bool MiraiCPString::operator==(const MiraiCPString &another) const {
         return another._size == _size && (_size == 0 || strcmp(another.str, str) == 0);
     }
@@ -96,4 +112,5 @@ namespace MiraiCP {
         std::swap(_size, other._size);
         std::swap(free_this, other.free_this);
     }
+
 } // namespace MiraiCP
