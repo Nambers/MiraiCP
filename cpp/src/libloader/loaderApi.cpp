@@ -40,6 +40,10 @@ namespace LoaderAPIs {
     using OperFunc = const char *(*) (const char *);
     extern OperFunc oper;
 }; // namespace LoaderAPIs
+
+inline MiraiCP::MiraiCPString *retrieveString(char **inPtr) {
+    return reinterpret_cast<MiraiCP::MiraiCPString *>(inPtr);
+}
 #endif
 
 namespace LibLoader::LoaderApi {
@@ -48,8 +52,7 @@ namespace LibLoader::LoaderApi {
 
     MiraiCPString pluginOperation(const MiraiCPString &s) {
 #ifdef LOADER_NATIVE
-        auto nCharPtr = s.copyToCharPtr();
-        MIRAICP_DEFER(delete[] nCharPtr;);
+        auto nCharPtr = s.c_str();
         return {LoaderAPIs::oper(nCharPtr)};
 #else
         auto env = JNIEnvManager::getEnv();

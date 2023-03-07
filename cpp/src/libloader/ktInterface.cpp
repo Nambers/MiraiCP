@@ -106,8 +106,10 @@ MIRAICP_EXPORT void PluginDisable() {
     PluginDisableImpl();
 }
 
-MIRAICP_EXPORT char *KtNewString(size_t inSize) {
-    return new char[inSize + 1];
+MIRAICP_EXPORT char **KtNewString(size_t inSize) {
+    auto str = new MiraiCP::MiraiCPString;
+    str->reserve(inSize);
+    return reinterpret_cast<char **>(str);
 }
 }
 #else
