@@ -1,6 +1,7 @@
-linkerOpts  = -L F:/Git/mirai/MiraiCP/cpp/cmake-build-debug/ \
-                -L GITHUB_WORKSPACE \
-                -l LoaderNative
+linkerOpts  = -L ../cpp/cmake-build-debug/ \
+              -L ../../cpp/cmake-build-debug/ \
+              -L GITHUB_WORKSPACE \
+              -l LoaderNative
 package =  tech.eritquearcus.MiraiCP
 ---
 #ifndef MIRAICP_PRO_MIRAICP_H
