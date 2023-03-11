@@ -106,6 +106,7 @@ thread_local bool alreadyInHandler = false;
 class [[maybe_unused]] SignalHandle {
     SignalHandle() noexcept {
         auto &act = getAct();
+        memset(&act, 0, sizeof(act));
         act.sa_flags = SA_SIGINFO;
         sigemptyset(&act.sa_mask);
         act.sa_sigaction = &SignalHandle::sigsegv_handler;
