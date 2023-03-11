@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -36,10 +36,6 @@ class Jline3AppenderImpl private constructor(
 ) : AbstractAppender(name, filter, layout, ignoreExceptions, null) {
 
     companion object {
-        var handle: (String) -> Unit = {
-            Console.lineReader.printAbove(it)
-        }
-
         @PluginFactory
         @JvmStatic
         fun createAppender(
@@ -56,6 +52,6 @@ class Jline3AppenderImpl private constructor(
     }
 
     override fun append(event: LogEvent) {
-        handle(String(layout.toByteArray(event)) + Ansi().reset().toString())
+        Console.lineReader.printAbove((String(layout.toByteArray(event)) + Ansi().reset().toString()))
     }
 }
