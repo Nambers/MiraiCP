@@ -22,6 +22,7 @@ import Version.`mirai-core`
 import Version.`mirai-logging`
 import Version.miraiCP
 import Version.mordant
+import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     kotlin("multiplatform")
@@ -104,17 +105,12 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     }
 }
 afterEvaluate {
-    tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile>("compileKotlinNative").apply {
-        this.configure {
-//            this.kotlinOptions.freeCompilerArgs += listOf("-Xllvm-variant=/usr/lib/llvm-15/")
-//            this.kotlinOptions.freeCompilerArgs += listOf("-Xllvm-variant=D:\\msys64\\mingw64")
-        }
-    }
     tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>("linkDebugExecutableNative").apply {
         this.configure {
-//            this.kotlinOptions.freeCompilerArgs += listOf("-Xllvm-variant=/usr/lib/llvm-15/")
-//            this.kotlinOptions.freeCompilerArgs += listOf("-Xllvm-variant=D:\\msys64\\mingw64")
-//            this.kotlinOptions.freeCompilerArgs += listOf("-linker-option", "--allow-shlib-undefined")
+            if (Os.isFamily(Os.FAMILY_UNIX)) {
+                // https://youtrack.jetbrains.com/issue/KT-52510/Native-undefined-reference-during-interop-with-Rust
+                this.kotlinOptions.freeCompilerArgs += listOf("-linker-option", "--allow-shlib-undefined")
+            }
         }
     }
 }
