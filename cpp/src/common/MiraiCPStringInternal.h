@@ -25,7 +25,7 @@
 
 
 namespace MiraiCP {
-    class MiraiCPString;
+    class MIRAICP_EXPORT MiraiCPString;
 
     /// @brief stringview的类似实现
     /// @note 仅用于保证string在动态库间传递的一致性，请优先使用std::string_view
