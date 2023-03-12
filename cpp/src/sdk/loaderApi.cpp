@@ -79,7 +79,7 @@ namespace LibLoader::LoaderApi {
 
     /// interfaces for plugins
 
-    MiraiCPString pluginOperation(const MiraiCPString &s) {
+    MiraiCPString pluginOperation(MiraiCPStringview s) {
         checkApi((void *) loader_apis->_pluginOperation);
         return loader_apis->_pluginOperation(s);
     }

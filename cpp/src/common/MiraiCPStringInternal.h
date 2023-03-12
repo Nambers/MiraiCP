@@ -37,15 +37,17 @@ namespace MiraiCP {
         size_t _size = 0;
 
     public:
+        MiraiCPStringview() = delete;
+
         MiraiCPStringview(const MiraiCPStringview &other) = default;
 
         MiraiCPStringview(MiraiCPStringview &&temp) noexcept = default;
 
-        explicit MiraiCPStringview(const char *char_str);
+        MiraiCPStringview(const char *char_str); // NOLINT(google-explicit-constructor)
 
-        explicit MiraiCPStringview(const std::string &string_str);
+        MiraiCPStringview(const std::string &string_str); // NOLINT(google-explicit-constructor)
 
-        explicit MiraiCPStringview(const MiraiCPString &miraiCPString);
+        MiraiCPStringview(const MiraiCPString &miraiCPString); // NOLINT(google-explicit-constructor)
 
         ~MiraiCPStringview() = default;
 

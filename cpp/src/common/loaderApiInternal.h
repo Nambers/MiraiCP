@@ -37,9 +37,10 @@ namespace LibLoader::LoaderApi {
     typedef void (*task_func_with_id)(size_t);
 
     using MiraiCP::MiraiCPString;
+    using MiraiCP::MiraiCPStringview;
 
     LOADER_API_COUNT
-    MiraiCPString pluginOperation(const MiraiCPString &);
+    MiraiCPString pluginOperation(MiraiCPStringview view);
 
     LOADER_API_COUNT
     void loggerInterface(const MiraiCPString &content, const MiraiCPString &name, long long id, int level);
