@@ -21,6 +21,17 @@
 
 
 namespace MiraiCP {
+    MiraiCPStringview::MiraiCPStringview(const char *char_str) : str(char_str) {
+        if (char_str == nullptr) return;
+        _size = strlen(char_str);
+    }
+
+    MiraiCPStringview::MiraiCPStringview(const std::string &string_str)
+        : str(string_str.c_str()), _size(string_str.size()) {}
+
+    MiraiCPStringview::MiraiCPStringview(const MiraiCPString &miraiCPString)
+        : str(miraiCPString.c_str()), _size(miraiCPString.size()) {}
+
     // avoid calling this if _size == 0
     void MiraiCPString::construction() {
         str = (char *) ::std::malloc(sizeof(char) * (_size + 1));
@@ -112,5 +123,4 @@ namespace MiraiCP {
         std::swap(_size, other._size);
         std::swap(free_this, other.free_this);
     }
-
 } // namespace MiraiCP
