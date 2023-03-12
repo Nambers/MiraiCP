@@ -50,7 +50,7 @@ namespace LibLoader::LoaderApi {
     using MiraiCP::MiraiCPString;
     /// interfaces for plugins
 
-    MiraiCPString pluginOperation(const MiraiCPString &s) {
+    MiraiCPString pluginOperation(MiraiCPStringview s) {
 #ifdef LOADER_NATIVE
         auto nCharPtr = s.c_str();
         auto str = retrieveString(LoaderAPIs::oper(nCharPtr));
@@ -60,7 +60,7 @@ namespace LibLoader::LoaderApi {
         auto env = JNIEnvManager::getEnv();
         auto tmp = jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
                                                                      JNIEnvs::koper,
-                                                                     str2jstring(s.copyToCharPtr())));
+                                                                     str2jstring(s.c_str())));
         return {tmp};
 #endif
     }
