@@ -25,6 +25,40 @@
 
 
 namespace MiraiCP {
+    class MiraiCPString;
+
+    /// @brief stringview的类似实现
+    /// @note 仅用于保证string在动态库间传递的一致性，请优先使用std::string_view
+    class MIRAICP_EXPORT MiraiCPStringview final {
+        using string = std::string;
+
+    private:
+        const char *str = nullptr;
+        size_t _size = 0;
+
+    public:
+        MiraiCPStringview(const MiraiCPStringview &other) = default;
+
+        MiraiCPStringview(MiraiCPStringview &&temp) noexcept = default;
+
+        explicit MiraiCPStringview(const char *char_str);
+
+        explicit MiraiCPStringview(const std::string &string_str);
+
+        explicit MiraiCPStringview(const MiraiCPString &miraiCPString);
+
+        ~MiraiCPStringview() = default;
+
+    public:
+        [[nodiscard]] bool isEmpty() const {
+            return _size == 0;
+        }
+
+        [[nodiscard]] const char *c_str() const { return str; }
+
+        [[nodiscard]] size_t size() const { return _size; }
+    };
+
     // this class is used to ensure data consistency between dynamic libs
     // note: DO NOT use this directly;
     // always convert to const char* or std::string before using.
@@ -79,6 +113,8 @@ namespace MiraiCP {
         [[nodiscard]] const char *copyToCharPtr() const;
 
         [[nodiscard]] const char *c_str() const { return str; }
+
+        [[nodiscard]] size_t size() const { return _size; }
 
     public:
         void reserve(size_t inSize);
