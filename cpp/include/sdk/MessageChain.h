@@ -148,7 +148,7 @@ namespace MiraiCP {
         /// 筛选出某种类型的消息
         /// @note 最多可能将整个vector复制一次
         template<typename T>
-        std::vector<T> filter() {
+        std::vector<T> filter() const {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
             for (auto &&a: *this) {
@@ -161,7 +161,7 @@ namespace MiraiCP {
         /// 自定义筛选器
         /// @note 最多可能将整个vector复制一次
         template<typename T>
-        std::vector<T> filter(const std::function<bool(const Message &)> &func) {
+        std::vector<T> filter(const std::function<bool(const Message &)> &func) const {
             static_assert(std::is_base_of_v<SingleMessage, T>, "只支持SingleMessage的子类");
             std::vector<T> re;
             for (auto &&a: *this) {
@@ -173,7 +173,7 @@ namespace MiraiCP {
 
         /// 找出第一个指定的type的消息，消息可能不存在
         template<typename T>
-        std::optional<T> first() {
+        std::optional<T> first() const {
             for (auto &&a: *this)
                 if (a.getType() == T::type())
                     return a.getVal<T>();
