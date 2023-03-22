@@ -30,12 +30,14 @@ jobs:
     - name: build with gcc
       run: cd ./cpp && cmake --build build --config Release --target Loader && cmake --build build --config Release --target LoaderNative
     - name: copy out
-      run: copy ./cpp/build/Release/*.dll
+      run: copy ./cpp/build/Release/*.dll && copy ./cpp/build/Release/*.lib
     - name: upload
       uses: actions/upload-artifact@v3
       with:
         name: libLoaderdll
-        path: ./*.dll
+        path: |
+          ./*.dll 
+          ./*.lib
   build-libLoader-gcc-4-linux:
     if: ${{ github.event.inputs.clean == 'false' }}
     runs-on: ubuntu-20.04
@@ -199,10 +201,10 @@ jobs:
     
     - name: packing - linux
       if: ${{ env.isUbuntu == 'true' }}
-      run: zip -j output.zip ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.kexe libcrypt.so.1 libLoaderNative.so
+      run: zip -j output.zip ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.kexe libcrypt.so.1 libLoaderNative.so libLoader.so
     - name: packing -win
       if: ${{ env.isWindows == 'true' }}
-      run: copy ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.exe &&  tar -cvf output.zip *.exe libLoaderNative.dll
+      run: copy ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.exe &&  tar -cvf output.zip *.exe libLoaderNative.dll libLoader.so
     - name: upload
       if: ${{ env.isWindows == 'true' }}
       uses: actions/upload-artifact@v3
