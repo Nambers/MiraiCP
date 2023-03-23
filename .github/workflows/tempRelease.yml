@@ -207,11 +207,10 @@ jobs:
         ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.kexe \
         libcrypt.so.1 \
         libLoaderNative.so \
-        libLoader.so \
         ${{ github.workspace }}/kotlin/loader/src/nativeMain/kotlin/scripts/runMiraiCP.sh \;
     - name: packing -win
       if: ${{ env.isWindows == 'true' }}
-      run: copy ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.exe &&  tar -cvf LoaderNativeWindows.zip *.exe libLoaderNative.dll libLoader.dll
+      run: copy ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.exe &&  tar -cvf LoaderNativeWindows.zip *.exe libLoaderNative.dll
     - name: upload
       if: ${{ env.isWindows == 'true' }}
       uses: actions/upload-artifact@v3
