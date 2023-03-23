@@ -205,7 +205,7 @@ jobs:
       run: zip -j output.zip ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.kexe libcrypt.so.1 libLoaderNative.so libLoader.so
     - name: packing -win
       if: ${{ env.isWindows == 'true' }}
-      run: copy ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.exe &&  tar -cvf output.zip *.exe libLoaderNative.dll libLoader.so
+      run: copy ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.exe &&  tar -cvf output.zip *.exe libLoaderNative.dll libLoader.dll
     - name: upload
       if: ${{ env.isWindows == 'true' }}
       uses: actions/upload-artifact@v3
