@@ -172,6 +172,7 @@ jobs:
         path: ${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def
         oldString: GITHUB_WORKSPACE
         newString: ${{ github.workspace }}
+        escapeBackslash: true
         showFileContent: true
     # - name: replace MiraiCP lib path of def file linux
     #   if: ${{ env.isUbuntu == 'true' }}
