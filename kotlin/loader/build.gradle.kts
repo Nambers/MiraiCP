@@ -104,6 +104,9 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
         attributes["Build-Kotlin"] = Version.kotlin
     }
 }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>() {
+    dependsOn(":fillingConstants")
+}
 afterEvaluate {
     tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>("linkDebugExecutableNative").apply {
         this.configure {
