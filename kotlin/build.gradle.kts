@@ -69,6 +69,17 @@ tasks {
                             )
                     )
                 }
+            File(projectDir, "loader/src/nativeMain/kotlin/scripts/runMiraiCP.sh")
+                .let {
+                    println("write to ${it.absolutePath}")
+                    it.writeText(
+                        it.readText()
+                            .replace(
+                                Regex("""./MiraiCP-loader-v(.*).kexe"""),
+                                "./MiraiCP-loader-v${Version.miraiCP}.kexe"
+                            )
+                    )
+                }
         }
     }
 }

@@ -199,10 +199,16 @@ jobs:
     #   run: Rename-Item -Path "${{ github.workspace }}\libLoaderNative.lib" -NewName "LoaderNative.lib"
     - name: link native
       run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:linkDebugExecutableNative --warning-mode all --info --stacktrace
-    
+
     - name: packing - linux
       if: ${{ env.isUbuntu == 'true' }}
-      run: zip -j output.zip ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.kexe libcrypt.so.1 libLoaderNative.so libLoader.so
+      run: |
+        zip -j output.zip
+        ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.kexe
+        libcrypt.so.1
+        libLoaderNative.so
+        libLoader.so
+        ${{ github.workspace }}/kotlin/loader/src/nativeMain/kotlin/scripts/runMiraiCP.sh
     - name: packing -win
       if: ${{ env.isWindows == 'true' }}
       run: copy ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.exe &&  tar -cvf output.zip *.exe libLoaderNative.dll libLoader.dll
@@ -211,13 +217,17 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: winOutput
-        path: ./output.zip
+        path: |
+          ./LoaderNativeWindows.zip
+          ./libLoader.dll
     - name: upload
       if: ${{ env.isUbuntu == 'true' }}
       uses: actions/upload-artifact@v3
       with:
         name: linuxOutput
-        path: ./output.zip
+        path: |
+          ./LoaderNativeLinux.zip
+          ./libLoader.so
     
       
   tempRelease:
@@ -267,14 +277,6 @@ jobs:
       run: ls -1 ./main/kotlin/loader/build/libs/MiraiCP-loader-*.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} && ls -1 ./main/kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai2.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} && ls -1 ./main/kotlin/core/build/libs/MiraiCP-core-*.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }}
     #name: print
      # run: find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
-    - uses: actions/download-artifact@v3
-      with:
-        name: libLoaderdll
-        path: ./tr/${{ github.event.inputs.v }}/
-    - uses: actions/download-artifact@v3
-      with:
-        name: libLoaderso
-        path: ./tr/${{ github.event.inputs.v }}/
     - uses: actions/download-artifact@v3
       with:
         name: winOutput
