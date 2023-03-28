@@ -47,26 +47,20 @@ jobs:
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
     - name: checkout
-      uses: actions/checkout@v2
-
-    - name: set mingw version 9.1.0
-      if: ${{ env.isWindows == 'true' }}
-      # github workflows in windows is GCC 11, in linux is GCC 9.4.0
-      run: choco install mingw --version=9.4.0 --force
-
+      uses: actions/checkout@v3
     - name: build with gcc ubuntu
       if: ${{ env.isUbuntu == 'true' }}
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF .. && make LoaderNative
+      run: ./scripts/LINUX/cppBuilds.sh libLoaderNative
     
     - name: build with gcc win
       if: ${{ env.isWindows == 'true' }}
       env:
         cc: gcc
         cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles" -DGOOGLE_TEST=OFF .. && cd .. && cmake --build build --target LoaderNative
+      run: ./scripts/WIN/cppBuilds.bat libLoaderNative
     
     - name: upload
       if: ${{ env.isWindows == 'true' }}
@@ -102,7 +96,7 @@ jobs:
       VCPKG_DEFAULT_BINARY_CACHE: ${{ startsWith(matrix.os, 'windows') && 'C:\vcpkg\binary_cache' || '/usr/local/share/vcpkg/binary_cache' }}
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up JDK 15
       uses: actions/setup-java@v2
       with:
@@ -143,15 +137,9 @@ jobs:
     - name: Setup Memory Environment on Windows
       if: ${{ env.isWindows == 'true' }}
       run: >
-        wmic pagefileset where name="D:\\pagefile.sys" set InitialSize=1024,MaximumSize=9216 &
-        net stop mongodb
+        wmic pagefileset where name="D:\\pagefile.sys" set InitialSize=1024,MaximumSize=9216
       shell: cmd
       continue-on-error: true
-
-    - name: upgrade mingw
-      if: ${{ env.isWindows == 'true' }}
-      # github workflows in windows is GCC 11, in linux is GCC 9.4.0
-      run: choco install mingw --version=9.4.0 --force
 
     - name: Install OpenSSL & cURL on Windows
       if: ${{ env.isWindows == 'true' }}
@@ -166,14 +154,21 @@ jobs:
     - name: chmod
       if: ${{ env.isUbuntu == 'true' }}
       run: chmod -R 777 *
-
-    - name: replace MiraiCP lib path of def file linux
-      if: ${{ env.isUbuntu == 'true' }}
-      run: sed -i 's|GITHUB_WORKSPACE|${{ github.workspace }}|g' '${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def' && cat ${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def
-    - name: replace MiraiCP lib path of def file win
-      if: ${{ env.isWindows == 'true' }}
-      run: $path = "${{ github.workspace }}"; $path=$path.Replace("`\", "/"); (Get-Content ${{ github.workspace }}\kotlin\shared\src\nativeInterop\cinterop\localMiraiCP.def) -replace 'GITHUB_WORKSPACE', $path | Set-Content -encoding ASCII ${{ github.workspace }}\kotlin\shared\src\nativeInterop\cinterop\localMiraiCP.def && type ${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def
-    - name: complie native
+    - name: replace def file
+      uses: Nambers/ReplaceStringInFile@v1.3
+      with:
+        path: ${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def
+        oldString: GITHUB_WORKSPACE
+        newString: ${{ github.workspace }}
+        escapeBackslash: true
+        showFileContent: true
+    # - name: replace MiraiCP lib path of def file linux
+    #   if: ${{ env.isUbuntu == 'true' }}
+    #   run: sed -i 's|GITHUB_WORKSPACE|${{ github.workspace }}|g' '${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def' && cat ${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def
+    # - name: replace MiraiCP lib path of def file win
+    #   if: ${{ env.isWindows == 'true' }}
+    #   run: $path = "${{ github.workspace }}"; $path=$path.Replace("`\", "/"); (Get-Content ${{ github.workspace }}\kotlin\shared\src\nativeInterop\cinterop\localMiraiCP.def) -replace 'GITHUB_WORKSPACE', $path | Set-Content -encoding ASCII ${{ github.workspace }}\kotlin\shared\src\nativeInterop\cinterop\localMiraiCP.def && type ${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def
+    - name: compile native
       run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:compileKotlinNative --warning-mode all --info --stacktrace
     - name: libLoaderNativeWin
       if: ${{ env.isWindows == 'true' }}

@@ -25,10 +25,8 @@ jobs:
       with:
         arch: amd64
         vsversion: 2019
-    - name: configure
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with gcc
-      run: cd ./cpp && cmake --build build --config Release --target Loader && cmake --build build --config Release --target LoaderNative
+      run: ./scripts/WIN/cppBuilds.bat libLoaderNative
     - name: copy out
       run: copy ./cpp/build/Release/*.dll && copy ./cpp/build/Release/*.lib
     - name: upload
@@ -51,13 +49,8 @@ jobs:
         platform: x64
     - name: print glibc version
       run: ldd --version
-    - name: configure
-      env:
-        cc: gcc
-        cxx: g++
-      run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
     - name: build with gcc
-      run: cd cpp/build && make Loader && make LoaderNative
+      run: ./scripts/LINUX/cppBuilds.sh libLoaderNative
     - name: copy out
       run: cp ./cpp/build/*.so ./ && cp /lib/x86_64-linux-gnu/libcrypt.so.1 ./
     - name: upload
@@ -180,7 +173,7 @@ jobs:
     # - name: replace MiraiCP lib path of def file win
     #   if: ${{ env.isWindows == 'true' }}
     #   run: $path = "${{ github.workspace }}"; $path=$path.Replace("`\", "/"); (Get-Content ${{ github.workspace }}\kotlin\shared\src\nativeInterop\cinterop\localMiraiCP.def) -replace 'GITHUB_WORKSPACE', $path | Set-Content -encoding ASCII ${{ github.workspace }}\kotlin\shared\src\nativeInterop\cinterop\localMiraiCP.def && type ${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def
-    - name: complie native
+    - name: compile native
       run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:compileKotlinNative --warning-mode all --info --stacktrace
     - name: libLoaderNativeWin
       if: ${{ env.isWindows == 'true' }}
@@ -194,9 +187,6 @@ jobs:
       with:
         name: libLoaderso
         path: ${{ github.workspace }}
-    # - if: ${{ env.isWindows == 'true' }}
-    #   name: rename libLoader win
-    #   run: Rename-Item -Path "${{ github.workspace }}\libLoaderNative.lib" -NewName "LoaderNative.lib"
     - name: link native
       run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:linkDebugExecutableNative --warning-mode all --info --stacktrace
 
@@ -274,8 +264,6 @@ jobs:
       run: rm -rf ./tr/${{ github.event.inputs.v }} && mkdir ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/single_include/MiraiCP.hpp" ./tr/${{ github.event.inputs.v }} && mv "./main/cpp/single_include/MiraiCP.cpp" ./tr/${{ github.event.inputs.v }}
     - name: moveKt
       run: ls -1 ./main/kotlin/loader/build/libs/MiraiCP-loader-*.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} && ls -1 ./main/kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai2.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }} && ls -1 ./main/kotlin/core/build/libs/MiraiCP-core-*.jar | xargs -L1 -I{} mv {} ./tr/${{ github.event.inputs.v }}
-    #name: print
-     # run: find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
     - uses: actions/download-artifact@v3
       with:
         name: winOutput

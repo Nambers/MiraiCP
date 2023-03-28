@@ -33,9 +33,7 @@ jobs:
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
       - name: checkout
-        uses: actions/checkout@v2
-      - name: configure
-        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
+        uses: actions/checkout@v3
       # Linux
       - name: setup gcc
         if: ${{ env.isUbuntu == 'true' }}
@@ -48,7 +46,7 @@ jobs:
         env:
           cc: gcc
           cxx: g++
-        run: cd cpp/build && make generateSingleHeaders && make MiraiCP_single
+        run: ./scripts/LINUX/cppBuilds.sh single
       # Windows
       - name: setup MSVC
         if: ${{ env.isWindows == 'true' }}
@@ -58,17 +56,15 @@ jobs:
           vsversion: 2019
       - name: build with MSVC
         if: ${{ env.isWindows == 'true' }}
-        run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single --config Release
+        run: ./scripts/WIN/cppBuilds.bat single
 
   windows-mingw-single:
     runs-on: windows-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
-      - name: configure
-        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
+        uses: actions/checkout@v3
       - name: build with MinGW
-        run: cd ./cpp && cmake --build build --target generateSingleHeaders && cmake --build build --target MiraiCP_single
+        run: ./scripts/WIN/cppBuilds.bat single mingw
 
   libLoader:
     name: "build MiraiCP-libLoader (${{ matrix.os }})"
@@ -89,9 +85,7 @@ jobs:
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
       - name: checkout
-        uses: actions/checkout@v2
-      - name: configure
-        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
+        uses: actions/checkout@v3
       # Linux
       - name: setup gcc
         if: ${{ env.isUbuntu == 'true' }}
@@ -104,7 +98,7 @@ jobs:
         env:
           cc: gcc
           cxx: g++
-        run: cd cpp/build && make Loader
+        run: ./scripts/LINUX/cppBuilds.sh libLoader
       # Windows
       - name: setup MSVC
         if: ${{ env.isWindows == 'true' }}
@@ -114,7 +108,7 @@ jobs:
           vsversion: 2019
       - name: build with MSVC
         if: ${{ env.isWindows == 'true' }}
-        run: cd ./cpp && cmake --build build --config Release --target Loader
+        run: ./scripts/WIN/cppBuilds.bat libLoader
 
   libLoader-native:
     name: "build Native (${{ matrix.os }})"
@@ -135,11 +129,7 @@ jobs:
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
       - name: checkout
-        uses: actions/checkout@v2
-      # Linux
-      - name: configure Linux
-        if: ${{ env.isUbuntu == 'true' }}
-        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -DGOOGLE_TEST=OFF ..
+        uses: actions/checkout@v3.
       - name: setup gcc
         if: ${{ env.isUbuntu == 'true' }}
         uses: egor-tensin/setup-gcc@v1
@@ -151,11 +141,8 @@ jobs:
         env:
           cc: gcc
           cxx: g++
-        run: cd cpp/build && make LoaderNative
+        run: ./scripts/LINUX/cppBuilds.sh libLoaderNative
       # Windows
-      - name: configure Windows
-        if: ${{ env.isWindows == 'true' }}
-        run: mkdir cpp/build && cd cpp/build && cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -DGOOGLE_TEST=OFF ..
       - name: build with MinGW win
         if: ${{ env.isWindows == 'true' }}
-        run: cd cpp && cmake --build build --target LoaderNative
+        run: ./scripts/WIN/cppBuilds.bat libLoaderNative
