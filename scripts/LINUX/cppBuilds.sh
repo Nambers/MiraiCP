@@ -4,7 +4,11 @@ echo "--- preBuild ---"
 workDir="$(pwd)/"
 echo "working directory: $workDir"
 
-if [ "$1"=="clean" ]; then
+# if $1 is "clean", then clean build directory
+
+
+
+if [ "$1" = "clean" ]; then
     echo "--- clean build directory ---"
     if [ -d $workDir"cpp/build" ]; then
         rm -rf $workDir"cpp/build"

@@ -129,7 +129,7 @@ jobs:
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
       - name: checkout
-        uses: actions/checkout@v3.
+        uses: actions/checkout@v3
       - name: setup gcc
         if: ${{ env.isUbuntu == 'true' }}
         uses: egor-tensin/setup-gcc@v1
