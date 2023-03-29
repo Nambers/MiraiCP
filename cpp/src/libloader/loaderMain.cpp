@@ -15,7 +15,7 @@
 //
 
 #include "loaderMain.h"
-#include "BS_thread_pool.hpp"
+#include "ThreadPool.h"
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
@@ -45,7 +45,7 @@ namespace LibLoader {
         ThreadIdentify::IAmLoaderThread();
         logger.info("libLoader thread start");
 
-        BS::pool = std::make_unique<BS::thread_pool>();
+        Antares::pool = std::make_unique<Antares::ThreadPool<>>();
 
         PluginListManager::enableAll();
 
@@ -53,7 +53,7 @@ namespace LibLoader {
 
         shutdownLoader();
 
-        BS::pool.reset();
+        Antares::pool.reset();
     }
 
     ////////////////////////////////////
@@ -94,7 +94,7 @@ namespace LibLoader {
     }
 
     void loader_resetThreadByIndex(const std::string &index) {
-        BS::pool->resetThreadByIndex(std::stoull(index));
+        Antares::pool->resetThreadByIndex(std::stoull(index));
     }
 
     ////////////////////////////////////

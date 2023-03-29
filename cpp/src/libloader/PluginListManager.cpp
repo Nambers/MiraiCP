@@ -15,7 +15,7 @@
 //
 
 #include "PluginListManager.h"
-#include "BS_thread_pool.hpp"
+#include "ThreadPool.h"
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "Plugin.h"
@@ -260,7 +260,7 @@ namespace LibLoader {
                 auto pluginConfigCopy = pluginConfig;
                 //                auto eventPtr = pluginConfig->eventFunc;
                 //                // 禁止捕获和plugin本身有关的东西，因为不知道谁先运行完
-                BS::pool->push_task([strPtrCopy = strPtr, pluginConfig = std::move(pluginConfigCopy)]() mutable {
+                Antares::pool->push_task([strPtrCopy = strPtr, pluginConfig = std::move(pluginConfigCopy)]() mutable {
                     pluginConfig->pushEvent_worker(strPtrCopy);
                 });
             }
@@ -273,7 +273,7 @@ namespace LibLoader {
         if (it == id_plugin_list.end() || !it->second->isEnabled()) {
             logger.error("插件不存在或尚未加载！插件id: " + id);
         }
-        BS::pool->push_task([strCopy = std::move(str), pluginConfig = it->second]() mutable {
+        Antares::pool->push_task([strCopy = std::move(str), pluginConfig = it->second]() mutable {
             pluginConfig->pushEvent_worker(strCopy);
         });
     }

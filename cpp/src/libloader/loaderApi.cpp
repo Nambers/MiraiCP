@@ -16,13 +16,13 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
-#include "BS_thread_pool.hpp"
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
 #include "LoaderMacro.h"
 #include "LoaderTaskQueue.h"
 #include "PluginListManager.h"
 #include "Scheduler.h"
+#include "ThreadPool.h"
 #include "loaderApiInternal.h"
 #include "loaderTools.h"
 #include <mutex>
@@ -74,11 +74,11 @@ namespace LibLoader::LoaderApi {
     }
 
     void pushTask(task_func func) {
-        BS::pool->push_task(func);
+        Antares::pool->push_task(func);
     }
 
     void pushTaskWithId(task_func_with_id func, size_t id) {
-        BS::pool->push_task(func, id);
+        Antares::pool->push_task(func, id);
     }
 
     void timer(const MiraiCPString &id, const MiraiCPString &content, size_t time) {

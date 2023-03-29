@@ -17,12 +17,13 @@
 // 本文件的目的是分离出PluginListManager交互的部分函数实现，方便代码的阅读和维护
 #include "MiraiCPMacros.h"
 // -----------------------
-#include "BS_thread_pool.hpp"
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "Plugin.h"
 #include "PluginConfig.h"
 #include "PluginListManager.h"
+#include "ThreadIdentify.h"
+#include "ThreadPool.h"
 #include "commonTools.h"
 #include "libOpen.h"
 #include "loaderTools.h"
@@ -214,7 +215,7 @@ namespace LibLoader {
         _enable();
         updateTimeStamp();
 
-        BS::pool->push_task([this] {
+        Antares::pool->push_task([this] {
             std::shared_lock lk(_mtx);
 
             if (nullptr == entrance) {
@@ -244,7 +245,7 @@ namespace LibLoader {
         _disable();
         updateTimeStamp();
 
-        return std::make_shared<std::future<void>>(BS::pool->submit([this, lockedAndWait] {
+        return std::make_shared<std::future<void>>(Antares::pool->submit([this, lockedAndWait] {
             std::shared_lock lk(_mtx, std::defer_lock);
 
             if (!lockedAndWait) lk.lock();

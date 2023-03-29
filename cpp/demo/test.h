@@ -12,7 +12,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+#include <iostream>
 using namespace MiraiCP;
 
 const PluginConfig CPPPlugin::config{
@@ -41,6 +41,11 @@ public:
             auto r = a.group.getFileById("/e3080b6d-aea9-4d66-9f07-7289cf097cdc");
             Logger::logger.info("file size: ", r.size);
         });
+        std::cout<<"111"<<std::endl;
+        for(size_t i=0;i<1000;++i){
+
+            ThreadTask::addTask([i](){std::cout<<i<<std::endl;});
+        }
     }
 
     void onDisable() override {

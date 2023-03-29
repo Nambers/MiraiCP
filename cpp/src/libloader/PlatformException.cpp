@@ -16,7 +16,7 @@
 
 #include "MiraiCPMacros.h"
 // -----------------------
-#include "BS_thread_pool.hpp"
+#include "ThreadPool.h"
 #include "LoaderTaskQueue.h"
 #include "PluginListManager.h"
 #include "ThreadIdentify.h"
@@ -167,7 +167,7 @@ private:
         LibLoader::logger.error("请检查您的插件代码，崩溃发生后的任何行为均未定义，MiraiCP将尽可能尝试继续运行");
         LibLoader::sendPluginException(std::move(pluginName));
 
-        size_t threadIndex = BS::thread_pool::getCurrentThreadIndexView();
+        size_t threadIndex = Antares::ThreadPool<>::getCurrentThreadIndexView();
         if (threadIndex != (std::numeric_limits<size_t>::max)()) {
             // 是线程池线程
             LibLoader::sendThreadReset(threadIndex);
