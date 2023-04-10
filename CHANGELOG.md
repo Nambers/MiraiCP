@@ -1,5 +1,9 @@
 # Change Log
 
+## v2.15.0-RC2
+与上一版本无修改
+修复了打包 workflow 不导出 libLoader 的问题
+
 ## v2.15.0-RC
 * 修复文件列表的问题, #188
 * 修复 MiraiCP-native 的问题, 现在理论上应该是能开始用了, 但还没经过完全测试

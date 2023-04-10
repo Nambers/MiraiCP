@@ -17,7 +17,7 @@
 #
 #
 
-executable="./MiraiCP-loader-v2.15.0-RC.kexe"
+executable="./MiraiCP-loader-v2.15.0-RC2.kexe"
 grep_re=$(LD_LIBRARY_PATH=./ ldd $executable | grep "not found")
 if [ "$grep_re" != "" ]; then
   echo "检测到以下依赖缺失"

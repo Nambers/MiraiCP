@@ -17,7 +17,7 @@
  */
 
 object Version {
-    const val miraiCP = "2.15.0-RC"
+    const val miraiCP = "2.15.0-RC2"
 
     // plugins
     const val kotlin = "1.8.10"

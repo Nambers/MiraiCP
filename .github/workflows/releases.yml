@@ -29,8 +29,10 @@ jobs:
       with:
         arch: amd64
         vsversion: 2019
-    - name: build with gcc
+    - name: build with gcc libLoaderNative
       run: ./scripts/WIN/cppBuilds.bat libLoaderNative
+    - name: build with gcc libLoader
+      run: ./scripts/WIN/cppBuilds.bat libLoader
     - name: copy out
       run: copy ./cpp/build/Release/*.dll && copy ./cpp/build/Release/*.lib
     - name: upload
@@ -52,8 +54,10 @@ jobs:
         platform: x64
     - name: print glibc version
       run: ldd --version
-    - name: build with gcc
+    - name: build with gcc libLoaderNative
       run: ./scripts/LINUX/cppBuilds.sh libLoaderNative
+    - name: build with gcc libLoader
+      run: ./scripts/LINUX/cppBuilds.sh libLoader
     - name: copy out
       run: cp ./cpp/build/*.so ./ && cp /lib/x86_64-linux-gnu/libcrypt.so.1 ./
     - name: upload
