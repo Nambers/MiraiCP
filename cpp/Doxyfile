@@ -38,7 +38,7 @@ PROJECT_NAME           = MiraiCP
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = v2.14.0
+PROJECT_NUMBER         = v2.15.0-RC
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -920,8 +920,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = include/libloader/BS_thread_pool.hpp \
-                         src/single_include
+EXCLUDE                = src/single_include
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

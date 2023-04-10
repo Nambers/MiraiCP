@@ -1,5 +1,16 @@
 # Change Log
 
+## v2.15.0-RC
+* 修复文件列表的问题, #188
+* 修复 MiraiCP-native 的问题, 现在理论上应该是能开始用了, 但还没经过完全测试
+* 更新 Mirai 版本 -> 2.15.0-M1
+* 修复 filter const 的问题 PR #191 by @shuli106
+* 增加发布 native 版本的 CI
+
+Internal:
+* 修改了一些 MiraiCPString 内部实现
+* 修改了 BS 线程池实现
+
 ## v2.14.0
 * Command注册函数`registerCommand`现在不接受参数，只接受一个模板参数，会调用默认构造函数构造子类对象；command类必须重写基类析构函数
 * schedule不会从重载前的插件传递timeout event给重载后的插件
