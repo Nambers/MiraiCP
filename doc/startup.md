@@ -179,14 +179,13 @@ cmake --build . --target MiraiCPPlugin
 ### iv 中间件下载
 从最新的 release 中下载 `libLoader-<version>` 对应自己操作系统的中间件`libLoader`. `libLoader`是用于管理插件运行时动态链接的工具，提供热重载，线程池，内存访问异常处理等功能。`libLoader`的详细工作原理见[文档](doc/libloader.md)
 
-名字对照表见下表格
+名字和平台对照表见下表格  
 | Platform Name | Libloader name          |
 | ------------- | ----------------------- |
 | Windows       | libloader-\<version\>.dll |
-| Linux         | libloader-\<version\>.so  |
-如果上面没有你的版本, 可以发 issue 以获取支持, 或者自行编译 libLoader
-
-或者，从源码构建，以Linux为例：
+| Linux         | libloader-\<version\>.so  |  
+如果上面没有你的平台, 可以发 issue 以获取支持, 或者自行编译 libLoader  
+或者，从源码构建，以Linux为例(详细可以参考`/scripts`下的编译脚本):  
 
 ```bash
 git clone https://github.com/Nambers/MiraiCP --depth 1
@@ -197,11 +196,62 @@ cmake -DGOOGLE_TEST=OFF ..
 make Loader
 ```
 
-至此，配置环境部分暂时告一段落，可直接前往 *Step 3 配置运行环境*
-
+至此，配置环境部分暂时告一段落，可直接前往 *Step 3 配置运行环境*  
 ### v MiraiCP Loader Native
-
-WIP
+> 运行 Native 版本可能需要一定的知识
+> 该版本还没经过全面测试
+> -- 4/12/2023
+#### 下载
+在 GitHub Releases 里面下载 LoaderNativeLinux 或者 LoaderNativeWindows, 然后本地解压.
+#### 环境配置
+因为 Mirai 依赖于 Openssl 和 curl 运行, 所以启动 native 前要安装这两个库
+##### Linux
+依赖预览:
+```
+libLoaderNative.so => ./libLoaderNative.so
+        libresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6
+        libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0
+        libutil.so.1 => /lib/x86_64-linux-gnu/libutil.so.1
+        libcrypt.so.1 => /lib/x86_64-linux-gnu/libcrypt.so.1
+        librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1
+        libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1
+        libcrypto.so.1.1 => not found
+        libssl.so.1.1 => not found
+        libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2
+        libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6
+        /lib64/ld-linux-x86-64.so.2
+```
+可以先使用 `LD_LIBRARY_PATH=./ ldd MiraiCP-loader-<version>.kexe` 来检查哪些环境缺失了.  
+一般来说应该只需要额外安装一次 Openssl (比如用 `sudo apt install libssl-dev` 在 ubuntu).  
+环境配置这块可能需要使用者自己查询资料配好.  
+> 如果不加 `LD_LIBRARY_PATH=./` 跑 ldd 显示 `libLoaderNative.so => not found` 是正常的
+> 我们同时把 `libcrypt.so.1` 一起打包了, 以防 Arch 下找不到
+##### Windows
+依赖预览:
+```
+Image has the following dependencies:
+    ADVAPI32.dll
+    bcrypt.dll
+    KERNEL32.dll
+    msvcrt.dll
+    WS2_32.dll
+    libLoaderNative.dll
+    libcrypto-3-x64.dll
+    libcurl.dll
+```  
+可以用 VS developer command prompt 里面的 `dumpbin /DEPENDENTS MiraiCP-loader-<version>.exe` 查看依赖.  
+通常的做法是用 vcpkg 安装 openssl 和 curl.  
+安装命令类似于 ` vcpkg install openssl:x64-windows curl[core,ssl]:x64-windows`.  
+#### 启动配置
+native 的启动配置和 loader 完全一致, 两者的配置文件 `config.json` 可以完全互通.  
+但是与 loader 不同的是, native 不需要配置 libLoaderPath 也就是中间件路径, 他会以动态库依赖的方式载入, 而不是 loader 的动态载入.  
+所以如果 native 找不到中间件他会直接无法执行.  
+> native 的配置文件路径与 loader 相同, 都是在可执行文件的同目录下.  
+#### 启动
+在 linux 下执行 `runMiraiCP.sh` 脚本, 该脚本会自动检查依赖和启动 (如果自己启动注意要加 `LD_LIBRARY_PATH=./`).  
+在 windows 下直接运行可执行文件.  
 
 ## Step 3 配置运行环境
 ### 对于 MiraiCP Plugin 启动方法
