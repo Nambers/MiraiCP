@@ -349,12 +349,30 @@ namespace MiraiCP {
 
     Event::Event() : _all_events_(int(eventTypes::Types::count)) {}
 
-    bool Event::noRegistered(int index) {
-        return processor._all_events_[index].empty();
+    bool Event::internalNoRegistered(int index) const {
+        std::shared_lock lk(eventsMtx);
+        return _all_events_[index].empty();
     }
 
-    void Event::clear() noexcept {
-        for (auto &a: processor._all_events_) a.clear();
+    void Event::internalClear() noexcept {
+        std::unique_lock lk(eventsMtx);
+        for (auto &a: _all_events_) a.clear();
+    }
+
+    void Event::internalBroadcast(MiraiCPEvent *event, size_t eventId) const {
+        std::shared_lock lk(eventsMtx);
+        for (auto &&[k, v]: _all_events_[eventId]) {
+            for (auto &&a: v) {
+                if (a->run(event)) return;
+            }
+        }
+    }
+
+    NodeHandle *Event::internalRegister(std::function<bool(MiraiCPEvent *)> callback, size_t where, Event::priority_level level) {
+        std::unique_lock lk(eventsMtx);
+        auto &row = _all_events_[where][level];
+        row.emplace_back(std::make_unique<eventNode>(std::move(callback)));
+        return row[row.size() - 1]->getHandle();
     }
 
     BaseEventData::BaseEventData(nlohmann::json j) {

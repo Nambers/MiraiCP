@@ -70,8 +70,6 @@ namespace MiraiCP {
 
         template<class T, class... T1>
         static std::string constructString(T &&val, T1 &&...val1) {
-            // todo(Antares): 构造一个std::stringstream消耗很大，改为T类型实现序列化函数，
-            //  调用 T::serialize
             std::stringstream sstream;
             sstream << val;
             return sstream.str() + constructString(std::forward<T1>(val1)...);

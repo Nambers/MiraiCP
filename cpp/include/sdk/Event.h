@@ -25,6 +25,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <shared_mutex>
 #include <vector>
 
 
@@ -90,7 +91,7 @@ namespace MiraiCP {
 
     private: // member
         eventNodeTable _all_events_;
-        std::mutex eventsMtx;
+        mutable std::shared_mutex eventsMtx;
 
     private:
         Event();
@@ -105,20 +106,25 @@ namespace MiraiCP {
             return static_cast<size_t>(EventClass::get_event_type());
         }
 
+        bool internalNoRegistered(int index) const;
+
+        void internalClear() noexcept;
+
+        void internalBroadcast(MiraiCPEvent *event, size_t eventId) const;
+
+        NodeHandle *internalRegister(std::function<bool(MiraiCPEvent *)> callback, size_t where, priority_level level);
+
     public:
-        static bool noRegistered(int index);
+        static bool noRegistered(int index) {
+            return processor.internalNoRegistered(index);
+        }
 
         /// 清空全部配置
-        static void clear() noexcept;
+        static void clear() noexcept {
+            processor.internalClear();
+        }
 
         static void incomingEvent(BaseEventData j, int type);
-
-        static NodeHandle *internalRegister(std::function<bool(MiraiCPEvent *)> callback, size_t where, priority_level level) {
-            std::lock_guard lk(processor.eventsMtx);
-            auto &row = processor._all_events_[where][level];
-            row.emplace_back(std::make_unique<eventNode>(std::move(callback)));
-            return row[row.size() - 1]->getHandle();
-        }
 
         /// 广播一个事件, 必须为MiraiCPEvent的派生类
         template<typename EventClass>
@@ -126,11 +132,7 @@ namespace MiraiCP {
             using UnderlyingClass = std::decay_t<EventClass>;
             static_assert(std::is_base_of_v<MiraiCPEvent, UnderlyingClass>, "只支持广播MiraiCPEvent的派生类");
             MiraiCPEvent *p = &val;
-            for (auto &&[k, v]: processor._all_events_[id<UnderlyingClass>()]) {
-                for (auto &&a: v) {
-                    if (a->run(p)) return;
-                }
-            }
+            processor.internalBroadcast(p, id<UnderlyingClass>());
         }
 
         /**
@@ -142,16 +144,11 @@ namespace MiraiCP {
          */
         template<typename EventClass, typename = std::enable_if_t<std::is_base_of_v<MiraiCPEvent, EventClass>>>
         static NodeHandle *registerEvent(std::function<void(EventClass)> callback, priority_level level = 100) {
-            // static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
                 callback(*static_cast<EventClass *>(p));
                 return false;
             };
-            return internalRegister(std::move(tmp), id<EventClass>(), level);
-            //            std::lock_guard lk(processor.eventsMtx);
-            //            auto &row = processor._all_events_[id<EventClass>()][level];
-            //            row.emplace_back(std::make_unique<eventNode>(tmp));
-            //            return row[row.size() - 1]->getHandle();
+            return processor.internalRegister(std::move(tmp), id<EventClass>(), level);
         }
 
         /**
@@ -164,15 +161,10 @@ namespace MiraiCP {
          */
         template<typename EventClass, typename = std::enable_if_t<std::is_base_of_v<MiraiCPEvent, EventClass>>>
         static NodeHandle *registerBlockingEvent(std::function<bool(EventClass)> callback, priority_level level = 100) {
-            // static_assert(std::is_base_of_v<MiraiCPEvent, EventClass>, "只支持注册MiraiCPEvent的派生类事件");
             std::function<bool(MiraiCPEvent *)> tmp = [=](MiraiCPEvent *p) {
                 return callback(*static_cast<EventClass *>(p));
             };
-            return internalRegister(std::move(tmp), id<EventClass>(), level);
-            //            std::lock_guard lk(processor.eventsMtx);
-            //            auto &row = processor._all_events_[id<EventClass>()][level];
-            //            row.emplace_back(std::make_unique<eventNode>(tmp));
-            //            return row[row.size() - 1]->getHandle();
+            return processor.internalRegister(std::move(tmp), id<EventClass>(), level);
         }
     };
 } // namespace MiraiCP
