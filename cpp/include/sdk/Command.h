@@ -17,7 +17,8 @@
 #ifndef MIRAICP_PRO_COMMAND_H
 #define MIRAICP_PRO_COMMAND_H
 
-
+#include "MiraiCPMacros.h"
+// -----------------------
 #include <memory>
 #include <optional>
 #include <string>
@@ -35,7 +36,7 @@ namespace MiraiCP {
      * @attention loader端的命令只支持从console传入, plugin端是对接 mirai 的RawCommand
      * @note 析构函数必须重写基类，否则会造成内存泄漏
      */
-    class IRawCommand {
+    class MIRAICP_EXPORT IRawCommand {
     public:
         /// @brief Command 类的配置信息
         struct Config {

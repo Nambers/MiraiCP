@@ -47,6 +47,30 @@ namespace MiraiCP {
 
     using json = nlohmann::json;
 
+    class Event::eventNode {
+    public:
+        std::function<bool(MiraiCPEvent *)> func;
+
+    private:
+        /// 回调的handle，用于管理
+        NodeHandle _handle;
+
+    public:
+        eventNode() : func(nullptr), _handle(true) {}
+
+        explicit eventNode(std::function<bool(MiraiCPEvent *)> f) : func(std::move(f)), _handle(true) {}
+
+    public:
+        /// 返回true代表block之后的回调
+        bool run(MiraiCPEvent *a) const {
+            return _handle.isEnable() && func(a);
+        }
+
+        NodeHandle *getHandle() {
+            return &_handle;
+        }
+    };
+
     Event Event::processor;
 
     GroupMessageEvent::GroupMessageEvent(BaseEventData j) : BotEvent(j.botId),
@@ -418,6 +442,7 @@ namespace MiraiCP {
                 throw APIException("Type of builtInContact doesn't match or implement", MIRAICP_EXCEPTION_WHERE);
         }
     }
+
     struct NodeHandle::NodeHandleInternal {
         std::atomic<bool> flag;
     };
@@ -441,11 +466,4 @@ namespace MiraiCP {
         delete handle;
     }
 
-    bool Event::eventNode::run(MiraiCPEvent *a) const {
-        return _handle.isEnable() && func(a);
-    }
-
-    Event::eventNode::eventNode() : func(nullptr), _handle(true) {}
-
-    Event::eventNode::eventNode(std::function<bool(MiraiCPEvent *)> f) : func(std::move(f)), _handle(true) {}
 } // namespace MiraiCP

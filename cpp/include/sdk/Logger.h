@@ -41,7 +41,7 @@ namespace MiraiCP {
 	* @code Logger::logger.error(string) @endcode
     * @doxygenEg{1011, logger.cpp, 自定义日志handle}
     */
-    class Logger_interface {
+    class MIRAICP_EXPORT Logger_interface {
         using string = std::string;
 
     public:
@@ -142,7 +142,7 @@ namespace MiraiCP {
     };
 
     /// 带id(一般为bot账号)的logger
-    class IdLogger : public Logger_interface {
+    class MIRAICP_EXPORT IdLogger : public Logger_interface {
     public:
         QQID id;
 

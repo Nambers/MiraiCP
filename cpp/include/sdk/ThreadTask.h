@@ -17,6 +17,8 @@
 #ifndef MIRAICP_PRO_THREADTASK_H
 #define MIRAICP_PRO_THREADTASK_H
 
+#include "MiraiCPMacros.h"
+// -----------------------
 #include <functional>
 #include <future>
 #include <memory>
@@ -25,17 +27,17 @@
 
 namespace MiraiCP::ThreadTask {
     namespace internal {
-        void task_interface(size_t id);
+        MIRAICP_EXPORT void task_interface(size_t id);
 
-        size_t get_auto_incr_id();
+        MIRAICP_EXPORT size_t get_auto_incr_id();
 
-        void remove_task(size_t id);
+        MIRAICP_EXPORT void remove_task(size_t id);
 
-        void push_task(size_t id, std::shared_ptr<std::function<void()>> func);
+        MIRAICP_EXPORT void push_task(size_t id, std::shared_ptr<std::function<void()>> func);
 
-        void raw_push_task(void (*)());
+        MIRAICP_EXPORT void raw_push_task(void (*)());
 
-        void logerror(const std::string &content);
+        MIRAICP_EXPORT void logerror(const std::string &content);
     } // namespace internal
 
     /// @brief 提交一个任务到线程池，参数与构造 std::thread 以及 MiraiCPNewThread 用的参数相同。

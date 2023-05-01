@@ -276,7 +276,7 @@ namespace MiraiCP {
         };
     };
 
-    class INudgeSupport {
+    class MIRAICP_EXPORT INudgeSupport {
     public:
         virtual ~INudgeSupport() = default;
         /*!

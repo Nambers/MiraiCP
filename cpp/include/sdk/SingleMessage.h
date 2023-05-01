@@ -96,7 +96,7 @@ namespace MiraiCP {
     } // namespace SingleMessageType
 
     /// 用serviceMessage的分享信息
-    struct URLSharer {
+    struct MIRAICP_EXPORT URLSharer {
         /// 简介 没点进来看见的样子
         std::string brief = "简介 没点进来看见的样子";
         /// 目标url

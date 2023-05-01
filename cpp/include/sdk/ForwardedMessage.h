@@ -29,7 +29,7 @@ namespace MiraiCP {
     class ForwardedMessage;
 
     /// 转发信息显示策略, 目前好像只在转发信息内的转发信息生效
-    class ForwardedMessageDisplayStrategy {
+    class MIRAICP_EXPORT ForwardedMessageDisplayStrategy {
         using string = std::string;
 
     public:
@@ -56,7 +56,7 @@ namespace MiraiCP {
 
     ///聊天记录里每个消息
     /// todo 传入头像
-    class ForwardedNode {
+    class MIRAICP_EXPORT ForwardedNode {
     public:
         ///发送者id
         QQID id = 0;
@@ -92,7 +92,7 @@ namespace MiraiCP {
      * @see class ForwardedNode
      * @doxygenEg{1005, forwardMessage.cpp, 构建聊天记录}
      */
-    class ForwardedMessage : public SingleMessage {
+    class MIRAICP_EXPORT ForwardedMessage : public SingleMessage {
     private:
         /// 每条信息
         std::vector<ForwardedNode> nodes;

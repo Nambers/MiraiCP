@@ -29,7 +29,7 @@ namespace MiraiCP {
      * @brief 群成员类声明
      * @doxygenEg{1013, member.cpp, 群成员操作}
      */
-    class Member : public Contact, public INudgeSupport, public ContactDataHelper<Member, MemberData> {
+    class MIRAICP_EXPORT Member : public Contact, public INudgeSupport, public ContactDataHelper<Member, MemberData> {
         friend class Contact;
 
     public:

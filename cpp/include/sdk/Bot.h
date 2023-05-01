@@ -24,11 +24,11 @@
 
 
 namespace MiraiCP {
-    class Friend;       /// forward declaration
-    class Group;        /// forward declaration
+    class Friend; /// forward declaration
+    class Group;  /// forward declaration
 
     /// 当前bot账号信息
-    class Bot: public Contact {
+    class MIRAICP_EXPORT Bot : public Contact {
     public:
         /**
          * 用 id 构造 Bot 对象

@@ -29,7 +29,7 @@ namespace MiraiCP {
     /*!
      * @brief 群聊类
      */
-    class Group : public Contact, public ContactDataHelper<Group, GroupData> {
+    class MIRAICP_EXPORT Group : public Contact, public ContactDataHelper<Group, GroupData> {
     private:
         friend class Contact;
 

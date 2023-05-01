@@ -23,7 +23,7 @@
 
 namespace MiraiCP {
     /// 注册插件函数, 需要被插件实现, 类似onStart();
-    void enrollPlugin();
+    MIRAICP_EXPORT void enrollPlugin();
 
     /// 用指针绑定插件
     [[deprecated("use enrollPlugin<T> instead")]] inline void enrollPlugin(CPPPlugin *p) {

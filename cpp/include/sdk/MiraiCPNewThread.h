@@ -25,10 +25,8 @@
 
 
 namespace MiraiCP {
-
-
     /// MiraiCP 对 std::thread 的封装
-    class MiraiCPNewThread : public std::thread {
+    class MIRAICP_EXPORT MiraiCPNewThread : public std::thread {
     public:
         MiraiCPNewThread() noexcept = default;
 

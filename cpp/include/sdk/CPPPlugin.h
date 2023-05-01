@@ -26,7 +26,7 @@
 
 namespace MiraiCP {
     /// 插件父类
-    class CPPPlugin {
+    class MIRAICP_EXPORT CPPPlugin {
     public:
         // for api-compatible
         ShouldNotUse("请改为初始化静态常量 CPPPlugin::config") explicit CPPPlugin(const PluginConfig &) {

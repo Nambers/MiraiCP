@@ -30,7 +30,6 @@
 
 
 namespace MiraiCP {
-
     class MiraiCPEvent;
     class FriendRecallEvent;
     class MemberRecallEvent;
@@ -63,27 +62,7 @@ namespace MiraiCP {
 
     class MIRAICP_EXPORT Event {
     private: // typedefs
-        class eventNode {
-        public:
-            std::function<bool(MiraiCPEvent *)> func;
-
-        private:
-            /// 回调的handle，用于管理
-            NodeHandle _handle;
-
-        public:
-            eventNode();
-
-            explicit eventNode(std::function<bool(MiraiCPEvent *)> f);
-
-        public:
-            /// 返回true代表block之后的回调
-            bool run(MiraiCPEvent *a) const;
-
-            NodeHandle *getHandle() {
-                return &_handle;
-            }
-        };
+        class eventNode;
 
         using priority_level = unsigned char;
         using event_vector = std::vector<std::unique_ptr<eventNode>>;
