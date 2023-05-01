@@ -37,7 +37,7 @@ namespace MiraiCP {
 
     public:
         /// @brief 插件信息，一个插件中该内容不应变化
-        MIRAICP_EXPORT const static PluginConfig config;
+        const static PluginConfig config;
 
         inline static std::unique_ptr<CPPPlugin> plugin = nullptr;
 
