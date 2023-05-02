@@ -182,6 +182,18 @@ static_assert(false, "Unsupported platform");
 #endif
 
 
+#define MIRAICP_EXPORT_UNITTEST
+#ifdef GOOGLE_TEST
+#undef MIRAICP_EXPORT_UNITTEST
+#define MIRAICP_EXPORT_UNITTEST __declspec(dllimport)
+#else
+#ifdef ENABLE_UNITTEST
+#undef MIRAICP_EXPORT_UNITTEST
+#define MIRAICP_EXPORT_UNITTEST __declspec(dllexport)
+#endif
+#endif
+
+
 // data locker
 #define MIRAICP_DATALOCK std::shared_lock<std::shared_mutex> TOKEN_PASTE(local_lck_, __LINE__)(InternalData->getMutex())
 

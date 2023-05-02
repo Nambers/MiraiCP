@@ -17,7 +17,7 @@
 #include "MiraiCPNewThread.h"
 #include "Event.h"
 #include "Events/MiraiCPExceptionEvent.h"
-#include <ostream>
+#include <sstream>
 
 
 namespace MiraiCP {
