@@ -22,22 +22,8 @@
 #include <utility>
 
 namespace MiraiCP {
-    class Member;     /// forward declaration
-    struct GroupData; /// forward declaration
-
-
-    /*!
-     * @brief 群聊类
-     */
-    class MIRAICP_EXPORT Group : public Contact, public ContactDataHelper<Group, GroupData> {
-    private:
-        friend class Contact;
-
-        /**
-         * @brief 群设置
-         * @details 使用 Group::updateSetting 上传设置，后面两项由于 https://github.com/mamoe/mirai/issues/1307 还不能改
-         */
-    public: // nested classes and structs
+    class Group;
+    namespace internal {
         struct GroupSetting {
             /// 群名称
             std::string name;
@@ -51,7 +37,6 @@ namespace MiraiCP {
             bool isAnonymousChatEnabled{};
         };
 
-        /// 群公告参数
         struct AnnouncementParams {
             /// 发送给新成员
             bool send2new;
@@ -68,7 +53,6 @@ namespace MiraiCP {
             nlohmann::json serializeToJson();
         };
 
-        /// 在线群公告
         struct OnlineAnnouncement {
             /// 内容
             std::string content;
@@ -96,7 +80,6 @@ namespace MiraiCP {
             static OnlineAnnouncement deserializeFromJson(const nlohmann::json &);
         };
 
-        /// 本地(未发送)群公告
         struct OfflineAnnouncement {
             /// 内容
             std::string content;
@@ -104,8 +87,36 @@ namespace MiraiCP {
             AnnouncementParams params;
 
             /// 发布群公告
-            Group::OnlineAnnouncement publishTo(const Group &);
+            OnlineAnnouncement publishTo(const Group &);
         };
+    }                 // namespace internal
+    class Member;     /// forward declaration
+    struct GroupData; /// forward declaration
+
+
+    /*!
+     * @brief 群聊类
+     */
+    class MIRAICP_EXPORT Group : public Contact, public ContactDataHelper<Group, GroupData> {
+    private:
+        friend class Contact;
+
+        /**
+         * @brief 群设置
+         * @details 使用 Group::updateSetting 上传设置，后面两项由于 https://github.com/mamoe/mirai/issues/1307 还不能改
+         */
+    public: // nested classes and structs
+        /// 群设置
+        using GroupSetting = ::MiraiCP::internal::GroupSetting;
+
+        /// 群公告参数
+        using AnnouncementParams = ::MiraiCP::internal::AnnouncementParams;
+
+        /// 在线群公告
+        using OnlineAnnouncement = ::MiraiCP::internal::OnlineAnnouncement;
+
+        /// 本地(未发送)群公告
+        using OfflineAnnouncement = ::MiraiCP::internal::OfflineAnnouncement;
 
         DECL_GETTER(GroupSetting, setting)
 

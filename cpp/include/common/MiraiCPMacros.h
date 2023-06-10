@@ -198,21 +198,23 @@ static_assert(false, "Unsupported platform");
 #define MIRAICP_DATALOCK std::shared_lock<std::shared_mutex> TOKEN_PASTE(local_lck_, __LINE__)(InternalData->getMutex())
 
 
+// raw data pointer getter, can only be used in source files
+#define GET_DATA_INTERNAL() GetDataInternal<LOC_CLASS_NAMESPACE::DataType>(InternalData)
+
+
 // getter
-// need to define macro LOC_CLASS_NAMESPACE to the class first!
+// the latter two can only be used in source files and need to define macro LOC_CLASS_NAMESPACE to that scope first!
 #define DECL_GETTER(type, attr) type attr();
 #define IMPL_GETTER(attr)                                                          \
     decltype(LOC_CLASS_NAMESPACE::DataType::_##attr) LOC_CLASS_NAMESPACE::attr() { \
         InternalData->requestRefresh();                                            \
         MIRAICP_DATALOCK;                                                          \
-        return GetDataInternal()->_##attr;                                         \
+        return GET_DATA_INTERNAL()->_##attr;                                         \
     }
 #define NOLOCK_IMPL_GETTER(attr)                                                   \
     decltype(LOC_CLASS_NAMESPACE::DataType::_##attr) LOC_CLASS_NAMESPACE::attr() { \
-        return GetDataInternal()->_##attr;                                         \
+        return GET_DATA_INTERNAL()->_##attr;                                         \
     }
-#define INLINE_GETTER(attr) \
-    auto attr() { return GetDataInternal()->_##attr; }
 
 
 // api declarer

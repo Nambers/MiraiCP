@@ -84,7 +84,7 @@ namespace MiraiCP {
     }
 
     Member::Member(nlohmann::json in_json) : Contact(GetMemberFromPool(in_json)) {
-        auto ActualDataPtr = GetDataInternal();
+        auto ActualDataPtr = GET_DATA_INTERNAL();
         assert(ActualDataPtr != nullptr);
         bool needrefresh = false;
         if (in_json.contains("nickOrNameCard")) ActualDataPtr->_nickOrNameCard = json_stringmover(in_json, "nickOrNameCard");

@@ -62,7 +62,29 @@ namespace MiraiCP {
 
     class MIRAICP_EXPORT Event {
     private: // typedefs
-        class eventNode;
+        struct eventNode {
+        public:
+            std::function<bool(MiraiCPEvent *)> func;
+
+        private:
+            /// 回调的handle，用于管理
+            NodeHandle _handle;
+
+        public:
+            eventNode() : func(nullptr), _handle(true) {}
+
+            explicit eventNode(std::function<bool(MiraiCPEvent *)> f) : func(std::move(f)), _handle(true) {}
+
+        public:
+            /// 返回true代表block之后的回调
+            bool run(MiraiCPEvent *a) const {
+                return _handle.isEnable() && func(a);
+            }
+
+            NodeHandle *getHandle() {
+                return &_handle;
+            }
+        };
 
         using priority_level = unsigned char;
         using event_vector = std::vector<std::unique_ptr<eventNode>>;

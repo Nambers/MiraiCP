@@ -71,7 +71,7 @@ namespace MiraiCP {
     }
 
     Group::Group(json in_json) : Contact(GetGroupFromPool(in_json)) {
-        auto ActualDataPtr = GetDataInternal();
+        auto ActualDataPtr = GET_DATA_INTERNAL();
         assert(ActualDataPtr != nullptr);
 
         bool needRefresh = false;
@@ -246,8 +246,6 @@ namespace MiraiCP {
         return getMember(a);
     }
 
-    IMPL_GETTER(setting)
-
     void GroupData::refreshInfo() {
         std::string re = LowLevelAPI::getInfoSource(internalToJson());
         LowLevelAPI::info tmp = LowLevelAPI::info0(re);
@@ -277,11 +275,13 @@ namespace MiraiCP {
     }
 
     QQID Group::groupId() {
-        return GetDataInternal()->_groupId;
+        return GET_DATA_INTERNAL()->_groupId;
     }
 
     MessageSource Group::sendVoice(std::string path) {
         return sendVoiceImpl(std::move(path));
     }
+
+    IMPL_GETTER(setting)
 #undef LOC_CLASS_NAMESPACE
 } // namespace MiraiCP

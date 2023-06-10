@@ -24,6 +24,7 @@
 
 
 namespace MiraiCP {
+#define LOC_CLASS_NAMESPACE Friend
     using json = nlohmann::json;
 
     auto GetFriendPool(QQID id, QQID botid) noexcept {
@@ -52,7 +53,7 @@ namespace MiraiCP {
     }
 
     Friend::Friend(nlohmann::json in_json) : Contact(GetFriendPool(in_json)) {
-        auto ActualDataPtr = GetDataInternal();
+        auto ActualDataPtr = GET_DATA_INTERNAL();
         assert(ActualDataPtr != nullptr);
 
         bool needRefresh = false;
@@ -77,4 +78,5 @@ namespace MiraiCP {
         if (re == "E1")
             throw IllegalStateException("发送戳一戳失败，登录协议不为phone/ipad", MIRAICP_EXCEPTION_WHERE);
     }
+#undef LOC_CLASS_NAMESPACE
 } // namespace MiraiCP

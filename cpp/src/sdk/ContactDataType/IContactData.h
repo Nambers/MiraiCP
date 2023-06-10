@@ -50,7 +50,17 @@ namespace MiraiCP {
         void updateJson(nlohmann::json &jsonToUpdate) const;
     };
 
-
+    /**
+     * @brief 获取指向的数据的裸指针，实际取内容时必须通过该函数，否则可能会取不到。
+     * @note dev: 为了让getter正常地拥有const语义, 该函数不可以由外部调用.
+     *  该函数使用const qualifier, 但返回非const的指针类型. 若允许外部调用可能造成数据问题。
+     * @see IMPL_GETTER
+     */
+    template<typename DataType>
+    DataType *GetDataInternal(std::shared_ptr<IContactData> &Data) {
+        assert(Data != nullptr);
+        return static_cast<DataType *>(Data.get());
+    }
 } // namespace MiraiCP
 
 #endif //MIRAICP_PRO_ICONTACTDATA_H

@@ -246,21 +246,7 @@ namespace MiraiCP {
     template<typename ClassType, typename InternalDataType>
     struct ContactDataHelper {
         typedef InternalDataType DataType;
-
-    protected:
         using json = nlohmann::json;
-
-        /**
-         * @brief 获取指向的数据的裸指针，实际取内容时必须通过该函数，否则可能会取不到。
-         * @note dev: 为了让getter正常地拥有const语义, 该函数不可以由外部调用.
-         *  该函数使用const qualifier, 但返回非const的指针类型. 若允许外部调用可能造成数据问题。
-         * @see IMPL_GETTER, INLINE_GETTER
-         */
-        DataType *GetDataInternal() const {
-            auto clz_ptr = static_cast<const ClassType *>(this);
-            assert(clz_ptr->InternalData != nullptr);
-            return static_cast<DataType *>(clz_ptr->InternalData.get());
-        }
 
     public:
         /// 群名称，群成员群名片，或好友昵称
