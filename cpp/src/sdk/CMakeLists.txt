@@ -1,8 +1,10 @@
 # common build options for sdk
 add_library(sdkCommon INTERFACE)
 target_compile_definitions(sdkCommon INTERFACE MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
+# include paths
+target_link_libraries(sdkCommon INTERFACE SDKCommonInclude)
 add_library(sdkCommonMulti INTERFACE)
-target_link_libraries(sdkCommonMulti INTERFACE sdkCommon SDKCommonInclude)
+target_link_libraries(sdkCommonMulti INTERFACE sdkCommon)
 
 # -- miraicp multi --
 file(GLOB MIRAICP_CPP_PATH ${SRC_PATH}/sdk/*.cpp)
