@@ -8,7 +8,7 @@ set_target_properties(
 )
 
 target_link_directories(AllTestForPlugin_Multi PUBLIC ${CMAKE_BINARY_DIR})
-target_link_libraries(AllTestForPlugin_Multi PUBLIC GTest::gtest_main MiraiCP_multi)
+target_link_libraries(AllTestForPlugin_Multi PUBLIC GTest::gtest_main MiraiCP_multi SDKCommonInclude)
 target_compile_definitions(AllTestForPlugin_Multi PUBLIC GOOGLE_TEST MIRAICP_LIB_SDK)
 
 add_dependencies(AllTestForPlugin_Multi MiraiCP_multi)

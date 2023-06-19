@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Eritque arcus and contributors.
+// Copyright (c) 2022 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -17,6 +17,7 @@
 #include "MiraiCPNewThread.h"
 #include "MockLibLoaderApi.h"
 #include "Tools.h"
+#include "Logger.h"
 #include <gtest/gtest.h>
 #include <iostream>
 

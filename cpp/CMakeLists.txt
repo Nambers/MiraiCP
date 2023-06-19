@@ -7,6 +7,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(commonBuild INTERFACE)
+# for sharing including path
+add_library(SDKCommonInclude INTERFACE)
+add_library(libLoaderCommonInclude INTERFACE)
 
 if (MSVC)
     message("MSVC detected")
@@ -53,6 +56,22 @@ add_subdirectory(cmake/static)
 if (CMAKE_SYSTEM_NAME STREQUAL Android)
     message("Android build detected") # TODO(Antares)
 endif ()
+
+# -- share included paths --
+# should be included after JNI check since ${3RD_PATH}
+
+target_include_directories(SDKCommonInclude INTERFACE
+        ${3RD_PATH}
+        ${INCLUDE_PATH}/common
+        ${SRC_PATH}/common
+        ${INCLUDE_PATH}/sdk
+        ${SRC_PATH}/sdk)
+target_include_directories(libLoaderCommonInclude INTERFACE
+        ${3RD_PATH}
+        ${INCLUDE_PATH}/common
+        ${SRC_PATH}/common
+        ${JNI_PATH}
+        ${SRC_PATH}/libloader)
 
 # -- set command names according to platform --
 if (WIN32)

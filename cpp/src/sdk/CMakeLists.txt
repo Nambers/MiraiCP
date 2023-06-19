@@ -1,15 +1,8 @@
-set(SDK_INCLUDES_INTERNAL
-        ${INCLUDE_PATH}/sdk
-        ${SRC_PATH}/sdk
-        ${3RD_PATH})
-set(SDK_INCLUDES_ALL ${SDK_INCLUDES_INTERNAL} PARENT_SCOPE)
-
 # common build options for sdk
 add_library(sdkCommon INTERFACE)
 target_compile_definitions(sdkCommon INTERFACE MIRAICP_LIB_SDK JSON_MultipleHeaders=ON)
 add_library(sdkCommonMulti INTERFACE)
-target_link_libraries(sdkCommonMulti INTERFACE sdkCommon)
-target_include_directories(sdkCommonMulti INTERFACE ${SDK_INCLUDES_INTERNAL})
+target_link_libraries(sdkCommonMulti INTERFACE sdkCommon SDKCommonInclude)
 
 # -- miraicp multi --
 file(GLOB MIRAICP_CPP_PATH ${SRC_PATH}/sdk/*.cpp)

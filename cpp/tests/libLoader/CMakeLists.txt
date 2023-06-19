@@ -8,7 +8,7 @@ set_target_properties(
 )
 
 target_link_directories(AllTestForLibLoader PUBLIC ${CMAKE_BINARY_DIR})
-target_link_libraries(AllTestForLibLoader PUBLIC GTest::gtest_main Loader)
+target_link_libraries(AllTestForLibLoader PUBLIC GTest::gtest_main Loader libLoaderCommonInclude)
 target_compile_definitions(AllTestForLibLoader PUBLIC MIRAICP_LIB_LOADER GOOGLE_TEST)
 
 add_dependencies(AllTestForLibLoader Loader)

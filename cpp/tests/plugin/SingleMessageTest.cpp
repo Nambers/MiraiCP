@@ -22,6 +22,8 @@
 #include "SingleMessage.h"
 #include "MessageChain.h"
 #include "MessageSource.h"
+// for implementation
+#include <json.hpp>
 
 using namespace MiraiCP;
 

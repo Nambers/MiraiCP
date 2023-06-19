@@ -2,7 +2,7 @@ file(GLOB LOADER_PATH ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 # common build options for loader
 add_library(loaderCommon INTERFACE)
-target_include_directories(loaderCommon INTERFACE ${JNI_PATH} ${SRC_PATH}/libloader)
+target_link_libraries(loaderCommon INTERFACE libLoaderCommonInclude)
 target_compile_definitions(loaderCommon INTERFACE MIRAICP_LIB_LOADER JSON_MultipleHeaders=ON)
 
 # -- MiraiCP libLoader --
