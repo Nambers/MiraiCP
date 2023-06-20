@@ -29,11 +29,11 @@ namespace LibLoader::LoaderApi {
 } // namespace LibLoader::LoaderApi
 class LoaderApiMock {
 public:
-    static MiraiCPString pluginOperation(const MiraiCPString &) {
-        return "";
+    static MiraiCPString pluginOperation(MiraiCPStringview) {
+        return {};
     }
     static void loggerInterface(const MiraiCPString &content, const MiraiCPString &name, long long id, int level) {}
-    static MiraiCPString showAllPluginId() { return ""; }
+    static MiraiCPString showAllPluginId() { return {}; }
     static void enablePluginById(const MiraiCPString &) {}
     static void disablePluginById(const MiraiCPString &) {}
     static void pushTask(void (*)()) {}

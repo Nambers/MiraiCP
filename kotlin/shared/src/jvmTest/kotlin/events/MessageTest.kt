@@ -122,5 +122,24 @@ class MessageTest : TestBase() {
             add(At(111))
         })
     }
+
+    @Test
+    fun groupMusicShareTest() = runBlocking {
+        member.says("MusicShareMiraiCode")
+        waitUntilEnd()
+        checkMessageChainJsonResultFromLog(buildMessageChain {
+            add(
+                MusicShare(
+                    MusicKind.NeteaseCloudMusic,
+                    "title",
+                    "summary",
+                    "jumpUrl",
+                    "pictureUrl",
+                    "musicUrl",
+                    "brief"
+                )
+            )
+        })
+    }
     // nudge is in Event test
 }

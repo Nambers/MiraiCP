@@ -87,6 +87,11 @@ public:
             TEST(message, groupSendMessageTest, {
                 a.group.sendMessage(a.message);
             })
+            TEST(MusicShareMiraiCode, groupMusicShareTest, {
+                auto msg = MessageChain(MusicShare("NeteaseCloudMusic", "title", "summary", "jumpUrl", "pictureUrl", "musicUrl", "brief"));
+                Logger::logger.info("after_serialization:", msg.toJson().dump());
+                a.group.sendMessage(msg);
+            })
             TEST(nudge, memberNudgeTest, {
                 a.sender.sendNudge();
             })
@@ -116,7 +121,7 @@ public:
                 Logger::logger.info(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
                 auto img = a.group.uploadImg(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
                 a.group.sendMessage(img);
-//                assert(img.size != 0);
+                assert(img.size != 0);
             })
             TEST(botList, queryBotListTest, {
                 Logger::logger.info("botList:", a.bot.FriendListToString());

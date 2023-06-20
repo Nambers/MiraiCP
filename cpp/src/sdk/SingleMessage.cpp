@@ -445,6 +445,21 @@ namespace MiraiCP {
         return "[mirai:musicshare:" + appName + "," + title + "," + summary + "," + jumpUrl + "," + picUrl + "," + musicUrl + "," + brief + "]";
     }
 
+    // impl: {"type":"MusicShare","kind":"NeteaseCloudMusic","title":"title","summary":"summary","jumpUrl":"jumpUrl","pictureUrl":"pictureUrl","musicUrl":"musicUrl","brief":"brief"}
+    json MusicShare::toJson() const {
+        return {{"type", SingleMessage::messageType[this->internalType]},
+                {"kind", appName},
+                {"title", title},
+                {"summary", summary},
+                {"jumpUrl", jumpUrl},
+                {"pictureUrl", picUrl},
+                {"musicUrl", musicUrl},
+                {"brief", brief}};
+    }
+    std::string MusicShare::toString() const {
+        return this->toJson().dump();
+    }
+
     MarketFace::MarketFace(std::array<uint8_t, 16> id) : SingleMessage(MarketFace::type(), ""), faceId(id) {}
 
     bool MarketFace::operator==(const MarketFace &mf) const {

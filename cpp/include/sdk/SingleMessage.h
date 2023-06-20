@@ -553,7 +553,7 @@ namespace MiraiCP {
             return Types::MusicShare_t;
         }
 
-        /// 应用名称, 如NeteaseCloudMusic
+        /// 应用名称, 如 NeteaseCloudMusic
         std::string appName;
         /// 歌名
         std::string title;
@@ -578,6 +578,9 @@ namespace MiraiCP {
                    std::string brief);
 
         [[nodiscard]] std::string toMiraiCode() const override;
+
+        nlohmann::json toJson() const override;
+        std::string toString() const;
     };
 
     class MIRAICP_EXPORT MarketFace : public SingleMessage {
