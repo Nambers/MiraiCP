@@ -221,6 +221,7 @@ class OperationTest : TestBase() {
         waitUntilEnd()
     }
 
+    // TODO Need mirai v2.15.0-RC. mirai/pull/2582
     @Test
     fun imgUploaded() = runBlocking {
         member.says(buildMessageChain {

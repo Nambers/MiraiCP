@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+ * Copyright (c) 2020 - 2023. Eritque arcus and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,7 +37,7 @@ allprojects {
         withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
             kotlinOptions {
 //                freeCompilerArgs += "-Xjvm-default=enable"
-                freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+                freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
                 kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
             }
         }
