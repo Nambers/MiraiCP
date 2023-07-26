@@ -31,7 +31,7 @@ version = Version.miraiCP
 description = "Plugin version for MiraiCP"
 
 mirai {
-    jvmTarget = JavaVersion.VERSION_15
+    jvmTarget = JavaVersion.VERSION_17
 }
 
 tasks {
@@ -78,9 +78,10 @@ mavenCentralPublish {
     }
 }
 dependencies {
-    implementation(project(":utils"))
     compileOnly(`mirai-core-api`)
     implementation(`kotlinx-coroutines-core`)
+
     implementation(project(":shared"))
+
     testImplementation(project(":TestUtils"))
 }

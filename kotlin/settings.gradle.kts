@@ -17,11 +17,10 @@
  */
 
 rootProject.name = "MiraiCP"
+include("TestUtils")
 include("shared")
 include("plugin")
 include("loader")
-include("utils")
-include("TestUtils")
 project(":plugin").name = "MiraiCP-plugin"
 project(":loader").name = "MiraiCP-loader"
 

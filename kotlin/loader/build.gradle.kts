@@ -21,76 +21,29 @@ import Version.`kotlinx-coroutines-core`
 import Version.`mirai-core`
 import Version.`mirai-logging`
 import Version.miraiCP
-import Version.mordant
-import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-    kotlin("multiplatform")
+    kotlin("jvm")
+    application
+    kotlin("plugin.serialization")
+    id("com.github.johnrengelman.shadow")
 }
 
-kotlin {
-    jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-        withJava()
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
-    }
-    val hostOs = System.getProperty("os.name")
-    val nativeTarget = when {
-        hostOs == "Mac OS X" -> macosX64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        hostOs.startsWith("Windows") -> mingwX64("native")
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }
-    nativeTarget.binaries {
-        executable {
-            this.baseName = "MiraiCP-loader-v$miraiCP"
-        }
-    }
-    sourceSets {
-        val commonMain by getting {
-            apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
-            dependencies {
-                implementation(project(":shared"))
-                implementation(project(":utils"))
-                implementation(`mirai-core`)
-                implementation(`kotlinx-coroutines-core`)
-            }
-        }
+project.setProperty("mainClassName", "tech.eritquearcus.miraicp.loader.KotlinMainEntry")
 
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
+dependencies {
+    implementation(`mirai-core`)
+    implementation(`kotlinx-coroutines-core`)
+    implementation(jansi)
+    implementation(`mirai-logging`)
+    implementation(jline)
 
-        val jvmMain by getting {
-            apply(plugin = "com.github.johnrengelman.shadow")
-            apply(plugin = "application")
-            dependencies {
-                implementation(jansi)
-                implementation(`mirai-logging`)
-                implementation(jline)
-            }
-            project.setProperty("mainClassName", "tech.eritquearcus.miraicp.loader.KotlinMainEntry")
-        }
-        val jvmTest by getting {
-            dependencies {
-                dependsOn(jvmMain)
-                implementation(project(":TestUtils"))
-            }
-        }
-        val nativeMain by getting {
-            dependencies {
-                implementation(mordant)
-            }
-        }
-        val nativeTest by getting
-    }
+    implementation(project(":shared"))
+
+    testImplementation(kotlin("test"))
+    testImplementation(project(":TestUtils"))
 }
+
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     dependsOn(":fillingConstants")
     archiveBaseName.set("MiraiCP-loader")
@@ -106,16 +59,6 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>() {
     dependsOn(":fillingConstants")
-}
-afterEvaluate {
-    tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>("linkDebugExecutableNative").apply {
-        this.configure {
-            if (Os.isFamily(Os.FAMILY_UNIX)) {
-                // https://youtrack.jetbrains.com/issue/KT-52510/Native-undefined-reference-during-interop-with-Rust
-                this.kotlinOptions.freeCompilerArgs += listOf("-linker-option", "--allow-shlib-undefined")
-            }
-        }
-    }
 }
 
 

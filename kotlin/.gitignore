@@ -13,3 +13,4 @@ config.json
 device.json
 
 c.txt
+hs_err_pid*.log

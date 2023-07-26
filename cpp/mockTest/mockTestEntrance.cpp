@@ -118,8 +118,8 @@ public:
                 CommandManager::registerCommand<CustomCommand>();
             })
             TEST(image, uploadImageTest, {
-                Logger::logger.info(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
-                auto img = a.group.uploadImg(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
+                Logger::logger.info(absolute(std::filesystem::path("./src/test/resources/img.png")).string());
+                auto img = a.group.uploadImg(absolute(std::filesystem::path("./src/test/resources/img.png")).string());
                 a.group.sendMessage(img);
                 assert(img.size != 0);
             })
@@ -130,7 +130,7 @@ public:
                 Logger::logger.info("botList:",a.bot.OnlineBotsListToString());
             })
             TEST(sendFile, sendFileTest, {
-                a.group.sendFile("/img/img.png", absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
+                a.group.sendFile("/img/img.png", absolute(std::filesystem::path("./src/test/resources/img.png")).string());
             })
             TEST(groupFileListRoot, groupFileListRootTest, {
                 Logger::logger.info("fileList:", a.group.getFileListString("/"));
@@ -146,7 +146,7 @@ public:
                 Logger::logger.info("reId" + std::to_string(a.group.getOwner().id()));
             })
             TEST(voice, uploadVoiceTest, {
-                a.group.sendVoice(absolute(std::filesystem::path("./src/jvmTest/resources/mic.amr")).string());
+                a.group.sendVoice(absolute(std::filesystem::path("./src/test/resources/mic.amr")).string());
             })
             TEST(groupSetting, getGroupSettingTest, {
                 auto settings = a.group.setting();
@@ -184,7 +184,7 @@ public:
                 }
             })
             TEST(imgUploaded, , {
-                auto img = a.group.uploadImg(absolute(std::filesystem::path("./src/jvmTest/resources/img.png")).string());
+                auto img = a.group.uploadImg(absolute(std::filesystem::path("./src/test/resources/img.png")).string());
                 Logger::logger.info(img.toJson().dump());
                 if (img.isUploaded(a.bot.id())) {
                     testEnd("imgUploadedTest");

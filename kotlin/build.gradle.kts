@@ -50,7 +50,7 @@ tasks {
     register("fillingConstants") {
         group = "build"
         doFirst {
-            File(projectDir, "shared/src/commonMain/kotlin/BuiltInConstants.kt")
+            File(projectDir, "shared/src/main/kotlin/BuiltInConstants.kt")
                 .let {
                     println("write to ${it.absolutePath}")
                     it.writeText(
@@ -66,17 +66,6 @@ tasks {
                             .replace(
                                 Regex("""val miraiVersion = "(.*)""""),
                                 "val miraiVersion = \"${Version.mirai}\""
-                            )
-                    )
-                }
-            File(projectDir, "loader/src/nativeMain/kotlin/scripts/runMiraiCP.sh")
-                .let {
-                    println("write to ${it.absolutePath}")
-                    it.writeText(
-                        it.readText()
-                            .replace(
-                                Regex("""./MiraiCP-loader-v(.*).kexe"""),
-                                "./MiraiCP-loader-v${Version.miraiCP}.kexe"
                             )
                     )
                 }

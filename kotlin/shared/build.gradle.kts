@@ -20,51 +20,21 @@ import Version.`mirai-core-api`
 import Version.`mirai-core-utils`
 
 plugins {
-    kotlin("multiplatform")
+    kotlin("jvm")
+    kotlin("plugin.serialization")
 }
 group = "tech.eritquearcus"
 version = Version.miraiCP
-kotlin {
-    jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-        withJava()
-    }
-    val hostOs = System.getProperty("os.name")
-    when {
-        hostOs == "Mac OS X" -> macosX64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        hostOs.startsWith("Windows") -> mingwX64("native")
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }.compilations.all {
-        cinterops {
-            this.maybeCreate("localOpenSSL&Curl")
-            this.create("localMiraiCP")
-        }
-    }
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(project(":utils"))
-                implementation(`mirai-core-api`)
-                implementation(`mirai-core-utils`)
-                implementation(`kotlinx-coroutines-core`)
-            }
-            apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
-        }
-        val jvmMain by getting
-        val jvmTest by getting {
-            dependencies {
-                // receive test dependencies (junit etc...) from here
-                implementation(project(":TestUtils"))
-            }
-        }
-        val nativeMain by getting
-    }
+
+dependencies {
+    implementation(`mirai-core-api`)
+    implementation(`mirai-core-utils`)
+    implementation(`kotlinx-coroutines-core`)
+
+    testImplementation(project(":TestUtils"))
 }
 
-tasks.named<Test>("jvmTest") {
+tasks.named<Test>("test") {
     useJUnitPlatform()
     testLogging {
         showExceptions = true

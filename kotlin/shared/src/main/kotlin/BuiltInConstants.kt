@@ -16,21 +16,10 @@
  *
  */
 
-import Version.`junit-jupiter`
-import Version.`kotlin-test`
-import Version.`mirai-core-mock`
+package tech.eritquearcus.miraicp.shared
 
-plugins {
-    kotlin("jvm")
-}
-group = "tech.eritquearcus"
-version = Version.miraiCP
-
-dependencies {
-    // pass junit and other dependencies
-    api(`junit-jupiter`)
-    api(`kotlin-test`)
-    api(`mirai-core-mock`)
-
-    implementation(project(":shared"))
+object BuiltInConstants {
+    const val date = "Thu Jul 27 00:11:05 CST 2023"
+    const val version = "2.15.0-RC2"
+    const val miraiVersion = "2.15.0-M1"
 }

@@ -25,7 +25,7 @@ object Version {
     const val `kotlinx-coroutines-core` = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     const val `kotlin-test` = "org.jetbrains.kotlin:kotlin-test:$kotlin"
 
-    const val mirai = "2.15.0-M1"
+    const val mirai = "2.15.0"
     const val `mirai-core-api` = "net.mamoe:mirai-core-api:$mirai"
     const val `mirai-core-utils` = "net.mamoe:mirai-core-utils:$mirai"
     const val `mirai-console` = "net.mamoe:mirai-console:$mirai"
@@ -36,7 +36,6 @@ object Version {
     const val mavenCenterPublish = "1.0.0"
     const val jline = "org.jline:jline:3.21.0"
     const val jansi = "org.fusesource.jansi:jansi:2.4.0"
-    const val mordant = "com.github.ajalt.mordant:mordant:2.0.0-beta10"
 
     const val `junit-jupiter` = "org.junit.jupiter:junit-jupiter:5.8.1"
 }
