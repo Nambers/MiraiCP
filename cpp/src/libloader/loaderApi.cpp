@@ -35,34 +35,16 @@ namespace LibLoader {
     std::condition_variable &loaderWakeCV();
 } // namespace LibLoader
 
-#ifdef LOADER_NATIVE
-namespace LoaderAPIs {
-    using OperFunc = char **(*) (const char *);
-    extern OperFunc oper;
-}; // namespace LoaderAPIs
-
-inline MiraiCP::MiraiCPString *retrieveString(char **inPtr) {
-    return reinterpret_cast<MiraiCP::MiraiCPString *>(inPtr);
-}
-#endif
-
 namespace LibLoader::LoaderApi {
     using MiraiCP::MiraiCPString;
     /// interfaces for plugins
 
     MiraiCPString pluginOperation(MiraiCPStringview s) {
-#ifdef LOADER_NATIVE
-        auto nCharPtr = s.c_str();
-        auto str = retrieveString(LoaderAPIs::oper(nCharPtr));
-        MIRAICP_DEFER(delete str;);
-        return std::move(*str);
-#else
         auto env = JNIEnvManager::getEnv();
         auto tmp = jstring2str((jstring) env->CallStaticObjectMethod(JNIEnvs::Class_cpplib,
                                                                      JNIEnvs::koper,
                                                                      str2jstring(s.c_str())));
         return {tmp};
-#endif
     }
 
     void loggerInterface(const MiraiCPString &content, const MiraiCPString &name, long long id, int level) {

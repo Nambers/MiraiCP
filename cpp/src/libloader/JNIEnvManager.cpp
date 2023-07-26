@@ -14,8 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LOADER_NATIVE
-
 #include "LoaderMacro.h"
 // -----------------------
 #include "JNIEnvManager.h"
@@ -89,5 +87,3 @@ namespace EnvMocker {
         thread_info = JNIEnvManager::ThreadInfo();
     }
 } // namespace EnvMocker
-
-#endif //LOADER_NATIVE

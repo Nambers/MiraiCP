@@ -9,18 +9,11 @@
 // -----------------------
 
 
-#ifdef LOADER_NATIVE
-#define JSTRING const char *
-#define J_TO_STD_STRING std::string
-#define SET_ENV(x)
-#define J_ARGS
-#else
 #include <jni.h>
 #define JSTRING jstring
 #define J_TO_STD_STRING LibLoader::jstring2str
 #define SET_ENV(x) JNIEnvManager::setEnv(x)
 #define J_ARGS JNIEnv *, jobject
-#endif
 
 #if MIRAICP_TERMUX || MIRAICP_ANDROID
 #define MIRAICP_JNIPPTR

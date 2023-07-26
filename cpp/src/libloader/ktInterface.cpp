@@ -27,13 +27,9 @@
 #include <condition_variable>
 #include <thread>
 
-#ifdef LOADER_NATIVE
-#include <cstdio>
-#else
 #include "JNIEnvs.h"
 #include "LoaderMacro.h"
 #include "loaderTools.h"
-#endif
 
 namespace LibLoader {
     void registerAllPlugin(const std::string &) noexcept;
@@ -81,38 +77,6 @@ void PluginDisableImpl() {
     LibLoader::loaderThread.join();
 }
 
-#ifdef LOADER_NATIVE
-namespace LoaderAPIs {
-    using LogFunc = void (*)(const char *, int);
-    using OperFunc = char **(*) (const char *);
-    LogFunc log = nullptr;
-    OperFunc oper = nullptr;
-} // namespace LoaderAPIs
-
-extern "C" {
-MIRAICP_EXPORT void Verify(const char *a, const char *b, LoaderAPIs::OperFunc inOper, LoaderAPIs::LogFunc inLog) {
-    printf("call Verify(%s, %s)\n", a, b);
-    LoaderAPIs::log = inLog;
-    LoaderAPIs::oper = inOper;
-    VerifyImpl(a, b);
-}
-
-MIRAICP_EXPORT void Event(const char *a) {
-    printf("call Event(%s)\n", a);
-    EventImpl(a);
-}
-
-MIRAICP_EXPORT void PluginDisable() {
-    PluginDisableImpl();
-}
-
-MIRAICP_EXPORT char **NewString(size_t inSize) {
-    auto str = new MiraiCP::MiraiCPString;
-    str->reserve(inSize);
-    return reinterpret_cast<char **>(str);
-}
-}
-#else
 /// 实际初始化函数
 /// 1. 设置全局变量
 /// 2. 开启loader线程并获取插件入口函数的返回值
@@ -173,4 +137,3 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     }
     return MIRAICP_JVER;
 }
-#endif

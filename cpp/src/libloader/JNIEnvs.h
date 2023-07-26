@@ -17,8 +17,6 @@
 #ifndef MIRAICP_PRO_JNIENVS_H
 #define MIRAICP_PRO_JNIENVS_H
 
-#ifndef LOADER_NATIVE
-
 #include "JNIEnvManager.h"
 
 namespace LibLoader::JNIEnvs {
@@ -33,5 +31,4 @@ namespace LibLoader::JNIEnvs {
     void initializeMiraiCPLoader();
 } // namespace LibLoader::JNIEnvs
 
-#endif //LOADER_NATIVE
 #endif //MIRAICP_PRO_JNIENVS_H

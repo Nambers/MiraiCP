@@ -21,7 +21,6 @@
 #include "LoaderMacro.h"
 
 
-#ifndef LOADER_NATIVE
 // EXPORT functions
 JNIEXPORT jobject Verify(J_ARGS, JSTRING, JSTRING);
 
@@ -35,6 +34,5 @@ const JNINativeMethod method_table[]{
         {(char *) "Verify", (char *) "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Void;", (jstring *) Verify},
         {(char *) "Event", (char *) "(Ljava/lang/String;)Ljava/lang/Void;", (jstring *) Event},
         {(char *) "PluginDisable", (char *) "()Ljava/lang/Void;", (jobject *) PluginDisable}};
-#endif
 
 #endif //MIRAICP_PRO_KTINTERFACE_H

@@ -14,8 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LOADER_NATIVE
-
 #include "JNIEnvs.h"
 #include "LoaderLogger.h"
 
@@ -40,5 +38,3 @@ namespace LibLoader::JNIEnvs {
         return JNIEnvManager::getEnv();
     }
 } // namespace LibLoader::JNIEnvs
-
-#endif //LOADER_NATIVE

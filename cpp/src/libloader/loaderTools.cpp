@@ -59,7 +59,6 @@ namespace LibLoader {
         return {std::move(paths), std::move(authorities)};
     }
 
-#ifndef LOADER_NATIVE
     std::string jstring2str(jstring jStr) {
         if (!jStr) {
             return "";
@@ -91,5 +90,4 @@ namespace LibLoader {
         }
         return JNIEnvs::getEnv()->NewString(ans.c_str(), (jsize) ans.size());
     }
-#endif
 } // namespace LibLoader
