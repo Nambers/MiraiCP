@@ -46,10 +46,6 @@ IF "%1"=="libLoader" (
     set targetName=Loader
     goto build
 )
-IF "%1"=="libLoaderNative" (
-    set targetName=LoaderNative
-    goto build
-)
 
 echo Error: parameter error
 cd %workDir%

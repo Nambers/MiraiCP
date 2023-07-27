@@ -29,19 +29,16 @@ jobs:
       with:
         arch: amd64
         vsversion: 2019
-    - name: build with gcc libLoaderNative
-      run: ./scripts/WIN/cppBuilds.bat libLoaderNative
     - name: build with gcc libLoader
       run: ./scripts/WIN/cppBuilds.bat libLoader
     - name: copy out
-      run: copy ./cpp/build/Release/*.dll && copy ./cpp/build/Release/*.lib
+      run: copy ./cpp/build/Release/*.dll
     - name: upload
       uses: actions/upload-artifact@v3
       with:
         name: libLoaderdll
         path: |
           ./*.dll 
-          ./*.lib
   build-libLoader-gcc-4-linux:
     runs-on: ubuntu-20.04
     steps:
@@ -54,19 +51,16 @@ jobs:
         platform: x64
     - name: print glibc version
       run: ldd --version
-    - name: build with gcc libLoaderNative
-      run: ./scripts/LINUX/cppBuilds.sh libLoaderNative
     - name: build with gcc libLoader
       run: ./scripts/LINUX/cppBuilds.sh libLoader
     - name: copy out
-      run: cp ./cpp/build/*.so ./ && cp /lib/x86_64-linux-gnu/libcrypt.so.1 ./
+      run: cp ./cpp/build/*.so ./
     - name: upload
       uses: actions/upload-artifact@v3
       with:
         name: libLoaderso
         path: |
           ./*.so
-          ./libcrypt.so.1
   push-single-include-2-template:
     runs-on: ubuntu-20.04
     steps:
@@ -105,146 +99,8 @@ jobs:
          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
          MESSAGE: ${{ github.event.inputs.v }} # The commit message
 
-  build-native:
-    name: "build Native (${{ matrix.os }})"
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - windows-latest
-          - ubuntu-20.04
-        include:
-          - os: windows-latest
-            targetName: mingwX64
-          - os: ubuntu-20.04
-            targetName: linuxX64
-    env:
-      isWindows: ${{ startsWith(matrix.os, 'windows') }}
-      isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
-      VCPKG_DEFAULT_BINARY_CACHE: ${{ startsWith(matrix.os, 'windows') && 'C:\vcpkg\binary_cache' || '/usr/local/share/vcpkg/binary_cache' }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3
-    - name: Set up JDK 15
-      uses: actions/setup-java@v2
-      with:
-        java-version: '15'
-        distribution: 'adopt'
-
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
-      # with:
-      #   cache-read-only: ${{ github.ref != 'refs/heads/main' }}
-
-    - name: Cache konan
-      uses: pat-s/always-upload-cache@v3
-      with:
-        path: ~/.konan
-        key: ${{ runner.os }}-gradle-${{ hashFiles('*.gradle.kts') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-
-    - name: Prepare to cache vcpkg
-      if: ${{ env.isWindows == 'true' }}
-      run: mkdir -p ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-
-    - name: Cache vcpkg
-      if: ${{ env.isWindows == 'true' }}
-      uses: pat-s/always-upload-cache@v3
-      with:
-        path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-        key: ${{ runner.os }}-vcpkg-binary-cache-${{ github.job }}
-        restore-keys: |
-          ${{ runner.os }}-vcpkg-binary-cache-
-
-    - name: Install OpenSSL on Ubuntu
-      if: ${{ env.isUbuntu == 'true' }}
-      run: sudo apt install libssl-dev -y
-
-    # Prepare environment for linking on Windows
-    - name: Setup Memory Environment on Windows
-      if: ${{ env.isWindows == 'true' }}
-      run: >
-        wmic pagefileset where name="D:\\pagefile.sys" set InitialSize=1024,MaximumSize=9216
-      shell: cmd
-      continue-on-error: true
-
-    - name: Install OpenSSL & cURL on Windows
-      if: ${{ env.isWindows == 'true' }}
-      run: |
-        echo "set(VCPKG_BUILD_TYPE release)" | Out-File -FilePath "$env:VCPKG_INSTALLATION_ROOT\triplets\x64-windows.cmake" -Encoding utf8 -Append
-        vcpkg install openssl:x64-windows curl[core,ssl]:x64-windows
-        New-Item -Path $env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\crypto.lib -ItemType SymbolicLink -Value $env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\libcrypto.lib
-        New-Item -Path $env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\ssl.lib -ItemType SymbolicLink -Value $env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\libssl.lib
-        New-Item -Path $env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\curl.lib -ItemType SymbolicLink -Value $env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib\libcurl.lib
-        echo "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-    - name: chmod
-      if: ${{ env.isUbuntu == 'true' }}
-      run: chmod -R 777 *
-    - name: replace def file
-      uses: Nambers/ReplaceStringInFile@v1.3
-      with:
-        path: ${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def
-        oldString: GITHUB_WORKSPACE
-        newString: ${{ github.workspace }}
-        escapeBackslash: true
-        showFileContent: true
-    # - name: replace MiraiCP lib path of def file linux
-    #   if: ${{ env.isUbuntu == 'true' }}
-    #   run: sed -i 's|GITHUB_WORKSPACE|${{ github.workspace }}|g' '${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def' && cat ${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def
-    # - name: replace MiraiCP lib path of def file win
-    #   if: ${{ env.isWindows == 'true' }}
-    #   run: $path = "${{ github.workspace }}"; $path=$path.Replace("`\", "/"); (Get-Content ${{ github.workspace }}\kotlin\shared\src\nativeInterop\cinterop\localMiraiCP.def) -replace 'GITHUB_WORKSPACE', $path | Set-Content -encoding ASCII ${{ github.workspace }}\kotlin\shared\src\nativeInterop\cinterop\localMiraiCP.def && type ${{ github.workspace }}/kotlin/shared/src/nativeInterop/cinterop/localMiraiCP.def
-    - name: compile native
-      run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:compileKotlinNative --warning-mode all --info --stacktrace
-    - name: libLoaderNativeWin
-      if: ${{ env.isWindows == 'true' }}
-      uses: actions/download-artifact@v3
-      with:
-        name: libLoaderdll
-        path: ${{ github.workspace }}
-    - name: libLoaderNativeLinux
-      if: ${{ env.isUbuntu == 'true' }}
-      uses: actions/download-artifact@v3
-      with:
-        name: libLoaderso
-        path: ${{ github.workspace }}
-    - name: link native
-      run:  cd ./kotlin/ && ./gradlew MiraiCP-loader:linkDebugExecutableNative --warning-mode all --info --stacktrace
-
-    - name: packing - linux
-      if: ${{ env.isUbuntu == 'true' }}
-      run: |
-        zip -j LoaderNativeLinux.zip \
-        ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.kexe \
-        libcrypt.so.1 \
-        libLoaderNative.so \
-        ${{ github.workspace }}/kotlin/loader/src/nativeMain/kotlin/scripts/runMiraiCP.sh \;
-    - name: packing -win
-      if: ${{ env.isWindows == 'true' }}
-      run: copy ${{ github.workspace }}/kotlin/loader/build/bin/native/debugExecutable/*.exe &&  tar -cvf LoaderNativeWindows.zip *.exe libLoaderNative.dll
-    - name: upload
-      if: ${{ env.isWindows == 'true' }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: winOutput
-        path: |
-          ./LoaderNativeWindows.zip
-          ./libLoader.dll
-    - name: upload
-      if: ${{ env.isUbuntu == 'true' }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: linuxOutput
-        path: |
-          ./LoaderNativeLinux.zip
-          ./libLoader.so  
-  
-
   publish-release:
-    needs: [build-native]
+    needs: [build-libLoader-gcc-4-linux, build-libLoader-msvc-4-windows]
     runs-on: ubuntu-20.04
     steps:
     # - name: loadTest
@@ -275,16 +131,16 @@ jobs:
       run: cat release.log
     - uses: actions/download-artifact@v3
       with:
-        name: winOutput
+        name: libLoaderso
         path: ./
     - uses: actions/download-artifact@v3
       with:
-        name: linuxOutput
+        name: libLoaderdll
         path: ./
     - name: Create Release
       uses: ncipollo/release-action@v1.8.6
       with:
-          artifacts: ./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai2.jar,./libLoader.dll,./libLoader.so,./LoaderNativeLinux.zip,./LoaderNativeWindows.zip
+          artifacts: ./kotlin/loader/build/libs/MiraiCP-loader-*.jar,./kotlin/plugin/build/mirai/MiraiCP-plugin-*.mirai2.jar,./libLoader.dll,./libLoader.so
           bodyfile: release.log
           tag: ${{ github.event.inputs.v }}
           token: ${{ secrets.GITHUB_TOKEN }}

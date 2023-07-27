@@ -44,11 +44,6 @@ case $1 in
         echo "build libLoader"
         buildType="Loader"
         ;;
-    
-    libLoaderNative)
-        echo "build libLoaderNative"
-        buildType="LoaderNative"
-        ;;
 
     *)
         echo "Error: unknown build type"
