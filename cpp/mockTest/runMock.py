@@ -12,7 +12,6 @@ Copyright 2023 (c) Antares
 import os
 import subprocess
 import sys
-import tqdm
 
 codepage = 'utf-8' if sys.platform != 'win32' else 'cp936'
 currentFilePath = os.path.dirname(os.path.abspath(__file__))
