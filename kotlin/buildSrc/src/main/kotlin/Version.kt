@@ -21,7 +21,7 @@ object Version {
 
     // plugins
     const val kotlin = "1.8.10"
-    const val shadowJar = "7.1.2"
+    const val shadowJar = "8.1.0"
     const val `kotlinx-coroutines-core` = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     const val `kotlin-test` = "org.jetbrains.kotlin:kotlin-test:$kotlin"
 
