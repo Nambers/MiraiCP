@@ -12,6 +12,7 @@ Copyright 2023 (c) Antares
 import os
 import subprocess
 import sys
+import tqdm
 
 codepage = 'utf-8' if sys.platform != 'win32' else 'cp936'
 currentFilePath = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +30,7 @@ def runmock(name: str, kwargs: dict) -> bool:
     global kotlinPath, env
     try:
         subprocess.check_output(
-            f"{prefix}gradlew :shared:cleanJvmTest :shared:jvmTest --tests \"tech.eritquearcus.miraicp.shared.test.events.{name}\"",
+            f"{prefix}gradlew :shared:test --tests \"tech.eritquearcus.miraicp.shared.test.events.{name}\"",
             shell=True,
             stderr=subprocess.PIPE,
             **kwargs
