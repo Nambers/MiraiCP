@@ -132,6 +132,7 @@ private:
         if (alreadyInHandler) {
             return;
         }
+        alreadyInHandler = true;
         auto pluginName = ThreadIdentify::getThreadWorkingName();
         if (pluginName.empty()) {
             // test the thread is from jvm
@@ -154,7 +155,6 @@ private:
             }
         }
         // 插件导致的崩溃，卸载该插件
-        alreadyInHandler = true;
         MIRAICP_DEFER(alreadyInHandler = false;);
         LibLoader::logger.error(
                 "插件" + pluginName + "遇到致命错误! 插件运行终止，信号： SIG" +
