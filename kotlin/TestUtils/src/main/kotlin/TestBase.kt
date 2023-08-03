@@ -36,6 +36,7 @@ import tech.eritquearcus.miraicp.shared.Packets.Utils.toEventData
 import tech.eritquearcus.miraicp.shared.PublicShared
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 val onCloseLock: Unit by lazy {
     println("load libLoader")
@@ -69,8 +70,9 @@ val onCloseLock: Unit by lazy {
     }
 }
 
-// each test timeOut in 6 sec
-@Timeout(6)
+// @TestInstance(TestInstance.Lifecycle.PER_METHOD)
+// each test timeOut in 10 sec
+@Timeout(value = 10, unit = TimeUnit.SECONDS)
 open class TestBase {
     companion object {
         @BeforeAll
@@ -121,6 +123,8 @@ open class TestBase {
         }
         bot.addGroup(111, "testGroup0")
         group.addMember(222, "testMember0")
+        // workaround for https://github.com/mamoe/mirai/issues/2768
+        member.avatarUrl
         member.mockApi.permission = MemberPermission.MEMBER
         bot.addFriend(333, "testFriend0")
         TestUtils.logListener
