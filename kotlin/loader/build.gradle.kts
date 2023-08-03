@@ -31,6 +31,15 @@ plugins {
 
 project.setProperty("mainClassName", "tech.eritquearcus.miraicp.loader.KotlinMainEntry")
 
+tasks.compileJava {
+    targetCompatibility = JavaVersion.VERSION_17.toString()
+    sourceCompatibility = JavaVersion.VERSION_17.toString()
+}
+
+tasks.compileKotlin {
+    kotlinOptions.jvmTarget = "17"
+}
+
 dependencies {
     implementation(`mirai-core`)
     implementation(`kotlinx-coroutines-core`)

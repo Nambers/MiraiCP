@@ -26,6 +26,15 @@ plugins {
 group = "tech.eritquearcus"
 version = Version.miraiCP
 
+tasks.compileJava {
+    targetCompatibility = JavaVersion.VERSION_17.toString()
+    sourceCompatibility = JavaVersion.VERSION_17.toString()
+}
+
+tasks.compileKotlin {
+    kotlinOptions.jvmTarget = "17"
+}
+
 dependencies {
     // pass junit and other dependencies
     api(`junit-jupiter`)

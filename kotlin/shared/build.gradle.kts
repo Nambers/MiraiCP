@@ -26,6 +26,19 @@ plugins {
 group = "tech.eritquearcus"
 version = Version.miraiCP
 
+tasks.compileJava {
+    targetCompatibility = JavaVersion.VERSION_17.toString()
+    sourceCompatibility = JavaVersion.VERSION_17.toString()
+}
+
+tasks.compileKotlin {
+    kotlinOptions.jvmTarget = "17"
+}
+
+tasks.compileTestKotlin {
+    kotlinOptions.jvmTarget = "17"
+}
+
 dependencies {
     implementation(`mirai-core-api`)
     implementation(`mirai-core-utils`)

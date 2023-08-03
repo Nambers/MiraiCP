@@ -34,6 +34,15 @@ mirai {
     jvmTarget = JavaVersion.VERSION_17
 }
 
+tasks.compileJava {
+    targetCompatibility = JavaVersion.VERSION_17.toString()
+    sourceCompatibility = JavaVersion.VERSION_17.toString()
+}
+
+tasks.compileKotlin {
+    kotlinOptions.jvmTarget = "17"
+}
+
 tasks {
     afterEvaluate {
         named<me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication>(me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication.TASK_NAME) {
