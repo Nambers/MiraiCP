@@ -102,6 +102,9 @@ add_custom_target(
 # add targets
 add_subdirectory(src)
 
+# example
+add_subdirectory(examples)
+
 # tests
 if (GOOGLE_TEST)
     message(STATUS "loading test")

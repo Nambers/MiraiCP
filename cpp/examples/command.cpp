@@ -25,25 +25,25 @@ const PluginConfig CPPPlugin::config{
                 // 可选：日期
 };
 
-class a : public IRawCommand {
+class TestCommand : public IRawCommand {
 public:
     IRawCommand::Config config() override {
         return {"test", {"sname1", "sname2"}};
     }
-    void onCommand(std::optional<Contact> c, const Bot &b, const MessageChain &a) override {
-        Logger::logger.info(a.toMiraiCode());
+    void onCommand(std::shared_ptr<Contact> contact, const Bot &bot, const MessageChain &msg) override{
+        Logger::logger.info(msg.toMiraiCode());
     }
-    a() = default;
+    TestCommand() = default;
 };
 
 class Main : public CPPPlugin {
 public:
     Main() : CPPPlugin() {}
     void onEnable() override {
-        CommandManager::commandManager.registerCommand(a());
+        CommandManager::registerCommand<TestCommand>();
     }
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }

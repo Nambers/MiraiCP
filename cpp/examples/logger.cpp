@@ -29,9 +29,9 @@ class Main : public CPPPlugin {
 public:
     Main() : CPPPlugin() {}
     void onEnable() override {
-        Logger::logger.registerHandle([](std::string content, int level) {
+        Logger::logger.registerHandle([](const std::string& content, int level) {
             //do some things
-            // eg. write file
+            // e.g. write file
         });
         // 设置logger是否启用
         Logger::logger.setHandleState(true);
@@ -39,5 +39,5 @@ public:
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }

@@ -56,5 +56,5 @@ public:
 
 // 绑定当前插件实例
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }

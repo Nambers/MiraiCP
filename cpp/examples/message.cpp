@@ -45,5 +45,5 @@ public:
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }

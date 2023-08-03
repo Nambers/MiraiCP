@@ -41,9 +41,8 @@ public:
                      ForwardedNode(12, "b", ForwardedMessage({ForwardedNode(12, "a", MessageChain(PlainText("test")), 1)}), 1)},
                     ForwardedMessageDisplayStrategy::defaultStrategy())
                     .sendTo(&e.group);
-
-            if (e.message[0].type() == OnlineForwardedMessage::type())
-                e.message[0].get<OnlineForwardedMessage>().toForwardedMessage(ForwardedMessageDisplayStrategy::defaultStrategy()).sendTo(&e.group);
+            if (e.message[0].getType() == OnlineForwardedMessage::type())
+                e.message[0].getVal<OnlineForwardedMessage>().setDisplayStrategy(ForwardedMessageDisplayStrategy::defaultStrategy()).sendTo(&e.group);
             e.group.sendMessage("style1");
             ForwardedMessage(
                     {ForwardedNode(12, "a", MessageChain(PlainText("test")), 1),
@@ -51,12 +50,12 @@ public:
                     style1)
                     .sendTo(&e.group);
 
-            if (e.message[0].type() == OnlineForwardedMessage::type())
-                e.message[0].get<OnlineForwardedMessage>().toForwardedMessage(style1).sendTo(&e.group);
+            if (e.message[0].getType() == OnlineForwardedMessage::type())
+                e.message[0].getVal<OnlineForwardedMessage>().setDisplayStrategy(style1).sendTo(&e.group);
         });
     }
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }

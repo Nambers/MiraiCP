@@ -33,12 +33,12 @@ public:
             auto tmp = e.nextMessage();
             e.group.sendMessage(tmp);
         });
-        Event::registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e) -> {
+        Event::registerEvent<PrivateMessageEvent>([](PrivateMessageEvent e)  {
             auto tmp = e.nextMessage();
         });
     }
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }

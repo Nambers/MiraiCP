@@ -36,7 +36,7 @@ public:
             j["id"] = 111;
             j["bid"] = 111;
             schedule(100, j.dump());
-            Event::processor.registerEvent<TimeOutEvent>([](TimeOutEvent e) {
+            Event::registerEvent<TimeOutEvent>([](TimeOutEvent e) {
                 nlohmann::json j = nlohmann::json::parse(e.msg);
                 if (j["type"] == 1)
                     // 发送群消息
@@ -47,5 +47,5 @@ public:
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }

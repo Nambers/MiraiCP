@@ -85,6 +85,9 @@ namespace MiraiCP {
         ForwardedNode(QQID id, std::string name, ForwardedMessage message, int t);
 
     public:
+        /*!
+         * 是否也是转发信息
+         */
         [[nodiscard]] bool isForwarded() const { return isForwardedMessage; }
     };
 
@@ -100,6 +103,10 @@ namespace MiraiCP {
         ForwardedMessageDisplayStrategy display;
 
     public:
+        static int type() {
+            return Types::OnlineForwardedMessage_t;
+        }
+
         ForwardedNode &operator[](size_t i) {
             return nodes[i];
         }
@@ -113,6 +120,11 @@ namespace MiraiCP {
         auto &operator+=(ForwardedNode a);
 
         bool operator==(const ForwardedMessage &m) const;
+
+        ForwardedMessage& setDisplayStrategy(ForwardedMessageDisplayStrategy strategy) {
+            display = std::move(strategy);
+            return *this;
+        }
 
     public:
         /*!

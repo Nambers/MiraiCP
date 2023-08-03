@@ -31,7 +31,7 @@ public:
     void onEnable() override {
         Event::registerEvent<GroupMessageEvent>([](GroupMessageEvent e) {
             // 用 id 构建群对象
-            Group a(e.group.id(), e.bot.id);
+            Group a(e.group.id(), e.bot.id());
             // 发送D:\\ValveUnhandledExceptionFilter.txt本地文件到qq群的 /test.txt 路径
             RemoteFile tmp = e.group.sendFile("/test.txt", "D:\\ValveUnhandledExceptionFilter.txt");
             e.group.sendMessage(e.group.getFile("/", tmp.id).name);
@@ -44,5 +44,5 @@ public:
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }

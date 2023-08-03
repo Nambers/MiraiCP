@@ -13,6 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+//
+// >本示例可能已经过时, 按情况使用<
+//
 #include <MiraiCP.hpp>
 using namespace MiraiCP;
 using namespace std;
@@ -82,5 +85,5 @@ public:
 };
 
 void MiraiCP::enrollPlugin() {
-    MiraiCP::enrollPlugin0(new Main());
+    MiraiCP::enrollPlugin<Main>();
 }
