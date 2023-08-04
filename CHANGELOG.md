@@ -1,4 +1,20 @@
 # Change Log
+## v2.15.0
+Internal fix:  
+* improve thread safety
+* Forward declaration and export marco #193
+* MSVC 下编译
+
+Fix:  
+* 修复 MusicShare MiraiCode #195
+* 升级依赖到:  
+  + Mirai v2.15.0
+  + Gradle v8.2.*
+  + 一些其他的内部依赖
+
+Breakchanges:  
+* 移除 loader-native 支持
+
 
 ## v2.15.0-RC2
 与上一版本无修改

@@ -201,6 +201,11 @@ make Loader
 > 运行 Native 版本可能需要一定的知识  
 > 该版本还没经过全面测试  
 > -- 4/12/2023  
+
+> 由于 Mirai 从 `v2.15.0` 取消了对 native 的支持  
+> 最后一个支持 Loader-native 的 MiraiCP 版本为 `v2.15.0-RC2`  
+> -- 8/4/2023  
+
 #### 下载
 在 GitHub Releases 里面下载 LoaderNativeLinux 或者 LoaderNativeWindows, 然后本地解压.
 #### 环境配置
