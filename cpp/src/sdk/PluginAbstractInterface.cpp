@@ -25,7 +25,7 @@
 #include <iostream>
 #include <memory>
 #include <polym/Msg.hpp>
-#include <polym/queue.hpp>
+#include <polym/Queue.hpp>
 
 
 namespace MiraiCP {
