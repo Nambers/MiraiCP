@@ -20,8 +20,8 @@
 #include "LoaderLogger.h"
 #include "commonTools.h"
 #include "loaderTools.h"
-#include "utf8.h"
-#include <json.hpp>
+#include <utf8/utf8.h>
+#include <nlohmann/json.hpp>
 
 namespace LibLoader {
     static const std::string LoaderName = "MiraiCP/LibLoader";

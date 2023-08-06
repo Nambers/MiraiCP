@@ -18,7 +18,7 @@
 #include "CPPPlugin.h"
 #include "KtOperation.h"
 #include "Logger.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <mutex>
 
 

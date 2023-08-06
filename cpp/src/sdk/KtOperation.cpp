@@ -19,7 +19,7 @@
 #include "ExceptionHandle.h"
 #include "KtOperation.h"
 #include "loaderApiInternal.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 
 namespace MiraiCP::KtOperation {

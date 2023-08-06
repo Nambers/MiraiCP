@@ -18,7 +18,7 @@
 #include "LoaderLogger.h"
 #include "Plugin.h"
 #include "PluginListManager.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 
 namespace LibLoader {

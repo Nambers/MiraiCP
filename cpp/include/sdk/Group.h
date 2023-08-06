@@ -18,7 +18,7 @@
 #define MIRAICP_PRO_GROUP_H
 
 #include "Contact.h"
-#include <json_fwd.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <utility>
 
 namespace MiraiCP {

@@ -24,7 +24,7 @@
 #include "MiraiCode.h"
 #include "SdkType.h"
 #include <array>
-#include <json_fwd.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <optional>
 #include <sstream>
 #include <unordered_map>

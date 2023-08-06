@@ -20,7 +20,7 @@
 #include "Exceptions/API.h"
 #include "Exceptions/IllegalArgument.h"
 #include "KtOperation.h"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 
 namespace MiraiCP {

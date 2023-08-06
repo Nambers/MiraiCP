@@ -29,7 +29,7 @@
 #include "loaderTools.h"
 
 #if MIRAICP_WINDOWS
-#include "utf8.h"
+#include <utf8/utf8.h>
 #include <filesystem>
 #include "WindowsMin.h"
 #endif

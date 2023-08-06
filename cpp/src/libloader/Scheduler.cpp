@@ -17,7 +17,7 @@
 #include "Scheduler.h"
 #include "LoaderExceptions.h"
 #include "PluginListManager.h"
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include <chrono>
 #include <condition_variable>
 #include <mutex>

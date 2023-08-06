@@ -16,7 +16,7 @@
 
 #include "ContactDataType/IMiraiData.h"
 #include "LowLevelAPI.h"
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include <mutex>
 
 

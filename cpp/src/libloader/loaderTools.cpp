@@ -20,7 +20,7 @@
 #include "LoaderLogger.h"
 #include "commonTools.h"
 #include "loaderTools.h"
-#include "utf8.h"
+#include <utf8/utf8.h>
 #include <iomanip> // for std::setw
 #include <sstream> // for ostringstream
 

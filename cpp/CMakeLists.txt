@@ -57,6 +57,11 @@ if (CMAKE_SYSTEM_NAME STREQUAL Android)
     message("Android build detected") # TODO(Antares)
 endif ()
 
+# 3RD path
+set(3RD_PATH
+       # ${THIRD_PARTY_PATH}/utf8
+        ${THIRD_PARTY_PATH})
+
 # -- share included paths --
 # should be included after JNI check since ${3RD_PATH}
 

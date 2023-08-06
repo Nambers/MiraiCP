@@ -14,13 +14,6 @@ if (JNI_FOUND)
                 PARENT_SCOPE
                 )
     endif ()
-    set(3RD_PATH
-            ${THIRD_PARTY_PATH}/json
-            ${THIRD_PARTY_PATH}/json/nlohmann
-            ${THIRD_PARTY_PATH}/utf8
-            ${THIRD_PARTY_PATH}/utf8/utf8
-            PARENT_SCOPE
-            )
 else ()
     message(STATUS "Cannot find JNI")
 endif ()

@@ -17,7 +17,8 @@
 #ifndef MIRAICP_PRO_IMIRAIDATA_H
 #define MIRAICP_PRO_IMIRAIDATA_H
 
-#include "json_fwd.hpp"
+
+#include <nlohmann/json_fwd.hpp>
 #include <atomic>
 #include <shared_mutex>
 

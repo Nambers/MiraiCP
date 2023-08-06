@@ -18,7 +18,7 @@
 
 
 #if MIRAICP_WINDOWS
-#include "utf8.h"
+#include <utf8/utf8.h>
 #include <cstdio>
 #include "WindowsMin.h"
 #define OPEN_LIBRARY(path) LoadLibrary(TEXT(path.c_str()))

@@ -20,7 +20,7 @@
 #include "MiraiCPMacros.h"
 // -----------------------
 #include "SdkType.h"
-#include <json_fwd.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
