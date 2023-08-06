@@ -21,6 +21,7 @@
 #include "Exception.h"
 #include "KtOperation.h"
 #include "Logger.h"
+#include "MsgSender.h"
 #include "commonTools.h"
 #include "commonTypes.h"
 #include "loaderApiInternal.h"
@@ -48,9 +49,11 @@ MIRAICP_EXPORT void _unused_MiraiCP_internal_safety_check() {
 }
 }
 
+using namespace LibLoader;
+
 extern "C" {
 /// 插件开启入口
-MIRAICP_EXPORT int FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
+MIRAICP_EXPORT message_queue_handle FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
     static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
     using namespace MiraiCP;
 
@@ -72,22 +75,24 @@ MIRAICP_EXPORT int FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &fu
             e.raise();
             Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         } catch (...) {}
-        return PLUGIN_ERROR;
+        return nullptr;
     } catch (const std::exception &e) {
         try {
             std::cerr.flush();
             Logger::logger.error(e.what());
             Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         } catch (...) {}
-        return PLUGIN_ERROR;
+        return nullptr;
     } catch (...) {
         try {
             std::cerr.flush();
             Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         } catch (...) {}
-        return PLUGIN_ERROR;
+        return nullptr;
     }
-    return PLUGIN_NORMAL;
+
+    auto ret = getMsgQueue();
+    return reinterpret_cast<message_queue_handle>(ret);
 }
 
 

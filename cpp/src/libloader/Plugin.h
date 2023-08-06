@@ -22,6 +22,7 @@
 #include "commonTypes.h"
 #include <atomic>
 #include <future>
+#include <polym/Queue.hpp>
 #include <shared_mutex>
 #include <string>
 
@@ -31,6 +32,7 @@ namespace LibLoader {
         using timepoint = std::chrono::time_point<std::chrono::system_clock>;
         std::atomic<int> _runCounter = {0};
         mutable std::shared_mutex _mtx;
+        PolyM::Queue *message_queue;
         timepoint timestamp;
 
     public:
@@ -42,11 +44,11 @@ namespace LibLoader {
         static void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept;
 
     private:
-        int callEntranceFuncAdmin() const;
+        message_queue_handle callEntranceFuncAdmin() const;
 
-        int callEntranceFuncNormal() const;
+        message_queue_handle callEntranceFuncNormal() const;
 
-        int callEntranceByAuthority() const;
+        message_queue_handle callEntranceByAuthority() const;
 
     private: // internal, no lock; literally
         void updateTimeStamp();

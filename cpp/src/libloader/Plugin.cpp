@@ -27,11 +27,10 @@
 #include "commonTools.h"
 #include "libOpen.h"
 #include "loaderTools.h"
-
 #if MIRAICP_WINDOWS
-#include <utf8/utf8.h>
-#include <filesystem>
 #include "WindowsMin.h"
+#include <filesystem>
+#include <utf8/utf8.h>
 #endif
 
 namespace LibLoader {
@@ -91,15 +90,15 @@ namespace LibLoader {
 
     constexpr static LoaderApi::interface_funcs normalInterfaces = LoaderApi::collect_interface_functions(false);
 
-    int Plugin::callEntranceFuncAdmin() const {
+    message_queue_handle Plugin::callEntranceFuncAdmin() const {
         return entrance(adminInterfaces);
     }
 
-    int Plugin::callEntranceFuncNormal() const {
+    message_queue_handle Plugin::callEntranceFuncNormal() const {
         return entrance(normalInterfaces);
     }
 
-    int Plugin::callEntranceByAuthority() const {
+    message_queue_handle Plugin::callEntranceByAuthority() const {
         if (authority == PluginAuthority::PLUGIN_AUTHORITY_ADMIN) {
             return callEntranceFuncAdmin();
         } else {
@@ -223,7 +222,7 @@ namespace LibLoader {
                 return;
             }
 
-            int ret = -1;
+            message_queue_handle ret = nullptr;
 
             {
                 ThreadIdentify::setThreadWorkingName(_getId());
@@ -234,9 +233,12 @@ namespace LibLoader {
                 }
             }
 
-            if (ret != 0) {
+            if (!ret) {
                 logger.error("插件：" + _getId() + "启用时出现错误");
             }
+
+            // reinterpret cast to message_queue
+            message_queue = reinterpret_cast<PolyM::Queue *>(ret);
         });
     }
 
@@ -247,13 +249,14 @@ namespace LibLoader {
 
         return std::make_shared<std::future<void>>(Antares::pool->submit([this, lockedAndWait] {
             std::shared_lock lk(_mtx, std::defer_lock);
-
             if (!lockedAndWait) lk.lock();
+
             if (!checkValid() || exit == nullptr) {
                 // 任务分派过慢
                 return;
             }
 
+            message_queue = nullptr;
             int ret = -1;
 
             {

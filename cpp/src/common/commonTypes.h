@@ -27,8 +27,9 @@
 
 namespace LibLoader {
     typedef void *plugin_handle;
+    typedef void *message_queue_handle;
     /// @see @macro FUNC_ENTRANCE
-    typedef int (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
+    typedef message_queue_handle (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
     /// @see @macro FUNC_EVENT
     typedef int (*plugin_event_func_ptr)(const MiraiCP::MiraiCPString &);
     /// @see @macro FUNC_EXIT
@@ -36,8 +37,6 @@ namespace LibLoader {
     /// @see @macro PLUGIN_INFO
     typedef const MiraiCP::PluginConfig *(*plugin_info_func_ptr)();
 } // namespace LibLoader
-
-
 
 
 #endif //MIRAICP_PRO_COMMONTYPES_H
