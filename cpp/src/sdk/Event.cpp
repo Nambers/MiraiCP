@@ -159,7 +159,7 @@ namespace MiraiCP {
                                                         type(joinType(j.eventData["eventType"].get<int>())),
                                                         member(j.object->id, j.subject->groupId, j.botId),
                                                         group(j.subject->id, j.subject->botId),
-                                                        inviter(j.object == std::nullopt ? std::nullopt : std::optional(Member(j.object->id, j.object->groupId, j.object->botId))) {
+                                                        inviter(j.object == std::nullopt ? std::nullopt : std::optional(Member(j.eventData["invitor"]["id"], j.eventData["invitor"]["groupId"], j.eventData["invitor"]["botId"]))) {
     }
 
     MemberLeaveEvent::MemberLeaveEvent(BaseEventData j) : BotEvent(j.botId),

@@ -234,6 +234,9 @@ public:
             testEnd("GroupMessageEventTest");
         });
         Event::registerEvent<MemberJoinEvent>([](MemberJoinEvent a) {
+            if(a.type == MemberJoinEvent::invited) {
+                Logger::logger.info("Invitor:", a.inviter->id());
+            }
             testEnd("MemberJoinEventTest");
         });
         Event::registerEvent<MemberJoinRequestEvent>([](MemberJoinRequestEvent a) {
