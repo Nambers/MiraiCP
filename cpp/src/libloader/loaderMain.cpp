@@ -15,14 +15,15 @@
 //
 
 #include "loaderMain.h"
-#include "ThreadPool.h"
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
+#include "MessageManager.h"
 #include "Plugin.h"
 #include "PluginListManager.h"
 #include "Scheduler.h"
 #include "ThreadIdentify.h"
+#include "ThreadPool.h"
 #include "redirectCout.h"
 
 
@@ -101,6 +102,8 @@ namespace LibLoader {
 
     void tick() noexcept {
         Scheduler::popSchedule();
+
+        MessageManager::get().tick();
     }
 
     bool shouldTick() noexcept { return Scheduler::timeup(); }

@@ -5,7 +5,7 @@
 #ifndef MIRAICP_PRO_MSGQUEUE_H
 #define MIRAICP_PRO_MSGQUEUE_H
 
-#include "PolyM/Queue.hpp"
+#include "polym/Queue.hpp"
 #include "MsgDefine.h"
 
 namespace MiraiCP {

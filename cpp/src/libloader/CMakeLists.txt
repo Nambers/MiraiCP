@@ -1,4 +1,4 @@
-file(GLOB LOADER_PATH ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE LOADER_PATH ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 # common build options for loader
 add_library(loaderCommon INTERFACE)

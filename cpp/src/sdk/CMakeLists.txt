@@ -7,7 +7,7 @@ add_library(sdkCommonMulti INTERFACE)
 target_link_libraries(sdkCommonMulti INTERFACE sdkCommon)
 
 # -- miraicp multi --
-file(GLOB MIRAICP_CPP_PATH ${SRC_PATH}/sdk/*.cpp)
+file(GLOB_RECURSE MIRAICP_CPP_PATH ${SRC_PATH}/sdk/*.cpp)
 
 add_library(
         MiraiCP_multi
