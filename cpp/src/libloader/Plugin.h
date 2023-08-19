@@ -38,31 +38,6 @@ namespace LibLoader {
     public:
         explicit Plugin(std::string inPath) : PluginData(std::move(inPath)) {}
 
-    private:
-        static plugin_handle loadNewPlugin(const std::string &path) noexcept;
-
-        static void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept;
-
-    private:
-        message_queue_handle callEntranceFuncAdmin() const;
-
-        message_queue_handle callEntranceFuncNormal() const;
-
-        message_queue_handle callEntranceByAuthority() const;
-
-    private: // internal, no lock; literally
-        void updateTimeStamp();
-
-        void enableInternal();
-
-        std::shared_ptr<std::future<void>> disableInternal(bool lockedAndWait = false);
-
-        void loadInternal(bool alsoEnablePlugin);
-
-        void unloadInternal();
-
-        void unloadWhenExceptionInternal();
-
     public: // external usage, with lock; literally
         void loadPlugin(bool alsoEnablePlugin);
 
@@ -93,14 +68,41 @@ namespace LibLoader {
 
         timepoint getTimeStamp() const;
 
+        std::unique_ptr<PolyM::Msg> popMessage() const;
+
+        void popMessageTo(std::vector<std::unique_ptr<PolyM::Msg>> & messageList) const;
+
     public:
         static PluginFuncAddrData testSymbolExistance(plugin_handle handle, const std::string &path);
 
         /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用一次
         /// 实际的入口，id_plugin_list 必须在这里初始化，该函数只会被调用一次
         static void registerAllPlugin(const std::string &cfgPath) noexcept;
-    };
 
-    // plugin_func_ptr get_plugin_disable_ptr(Plugin &plugin);
+    private:
+        static plugin_handle loadNewPlugin(const std::string &path) noexcept;
+
+        static void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept;
+
+    private:
+        message_queue_handle callEntranceFuncAdmin() const;
+
+        message_queue_handle callEntranceFuncNormal() const;
+
+        message_queue_handle callEntranceByAuthority() const;
+
+    private: // internal, no lock; literally
+        void updateTimeStamp();
+
+        void enableInternal();
+
+        std::shared_ptr<std::future<void>> disableInternal(bool lockedAndWait = false);
+
+        void loadInternal(bool alsoEnablePlugin);
+
+        void unloadInternal();
+
+        void unloadWhenExceptionInternal();
+    };
 } // namespace LibLoader
 #endif //MIRAICP_PRO_PLUGIN_H

@@ -17,6 +17,7 @@
 #ifndef MIRAICP_PRO_MESSAGEMANAGER_H
 #define MIRAICP_PRO_MESSAGEMANAGER_H
 
+#include <memory>
 #include <vector>
 
 namespace PolyM {
@@ -24,17 +25,23 @@ namespace PolyM {
     class Msg;
 } // namespace PolyM
 
-class MessageManager {
-public:
-    static MessageManager &get();
+namespace LibLoader {
+    class MessageProcessor;
 
-    void tick();
+    class MessageManager {
+        MessageProcessor *processor = nullptr;
 
-private:
-    //    std::vector<PolyM::Queue *> collectAllQueues();
-    //
-    //    void process(PolyM::Msg* msg);
-};
+    public:
+        static MessageManager &get();
 
+        void tick();
+
+        void init(MessageProcessor *in_processor);
+
+    private:
+        std::vector<std::unique_ptr<PolyM::Msg>> collectAllMessages();
+    };
+
+} // namespace LibLoader
 
 #endif //MIRAICP_PRO_MESSAGEMANAGER_H

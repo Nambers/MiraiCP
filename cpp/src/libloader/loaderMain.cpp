@@ -19,6 +19,7 @@
 #include "LoaderLogger.h"
 #include "LoaderTaskQueue.h"
 #include "MessageManager.h"
+#include "MessageProcessor.h"
 #include "Plugin.h"
 #include "PluginListManager.h"
 #include "Scheduler.h"
@@ -49,6 +50,8 @@ namespace LibLoader {
         Antares::pool = std::make_unique<Antares::ThreadPool<>>();
 
         PluginListManager::enableAll();
+
+        MessageManager::get().init(&MessageProcessor::get());
 
         while (!is_loader_exited()) mainloop();
 

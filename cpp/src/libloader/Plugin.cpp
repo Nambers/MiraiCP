@@ -463,6 +463,17 @@ namespace LibLoader {
         return timestamp;
     }
 
+    std::unique_ptr<PolyM::Msg> Plugin::popMessage() const {
+        if (!message_queue) return nullptr;
+        return message_queue->tryGet();
+    }
+
+    void Plugin::popMessageTo(std::vector<std::unique_ptr<PolyM::Msg>> &messageList) const {
+        if (!message_queue) return;
+        auto in = message_queue->tryGet();
+        if(in) messageList.emplace_back(std::move(in));
+    }
+
     void registerAllPlugin(const std::string &cfgPath) noexcept {
         Plugin::registerAllPlugin(cfgPath);
     }

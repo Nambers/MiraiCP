@@ -15,19 +15,35 @@
 //
 
 #include "MessageManager.h"
+#include "MessageProcessor.h"
+#include "Plugin.h"
+#include "PluginListManager.h"
 #include <polym/Queue.hpp>
 
-MessageManager &MessageManager::get() {
-    static MessageManager manager;
-    return manager;
-}
+namespace LibLoader {
+    MessageManager &MessageManager::get() {
+        static MessageManager manager;
+        return manager;
+    }
 
-void MessageManager::tick() {
-    //    for (auto &queue: collectAllQueues()) {
-    //        while (true){
-    //            auto msg = queue->tryGet();
-    //            if (!msg) break ;
-    //            process(msg.get());
-    //        }
-    //    }
-}
+    void MessageManager::tick() {
+        for (auto &msg: collectAllMessages()) {
+            auto type_id = static_cast<MiraiCP::MessageType::Type>(msg->getMsgId());
+            processor->processMessage(type_id, std::move(msg));
+        }
+    }
+
+    void MessageManager::init(MessageProcessor *in_processor) {
+        processor = in_processor;
+        in_processor->registerDefaultHandlers();
+    }
+
+    std::vector<std::unique_ptr<PolyM::Msg>> MessageManager::collectAllMessages() {
+        // run over all plugins to get all messages
+        std::vector<std::unique_ptr<PolyM::Msg>> ret;
+        PluginListManager::run_over_pluginlist([&ret](const Plugin &plugin) {
+            plugin.popMessageTo(ret);
+        });
+        return ret;
+    }
+} // namespace LibLoader

@@ -15,6 +15,7 @@ namespace LibLoader{
         typedef void (*message_handler)(std::unique_ptr<PolyM::Msg> msg);
 
         message_handler handlers[MsgType::MESSAGE_TYPE_COUNT];
+
     public:
         static MessageProcessor& get();
 
@@ -25,8 +26,5 @@ namespace LibLoader{
         void registerDefaultHandlers();
     };
 }
-
-
-
 
 #endif //MIRAICP_PRO_MESSAGEPROCESSOR_H
