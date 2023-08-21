@@ -14,20 +14,23 @@ on:
   workflow_dispatch:
 
 jobs:
+  generated-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - id: generate-matrix
+        run: python scripts/CIHelper.py genMatrix ${{ github.event.head_commit.message }} >> $GITHUB_OUTPUT
+      
   single:
+    needs: generated-matrix
     name: "build MiraiCP-single (${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      matrix:
-        os:
-          - windows-2019
-          - ubuntu-20.04
-        include:
-          - os: windows-2019
-            targetName: MSVCX64
-          - os: ubuntu-20.04
-            targetName: LinuxX64
+      matrix: ${{fromJson(needs.generated-matrix.outputs.matrix)}}
     env:
       isWindows: ${{ startsWith(matrix.os, 'windows') }}
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
@@ -58,28 +61,21 @@ jobs:
         if: ${{ env.isWindows == 'true' }}
         run: ./scripts/WIN/cppBuilds.bat single
 
-  windows-mingw-single:
-    runs-on: windows-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - name: build with MinGW
-        run: ./scripts/WIN/cppBuilds.bat single mingw
+  # windows-mingw-single:
+  #   runs-on: windows-latest
+  #   steps:
+  #     - name: checkout
+  #       uses: actions/checkout@v3
+  #     - name: build with MinGW
+  #       run: ./scripts/WIN/cppBuilds.bat single mingw
 
   libLoader:
+    needs: generated-matrix
     name: "build MiraiCP-libLoader (${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      matrix:
-        os:
-          - windows-2019
-          - ubuntu-20.04
-        include:
-          - os: windows-2019
-            targetName: MSVCX64
-          - os: ubuntu-20.04
-            targetName: linuxX64
+      matrix: ${{fromJson(needs.generated-matrix.outputs.matrix)}}
     env:
       isWindows: ${{ startsWith(matrix.os, 'windows') }}
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
