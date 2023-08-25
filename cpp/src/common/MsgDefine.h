@@ -21,6 +21,8 @@
 
 
 namespace MiraiCP {
+
+
     namespace MessageType{
         enum Type {
             OperationMessage,
@@ -33,7 +35,6 @@ namespace MiraiCP {
         };
     }
 
-
     template<bool t_blocking = false>
     class MessageTraits {
         static inline bool blocking = t_blocking;
@@ -44,13 +45,13 @@ namespace MiraiCP {
     //        inline static int id = 0;
     //    };
     //
-    //    struct LoggerMessage{
-    //        MiraiCPStringview msg_string;
-    //        MiraiCPStringview name;
-    //        long long msg_lid;
-    //        int msg_level;
-    //        inline static int id = 1;
-    //    };
+        struct LoggerMessage{
+            MiraiCPStringview msg_string;
+            MiraiCPStringview name;
+            long long msg_lid;
+            int msg_level;
+            inline static int class_payload_id = 1;
+        };
 } // namespace MiraiCP
 
 

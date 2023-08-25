@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_PLUGIN_H
 
 
+#include "MessageProcessor.h"
 #include "PluginData.h"
 #include "commonTypes.h"
 #include <atomic>
@@ -28,11 +29,11 @@
 
 
 namespace LibLoader {
-    class Plugin : public PluginData {
+    class Plugin : public PluginData, public std::enable_shared_from_this<Plugin>{
         using timepoint = std::chrono::time_point<std::chrono::system_clock>;
         std::atomic<int> _runCounter = {0};
         mutable std::shared_mutex _mtx;
-        PolyM::Queue *message_queue;
+        MiraiCP::PluginInterface::PluginMessageHandles message_queue{};
         timepoint timestamp;
 
     public:
@@ -68,9 +69,11 @@ namespace LibLoader {
 
         timepoint getTimeStamp() const;
 
-        std::unique_ptr<PolyM::Msg> popMessage() const;
+        MessageProxy popMessage() const;
 
-        void popMessageTo(std::vector<std::unique_ptr<PolyM::Msg>> & messageList) const;
+//        void popMessageTo(std::vector<std::unique_ptr<PolyM::Msg>> & messageList) const;
+
+        void delete_message() const;
 
     public:
         static PluginFuncAddrData testSymbolExistance(plugin_handle handle, const std::string &path);
@@ -85,11 +88,11 @@ namespace LibLoader {
         static void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept;
 
     private:
-        message_queue_handle callEntranceFuncAdmin() const;
+        MiraiCP::PluginInterface::PluginMessageHandles callEntranceFuncAdmin() const;
 
-        message_queue_handle callEntranceFuncNormal() const;
+        MiraiCP::PluginInterface::PluginMessageHandles callEntranceFuncNormal() const;
 
-        message_queue_handle callEntranceByAuthority() const;
+        MiraiCP::PluginInterface::PluginMessageHandles callEntranceByAuthority() const;
 
     private: // internal, no lock; literally
         void updateTimeStamp();

@@ -14,34 +14,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MIRAICP_PRO_MESSAGEMANAGER_H
-#define MIRAICP_PRO_MESSAGEMANAGER_H
-
+#include "MsgDefine.h"
+#include "MsgSender.h"
+#include <deque>
 #include <memory>
-#include <vector>
+#include <polym/Msg.hpp>
+#include "commonTypes.h"
 
-namespace PolyM {
-    class Queue;
-    class Msg;
-} // namespace PolyM
+namespace MiraiCP::PluginInterface {
+    static auto &deleteQueue() {
+        static std::deque<std::unique_ptr<PolyM::Msg>> queue;
+        return queue;
+    }
 
-namespace LibLoader {
-    class MessageProcessor;
+    PayLoadInfo _try_get_payload() {
+        PayLoadInfo ret{nullptr, -1};
+        auto queue_ptr = MiraiCP::getMsgQueue();
+        auto msg = queue_ptr->tryGet();
+        if (!msg) return ret;
+        ret.payload = msg->getRawPayLoad();
+        ret.payload_id = msg->getMsgId();
+        deleteQueue().emplace_back(std::move(msg));
+        return ret;
+    }
 
-    class MessageManager {
-        MessageProcessor *processor = nullptr;
-
-    public:
-        static MessageManager &get();
-
-        void tick();
-
-        void init(MessageProcessor *in_processor);
-
-    private:
-//        std::vector<std::unique_ptr<PolyM::Msg>> collectAllMessages();
-    };
-
-} // namespace LibLoader
-
-#endif //MIRAICP_PRO_MESSAGEMANAGER_H
+    void _delete_one_msg() {
+        deleteQueue().pop_front();
+    }
+} // namespace MiraiCP

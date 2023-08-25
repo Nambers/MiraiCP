@@ -7,9 +7,25 @@
 
 
 #include "MsgDefine.h"
-#include <polym/Msg.hpp>
+#include "commonTypes.h"
 #include <memory>
-namespace LibLoader{
+#include <polym/Msg.hpp>
+#include <utility>
+
+namespace LibLoader {
+    class Plugin;
+    class MessageProxy {
+        MiraiCP::PluginInterface::PayLoadInfo payload;
+        std::shared_ptr<const Plugin> plugin;
+
+    public:
+        MessageProxy(MiraiCP::PluginInterface::PayLoadInfo payload, std::shared_ptr<const Plugin> plugin);
+
+        ~MessageProxy();
+
+        [[nodiscard]] auto getPayload() const { return payload; }
+    };
+
     class MessageProcessor {
         using MsgType = MiraiCP::MessageType::Type;
         typedef void (*message_handler)(std::unique_ptr<PolyM::Msg> msg);
@@ -17,7 +33,7 @@ namespace LibLoader{
         message_handler handlers[MsgType::MESSAGE_TYPE_COUNT];
 
     public:
-        static MessageProcessor& get();
+        static MessageProcessor &get();
 
         void processMessage(MsgType type, std::unique_ptr<PolyM::Msg> msg);
 
@@ -25,6 +41,6 @@ namespace LibLoader{
 
         void registerDefaultHandlers();
     };
-}
+} // namespace LibLoader
 
 #endif //MIRAICP_PRO_MESSAGEPROCESSOR_H

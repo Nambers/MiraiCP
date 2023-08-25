@@ -42,6 +42,12 @@ namespace LibLoader::LoaderApi {
     MIRAICP_EXPORT void reset_loader_apis() noexcept;
 } // namespace LibLoader::LoaderApi
 
+namespace MiraiCP::PluginInterface {
+    PayLoadInfo _try_get_payload();
+
+    void _delete_one_msg();
+} // namespace MiraiCP::PluginInterface
+
 /// 安全检查
 extern "C" {
 MIRAICP_EXPORT void _unused_MiraiCP_internal_safety_check() {
@@ -53,9 +59,10 @@ using namespace LibLoader;
 
 extern "C" {
 /// 插件开启入口
-MIRAICP_EXPORT message_queue_handle FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
+MIRAICP_EXPORT MiraiCP::PluginInterface::PluginMessageHandles FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
     static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
     using namespace MiraiCP;
+    PluginInterface::PluginMessageHandles ret{};
 
     Event::clear();
     LibLoader::LoaderApi::set_loader_apis(&funcs);
@@ -75,24 +82,26 @@ MIRAICP_EXPORT message_queue_handle FUNC_ENTRANCE(const LibLoader::LoaderApi::in
             e.raise();
             Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         } catch (...) {}
-        return nullptr;
+        return ret;
     } catch (const std::exception &e) {
         try {
             std::cerr.flush();
             Logger::logger.error(e.what());
             Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         } catch (...) {}
-        return nullptr;
+        return ret;
     } catch (...) {
         try {
             std::cerr.flush();
             Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         } catch (...) {}
-        return nullptr;
+        return ret;
     }
 
-    auto ret = getMsgQueue();
-    return reinterpret_cast<message_queue_handle>(ret);
+    ret.try_get_payload = PluginInterface::_try_get_payload;
+    ret.delete_one_msg = PluginInterface::_delete_one_msg;
+
+    return ret;
 }
 
 

@@ -4,9 +4,10 @@
 
 #include "MessageProcessor.h"
 #include "LoaderLogger.h"
+#include "Plugin.h"
 #include "commonTools.h"
 
-namespace LibLoader{
+namespace LibLoader {
 
     MessageProcessor &MessageProcessor::get() {
         static MessageProcessor processor;
@@ -44,4 +45,13 @@ namespace LibLoader{
     void MessageProcessor::registerDefaultHandlers() {
         // todo
     }
-}
+
+    MessageProxy::~MessageProxy() {
+        if (payload.payload && plugin->checkValid()) {
+            plugin->delete_message();
+        }
+    }
+
+    MessageProxy::MessageProxy(MiraiCP::PluginInterface::PayLoadInfo payload, std::shared_ptr<const Plugin> plugin) : payload(payload), plugin(std::move(plugin)) {
+    }
+} // namespace LibLoader

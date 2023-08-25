@@ -90,15 +90,15 @@ namespace LibLoader {
 
     constexpr static LoaderApi::interface_funcs normalInterfaces = LoaderApi::collect_interface_functions(false);
 
-    message_queue_handle Plugin::callEntranceFuncAdmin() const {
+    MiraiCP::PluginInterface::PluginMessageHandles Plugin::callEntranceFuncAdmin() const {
         return entrance(adminInterfaces);
     }
 
-    message_queue_handle Plugin::callEntranceFuncNormal() const {
+    MiraiCP::PluginInterface::PluginMessageHandles Plugin::callEntranceFuncNormal() const {
         return entrance(normalInterfaces);
     }
 
-    message_queue_handle Plugin::callEntranceByAuthority() const {
+    MiraiCP::PluginInterface::PluginMessageHandles Plugin::callEntranceByAuthority() const {
         if (authority == PluginAuthority::PLUGIN_AUTHORITY_ADMIN) {
             return callEntranceFuncAdmin();
         } else {
@@ -222,7 +222,7 @@ namespace LibLoader {
                 return;
             }
 
-            message_queue_handle ret = nullptr;
+            MiraiCP::PluginInterface::PluginMessageHandles ret{};
 
             {
                 ThreadIdentify::setThreadWorkingName(_getId());
@@ -233,12 +233,12 @@ namespace LibLoader {
                 }
             }
 
-            if (!ret) {
+            if (!ret.try_get_payload) {
                 logger.error("插件：" + _getId() + "启用时出现错误");
             }
 
             // reinterpret cast to message_queue
-            message_queue = reinterpret_cast<PolyM::Queue *>(ret);
+            message_queue = ret;
         });
     }
 
@@ -256,7 +256,7 @@ namespace LibLoader {
                 return;
             }
 
-            message_queue = nullptr;
+            message_queue.clear();
             int ret = -1;
 
             {
@@ -463,15 +463,21 @@ namespace LibLoader {
         return timestamp;
     }
 
-    std::unique_ptr<PolyM::Msg> Plugin::popMessage() const {
-        if (!message_queue) return nullptr;
-        return message_queue->tryGet();
+    MessageProxy Plugin::popMessage() const {
+        if(!message_queue.try_get_payload) return MessageProxy({}, nullptr);
+        auto payload = message_queue.try_get_payload();
+                if(!payload.payload) return MessageProxy({}, nullptr);
+        return MessageProxy(payload, shared_from_this());
     }
 
-    void Plugin::popMessageTo(std::vector<std::unique_ptr<PolyM::Msg>> &messageList) const {
-        if (!message_queue) return;
-        auto in = message_queue->tryGet();
-        if(in) messageList.emplace_back(std::move(in));
+//    void Plugin::popMessageTo(std::vector<std::unique_ptr<PolyM::Msg>> &messageList) const {
+//        if (!message_queue) return;
+//        auto in = message_queue->tryGet();
+//        if(in) messageList.emplace_back(std::move(in));
+//    }
+
+    void Plugin::delete_message() const {
+        if(message_queue.delete_one_msg) message_queue.delete_one_msg();
     }
 
     void registerAllPlugin(const std::string &cfgPath) noexcept {

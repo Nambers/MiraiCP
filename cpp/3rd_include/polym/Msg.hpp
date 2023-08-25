@@ -42,6 +42,11 @@ public:
      */
     MsgUID getUniqueId() const;
 
+    /** Get the raw payload data */
+    [[nodiscard]] virtual void* getRawPayLoad() const {
+        return nullptr;
+    }
+
 protected:
     Msg(Msg&&) = default;
     Msg& operator=(Msg&&) = default;
@@ -85,6 +90,11 @@ public:
     PayloadType& getPayload() const
     {
         return *pl_;
+    }
+
+    /** Get the raw payload data */
+    [[nodiscard]] void* getRawPayLoad() const override {
+        return reinterpret_cast<void*>(pl_.get());
     }
 
 protected:

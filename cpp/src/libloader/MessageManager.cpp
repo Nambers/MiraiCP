@@ -27,10 +27,10 @@ namespace LibLoader {
     }
 
     void MessageManager::tick() {
-        for (auto &msg: collectAllMessages()) {
-            auto type_id = static_cast<MiraiCP::MessageType::Type>(msg->getMsgId());
-            processor->processMessage(type_id, std::move(msg));
-        }
+//        for (auto &msg: collectAllMessages()) {
+//            auto type_id = static_cast<MiraiCP::MessageType::Type>(msg->getMsgId());
+//            processor->processMessage(type_id, std::move(msg));
+//        }
     }
 
     void MessageManager::init(MessageProcessor *in_processor) {
@@ -38,12 +38,12 @@ namespace LibLoader {
         in_processor->registerDefaultHandlers();
     }
 
-    std::vector<std::unique_ptr<PolyM::Msg>> MessageManager::collectAllMessages() {
-        // run over all plugins to get all messages
-        std::vector<std::unique_ptr<PolyM::Msg>> ret;
-        PluginListManager::run_over_pluginlist([&ret](const Plugin &plugin) {
-            plugin.popMessageTo(ret);
-        });
-        return ret;
-    }
+//    std::vector<std::unique_ptr<PolyM::Msg>> MessageManager::collectAllMessages() {
+//        // run over all plugins to get all messages
+//        std::vector<std::unique_ptr<PolyM::Msg>> ret;
+//        PluginListManager::run_over_pluginlist([&ret](const Plugin &plugin) {
+//            plugin.popMessageTo(ret);
+//        });
+//        return ret;
+//    }
 } // namespace LibLoader
