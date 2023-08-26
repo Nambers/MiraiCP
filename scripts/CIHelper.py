@@ -6,6 +6,7 @@ import sys, json, re
 
 def genMatrix(msg: str):
     global winOS, linuxOS
+    assert(len(msg) > 0)
     matrix = {
         "os":[winOS, linuxOS], 
         "include":[
@@ -16,9 +17,9 @@ def genMatrix(msg: str):
     if msg.endswith("noqa"):
         matrix = {"os": []}
     else:
-        result = re.findall(R"noqa\(([a-z,]+)\)$", msg)[0]
-        if result is not None:
-            OSs = result.split(',')
+        result = re.findall(R"noqa\(([a-z,]+)\)$", msg)
+        if len(result) > 0:
+            OSs = result[0].split(',')
             for OS in OSs:
                 if OS == "win" or OS == "windows":
                     matrix["os"].remove(winOS)
