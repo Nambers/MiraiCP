@@ -22,7 +22,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - id: generate-matrix
-        run: python scripts/CIHelper.py genMatrix ${{ github.event.head_commit.message }} >> $GITHUB_OUTPUT
+        run: python scripts/CIHelper.py genMatrix $msg >> $GITHUB_OUTPUT
+        env:
+          msg: ${{ github.event.head_commit.message }} 
       
   single:
     needs: generated-matrix
