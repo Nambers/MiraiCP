@@ -25,6 +25,7 @@ const PluginConfig CPPPlugin::config{
                 // 可选：日期
 };
 
+
 class Main : public CPPPlugin {
 public:
     Main() : CPPPlugin() {}

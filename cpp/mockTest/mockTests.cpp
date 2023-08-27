@@ -18,20 +18,22 @@
 
 using namespace MiraiCP;
 namespace MockTests {
-    void testEnd(const std::string& str){
+    void testEnd(const std::string &str) {
         MiraiCP::Logger::logger.info("--test end--" + str);
     }
+
     namespace Message {
-        void messageSerialization(const MessageChain& msg) {
+        void messageSerialization(const MessageChain &msg) {
             // let kotlin check serialization result
             Logger::logger.info("after_serialization:" + msg.toJson().dump());
         }
-    }
-    void refresh(GroupMessageEvent event){
+    } // namespace Message
+
+    void refresh(GroupMessageEvent event) {
         Logger::logger.info("refresh:");
         Logger::logger.info(event.sender.specialTitle());
-       Logger::logger.info(event.sender.avatarUrl());
-       Logger::logger.info(event.group.avatarUrl());
-       Logger::logger.info(event.bot.avatarUrl());
+        Logger::logger.info(event.sender.avatarUrl());
+        Logger::logger.info(event.group.avatarUrl());
+        Logger::logger.info(event.bot.avatarUrl());
     }
-}
+} // namespace MockTests

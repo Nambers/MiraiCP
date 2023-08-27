@@ -16,27 +16,27 @@
 
 #include "CPPPlugin.h"
 #include "Command.h"
+#include "Events/BotJoinGroupEvent.h"
+#include "Events/BotLeaveEvent.h"
+#include "Events/BotOnlineEvent.h"
+#include "Events/FriendRecallEvent.h"
+#include "Events/GroupInviteEvent.h"
+#include "Events/GroupMessageEvent.h"
+#include "Events/GroupTempMessageEvent.h"
+#include "Events/MemberJoinEvent.h"
+#include "Events/MemberJoinRequestEvent.h"
+#include "Events/MemberLeaveEvent.h"
+#include "Events/MemberRecallEvent.h"
+#include "Events/MessagePreSendEvent.h"
+#include "Events/NewFriendRequestEvent.h"
+#include "Events/NudgeEvent.h"
+#include "Events/PrivateMessageEvent.h"
+#include "Events/TimeOutEvent.h"
 #include "ForwardedMessage.h"
 #include "Schedule.h"
 #include "Tools.h"
 #include "mockTests.h"
 #include "utils.h"
-#include "Events/GroupMessageEvent.h"
-#include "Events/NudgeEvent.h"
-#include "Events/GroupTempMessageEvent.h"
-#include "Events/PrivateMessageEvent.h"
-#include "Events/NewFriendRequestEvent.h"
-#include "Events/MemberJoinEvent.h"
-#include "Events/MemberJoinRequestEvent.h"
-#include "Events/MemberLeaveEvent.h"
-#include "Events/BotOnlineEvent.h"
-#include "Events/MemberRecallEvent.h"
-#include "Events/FriendRecallEvent.h"
-#include "Events/BotJoinGroupEvent.h"
-#include "Events/GroupInviteEvent.h"
-#include "Events/BotLeaveEvent.h"
-#include "Events/MessagePreSendEvent.h"
-#include "Events/TimeOutEvent.h"
 
 
 #define MESSAGE_EQ(msg) a.message[0]->content == #msg
@@ -125,9 +125,9 @@ public:
             })
             TEST(botList, queryBotListTest, {
                 Logger::logger.info("botList:", a.bot.FriendListToString());
-                Logger::logger.info("botList:",a.bot.GroupListToString());
-                Logger::logger.info("botList:",a.group.MemberListToString());
-                Logger::logger.info("botList:",a.bot.OnlineBotsListToString());
+                Logger::logger.info("botList:", a.bot.GroupListToString());
+                Logger::logger.info("botList:", a.group.MemberListToString());
+                Logger::logger.info("botList:", a.bot.OnlineBotsListToString());
             })
             TEST(sendFile, sendFileTest, {
                 a.group.sendFile("/img/img.png", absolute(std::filesystem::path("./src/test/resources/img.png")).string());
@@ -205,7 +205,7 @@ public:
             })
             TEST(honorMember, honorMemberTest, {
                 auto m = a.group.queryCurrentHonorMember(MiraiCP::Group::TALKATIVE);
-                Logger::logger.info("honorMember:", m.has_value()? m.value().id() : 0);
+                Logger::logger.info("honorMember:", m.has_value() ? m.value().id() : 0);
             })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");
@@ -234,7 +234,7 @@ public:
             testEnd("GroupMessageEventTest");
         });
         Event::registerEvent<MemberJoinEvent>([](MemberJoinEvent a) {
-            if(a.type == MemberJoinEvent::invited) {
+            if (a.type == MemberJoinEvent::invited) {
                 Logger::logger.info("Invitor:", a.inviter->id());
             }
             testEnd("MemberJoinEventTest");

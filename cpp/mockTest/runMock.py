@@ -18,6 +18,7 @@ currentFilePath = os.path.dirname(os.path.abspath(__file__))
 logfile = "mock_errlog.txt"
 prefix = "bash " if sys.platform != 'win32' else ""
 
+
 def writelog(e: subprocess.CalledProcessError):
     ot: str = e.stdout.decode(codepage, errors='ignore')
     with open(os.path.join(currentFilePath, logfile), 'a', encoding='utf-8') as f:
@@ -62,6 +63,7 @@ if __name__ == "__main__":
         exit(1)
 
     kotlinPath = os.path.join(os.path.join(cppPath, os.path.pardir), "kotlin")
+
     env = os.environ.copy()
     env.update({"libpath": libPath})
 

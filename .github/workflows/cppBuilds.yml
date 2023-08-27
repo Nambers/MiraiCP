@@ -14,96 +14,84 @@ on:
   workflow_dispatch:
 
 jobs:
-  generated-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.generate-matrix.outputs.matrix }}
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - id: generate-matrix
-        run: python scripts/CIHelper.py genMatrix $msg >> $GITHUB_OUTPUT
-        env:
-          msg: ${{ github.event.head_commit.message }} 
-      
   single:
-    needs: generated-matrix
     name: "build MiraiCP-single (${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      matrix: ${{fromJson(needs.generated-matrix.outputs.matrix)}}
+      matrix:
+        os:
+          - windows-2019
+          - ubuntu-20.04
     env:
       isWindows: ${{ startsWith(matrix.os, 'windows') }}
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
+      - id: generate-skip-envs-bash
+        run: python scripts/CIHelper.py skip_env "${{ github.event.head_commit.message }}"
       # Linux
       - name: setup gcc
-        if: ${{ env.isUbuntu == 'true' }}
+        if: ${{ env.isUbuntu == 'true' && env.SKIP_LINUX != 'true' }}
         uses: egor-tensin/setup-gcc@v1
         with:
           version: 9
           platform: x64
       - name: build with gcc ubuntu
-        if: ${{ env.isUbuntu == 'true' }}
+        if: ${{ env.isUbuntu == 'true' && env.SKIP_LINUX != 'true' }}
         env:
           cc: gcc
           cxx: g++
         run: ./scripts/LINUX/cppBuilds.sh single
       # Windows
       - name: setup MSVC
-        if: ${{ env.isWindows == 'true' }}
+        if: ${{ env.isWindows == 'true' && env.SKIP_WINDOWS != 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.12.0
         with:
           arch: amd64
           vsversion: 2019
       - name: build with MSVC
-        if: ${{ env.isWindows == 'true' }}
+        if: ${{ env.isWindows == 'true' && env.SKIP_WINDOWS != 'true' }}
         run: ./scripts/WIN/cppBuilds.bat single
 
-  # windows-mingw-single:
-  #   runs-on: windows-latest
-  #   steps:
-  #     - name: checkout
-  #       uses: actions/checkout@v3
-  #     - name: build with MinGW
-  #       run: ./scripts/WIN/cppBuilds.bat single mingw
-
   libLoader:
-    needs: generated-matrix
     name: "build MiraiCP-libLoader (${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      matrix: ${{fromJson(needs.generated-matrix.outputs.matrix)}}
+      matrix:
+        os:
+          - windows-2019
+          - ubuntu-20.04
     env:
       isWindows: ${{ startsWith(matrix.os, 'windows') }}
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
+      - id: generate-skip-envs
+        run: python scripts/CIHelper.py skip_env "${{ github.event.head_commit.message }}" >> $GITHUB_ENV
       # Linux
       - name: setup gcc
-        if: ${{ env.isUbuntu == 'true' }}
+        if: ${{ env.isUbuntu == 'true' && env.SKIP_LINUX != 'true' }}
         uses: egor-tensin/setup-gcc@v1
         with:
           version: 9
           platform: x64
       - name: build with gcc ubuntu
-        if: ${{ env.isUbuntu == 'true' }}
+        if: ${{ env.isUbuntu == 'true' && env.SKIP_LINUX != 'true' }}
         env:
           cc: gcc
           cxx: g++
         run: ./scripts/LINUX/cppBuilds.sh libLoader
       # Windows
       - name: setup MSVC
-        if: ${{ env.isWindows == 'true' }}
+        if: ${{ env.isWindows == 'true' && env.SKIP_WINDOWS != 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.12.0
         with:
           arch: amd64
           vsversion: 2019
       - name: build with MSVC
-        if: ${{ env.isWindows == 'true' }}
+        if: ${{ env.isWindows == 'true' && env.SKIP_WINDOWS != 'true' }}
         run: ./scripts/WIN/cppBuilds.bat libLoader
