@@ -8,23 +8,24 @@
 #include "commonTools.h"
 
 namespace LibLoader {
+    /// MessageProxy
+    MessageProxy::~MessageProxy() {
+        if (payload.payload && plugin != nullptr && plugin->checkValid()) {
+            plugin->delete_message();
+        }
+    }
 
+    MessageProxy::MessageProxy(MiraiCP::PluginInterface::PayLoadInfo payload, std::shared_ptr<const Plugin> plugin) : payload(payload), plugin(std::move(plugin)) {
+    }
+
+    MessageProxy::operator bool() const {
+        return payload.payload != nullptr && plugin != nullptr;
+    }
+
+    /// MessageProcessor
     MessageProcessor &MessageProcessor::get() {
         static MessageProcessor processor;
         return processor;
-    }
-
-    void MessageProcessor::processMessage(MsgType type, std::unique_ptr<PolyM::Msg> msg) {
-        bool invalid = true;
-        MIRAICP_DEFER(if (invalid) logger.error("MessageProcessor::processMessage: invalid message type:" + std::to_string(type)););
-
-        if (type < 0 || type >= MsgType::MESSAGE_TYPE_COUNT) return;
-
-        auto handler = handlers[type];
-        if (!handler) return;
-
-        invalid = false;
-        handler(std::move(msg));
     }
 
     void MessageProcessor::registerHandler(MsgType type, message_handler handler) {
@@ -46,12 +47,18 @@ namespace LibLoader {
         // todo
     }
 
-    MessageProxy::~MessageProxy() {
-        if (payload.payload && plugin->checkValid()) {
-            plugin->delete_message();
-        }
-    }
+    void MessageProcessor::processMessage(const MessageProxy &msg) {
+        bool invalid = true;
+        auto payload = msg.getPayload();
+        auto type = payload.payload_id;
+        MIRAICP_DEFER(if (invalid) logger.error("MessageProcessor::processMessage: invalid message type:" + std::to_string(type)););
 
-    MessageProxy::MessageProxy(MiraiCP::PluginInterface::PayLoadInfo payload, std::shared_ptr<const Plugin> plugin) : payload(payload), plugin(std::move(plugin)) {
+        if (type < 0 || type >= MsgType::MESSAGE_TYPE_COUNT) return;
+
+        auto handler = handlers[type];
+        if (!handler) return;
+
+        invalid = false;
+        handler(payload.payload);
     }
 } // namespace LibLoader

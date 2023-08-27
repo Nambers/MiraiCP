@@ -29,15 +29,17 @@
 
 
 namespace LibLoader {
-    class Plugin : public PluginData, public std::enable_shared_from_this<Plugin>{
+    class Plugin : public PluginData, public std::enable_shared_from_this<Plugin> {
         using timepoint = std::chrono::time_point<std::chrono::system_clock>;
         std::atomic<int> _runCounter = {0};
         mutable std::shared_mutex _mtx;
-        MiraiCP::PluginInterface::PluginMessageHandles message_queue{};
+
         timepoint timestamp;
 
     public:
         explicit Plugin(std::string inPath) : PluginData(std::move(inPath)) {}
+
+        ~Plugin();
 
     public: // external usage, with lock; literally
         void loadPlugin(bool alsoEnablePlugin);
@@ -71,7 +73,7 @@ namespace LibLoader {
 
         MessageProxy popMessage() const;
 
-//        void popMessageTo(std::vector<std::unique_ptr<PolyM::Msg>> & messageList) const;
+        //        void popMessageTo(std::vector<std::unique_ptr<PolyM::Msg>> & messageList) const;
 
         void delete_message() const;
 
@@ -106,6 +108,8 @@ namespace LibLoader {
         void unloadInternal();
 
         void unloadWhenExceptionInternal();
+
+        MiraiCP::PluginInterface::PayLoadInfo tryGetPayload() const;
     };
 } // namespace LibLoader
 #endif //MIRAICP_PRO_PLUGIN_H

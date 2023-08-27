@@ -33,6 +33,7 @@ namespace LibLoader {
         plugin_event_func_ptr eventFunc = nullptr;
         plugin_func_ptr exit = nullptr;
         plugin_info_func_ptr infoFunc = nullptr;
+        MiraiCP::PluginInterface::PluginMessageHandles message_queue{};
 
         void _resetAddrData() {
             PluginFuncAddrData tmp;

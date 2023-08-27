@@ -26,24 +26,19 @@ namespace LibLoader {
         return manager;
     }
 
-    void MessageManager::tick() {
-//        for (auto &msg: collectAllMessages()) {
-//            auto type_id = static_cast<MiraiCP::MessageType::Type>(msg->getMsgId());
-//            processor->processMessage(type_id, std::move(msg));
-//        }
+    void MessageManager::tick() { // NOLINT(*-convert-member-functions-to-static)
+        std::vector<MessageProxy> messages;
+        PluginListManager::run_over_pluginlist([&messages](const Plugin &plugin) {
+            auto msg = plugin.popMessage();
+            if (msg) messages.emplace_back(std::move(msg));
+        });
+        for (auto &msg: messages) {
+            processor->processMessage(msg);
+        }
     }
 
     void MessageManager::init(MessageProcessor *in_processor) {
         processor = in_processor;
         in_processor->registerDefaultHandlers();
     }
-
-//    std::vector<std::unique_ptr<PolyM::Msg>> MessageManager::collectAllMessages() {
-//        // run over all plugins to get all messages
-//        std::vector<std::unique_ptr<PolyM::Msg>> ret;
-//        PluginListManager::run_over_pluginlist([&ret](const Plugin &plugin) {
-//            plugin.popMessageTo(ret);
-//        });
-//        return ret;
-//    }
 } // namespace LibLoader

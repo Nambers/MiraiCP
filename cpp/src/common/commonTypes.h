@@ -26,17 +26,18 @@
 
 namespace MiraiCP::PluginInterface {
     struct PayLoadInfo {
+        typedef void *payload_ptr;
         void *payload;
         int payload_id;
     };
     typedef MiraiCP::PluginInterface::PayLoadInfo (*message_queue_handle)();
     typedef void (*message_delete_handle)();
 
-    struct PluginMessageHandles{
+    struct PluginMessageHandles {
         message_queue_handle try_get_payload{};
         message_delete_handle delete_one_msg{};
 
-        void clear(){
+        void clear() {
             try_get_payload = nullptr;
             delete_one_msg = nullptr;
         }

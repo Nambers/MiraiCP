@@ -82,6 +82,22 @@ namespace LibLoader {
         static string exceptionType() { return "PluginHandleInvalidException"; }
     };
 
+    class InvalidPayloadPointerException : public LoaderExceptionCRTP<InvalidPayloadPointerException> {
+    public:
+        InvalidPayloadPointerException(string _filename, int _lineNum)
+            : LoaderExceptionCRTP("无效的payload指针", std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "InvalidPayloadPointerException"; }
+    };
+
+    class InvalidThreadException : public LoaderExceptionCRTP<InvalidThreadException> {
+    public:
+        InvalidThreadException(string _filename, int _lineNum)
+            : LoaderExceptionCRTP("函数只能在loader线程中调用", std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "InvalidThreadException"; }
+    };
+
     ////////////////////////////////////
     /// 这部分是一些工具函数、对象
 
@@ -132,6 +148,12 @@ namespace LibLoader {
     }
 
     ////////////////////////////////////
+
+    Plugin::~Plugin() {
+        if (handle != nullptr) {
+            unloadPlugin();
+        }
+    }
 
     // 将插件加载进内存
     void Plugin::loadPlugin(bool alsoEnablePlugin) {
@@ -464,20 +486,27 @@ namespace LibLoader {
     }
 
     MessageProxy Plugin::popMessage() const {
-        if(!message_queue.try_get_payload) return MessageProxy({}, nullptr);
-        auto payload = message_queue.try_get_payload();
-                if(!payload.payload) return MessageProxy({}, nullptr);
-        return MessageProxy(payload, shared_from_this());
+        if (!message_queue.try_get_payload) return MessageProxy({}, nullptr);
+        auto payload = tryGetPayload();
+        if (!payload.payload) return MessageProxy({}, nullptr);
+        return {payload, shared_from_this()};
     }
 
-//    void Plugin::popMessageTo(std::vector<std::unique_ptr<PolyM::Msg>> &messageList) const {
-//        if (!message_queue) return;
-//        auto in = message_queue->tryGet();
-//        if(in) messageList.emplace_back(std::move(in));
-//    }
-
     void Plugin::delete_message() const {
-        if(message_queue.delete_one_msg) message_queue.delete_one_msg();
+        if (message_queue.delete_one_msg) message_queue.delete_one_msg();
+    }
+
+    MiraiCP::PluginInterface::PayLoadInfo Plugin::tryGetPayload() const {
+        if (!message_queue.try_get_payload) {
+            logger.error("tryGetPayload: try_get_payload is nullptr");
+            throw InvalidPayloadPointerException(MIRAICP_EXCEPTION_WHERE);
+        }
+        // check thread
+        if (!ThreadIdentify::isMeLoaderThread()) {
+            logger.error("tryGetPayload: you should call this function in loader thread!!!");
+            throw InvalidThreadException(MIRAICP_EXCEPTION_WHERE);
+        }
+        return message_queue.try_get_payload();
     }
 
     void registerAllPlugin(const std::string &cfgPath) noexcept {

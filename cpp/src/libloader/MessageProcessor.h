@@ -14,28 +14,37 @@
 
 namespace LibLoader {
     class Plugin;
+
     class MessageProxy {
         MiraiCP::PluginInterface::PayLoadInfo payload;
         std::shared_ptr<const Plugin> plugin;
 
     public:
+        MessageProxy() = delete;
+        MessageProxy(const MessageProxy &) = delete;
+        MessageProxy(MessageProxy &&) = default;
+
         MessageProxy(MiraiCP::PluginInterface::PayLoadInfo payload, std::shared_ptr<const Plugin> plugin);
 
         ~MessageProxy();
 
         [[nodiscard]] auto getPayload() const { return payload; }
+
+        explicit operator bool() const;
     };
 
     class MessageProcessor {
         using MsgType = MiraiCP::MessageType::Type;
-        typedef void (*message_handler)(std::unique_ptr<PolyM::Msg> msg);
+        using PayLoadInfo = MiraiCP::PluginInterface::PayLoadInfo;
+        using payload_ptr = PayLoadInfo::payload_ptr;
+        typedef void (*message_handler)(payload_ptr msg);
 
         message_handler handlers[MsgType::MESSAGE_TYPE_COUNT];
 
     public:
         static MessageProcessor &get();
 
-        void processMessage(MsgType type, std::unique_ptr<PolyM::Msg> msg);
+        void processMessage(const MessageProxy &msg);
 
         void registerHandler(MsgType type, message_handler handler);
 
