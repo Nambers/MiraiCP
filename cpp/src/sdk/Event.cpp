@@ -157,9 +157,9 @@ namespace MiraiCP {
 
     MemberJoinEvent::MemberJoinEvent(BaseEventData j) : BotEvent(j.botId),
                                                         type(joinType(j.eventData["eventType"].get<int>())),
-                                                        member(j.object->id, j.subject->groupId, j.botId),
+                                                        member(j.object->id, j.object->groupId, j.botId),
                                                         group(j.subject->id, j.subject->botId),
-                                                        inviter(j.object == std::nullopt ? std::nullopt : std::optional(Member(j.object->id, j.object->groupId, j.object->botId))) {
+                                                        inviter(j.object == std::nullopt ? std::nullopt : std::optional(Member(j.eventData["invitor"]["id"], j.eventData["invitor"]["groupId"], j.eventData["invitor"]["botId"]))) {
     }
 
     MemberLeaveEvent::MemberLeaveEvent(BaseEventData j) : BotEvent(j.botId),
@@ -388,6 +388,14 @@ namespace MiraiCP {
         this->eventData = json_jsonmover(j, "eventData");
     }
 
+    std::string BaseEventData::toString() const {
+        std::stringstream ss;
+        ss << "{"
+           << "botId=" << botId << ", subject=" << subject->toString() << ", object=" << object->toString()
+           << ", eventData=" << eventData.dump() << "}";
+        return ss.str();
+    }
+
     BaseEventData::BuiltInContact::BuiltInContact(nlohmann::json in_json) {
         if (in_json.empty()) {
             return;
@@ -397,6 +405,13 @@ namespace MiraiCP {
         if (in_json.contains("groupId"))
             this->groupId = in_json["groupId"];
         this->type = ContactType(in_json["type"]);
+    }
+
+    std::string BaseEventData::BuiltInContact::toString() const {
+        std::stringstream ss;
+        ss << "{"
+           << "botId=" << botId << ", id=" << id << ", groupId=" << groupId << ", type=" << type << "}";
+        return ss.str();
     }
 
     std::shared_ptr<Contact> BaseEventData::BuiltInContact::toContactPointer() {

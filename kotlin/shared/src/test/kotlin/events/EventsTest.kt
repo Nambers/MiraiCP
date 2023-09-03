@@ -28,7 +28,9 @@ import net.mamoe.mirai.utils.MiraiExperimentalApi
 import net.mamoe.mirai.utils.MiraiInternalApi
 import org.junit.jupiter.api.Test
 import tech.eritquearcus.miraicp.testUtils.TestBase
+import tech.eritquearcus.miraicp.testUtils.TestUtils.logList
 import tech.eritquearcus.miraicp.testUtils.TestUtils.waitUntilEnd
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 // ref: https://github.com/mamoe/mirai/blob/dev/mirai-core-mock/test/DslTest.kt
@@ -94,6 +96,18 @@ class EventsTest : TestBase() {
     fun memberJoinEvent() = runBlocking {
         MemberJoinEvent.Active(member).broadcast()
         waitUntilEnd()
+    }
+
+    @OptIn(MiraiInternalApi::class)
+    @Test
+    fun memberJoinInvitedEvent() = runBlocking {
+        val invitor = group.addMember(2333, "invitedMember")
+        MemberJoinEvent.Invite(member, invitor).broadcast()
+        waitUntilEnd()
+        assertEquals(
+            invitor.id.toString(),
+            logList.first { it.contains("Invitor:") }.substringAfter("Invitor:")
+        )
     }
 
     @OptIn(MiraiInternalApi::class)

@@ -17,14 +17,14 @@
 #ifndef MIRAICP_PRO_MOCKTESTS_H
 #define MIRAICP_PRO_MOCKTESTS_H
 #include "Event.h"
-#include "MessageChain.h"
 #include "Events/GroupMessageEvent.h"
+#include "MessageChain.h"
 #include <string>
-namespace MockTests{
-    void testEnd(const std::string&);
-    namespace Message{
-        void messageSerialization(const MiraiCP::MessageChain&);
+namespace MockTests {
+    void testEnd(const std::string &);
+    namespace Message {
+        void messageSerialization(const MiraiCP::MessageChain &);
     }
     void refresh(MiraiCP::GroupMessageEvent);
-}
+} // namespace MockTests
 #endif //MIRAICP_PRO_MOCKTESTS_H

@@ -38,6 +38,7 @@ public:
             schedule(100, j.dump());
             Event::registerEvent<TimeOutEvent>([](TimeOutEvent e) {
                 nlohmann::json j = nlohmann::json::parse(e.msg);
+
                 if (j["type"] == 1)
                     // 发送群消息
                     Group(j["id"], j["bid"]).sendMessage("");

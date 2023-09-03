@@ -72,6 +72,8 @@ namespace MiraiCP {
             QQID groupId{};
             ContactType type{};
 
+            // test helper
+            [[nodiscard]] std::string toString() const;
             explicit BuiltInContact(nlohmann::json in_json);
 
             std::shared_ptr<Contact> toContactPointer();
@@ -82,6 +84,8 @@ namespace MiraiCP {
         QQID botId;
         nlohmann::json eventData;
 
+        // test helper
+        [[nodiscard]] std::string toString() const;
         explicit BaseEventData(nlohmann::json j);
     };
 
