@@ -454,10 +454,10 @@ object Packets {
         @Serializable
         data class EventData<T : EventPacket>(
             val eventData: T,
-            val eventId: Int = -1,
+            val eventId: Int,
             var subject: Contact? = Contact(),
             var `object`: Contact? = Contact(),
-            val botId: Long = 0,
+            val botId: Long,
         )
 
         @Serializable
@@ -784,7 +784,7 @@ object Packets {
             builder: (Outgoing.EventData<T>) -> Unit
         ) =
             json.encodeToString(
-                Outgoing.EventData(event, eventId = event.eventId).also { builder(it) })
+                Outgoing.EventData(event, eventId = event.eventId, botId = bot.id).also { builder(it) })
 
         fun MessageEvent.toEventData(): String = eventToJson(Outgoing.MessageEventData(this)) {
             when (this) {

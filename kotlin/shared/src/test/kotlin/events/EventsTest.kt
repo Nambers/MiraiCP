@@ -103,7 +103,9 @@ class EventsTest : TestBase() {
     fun memberJoinInvitedEvent() = runBlocking {
         val invitor = group.addMember(2333, "invitedMember")
         MemberJoinEvent.Invite(member, invitor).broadcast()
-        waitUntilEnd()
+        MemberJoinEvent.Active(member).broadcast()
+        MemberJoinEvent.Retrieve(member).broadcast()
+        waitUntilEnd(3)
         assertEquals(
             invitor.id.toString(),
             logList.first { it.contains("Invitor:") }.substringAfter("Invitor:")
