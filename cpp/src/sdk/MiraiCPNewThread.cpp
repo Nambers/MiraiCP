@@ -21,34 +21,6 @@
 
 
 namespace MiraiCP {
-    /// 如果在 MiraiCPNewThread 中捕获到了非 MiraiCP 之外的异常抛出
-    /// @see MiraiCPNewThread
-    class MiraiCPThreadException : public MiraiCPExceptionCRTP<MiraiCPThreadException> {
-    public:
-        /// 抛出异常的线程 ID
-        std::thread::id threadId;
-
-    public:
-        explicit MiraiCPThreadException(const std::string &exception_content, std::thread::id threadId, string _filename, int _lineNum)
-            : MiraiCPExceptionCRTP(exception_content + " at threadId: " + getThreadIdStr(threadId), std::move(_filename), _lineNum),
-              threadId(threadId) {}
-
-    public:
-        std::string getThreadIdStr() const { return getThreadIdStr(threadId); }
-
-    public:
-        static string exceptionType() { return "MiraiCPThreadException"; }
-
-    private:
-        MIRAICP_EXPORT static std::string getThreadIdStr(const std::thread::id &id) {
-            static std::stringstream ss;
-            ss << id;
-            auto result = ss.str();
-            ss.str("");
-            return result;
-        }
-    };
-
     void MiraiCPNewThread::threadThrows(const std::string &content) {
         MiraiCPThreadException exNew(content, std::this_thread::get_id(), MIRAICP_EXCEPTION_WHERE);
         exNew.raise();

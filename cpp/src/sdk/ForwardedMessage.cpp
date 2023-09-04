@@ -16,9 +16,8 @@
 
 #include "ForwardedMessage.h"
 #include "Contact.h"
+#include "Exception.h"
 #include "ExceptionHandle.h"
-#include "Exceptions/API.h"
-#include "Exceptions/IllegalArgument.h"
 #include "KtOperation.h"
 #include <nlohmann/json.hpp>
 

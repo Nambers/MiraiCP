@@ -16,10 +16,8 @@
 
 #include "Member.h"
 #include "ContactDataType/GroupRelatedData.h"
+#include "Exception.h"
 #include "ExceptionHandle.h"
-#include "Exceptions/IllegalArgument.h"
-#include "Exceptions/IllegalState.h"
-#include "Exceptions/Member.h"
 #include "JsonTools.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"
@@ -43,18 +41,6 @@ namespace MiraiCP {
     };
 
     using json = nlohmann::json;
-
-    /// 禁言异常
-    /// @see MiraiCPExceptionBase
-    class MIRAICP_EXPORT MuteException : public MiraiCPExceptionCRTP<MuteException> {
-    public:
-        /*
-        *	 禁言时间超出0s~30d
-        */
-        MuteException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("禁言时长不在0s~30d中间", std::move(_filename), _lineNum) {}
-
-        static string exceptionType() { return "MuteException"; }
-    };
 
     auto GetMemberFromPool(QQID id, QQID groupId, QQID botid) noexcept {
         using Tools::idpair;
@@ -152,9 +138,9 @@ namespace MiraiCP {
         std::string result = LowLevelAPI::getInfoSource(internalToJson());
 
         if (result == "E1")
-            throw MemberException(1, MIRAICP_EXCEPTION_WHERE);
+            throw MemberGroupNotFoundException(MIRAICP_EXCEPTION_WHERE);
         if (result == "E2")
-            throw MemberException(2, MIRAICP_EXCEPTION_WHERE);
+            throw MemberNotFoundException(MIRAICP_EXCEPTION_WHERE);
 
         {
             LowLevelAPI::info tmp = LowLevelAPI::info0(result);

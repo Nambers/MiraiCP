@@ -16,11 +16,8 @@
 
 #include "Group.h"
 #include "ContactDataType/GroupRelatedData.h"
+#include "Exception.h"
 #include "ExceptionHandle.h"
-#include "Exceptions/IllegalArgument.h"
-#include "Exceptions/IllegalState.h"
-#include "Exceptions/RemoteAsset.h"
-#include "Exceptions/Upload.h"
 #include "JsonTools.h"
 #include "KtOperation.h"
 #include "LowLevelAPI.h"

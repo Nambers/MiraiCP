@@ -15,8 +15,7 @@
 //
 
 #include "SingleMessage.h"
-#include "Exceptions/IllegalArgument.h"
-#include "Exceptions/RemoteAsset.h"
+#include "Exception.h"
 #include "JsonTools.h"
 #include "KtOperation.h"
 #include "Logger.h"

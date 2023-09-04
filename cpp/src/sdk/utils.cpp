@@ -19,7 +19,6 @@
 #include "Event.h"
 #include "Events/MiraiCPExceptionEvent.h"
 #include "Exception.h"
-#include "KtOperation.h"
 #include "Logger.h"
 #include "commonTools.h"
 #include "commonTypes.h"

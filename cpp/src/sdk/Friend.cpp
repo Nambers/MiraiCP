@@ -16,9 +16,8 @@
 
 #include "Friend.h"
 #include "ContactDataType/IContactData.h"
+#include "Exception.h"
 #include "ExceptionHandle.h"
-#include "Exceptions/IllegalArgument.h"
-#include "Exceptions/IllegalState.h"
 #include "JsonTools.h"
 #include "KtOperation.h"
 

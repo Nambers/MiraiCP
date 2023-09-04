@@ -15,38 +15,12 @@
 //
 
 #include "loaderApi.h"
-#include "CPPPlugin.h"
 #include "Exception.h"
 #include "commonTools.h"
 #include "loaderApiInternal.h"
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
-
-
-namespace MiraiCP {
-    /// 插件没有权限时抛出该异常
-    /// 该异常仅可能在插件尝试调用libLoader 高级权限的Api接口时抛出
-    /// 如插件尝试重载、加载、卸载插件等操作，但配置文件中并没有赋予该插件权限时
-    /// @see MiraiCPExceptionBase
-    class MIRAICP_EXPORT PluginNotAuthorizedException : public MiraiCPExceptionCRTP<PluginNotAuthorizedException> {
-    public:
-        explicit PluginNotAuthorizedException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("插件" + CPPPlugin::config.getId() + "没有管理权限", std::move(_filename), _lineNum) {}
-
-        static string exceptionType() { return "PluginNotAuthorizedException"; }
-    };
-
-    /// 插件未加载抛出该异常
-    /// 在插件能正常运行时不会抛出，出现该异常事件时请不要再次尝试收发消息等Mirai操作，
-    /// 否则可能导致异常处理时再次抛出异常
-    /// @see MiraiCPExceptionBase
-    class MIRAICP_EXPORT PluginNotEnabledException : public MiraiCPExceptionCRTP<PluginNotEnabledException> {
-    public:
-        explicit PluginNotEnabledException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("插件" + CPPPlugin::config.getId() + "未加载", std::move(_filename), _lineNum) {}
-
-        static string exceptionType() { return "PluginNotEnabledException"; }
-    };
-} // namespace MiraiCP
 
 
 namespace LibLoader::LoaderApi {
