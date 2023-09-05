@@ -1,4 +1,18 @@
 # Change Log
+## v2.16.0-RC
+Internal fixs:
++ move 3rd includes
++ add `noqa` detect on commit message to bypass some specific platforms workflow #199
+
+Fixs:
++ fix MemberJoinInvitedEvent and MemberJoinEvent #196
+
+Improvements:
++ Improved implementation of MiraiCP Exceptions.
+
+Upgrade:
++ Upgrade mirai to `2.16.0-RC`
+
 ## v2.15.0
 Internal fix:  
 * improve thread safety
