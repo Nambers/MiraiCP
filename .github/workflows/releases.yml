@@ -23,7 +23,7 @@ jobs:
     runs-on: windows-2019
     steps:
     - name: checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Set up MSVC
       uses: ilammy/msvc-dev-cmd@v1.12.0
       with:
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Set up GCC
       uses: egor-tensin/setup-gcc@v1
       with:
@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
      - name: checkout
-       uses: actions/checkout@v2
+       uses: actions/checkout@v4
        with:
         ref: dev
         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
@@ -107,7 +107,7 @@ jobs:
     #   if: ${{ !github.event.inputs.skipTest }}
     #   uses: ./.github/workflows/loadTest.yml
     - name: checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: permission
       run: chmod -R 777 *
     - name: Set up JDK 15
