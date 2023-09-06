@@ -59,7 +59,7 @@ using namespace LibLoader;
 
 extern "C" {
 /// 插件开启入口
-MIRAICP_EXPORT MiraiCP::PluginInterface::PluginMessageHandles FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
+MIRAICP_EXPORT PluginMessageHandles_C FUNC_ENTRANCE(const LibLoader::LoaderApi::interface_funcs &funcs) {
     static_assert(std::is_same_v<decltype(&FUNC_ENTRANCE), LibLoader::plugin_entrance_func_ptr>);
     using namespace MiraiCP;
     PluginInterface::PluginMessageHandles ret{};
@@ -82,26 +82,26 @@ MIRAICP_EXPORT MiraiCP::PluginInterface::PluginMessageHandles FUNC_ENTRANCE(cons
             e.raise();
             Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         } catch (...) {}
-        return ret;
+        return ret.toC();
     } catch (const std::exception &e) {
         try {
             std::cerr.flush();
             Logger::logger.error(e.what());
             Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         } catch (...) {}
-        return ret;
+        return ret.toC();
     } catch (...) {
         try {
             std::cerr.flush();
             Logger::logger.error("插件(id=" + CPPPlugin::config.getId() + ", name=" + CPPPlugin::config.name + ")启动失败");
         } catch (...) {}
-        return ret;
+        return ret.toC();
     }
 
     ret.try_get_payload = PluginInterface::_try_get_payload;
     ret.delete_one_msg = PluginInterface::_delete_one_msg;
 
-    return ret;
+    return ret.toC();
 }
 
 

@@ -24,6 +24,13 @@
 #include "PluginConfig.h"
 #include "loaderApiInternal.h"
 
+extern "C" {
+struct PluginMessageHandles_C {
+    void *try_get_payload;
+    void *delete_one_msg;
+};
+}
+
 namespace MiraiCP::PluginInterface {
     struct PayLoadInfo {
         typedef void *payload_ptr;
@@ -41,6 +48,15 @@ namespace MiraiCP::PluginInterface {
             try_get_payload = nullptr;
             delete_one_msg = nullptr;
         }
+
+        PluginMessageHandles_C toC() {
+            return {reinterpret_cast<void *>(try_get_payload), reinterpret_cast<void *>(delete_one_msg)};
+        }
+
+        static PluginMessageHandles fromC(PluginMessageHandles_C handles) {
+            return {reinterpret_cast<message_queue_handle>(handles.try_get_payload),
+                    reinterpret_cast<message_delete_handle>(handles.delete_one_msg)};
+        }
     };
 } // namespace MiraiCP::PluginInterface
 
@@ -48,7 +64,7 @@ namespace LibLoader {
     typedef void *plugin_handle;
 
     /// @see @macro FUNC_ENTRANCE
-    typedef MiraiCP::PluginInterface::PluginMessageHandles (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
+    typedef PluginMessageHandles_C (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
     /// @see @macro FUNC_EVENT
     typedef int (*plugin_event_func_ptr)(const MiraiCP::MiraiCPString &);
     /// @see @macro FUNC_EXIT

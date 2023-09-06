@@ -19,11 +19,13 @@
 
 #include "MiraiCPStringInternal.h"
 
-
+#define GEN_MSG_BODY(_class_name)                                     \
+    constexpr static int class_payload_id = MessageType::_class_name; \
+    ~_class_name() override = default;
 namespace MiraiCP {
 
 
-    namespace MessageType{
+    namespace MessageType {
         enum Type {
             OperationMessage,
             LoggerMessage,
@@ -35,23 +37,54 @@ namespace MiraiCP {
         };
     }
 
-    template<bool t_blocking = false>
-    class MessageTraits {
-        static inline bool blocking = t_blocking;
+    template<typename T, bool t_blocking = false>
+    struct MessageTraits {
+        constexpr static bool blocking = t_blocking;
+        virtual int get_class_payload_id() {
+            return _get_class_payload_id();
+        }
+        virtual ~MessageTraits() = default;
+
+    private:
+        constexpr static int _get_class_payload_id() {
+            return T::class_payload_id;
+        }
     };
 
-    //    struct OperationMessage: public MessageTraits<true>{
-    //        MiraiCPStringview msg_string_view;
-    //        inline static int id = 0;
-    //    };
-    //
-        struct LoggerMessage{
-            MiraiCPStringview msg_string;
-            MiraiCPStringview name;
-            long long msg_lid;
-            int msg_level;
-            inline static int class_payload_id = 1;
-        };
+    struct OperationMessage : public MessageTraits<OperationMessage, true> {
+        MiraiCPStringview msg_string;
+        GEN_MSG_BODY(OperationMessage)
+    };
+
+    struct LoggerMessage : public MessageTraits<LoggerMessage, false> {
+        MiraiCPString msg_string;
+        MiraiCPString name;
+        long long msg_lid;
+        int msg_level;
+        GEN_MSG_BODY(LoggerMessage)
+    };
+
+    struct PluginIdMessage : public MessageTraits<PluginIdMessage, true> {
+        GEN_MSG_BODY(PluginIdMessage)
+    };
+
+    struct PushTaskMessage : public MessageTraits<PushTaskMessage, false> {
+        void (*task_func)();
+        GEN_MSG_BODY(PushTaskMessage)
+    };
+
+    struct PushTaskWithIdMessage : public MessageTraits<PushTaskWithIdMessage, false> {
+        void (*task_func_with_id)(size_t);
+        size_t id;
+        GEN_MSG_BODY(PushTaskWithIdMessage)
+    };
+
+    struct TimerMessage : public MessageTraits<TimerMessage, false> {
+        MiraiCPString name;
+        MiraiCPString content;
+        size_t id;
+        GEN_MSG_BODY(TimerMessage)
+    };
 } // namespace MiraiCP
 
 
