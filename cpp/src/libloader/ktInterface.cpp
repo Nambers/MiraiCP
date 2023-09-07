@@ -54,7 +54,9 @@ void VerifyImpl(JSTRING _version, JSTRING _cfgPath) {
 
     // 激活插件。创建loader thread。
     // loader thread中创建多线程加载所有插件，调用入口函数
-    LibLoader::loaderThread = std::thread(LibLoader::LoaderMain::loaderMain);
+    LibLoader::loaderThread = std::thread([](){
+        LibLoader::LoaderMain::get().loaderMain();
+    });
 }
 
 void EventImpl(JSTRING content) {
@@ -70,7 +72,7 @@ void EventImpl(JSTRING content) {
 }
 
 void PluginDisableImpl() {
-    LibLoader::LoaderMain::loaderExit();
+    LibLoader::LoaderMain::get().loaderExit();
     {
         LibLoader::loaderWakeCV().notify_one();
     }

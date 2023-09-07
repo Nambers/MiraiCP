@@ -107,11 +107,11 @@ namespace LibLoader {
     constexpr static LoaderApi::interface_funcs normalInterfaces = LoaderApi::collect_interface_functions(false);
 
     MiraiCP::PluginInterface::PluginMessageHandles Plugin::callEntranceFuncAdmin() const {
-        return entrance(adminInterfaces);
+        return MiraiCP::PluginInterface::PluginMessageHandles::fromC(entrance(adminInterfaces));
     }
 
     MiraiCP::PluginInterface::PluginMessageHandles Plugin::callEntranceFuncNormal() const {
-        return entrance(normalInterfaces);
+        return MiraiCP::PluginInterface::PluginMessageHandles::fromC(entrance(normalInterfaces));
     }
 
     MiraiCP::PluginInterface::PluginMessageHandles Plugin::callEntranceByAuthority() const {

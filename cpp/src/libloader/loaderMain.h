@@ -20,19 +20,25 @@
 
 namespace LibLoader {
     class LoaderMain {
-        volatile static bool loader_exit;
+        volatile bool loader_exit = false;
 
     private:
-        static void mainloop() noexcept;
+        void mainloop() const noexcept;
 
-        static void shutdownLoader();
+        void shutdownLoader();
+
+        void tick() const noexcept;
+
+        void process_task_queue() const;
 
     public:
-        static bool is_loader_exited() { return loader_exit; }
+        static LoaderMain &get();
 
-        static void loaderExit() { loader_exit = true; }
+        [[nodiscard]] bool is_loader_exited() const { return loader_exit; }
 
-        static void loaderMain();
+        void loaderExit() { loader_exit = true; }
+
+        void loaderMain();
     };
 } // namespace LibLoader
 #endif //MIRAICP_PRO_LOADERMAIN_H

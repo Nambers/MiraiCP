@@ -37,11 +37,11 @@ namespace MiraiCP {
         size_t _size = 0;
 
     public:
-        MiraiCPStringview() = delete;
-
+        MiraiCPStringview() = default;
         MiraiCPStringview(const MiraiCPStringview &other) = default;
-
+        MiraiCPStringview& operator=(const MiraiCPStringview &other) = default;
         MiraiCPStringview(MiraiCPStringview &&temp) noexcept = default;
+        MiraiCPStringview& operator=(MiraiCPStringview &&temp) noexcept = default;
 
         MiraiCPStringview(const char *char_str); // NOLINT(google-explicit-constructor)
 

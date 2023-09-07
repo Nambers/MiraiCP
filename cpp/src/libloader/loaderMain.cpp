@@ -26,10 +26,14 @@
 #include "ThreadIdentify.h"
 #include "ThreadPool.h"
 #include "redirectCout.h"
+#include <chrono>
 
 
 namespace LibLoader {
-    volatile bool LoaderMain::loader_exit = false;
+    LoaderMain &LoaderMain::get() {
+        static LoaderMain loaderMain;
+        return loaderMain;
+    }
 
     std::mutex &loaderCVLock() {
         static std::mutex m;
@@ -103,24 +107,43 @@ namespace LibLoader {
 
     ////////////////////////////////////
 
-    void tick() noexcept {
+
+    void LoaderMain::tick() const noexcept {
         Scheduler::popSchedule();
 
         MessageManager::get().tick();
+
+        process_task_queue();
     }
 
-    bool shouldTick() noexcept { return Scheduler::timeup(); }
-
-    void LoaderMain::mainloop() noexcept {
-        std::unique_lock cvuniquelock(loaderCVLock());
-        loaderWakeCV().wait_for(
-                cvuniquelock,
-                std::chrono::milliseconds(100),
-                []() { return is_loader_exited() || shouldTick() || !loader_thread_task_queue.empty(); });
-        cvuniquelock.unlock();
+    void LoaderMain::mainloop() const noexcept {
+        constexpr auto tick_time = std::chrono::milliseconds(33);
+        using Clock = std::chrono::steady_clock;
+        auto loop_start = Clock::now();
 
         tick();
 
+        auto loop_end = Clock::now();
+        auto loop_duration = std::chrono::duration_cast<std::chrono::milliseconds>(loop_end - loop_start);
+        if (loop_duration >= tick_time) {
+            logger.warning("libLoader线程运行时间过长：" + std::to_string(loop_duration.count()) + "ms");
+        } else {
+            std::unique_lock cvuniquelock(loaderCVLock());
+            auto diff_time = tick_time - loop_duration;
+            loaderWakeCV().wait_for(cvuniquelock, diff_time,
+                                    [this]() { return is_loader_exited() || Scheduler::timeup() || !loader_thread_task_queue.empty(); });
+            cvuniquelock.unlock();
+        }
+    }
+
+    void LoaderMain::shutdownLoader() {
+        loader_disableAllPlugins();
+        MiraiCP::Redirector::reset();
+        // 为了删除 Win 下复制的缓存
+        PluginListManager::unloadAll();
+    }
+
+    void LoaderMain::process_task_queue() const {
         if (!loader_thread_task_queue.empty()) {
             loadertask task;
             {
@@ -170,12 +193,4 @@ namespace LibLoader {
             }
         }
     }
-
-    void LoaderMain::shutdownLoader() {
-        loader_disableAllPlugins();
-        MiraiCP::Redirector::reset();
-        // 为了删除 Win 下复制的缓存
-        PluginListManager::unloadAll();
-    }
-
 } // namespace LibLoader

@@ -17,6 +17,8 @@
 #include "loaderApi.h"
 #include "CPPPlugin.h"
 #include "Exception.h"
+#include "MsgDefine.h"
+#include "MsgSender.h"
 #include "commonTools.h"
 #include "loaderApiInternal.h"
 #include <nlohmann/json.hpp>
@@ -50,6 +52,15 @@ namespace MiraiCP {
 
 
 namespace LibLoader::LoaderApi {
+    using namespace MiraiCP;
+    using namespace PolyM;
+#define PUT_MSG \
+    if constexpr (PayloadClass::blocking) { \
+        getMsgQueue()->request(DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp))); \
+    } else { \
+        getMsgQueue()->put(DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp))); \
+    }
+
     static const interface_funcs *loader_apis = nullptr;
 
     MIRAICP_EXPORT void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis) noexcept {
@@ -80,11 +91,24 @@ namespace LibLoader::LoaderApi {
     /// interfaces for plugins
 
     MiraiCPString pluginOperation(MiraiCPStringview s) {
+        using PayloadClass = MiraiCP::OperationMessage;
+        PayloadClass tmp;
+        tmp.msg_string = s;
+        PUT_MSG;
         checkApi((void *) loader_apis->_pluginOperation);
         return loader_apis->_pluginOperation(s);
     }
 
     void loggerInterface(const MiraiCPString &content, const MiraiCPString &name, long long id, int level) {
+        using PayloadClass = MiraiCP::LoggerMessage;
+        PayloadClass tmp;
+        tmp.msg_string = content;
+        tmp.name = name;
+        tmp.msg_lid = id;
+        tmp.msg_level = level;
+        PUT_MSG;
+
+        MiraiCP::getMsgQueue()->put(PolyM::DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp)));
         checkApi((void *) loader_apis->_loggerInterface);
         loader_apis->_loggerInterface(content, name, id, level);
     }

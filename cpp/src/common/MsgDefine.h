@@ -40,13 +40,12 @@ namespace MiraiCP {
     template<typename T, bool t_blocking = false>
     struct MessageTraits {
         constexpr static bool blocking = t_blocking;
-        virtual int get_class_payload_id() {
-            return _get_class_payload_id();
+        virtual int get_payload_class_id() {
+            return static_payload_class_id();
         }
         virtual ~MessageTraits() = default;
 
-    private:
-        constexpr static int _get_class_payload_id() {
+        constexpr static int static_payload_class_id() {
             return T::class_payload_id;
         }
     };
