@@ -35,6 +35,7 @@ namespace MiraiCP {
             TimerMessage,
             AdminMessage,
             MESSAGE_TYPE_COUNT,
+            RET = MESSAGE_TYPE_COUNT,
         };
     }
 

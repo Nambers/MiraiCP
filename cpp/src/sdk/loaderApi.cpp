@@ -74,7 +74,7 @@ namespace LibLoader::LoaderApi {
             auto ret_msg = static_cast<DataMsg<MiraiCPString>*>(ret.get()); // NOLINT(*-pro-type-static-cast-downcast)
             return std::move(ret_msg->getPayload());
         }
-        throw
+        throw LibLoaderNoResponseException(MIRAICP_EXCEPTION_WHERE);
 //        PUT_MSG;
 //        checkApi((void *) loader_apis->_pluginOperation);
 //        return loader_apis->_pluginOperation(s);
@@ -89,15 +89,22 @@ namespace LibLoader::LoaderApi {
         tmp.msg_level = level;
         PUT_MSG;
 
-        MiraiCP::getMsgQueue()->put(PolyM::DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp)));
-        checkApi((void *) loader_apis->_loggerInterface);
-        loader_apis->_loggerInterface(content, name, id, level);
+//        MiraiCP::getMsgQueue()->put(PolyM::DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp)));
+//        checkApi((void *) loader_apis->_loggerInterface);
+//        loader_apis->_loggerInterface(content, name, id, level);
     }
 
     MiraiCPString showAllPluginId() {
         using PayloadClass = MiraiCP::PluginIdMessage;
         PayloadClass tmp;
-        PUT_MSG;
+
+        auto ret = getMsgQueue()->request(DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp)));
+        if (ret != nullptr){
+            auto ret_msg = static_cast<DataMsg<MiraiCPString>*>(ret.get()); // NOLINT(*-pro-type-static-cast-downcast)
+            return std::move(ret_msg->getPayload());
+        }
+        throw LibLoaderNoResponseException(MIRAICP_EXCEPTION_WHERE);
+//        PUT_MSG;
         checkApi((void *) loader_apis->_showAllPluginId);
         return loader_apis->_showAllPluginId();
     }
@@ -107,6 +114,7 @@ namespace LibLoader::LoaderApi {
         PayloadClass tmp;
         tmp.task_func = func;
         PUT_MSG;
+
         checkApi((void *) loader_apis->_pushTask);
         loader_apis->_pushTask(func);
     }

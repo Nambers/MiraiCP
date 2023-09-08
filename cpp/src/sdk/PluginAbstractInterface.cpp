@@ -41,4 +41,9 @@ namespace MiraiCP::PluginInterface {
     void _delete_one_msg() {
         deleteQueue().pop_front();
     }
+
+    void _make_response(PolyM::MsgUID msg_uid, MiraiCPString msg){
+        auto queue_ptr = MiraiCP::getMsgQueue();
+        queue_ptr->respondTo(msg_uid, PolyM::DataMsg<MiraiCPString>(MessageType::RET, std::move(msg)));
+    }
 } // namespace MiraiCP
