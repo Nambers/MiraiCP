@@ -33,6 +33,7 @@ namespace MiraiCP {
             PushTaskMessage,
             PushTaskWithIdMessage,
             TimerMessage,
+            AdminMessage,
             MESSAGE_TYPE_COUNT,
         };
     }
@@ -79,10 +80,17 @@ namespace MiraiCP {
     };
 
     struct TimerMessage : public MessageTraits<TimerMessage, false> {
-        MiraiCPString name;
+        MiraiCPString timer_id;
         MiraiCPString content;
-        size_t id;
+        size_t sec;
         GEN_MSG_BODY(TimerMessage)
+    };
+
+    struct AdminMessage : public MessageTraits<AdminMessage, false> {
+        int cmd_id;
+        MiraiCPString cmd_arg;
+        bool immediate;
+        GEN_MSG_BODY(AdminMessage)
     };
 } // namespace MiraiCP
 

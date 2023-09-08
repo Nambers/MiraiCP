@@ -31,6 +31,7 @@ namespace MiraiCP {
     /// @note 仅用于保证string在动态库间传递的一致性，请优先使用std::string_view
     class MIRAICP_EXPORT MiraiCPStringview final {
         using string = std::string;
+        friend class MiraiCPString;
 
     private:
         const char *str = nullptr;
@@ -86,6 +87,8 @@ namespace MiraiCP {
         MiraiCPString(MiraiCPString &&temp) noexcept;
 
         MiraiCPString(const char *char_str); // NOLINT(google-explicit-constructor)
+
+        MiraiCPString(MiraiCPStringview str_view);
 
         MiraiCPString(const std::string &string_str); // NOLINT(google-explicit-constructor)
 

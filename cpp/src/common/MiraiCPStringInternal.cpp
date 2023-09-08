@@ -123,4 +123,13 @@ namespace MiraiCP {
         std::swap(_size, other._size);
         std::swap(free_this, other.free_this);
     }
+
+    MiraiCPString::MiraiCPString(MiraiCPStringview str_view) {
+        _size = str_view.size();
+        if (0 == _size) return;
+        construction();
+        assert(str != nullptr);
+        memcpy(str, str_view.c_str(), _size * sizeof(char));
+        str[_size] = 0;
+    }
 } // namespace MiraiCP

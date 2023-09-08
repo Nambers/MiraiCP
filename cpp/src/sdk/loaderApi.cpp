@@ -79,6 +79,7 @@ namespace LibLoader::LoaderApi {
     using MiraiCP::PluginNotAuthorizedException;
     using MiraiCP::PluginNotEnabledException;
 
+
     // check the func ptr existance before use it
     inline void checkApi(void *funcptr) {
         if (loader_apis == nullptr) [[unlikely]] {
@@ -94,9 +95,15 @@ namespace LibLoader::LoaderApi {
         using PayloadClass = MiraiCP::OperationMessage;
         PayloadClass tmp;
         tmp.msg_string = s;
-        PUT_MSG;
-        checkApi((void *) loader_apis->_pluginOperation);
-        return loader_apis->_pluginOperation(s);
+        auto ret = getMsgQueue()->request(DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp)));
+        if (ret != nullptr){
+            auto ret_msg = static_cast<DataMsg<MiraiCPString>*>(ret.get()); // NOLINT(*-pro-type-static-cast-downcast)
+            return std::move(ret_msg->getPayload());
+        }
+        throw
+//        PUT_MSG;
+//        checkApi((void *) loader_apis->_pluginOperation);
+//        return loader_apis->_pluginOperation(s);
     }
 
     void loggerInterface(const MiraiCPString &content, const MiraiCPString &name, long long id, int level) {
@@ -114,21 +121,39 @@ namespace LibLoader::LoaderApi {
     }
 
     MiraiCPString showAllPluginId() {
+        using PayloadClass = MiraiCP::PluginIdMessage;
+        PayloadClass tmp;
+        PUT_MSG;
         checkApi((void *) loader_apis->_showAllPluginId);
         return loader_apis->_showAllPluginId();
     }
 
     void pushTask(task_func func) {
+        using PayloadClass = MiraiCP::PushTaskMessage;
+        PayloadClass tmp;
+        tmp.task_func = func;
+        PUT_MSG;
         checkApi((void *) loader_apis->_pushTask);
         loader_apis->_pushTask(func);
     }
 
     void pushTaskWithId(task_func_with_id func, size_t id) {
+        using PayloadClass = MiraiCP::PushTaskWithIdMessage;
+        PayloadClass tmp;
+        tmp.task_func_with_id = func;
+        tmp.id = id;
+        PUT_MSG;
         checkApi((void *) loader_apis->_pushTaskWithId);
         loader_apis->_pushTaskWithId(func, id);
     }
 
     void timer(const MiraiCPString &id, const MiraiCPString &content, size_t sec) {
+        using PayloadClass = MiraiCP::TimerMessage;
+        PayloadClass tmp;
+        tmp.timer_id = id;
+        tmp.content = content;
+        tmp.sec = sec;
+        PUT_MSG;
         checkApi((void *) loader_apis->_timer);
         loader_apis->_timer(id, content, sec);
     }
