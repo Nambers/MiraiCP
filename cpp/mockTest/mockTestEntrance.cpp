@@ -32,6 +32,7 @@
 #include "Events/NudgeEvent.h"
 #include "Events/PrivateMessageEvent.h"
 #include "Events/TimeOutEvent.h"
+#include "Exception.h"
 #include "ForwardedMessage.h"
 #include "Schedule.h"
 #include "Tools.h"
@@ -206,6 +207,18 @@ public:
             TEST(honorMember, honorMemberTest, {
                 auto m = a.group.queryCurrentHonorMember(MiraiCP::Group::TALKATIVE);
                 Logger::logger.info("honorMember:", m.has_value() ? m.value().id() : 0);
+            })
+            TEST(memberException, memberExceptionTest, {
+                try {
+                    a.group.getMember(123456).forceRefreshNow();
+                } catch (const MemberNotFoundException &e) {
+                    Logger::logger.info("MemberExceptionTriggered");
+                }
+                try {
+                    Member(123456, 123456, a.bot.botid()).forceRefreshNow();
+                } catch (MemberGroupNotFoundException &e) {
+                    Logger::logger.info("MemberExceptionTriggered");
+                }
             })
             Message::messageSerialization(a.message);
             testEnd("groupMessageEventMessageTest");

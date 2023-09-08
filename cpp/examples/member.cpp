@@ -25,43 +25,6 @@ const PluginConfig CPPPlugin::config{
                 // 可选：日期
 };
 
-// 目前需要把 Exception 复制出来用, 将在下面版本修复.
-// 或者直接捕获基类 (在不需要内部数据的情况下)
-class MIRAICP_EXPORT BotException : public MiraiCPExceptionCRTP<BotException> {
-public:
-    explicit BotException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("没有权限执行该操作", std::move(_filename), _lineNum) {}
-    explicit BotException(const string &d, string _filename, int _lineNum) : MiraiCPExceptionCRTP(d, std::move(_filename), _lineNum) {}
-    static string exceptionType() { return "BotException"; }
-};
-class MIRAICP_EXPORT MemberException : public MiraiCPExceptionCRTP<MemberException> {
-public:
-    enum MemberExceptionType : int {
-        OtherType,
-        NoSuchGroup,
-        NoSuchMember
-    };
-    MemberExceptionType type = OtherType;
-    /*
-        *   "1" - 找不到群
-        *	"2" - 找不到群成员
-        */
-    explicit MemberException(int _type, string _filename, int _lineNum) : MiraiCPExceptionCRTP(
-                                                                                  [&]() -> string {
-                                                                                      type = MemberExceptionType(_type);
-                                                                                      switch (type) {
-                                                                                          case NoSuchGroup:
-                                                                                              return "找不到群";
-                                                                                          case NoSuchMember:
-                                                                                              return "找不到群成员";
-                                                                                          default:
-                                                                                              return "";
-                                                                                      }
-                                                                                  }(),
-                                                                                  std::move(_filename), _lineNum) {}
-    static string exceptionType() { return "MemberException"; }
-};
-
-
 class Main : public CPPPlugin {
 public:
     Main() : CPPPlugin() {}
@@ -73,23 +36,13 @@ public:
             try {
                 Member m = Member(e.sender.id(), e.group.id(), e.bot.id());
                 m.kick("this_is_reason");
-            } catch (BotException &err) {
+            } catch (BotPermException &err) {
                 //权限不足
                 Logger::logger.error(err.what());
-            } catch (MemberException &err) {
-                if (err.type == 1) {
-                    //找不到群
-                }
-                if (err.type == 2) {
-                    //找不到群成员
-                }
+            } catch (MemberNotFoundException &err) {
+
+            } catch (MemberGroupNotFoundException &err) {
             }
-            // 或者
-//            catch(MiraiCPExceptionBase &err){
-//                if(err.getExceptionType() == "BotException"){
-//                    // 权限不足
-//                }
-//            }
         });
     }
 };

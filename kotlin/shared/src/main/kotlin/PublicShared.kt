@@ -63,15 +63,6 @@ import tech.eritquearcus.miraicp.shared.Packets.Utils.toEventData
 import tech.eritquearcus.miraicp.shared.PublicSharedData.logger
 import tech.eritquearcus.miraicp.shared.UlitsMultiPlatform.event
 import java.io.File
-import kotlin.collections.ArrayList
-import kotlin.collections.MutableMap
-import kotlin.collections.filter
-import kotlin.collections.firstOrNull
-import kotlin.collections.forEach
-import kotlin.collections.joinToString
-import kotlin.collections.map
-import kotlin.collections.mutableMapOf
-import kotlin.collections.remove
 import kotlin.collections.set
 
 object PublicSharedMultiplatform {
@@ -745,7 +736,7 @@ object PublicShared {
                         try {
                             f.nudge().sendTo(f)
                         } catch (e: UnsupportedOperationException) {
-                            logger.error("发送nudge必须使用ANDROID_PHONE/ipad协议，目前协议为:" + bot.configuration.protocol.name)
+                            logger.error("发送nudge必须使用ANDROID_PHONE/ipad/ANDROID_PAD协议，目前协议为:" + bot.configuration.protocol.name)
                             return "E1"
                         }
                         "Y"

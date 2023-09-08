@@ -16,9 +16,8 @@
 
 #include "Contact.h"
 #include "ContactDataType/GroupRelatedData.h"
+#include "Exception.h"
 #include "ExceptionHandle.h"
-#include "Exceptions/IllegalArgument.h"
-#include "Exceptions/Upload.h"
 #include "Friend.h"
 #include "Group.h"
 #include "JsonTools.h"

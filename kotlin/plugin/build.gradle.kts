@@ -64,10 +64,11 @@ tasks {
     }
 }
 mavenCentralPublish {
+    workingDir = rootProject.file("plugin\\build\\gpg")
     credentials = rootProject.file("plugin\\c.txt").let {
         if (it.exists()) kotlinx.serialization.protobuf.ProtoBuf.decodeFromHexString(
             me.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
-            rootProject.file("plugin\\c.txt").readText()
+            it.readText()
         )
         else null
     }

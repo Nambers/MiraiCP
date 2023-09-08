@@ -26,6 +26,7 @@ project(":loader").name = "MiraiCP-loader"
 
 pluginManagement {
     repositories {
+        mavenLocal()
         gradlePluginPortal()
         maven("https://maven.aliyun.com/repository/gradle-plugin")
         // mirai snapshot

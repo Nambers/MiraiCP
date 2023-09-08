@@ -318,4 +318,11 @@ class OperationTest : TestBase() {
             logs
         )
     }
+
+    @Test
+    fun memberExceptionTest() = runBlocking {
+        member.says("memberException")
+        waitUntilEnd()
+        assertEquals(2, TestUtils.logList.count { it.contains("MemberExceptionTriggered") })
+    }
 }

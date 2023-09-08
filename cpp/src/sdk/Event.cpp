@@ -32,8 +32,7 @@
 #include "Events/NudgeEvent.h"
 #include "Events/PrivateMessageEvent.h"
 #include "Events/TimeOutEvent.h"
-#include "Exceptions/API.h"
-#include "Exceptions/TimeOut.h"
+#include "Exception.h"
 #include "JsonTools.h"
 #include "KtOperation.h"
 #include "Tools.h"
@@ -157,9 +156,9 @@ namespace MiraiCP {
 
     MemberJoinEvent::MemberJoinEvent(BaseEventData j) : BotEvent(j.botId),
                                                         type(joinType(j.eventData["eventType"].get<int>())),
-                                                        member(j.object->id, j.object->groupId, j.botId),
+                                                        member(j.object->id, j.object->groupId, j.object->botId),
                                                         group(j.subject->id, j.subject->botId),
-                                                        inviter(j.object == std::nullopt ? std::nullopt : std::optional(Member(j.eventData["invitor"]["id"], j.eventData["invitor"]["groupId"], j.eventData["invitor"]["botId"]))) {
+                                                        inviter(!j.eventData.contains("invitor") ? std::nullopt : std::optional(Member(j.eventData["invitor"]["id"], j.eventData["invitor"]["groupId"], j.eventData["invitor"]["botId"]))) {
     }
 
     MemberLeaveEvent::MemberLeaveEvent(BaseEventData j) : BotEvent(j.botId),

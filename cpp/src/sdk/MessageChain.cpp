@@ -16,7 +16,6 @@
 
 #include "MessageChain.h"
 #include "Exception.h"
-#include "Exceptions/IllegalArgument.h"
 #include "ForwardedMessage.h"
 #include "Group.h"
 #include "KtOperation.h"

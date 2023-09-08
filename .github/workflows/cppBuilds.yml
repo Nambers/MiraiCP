@@ -28,7 +28,7 @@ jobs:
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - id: generate-skip-envs-bash
         run: python scripts/CIHelper.py skip_env "${{ github.event.head_commit.message }}"
       # Linux
@@ -69,7 +69,7 @@ jobs:
       isUbuntu: ${{ startsWith(matrix.os, 'ubuntu') }}
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - id: generate-skip-envs
         run: python scripts/CIHelper.py skip_env "${{ github.event.head_commit.message }}" >> $GITHUB_ENV
       # Linux

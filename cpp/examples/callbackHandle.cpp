@@ -41,12 +41,12 @@ public:
             handle0->stop();
         });
 
-        auto handle1 = Event::registerEvent<BotOnlineEvent>([](BotOnlineEvent e) {
+        Event::registerEvent<BotOnlineEvent>([](BotOnlineEvent e) {
             auto f = Friend(1234567890, 9876543210);
             f.sendMessage("Bot is live!");
         });
 
-        auto handle2 = Event::registerEvent<MiraiCPExceptionEvent>([&](const MiraiCPExceptionEvent &e) {
+        Event::registerEvent<MiraiCPExceptionEvent>([&](const MiraiCPExceptionEvent &e) {
             auto ct = Friend(1234567890, 9876543210);
             Logger::logger.info(e.getException());
             ct.sendMessage("Error occurs, type: " + e.getException()->getExceptionType() + ".\nError occurs in file: " + e.getException()->filename + ", line: " + std::to_string(e.getException()->lineNum));

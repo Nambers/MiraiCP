@@ -15,7 +15,7 @@
 //
 
 #include "MessageSource.h"
-#include "Exceptions/IllegalArgument.h"
+#include "Exception.h"
 #include "KtOperation.h"
 #include "Logger.h"
 #include "commonTools.h"
@@ -25,14 +25,7 @@
 namespace MiraiCP {
     using json = nlohmann::json;
 
-    /// 撤回异常
-    /// @see MiraiCPExceptionBase
-    class MIRAICP_EXPORT RecallException : public MiraiCPExceptionCRTP<RecallException> {
-    public:
-        RecallException(string _filename, int _lineNum) : MiraiCPExceptionCRTP("该消息已经被撤回", std::move(_filename), _lineNum) {}
 
-        static string exceptionType() { return "RecallException"; }
-    };
 
     void MessageSource::recall() const {
         std::string re = KtOperation::ktOperationStr(KtOperation::Recall, serializeToString());
