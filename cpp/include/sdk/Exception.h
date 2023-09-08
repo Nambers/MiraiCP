@@ -153,6 +153,8 @@ namespace MiraiCP {
     /// 在插件能正常运行时不会抛出，出现该异常事件时请不要再次尝试收发消息等Mirai操作，
     /// 否则可能导致异常处理时再次抛出异常
     EXCEPTION_DEFINE(PluginNotEnabledException, (nlohmann::json{{"cause", "插件" + CPPPlugin::config.getId() + "未加载"}}));
+    /// LoaderAPI返回空Msg unique指针
+    EXCEPTION_DEFINE(LibLoaderNoResponseException, (nlohmann::json{{"cause", "LibLoader返回了空的响应"}}));
     /// 禁言异常
     EXCEPTION_DEFINE(MuteException, (nlohmann::json{{"cause", "禁言时长不在0s~30d中间"}}));
     /// 撤回异常
