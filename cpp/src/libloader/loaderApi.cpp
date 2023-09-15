@@ -31,8 +31,15 @@
 namespace LibLoader {
     std::queue<loadertask> loader_thread_task_queue; // NOLINT(cert-err58-cpp)
     std::recursive_mutex task_mtx;
-    std::mutex &loaderCVLock();
-    std::condition_variable &loaderWakeCV();
+    void loader_enableAllPlugins();
+    void loader_disableAllPlugins();
+    void loader_loadNewPlugin(const std::string &path, bool activateNow);
+    void loader_unloadPluginById(const std::string &id);
+    void loader_enablePluginById(const std::string &id);
+    void loader_disablePluginById(const std::string &id);
+    void loader_reloadPluginById(const std::string &id);
+    void loader_pluginEndByException(const std::string &id);
+    void loader_resetThreadByIndex(const std::string &index);
 } // namespace LibLoader
 
 namespace LibLoader::LoaderApi {
@@ -68,75 +75,30 @@ namespace LibLoader::LoaderApi {
     }
 
     void enablePluginById(const MiraiCPString &id) {
-        {
-            std::lock_guard lk(task_mtx);
-            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::ADD_THREAD, id));
-        }
-        {
-            loaderWakeCV().notify_one();
-        }
+        loader_enablePluginById(id);
     }
 
     void disablePluginById(const MiraiCPString &id) {
-        {
-            std::lock_guard lk(task_mtx);
-            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::END_THREAD, id));
-        }
-        {
-            loaderWakeCV().notify_one();
-        }
+        loader_disablePluginById(id);
     }
 
     void enableAllPlugins() {
-        {
-            std::lock_guard lk(task_mtx);
-            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::ENABLE_ALL, ""));
-        }
-        {
-            loaderWakeCV().notify_one();
-        }
+        loader_enableAllPlugins();
     }
 
     void disableAllPlugins() {
-        {
-            std::lock_guard lk(task_mtx);
-            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::DISABLE_ALL, ""));
-        }
-        {
-            loaderWakeCV().notify_one();
-        }
+        loader_disableAllPlugins();
     }
 
     void loadNewPlugin(const MiraiCPString &path, bool activateNow) {
-        {
-            std::lock_guard lk(task_mtx);
-            if (activateNow)
-                loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_ACTIVATENOW, path));
-            else
-                loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::LOAD_NEW_DONTACTIVATE, path));
-        }
-        {
-            loaderWakeCV().notify_one();
-        }
+        loader_loadNewPlugin(path, activateNow);
     }
 
     void unloadPluginById(const MiraiCPString &id) {
-        {
-            std::lock_guard lk(task_mtx);
-            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::UNLOAD, id));
-        }
-        {
-            loaderWakeCV().notify_one();
-        }
+        loader_unloadPluginById(id);
     }
 
     void reloadPluginById(const MiraiCPString &id) {
-        {
-            std::lock_guard lk(task_mtx);
-            loader_thread_task_queue.push(std::make_pair(LOADER_TASKS::RELOAD, id));
-        }
-        {
-            loaderWakeCV().notify_one();
-        }
+        loader_reloadPluginById(id);
     }
 } // namespace LibLoader::LoaderApi

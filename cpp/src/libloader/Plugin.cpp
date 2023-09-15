@@ -33,6 +33,10 @@
 #include <utf8/utf8.h>
 #endif
 
+extern "C" {
+void plugin_raw_API_try_wake_loader();
+}
+
 namespace LibLoader {
     class SymbolResolveException : public LoaderExceptionCRTP<SymbolResolveException> {
     public:
@@ -100,26 +104,8 @@ namespace LibLoader {
 
     ////////////////////////////////////
     /// 这部分是一些工具函数、对象
-
-    /// 该对象的地址将被用于传递给MiraiCP插件
-    constexpr static LoaderApi::interface_funcs adminInterfaces = LoaderApi::collect_interface_functions(true);
-
-    constexpr static LoaderApi::interface_funcs normalInterfaces = LoaderApi::collect_interface_functions(false);
-
-    MiraiCP::PluginInterface::PluginMessageHandles Plugin::callEntranceFuncAdmin() const {
-        return MiraiCP::PluginInterface::PluginMessageHandles::fromC(entrance(adminInterfaces));
-    }
-
-    MiraiCP::PluginInterface::PluginMessageHandles Plugin::callEntranceFuncNormal() const {
-        return MiraiCP::PluginInterface::PluginMessageHandles::fromC(entrance(normalInterfaces));
-    }
-
-    MiraiCP::PluginInterface::PluginMessageHandles Plugin::callEntranceByAuthority() const {
-        if (authority == PluginAuthority::PLUGIN_AUTHORITY_ADMIN) {
-            return callEntranceFuncAdmin();
-        } else {
-            return callEntranceFuncNormal();
-        }
+    MiraiCP::PluginInterface::PluginMessageHandles Plugin::callEntrance() const {
+        return MiraiCP::PluginInterface::PluginMessageHandles::fromC(entrance({plugin_raw_API_try_wake_loader}));
     }
 
     inline bool checkPluginInfoValid(plugin_info_func_ptr info_ptr) {
@@ -250,7 +236,7 @@ namespace LibLoader {
                 ThreadIdentify::setThreadWorkingName(_getId());
                 MIRAICP_DEFER(ThreadIdentify::unsetThreadWorkingName(););
                 try {
-                    ret = callEntranceByAuthority();
+                    ret = callEntrance();
                 } catch (...) {
                 }
             }

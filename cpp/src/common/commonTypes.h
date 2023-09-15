@@ -32,6 +32,10 @@ struct PluginMessageHandles_C {
     void *delete_one_msg;
     void *make_response;
 };
+
+struct PluginArgv_C {
+    void (*wake_loader)();
+};
 }
 
 namespace MiraiCP::PluginInterface {
@@ -70,7 +74,7 @@ namespace MiraiCP::PluginInterface {
 namespace LibLoader {
     typedef void *plugin_handle;
     /// @see @macro FUNC_ENTRANCE
-    typedef PluginMessageHandles_C (*plugin_entrance_func_ptr)(const LoaderApi::interface_funcs &);
+    typedef PluginMessageHandles_C (*plugin_entrance_func_ptr)(PluginArgv_C);
     /// @see @macro FUNC_EVENT
     typedef int (*plugin_event_func_ptr)(const MiraiCP::MiraiCPString &);
     /// @see @macro FUNC_EXIT

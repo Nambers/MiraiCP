@@ -33,7 +33,6 @@
 
 namespace LibLoader {
     void registerAllPlugin(const std::string &) noexcept;
-    std::mutex &loaderCVLock();
     std::condition_variable &loaderWakeCV();
     std::thread loaderThread;
 } // namespace LibLoader

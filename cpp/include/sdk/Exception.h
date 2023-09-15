@@ -22,8 +22,10 @@
 #include "CPPPlugin.h"
 #include "nlohmann/json.hpp"
 #include <exception>
+#include <sstream>
 #include <string>
 #include <thread>
+
 
 #define EXCEPTION_DEFINE(name, cause)                                                                                 \
     class MIRAICP_EXPORT name : public MiraiCPExceptionCRTP<name> {                                                   \

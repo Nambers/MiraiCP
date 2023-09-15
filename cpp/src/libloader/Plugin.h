@@ -90,11 +90,7 @@ namespace LibLoader {
         static void loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept;
 
     private:
-        MiraiCP::PluginInterface::PluginMessageHandles callEntranceFuncAdmin() const;
-
-        MiraiCP::PluginInterface::PluginMessageHandles callEntranceFuncNormal() const;
-
-        MiraiCP::PluginInterface::PluginMessageHandles callEntranceByAuthority() const;
+        MiraiCP::PluginInterface::PluginMessageHandles callEntrance() const;
 
     private: // internal, no lock; literally
         void updateTimeStamp();

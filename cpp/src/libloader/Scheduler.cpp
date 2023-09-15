@@ -42,7 +42,6 @@ struct std::greater<scheduleTask> {
 
 namespace LibLoader {
     std::condition_variable &loaderWakeCV();
-    std::mutex &loaderCVLock();
 } // namespace LibLoader
 
 namespace LibLoader::Scheduler {

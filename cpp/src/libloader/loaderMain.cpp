@@ -29,20 +29,21 @@
 #include <chrono>
 
 
+extern "C" {
+void plugin_raw_API_try_wake_loader() {
+    LibLoader::loaderWakeCV().notify_one();
+}
+}
+
+
 namespace LibLoader {
     LoaderMain &LoaderMain::get() {
         static LoaderMain loaderMain;
         return loaderMain;
     }
 
-    std::mutex &loaderCVLock() {
-        static std::mutex m;
-        return m;
-    }
-
     std::condition_variable &loaderWakeCV() {
-        static std::condition_variable cv;
-        return cv;
+        return LoaderMain::get().get_cv();
     }
 
     /// LoaderMain实现开始
@@ -128,22 +129,22 @@ namespace LibLoader {
         if (loop_duration >= tick_time) {
             logger.warning("libLoader线程运行时间过长：" + std::to_string(loop_duration.count()) + "ms");
         } else {
-            std::unique_lock cvuniquelock(loaderCVLock());
+            std::unique_lock cvUniqueLock(loaderCVLock);
             auto diff_time = tick_time - loop_duration;
-            loaderWakeCV().wait_for(cvuniquelock, diff_time,
+            loaderWakeCV().wait_for(cvUniqueLock, diff_time,
                                     [this]() { return is_loader_exited() || Scheduler::timeup() || !loader_thread_task_queue.empty(); });
-            cvuniquelock.unlock();
+            cvUniqueLock.unlock();
         }
     }
 
-    void LoaderMain::shutdownLoader() {
+    void LoaderMain::shutdownLoader() { // NOLINT(*-convert-member-functions-to-static)
         loader_disableAllPlugins();
         MiraiCP::Redirector::reset();
         // 为了删除 Win 下复制的缓存
         PluginListManager::unloadAll();
     }
 
-    void LoaderMain::process_task_queue() const {
+    void LoaderMain::process_task_queue() const { // NOLINT(*-convert-member-functions-to-static)
         if (!loader_thread_task_queue.empty()) {
             loadertask task;
             {

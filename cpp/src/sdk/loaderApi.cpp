@@ -17,22 +17,40 @@
 #include "loaderApi.h"
 #include "Exception.h"
 #include "MsgDefine.h"
-#include "MsgSender.h"
-#include "commonTools.h"
 #include "loaderApiInternal.h"
 #include <nlohmann/json.hpp>
+#include <polym/Queue.hpp>
 #include <string>
 #include <vector>
 
+namespace MiraiCP {
+    PolyM::Queue *getMsgQueue();
+} // namespace MiraiCP
+
+namespace LibLoader {
+    void try_wake_loader();
+}
 
 namespace LibLoader::LoaderApi {
     using namespace MiraiCP;
     using namespace PolyM;
-#define PUT_MSG \
-    if constexpr (PayloadClass::blocking) { \
-        getMsgQueue()->request(DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp))); \
-    } else { \
-        getMsgQueue()->put(DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp))); \
+
+    template<typename T>
+    MiraiCPString send_payload(T &&payload) {
+        using PayloadClass = typename std::decay_t<T>;
+        if constexpr (PayloadClass::blocking) {
+            auto ret_raw = getMsgQueue()->request(
+                    DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(),
+                                          std::forward<T>(payload)),
+                    0,
+                    LibLoader::try_wake_loader);
+            auto ret = static_cast<PolyM::DataMsg<MiraiCPString> *>(ret_raw.get());
+            return std::move(ret->getPayload());
+        } else {
+            getMsgQueue()->put(DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::forward<T>(payload)));
+            LibLoader::try_wake_loader();
+            return {};
+        }
     }
 
     static const interface_funcs *loader_apis = nullptr;
@@ -53,31 +71,13 @@ namespace LibLoader::LoaderApi {
     using MiraiCP::PluginNotAuthorizedException;
     using MiraiCP::PluginNotEnabledException;
 
-
-    // check the func ptr existance before use it
-    inline void checkApi(void *funcptr) {
-        if (loader_apis == nullptr) [[unlikely]] {
-            throw PluginNotEnabledException(MIRAICP_EXCEPTION_WHERE);
-        } else if (funcptr == nullptr) [[unlikely]] {
-            throw PluginNotAuthorizedException(MIRAICP_EXCEPTION_WHERE);
-        }
-    }
-
     /// interfaces for plugins
 
     MiraiCPString pluginOperation(MiraiCPStringview s) {
         using PayloadClass = MiraiCP::OperationMessage;
         PayloadClass tmp;
         tmp.msg_string = s;
-        auto ret = getMsgQueue()->request(DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp)));
-        if (ret != nullptr){
-            auto ret_msg = static_cast<DataMsg<MiraiCPString>*>(ret.get()); // NOLINT(*-pro-type-static-cast-downcast)
-            return std::move(ret_msg->getPayload());
-        }
-        throw LibLoaderNoResponseException(MIRAICP_EXCEPTION_WHERE);
-//        PUT_MSG;
-//        checkApi((void *) loader_apis->_pluginOperation);
-//        return loader_apis->_pluginOperation(s);
+        return send_payload(std::move(tmp));
     }
 
     void loggerInterface(const MiraiCPString &content, const MiraiCPString &name, long long id, int level) {
@@ -87,36 +87,20 @@ namespace LibLoader::LoaderApi {
         tmp.name = name;
         tmp.msg_lid = id;
         tmp.msg_level = level;
-        PUT_MSG;
-
-//        MiraiCP::getMsgQueue()->put(PolyM::DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp)));
-//        checkApi((void *) loader_apis->_loggerInterface);
-//        loader_apis->_loggerInterface(content, name, id, level);
+        send_payload(std::move(tmp));
     }
 
     MiraiCPString showAllPluginId() {
         using PayloadClass = MiraiCP::PluginIdMessage;
         PayloadClass tmp;
-
-        auto ret = getMsgQueue()->request(DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::move(tmp)));
-        if (ret != nullptr){
-            auto ret_msg = static_cast<DataMsg<MiraiCPString>*>(ret.get()); // NOLINT(*-pro-type-static-cast-downcast)
-            return std::move(ret_msg->getPayload());
-        }
-        throw LibLoaderNoResponseException(MIRAICP_EXCEPTION_WHERE);
-//        PUT_MSG;
-        checkApi((void *) loader_apis->_showAllPluginId);
-        return loader_apis->_showAllPluginId();
+        return send_payload(std::move(tmp));
     }
 
     void pushTask(task_func func) {
         using PayloadClass = MiraiCP::PushTaskMessage;
         PayloadClass tmp;
         tmp.task_func = func;
-        PUT_MSG;
-
-        checkApi((void *) loader_apis->_pushTask);
-        loader_apis->_pushTask(func);
+        send_payload(std::move(tmp));
     }
 
     void pushTaskWithId(task_func_with_id func, size_t id) {
@@ -124,9 +108,7 @@ namespace LibLoader::LoaderApi {
         PayloadClass tmp;
         tmp.task_func_with_id = func;
         tmp.id = id;
-        PUT_MSG;
-        checkApi((void *) loader_apis->_pushTaskWithId);
-        loader_apis->_pushTaskWithId(func, id);
+        send_payload(std::move(tmp));
     }
 
     void timer(const MiraiCPString &id, const MiraiCPString &content, size_t sec) {
@@ -135,48 +117,49 @@ namespace LibLoader::LoaderApi {
         tmp.timer_id = id;
         tmp.content = content;
         tmp.sec = sec;
-        PUT_MSG;
-        checkApi((void *) loader_apis->_timer);
-        loader_apis->_timer(id, content, sec);
+        send_payload(std::move(tmp));
+    }
+
+    void _admin_command(int cmd_id, const MiraiCPString &arg, bool immediate = false) {
+        using PayloadClass = MiraiCP::AdminMessage;
+        PayloadClass tmp;
+        tmp.cmd_id = cmd_id;
+        tmp.cmd_arg = arg;
+        tmp.immediate = immediate;
+        send_payload(std::move(tmp));
     }
 
     void enablePluginById(const MiraiCPString &id) {
-        checkApi((void *) loader_apis->_enablePluginById);
-        loader_apis->_enablePluginById(id);
+        _admin_command(MiraiCP::AdminMessage::ENABLE_ONE, id);
     }
 
     void disablePluginById(const MiraiCPString &id) {
-        checkApi((void *) loader_apis->_disablePluginById);
-        loader_apis->_disablePluginById(id);
+        _admin_command(MiraiCP::AdminMessage::DISABLE_ONE, id);
     }
 
     void enableAllPlugins() {
-        checkApi((void *) loader_apis->_enableAllPlugins);
-        loader_apis->_enableAllPlugins();
+        _admin_command(MiraiCP::AdminMessage::ENABLE_ALL, "");
     }
 
     void disableAllPlugins() {
-        checkApi((void *) loader_apis->_disableAllPlugins);
-        loader_apis->_disableAllPlugins();
+        _admin_command(MiraiCP::AdminMessage::DISABLE_ALL, "");
     }
 
     void loadNewPlugin(const MiraiCPString &path, bool activateNow) {
-        checkApi((void *) loader_apis->_loadNewPlugin);
-        loader_apis->_loadNewPlugin(path, activateNow);
+        _admin_command(MiraiCP::AdminMessage::LOAD_NEW, path, activateNow);
     }
 
     void unloadPluginById(const MiraiCPString &id) {
-        checkApi((void *) loader_apis->_unloadPluginById);
-        loader_apis->_unloadPluginById(id);
+        _admin_command(MiraiCP::AdminMessage::UNLOAD_ONE, id);
     }
 
     void reloadPluginById(const MiraiCPString &id) {
-        checkApi((void *) loader_apis->_reloadPluginById);
-        loader_apis->_reloadPluginById(id);
+        _admin_command(MiraiCP::AdminMessage::RELOAD_ONE, id);
     }
 } // namespace LibLoader::LoaderApi
 
 namespace MiraiCP::LoaderApi {
+    /// ---------- 封装接口 ----------
     void loggerInterface(const std::string &content, const std::string &name, long long int id, int level) {
         LibLoader::LoaderApi::loggerInterface(content, name, id, level);
     }

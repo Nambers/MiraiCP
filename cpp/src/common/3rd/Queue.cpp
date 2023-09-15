@@ -73,7 +73,7 @@ public:
         }
     }
 
-    std::unique_ptr<Msg> request(Msg&& msg, int timeoutMillis)
+    std::unique_ptr<Msg> request(Msg&& msg, int timeoutMillis, void (*on_put_callback)())
     {
         Request req;
 
@@ -83,6 +83,8 @@ public:
             std::make_pair(msg.getUniqueId(), &req)).first;
 
         put(std::move(msg));
+
+        if(on_put_callback != nullptr) on_put_callback();
 
         if (timeoutMillis <= 0)
             req.condVar.wait(lock, [&req]{return req.response.get();});
@@ -127,6 +129,14 @@ public:
         return size;
     }
 
+    void clear()
+    {
+        std::unique_lock<std::mutex> lock(queueMutex_);
+        std::unique_lock<std::mutex> lock2(responseMapMutex_);
+        queue_ = std::queue<std::unique_ptr<Msg>>();
+        responseMap_ = std::map<MsgUID, Request*>();
+    }
+
 private:
     // Queue for the Msgs
     std::queue<std::unique_ptr<Msg>> queue_;
@@ -168,9 +178,9 @@ std::unique_ptr<Msg> Queue::tryGet()
     return impl_->tryGet();
 }
 
-std::unique_ptr<Msg> Queue::request(Msg&& msg, int timeoutMillis)
+std::unique_ptr<Msg> Queue::request(Msg&& msg, int timeoutMillis, void (*on_put_callback)())
 {
-    return impl_->request(std::move(msg), timeoutMillis);
+    return impl_->request(std::move(msg), timeoutMillis, on_put_callback);
 }
 
 bool Queue::respondTo(MsgUID reqUid, Msg&& responseMsg)
@@ -181,6 +191,10 @@ bool Queue::respondTo(MsgUID reqUid, Msg&& responseMsg)
 size_t Queue::size()
 {
     return impl_->size();
+}
+
+void Queue::clear() {
+    return impl_->clear();
 }
 
 }

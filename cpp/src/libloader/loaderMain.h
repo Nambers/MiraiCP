@@ -18,9 +18,14 @@
 #define MIRAICP_PRO_LOADERMAIN_H
 
 
+#include <condition_variable>
+
+
 namespace LibLoader {
     class LoaderMain {
         volatile bool loader_exit = false;
+        std::condition_variable cv;
+        mutable std::mutex loaderCVLock;
 
     private:
         void mainloop() const noexcept;
@@ -39,6 +44,8 @@ namespace LibLoader {
         void loaderExit() { loader_exit = true; }
 
         void loaderMain();
+
+        auto &get_cv() { return cv; }
     };
 } // namespace LibLoader
 #endif //MIRAICP_PRO_LOADERMAIN_H

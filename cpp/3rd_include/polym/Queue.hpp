@@ -47,7 +47,7 @@ public:
      * @param timeoutMillis How many ms to wait for response until timeout happens.
      *                      0 = wait indefinitely.
      */
-    std::unique_ptr<Msg> request(Msg&& msg, int timeoutMillis = 0);
+    std::unique_ptr<Msg> request(Msg&& msg, int timeoutMillis = 0, void (*on_put_callback)() = nullptr);
 
     /**
      * Respond to a request previously made with request().
@@ -63,6 +63,12 @@ public:
      * Get the size of the queue
     */
     size_t size();
+
+    /**
+     * Clear all messages in queue
+    */
+    void clear();
+
 private:
     class Impl;
     std::unique_ptr<Impl> impl_;
