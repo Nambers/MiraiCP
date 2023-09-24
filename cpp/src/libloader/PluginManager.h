@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MIRAICP_PRO_PLUGINLISTMANAGER_H
-#define MIRAICP_PRO_PLUGINLISTMANAGER_H
+#ifndef MIRAICP_PRO_PLUGINMANAGER_H
+#define MIRAICP_PRO_PLUGINMANAGER_H
 
 
 #include "commonTypes.h"
@@ -29,13 +29,13 @@ namespace LibLoader {
     class Plugin;
 
     /// Plugin 对象的管理接口，全静态
-    /// 不应提供接口可以使外部获取 Plugin 对象，所有功能应委托 PluginListManager 完成
-    class PluginListManager {
-        typedef std::unordered_map<std::string, std::shared_ptr<Plugin>> PluginList;
-        typedef PluginList::iterator iterator;
+    /// 不应提供接口可以使外部获取 Plugin 对象，所有功能应委托 PluginManager 完成
+    class PluginManager {
+        typedef std::unordered_map<std::string, std::shared_ptr<Plugin>> PluginMap;
+        typedef PluginMap::iterator iterator;
 
     private:
-        static PluginList id_plugin_list;
+        static PluginMap id_plugin_map;
         static std::shared_mutex pluginlist_mtx;
 
     private:
@@ -47,8 +47,8 @@ namespace LibLoader {
         static void unloadAll();
 
     public:
-        PluginListManager() = delete;
-        ~PluginListManager() = delete;
+        PluginManager() = delete;
+        ~PluginManager() = delete;
 
     public:
         static std::vector<std::string> getAllPluginId();
@@ -59,9 +59,9 @@ namespace LibLoader {
         static std::vector<std::string> getAllPluginPath();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
-        static auto count() { return id_plugin_list.size(); }
+        static auto count() { return id_plugin_map.size(); }
         /// 返回目前记录的插件个数，使用前请先获取锁
-        static bool empty() { return id_plugin_list.empty(); }
+        static bool empty() { return id_plugin_map.empty(); }
 
     public: // load
         static bool addNewPlugin(const std::shared_ptr<Plugin> &cfg);
@@ -107,4 +107,4 @@ namespace LibLoader {
 } // namespace LibLoader
 
 
-#endif //MIRAICP_PRO_PLUGINLISTMANAGER_H
+#endif //MIRAICP_PRO_PLUGINMANAGER_H

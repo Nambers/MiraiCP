@@ -16,11 +16,11 @@
 
 #include "Scheduler.h"
 #include "LoaderExceptions.h"
-#include "PluginListManager.h"
-#include <nlohmann/json.hpp>
+#include "PluginManager.h"
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
+#include <nlohmann/json.hpp>
 #include <queue>
 
 
@@ -64,11 +64,11 @@ namespace LibLoader::Scheduler {
     inline void sendTimeoutEvent(const std::string &pluginId, const std::string &content) noexcept {
         nlohmann::json j{{"eventId", 15},
                          {"eventData", nlohmann::json{{"msg", content}}}};
-        PluginListManager::broadcastToOnePlugin(pluginId, j.dump());
+        PluginManager::broadcastToOnePlugin(pluginId, j.dump());
     }
 
     bool checkValidTimeStamp(const scheduleTask &task) {
-        return task.createTime > PluginListManager::getPluginTimeStamp(task.pluginId);
+        return task.createTime > PluginManager::getPluginTimeStamp(task.pluginId);
     }
 
     void popSchedule() noexcept {

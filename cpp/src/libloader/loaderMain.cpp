@@ -21,7 +21,7 @@
 #include "MessageManager.h"
 #include "MessageProcessor.h"
 #include "Plugin.h"
-#include "PluginListManager.h"
+#include "PluginManager.h"
 #include "Scheduler.h"
 #include "ThreadIdentify.h"
 #include "ThreadPool.h"
@@ -54,7 +54,7 @@ namespace LibLoader {
 
         Antares::pool = std::make_unique<Antares::ThreadPool<>>();
 
-        PluginListManager::enableAll();
+        PluginManager::enableAll();
 
         MessageManager::get().init(&MessageProcessor::get());
 
@@ -71,35 +71,35 @@ namespace LibLoader {
     /// 见getLock()的注释
 
     void loader_enableAllPlugins() {
-        PluginListManager::enableAll();
+        PluginManager::enableAll();
     }
 
     void loader_disableAllPlugins() {
-        PluginListManager::disableAll();
+        PluginManager::disableAll();
     }
 
     void loader_loadNewPlugin(const std::string &path, bool activateNow) {
-        PluginListManager::loadNewPluginByPath(path, activateNow);
+        PluginManager::loadNewPluginByPath(path, activateNow);
     }
 
     void loader_unloadPluginById(const std::string &id) {
-        PluginListManager::unloadById(id);
+        PluginManager::unloadById(id);
     }
 
     void loader_enablePluginById(const std::string &id) {
-        PluginListManager::enableById(id);
+        PluginManager::enableById(id);
     }
 
     void loader_disablePluginById(const std::string &id) {
-        PluginListManager::disableById(id);
+        PluginManager::disableById(id);
     }
 
     void loader_reloadPluginById(const std::string &id) {
-        PluginListManager::reloadById(id);
+        PluginManager::reloadById(id);
     }
 
     void loader_pluginEndByException(const std::string &id) {
-        PluginListManager::unloadWhenException(id);
+        PluginManager::unloadWhenException(id);
     }
 
     void loader_resetThreadByIndex(const std::string &index) {
@@ -141,7 +141,7 @@ namespace LibLoader {
         loader_disableAllPlugins();
         MiraiCP::Redirector::reset();
         // 为了删除 Win 下复制的缓存
-        PluginListManager::unloadAll();
+        PluginManager::unloadAll();
     }
 
     void LoaderMain::process_task_queue() const { // NOLINT(*-convert-member-functions-to-static)

@@ -19,7 +19,7 @@
 #include "MiraiCPMacros.h"
 // -----------------------
 #include "LoaderLogger.h"
-#include "PluginListManager.h"
+#include "PluginManager.h"
 #include "eventHandle.h"
 #include "ktInterface.h"
 #include "loaderMain.h"
@@ -67,7 +67,7 @@ void EventImpl(JSTRING content) {
         return;
     }
 
-    LibLoader::PluginListManager::broadcastToAllEnabledPlugins(stringPtr);
+    LibLoader::PluginManager::broadcastToAllEnabledPlugins(stringPtr);
 }
 
 void PluginDisableImpl() {

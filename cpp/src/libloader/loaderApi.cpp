@@ -20,7 +20,7 @@
 #include "LoaderLogger.h"
 #include "LoaderMacro.h"
 #include "LoaderTaskQueue.h"
-#include "PluginListManager.h"
+#include "PluginManager.h"
 #include "Scheduler.h"
 #include "ThreadPool.h"
 #include "loaderApiInternal.h"
@@ -59,7 +59,7 @@ namespace LibLoader::LoaderApi {
     }
 
     MiraiCPString showAllPluginId() {
-        return nlohmann::json(PluginListManager::getAllPluginId()).dump();
+        return nlohmann::json(PluginManager::getAllPluginId()).dump();
     }
 
     void pushTask(task_func func) {

@@ -21,7 +21,7 @@
 #include "LoaderLogger.h"
 #include "Plugin.h"
 #include "PluginConfig.h"
-#include "PluginListManager.h"
+#include "PluginManager.h"
 #include "ThreadIdentify.h"
 #include "ThreadPool.h"
 #include "commonTools.h"
@@ -371,7 +371,7 @@ namespace LibLoader {
     /// 作用是将所有plugin加入plugin列表
     /// 这一过程必须是原子的
     void Plugin::loadsAll(const std::vector<std::string> &paths, const std::vector<PluginAuthority> &authorities) noexcept {
-        // std::lock_guard lk(PluginListManager::getLock());
+        // std::lock_guard lk(PluginManager::getLock());
 
         for (size_t i = 0; i < paths.size(); ++i) {
             auto &path = paths[i];
@@ -396,7 +396,7 @@ namespace LibLoader {
             newPlugin->authority = authority;
 
             try {
-                PluginListManager::addNewPlugin(newPlugin);
+                PluginManager::addNewPlugin(newPlugin);
             } catch (LoaderBaseException &e) {
                 e.raise();
             }
@@ -404,7 +404,7 @@ namespace LibLoader {
     }
 
     /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用且仅调用一次
-    /// 实际的入口，id_plugin_list 必须在这里初始化
+    /// 实际的入口，id_plugin_map 必须在这里初始化
     void Plugin::registerAllPlugin(const std::string &cfgPath) noexcept {
         // 获取cfg文件路径并读取
         nlohmann::json j = readJsonFile(cfgPath);

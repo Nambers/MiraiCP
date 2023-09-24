@@ -81,7 +81,7 @@ namespace LibLoader {
         static PluginFuncAddrData testSymbolExistance(plugin_handle handle, const std::string &path);
 
         /// 激活目前所有存储的插件。在Verify步骤中被kt（主）线程调用一次
-        /// 实际的入口，id_plugin_list 必须在这里初始化，该函数只会被调用一次
+        /// 实际的入口，id_plugin_map 必须在这里初始化，该函数只会被调用一次
         static void registerAllPlugin(const std::string &cfgPath) noexcept;
 
     private:
