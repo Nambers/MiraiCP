@@ -19,7 +19,7 @@
 #include "Event.h"
 #include "Events/GroupMessageEvent.h"
 #include "Member.h"
-#include "Schedule.h"
+#include "MiraiCPSchedule.h"
 #include "ThreadTask.h"
 #include "utils.h"
 // --------------------

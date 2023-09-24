@@ -34,7 +34,7 @@
 #include "Events/TimeOutEvent.h"
 #include "Exception.h"
 #include "ForwardedMessage.h"
-#include "Schedule.h"
+#include "MiraiCPSchedule.h"
 #include "Tools.h"
 #include "mockTests.h"
 #include "utils.h"

@@ -18,7 +18,7 @@
 // Created by antares on 11/10/22.
 //
 
-#include "Schedule.h"
+#include "MiraiCPSchedule.h"
 #include "CPPPlugin.h"
 #include "Event.h"
 #include "loaderApiInternal.h"
