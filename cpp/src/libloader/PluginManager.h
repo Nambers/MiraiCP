@@ -38,22 +38,14 @@ namespace LibLoader {
         PluginMap id_plugin_map;
         std::shared_mutex pluginlist_mtx;
 
-    private:
-        void changeKey(const std::string &key, const std::string &new_key);
-
-        void changeKeyInternal(const std::string &key, const std::string &new_key);
-
     public:
-        void unloadAll();
-
-    public:
-        //        PluginManager() = delete;
-        //        ~PluginManager() = delete;
-
         static PluginManager &Get() {
             static PluginManager instance;
             return instance;
         }
+
+    public:
+        void unloadAll();
 
     public:
         std::vector<std::string> getAllPluginId();
@@ -88,10 +80,9 @@ namespace LibLoader {
         void disableById(const std::string &);
 
     public:
-        void run_over_pluginlist(const std::function<void(const Plugin &)> &f);
+        void runOverPlugins(const std::function<void(const Plugin &)> &f);
 
-    private:
-        std::string &threadRunningPluginId();
+        void runOverEnabledPlugins(const std::function<void(const Plugin &)> &f);
 
     public:
         std::string getThreadRunningPluginId() {
@@ -108,6 +99,11 @@ namespace LibLoader {
         bool pluginNameLookup(const std::string &_id);
 
         std::chrono::time_point<std::chrono::system_clock> getPluginTimeStamp(const std::string &_id);
+
+    private:
+        std::string &threadRunningPluginId();
+
+        void changeKeyInternal(const std::string &key, const std::string &new_key);
     };
 } // namespace LibLoader
 

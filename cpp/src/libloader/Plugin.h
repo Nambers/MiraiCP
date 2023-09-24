@@ -73,9 +73,9 @@ namespace LibLoader {
 
         MessageProxy popMessage() const;
 
-        //        void popMessageTo(std::vector<std::unique_ptr<PolyM::Msg>> & messageList) const;
-
         void delete_message() const;
+
+        void makeResponse(PolyM::MsgUID, MiraiCP::MiraiCPString) const;
 
     public:
         static PluginFuncAddrData testSymbolExistance(plugin_handle handle, const std::string &path);

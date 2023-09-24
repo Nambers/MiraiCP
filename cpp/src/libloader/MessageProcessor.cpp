@@ -22,6 +22,10 @@ namespace LibLoader {
         return payload.payload != nullptr && plugin != nullptr;
     }
 
+    std::shared_ptr<const Plugin> MessageProxy::getPlugin() const {
+        return plugin;
+    }
+
     /// MessageProcessor
     MessageProcessor &MessageProcessor::get() {
         static MessageProcessor processor;
@@ -59,6 +63,6 @@ namespace LibLoader {
         if (!handler) return;
 
         invalid = false;
-        handler(payload.payload);
+        handler(payload.payload, msg.getPlugin());
     }
 } // namespace LibLoader

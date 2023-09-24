@@ -495,6 +495,19 @@ namespace LibLoader {
         return message_queue.try_get_payload();
     }
 
+    void Plugin::makeResponse(PolyM::MsgUID uid, MiraiCP::MiraiCPString s) const {
+        if (!message_queue.make_response) {
+            logger.error("makeResponse: make_response is nullptr");
+            throw InvalidPayloadPointerException(MIRAICP_EXCEPTION_WHERE);
+        }
+        // check thread
+        if (!ThreadIdentify::isMeLoaderThread()) {
+            logger.error("makeResponse: you should call this function in loader thread!!!");
+            throw InvalidThreadException(MIRAICP_EXCEPTION_WHERE);
+        }
+        message_queue.make_response(uid, std::move(s));
+    }
+
     void registerAllPlugin(const std::string &cfgPath) noexcept {
         Plugin::registerAllPlugin(cfgPath);
     }

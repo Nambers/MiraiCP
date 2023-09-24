@@ -83,6 +83,8 @@ namespace LibLoader {
         [[nodiscard]] bool isEnabled() const { return enabled; }
 
         [[nodiscard]] bool isLoaded() const { return handle != nullptr; }
+
+        [[nodiscard]] auto getAuthority() const { return authority; }
     };
 } // namespace LibLoader
 #endif //MIRAICP_PRO_PLUGINDATA_H

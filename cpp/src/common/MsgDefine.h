@@ -22,9 +22,9 @@
 #define GEN_MSG_BODY(_class_name)                                     \
     constexpr static int class_payload_id = MessageType::_class_name; \
     ~_class_name() override = default;
+
+
 namespace MiraiCP {
-
-
     namespace MessageType {
         enum Type {
             OperationMessage,
@@ -88,14 +88,14 @@ namespace MiraiCP {
     };
 
     struct AdminMessage : public MessageTraits<AdminMessage, false> {
-        enum CmdId{
-            ENABLE_ONE,         // arg: plugin id
-            DISABLE_ONE,        // arg: plugin id
-            ENABLE_ALL,         // arg: none
-            DISABLE_ALL,        // arg: none
-            RELOAD_ONE,         // arg: plugin id
-            UNLOAD_ONE,         // arg: plugin id
-            LOAD_NEW,           // arg: path, bool immediate
+        enum CmdId {
+            ENABLE_ONE,  // arg: plugin id
+            DISABLE_ONE, // arg: plugin id
+            ENABLE_ALL,  // arg: none
+            DISABLE_ALL, // arg: none
+            RELOAD_ONE,  // arg: plugin id
+            UNLOAD_ONE,  // arg: plugin id
+            LOAD_NEW,    // arg: path, bool immediate
         };
         int cmd_id;
         MiraiCPString cmd_arg;

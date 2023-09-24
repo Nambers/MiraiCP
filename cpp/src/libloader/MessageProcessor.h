@@ -30,6 +30,8 @@ namespace LibLoader {
 
         [[nodiscard]] auto getPayload() const { return payload; }
 
+        [[nodiscard]] std::shared_ptr<const Plugin> getPlugin() const;
+
         explicit operator bool() const;
     };
 
@@ -39,7 +41,8 @@ namespace LibLoader {
 
     public:
         using payload_ptr = PayLoadInfo::payload_ptr;
-        typedef void (*message_handler)(payload_ptr msg);
+        using plugin_ptr = std::shared_ptr<const Plugin>;
+        typedef void (*message_handler)(payload_ptr msg, plugin_ptr plugin_ptr);
 
     private:
         message_handler handlers[MsgType::MESSAGE_TYPE_COUNT];

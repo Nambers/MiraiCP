@@ -14,11 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "PluginManager.h"
 #include "LoaderExceptions.h"
 #include "LoaderLogger.h"
 #include "Plugin.h"
 #include "PluginConfig.h"
-#include "PluginManager.h"
 #include "ThreadPool.h"
 #include "commonTools.h"
 #include <iomanip>
@@ -28,9 +28,6 @@
 
 
 namespace LibLoader {
-//    PluginManager::PluginMap PluginManager::id_plugin_map;
-//    std::shared_mutex PluginManager::pluginlist_mtx;
-
     ////////////////////////////////////
     // 一个工具函数
     std::string PluginInfoStream(const std::vector<std::string> &plugin_info, size_t (&charNum)[4]) {
@@ -225,10 +222,17 @@ namespace LibLoader {
 
     /// 遍历所有插件，by id（默认是不会by path的，path是用于id变更的特殊情况的备份）
     /// 注意：不会检查插件是否enable，请自行检查
-    void PluginManager::run_over_pluginlist(const std::function<void(const Plugin &)> &f) {
+    void PluginManager::runOverPlugins(const std::function<void(const Plugin &)> &f) {
         std::shared_lock lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_map) {
             f(*v);
+        }
+    }
+
+    void PluginManager::runOverEnabledPlugins(const std::function<void(const Plugin &)> &f) {
+        std::shared_lock lk(pluginlist_mtx);
+        for (auto &&[k, v]: id_plugin_map) {
+            if (v->isEnabled()) f(*v);
         }
     }
 
@@ -241,11 +245,6 @@ namespace LibLoader {
             ptr->unloadPlugin();
             return;
         }
-    }
-
-    void PluginManager::changeKey(const std::string &key, const std::string &new_key) {
-        std::unique_lock lk(pluginlist_mtx);
-        changeKeyInternal(key, new_key);
     }
 
     std::string &PluginManager::threadRunningPluginId() {
@@ -305,4 +304,5 @@ namespace LibLoader {
         }
         return it->second->getTimeStamp();
     }
+
 } // namespace LibLoader
