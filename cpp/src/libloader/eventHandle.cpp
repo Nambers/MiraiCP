@@ -40,10 +40,10 @@ namespace LibLoader {
                  LoaderApi::disablePluginById(name);
              }},
             {"DisablePluginList", [](const std::string &) {
-                 LibLoader::logger.info(LibLoader::PluginManager::pluginListInfo([](const LibLoader::Plugin &c) { return !c.isEnabled(); }));
+                 LibLoader::logger.info(LibLoader::PluginManager::Get().pluginListInfo([](const LibLoader::Plugin &c) { return !c.isEnabled(); }));
              }},
             {"EnablePluginList",  [](const std::string &) {
-                 LibLoader::logger.info(LibLoader::PluginManager::pluginListInfo([](const LibLoader::Plugin &c) { return c.isEnabled(); }));
+                 LibLoader::logger.info(LibLoader::PluginManager::Get().pluginListInfo([](const LibLoader::Plugin &c) { return c.isEnabled(); }));
              }},
             {"ReloadPlugin",      [](const std::string &id) {
                  LoaderApi::reloadPluginById(id);
@@ -55,7 +55,7 @@ namespace LibLoader {
                 LoaderApi::unloadPluginById(id);
             }},
             {"PluginMap",        [](const std::string &) {
-                logger.info(LibLoader::PluginManager::pluginListInfo(
+                logger.info(LibLoader::PluginManager::Get().pluginListInfo(
                         [](const LibLoader::PluginData &) { return true; }));
             }},
             {"DisableAllPlugins", [](const std::string &) {

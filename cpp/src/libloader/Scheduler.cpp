@@ -64,11 +64,11 @@ namespace LibLoader::Scheduler {
     inline void sendTimeoutEvent(const std::string &pluginId, const std::string &content) noexcept {
         nlohmann::json j{{"eventId", 15},
                          {"eventData", nlohmann::json{{"msg", content}}}};
-        PluginManager::broadcastToOnePlugin(pluginId, j.dump());
+        PluginManager::Get().broadcastToOnePlugin(pluginId, j.dump());
     }
 
     bool checkValidTimeStamp(const scheduleTask &task) {
-        return task.createTime > PluginManager::getPluginTimeStamp(task.pluginId);
+        return task.createTime > PluginManager::Get().getPluginTimeStamp(task.pluginId);
     }
 
     void popSchedule() noexcept {

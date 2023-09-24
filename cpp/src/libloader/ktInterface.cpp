@@ -67,7 +67,7 @@ void EventImpl(JSTRING content) {
         return;
     }
 
-    LibLoader::PluginManager::broadcastToAllEnabledPlugins(stringPtr);
+    LibLoader::PluginManager::Get().broadcastToAllEnabledPlugins(stringPtr);
 }
 
 void PluginDisableImpl() {

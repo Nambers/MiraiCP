@@ -396,7 +396,7 @@ namespace LibLoader {
             newPlugin->authority = authority;
 
             try {
-                PluginManager::addNewPlugin(newPlugin);
+                PluginManager::Get().addNewPlugin(newPlugin);
             } catch (LoaderBaseException &e) {
                 e.raise();
             }

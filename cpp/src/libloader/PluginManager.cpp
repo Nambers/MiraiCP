@@ -28,8 +28,8 @@
 
 
 namespace LibLoader {
-    PluginManager::PluginMap PluginManager::id_plugin_map;
-    std::shared_mutex PluginManager::pluginlist_mtx;
+//    PluginManager::PluginMap PluginManager::id_plugin_map;
+//    std::shared_mutex PluginManager::pluginlist_mtx;
 
     ////////////////////////////////////
     // 一个工具函数

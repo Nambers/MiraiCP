@@ -59,7 +59,7 @@ namespace LibLoader::LoaderApi {
     }
 
     MiraiCPString showAllPluginId() {
-        return nlohmann::json(PluginManager::getAllPluginId()).dump();
+        return nlohmann::json(PluginManager::Get().getAllPluginId()).dump();
     }
 
     void pushTask(task_func func) {

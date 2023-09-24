@@ -28,7 +28,7 @@ namespace LibLoader {
 
     void MessageManager::tick() { // NOLINT(*-convert-member-functions-to-static)
         std::vector<MessageProxy> messages;
-        PluginManager::run_over_pluginlist([&messages](const Plugin &plugin) {
+        PluginManager::Get().run_over_pluginlist([&messages](const Plugin &plugin) {
             auto msg = plugin.popMessage();
             if (msg) messages.emplace_back(std::move(msg));
         });

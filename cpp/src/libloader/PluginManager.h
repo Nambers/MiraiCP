@@ -35,74 +35,79 @@ namespace LibLoader {
         typedef PluginMap::iterator iterator;
 
     private:
-        static PluginMap id_plugin_map;
-        static std::shared_mutex pluginlist_mtx;
+        PluginMap id_plugin_map;
+        std::shared_mutex pluginlist_mtx;
 
     private:
-        static void changeKey(const std::string &key, const std::string &new_key);
+        void changeKey(const std::string &key, const std::string &new_key);
 
-        static void changeKeyInternal(const std::string &key, const std::string &new_key);
-
-    public:
-        static void unloadAll();
+        void changeKeyInternal(const std::string &key, const std::string &new_key);
 
     public:
-        PluginManager() = delete;
-        ~PluginManager() = delete;
+        void unloadAll();
 
     public:
-        static std::vector<std::string> getAllPluginId();
+        //        PluginManager() = delete;
+        //        ~PluginManager() = delete;
+
+        static PluginManager &Get() {
+            static PluginManager instance;
+            return instance;
+        }
+
+    public:
+        std::vector<std::string> getAllPluginId();
 
         /// 将所有插件信息格式化为一个string
-        static std::string pluginListInfo(const std::function<bool(const Plugin &)> &);
+        std::string pluginListInfo(const std::function<bool(const Plugin &)> &);
 
-        static std::vector<std::string> getAllPluginPath();
+        std::vector<std::string> getAllPluginPath();
 
         /// 返回目前记录的插件个数，使用前请先获取锁
-        static auto count() { return id_plugin_map.size(); }
+        auto count() { return id_plugin_map.size(); }
         /// 返回目前记录的插件个数，使用前请先获取锁
-        static bool empty() { return id_plugin_map.empty(); }
+        bool empty() { return id_plugin_map.empty(); }
 
     public: // load
-        static bool addNewPlugin(const std::shared_ptr<Plugin> &cfg);
+        bool addNewPlugin(const std::shared_ptr<Plugin> &cfg);
 
     public: // unload
-        static void unloadById(const std::string &);
-        static void unloadWhenException(const std::string &);
+        void unloadById(const std::string &);
+        void unloadWhenException(const std::string &);
 
     public: // reload
-        static void reloadAllPlugin();
-        static void reloadById(const std::string &);
+        void reloadAllPlugin();
+        void reloadById(const std::string &);
 
     public: // enable
-        static void enableAll();
-        static void enableById(const std::string &);
+        void enableAll();
+        void enableById(const std::string &);
 
     public: // disable
-        static void disableAll();
-        static void disableById(const std::string &);
+        void disableAll();
+        void disableById(const std::string &);
 
     public:
-        static void run_over_pluginlist(const std::function<void(const Plugin &)> &f);
+        void run_over_pluginlist(const std::function<void(const Plugin &)> &f);
 
     private:
-        static std::string &threadRunningPluginId();
+        std::string &threadRunningPluginId();
 
     public:
-        static std::string getThreadRunningPluginId() {
+        std::string getThreadRunningPluginId() {
             return threadRunningPluginId();
         }
 
     public:
-        static void broadcastToAllEnabledPlugins(const MiraiCP::MiraiCPString &strPtr);
+        void broadcastToAllEnabledPlugins(const MiraiCP::MiraiCPString &strPtr);
 
-        static void broadcastToOnePlugin(const std::string &id, MiraiCP::MiraiCPString str);
+        void broadcastToOnePlugin(const std::string &id, MiraiCP::MiraiCPString str);
 
-        static void loadNewPluginByPath(const std::string &_path, bool activateNow);
+        void loadNewPluginByPath(const std::string &_path, bool activateNow);
 
-        static bool pluginNameLookup(const std::string &_id);
+        bool pluginNameLookup(const std::string &_id);
 
-        static std::chrono::time_point<std::chrono::system_clock> getPluginTimeStamp(const std::string &_id);
+        std::chrono::time_point<std::chrono::system_clock> getPluginTimeStamp(const std::string &_id);
     };
 } // namespace LibLoader
 

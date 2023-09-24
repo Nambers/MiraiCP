@@ -54,7 +54,7 @@ namespace LibLoader {
 
         Antares::pool = std::make_unique<Antares::ThreadPool<>>();
 
-        PluginManager::enableAll();
+        PluginManager::Get().enableAll();
 
         MessageManager::get().init(&MessageProcessor::get());
 
@@ -71,35 +71,35 @@ namespace LibLoader {
     /// 见getLock()的注释
 
     void loader_enableAllPlugins() {
-        PluginManager::enableAll();
+        PluginManager::Get().enableAll();
     }
 
     void loader_disableAllPlugins() {
-        PluginManager::disableAll();
+        PluginManager::Get().disableAll();
     }
 
     void loader_loadNewPlugin(const std::string &path, bool activateNow) {
-        PluginManager::loadNewPluginByPath(path, activateNow);
+        PluginManager::Get().loadNewPluginByPath(path, activateNow);
     }
 
     void loader_unloadPluginById(const std::string &id) {
-        PluginManager::unloadById(id);
+        PluginManager::Get().unloadById(id);
     }
 
     void loader_enablePluginById(const std::string &id) {
-        PluginManager::enableById(id);
+        PluginManager::Get().enableById(id);
     }
 
     void loader_disablePluginById(const std::string &id) {
-        PluginManager::disableById(id);
+        PluginManager::Get().disableById(id);
     }
 
     void loader_reloadPluginById(const std::string &id) {
-        PluginManager::reloadById(id);
+        PluginManager::Get().reloadById(id);
     }
 
     void loader_pluginEndByException(const std::string &id) {
-        PluginManager::unloadWhenException(id);
+        PluginManager::Get().unloadWhenException(id);
     }
 
     void loader_resetThreadByIndex(const std::string &index) {
@@ -141,7 +141,7 @@ namespace LibLoader {
         loader_disableAllPlugins();
         MiraiCP::Redirector::reset();
         // 为了删除 Win 下复制的缓存
-        PluginManager::unloadAll();
+        PluginManager::Get().unloadAll();
     }
 
     void LoaderMain::process_task_queue() const { // NOLINT(*-convert-member-functions-to-static)
