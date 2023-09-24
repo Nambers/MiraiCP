@@ -36,9 +36,12 @@ namespace LibLoader {
     class MessageProcessor {
         using MsgType = MiraiCP::MessageType::Type;
         using PayLoadInfo = MiraiCP::PluginInterface::PayLoadInfo;
+
+    public:
         using payload_ptr = PayLoadInfo::payload_ptr;
         typedef void (*message_handler)(payload_ptr msg);
 
+    private:
         message_handler handlers[MsgType::MESSAGE_TYPE_COUNT];
 
     public:
