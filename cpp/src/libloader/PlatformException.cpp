@@ -147,7 +147,7 @@ private:
 
             std::string maybeId = ThreadIdentify::identifyMe();
             // 插件列表中查询是否有这个线程名的插件，如果没有则放弃处理，有则卸载
-            if (LibLoader::PluginListManager::pluginNameLookup(maybeId)) {
+            if (LibLoader::PluginManager::Get().pluginNameLookup(maybeId)) {
                 pluginName = std::move(maybeId);
             } else {
                 getOact().sa_sigaction(a, si, unused);
