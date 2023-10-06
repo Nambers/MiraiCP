@@ -19,6 +19,7 @@
 
 
 #include <condition_variable>
+#include <string>
 
 
 namespace LibLoader {
@@ -26,6 +27,8 @@ namespace LibLoader {
         volatile bool loader_exit = false;
         std::condition_variable cv;
         mutable std::mutex loaderCVLock;
+        std::string config_path;
+        size_t tickRate = 100;
 
     private:
         void mainloop() const noexcept;
@@ -35,6 +38,8 @@ namespace LibLoader {
         void tick() const noexcept;
 
         void process_task_queue() const;
+
+        void readConfig();
 
     public:
         static LoaderMain &get();
@@ -46,6 +51,10 @@ namespace LibLoader {
         void loaderMain();
 
         auto &get_cv() { return cv; }
+
+        void setConfigPath(const std::string &in_config_path) {
+            config_path = in_config_path;
+        }
     };
 } // namespace LibLoader
 #endif //MIRAICP_PRO_LOADERMAIN_H

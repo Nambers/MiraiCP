@@ -49,7 +49,9 @@ void VerifyImpl(JSTRING _version, JSTRING _cfgPath) {
     }
 
     // 测试有效的插件
-    LibLoader::registerAllPlugin(J_TO_STD_STRING(_cfgPath));
+    std::string config_path = J_TO_STD_STRING(_cfgPath);
+    LibLoader::LoaderMain::get().setConfigPath(config_path);
+    LibLoader::registerAllPlugin(config_path);
 
     // 激活插件。创建loader thread。
     // loader thread中创建多线程加载所有插件，调用入口函数

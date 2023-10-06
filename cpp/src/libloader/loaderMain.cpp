@@ -25,8 +25,11 @@
 #include "Scheduler.h"
 #include "ThreadIdentify.h"
 #include "ThreadPool.h"
+#include "loaderTools.h"
 #include "redirectCout.h"
 #include <chrono>
+#include <nlohmann/json.hpp>
+#include <utility>
 
 
 extern "C" {
@@ -35,8 +38,16 @@ void plugin_raw_API_try_wake_loader() {
 }
 }
 
+constexpr size_t US_IN_SEC = 1000000;
+
 
 namespace LibLoader {
+    class InvalidConfException : public LoaderExceptionCRTP<InvalidConfException> {
+    public:
+        InvalidConfException(const string &conf_name, string _filename, int _lineNum) : LoaderExceptionCRTP("无效的配置" + conf_name, std::move(_filename), _lineNum) {}
+
+        static string exceptionType() { return "InvalidConfException"; }
+    };
     LoaderMain &LoaderMain::get() {
         static LoaderMain loaderMain;
         return loaderMain;
@@ -51,8 +62,9 @@ namespace LibLoader {
     void LoaderMain::loaderMain() {
         ThreadIdentify::IAmLoaderThread();
         logger.info("libLoader thread start");
+        readConfig();
+        if (!Antares::pool) Antares::pool = std::make_unique<Antares::ThreadPool<>>();
 
-        Antares::pool = std::make_unique<Antares::ThreadPool<>>();
 
         PluginManager::Get().enableAll();
 
@@ -118,7 +130,7 @@ namespace LibLoader {
     }
 
     void LoaderMain::mainloop() const noexcept {
-        constexpr auto tick_time = std::chrono::milliseconds(33);
+        auto tick_time = std::chrono::microseconds(US_IN_SEC / tickRate);
         using Clock = std::chrono::steady_clock;
         auto loop_start = Clock::now();
 
@@ -191,6 +203,28 @@ namespace LibLoader {
                 e.raise();
             } catch (std::exception &e) {
                 logger.error("libLoader线程遇到无法预料的错误：" + std::string(e.what()) + "，程序将继续执行，如果发生意料之外的状况，请提交issue");
+            }
+        }
+    }
+
+    void LoaderMain::readConfig() {
+        nlohmann::json j = readJsonFile(config_path);
+        if (j.contains("loaderConfigs")) {
+            auto &loader_conf = j["loaderConfigs"];
+            if (loader_conf.contains("threadPoolSize")) {
+                size_t thread_pool_size = loader_conf["threadPoolSize"];
+                Antares::pool = std::make_unique<Antares::ThreadPool<>>(thread_pool_size);
+            }
+            if (loader_conf.contains("tickRate")) {
+                size_t _tickRate = loader_conf["tickRate"];
+                if (_tickRate > US_IN_SEC) {
+                    throw InvalidConfException("tickRate", MIRAICP_EXCEPTION_WHERE);
+                }
+                if (_tickRate == 0) {
+                    tickRate = 100;
+                } else {
+                    tickRate = _tickRate;
+                }
             }
         }
     }
