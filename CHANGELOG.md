@@ -1,4 +1,30 @@
 # Change Log
+
+## v我也不知道会是什么版本
+
+Internal:
+
+* 引入消息机制，插件与loader的通信会变得更安全
+* libloader内部大幅重构、简化实现
+* 重构指令系统
+* 第三方代码增加polym的message queue
+
+Fixs:
+
+* 注册指令导致的崩溃 #198
+* termux编译时缺少include的错误
+
+Improvements:
+
+* 现在`config.json`中可以填写libloader可配置项，json field为`loaderConfigs`，子项包括：
+  * `threadPoolSize`：控制线程池线程数，默认为0（使用系统支持的并发线程数）（注意：过大或过小均可能导致卡顿）
+  * `tickRate`：一秒钟内libloader处理任务的次数，默认为100。范围为0-1000000，最小粒度为1微秒，该值为0时将使用默认值。（注意：过大会导致CPU占用虚高，过小可能导致延迟）
+
+Breakchanges:  
+
+* 修改了部分源文件的命名，修复在Windows下MiraiCP源文件与部分系统库文件重名导致的编译、静态检查问题。使用multi target的用户可能会需要修改部分include
+* 由于内部逻辑大幅重构，还未严格测试，可能有潜在的不兼容问题
+
 ## v2.16.0-dev1
 Internal fixs:
 + move 3rd includes

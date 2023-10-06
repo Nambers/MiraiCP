@@ -1,6 +1,13 @@
-# MiraiCP
+<div align="center">
 
-[![License](https://img.shields.io/github/license/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/blob/master/LICENSE)  [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP?include_prereleases)](https://github.com/Nambers/MiraiCP/releases/) [![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/commit/master)
+# **MiraiCP**
+
+[API documentation](https://eritque-arcus.tech/MiraiCP/) · [download](https://github.com/Nambers/MiraiCP/releases) · [demo](https://github.com/Nambers/MiraiCP-template)
+
+[![License](https://img.shields.io/github/license/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/blob/master/LICENSE)  [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Nambers/MiraiCP?include_prereleases)](https://github.com/Nambers/MiraiCP/releases/) [![GitHub last commit](https://img.shields.io/github/last-commit/Nambers/MiraiCP/dev)](https://github.com/Nambers/MiraiCP/commit/master)
+![image](https://user-images.githubusercontent.com/35139537/143440804-e7385a03-b3b6-4d0a-b4c0-2595ea4b35ba.png)
+	
+</div>
 
 >[中文](https://github.com/Nambers/MiraiCP/blob/master/README.md)
 >
@@ -226,11 +233,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
 
 # Dependencies
-[JSON for modern C++](https://github.com/nlohmann/json) - MIT license
+<details> 
+<summary>C++ dependencies</summary>
 
-[UTF8-CPP: UTF-8 with C++ in a Portable Way](https://github.com/nemtrif/utfcpp) - Boost Software License 1.0
+| Dependence name                                              | Url                                      | Author             | License                              |
+| ------------------------------------------------------------ | ---------------------------------------- | ------------------ | ------------------------------------ |
+| JSON for modern C++                                          | <https://github.com/nlohmann/json>       | Niels Lohmann      | MIT                                  |
+| UTF8-CPP: UTF-8 with C++ in a Portable Way                   | <https://github.com/nemtrif/utfcpp>      | Nemanja Trifunovic | BSL-1.0                              |
+| JNI Headers                                                  | Null                                     | Java               | GNU General Public License version 2 |
+| Amalgamate: C++ source file amalgamation                     | <https://github.com/0ph1uch1/amalgamate> | Antares0982        | AGPL-3.0                             |
+| PolyM is a very simple C++ message queue intended for inter-thread communication | <https://github.com/khuttun/PolyM>       | khuttun            | MIT                                  |
 
-`JNI headers`, in the directory of JDK
+</details>
 
+<details> 
+<summary>Kotlin dependencies</summary>
+
+| Dependence name                                         | Url                                    | Author          | License                        |
+|---------------------------------------------------------|----------------------------------------|-----------------|--------------------------------|
+| Jline 3                                                 | <https://github.com/jline/jline3>      | Jline team      | BSD-3                          |
+| Mirai                                                   | <https://github.com/mamoe/mirai>       | Mamoe team      | AGPL-3.0                       |
+| Jansi                                                   | <https://github.com/fusesource/jansi>  | FuseSource team | Apache License 2.0             |
+| Mordant: Colorful styling for command-line applications | <https://github.com/ajalt/mordant>     | AJ Alt          | Apache License 2.0             |
+| Junit 5                                                 | <https://github.com/junit-team/junit5> | Junit team      | Eclipse Public License - v 2.0 |
+
+</details>
 # Stargazers
 [![Stargazers repo roster for @Nambers/MiraiCP](https://reporoster.com/stars/Nambers/MiraiCP)](https://github.com/Nambers/MiraiCP/stargazers)
