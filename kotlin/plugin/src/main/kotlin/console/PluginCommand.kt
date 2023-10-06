@@ -54,7 +54,6 @@ class CommandHandlerImpl : CommandHandler {
         }
         a::preFixOption.set(c.preFixOption)
         a::pluginId.set(c.pluginId)
-        a::primaryName.set(c.primaryName)
         return CommandManager.registerCommand(a, c.override).toString()
     }
 }
