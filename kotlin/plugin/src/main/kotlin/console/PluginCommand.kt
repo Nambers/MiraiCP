@@ -41,11 +41,11 @@ class CommandHandlerImpl : CommandHandler {
             override val prefixOptional: Boolean
                 get() = preFixOption
             var pluginId: String = ""
-            var bindId: Int = -1
+            var primaryName: String = ""
             override suspend fun CommandSender.onCommand(args: MessageChain) {
                 event(
                     commandToEventData(
-                        bindId,
+                        primaryName,
                         this.user?.toContact(),
                         args.serializeToJsonString(),
                         this.bot?.id ?: 0
@@ -55,7 +55,7 @@ class CommandHandlerImpl : CommandHandler {
         }
         a::preFixOption.set(c.preFixOption)
         a::pluginId.set(c.pluginId)
-        a::bindId.set(c.bindId)
+        a::primaryName.set(c.primaryName)
         return CommandManager.registerCommand(a, c.override).toString()
     }
 }

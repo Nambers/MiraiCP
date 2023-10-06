@@ -25,13 +25,13 @@ import tech.eritquearcus.miraicp.shared.CommandHandler
 data class CommandBrief(
     val name: String,
     val pid: String,
-    val bid: Int,
+    // val bid: Int,
     val sName: List<String>
 )
 
 class LoaderCommandHandlerImpl : CommandHandler {
     override fun register(c: tech.eritquearcus.miraicp.shared.Command): String {
-        val cb = CommandBrief(c.primaryName, c.pluginId, c.bindId, c.secondName)
+        val cb = CommandBrief(c.primaryName, c.pluginId, c.secondName)
         when (c.override) {
             true -> Command.preCommand.add(cb)
             false -> Command.lastCommand.add(cb)

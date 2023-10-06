@@ -35,7 +35,7 @@ data class Command(
     // 用法
     val usage: String?,
     // cpp端对应的监听id
-    val bindId: Int,
+    // val bindId: Int,
     // kt端插件编号
     val pluginId: String,
     // 覆盖已有指令

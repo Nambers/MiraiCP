@@ -187,7 +187,7 @@ object Command {
         }?.let { it ->
             val mc = MessageChainBuilder()
             order.drop(1).forEach { mc.append(PlainText(it)) }
-            event(commandToEventData(it.bid, null, mc.build().serializeToJsonString(), 0))
+            event(commandToEventData(order[0], null, mc.build().serializeToJsonString(), 0))
             true
         } ?: false
     }

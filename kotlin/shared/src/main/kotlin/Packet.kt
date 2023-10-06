@@ -759,12 +759,12 @@ object Packets {
         @Serializable
         class Command : EventPacket {
             override val eventId: Int = 17
-            private val bindId: Int
+            private val primaryName: String
             private val contact: Contact?
             private val message: String
 
-            constructor(bindId: Int, contact: Contact?, message: String) {
-                this.bindId = bindId
+            constructor(primaryName: String, contact: Contact?, message: String) {
+                this.primaryName = primaryName
                 this.contact = contact
                 this.message = message
             }
@@ -884,8 +884,8 @@ object Packets {
 //            it.`object` = this.bot.toContact()
         }
 
-        fun commandToEventData(bindId: Int, contact: Contact?, message: String, botId: Long): String {
-            val event = Outgoing.Command(bindId, contact, message)
+        fun commandToEventData(primaryName: String, contact: Contact?, message: String, botId: Long): String {
+            val event = Outgoing.Command(primaryName, contact, message)
             return json.encodeToString(Outgoing.EventData(event, eventId = event.eventId, botId = botId))
         }
     }
