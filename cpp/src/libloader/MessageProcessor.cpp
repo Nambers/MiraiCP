@@ -4,6 +4,7 @@
 
 #include "MessageProcessor.h"
 #include "LoaderLogger.h"
+#include "MessageHandler.h"
 #include "Plugin.h"
 #include "commonTools.h"
 
@@ -48,7 +49,13 @@ namespace LibLoader {
     }
 
     void MessageProcessor::registerDefaultHandlers() {
-        // todo
+        handlers[MsgType::OperationMessage] = MessageHandler::operation_message;
+        handlers[MsgType::LoggerMessage] = MessageHandler::logger_message;
+        handlers[MsgType::PluginIdMessage] = MessageHandler::plugin_id_message;
+        handlers[MsgType::PushTaskMessage] = MessageHandler::push_task_message;
+        handlers[MsgType::PushTaskWithIdMessage] = MessageHandler::push_task_with_id_message;
+        handlers[MsgType::TimerMessage] = MessageHandler::timer_message;
+        handlers[MsgType::AdminMessage] = MessageHandler::admin_message;
     }
 
     void MessageProcessor::processMessage(const MessageProxy &msg) {

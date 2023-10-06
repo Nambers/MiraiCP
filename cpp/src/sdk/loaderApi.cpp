@@ -1,4 +1,4 @@
-// Copyright (c) 2020 - 2022. Eritque arcus and contributors.
+// Copyright (c) 2020 - 2023. Eritque arcus and contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -38,16 +38,22 @@ namespace LibLoader::LoaderApi {
     template<typename T>
     MiraiCPString send_payload(T &&payload) {
         using PayloadClass = typename std::decay_t<T>;
+        static_assert(std::is_base_of_v<MessageTraits<PayloadClass, true>, PayloadClass> || std::is_base_of_v<MessageTraits<PayloadClass, false>, PayloadClass>,
+                      "PayloadClass must be a subclass of MessageTraits");
         if constexpr (PayloadClass::blocking) {
+            auto msg = DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(),
+                                             std::forward<T>(payload));
+            msg.getPayload().uid = msg.getUniqueId();
             auto ret_raw = getMsgQueue()->request(
-                    DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(),
-                                          std::forward<T>(payload)),
+                    std::move(msg),
                     0,
                     LibLoader::try_wake_loader);
             auto ret = static_cast<PolyM::DataMsg<MiraiCPString> *>(ret_raw.get());
             return std::move(ret->getPayload());
         } else {
-            getMsgQueue()->put(DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::forward<T>(payload)));
+            auto msg = DataMsg<PayloadClass>(PayloadClass::static_payload_class_id(), std::forward<T>(payload));
+            msg.getPayload().uid = msg.getUniqueId();
+            getMsgQueue()->put(std::move(msg));
             LibLoader::try_wake_loader();
             return {};
         }

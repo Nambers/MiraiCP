@@ -18,6 +18,7 @@
 #define MIRAICP_PRO_MSGDEFINE_H
 
 #include "MiraiCPStringInternal.h"
+#include "polym/Msg.hpp"
 
 #define GEN_MSG_BODY(_class_name)                                     \
     constexpr static int class_payload_id = MessageType::_class_name; \
@@ -25,6 +26,7 @@
 
 
 namespace MiraiCP {
+
     namespace MessageType {
         enum Type {
             OperationMessage,
@@ -41,6 +43,8 @@ namespace MiraiCP {
 
     template<typename T, bool t_blocking = false>
     struct MessageTraits {
+        PolyM::MsgUID uid;
+
         constexpr static bool blocking = t_blocking;
         virtual int get_payload_class_id() {
             return static_payload_class_id();

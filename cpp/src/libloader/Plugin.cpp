@@ -86,14 +86,6 @@ namespace LibLoader {
         static string exceptionType() { return "PluginHandleInvalidException"; }
     };
 
-    class InvalidPayloadPointerException : public LoaderExceptionCRTP<InvalidPayloadPointerException> {
-    public:
-        InvalidPayloadPointerException(string _filename, int _lineNum)
-            : LoaderExceptionCRTP("无效的payload指针", std::move(_filename), _lineNum) {}
-
-        static string exceptionType() { return "InvalidPayloadPointerException"; }
-    };
-
     class InvalidThreadException : public LoaderExceptionCRTP<InvalidThreadException> {
     public:
         InvalidThreadException(string _filename, int _lineNum)
@@ -483,9 +475,10 @@ namespace LibLoader {
     }
 
     MiraiCP::PluginInterface::PayLoadInfo Plugin::tryGetPayload() const {
+        std::shared_lock lk(_mtx);
         if (!message_queue.try_get_payload) {
-            logger.error("tryGetPayload: try_get_payload is nullptr");
-            throw InvalidPayloadPointerException(MIRAICP_EXCEPTION_WHERE);
+            logger.warning("tryGetPayload: try_get_payload is nullptr");
+            return {};
         }
         // check thread
         if (!ThreadIdentify::isMeLoaderThread()) {
@@ -496,9 +489,10 @@ namespace LibLoader {
     }
 
     void Plugin::makeResponse(PolyM::MsgUID uid, MiraiCP::MiraiCPString s) const {
+        std::shared_lock lk(_mtx);
         if (!message_queue.make_response) {
-            logger.error("makeResponse: make_response is nullptr");
-            throw InvalidPayloadPointerException(MIRAICP_EXCEPTION_WHERE);
+            logger.warning("makeResponse: make_response is nullptr");
+            return;
         }
         // check thread
         if (!ThreadIdentify::isMeLoaderThread()) {

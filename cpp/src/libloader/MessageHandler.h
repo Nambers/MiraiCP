@@ -9,19 +9,19 @@
 namespace LibLoader::MessageHandler {
     using plugin_ptr = std::shared_ptr<const Plugin>;
 
-    void operation_message(MessageProcessor::payload_ptr msg, plugin_ptr plugin);
+    void operation_message(MessageProcessor::payload_ptr msg, const plugin_ptr& plugin);
 
-    void logger_message(MessageProcessor::payload_ptr msg, plugin_ptr plugin);
+    void logger_message(MessageProcessor::payload_ptr msg, const plugin_ptr& plugin);
 
-    void plugin_id_message(MessageProcessor::payload_ptr msg, plugin_ptr plugin);
+    void plugin_id_message(MessageProcessor::payload_ptr msg, const plugin_ptr& plugin);
 
-    void push_task_message(MessageProcessor::payload_ptr msg, plugin_ptr plugin);
+    void push_task_message(MessageProcessor::payload_ptr msg, const plugin_ptr& plugin);
 
-    void push_task_with_id_message(MessageProcessor::payload_ptr msg, plugin_ptr plugin);
+    void push_task_with_id_message(MessageProcessor::payload_ptr msg, const plugin_ptr& plugin);
 
-    void timer_message(MessageProcessor::payload_ptr msg, plugin_ptr plugin);
+    void timer_message(MessageProcessor::payload_ptr msg, const plugin_ptr& plugin);
 
-    void admin_message(MessageProcessor::payload_ptr msg, plugin_ptr plugin);
+    void admin_message(MessageProcessor::payload_ptr msg, const plugin_ptr& plugin);
 } // namespace LibLoader::MessageHandler
 
 

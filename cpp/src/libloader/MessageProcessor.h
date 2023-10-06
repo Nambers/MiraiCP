@@ -42,7 +42,7 @@ namespace LibLoader {
     public:
         using payload_ptr = PayLoadInfo::payload_ptr;
         using plugin_ptr = std::shared_ptr<const Plugin>;
-        typedef void (*message_handler)(payload_ptr msg, plugin_ptr plugin_ptr);
+        typedef void (*message_handler)(payload_ptr msg, const plugin_ptr &plugin_ptr);
 
     private:
         message_handler handlers[MsgType::MESSAGE_TYPE_COUNT];
