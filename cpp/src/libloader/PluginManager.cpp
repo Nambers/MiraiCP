@@ -189,7 +189,12 @@ namespace LibLoader {
     void PluginManager::enableAll() {
         std::shared_lock lk(pluginlist_mtx);
         for (auto &&[k, v]: id_plugin_map) {
-            v->enablePlugin();
+            if (!v->isLoaded()) continue;
+            try {
+                v->enablePlugin();
+            } catch (const PluginAlreadyEnabledException &e) {
+                logger.warning("插件id: " + k + " 已经被启用");
+            }
         }
     }
 
