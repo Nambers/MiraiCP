@@ -41,7 +41,6 @@ class CommandHandlerImpl : CommandHandler {
             override val prefixOptional: Boolean
                 get() = preFixOption
             var pluginId: String = ""
-            var primaryName: String = ""
             override suspend fun CommandSender.onCommand(args: MessageChain) {
                 event(
                     commandToEventData(
