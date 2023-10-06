@@ -40,6 +40,7 @@ namespace LibLoader::MessageHandler {
         auto push_task_msg = message_cast<PayloadClass>(msg);
         LoaderApi::pushTask(push_task_msg->task_func);
     }
+
     void push_task_with_id_message(MessageProcessor::payload_ptr msg, const plugin_ptr &plugin) {
         if (!plugin->isEnabled()) return;
         using PayloadClass = MiraiCP::PushTaskWithIdMessage;

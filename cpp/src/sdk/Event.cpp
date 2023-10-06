@@ -41,7 +41,7 @@
 
 namespace MiraiCP {
     namespace CommandManager {
-        extern std::vector<std::unique_ptr<IRawCommand>> commandList;
+        extern std::unordered_map<std::string, std::unique_ptr<IRawCommand>> commandList;
     };
 
     using json = nlohmann::json;
@@ -334,10 +334,12 @@ namespace MiraiCP {
             }
             case eventTypes::Command: {
                 // command
-                CommandManager::commandList[j.eventData["bindId"]]->onCommand(
-                        j.eventData.contains("contact") ? Contact::deserializeToPointer(json_jsonmover(j.eventData, "contact")) : nullptr,
-                        Bot(j.botId),
-                        MessageChain::deserializationFromMessageJson(json::parse(json_stringmover(j.eventData, "message"))));
+                if (CommandManager::commandList.find(j.eventData["primaryName"]) != CommandManager::commandList.end()) {
+                    CommandManager::commandList[j.eventData["primaryName"]]->onCommand(
+                            j.eventData.contains("contact") ? Contact::deserializeToPointer(json_jsonmover(j.eventData, "contact")) : nullptr,
+                            Bot(j.botId),
+                            MessageChain::deserializationFromMessageJson(json::parse(json_stringmover(j.eventData, "message"))));
+                }
                 break;
             }
             default: {
