@@ -12,6 +12,7 @@ Copyright 2023 (c) Antares
 import os
 import subprocess
 import sys
+from typing import List
 
 codepage = 'utf-8' if sys.platform != 'win32' else 'cp936'
 currentFilePath = os.path.dirname(os.path.abspath(__file__))
@@ -26,13 +27,25 @@ def writelog(e: subprocess.CalledProcessError):
         f.write('\n\n')
 
 
+cfg_content = r"""
+{
+  "accounts": [],
+  "cppPaths": [
+    {
+      "path": "{}/libMiraiCP_mock_test.so"
+    }
+  ]
+}
+"""
+
+
 def runmock(name: str, kwargs: dict) -> bool:
-    global kotlinPath, env
+    global prefix
     try:
         subprocess.check_output(
             f"{prefix}gradlew :shared:test --tests \"tech.eritquearcus.miraicp.shared.test.events.{name}\"",
             shell=True,
-            stderr=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             **kwargs
         )
         return True
@@ -45,6 +58,25 @@ def runmock(name: str, kwargs: dict) -> bool:
         return False
 
 
+def find_build_folder(_cppPath: str, _cppFiles: List[str]):
+    if "cmake-build-debug" in _cppFiles and os.path.isdir(os.path.join(_cppPath, "cmake-build-debug")):
+        return os.path.join(_cppPath, "cmake-build-debug")
+    elif "build" in _cppFiles and os.path.isdir(os.path.join(_cppPath, "build")):
+        return os.path.join(_cppPath, "build")
+    elif "cmake-build-release" in _cppFiles and os.path.isdir(os.path.join(_cppPath, "cmake-build-release")):
+        return os.path.join(_cppPath, "cmake-build-release")
+
+
+def setup_lib_path(_lib_path):
+    mock_cfg_dir = os.path.join(_lib_path, "testFileFromKt4Mock")
+    if not os.path.exists(mock_cfg_dir):
+        os.mkdir(mock_cfg_dir)
+    cfg_file = os.path.join(mock_cfg_dir, "config.json")
+    if not os.path.exists(cfg_file):
+        with open(cfg_file, 'w', encoding='utf-8') as f:
+            f.write(cfg_content.format(_lib_path))
+
+
 if __name__ == "__main__":
     if os.path.exists(os.path.join(currentFilePath, logfile)):
         os.remove(os.path.join(currentFilePath, logfile))
@@ -52,15 +84,12 @@ if __name__ == "__main__":
     cppPath = os.path.join(currentFilePath, os.path.pardir)
     cppFiles = os.listdir(cppPath)
 
-    if "cmake-build-debug" in cppFiles and os.path.isdir(os.path.join(cppPath, "cmake-build-debug")):
-        libPath = os.path.join(cppPath, "cmake-build-debug")
-    elif "build" in cppFiles and os.path.isdir(os.path.join(cppPath, "build")):
-        libPath = os.path.join(cppPath, "build")
-    elif "cmake-build-release" in cppFiles and os.path.isdir(os.path.join(cppPath, "cmake-build-release")):
-        libPath = os.path.join(cppPath, "cmake-build-release")
-    else:
+    libPath = find_build_folder(cppPath, cppFiles)
+    if libPath is None:
         print("Error: no build folder detected", file=sys.stderr)
         exit(1)
+
+    setup_lib_path(libPath)
 
     kotlinPath = os.path.join(os.path.join(cppPath, os.path.pardir), "kotlin")
 
