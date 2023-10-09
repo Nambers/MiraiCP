@@ -165,7 +165,7 @@ class EventsTest : TestBase() {
             MockActions.fireMessageRecalled(friend.says("x"))
         }
         // friendMessageEvent + friendRecallEvent
-        waitUntilEnd()
+        waitUntilEnd(2)
     }
 
     @OptIn(MiraiInternalApi::class, MiraiExperimentalApi::class)
