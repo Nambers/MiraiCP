@@ -1,6 +1,6 @@
 name: Bug Report
 description: 提交一份错误报告
-labels: ["t:bug"]
+labels: ["t: bug"]
 
 body:
   - type: checkboxes

@@ -1,6 +1,6 @@
 name: feature request
 description: 申请新特性
-labels: ["t:enhancement"]
+labels: ["t: enhancement"]
 
 body:
 - type: markdown

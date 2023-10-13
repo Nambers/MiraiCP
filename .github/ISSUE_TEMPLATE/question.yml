@@ -1,6 +1,6 @@
-name: 使用相关的问题
-description: 问题
-labels: ["t:question"]
+name: question
+description: 使用相关问题
+labels: ["t: question"]
 
 body:
   - type: textarea

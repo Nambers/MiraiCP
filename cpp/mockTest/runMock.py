@@ -76,6 +76,17 @@ def setup_lib_path(_lib_path):
         with open(cfg_file, 'w', encoding='utf-8') as f:
             f.write(cfg_content.format(_lib_path))
 
+    subprocess.check_output(
+        f"cmake --build {_lib_path} --target MiraiCP_mock_test",
+        shell=True,
+        stderr=subprocess.STDOUT,
+    )
+    subprocess.check_output(
+        f"cmake --build {_lib_path} --target Loader",
+        shell=True,
+        stderr=subprocess.STDOUT,
+    )
+
 
 if __name__ == "__main__":
     if os.path.exists(os.path.join(currentFilePath, logfile)):
