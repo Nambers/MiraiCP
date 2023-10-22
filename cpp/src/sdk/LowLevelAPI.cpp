@@ -22,11 +22,6 @@
 #include "commonTypes.h"
 #include <utility>
 
-
-namespace LibLoader::LoaderApi {
-    const interface_funcs *get_loader_apis();
-}
-
 namespace MiraiCP {
     using json = nlohmann::json;
 
@@ -45,9 +40,5 @@ namespace MiraiCP {
     std::string LowLevelAPI::uploadImg0(std::string path, nlohmann::json c) {
         nlohmann::json j{{"filePath", std::move(path)}, {"contact", c}};
         return KtOperation::ktOperation(KtOperation::UploadImg, j);
-    }
-
-    bool checkSafeCall() {
-        return LibLoader::LoaderApi::get_loader_apis() != nullptr;
     }
 } // namespace MiraiCP

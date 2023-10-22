@@ -22,7 +22,7 @@
 
 namespace MiraiCP {
     void IMiraiData::requestRefresh() {
-        if (!MiraiCP::checkSafeCall() || Locker._inited.exchange(true)) return;
+        if (Locker._inited.exchange(true)) return;
 
         std::unique_lock<std::shared_mutex> _lck(Locker._mtx);
         refreshInfo();

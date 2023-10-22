@@ -15,7 +15,6 @@
 //
 
 #include "MiraiCPNewThread.h"
-#include "MockLibLoaderApi.h"
 #include "Tools.h"
 #include "Logger.h"
 #include <gtest/gtest.h>
@@ -134,7 +133,6 @@ int CheckNoMoreCopy(std::string &s1, std::string &s2) {
 }
 
 TEST(MiraiCPNewThreadTest, test) {
-    auto mock = LoaderApiMock();
     static std::string buf;
     static std::mutex bufmtx;
 

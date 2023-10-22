@@ -59,21 +59,6 @@ namespace LibLoader::LoaderApi {
         }
     }
 
-    static const interface_funcs *loader_apis = nullptr;
-
-    MIRAICP_EXPORT void set_loader_apis(const LibLoader::LoaderApi::interface_funcs *apis) noexcept {
-        loader_apis = apis;
-    }
-
-    MIRAICP_EXPORT void reset_loader_apis() noexcept {
-        loader_apis = nullptr;
-    }
-
-    /// 这个函数是给本cpp以外的文件使用的，大概率用不到
-    const interface_funcs *get_loader_apis() {
-        return loader_apis;
-    }
-
     using MiraiCP::PluginNotAuthorizedException;
     using MiraiCP::PluginNotEnabledException;
 
