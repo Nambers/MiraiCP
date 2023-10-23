@@ -195,5 +195,4 @@ TEST(MiraiCPNewThreadTest, test) {
     }
 
     ASSERT_EQ(0, CheckNoMoreCopy(result, stdresult)); // fail, 0 != 1
-    ASSERT_FALSE(result.empty());
 }

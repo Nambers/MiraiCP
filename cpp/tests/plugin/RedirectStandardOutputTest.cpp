@@ -21,6 +21,7 @@ using namespace MiraiCP;
 
  TEST(RedirectStandardOutputForPluginTest, COUT) {
      MiraiCP::Redirector::setRedirectedObjs(&std::cout, &std::cerr);
+     MiraiCP::Redirector::start();
      std::string re;
      MiraiCP::Logger::logger.registerHandle([&re](const std::string &str, int level) {
          if (level == 0) re += str;
@@ -29,11 +30,13 @@ using namespace MiraiCP;
      std::cout << "aabb";
      std::cout.flush();
      std::cout << "111" << std::endl;
+     MiraiCP::Redirector::reset();
      ASSERT_EQ("testaabb111\n", re);
  }
 
  TEST(RedirectStandardOutputForPluginTest, CERR) {
     MiraiCP::Redirector::setRedirectedObjs(&std::cout, &std::cerr);
+     MiraiCP::Redirector::start();
      std::string re;
      MiraiCP::Logger::logger.registerHandle([&re](const std::string &str, int level) {
          if (level == 2) re += str;
@@ -42,5 +45,6 @@ using namespace MiraiCP;
      std::cerr << "aabb";
      std::cerr.flush();
      std::cerr << "111" << std::endl;
+     MiraiCP::Redirector::reset();
      ASSERT_EQ("testaabb111\n", re);
  }
