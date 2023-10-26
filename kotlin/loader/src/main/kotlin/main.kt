@@ -103,6 +103,9 @@ object KotlinMainEntry {
                     File("config.json").writeText(
                         """
                         {
+                          "advanceConfig1": {
+                            "libLoaderPath": "libLoader.dll/so 位置
+                          },
                           "accounts": [{
                             "id": qqid,
                             "passwords": "passwords密码",
@@ -111,12 +114,10 @@ object KotlinMainEntry {
                             "md5": false,
                             "autoLogin": false
                           }],
-                          "cppPaths": {
+                          "cppPaths": [{
                           "path":"dll路径",
-                          "dependence":[
-                            "依赖的dll路径"
-                          ]
-                          }
+                           "authority": 插件的权限, 为 1 或 0
+                          }]
                         }
 
                     """.trimIndent()
@@ -145,7 +146,7 @@ object KotlinMainEntry {
                     if (!f.exists() || !f.isFile || !f.canRead()) {
                         println("默认配置文件路径(${f.absolutePath})读取错误,文件不存在/不是文件/不可读")
                         println("使用 -g 可以生成config.json模板(java -jar MiraiCP-loader-<version>.jar -g)")
-                        System.`in`.read()
+//                        System.`in`.read()
                         exitProcess(1)
                     }
                 }
