@@ -22,7 +22,7 @@
 
 
 namespace MiraiCP {
-    constexpr const char *m_MiraiCPVersion = "v2.16.0-dev1";
+    constexpr const char *m_MiraiCPVersion = "v2.16.0";
     inline const std::string MiraiCPVersion = m_MiraiCPVersion;
 
     struct PluginConfig {

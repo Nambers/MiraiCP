@@ -18,13 +18,14 @@
 
 import Version.`kotlinx-coroutines-core`
 import Version.`mirai-core-api`
-import kotlinx.serialization.decodeFromHexString
+
+//import kotlinx.serialization.decodeFromHexString
 
 
 plugins {
     kotlin("jvm")
     id("net.mamoe.mirai-console")
-    id("me.him188.maven-central-publish")
+//    id("me.him188.maven-central-publish")
     `maven-publish`
 }
 version = Version.miraiCP
@@ -43,50 +44,50 @@ tasks.compileKotlin {
     kotlinOptions.jvmTarget = "17"
 }
 
-tasks {
-    afterEvaluate {
-        named<me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication>(me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication.TASK_NAME) {
-            dependsOn(getByPath(":fillingConstants"))
-        }
-        named<net.mamoe.mirai.console.gradle.BuildMiraiPluginV2>("buildPlugin") {
-            dependsOn(getByPath(":fillingConstants"))
-            archiveBaseName.set("MiraiCP-plugin")
-            archiveClassifier.set("")
-            archiveVersion.set(Version.miraiCP)
-            manifest {
-                attributes["Description"] = "MiraiCP-Plugin"
-                attributes["Built-By"] = "Eritque arcus"
-                attributes["Implementation-Version"] = Version.miraiCP
-                attributes["Created-By"] = "Gradle " + gradle.gradleVersion
-                attributes["Build-Kotlin"] = Version.kotlin
-            }
-        }
-    }
-}
-mavenCentralPublish {
-    workingDir = rootProject.file("plugin\\build\\gpg")
-    credentials = rootProject.file("plugin\\c.txt").let {
-        if (it.exists()) kotlinx.serialization.protobuf.ProtoBuf.decodeFromHexString(
-            me.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
-            it.readText()
-        )
-        else null
-    }
-    this.useCentralS01()
-    singleDevGithubProject("Nambers", "MiraiCP", "Eritque arcus")
-    licenseFromGitHubProject("AGPL-3.0", "master")
-    publicationConfigurators.add {
-        groupId = "io.github.nambers"
-        artifactId = "MiraiCP-plugin"
-        description = "C++ SDK of Mirai"
-        artifact(tasks["buildPlugin"])
-        artifact(tasks["buildPluginLegacy"])
-        this.pom {
-            name.set("MiraiCP-plugin")
-            version = Version.miraiCP
-        }
-    }
-}
+//tasks {
+//    afterEvaluate {
+//        named<me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication>(me.him188.maven.central.publish.gradle.tasks.CheckMavenCentralPublication.TASK_NAME) {
+//            dependsOn(getByPath(":fillingConstants"))
+//        }
+//        named<net.mamoe.mirai.console.gradle.BuildMiraiPluginV2>("buildPlugin") {
+//            dependsOn(getByPath(":fillingConstants"))
+//            archiveBaseName.set("MiraiCP-plugin")
+//            archiveClassifier.set("")
+//            archiveVersion.set(Version.miraiCP)
+//            manifest {
+//                attributes["Description"] = "MiraiCP-Plugin"
+//                attributes["Built-By"] = "Eritque arcus"
+//                attributes["Implementation-Version"] = Version.miraiCP
+//                attributes["Created-By"] = "Gradle " + gradle.gradleVersion
+//                attributes["Build-Kotlin"] = Version.kotlin
+//            }
+//        }
+//    }
+//}
+//mavenCentralPublish {
+//    workingDir = rootProject.file("plugin\\build\\gpg")
+//    credentials = rootProject.file("plugin\\c.txt").let {
+//        if (it.exists()) kotlinx.serialization.protobuf.ProtoBuf.decodeFromHexString(
+//            me.him188.maven.central.publish.protocol.PublicationCredentials.serializer(),
+//            it.readText()
+//        )
+//        else null
+//    }
+//    this.useCentralS01()
+//    singleDevGithubProject("Nambers", "MiraiCP", "Eritque arcus")
+//    licenseFromGitHubProject("AGPL-3.0", "master")
+//    publicationConfigurators.add {
+//        groupId = "io.github.nambers"
+//        artifactId = "MiraiCP-plugin"
+//        description = "C++ SDK of Mirai"
+//        artifact(tasks["buildPlugin"])
+//        artifact(tasks["buildPluginLegacy"])
+//        this.pom {
+//            name.set("MiraiCP-plugin")
+//            version = Version.miraiCP
+//        }
+//    }
+//}
 dependencies {
     compileOnly(`mirai-core-api`)
     implementation(`kotlinx-coroutines-core`)

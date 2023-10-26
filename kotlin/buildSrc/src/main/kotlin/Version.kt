@@ -17,7 +17,7 @@
  */
 
 object Version {
-    const val miraiCP = "2.16.0-dev1"
+    const val miraiCP = "2.16.0"
 
     // plugins
     const val kotlin = "1.8.10"
@@ -25,7 +25,7 @@ object Version {
     const val `kotlinx-coroutines-core` = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     const val `kotlin-test` = "org.jetbrains.kotlin:kotlin-test:$kotlin"
 
-    const val mirai = "2.16.0-RC"
+    const val mirai = "2.16.0"
     const val `mirai-core-api` = "net.mamoe:mirai-core-api:$mirai"
     const val `mirai-core-utils` = "net.mamoe:mirai-core-utils:$mirai"
     const val `mirai-console` = "net.mamoe:mirai-console:$mirai"
@@ -33,7 +33,7 @@ object Version {
     const val `mirai-core` = "net.mamoe:mirai-core:$mirai"
     const val `mirai-logging` = "net.mamoe:mirai-logging-log4j2:$mirai"
 
-    const val mavenCenterPublish = "1.0.0"
+    //    const val mavenCenterPublish = "1.1.1"
     const val jline = "org.jline:jline:3.21.0"
     const val jansi = "org.fusesource.jansi:jansi:2.4.0"
 
