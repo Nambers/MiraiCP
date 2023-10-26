@@ -5,6 +5,7 @@
 鉴于种种情况, 这版大概会是最后一版 ><  
 如果想继续询问项目内技术细节可以继续给我邮箱发邮件 `eritque-arcus [at] eritque-arcus [dot] tech`  
 以上  
+Sep 2020 ~ Oct 2023 ■  
 
 + Upgrade mirai to `2.16.0`
 
