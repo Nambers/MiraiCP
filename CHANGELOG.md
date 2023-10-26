@@ -1,6 +1,12 @@
 # Change Log
 
-## v我也不知道会是什么版本
+## v2.16.0
+
+鉴于种种情况, 这版大概会是最后一版 ><  
+如果想继续询问项目内技术细节可以继续给我邮箱发邮件 `eritque-arcus [at] eritque-arcus [dot] tech`  
+以上  
+
++ Upgrade mirai to `2.16.0`
 
 Internal:
 
@@ -23,7 +29,7 @@ Improvements:
 Breakchanges:  
 
 * 修改了部分源文件的命名，修复在Windows下MiraiCP源文件与部分系统库文件重名导致的编译、静态检查问题。使用multi target的用户可能会需要修改部分include
-* 由于内部逻辑大幅重构，还未严格测试，可能有潜在的不兼容问题
+* ~~由于内部逻辑大幅重构，还未严格测试，可能有潜在的不兼容问题~~ 
 
 ## v2.16.0-dev1
 Internal fixs:
