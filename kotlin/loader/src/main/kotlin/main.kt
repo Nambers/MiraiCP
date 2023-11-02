@@ -36,7 +36,7 @@ object KotlinMainData {
     @OptIn(ExperimentalCoroutinesApi::class)
     val coroutineScope = CoroutineScope(threadPool + job)
     lateinit var loginAccount: List<CPPConfig.LoaderConfig.Account>
-    val aliveChan: Channel<Unit> = Channel(0)
+    val aliveChan: Channel<Unit> = Channel(1)
 }
 
 
