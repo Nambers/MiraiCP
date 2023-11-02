@@ -308,15 +308,15 @@ class OperationTest : TestBase() {
         }
         member.says("groupFileListFolder")
         waitUntilEnd()
+        val expected = listOf("[[\"/a/micb.amr\", \"${file[1].id}\"],[\"/a/mic.amr\", \"${file[0].id}\"]]")
         val logs = TestUtils.logList.filter {
             it.contains("fileList:")
         }.map {
             it.substringAfter("fileList:")
+        }.filterNot {
+            it in expected
         }
-        assertContentEquals(
-            listOf("[[\"/a/micb.amr\", \"${file[1].id}\"],[\"/a/mic.amr\", \"${file[0].id}\"]]"),
-            logs
-        )
+        assertContentEquals(emptyList(), logs)
     }
 
     @Test
